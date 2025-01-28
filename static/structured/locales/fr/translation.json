@@ -1,20 +1,55 @@
 {
+    "alerts": {
+        "add": "Ajouter",
+        "always_alert_legendary": "Soyez toujours attentif lorsque de nouveaux membres d'équipage légendaires sont découverts dans le pool de rachat.",
+        "check_buyback": "Vérifiez votre pool de rachat.",
+        "columns": {
+            "active": "Actif",
+            "items": "Éléments d'alerte",
+            "name": "Nom de l'alerte"
+        },
+        "description": "Définissez une alerte lorsque vous souhaitez être averti lorsqu'un équipage ou un objet spécifique a été acquis.",
+        "disable_all_alerts": "Désactiver toutes les alertes",
+        "disabled": "{{global.disabled}}",
+        "fusible_crew": "Alerte : l'équipier fusible '{{subject}}' ({{rarity}}/{{max_rarity}}*) a été acquis !",
+        "hit": "Alerte : {{subject}} a été acquis !",
+        "item_type": "{{item.columns.item_type}}",
+        "name": "Alertes",
+        "new_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
+        "remove": "Masquer",
+        "show_previously_hidden": "Afficher les alertes précédemment masquées",
+        "toggle_buyback_alerts": "Basculer les alertes de pool de rachat",
+        "trigger": "{{ship.trigger}}",
+        "trigger_always": "Déclencher toujours",
+        "trigger_once": "Déclencher une fois",
+        "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte.",
+        "when_new_crew": "Alerte lorsque copies d'un équipier non possédé sont découvertes dans le pool de rachat.",
+        "when_new_fuse": "Alerte lorsqu'un fusible pour un équipage possédé est découvert dans le pool de rachat."
+    },
     "base": {
         "all_crew": "Afficher tous l'équipiers",
+        "best_pair": "Meilleure paire",
         "bigbook_tier": "Étage",
         "cab_power": "CAB",
+        "cap_achiever": "Premier à Max",
         "collection": "Collection",
         "collection_fmt": "1 collections",
         "collections": "Collections",
         "collections_fmt": "{{count}} collections",
         "crew": "Équipage",
+        "crewman": "Équipier",
+        "crewmen": "Équipiers",
         "event_ships": "Vaisseaux événementiels",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",
+        "global_warn_permanent": "Attention : cette action ne peut pas être annulée.",
         "in_portal": "Dans le Portail",
+        "ingredient": "Ingrédient",
+        "ingredients": "Ingrédients",
         "less_than_100_retrieval": "< 100 % de Récupération",
         "level": "Niveau",
+        "live_results": "Résultats en direct (le calcul sera plus lent)",
         "n_slots": "{{n}} emplacements",
         "n_to_next": "{{n}} au suivant",
         "never_in_portal": "Jamais dans le portail",
@@ -26,12 +61,39 @@
         "on_shuttle": "En navette",
         "on_voyage": "En voyage",
         "one_slot": "1 emplacement",
+        "pseudocolumns": {
+            "collections.length": "{{base.collections}}",
+            "date_added": "{{base.release_date}}",
+            "highest_owned_rarity": "{{global.highest_owned_rarity}}",
+            "is_new": "{{global.new}}",
+            "level": "{{base.level}}",
+            "max_rarity": "{{global.max_rarity}}",
+            "name": "{{global.name}}",
+            "price": "{{retrieval.price.price}}",
+            "q_bits": "{{base.qp}}",
+            "quipment_score": "{{rank_names.quipment_score}}",
+            "ranks": {
+                "traitRank": "{{rank_names.trait_rank}}"
+            },
+            "retrievable": "{{retrieval.combos}}",
+            "sell_count": "Mis en vente"
+        },
         "qp": "QP",
+        "quipment": "Quipement",
         "rarity": "Rareté",
         "release_date": "Début",
+        "retrieval": "{{retrieval.modes.retrieval}}",
+        "rewards": "Récompenses",
+        "ship_taits": "Caractéristiques du vaisseau",
+        "ship_trait": "Caractéristiques du vaisseau",
+        "short_name": "Nom abrégé",
         "shuttle": "Navette",
         "shuttles": "Navettes",
-        "uniquely_retrievable": "Récupérable de manière unique"
+        "skills": "{{shuttle_helper.missions.columns.skills}}",
+        "traits": "{{hints.traits}}",
+        "uniquely_retrievable": "Récupérable de manière unique",
+        "voyage": "Voyage",
+        "voyages": "Voyages"
     },
     "behold_helper": {
         "columns": {
@@ -65,6 +127,8 @@
     },
     "buffs": {
         "max_buffs": "Effets maximum",
+        "max_quipment_buffs_double": "Effets maximum de quipement (deux compétences)",
+        "max_quipment_buffs_triple": "Effets maximum de quipement (trois compétences)",
         "no_buffs": "Aucun effets",
         "player_buffs": "Effets des joueurs",
         "quipment_buffs": "Effets de quipement"
@@ -83,6 +147,7 @@
                 "portal": "Pas dans le portail",
                 "power": "Score de puissance de base",
                 "quipment": "Score de la quipement",
+                "rareness": "Exclusivité",
                 "retrieval": "Cotes de récupération",
                 "score": "Classement global de puissance de la liste",
                 "skillRare": "Rareté par ordre de compétence",
@@ -130,6 +195,8 @@
         },
         "ev_show": "Afficher les colonnes VA",
         "expected_value": "Valeur attendue",
+        "max_final_ev_n": "Max. VE final: {{n}}",
+        "min_remaining_ev_n": "Min. VE restant: {{n}}",
         "original_engine": "Algorithme Original",
         "prospect": {
             "apply": "Appliquer l'état potentiel",
@@ -152,10 +219,99 @@
                 "title": "Équipiers à Former",
                 "title_short": "Former"
             }
-        }
+        },
+        "total_ev": "VE totale"
     },
     "clipboard": {
         "copied_exclaim": "Copié!"
+    },
+    "collections": {
+        "additional_milestones": "Étapes de collecte supplémentaires",
+        "alerts": {
+            "crew_already_fused": "Tous les membres d'équipage requis pour atteindre la prochaine étape sont déjà entièrement fusionnés.",
+            "crew_recruit_need_n": "Vous devez recruter {{n}} membres d'équipage supplémentaires pour atteindre le prochain objectif.",
+            "fuses_covered_by_cites": "Tous les fusibles restants requis sont couverts par les citations honorables que vous possédez déjà."
+        },
+        "citation_cost_to_next": "Coût de la citation jusqu'à la suivante",
+        "columns": {
+            "collections": "{{base.collections}}",
+            "crew": "{{base.crew}}",
+            "descriptions": {
+                "grade": "Une mesure de l'utilité d'un équipage pour réaliser le plus grand nombre de collectes à l'approche d'une étape importante",
+                "star_grade": "Une mesure basée sur la « Grade » qui prend en compte la rareté la plus élevée possédée"
+            },
+            "grade": "Grade",
+            "immortal_rewards": "Récompenses pour l'immortalisation",
+            "rarity": "{{base.rarity}}",
+            "star_grade": "Grade étoile"
+        },
+        "group": {
+            "warning": "La vue des collections groupées affiche uniquement l'équipage possédé si la liste des collections n'est pas filtrée."
+        },
+        "milestone": "Étape",
+        "milestone_rewards": "Récompenses d'étape",
+        "milestone_rewards_desc": "Récompenses que vous pouvez réclamer après avoir immortalisé le nombre de membres d'équipage nécessaire pour atteindre la prochaine étape",
+        "milestones": "Étapes",
+        "n_increased": "{{n}} collections augmentées",
+        "n_needed_for_rewards": "{{n}} nécessaire pour les récompenses",
+        "optimizer": {
+            "warning": "La vue de l'optimiseur de collection affiche uniquement l'équipage possédé."
+        },
+        "options": {
+            "group_rewards": "Regrouper les récompenses",
+            "hard_filter": "Filtre dur",
+            "honor_sale_pricing": "Prix de vente d'honneur",
+            "mode": {
+                "exact-only": "Exact uniquement",
+                "extended": "Étendu",
+                "inexact-only": "Inexact uniquement",
+                "normal": "Normal",
+                "title": "Mode"
+            },
+            "prioritize_favorite_crew": "Donner la priorité à l'équipage préféré",
+            "search_by_name_or_trait": "Recherchez des collections par nom ou par trait.",
+            "show_crew": {
+                "bottom": "En bas",
+                "title": "Montrer l'équipe",
+                "top": "En haut"
+            },
+            "show_incomplete_combos": "Afficher les combos incomplets",
+            "show_maxed_collections": "Afficher les collections maxées",
+            "sort_by_cost": "Trier par coût"
+        },
+        "panes": {
+            "crew": {
+                "description": "Collections regroupées par équipage",
+                "long_description": "Recherchez un équipage qui vous aidera à progresser dans vos collections et découvrez les récompenses que vous pourriez obtenir en immortalisant certains membres d'équipage dès maintenant. Remarque : les collections maxées et les membres d'équipage immortalisés ne seront pas affichés dans ce tableau.",
+                "long_title": "Tableau de l'équipage",
+                "title": "{{base.crew}}"
+            },
+            "group": {
+                "description": "Visualisez l'équipage regroupé en collections et trié par coût",
+                "long_description": "Afficher les équipages groupés en collections triées par ordre décroissant de la valeur maximale. Les équipages marqués d'une étoile verte {{star}} sont requis pour atteindre le prochain jalon. Les équipages sont triés par ordre croissant de rareté, de niveau et d'emplacements d'équipement. Utilisez le champ de recherche pour rechercher un équipage spécifique. Cliquer sur un équipage ajoutera le nom de l'équipage au champ de recherche.",
+                "long_title": "Groupes de collection d'équipage",
+                "title": "{{base.collections}}"
+            },
+            "optimizer": {
+                "description": "Découvrez quel équipage peut réaliser le plus de collections à la fois..",
+                "long_description": "Optimisez l'équipe de collection pour atteindre plusieurs étapes à la fois. Si plusieurs combinaisons sont disponibles, elles seront répertoriées dans la liste déroulante « Variations », triées du plus grand nombre de collections au plus petit nombre de collections. Les variantes qui remplissent entièrement l'équipe restante nécessaire pour la collection principale sont marquées d'un astérisque *.",
+                "long_title": "Optimiseur des étapes clés de les collections",
+                "title": "Optimiseur"
+            },
+            "overview": {
+                "description": "Aperçu des collections",
+                "long_description": " ",
+                "long_title": "Aperçu des collections",
+                "title": "Aperçu"
+            },
+            "progress": {
+                "description": "Progrès des collections",
+                "long_description": "Recherchez des collections par nom ou par description. Vous pouvez également filtrer les collections par types de récompenses. Cliquez sur une ligne pour voir l'équipe qui vous aidera à progresser dans cette collection.",
+                "long_title": "Étapes clés de la progression de la collection",
+                "title": "Progrès"
+            }
+        },
+        "progress_to_next": "Progression vers la prochaine étape"
     },
     "consider_crew": {
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
@@ -169,7 +325,7 @@
     },
     "cool_stats": {
         "all_ranks": "Tous les rangs",
-        "base_ranks": "Rangs de base",
+        "base_ranks": "Rangs principles",
         "base_roster": "#{{rank}} {{skill}} base dans votre liste",
         "gauntlet_pair_ranks": "Rangs de paire de gantelets",
         "gauntlet_pair_roster": "#{{rank}} {{skill}} paire de gantelets dans votre liste",
@@ -186,7 +342,8 @@
         "mortal": "Afficher uniquement les non-immortels appartenant",
         "none": "Afficher tous les équipiers",
         "owned": "Afficher uniquement les équipiers possédée",
-        "unowned": "Afficher uniquement les équipiers sans propriétaire"
+        "unowned": "Afficher uniquement les équipiers sans propriétaire",
+        "wishlist": "Afficher uniquement l'équipage sur ma liste de souhaits"
     },
     "crew_page": {
         "aka_colon": "Aussi connu sous le nom de :",
@@ -269,8 +426,9 @@
         }
     },
     "crew_views": {
+        "n_missions_to_next": "{{n}} missions à suivre",
         "advanced_analysis": "Analyse Avancée",
-        "base": "Afficher les compétences de base",
+        "base": "Afficher les compétences principles",
         "crew_utility": "Afficher d'utilité de l'équipier",
         "dismiss": "Rejeter {{crew}}",
         "faction_items": "{{n}} articles de faction",
@@ -291,22 +449,61 @@
         "items": "{{global.items}}"
     },
     "duration": {
+        "all_time": "Tout le temps",
         "n_d": "{{days}} j",
         "n_d_compact": "{{days}}d",
+        "n_day": "{{days}} jour",
         "n_days": "{{days}} jours",
         "n_h": "{{hours}} h",
         "n_h_compact": "{{hours}}h",
+        "n_hour": "{{hours}} heure",
         "n_hour_class": "{{hours}}-heure",
         "n_hours": "{{hours}} heures",
         "n_m": "{{minutes}} m",
         "n_m_compact": "{{minutes}}m",
+        "n_minute": "{{minutes}} minute",
         "n_minute_class": "{{minutes}}-minute",
         "n_minutes": "{{minutes}} minutes",
-        "title": "Durée: {{duration}}"
+        "n_month": "{{months}} mois",
+        "n_months": "{{months}} mois",
+        "n_week": "{{weeks}} semaine",
+        "n_weeks": "{{weeks}} semaines",
+        "n_year": "{{years}} année",
+        "n_years": "{{years}} années",
+        "same_time": "Même Temps",
+        "title": "Durée: {{duration}}",
+        "today": "aujourd'hui",
+        "tomorrow": "demain",
+        "yesterday": "hier"
+    },
+    "event_info": {
+        "active_event": "Données en direct du classement des événements actifs",
+        "active_event_lag_warn": "Si cet événement est actuellement actif, le classement ci-dessous peut être obsolète.",
+        "bonus_crew": "Équipage bonus",
+        "bonus_crew_not_determined": "Les bonus d'équipage pour cet événement n'ont pas encore été déterminés.",
+        "error_load": "Impossible de charger les informations sur l'événement",
+        "featured_crew": "Équipage en vedette",
+        "leaderboard": "Classement",
+        "leaderboards": "Classements",
+        "rank": "{{cite_opt.columns.rank}}",
+        "ranked_rewards": "Récompenses classées",
+        "score": "Compte",
+        "tabs": {
+            "info": {
+                "description": "Afficher les détails de chaque événement",
+                "title": "Informations sur l'événement"
+            },
+            "stats": {
+                "description": "Afficher les statistiques des l'événements",
+                "title": "Statistiques des événements"
+            }
+        },
+        "threshold_rewards": "Récompenses de seuil",
+        "title": "Événements"
     },
     "event_planner": {
         "heading": "Trouvez les meilleurs équipiers à utiliser lors d'un événement",
-        "hide_duplicate_pairs": "Supprimer les paires en double",
+        "hide_duplicate_pairs": "Masquer les paires en double",
         "prospect_description": "Ajoutez un équipier potentiel (ou un équipier partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
@@ -332,7 +529,15 @@
         },
         "warn_no_info": "Les informations sur le prochain événement ne sont pas encore disponibles à partir des données des joueurs. Veuillez réessayer plus tard."
     },
+    "event_stats": {
+        "average_vp": "PV moyen",
+        "event_type": "Type d'événement",
+        "median_vp": "PV médian",
+        "rank": "{{cite_opt.columns.rank}}",
+        "rank_n_vp": "Rang {{n}} PV"
+    },
     "event_type": {
+        "expedition": "Expédition",
         "gather": "Galaxie",
         "shuttles": "Faction",
         "skirmish": "Escarmouche",
@@ -473,13 +678,13 @@
         "select": "Sélectionnez un combat de boss",
         "settings": {
             "optimizations": {
-                "hide_non_optimal": "Supprimer l'équipage non optimal",
+                "hide_non_optimal": "Masquer l'équipage non optimal",
                 "prioritize_coverage": "Donner la priorité à l'équipage avec couverture",
                 "title": "Optimisations"
             },
             "unofficial": {
-                "hide_alpha": "Supprimer les exceptions alpha",
-                "hide_one_hand": "Supprimer les exceptions d'une main",
+                "hide_alpha": "Masquer les exceptions alpha",
+                "hide_one_hand": "Masquer les exceptions d'une main",
                 "title": "Règles non officielles"
             },
             "user_prefs": {
@@ -549,9 +754,11 @@
             "second_pair": "{{quipment_ranks.second_pair}}",
             "third_pair": "{{quipment_ranks.third_pair}}"
         },
+        "elevated_note": "Cliquez sur cette colonne pour voir un tableau de tous les gantelets à haut degré de critique.",
         "gauntlet": "Gantelet",
         "gauntlets": "Gantelets",
-        "hide_opponents": "Supprimer les adversaires",
+        "hide_best_crew": "Masquer les meilleurs niveaux d'équipage pour le gantelet actuel...",
+        "hide_opponents": "Masquer les adversaires",
         "import": {
             "click_here": "Appuyez ici pour télécharger vos données",
             "heading": "Vous pouvez accéder à vos matchs gantelets en direct de la même manière que vous accédez actuellement à vos données de joueur.",
@@ -559,6 +766,7 @@
         },
         "jackpot_crew": "Équipier Jackpot",
         "jackpot_crew_for_date": "Équipier Jackpot pour {{date}}",
+        "live_crew": "{{gauntlet.pages.live_gauntlet.title}}",
         "max_results_per_table": "Max. de résultats par table",
         "min_max_proficiency": "Compétence maximale minimale",
         "no_limit": "Sans limites",
@@ -568,6 +776,10 @@
         "note_unleveled_crew_max_highlight_pair_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum ont des compétences soulignées et surlignées en vert.",
         "note_unleveled_crew_max_highlight_table_msg": "Remarque : les équipages possédés sans niveau et affichés au maximum sont surlignés en vert.",
         "only_highlight_active_round": "Mettre en évidence uniquement le tour actif",
+        "opponent_table": {
+            "opponent": "Adversaire",
+            "opponent_crew_n": "Équipier Adversaire {{n}}"
+        },
         "owned_status": {
             "any": "Tous les équipiers",
             "fe": "Équipiers possédés et entièrement équipé",
@@ -610,6 +822,7 @@
                 "title": "Le gantelet d'hier"
             }
         },
+        "show_best_crew": "Afficher les meilleurs niveaux d'équipage pour le gantelet actuel...",
         "show_buffs_heading": "Afficher les effets",
         "show_top_crew": "Afficher les meilleurs membres d'équipage",
         "skills_and_pairs": "Compétences et paires",
@@ -624,6 +837,10 @@
             "big": {
                 "heading": "Voir l'équipage dans de grandes présentations",
                 "title": "Grande présentation"
+            },
+            "opponent_table": {
+                "heading": "Voir tous les adversaires capturés dans ce gant",
+                "title": "Adversaires"
             },
             "pair_cards": {
                 "heading": "Voir l'équipage regroupé en tables de paires",
@@ -641,26 +858,35 @@
         }
     },
     "global": {
-        "reserved": "Réservé",
+        "set_as_default_view": "Définir comme vue par défaut",
         "aborted": "Terminé",
         "admiral": "Avorté",
         "advanced_settings": "Réglages Avancés",
         "adventure": "Aventure",
         "and": "et",
+        "and_n_more_ellipses": "et {{n}} de plus ...",
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
-        "base": "Base",
+        "approx": "Env.",
+        "base": "Principle",
         "bonus": "Prime",
         "bonuses": "Bonus",
+        "calculate": "Calculer",
         "cancel": "Annuler",
         "challenge": "Défi",
+        "check_all": "Cochez tout",
         "clear": "Effacer",
         "clear_all": "Tout effacer",
-        "clear_cache": "Supprimer le cache",
+        "clear_cache": "Masquer le cache",
         "close": "Fermer",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
+        "create": "Créer",
+        "date_end": "Date de fin",
+        "date_start": "Date de début",
         "default": "Défaut",
+        "delete": "Masquer",
+        "delete_selected": "Masquer la sélection",
         "disable": "Désactiver",
         "disabled": "Désactivé",
         "dismiss": "Rejeter",
@@ -669,13 +895,19 @@
         "enable": "Activer",
         "enabled": "Activé",
         "episode": "Épisode",
+        "exclusive": "Exclusif",
         "experimental": "Expérimental",
         "filters": "Filtres",
         "fleet": "Flotte",
         "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
+        "highest_owned_rarity": "Rareté la plus élevée possédée",
         "idle": "Inactif",
+        "include_x": "Inclure {{x}}",
+        "ingredient_warning": "Vous n'avez pas les ingrédients pour fabriquer cet objet.",
+        "ingredient_warning_all": "Vous n'avez pas les ingrédients pour fabriquer tous ces objets.",
+        "initial_launch": "Sortie initiale du jeu",
         "item_types": {
             "arena": "Arène",
             "arena_tickets": "Billets pour arène",
@@ -707,7 +939,7 @@
             "shuttle_token": "Jetons de navette",
             "starbase_component": "Composant de base stellaire",
             "valor": "Valeur",
-            "voyage_consumable": "Jetons de renaissance du voyage"
+            "voyage_consumable": "Jetons de relance du voyage"
         },
         "items": "Articles",
         "last_updated_colon": "Dernière mise à jour :",
@@ -715,10 +947,18 @@
         "load_defaults": "Charger les défauts",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
+        "lose": "Perdre",
+        "max": "Max",
         "max_rarity": "Rareté max.",
         "member": "Membre",
+        "min": "Min",
         "min_rarity": "Rareté min.",
+        "missing_colon": "Manquant :",
+        "n_%": "{{n}} %",
+        "n_available": "{{n}} disponible",
         "n_results": "{{n}} résultats",
+        "n_total_x": "{{n}} {{x}} au total",
+        "n_x": "{{n}} {{x}}",
         "name": "Nom",
         "never": "Jamais",
         "new": "Nouveau",
@@ -735,8 +975,11 @@
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
+        "presets": "Prédéfinies",
+        "quarter_short": "T",
         "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
+        "reserved": "Réservé",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
         "running": "En cours d'exécution",
@@ -749,20 +992,33 @@
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
         "show": "Montre",
+        "show_all": "Tout afficher",
         "show_less": "Montrer moins",
+        "show_less_ellipses": "Montrer moins ...",
+        "show_more_ellipses": "Montrer plus ...",
         "show_n_more_ellipses": "Afficher {{n}} de plus...",
         "shown": "Affiché",
         "sort_by": "Trier par",
         "squadron_leader": "Chef d'escadron",
+        "uncheck_all": "Décochez tout",
+        "view_options": "Voir les options",
+        "viewing_stats_for_x": "Affichage des statistiques pour {{x}}",
+        "win": "Gagner",
         "work_in_progress": {
             "heading": "Cette page est un travail en cours. Certaines fonctions et fonctionnalités peuvent être non fonctionnelles, cassées, manquantes, incomplètes ou modifiées à tout moment.",
             "title": "Travail en cours !"
         },
-        "yes": "Oui"
+        "x_or_better": "{{x}} ou mieux",
+        "yes": "Oui",
+        "you_own_n_of_y": "Vous possédez {{n}} de {{y}}."
     },
     "graph": {
+        "area_bump": "Graphique de relief de surface",
         "bump": "Graphique de bosse",
-        "swarm": "Graphique d'essaim"
+        "circle": "Graphique circulaire",
+        "swarm": "Graphique d'essaim",
+        "tree": "Arbre",
+        "type": "Type de graphique"
     },
     "header": {
         "recommend": {
@@ -779,27 +1035,41 @@
         "apply_buffs": "Appliquer des effets",
         "display_buffs": "Afficher effets",
         "filter_by_availability": "Filtrer par disponibilité",
+        "filter_by_collections": "Filtrer par collections",
+        "filter_by_crew": "Filtrer par équipage",
+        "filter_by_event_type": "Filtrer par type d'événement",
         "filter_by_item_type": "Filtrer par type d'article",
+        "filter_by_listed_status": "Filtrer par statut répertorié",
+        "filter_by_movement": "Filtrer par mouvement",
         "filter_by_owned_status": "Filtrer par statut de propriété",
+        "filter_by_polestars": "Filtrer par étoiles polaires",
         "filter_by_portal_status": "Filtrer par statut du portail",
         "filter_by_primary_skill": "Filtrer par compétence principale",
         "filter_by_progress": "Filtrer par progression",
         "filter_by_rarity": "Filtrer par rareté",
+        "filter_by_retrieval_options": "Filtrer par options de récupération",
+        "filter_by_reward": "Filtrer par récompense",
         "filter_by_secondary_skill": "Filtrer par compétence secondaire",
         "filter_by_series": "Filtrer par série",
         "filter_by_ship_ability": "Filtrer par la capacité du vaisseau",
         "filter_by_skill": "Filtrer par compétence",
         "filter_by_status": "Filtrer par statut",
+        "filter_by_timeframe": "Filtrer par période",
         "filter_by_trait": "Filtrer par trait",
+        "filter_by_trait_or_series": "Filtrer par trait ou par série",
         "filter_by_voyage_seating": "Filtrer par sièges de voyage",
+        "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "prioritize_rewards": "Prioriser les récompenses",
         "roster_maintenance": "Entretien de la liste",
+        "select_crew": "Sélectionnez l'équipage",
         "select_items": "Sélectionner des articles",
         "select_ship": "Sélectionnez Vaisseau",
         "select_ship_abilities": "Sélectionner les capacités du vaisseau",
         "select_ship_ability": "Sélectionner la capacité du vaisseau",
         "select_ship_ability_amount": "Sélectionnez le montant de la capacité du vaisseau",
+        "tiers": "Étages",
         "trait": "Trait",
         "traits": "Traits"
     },
@@ -893,12 +1163,12 @@
             "title": "Avertissement de Limite d'Inventaire"
         },
         "options": {
-            "hide_generic": "Supprimer l'équipement utile à les équipiers sans propriétaire",
+            "hide_generic": "Masquer l'équipement utile à les équipiers sans propriétaire",
             "inefficient": "Afficher uniquement les utilisations les plus inefficaces des emplacements d'inventaire",
             "single_use": "Afficher uniquement le matériel à usage unique"
         },
         "ships_maxed": "les vaisseaux que vous avez déjà terminés",
-        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être supprimés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
+        "ships_maxed_info": "Les plans de vaisseaux suivants peuvent être masqueés en toute sécurité car ils sont utilisés pour améliorer {{max_text}}.",
         "summary": "Vous avez {{n}} articles dans votre inventaire. Remarque : les composants du continuum ne sont pas pris en compte dans votre limite d'inventaire.",
         "title": "{{menu.roster.unneeded_items}}"
     },
@@ -960,11 +1230,15 @@
     },
     "menu": {
         "about_title": "À propos",
+        "descriptions": {
+            "voyage_calculator": "Trouvez les meilleurs équipiers pour vos voyages et obtenez des estimations sur leur durée."
+        },
         "game_info": {
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
             "episodes": "Épisodes",
             "events": "Événements",
             "misc_game_stats": "Statistiques diverses du jeu",
+            "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Temple de la renommée des voyages"
         },
         "game_info_title": "Info jeu",
@@ -1009,8 +1283,14 @@
         "type_2": "Bataille de navires",
         "type_4": "Défi des cadets"
     },
+    "missions": {
+        "continuum_mission_map": "Carte de mission du continuum",
+        "current_continuum_mission_date": "Mission actuelle du continuum: {{date}}",
+        "mission_map": "Carte de mission"
+    },
     "obtained": {
         "long": {
+            "Achievement": "Réalisation",
             "Continuum": "Continuum",
             "Launch": "Lancement du jeu",
             "BossBattle": "Pont du Capitaine",
@@ -1030,6 +1310,7 @@
             "WebStore": "Magasin en ligne"
         },
         "short": {
+            "Achievement": "Réalisation",
             "Continuum": "Continuum",
             "Launch": "Lancement",
             "BossBattle": "Pont",
@@ -1073,6 +1354,7 @@
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",
             "impact": "Afficher uniquement les équipiers ayant besoin d'un fusible",
+            "liminal": "Afficher uniquement les équipiers ayant besoin de 1 ou 2 fusibles",
             "mortal": "Afficher uniquement les non-immortels",
             "none": "Afficher tous les équipiers",
             "nonfe": "Afficher uniquement les non-immortels sous-équipés",
@@ -1158,6 +1440,7 @@
         "mode_label": "Mode Compétences",
         "slot_label": "Mode Emplacements",
         "slots": {
+            "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",
             "n_slots": "Quiper {{slots}} emplacements",
             "natural": "Quiper des emplacements naturels",
             "one_slot": "Quiper 1 emplacement"
@@ -1172,15 +1455,28 @@
         "specialty": "Spécialité",
         "tertiary": "Tertiaire",
         "third_pair": "Troisième Paire",
-        "three_skills": "Trois Compétences"
+        "three_skills": "Trois Compétences",
+        "top_quipment": "Quipement de pointe"
     },
     "rank_names": {
+        "advantage": {
+            "d": "D",
+            "defense": "Défense (Réparation/Évasion)",
+            "o": "O",
+            "offense": "Attaque (Précision/Dégâts)",
+            "select": "Sélectionnez un avantage"
+        },
+        "arena_rank": "Arena",
         "bigbook_tier": "Étage Big Book",
         "cab_grade": "Catégorie CAB",
         "cab_rank": "Rang CAB",
         "cab_rating": "Cote CAB",
+        "fbb_rank": "Boss",
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",
+        "rank": "Rang",
+        "ship_rank": "Rang du vaisseau",
+        "trait_rank": "Rang du trait",
         "voyage_rank": "Rang Voyage"
     },
     "ranking_method": {
@@ -1194,6 +1490,146 @@
         "potential_maximum": "Potentiel maximum",
         "standard": "Standard"
     },
+    "retrieval": {
+        "allow_unowned": "Autoriser l'équipage sans propriétaire",
+        "assume_in_game_favorites": "Ajoutez dynamiquement les favoris du jeu à la liste de souhaits",
+        "calc_summary": "{{ship.calc.calc_summary}}",
+        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
+        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
+        "combo": "Combo",
+        "combo_length": "Taille des combos",
+        "combo_needs": {
+            "need_exact_n": "Vous avez besoin exactement de {{n}} des éléments suivants : {{y}}",
+            "needed_polestars": "étoiles polaires nécessaires",
+            "or_some_combination": "Ou une combinaison des éléments suivants : {{y}}",
+            "some_combination": "Vous avez besoin d'une combinaison des éléments suivants : {{y}}",
+            "unlock_retrieval_by_needed_polestars_fmt": "Débloquez les options de récupération pour cet équipage en acquérant 1 ou plusieurs {{needed_polestars}}"
+        },
+        "combos": "Combos",
+        "consider_unowned_polestars": "Envisagez des étoiles polaires sans propriétaire (cela peut prendre beaucoup plus de temps)",
+        "constellation": "Constellation",
+        "constellations": "Constellations",
+        "cost": "Coût de récupération",
+        "crew": {
+            "show_all_crew": "{{base.all_crew}}",
+            "show_all_uniquely_retrievable": "Afficher tous les membres d'équipage récupérables de manière unique",
+            "show_retrievable_crew": "Afficher uniquement l'équipage que je peux récupérer"
+        },
+        "description": "Trouvez les meilleures options pour ajouter de l'équipage à votre liste via la récupération de l'équipage.",
+        "energy": {
+            "guaranteed_legendary": "Vous pouvez garantir la récupération d'un équipage légendaire maintenant !",
+            "quantum_regeneration": "Vous régénérerez suffisamment de l'énergie quantique pour atteindre {{target}} en {{time}} ; ",
+            "spend_90": "dépensez 90 dilithium pour atteindre {{target}} en {{time}}.",
+            "spend_90_daily": "dépensez 90 dilithium par jour pour atteindre {{target}} en {{time}}.",
+            "spend_90_immediately": "dépensez 90 dilithium pour atteindre {{target}} immédiatement."
+        },
+        "filter_owned_polestars": "Filtrer les étoiles polaire possédées",
+        "hide_combos_with_unowned_polestars": "Masquer les combos avec des étoiles polaires sans propriétaire",
+        "hide_fully_fused_crew": "Masquer l'équipage entièrement fusionné",
+        "keystone": "Clé de voûte",
+        "keystone_crate": "Caisse des clés de voûte",
+        "keystone_crates": "Caisses des clés de voûte",
+        "keystones": "Clés de voûte",
+        "market": {
+            "columns": {
+                "buy_count": "Ordres passés",
+                "high": "Offre la plus élevée",
+                "last_price": "Dernier prix de vente",
+                "low": "Prix le plus bas affiché",
+                "sell_count": "Listes de marché",
+                "sold_last_day": "Vendu le dernier jour"
+            },
+            "description": "Parcourez le marché céleste",
+            "disposition": {
+                "needed": "{{items.columns.needed}}",
+                "needed_unique": "Nécessaire (récupérable de manière unique uniquement)",
+                "needed_wishlist": "Nécessaire (liste de souhaits)",
+                "owned": "{{crew_state.owned}}",
+                "owned_wishlist": "Possédé (Liste de souhaits)",
+                "unowned": "{{crew_state.unowned}}",
+                "wishlist": "Liste de souhaits"
+            },
+            "listed": "Répertorié",
+            "min_polestars": "Min. allumettes d'étoile polaire",
+            "modes": {
+                "list_price": "{{retrieval.market.columns.high}}",
+                "orders": "Ordres non exécutées",
+                "sold_last_day": "Vente la plus rapide"
+            },
+            "most_likely_popular": "Occurrence des traits les plus populaires de l'équipage étoiles polaires (les combos exacts sont en vert)",
+            "movement": {
+                "not_sold_last_day": "Non vendu au cours des dernières 24 heures",
+                "sold_last_day": "Vendu au cours des dernières 24 heures"
+            },
+            "title": "Marché céleste",
+            "top_n_polestars": "Les {{n}} meilleures étoiles polaires",
+            "unlisted": "Non Répertorié",
+            "updated": "Le marché est mis à jour toutes les heures"
+        },
+        "max_iterations": "{{ship.calc.max_iterations}}",
+        "max_workers": "{{ship.calc.max_workers}}",
+        "modes": {
+            "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels",
+            "mutual_polestar_calculator_desc": "Trouvez des combos qui donnent des chances égales de récupérer les non-immortels",
+            "retrieval": "Récupération",
+            "retrieval_desc": "Planifiez des récupérations d'équipiers uniques"
+        },
+        "n_constellations": "{{n}} Constellations",
+        "n_polestars": "{{n}} Étoile polaires",
+        "n_polestars_needed": "{{n}} étoiles polaires nécessaires",
+        "one_constellation": "1 Constellation",
+        "one_polestar": "1 Étoile polaire",
+        "option_n": "Option {{n}}",
+        "polestar": "Étoile polaire",
+        "polestars": "Étoiles polaire",
+        "polestars_needed": "Étoiles polaires nécessaires",
+        "price": {
+            "all": "Afficher le prix actuel de toutes les étoiles polaires",
+            "none": "Ne pas afficher les prix des étoiles polaires",
+            "price": "Prix",
+            "unowned": "Afficher le prix actuel des étoiles polaires non possédées"
+        },
+        "prospects": {
+            "acquisition": {
+                "acquire_to_retrieve_colon": "Obtenez l'{{polestar}} pour débloquer des récupérations garanties pour l'équipage suivant :",
+                "more_not_guaranteed": "L'acquisition de davantage de cette étoile polaire ne débloquera pas de récupérations garanties pour aucun nouvel équipage.",
+                "not_guaranteed": "L'acquisition de cette étoile polaire ne débloquera pas de récupérations garanties pour aucun nouvel équipage."
+            },
+            "add_prospective_polestars": "Ajouter des étoiles polaires potentielles",
+            "columns": {
+                "added": "Ajouté",
+                "crate_count": "Chance de constellation",
+                "crew_count": "Équipage dans le portail",
+                "name": "{{retrieval.polestar}}",
+                "owned": "Possédé",
+                "owned_best_odds": "Meilleure chance",
+                "scan_odds": "Chance de scan"
+            },
+            "crate": {
+                "already_owned": "Vous possédez déjà toutes les étoiles polaires dans la {{crate}}."
+            },
+            "definitions": {
+                "crate_count": "votre chance d'acquérir n'importe quelle constellation avec l'étoile polaire à partir d'un scan réussi.",
+                "owned_best_odds": "votre meilleure chance d'acquérir l'étoile polaire à partir d'une constellation de votre inventaire.",
+                "scan_odds": "votre chance globale d'acquérir l'étoile polaire à partir d'un scan réussi."
+            },
+            "filter_by_owned": "Filtrer les étoiles polaires par constellation possédée",
+            "return_to_polestars": "Retour aux étoiles polaires",
+            "search_polestars": "Recherchez les étoiles polaires par nom.",
+            "show_all_polestars": "Afficher toutes les étoiles polaires"
+        },
+        "showing_all_potential": "Affichage de TOUTES les options de récupération POTENTIELLES",
+        "up_to_n": "Jusqu'à {{n}}",
+        "use_all_combos_below_to_retrieve": "Utilisez TOUS les combos ci-dessous pour récupérer",
+        "use_any_combo_below_to_retrieve": "Utilisez n'importe quelle combinaison ci-dessous pour récupérer",
+        "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "wishlist": {
+            "add": "Ajouter à la liste de souhaits.",
+            "auto": "L'équipier est automatiquement ajouté à la liste de souhaits.",
+            "remove": "Supprimer de la liste de souhaits."
+        },
+        "you_own_n_of_the_polestar": "Vous possédez {{n}} de l'{{polestar}}."
+    },
     "roster_summary": {
         "by_rarity": "Par rareté",
         "by_skill": "Par compétence",
@@ -1202,6 +1638,7 @@
                 "dupes": "Dupliquer",
                 "frozen": "Congelé",
                 "immortal": "Immortel+",
+                "mortal": "Non-immortel",
                 "owned": "Possédé",
                 "ownedPct": "% Possédé",
                 "portalPct": "% Portail",
@@ -1333,6 +1770,7 @@
             "max_init": "Temps d'initialisation maximum",
             "max_iterations": "Itérations max.",
             "max_workers": "Max. ouvriers",
+            "min_init": "Temps d'initialisation minimum",
             "ranking_method": "Méthode de classement",
             "rate": "Taux",
             "rate_msg": "Doit être un nombre compris entre 1 et 10",
@@ -1372,10 +1810,18 @@
         },
         "initialize": "Initialise",
         "level": "{{base.level}}",
+        "lineup": {
+            "export": "Exporter la liste",
+            "header": "Enregistrer, exporter et importer des configurations de combat personnalisées.",
+            "import": "Importer la liste",
+            "select": "Sélectionner la liste",
+            "title": "Listes de pont personnalisées"
+        },
         "max_attack": "Attaque max.",
         "max_level": "Niveau maximum",
         "min_attack": "Attaque min.",
         "offset_adds_warn": "* Les compensations d'activation s'ajoutent au temps de recharge initial de l'équipier actuel.",
+        "opponent_variance": "Variation de l'adversaire",
         "power_depth": "Profondeur du niveau de puissance",
         "pvp": "{{global.item_types.arena}}",
         "pvp_divisions": {
@@ -1390,6 +1836,16 @@
         },
         "skirmish": "{{event_type.skirmish}}",
         "skirmish_metric": "Métrique d'escarmouche",
+        "tabs": {
+            "opponent": {
+                "heading": "Configurer le pont de combat adverse.",
+                "title": "Vaisseau adverse"
+            },
+            "player": {
+                "heading": "Configurez votre pont de combat.",
+                "title": "Vaisseau du joueur"
+            }
+        },
         "trigger": "Déclencheur",
         "triggers": "Déclencheurs",
         "unlimited": "Illimité",
@@ -1401,6 +1857,10 @@
         "boost_by": "Augmente {{type}} de {{amount}}",
         "grant": "Conférer le statut {{grant}} : {{grant_description}}",
         "handicap": "Diminuer {{type}} de {{amount}}"
+    },
+    "ship_ownership": {
+        "owned": "Afficher uniquement les vaisseaux possédés",
+        "unowned": "Afficher uniquement les vaisseaux sans propriétaire"
     },
     "shuttle_helper": {
         "calculator": {
@@ -1490,10 +1950,98 @@
         }
     },
     "spinners": {
+        "calculating": "Calcul...",
+        "calculating_voyage_estimate": "Calcul de l'estimation. S'il vous plaît, attendez...",
         "cite_opt": "Chargement l'Optimiseur des mentions honorable...",
         "default": "Chargement des données...",
         "demands": "Calcul des demandes de l'équipage...",
         "quipment": "Calcul de l'équipement..."
+    },
+    "stat_trends": {
+        "columns": {
+            "day_diff": "Intervalle de début",
+            "epoch_day": "Jour de l'époque (équipe récente)",
+            "prior_crew": "Équipe précédente",
+            "recent_crew": "Équipe récente",
+            "skill_diffs": "Différences de compétences",
+            "velocity": "Vitesse"
+        },
+        "description": "Étudiez les statistiques sur les tendances de la puissance de l'équipage au fil du temps.",
+        "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
+        "graphs": {
+            "circle": "Cercles de compétences",
+            "ignore_filters": "Ignorer les filtres actuellement actifs",
+            "map_skill_order_density": "Cartographier la densité de l'ordre des compétences",
+            "map_skill_order_power": "Cartographier l'ordre de puissance des compétences",
+            "population_increase": "Augmentation de la population",
+            "power_creep": "{{stat_trends.graphs.skill_area}}",
+            "release_graph": "Calendrier de sortie",
+            "skill_area": "Fluage de puissance",
+            "title": "Graphiques"
+        },
+        "initial_release": "Publication initiale",
+        "items": {
+            "demanded": "Demande totale de l'équipage",
+            "first_crew": "{{stat_trends.trait_columns.first_crew}}",
+            "inaugural_crew": "{{stat_trends.trait_columns.inaugural_crew}}",
+            "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
+            "latest_usage": "Dernière utilisation",
+            "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
+            "percentage": "Taux de demande de l'équipage",
+            "popular_trait": "Trait le plus fréquent"
+        },
+        "last_release": "Dernière publication",
+        "new_high": "Nouveau Élevé",
+        "new_highs_only": "Afficher uniquement les nouveaux élevés",
+        "released_duration": "Débuté {{duration}}",
+        "released_duration_ago": "Débuté il y a {{duration}}",
+        "released_n_days_ago": "Débuté il y a {{n}} jours",
+        "sections": {
+            "crew": {
+                "description": "Afficher les statistiques de l'équipage sous forme de tableau",
+                "title": "{{profile.download.crew_table}}"
+            },
+            "graphs": {
+                "description": "Afficher des représentations visuelles des tendances des données",
+                "title": "Diagrammes et graphiques"
+            },
+            "items": {
+                "description": "Statistiques sur les composants et l'équipement du jeu",
+                "title": "{{global.items}}"
+            },
+            "traits": {
+                "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",
+                "title": "{{hints.traits}}"
+            }
+        },
+        "stats": {
+            "average_time_between_releases": "Temps moyen entre les versions",
+            "average_velocity": "Vitesse moyenne",
+            "last_release": "Dernière version",
+            "mean_time_between_releases": "Temps médian entre les versions",
+            "mean_velocity": "Vitesse médiane"
+        },
+        "title": "Statistiques Tendances",
+        "total_power_difference": "Différence de puissance totale",
+        "trait_columns": {
+            "collection": "{{base.collection}}",
+            "first_appearance": "Première apparition",
+            "first_crew": "Équipier le plus âgé",
+            "hidden": "{{global.hidden}}",
+            "inaugural_crew": "Equipier inaugural",
+            "latest_crew": "Dernier équipier",
+            "total_crew": "Équipiers totals",
+            "trait": "{{hints.trait}}"
+        },
+        "traits": {
+            "exclude_launch": "Exclude launch crew",
+            "hide_only_one": "Masquer les traits avec un seul équipier",
+            "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
+            "show_hidden": "Afficher les traits cachés",
+            "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
+            "show_visible": "Afficher les traits visibles"
+        }
     },
     "tool_roster_picker": {
         "all_crew": {
@@ -1509,6 +2057,8 @@
         "active": {
             "active_voyage_colon": "Voyage actif :"
         },
+        "active_voyage": "Voyage actif",
+        "awaiting_crew": "Ce voyage attend les affectations de l'équipage.",
         "calc": {
             "msg_type": {
                 "completed": "Votre voyage a duré {{time}}.",
@@ -1521,11 +2071,132 @@
                 "initial_estimate": "Votre estimation initiale était de {{time}}."
             }
         },
+        "crew_finder_hints": {
+            "on_shuttle": "Sur la navette",
+            "on_voyage": "En voyage",
+            "unfreeze_crew": "Dégeler l'équipier"
+        },
+        "current_voyage_x": "{{x}} actuel",
+        "custom": {
+            "no_trait": "Aucun trait"
+        },
+        "custom_voyage": "Voyage personnalisé",
+        "custom_voyage_create": "Créer un voyage personnalisé",
+        "custom_voyage_description": "Vous pouvez créer manuellement un voyage et afficher le meilleur équipage du jeu pour n'importe quelle configuration possible.",
+        "custom_voyage_editor": "Éditeur de voyages personnalisés",
+        "custom_voyage_x": "{{x}} personnalisé",
+        "dilemma_chance_h_y": "Probabilité d'un dilemme de {{h]} heures : {{y}} %",
+        "encounter_traits": "Traits critiques de rencontre",
         "estimate": {
-            "dilemma_chance": "Chance d'un dilemme dans {{time}} : {{chance}}",
+            "1_refill": "1 recharge",
+            "analysis": {
+                "all_criteria": "Recommandé pour tous les critères",
+                "proposed_alternative": "Alternative proposée",
+                "recommended_for_mode": "Recommandé pour {{mode}}"
+            },
+            "base_event_vp": "VP de base pour l'événement",
+            "calculated_by_name_time": "Calculé par {{calculator_name}} en {{time}} secondes !",
+            "dilemma_chance": "Chance d'un dilemme dans {{time}}h : {{chance}} %",
+            "estimate": "Estimation",
             "estimate_time": "Estimation : {{time}}",
-            "n_refills": "{{n}} Recharges",
-            "refill": "1 Recharge"
+            "expected_range": "(plage attendue : {{a}} à {{b}})",
+            "first_refill": "Première recharge",
+            "legend": {
+                "chance_%": "Chance (%)",
+                "voyage_length": "Durée du voyage (heures)"
+            },
+            "n_chance_of_reaching_t": "{{n}}% de chance d'atteindre {{t}}h",
+            "n_refills": "{{n}} recharges",
+            "no_refills": "Aucune recharge",
+            "one_refill": "Une recharge",
+            "projected_vp": "PV projeté",
+            "recommendations": {
+                "antimatter": "antimatière de départ",
+                "dilemma": "chance de dilemme",
+                "median": "durée d'exécution estimée",
+                "minimum": "minimum garanti",
+                "moonshot": "moonshot",
+                "n%_to_reach_h": "{{n}}% pour atteindre {{h}}h",
+                "total_vp": "PV projeté",
+                "vp_per_min": "PV projeté par minute"
+            },
+            "recommended_lineups": "Compositions recommandées",
+            "second_refill": "Deuxième recharge",
+            "title": "Estimation du voyage",
+            "two_refills": "Deux recharges",
+            "voyage_end": "Ce voyage se terminera à {{time}}.",
+            "voyage_extend": "Les recharges ultérieures le prolongeront de {{time}}.",
+            "voyage_long_advice": "Pour un voyage de {{h}} heures, vous aurez besoin de {{r}} recharges pour un coût de {{d}} dilithium (ou {{re}} {{global.item_types.voyage_consumable}}.)"
+        },
+        "history": {
+            "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
+            "not_yet": "Vous n'avez pas encore d'historique de voyage. Commencez à suivre les voyages à partir du calculateur d'équipage.",
+            "title": "{{menu.tools.voyage_history}}"
+        },
+        "lineup": {
+            "crew_trait_bonuses": "Bonus de traits d'équipage",
+            "level_n_ship": "Vaisseau de niveau {{n}}",
+            "select_layout_colon": "Sélectionner la mise en page : ",
+            "ship_trait_bonus": "Bonus de trait de vaisseau",
+            "title": "Composition du voyage"
+        },
+        "loading_voyage_tool_ellipses": "Chargement de l'outil de voyage...",
+        "or_n_h_if_dupes_dismissed": "ou {{n}} {{h}} si tous les équiipers en double sont renvoyés.",
+        "overrun_problem_text": {
+            "line_1": "ATTENTION !!! Un problème potentiel avec la durée de voyage signalée a été détecté.",
+            "line_2": "Nous avons tenté de corriger cela, mais l'estimation peut être inexacte.",
+            "line_3": "Ouvrez le jeu, puis revenez à DataCore avec une nouvelle copie de vos données de joueur pour garantir une estimation plus précise."
+        },
+        "picker_options": {
+            "encounter_traits": "Équilibrez les compétences avec les bonus de traits critiques",
+            "freezen": "Considérez l'équipage gelé",
+            "shuttle": "Considérez l'équipage sur les navettes actives",
+            "sub_title": "Un total de {{n}} des équipiers seront pris en considération pour ce voyage.",
+            "title": "Équipiers à prendre en considération",
+            "voyage": "Considérez l'équipage en voyage actif"
+        },
+        "quipment": {
+            "crew_prefs": "Préférence de compétence de l'équipage",
+            "enable": "Activer le Quipement potentiel",
+            "mode": {
+                "all": "Toutes les compétences de l'équipier",
+                "best": "Compétence principale",
+                "best_2": "Les 2 meilleures compétences de l'équipier"
+            },
+            "skill_prefs": {
+                "none": "{{global.none}}",
+                "voyage": "Préférer les compétences de voyage",
+                "voyage_1": "Préférer la compétence de voyage principale",
+                "voyage_2": "Préférer la compétence de voyage secondaire"
+            },
+            "title": "Quipement potentiel",
+            "use_current": "Utilisez le quipement actuel si l'équipier est déjà quipé (les emplacements vides ne seront pas remplis)",
+            "voyage_prefs": "Préférence de compétence de voyage",
+            "voyage_prefs_explain": "Si une préférence de compétence de voyage est sélectionnée, l'ordre des compétences de l'équipage est trié de sorte que les compétences correspondantes viennent en premier."
+        },
+        "seats": {
+            "captain_slot": "Premier officier",
+            "chief_communications_officer": "Officier des communications",
+            "chief_engineering_officer": "Ingénieur en chef",
+            "chief_medical_officer": "Médecin en chef",
+            "chief_science_officer": "Officier scientifique en chef",
+            "chief_security_officer": "Officier de sécurité en chef",
+            "communications_officer": "Diplomate",
+            "engineering_officer": "Ingénieur",
+            "first_officer": "Officier de barre",
+            "medical_officer": "Conseiller du vaisseau",
+            "science_officer": "Officier scientifique adjoint",
+            "security_officer": "Officier tactique"
+        },
+        "skills": {
+            "primary": {
+                "name": "Compétence principale",
+                "placeholder": "{{quipment_ranks.primary}}"
+            },
+            "secondary": {
+                "name": "Compétence secondaire",
+                "placeholder": "{{quipment_ranks.secondary}}"
+            }
         },
         "tracking": {
             "not_tracking": "Vous ne suivez pas ce voyage.",
@@ -1535,10 +2206,17 @@
             "encounter_voyage": "Voyage de rencontre",
             "test_voyage_1": "Voyage de dilemme"
         },
+        "unable_to_track_revivals": "DataCore ne peut pas suivre automatiquement le moment où un voyage a été relancé, mais vous pouvez noter manuellement la relance ici.",
         "view": {
-            "active_voyage": "Afficher le voyage actif",
+            "active_voyage": "Afficher le voyage en cours",
             "crew_calculator": "Afficher le calculateur d'équipage",
             "voyage_history": "Afficher l'historique des voyages"
+        },
+        "voyages": {
+            "all": "Tous les voyages",
+            "current": "Voyages en cours",
+            "custom": "Voyages personnalisés",
+            "upcoming": "Voyages à venir"
         }
     }
 }

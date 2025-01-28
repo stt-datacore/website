@@ -21,8 +21,17 @@ type BeholdsPageProps = {
 const BeholdsPage = (props: BeholdsPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
+	const { playerData } = globalContext.player;
+
 	const crewList = crewCopy<CrewMember>(globalContext.core.crew)
 		.sort((a, b) => a.name.localeCompare(b.name));
+
+	if (playerData) {
+		crewList.forEach((crew) => {
+			let filtered = playerData.player.character.crew.filter(f => f.symbol === crew.symbol);
+			crew["any_immortal"] = filtered.some(f => !!f.immortal);
+		})
+	}
 
 	let crewFromUrl = [] as string[];
 	if (props.location) {

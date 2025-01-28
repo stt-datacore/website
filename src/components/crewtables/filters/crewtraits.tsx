@@ -23,7 +23,7 @@ export const CrewTraitsFilter = (props: CrewTraitsFilterProps) => {
 		const markup = crew.markup ?? {};
 		crew.markup = {
 			...markup,
-			traits_matched: traitFilter.filter(trait => crew.traits.includes(trait))
+			traits_matched: traitFilter.filter(trait => crew.traits.includes(trait) || crew.traits_hidden.includes(trait))
 		};
 	};
 	const filterByTrait = (crew: IRosterCrew) => {
@@ -68,13 +68,13 @@ export const CrewTraitMatchesCell = (props: CrewTraitMatchesCellProps) => {
 	const { crew } = props;
 	const traitList = crew.markup?.traits_matched;
 	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { TRAIT_NAMES, t } = globalContext.localized;
 	if (!traitList) return (<Table.Cell />);
 	return (
 		<Table.Cell textAlign='center'>
 			{traitList.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map((trait, idx) => (
 				<Label key={idx}>
-					{TRAIT_NAMES[trait]}
+					{crew.traits_hidden.includes(trait) ? t(`series.${trait}`) : TRAIT_NAMES[trait]}
 				</Label>
 			)).reduce((prev, curr) => <>{prev}{` `}{curr}</>, <></>)}
 		</Table.Cell>

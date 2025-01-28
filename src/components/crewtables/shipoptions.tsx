@@ -8,6 +8,7 @@ import CONFIG from "../CONFIG";
 import { getIconByKey } from "../item_presenters/shipskill";
 import { ShipSkillRanking } from "../../utils/crewutils";
 import { GlobalContext } from "../../context/globalcontext";
+import { ShipAdvantage } from "./views/shipabilities";
 
 export type AbilityUsesProps = {
     uses: number[];
@@ -48,6 +49,7 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 
 
 export type ShipPickerProps = {
+	clearable?: boolean;
 	filter?: ShipPickerFilter;
     playerData?: PlayerData;
 	pool?: Ship[];
@@ -57,7 +59,7 @@ export type ShipPickerProps = {
 
 export const ShipPicker = (props: ShipPickerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { selectedShip, setSelectedShip, filter } = props;
+	const { clearable, selectedShip, setSelectedShip, filter } = props;
 
     const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
     const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
@@ -104,7 +106,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 			<Dropdown
                 search
                 selection
-                clearable
+                clearable={clearable}
                 fluid
 				placeholder={placeholder}
 				options={poolList}
@@ -135,7 +137,7 @@ export type ShipAbilityPickerProps = {
     selectedAbilities: string[];
     setSelectedAbilities: (ability: string[]) => void | React.Dispatch<React.SetStateAction<string[]>>;
 	ship?: boolean;
-	fluid?: boolean;	
+	fluid?: boolean;
 };
 
 export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
@@ -468,3 +470,82 @@ export const TraitPicker = (props: TraitPickerProps) => {
 	);
 };
 
+export interface ShipOwnershipProps {
+	selectedValue?: 'owned' | 'unowned';
+	setSelectedValue: (value?: 'owned' | 'unowned') => void;
+	altTitle?: string;
+}
+
+export const ShipOwnership = (props: ShipOwnershipProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const { selectedValue: selectedValue, setSelectedValue: setSelectedUses } = props;
+
+    const ownershipOptions = ['owned', 'unowned'].map((u) => {
+        return {
+            key: u,
+            value: u,
+            text: t(`ship_ownership.${u}`)
+        }
+    })
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('hints.filter_by_owned_status')}
+				clearable
+				selection
+				options={ownershipOptions}
+				value={selectedValue}
+				onChange={(e, { value }) => setSelectedUses(value as any)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};
+
+
+
+export type AdvantagePickerProps = {
+	selectedAdvantage?: ShipAdvantage;
+	setSelectedAdvantage: (value?: ShipAdvantage) => void;
+	altTitle?: string;
+};
+
+export const AdvantagePicker = (props: AdvantagePickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const { selectedAdvantage, setSelectedAdvantage } = props;
+
+	const [advantage, setAdvantage] = React.useState(selectedAdvantage);
+
+    const advantageOptions = ['offense', 'defense'].map((u) => {
+        return {
+            key: u,
+            text: t(`rank_names.advantage.${u}`),
+			value: u,
+        }
+    }) ?? Object.keys(CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE).slice(0, 3).map((dt) => {
+		return {
+			key: Number.parseInt(dt),
+			value: Number.parseInt(dt),
+			text: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[dt]
+		}
+	});
+
+	React.useEffect(() => {
+		setSelectedAdvantage(advantage);
+	}, [advantage])
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('rank_names.advantage.select')}
+				clearable
+				selection
+				options={advantageOptions}
+				value={selectedAdvantage ?? []}
+				onChange={(e, { value }) => setAdvantage(value as ShipAdvantage | undefined)}
+				closeOnChange
+			/>
+		</Form.Field>
+	);
+};

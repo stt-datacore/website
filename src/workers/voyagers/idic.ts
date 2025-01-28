@@ -129,7 +129,7 @@ export const InfiniteDiversity = (
 				other_score: dOtherScore,
 				viable_slots: rViableSlots,
 				trait_slots: rTraitSlots
-			};
+			} as IPrimedCrew;
 			primedRoster.push(crewman);
 		}
 		return primedRoster;
@@ -150,9 +150,9 @@ export const InfiniteDiversity = (
 				if (primedCrew[i].trait_slots[j]) bestSlots.push(j);
 			}
 			if (baseSlots.length > bestSlots.length)
-				voyagerScores.push({ score: baseScore, id: primedCrew[i].id, isIdeal: false });
+				voyagerScores.push({ score: baseScore, id: primedCrew[i].id, isIdeal: false, traitValue: 0, eventScore: 0 });
 			if (bestSlots.length > 0)
-				voyagerScores.push({ score: bestScore, id: primedCrew[i].id, isIdeal: true });
+				voyagerScores.push({ score: bestScore, id: primedCrew[i].id, isIdeal: true, traitValue: 0, eventScore: 0 });
 		}
 		// Seat crew, starting with worst crew (in ideal slots) first
 		return voyagerScores.reverse();

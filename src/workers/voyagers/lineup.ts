@@ -6,6 +6,7 @@ interface ILineupCrew {
 	id: number;
 	name: string;
 	score: number;
+	event_score: number;
 };
 
 interface ILineupSkills {
@@ -30,6 +31,8 @@ export class VoyagersLineup {
 	score: number;
 	proficiency: number;
 	antimatter: number;
+	vp: number;
+	coverage: number;
 	vectors: number[];
 	log: string;
 
@@ -44,17 +47,21 @@ export class VoyagersLineup {
 			science_skill: { skill: 'science_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
 			medicine_skill: { skill: 'medicine_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 }
 		};
+		const skillCoverage: Set<string> = new Set();
 		let dTotalScore: number = 0, dTotalProficiency: number = 0;
-		let iBonusTraits: number = 0;
+		let iTotalBonus: number = 0, iTotalVP: number = 0;
 
 		for (let i = 0; i < assignments.length; i++) {
 			crew.push({
 				id: assignments[i].id,
 				name: assignments[i].name,
-				score: assignments[i].score
+				score: assignments[i].score,
+				event_score: assignments[i].event_score
 			});
-			traitsMatched.push(assignments[i].isIdeal ? 1 : 0);
-			if (assignments[i].isIdeal) iBonusTraits++;
+			const traitBonus: number = assignments[i].trait_slots[i];
+			traitsMatched.push(traitBonus > 0 ? 1 : 0);
+			iTotalBonus += traitBonus;
+			iTotalVP += assignments[i].event_score;
 			for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
 				if (!assignments[i].skills[SKILL_IDS[iSkill]]) continue;
 				const skill: Skill = assignments[i].skills[SKILL_IDS[iSkill]];
@@ -66,6 +73,10 @@ export class VoyagersLineup {
 				skillScores[SKILL_IDS[iSkill]].range_max += skill.range_max;
 				dTotalScore += dSkillScore;
 				dTotalProficiency += dProficiency;
+			}
+			const skills: string[] = Object.keys(assignments[i].skills);
+			for (let i = 1; i < skills.length; i++) {
+				skillCoverage.add(skills[0]+','+skills[i]);
 			}
 		}
 
@@ -81,7 +92,9 @@ export class VoyagersLineup {
 		this.skills = skillScores;
 		this.score = dTotalScore;
 		this.proficiency = Math.floor(dTotalProficiency/dTotalScore*100);
-		this.antimatter = iBonusTraits*25;
+		this.antimatter = iTotalBonus;
+		this.vp = iTotalVP;
+		this.coverage = skillCoverage.size;
 		this.vectors = [];
 		this.log = assemblyLog;
 	}

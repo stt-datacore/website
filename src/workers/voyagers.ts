@@ -6,8 +6,10 @@ DataCore(<VoyageTool>): input from UI =>
 				DataCore(<VoyageTool>) { updateUI } : void
 */
 
-import { IVoyageCrew, IVoyageInputConfig } from '../model/voyage';
-import { Estimate, JohnJayBest, Refill } from '../model/worker';
+import { Estimate, IVoyageCrew, IVoyageInputConfig, Refill } from '../model/voyage';
+import { JohnJayBest } from '../model/worker';
+
+import { calcVoyageVP } from '../utils/voyagevp';
 
 import { ILineupEstimate, ISkillAggregate } from './voyagers/model';
 import { VoyagersLineup } from './voyagers/lineup';
@@ -26,20 +28,19 @@ type InputType = {
 	options: {
 		assembler: string;
 		strategy: string;
-		scanDepth: number;
-		maxYield: number;
+		proficiency: number;
 	};
 };
 type OutputType = (result: (JohnJayBest[] | { error: string }), inProgress?: boolean) => void;
 type ChewableType = (config: any, reportProgress?: () => boolean) => Estimate;
 
 const VoyagersWorker = (input: InputType, output: OutputType, chewable: ChewableType) => {
-	const { voyage_description, roster, bestShip, options: { assembler, strategy } } = input;
+	const { voyage_description, roster, bestShip, options: { assembler, strategy, proficiency } } = input;
 
 	const debugCallback: ((message: string) => void) | undefined = DEBUGGING ? (message: string) => console.log(message) : undefined;
 
 	// Generate lots of unique lineups of potential voyagers
-	voyagersAssemble(assembler, voyage_description, roster, { strategy, debugCallback })
+	voyagersAssemble(assembler, voyage_description, roster, { strategy, proficiency, debugCallback })
 		.then(lineups => {
 			// Estimate only as many lineups as necessary
 			const scanDepth: number = assembler === 'idic' ? 30 : 5;
@@ -53,8 +54,10 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						methods = ['minimum'];
 					else if (strategy === 'moonshot')
 						methods = ['moonshot'];
-					// Either get 1 best lineup for each method, or the 3 best lineups for a single method
-					const limit: number = strategy === 'any' ? 1 : 3;
+					else if (strategy === 'peak-antimatter')
+						methods = ['antimatter'];
+					else if (strategy === 'peak-vp' || strategy === 'featured-vp')
+						methods = ['vp'];
 					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);
@@ -88,7 +91,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 		}
 		const chewableConfig = {
 			ps, ss, others,
-			startAm: input.bestShip.score + lineup.antimatter,
+			startAm: bestShip.score + lineup.antimatter,
 			prof: lineup.proficiency,
 			noExtends: false, // Set to true to show estimate with no refills
 			numSims: 5000
@@ -99,7 +102,14 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 		return new Promise((resolve, reject) => {
 			const estimate: Estimate = chewable(chewableConfig, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
-			estimate.antimatter = input.bestShip.score + lineup.antimatter;
+			estimate.antimatter = bestShip.score + lineup.antimatter;
+			// Add vpDetails prop here to allow for post-sorting by VP details
+			if (voyage_description.voyage_type === 'encounter') {
+				const seconds: number = estimate.refills[0].result*60*60;
+				const bonuses: number[] = [];
+				lineup.crew.forEach(crew => bonuses.push(crew.event_score));
+				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
+			}
 			resolve({ estimate, key: lineup.key });
 		});
 	}
@@ -154,6 +164,17 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 			aScore = a.estimate.antimatter ?? 0;
 			bScore = b.estimate.antimatter ?? 0;
 			// If antimatter is the same, use the one with the better median result
+			if (aScore === bScore) {
+				compareCloseTimes = true;
+				aScore = aEstimate.result;
+				bScore = bEstimate.result;
+			}
+		}
+		// Highest VP
+		else if (method === 'vp') {
+			aScore = a.estimate.vpDetails?.total_vp ?? 0;
+			bScore = b.estimate.vpDetails?.total_vp ?? 0;
+			// If VP is the same, use the one with the better median result
 			if (aScore === bScore) {
 				compareCloseTimes = true;
 				aScore = aEstimate.result;

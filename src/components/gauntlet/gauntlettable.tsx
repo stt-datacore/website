@@ -4,7 +4,7 @@ import { Link } from "gatsby";
 
 import { useStateWithStorage } from "../../utils/storage";
 
-import { Button, Dropdown, DropdownItemProps, Icon, Input, Pagination, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
+import { Button, Dropdown, DropdownItemProps, Icon, Input, Label, Pagination, Popup, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
 
 import { Gauntlet, GauntletFilterProps } from "../../model/gauntlets";
 import { CompletionState, PlayerCrew } from "../../model/player";
@@ -18,14 +18,16 @@ import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { arrayIntersect } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
+import { getCrewCrit, getCritColor, printGauntlet } from "../../utils/gauntlet";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
+type BucketType = { crit: number, name: string, count: number };
 
 export type GauntletTableHighlightMode = 'normal' | 'live';
 
 export interface GauntletTableProps {
     pageId: string;
-    gauntlet: Gauntlet;    
+    gauntlet: Gauntlet;
     gauntlets?: Gauntlet[]
     data: PlayerCrew[];
     mode: GauntletTableHighlightMode;
@@ -38,7 +40,7 @@ export interface GauntletTableProps {
 
 export const GauntletCrewTable = (props: GauntletTableProps) => {
     const { filter, pageId, gauntlet, gauntlets, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
-    const { t } = React.useContext(GlobalContext).localized;
+    const { t, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
     if (!data) return <></>;
 
     const targetGroup = `${pageId}_gauntletTable`;
@@ -46,7 +48,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const [crew, setCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 
     const [activePageCrew, setActivePageCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
-
+    const [openCrit, setOpenCrit] = React.useState<number>(0);
     const [totalPages, setTotalPages] = React.useState(1);
     const [itemsPerPage, setItemsPerPage] = React.useState(10);
     const [activePage, setActivePage] = React.useState(1);
@@ -57,7 +59,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
 
     const pageStartIdx = (activePage - 1) * itemsPerPage;
     const [elevated, setElevated] = React.useState({} as { [key: string]: number });
-
+    const [crewBuckets, setCrewBuckets] = React.useState({} as {[key:string]: BucketType[] });
     const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
         console.log("imageClick");
         // if (matchMedia('(hover: hover)').matches) {
@@ -95,15 +97,29 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const columns = [
         { title: t('gauntlet.columns.rank'), key: "index" },
         { title: t('gauntlet.columns.crew'), key: "name", width: 3 as SemanticWIDTHS },
-        { title: t('gauntlet.columns.rarity'), key: "rarity", reverse: true  },
-        { title: gauntlets?.length ? t('gauntlet.columns.high_crits') : t('gauntlet.columns.crits'), key: "crit", reverse: true },
-        { title: t('gauntlet.columns.first_pair'), key: "pair_1", reverse: true  },
-        { title: t('gauntlet.columns.second_pair'), key: "pair_2", reverse: true  },
-        { title: t('gauntlet.columns.third_pair'), key: "pair_3", reverse: true  },
+        { title: t('gauntlet.columns.rarity'), key: "rarity", reverse: true },
+        {
+            title: gauntlets?.length ?
+
+            <Popup
+                trigger={<div>{t('gauntlet.columns.high_crits')} <Icon name='help'/></div>}
+                content={<div>
+                    {t('gauntlet.elevated_note')}
+                </div>}
+             />
+
+            : t('gauntlet.columns.crits'),
+            key: "crit",
+            reverse: true
+        },
+        { title: t('gauntlet.columns.first_pair'), key: "pair_1", reverse: true },
+        { title: t('gauntlet.columns.second_pair'), key: "pair_2", reverse: true },
+        { title: t('gauntlet.columns.third_pair'), key: "pair_3", reverse: true },
         // { title: "Owned", key: "have" },
         { title: t('gauntlet.columns.in_portal'), key: "in_portal" },
         { title: t('gauntlet.columns.qp'), key: "q_bits", reverse: true }
     ];
+
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
             key: `pageSize_${size}`,
@@ -111,31 +127,26 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             text: `${size}`
         } as DropdownItemProps;
     });
-    
-    React.useEffect(() => {        
+
+    React.useEffect(() => {
         if (gauntlets?.length) {
-            const elev = { ... elevated };            
-            let uniques = [ ... new Set(gauntlets.map(g => g.contest_data?.traits?.sort() ?? []).map(f => f.sort().join("_"))) ].map(after => after.split("_"));
-
-            for (let c of data) {                
-                let elcrit = uniques.map(f => arrayIntersect(f, c.traits)?.length).filter(f => f > 1)?.length ?? 0;                
-                if (elcrit) {
-                    elev[c.symbol] = elcrit;                    
+            const elev: {[key:string]:number} = {};
+            const cb: {[key:string]:BucketType[]} = {};
+            for (let c of data) {
+                const buckets = getElevatedBuckets(c);
+                let high = buckets.filter(f => f.crit >= 45);
+                if (high?.length) {
+                    elev[c.symbol] = high.length;
                 }
-
-                if (elcrit) {
-                    elev[c.symbol] = elcrit;                    
-                }
-
+                cb[c.symbol] = buckets;
             }
             setElevated(elev);
+            setCrewBuckets(cb);
         }
-       
     }, [data]);
 
     React.useEffect(() => {
         if (!crew) return;
-
         let pages = Math.ceil(crew.length / itemsPerPage);
         if (totalPages !== pages) {
             setTotalPages(pages);
@@ -148,14 +159,211 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                 return;
             }
         }
-        
         setActivePageCrew(crew.slice(pageStartIdx, pageStartIdx + itemsPerPage));
     }, [crew, itemsPerPage, activePage, totalPages]);
 
     React.useEffect(() => {
+        setCrew(rosterizeCrew(data));
+    }, [sortKey, sortDirection, elevated, data]);
+
+    return (<div style={{ overflowX: "auto" }}>
+        <Input
+            style={{ width: isMobile ? '100%' : '50%' }}
+            iconPosition="left"
+            placeholder={t('global.search_ellipses')}
+            value={textFilter}
+            onChange={(e, { value }) => setTextFilter(value)}>
+            <input />
+            <Icon name='search' />
+            <Button icon onClick={() => setTextFilter('')} >
+                <Icon name='delete' />
+            </Button>
+        </Input>
+
+        <Table sortable celled selectable striped collapsing unstackable compact="very">
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell colSpan={columns.length}>
+                        <div style={{ margin: "1em 0", width: "100%" }}>
+                            <Pagination fluid totalPages={totalPages} activePage={activePage} onPageChange={(e, data) => setActivePage(data.activePage as number)} />
+                        </div>
+                    </Table.HeaderCell>
+                </Table.Row>
+                <Table.Row>
+                    {columns.map((col, hidx) =>
+                        <Table.HeaderCell
+                            key={"k_gauntlet_header_" + hidx}
+                            width={col.width}
+                            sorted={sortKey === col.key ? sortDirection : undefined}
+                            onClick={() => {
+                                columnClick(col.key);
+                                if (!!col.reverse && col.key !== sortKey && sortDirection !== 'descending') {
+                                    setSortDirection('descending');
+                                }
+                                else if (!col.reverse && col.key !== sortKey && sortDirection !== 'ascending') {
+                                    setSortDirection('ascending');
+                                }
+                            }}>
+                            {col.title}
+                        </Table.HeaderCell>)}
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {activePageCrew?.map((row, idx: number) => renderTableRow(row, idx))}
+            </Table.Body>
+            <Table.Footer>
+                <Table.Row>
+                    <Table.HeaderCell colSpan={columns.length}>
+                        <Pagination
+
+                            totalPages={totalPages}
+                            activePage={activePage}
+                            onPageChange={(e, data) => setActivePage(data.activePage as number)}
+                        />
+                        <span style={{ paddingLeft: '2em' }}>
+                            {t('global.rows_per_page')}:{' '}
+                            <Dropdown
+                                options={pageSizes}
+                                value={itemsPerPage}
+                                inline
+                                onChange={(e, { value }) => setItemsPerPage(value as number)}
+                            />
+                        </span>
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Footer>
+        </Table>
+        <CrewHoverStat targetGroup={targetGroup} />
+    </div>);
+
+    function renderTableRow(crew: PlayerCrew, idx: number) {
+        const pairs = crew.pairs ?? getPlayerPairs(crew);
+        const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pageStartIdx + 1;
+        const inMatch = !!gauntlet.contest_data?.selected_crew?.find((c) => c.crew_id === crew.id && crew.isSelected);
+        const obtained = prettyObtained(crew, t);
+        const color = printPortalStatus(crew, t, true, false) === t('global.never') ? CONFIG.RARITIES[5].color : undefined;
+        const qbslots = qbitsToSlots(crew.q_bits);
+        const trueImmo = isImmortal(crew);
+        const negative = !!crew.isOpponent;
+        const positive = (mode !== 'live' &&
+                (filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') &&
+                crew.immortal === CompletionState.DisplayAsImmortalOwned)
+                || (mode === 'live' && inMatch);
+
+        return (
+            <Table.Row key={`gauntletTable_row_${idx}`} negative={negative} positive={positive}>
+                <Table.Cell>{rank}</Table.Cell>
+                <Table.Cell>
+                    <div
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: '60px auto',
+                            gridTemplateAreas: `'icon stats' 'icon description'`,
+                            gridGap: '1px'
+                        }}>
+                        <div style={{ gridArea: 'icon' }}>
+                            <CrewTarget targetGroup={targetGroup} inputItem={crew} passDirect={crew.isSelected || crew.isOpponent}>
+                                <img
+                                    onClick={(e) => imageClick(e, crew)}
+                                    width={48}
+                                    src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                />
+                            </CrewTarget>
+                            {crew.immortal > 0 &&
+                                <div style={{
+                                    marginTop: "-16px",
+                                    color: "white",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-end"
+                                }}>
+                                    <i className="snowflake icon" />
+                                </div>}
+                        </div>
+                        <div style={{ gridArea: 'stats' }}>
+                            <span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
+                        </div>
+                    </div>
+                </Table.Cell>
+                <Table.Cell>
+                    <Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
+                </Table.Cell>
+                <Table.Cell>
+                    {gauntlets?.length && <>
+                        <div style={{cursor: openCrit !== crew.id ? 'zoom-in' : 'zoom-out'}} onClick={() => setOpenCrit(openCrit === crew.id ? 0 : crew.id)}>
+                            {openCrit !== crew.id && <>{elevated[crew.symbol]}</>}
+                            {openCrit === crew.id && renderElevateCritTable(crew)}
+                        </div>
+                    </>}
+                    {!gauntlets?.length && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
+                </Table.Cell>
+                <Table.Cell width={2}>
+                    {pairs && pairs.length >= 1 && formatPair(pairs[0])}
+                </Table.Cell>
+                <Table.Cell width={2}>
+                    {pairs && pairs.length >= 2 && formatPair(pairs[1])}
+                </Table.Cell>
+                <Table.Cell width={2}>
+                    {pairs && pairs.length >= 3 && formatPair(pairs[2])}
+                </Table.Cell>
+                <Table.Cell width={2}>
+                    <span title={printPortalStatus(crew, t, true, true, true)}>
+                        {printPortalStatus(crew, t, true, false)}
+                        {!!color && <div style={{ color: color }}>{obtained}</div>}
+                    </span>
+                </Table.Cell>
+                <Table.Cell>
+                    <div title={
+                        !trueImmo ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+                    }>
+                        <div>
+                            {!trueImmo ? 'N/A' : crew.q_bits}
+                        </div>
+                        {trueImmo &&
+                            <div style={{ fontSize: "0.8em" }}>
+                                ({qbslots} Slot{qbslots != 1 ? 's' : ''})
+                            </div>}
+                    </div>
+                </Table.Cell>
+            </Table.Row>)
+    }
+
+    function renderElevateCritTable(crew: PlayerCrew) {
+        if (!gauntlets) return <></>
+        const buckets = crewBuckets[crew.symbol];
+        if (!buckets) return <></>
+        return (
+            <div style={{maxHeight: '15em', overflowY: 'auto'}}>
+                <Table striped>
+                    {buckets.map((bucket, idx) => {
+                        const { name, crit, count } = bucket;
+
+                        return <Table.Row key={`gpcrit_${crew.symbol}_${name}_${crit}`}>
+                            <Table.Cell>
+                                {count}
+                            </Table.Cell>
+                            <Table.Cell>
+                                {name}
+                            </Table.Cell>
+                            <Table.Cell>
+                                <div style={{minWidth: '4em'}}>
+                                <Label color={getCritColor(crit)}>
+                                    {t('global.n_%', { n: crit })}
+                                </Label>
+                                </div>
+                            </Table.Cell>
+                        </Table.Row>
+                    })}
+                </Table>
+            </div>
+        )
+
+    }
+
+    function rosterizeCrew(data: PlayerCrew[]) {
         const prettyTraits = gauntlet?.prettyTraits;
 
-        var newarr =  [...data]; // JSON.parse(JSON.stringify(data)) as PlayerCrew[];
+        var newarr = [...data]; // JSON.parse(JSON.stringify(data)) as PlayerCrew[];
 
         const dir = sortDirection === 'descending' ? -1 : 1;
         let key = sortKey;
@@ -309,173 +517,35 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             });
         }
 
-        setCrew(newarr);
-    }, [sortKey, sortDirection, elevated, data]);
-    
-    return (<div style={{ overflowX: "auto" }}>
-        <Input
-            style={{ width: isMobile ? '100%' : '50%' }}
-            iconPosition="left"
-            placeholder={t('global.search_ellipses')}
-            value={textFilter}
-            onChange={(e, { value }) => setTextFilter(value)}>
-            <input />
-            <Icon name='search' />
-            <Button icon onClick={() => setTextFilter('')} >
-                <Icon name='delete' />
-            </Button>
-        </Input>
+        return newarr;
+    }
 
-        <Table sortable celled selectable striped collapsing unstackable compact="very">
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell colSpan={columns.length}>
-                        <div style={{ margin: "1em 0", width: "100%" }}>
-                            <Pagination fluid totalPages={totalPages} activePage={activePage} onPageChange={(e, data) => setActivePage(data.activePage as number)} />
-                        </div>
-                    </Table.HeaderCell>
-                </Table.Row>
-                <Table.Row>
-                    {columns.map((col, hidx) =>
-                        <Table.HeaderCell
-                            width={col.width}
-                            sorted={sortKey === col.key ? sortDirection : undefined}
-                            onClick={(e) => {
-                                columnClick(col.key);
-                                if (!!col.reverse && col.key !== sortKey && sortDirection !== 'descending') {
-                                    setSortDirection('descending');
-                                }
-                                else if (!col.reverse && col.key !== sortKey && sortDirection !== 'ascending') {
-                                    setSortDirection('ascending');
-                                }
-                            }}
-                            key={"k_" + hidx}>
-                            {col.title}
-                        </Table.HeaderCell>)}
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {activePageCrew?.map((row, idx: number) => {
-                    const crew = row;
-                    const pairs = crew.pairs ?? getPlayerPairs(crew);
-                    const rank = gauntlet.origRanks ? gauntlet.origRanks[crew.symbol] : idx + pageStartIdx + 1;
-                    const inMatch = !!gauntlet.contest_data?.selected_crew?.some((c) => c.archetype_symbol === crew.symbol && crew.isSelected);
-                    const obtained = prettyObtained(crew, t);
-                    const color = printPortalStatus(crew, t, true, false) === t('global.never') ? CONFIG.RARITIES[5].color : undefined;
-                    const qbslots = qbitsToSlots(crew.q_bits);
-                    const trueImmo = isImmortal(crew);
+    function getElevatedBuckets(crew: PlayerCrew) {
+        if (!gauntlets) return [];
+        const buckets = [] as BucketType[];
+        const addtobucket = (g: Gauntlet, c: number) => {
+            const name = printGauntlet(g, TRAIT_NAMES);
+            let f = buckets.find(b => b.name === name);
+            if (!f) {
+                f = {
+                    crit: c,
+                    name,
+                    count: 1
+                };
+                buckets.push(f);
+            }
+            else {
+                f.count++;
+            }
+        }
 
-                    return (crew &&
-                        <Table.Row key={idx}
-                            negative={crew.isOpponent}
-                            positive={
-                                (mode !== 'live' && (filter?.ownedStatus === 'maxall' || filter?.ownedStatus === 'ownedmax') && crew.immortal === CompletionState.DisplayAsImmortalOwned)
-                                || (mode === 'live' && inMatch)
-                            }
-                        >
-                            <Table.Cell>{rank}</Table.Cell>
-                            <Table.Cell>
-                                <div
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '60px auto',
-                                        gridTemplateAreas: `'icon stats' 'icon description'`,
-                                        gridGap: '1px'
-                                    }}>
-                                    <div style={{ gridArea: 'icon' }}
+        const critted = gauntlets.filter(f => f.contest_data && f.contest_data.traits.some(t => crew.traits.includes(t)));
 
-                                    >
-                                        <CrewTarget targetGroup={targetGroup}
-                                            inputItem={crew}
-                                        >
-                                            <img
-                                                onClick={(e) => imageClick(e, crew)}
-                                                width={48}
-                                                src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
-                                            />
-                                        </CrewTarget>
-                                        {crew.immortal > 0 &&
-                                            <div style={{
-                                                marginTop: "-16px",
-                                                color: "white",
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                justifyContent: "flex-end"
-                                            }}>
-                                                <i className="snowflake icon" />
-                                            </div>}
-                                    </div>
-                                    <div style={{ gridArea: 'stats' }}>
-                                        <span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{crew.name}</Link></span>
-                                    </div>
-                                </div>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
-                            </Table.Cell>
-                            <Table.Cell>
-                                {gauntlets?.length && <>{elevated[crew.symbol]}</>}
-                                {!gauntlets?.length && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
-                            </Table.Cell>
-                            <Table.Cell width={2}>
-                                {pairs && pairs.length >= 1 && formatPair(pairs[0])}
-                            </Table.Cell>
-                            <Table.Cell width={2}>
-                                {pairs && pairs.length >= 2 && formatPair(pairs[1])}
-                            </Table.Cell>
-                            <Table.Cell width={2}>
-                                {pairs && pairs.length >= 3 && formatPair(pairs[2])}
-                            </Table.Cell>
-                            {/* <Table.Cell width={2}>
-                                {crew.have === true ? "Yes" : "No"}
-                            </Table.Cell> */}
-                            <Table.Cell width={2}>
-                                <span title={printPortalStatus(crew, t, true, true, true)}>
-                                    {printPortalStatus(crew, t, true, false)}
-                                    {!!color && <div style={{color: color}}>{obtained}</div>}
-                                </span>
-                            </Table.Cell>
-                            <Table.Cell>
-                            <div title={
-                                !trueImmo ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
-                                }>
-                                <div>
-                                    {!trueImmo ? 'N/A' : crew.q_bits}
-                                </div>
-                                {trueImmo &&
-                                <div style={{fontSize:"0.8em"}}>
-                                    ({qbslots} Slot{qbslots != 1 ? 's' : ''})
-                                </div>}
-                            </div>
-                            </Table.Cell>
-                        </Table.Row>
-                    );
-                })}
-            </Table.Body>
-            <Table.Footer>
-                <Table.Row>
-                    <Table.HeaderCell colSpan={columns.length}>
-                        <Pagination 
-                             
-                            totalPages={totalPages} 
-                            activePage={activePage} 
-                            onPageChange={(e, data) => setActivePage(data.activePage as number)} 
-                            />                
-                        <span style={{ paddingLeft: '2em' }}>
-                            {t('global.rows_per_page')}:{' '}
-                            <Dropdown 
-                            options={pageSizes} 
-                            value={itemsPerPage}
-                            inline
-                            onChange={(e, { value }) => setItemsPerPage(value as number)}
-                        />
-                        </span>
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Footer>
-        </Table>
-        <CrewHoverStat targetGroup={targetGroup} />
-    </div>);
+        for (let g of critted) {
+            addtobucket(g, getCrewCrit(crew, g));
+        }
+        return buckets.sort((a, b) => b.crit - a.crit || b.count - a.count || a.name.localeCompare(b.name));
+    }
 }
 
 

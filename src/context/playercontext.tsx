@@ -67,7 +67,7 @@ export const defaultPlayer = {
 	showPlayerGlance: true,
 	setShowPlayerGlance: () => false,
 	noGradeColors: true,
-	setNoGradeColors: () => false
+	setNoGradeColors: () => false,
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -92,6 +92,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const maxBuffs = stripped ? calculateMaxBuffs(stripped.player?.character?.all_buffs_cap_hash) : (coreData.all_buffs ?? undefined);
 	const [sessionStates, setSessionStates] = useStateWithStorage<ISessionStates | undefined>('sessionStates', defaultSessionStates);
 	const [showPlayerGlance, setShowPlayerGlance] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}_showPlayerGlance`, true, { rememberForever: true })
+	const [showBuybackAlerts, setShowBuybackAlerts] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}_showBuybackAlerts`, true, { rememberForever: true })
+	const [restoreHiddenAlerts, setRestoreHiddenAlerts] = React.useState(false);
 	const [noGradeColors, internalSetNoGradeColors] = React.useState(tiny.getValue<boolean>('noGradeColors') ?? false)
 	const [newCrew, setNewCrew] = useStateWithStorage(`${stripped ? stripped.player.dbid : ''}/newCrew`, undefined as PlayerCrew[] | undefined);
 	const setNoGradeColors = (value: boolean) => {
@@ -117,7 +119,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 					equipment: crew.equipment.map((eq) => eq[0]),
 					active_status: crew.active_status,
 					active_id: crew.active_id,
-					active_index: crew.active_index
+					active_index: crew.active_index,
+					max_rarity: crew.max_rarity,
+					skill_order: []
 				});
 			}
 		});
@@ -202,7 +206,11 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		noGradeColors,
 		setNoGradeColors,
 		setNewCrew,
-		newCrew
+		newCrew,
+		showBuybackAlerts,
+		setShowBuybackAlerts,
+		restoreHiddenAlerts,
+		setRestoreHiddenAlerts
 	} as PlayerContextData;
 
 	return (

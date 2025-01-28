@@ -28,22 +28,41 @@ export const RetrievalEnergy = () => {
 	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? defaultSeconds); // 48
 	const qPerBoost = 50;
 
-	let energyMessage = 'You can guarantee a legendary crew retrieval now!';
+	let energyMessage = t('retrieval.energy.guaranteed_legendary');
 	if (energy.quantity < qTarget) {
 		const regenerationTime = getSecondsRemaining(qTarget, energy.quantity);
-		energyMessage = `You will regenerate enough quantum to reach ${qTarget} in ${formatTime(regenerationTime, t)};`;
+		energyMessage = t('retrieval.energy.quantum_regeneration', {
+			target: `${qTarget}`,
+			time: formatTime(regenerationTime, t)
+		});
 		let daysCanBoost = 0, qTotal = energy.quantity;
 		while (qTotal < qTarget) {
 			daysCanBoost++;
 			qTotal += qPerBoost+qPerFullDay;
 		}
 		const timeBoosted = getSecondsRemaining(qTarget, energy.quantity+(daysCanBoost*qPerBoost));
-		energyMessage += ` spend 90 dilithium ${daysCanBoost > 1 ? 'daily' : ''} to reach ${qTarget}`
-			+ ` ${timeBoosted <= 0 ? 'immediately' : `in ${formatTime(timeBoosted, t)}`}.`;
+
+		if (timeBoosted <= 0) {
+			energyMessage += t('retrieval.energy.spend_90_immediately', {
+				target: `${qTarget}`
+			});
+		}
+		else if (daysCanBoost > 1) {
+			energyMessage += t('retrieval.energy.spend_90_daily', {
+				target: `${qTarget}`,
+				time: formatTime(timeBoosted, t)
+			});
+		}
+		else {
+			energyMessage += t('retrieval.energy.spend_90', {
+				target: `${qTarget}`,
+				time: formatTime(timeBoosted, t)
+			});
+		}
 	}
 
 	return (
-		<p>Quantum: <strong>{energy.quantity}</strong>. {energyMessage}</p>
+		<p>{t('global.item_types.quantum')}: <strong>{energy.quantity}</strong>. {energyMessage}</p>
 	);
 
 	function getSecondsRemaining(target: number, quantity: number): number {
@@ -54,7 +73,7 @@ export const RetrievalEnergy = () => {
 		let d = Math.floor(seconds/(3600*24)),
 			h = Math.floor(seconds%(3600*24)/3600),
 			m = Math.floor(seconds%3600/60);
-		
+
 		if (t) {
 			if (d === 0) return `${t('duration.n_h', { hours: `${h}` })} ${t('duration.n_m', { minutes: `${m}` })}`;
 			return `${t('duration.n_d', { days: `${d}` })} ${t('duration.n_h', { hours: `${h}` })} ${t('duration.n_m', { minutes: `${m}` })}`

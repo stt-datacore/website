@@ -15,6 +15,8 @@ import { gradeToColor, numberToGrade } from "../../utils/crewutils";
 import { IRosterCrew, RetrievableState } from './model';
 import { CombosModal } from './combos';
 import CONFIG from '../CONFIG';
+import { PlayerCrew } from '../../model/player';
+import { RetrievalContext } from './context';
 
 type RetrievalCrewTableProps = {
  	filteredCrew: IRosterCrew[];
@@ -22,6 +24,8 @@ type RetrievalCrewTableProps = {
 
 export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const retrievalContext = React.useContext(RetrievalContext);
+	const { market } = retrievalContext;
 	const { t, tfmt } = globalContext.localized;
 	const { buffConfig } = globalContext.player;
 	const { filteredCrew } = props;
@@ -29,15 +33,39 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const topQuipmentScore = globalContext.core.crew.reduce((prev, curr) => Math.max(curr.quipment_score ?? 0, prev), 0);
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'date_added'] },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		{ width: 1, column: 'bigbook_tier', title: 'Tier' },
-		{ width: 1, column: 'cab_ov', title: 'CAB', reverse: true, tiebreakers: ['cab_ov_rank'] },
-		{ width: 1, column: 'ranks.voyRank', title: 'Voyage' },
-		{ width: 1, column: 'ranks.gauntletRank', title: 'Gauntlet' },
-		{ width: 1, column: 'quipment_score', title: 'Quipment', reverse: true },
-		{ width: 1, column: 'progressable_collections.length', title: 'Collections', reverse: true },
-		{ width: 1, column: 'retrievable', title: 'Retrieval', tiebreakers: ['actionable', 'alt_source'] }
+		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: ['name', 'date_added'] },
+		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['highest_owned_rarity'] },
+		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier') },
+		{ width: 1, column: 'cab_ov', title: t('base.cab_power'), reverse: true, tiebreakers: ['cab_ov_rank'] },
+		{ width: 1, column: 'ranks.voyRank', title: t('base.voyage') },
+		{ width: 1, column: 'ranks.gauntletRank', title: t('base.gauntlet') },
+		{ width: 1, column: 'quipment_score', title: t('base.quipment'), reverse: true },
+		{ width: 1, column: 'progressable_collections.length', title: t('base.collections'), reverse: true },
+		{
+			width: 1,
+			column: 'retrievable',
+			title: t('base.retrieval'),
+			//tiebreakers: ['actionable', 'alt_source'],
+			pseudocolumns: ['retrievable', 'price', 'sell_count'],
+			customCompare: (a: PlayerCrew, b: PlayerCrew, conf) => {
+				let r = 0;
+				if (conf.field === 'retrievable' || !market) {
+					r = a.unique_polestar_combos!.length - b.unique_polestar_combos!.length;
+				}
+				else if (conf.field === 'price') {
+					a.price ??= 0;
+					b.price ??= 0;
+					r = a.price! - b.price!;
+				}
+				else if (conf.field === 'sell_count') {
+					a.sell_count ??= 0;
+					b.sell_count ??= 0;
+					r = a.sell_count! - b.sell_count!;
+				}
+				if (!r) r = a.name.localeCompare(b.name);
+				return r;
+			}
+		}
 	];
 
 	return (
@@ -106,9 +134,9 @@ const CrewRow = (props: CrewRowProps) => {
 	function renderDefaultCells(): JSX.Element {
 		return (
 			<React.Fragment>
-				<Table.Cell textAlign='center'>
+				{/* <Table.Cell textAlign='center'>
 					<b>{formatTierLabel(crew)}</b>
-				</Table.Cell>
+				</Table.Cell> */}
 				<Table.Cell textAlign='center'>
 					<b>{crew.cab_ov}</b>
 					<br /><small>{rarityLabels[crew.max_rarity]} #{crew.cab_ov_rank}</small>

@@ -11,6 +11,7 @@ import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver.ts';
 import { calcQLots } from '../utils/equipment.ts';
 import ShipCrewWorker from './shipcrewworker.ts';
+import { calculateGauntlet } from '../utils/gauntlet.ts';
 
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
@@ -80,7 +81,7 @@ self.onmessage = (message) => {
         'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
-        'citeOptimizer': () => citeOptimizer(message.data.playerData, message.data.allCrew).then(data => postResult(data, false)),
+        'citeOptimizer': () => citeOptimizer(message.data.config.playerData, message.data.config.allCrew).then(data => postResult(data, false)),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
@@ -91,6 +92,10 @@ self.onmessage = (message) => {
             });
             postResult(result, false);
         }),
+        'gauntlet': () => {
+            const gauntlet = calculateGauntlet(message.data.config);
+            postResult(gauntlet, false);
+        },
         'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
         'qpower': () => {
             const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;

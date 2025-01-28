@@ -191,7 +191,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     //     rarity: ship.rarity,
     //     battle_stations: ship.battle_stations
     // }));
-    
+
     p.buyback_well = p.player.character.crew.filter((crew) => !!crew.in_buy_back_state) ?? [];
     p.player.character.crew = p.player.character.crew
         .filter((crew) => !crew.in_buy_back_state)
@@ -210,6 +210,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             skills: crew.skills,
             favorite: crew.favorite,
             expires_in: crew.expires_in,
+            cap_achiever: crew.cap_achiever,
             action: {
                 bonus_amount: crew.action?.bonus_amount,
             },
@@ -281,4 +282,13 @@ export function bonusCrewForCurrentEvent(
     }
 
     return undefined;
+}
+
+export function getChrons(playerData: PlayerData) {
+    let ch = 0;
+    ch = Math.floor(playerData.player.character.seconds_from_replay_energy_basis / playerData.player.character.replay_energy_rate);
+    if (ch <= 0) {
+        ch = playerData.player.character.replay_energy_max + playerData.player.character.replay_energy_overflow;
+    }
+    return ch;
 }

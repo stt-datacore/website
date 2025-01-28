@@ -37,7 +37,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 
 	function renderCopyPaste(): JSX.Element {
 
-        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=24&only_read_state=true';
+        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=25&only_read_state=true';
 
         return (
 			<React.Fragment>
@@ -95,7 +95,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 					title={`Gauntlet Input Form`}
 					validateInput={validateGauntlet}
 					setValidInput={(gauntlet) => {
-						if (gauntlet) setCollapsed(true);
+						//if (gauntlet) setCollapsed(true);
 						setGauntlet(gauntlet);
 					}}
 

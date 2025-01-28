@@ -26,12 +26,13 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getItemWithBonus } from '../../utils/itemutils';
+import { getItemWithBonus, getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
+import { ObtainedFilter } from './filters/crewobtained';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -218,6 +219,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
+	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
@@ -225,7 +227,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
-	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
+	const quipment = getQuipmentAsItemWithBonus(globalContext.core.items);
+
+	const shipranks = globalContext.core.crew.some(c => c.ranks.ship);
 
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
@@ -260,8 +264,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
 				/>,
-			tableConfig: getShipTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewShipCells crew={crew} />
+			tableConfig: getShipTableConfig(t, shipranks),
+			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
 		},
 		{
 			id: 'g_ranks',
@@ -342,6 +346,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					questFilter={questFilter}
+					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
 					maxxed={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 					quipment={quipment}
@@ -426,6 +432,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 				/>
 		},
+		{
+			id: 'obtained',
+			available: (['allCrew'].includes(rosterType)),
+			form:
+				<ObtainedFilter
+					key='filter_allcrew_obtained'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>
+		},
 	] as IToggleableFilter[];
 
 	const tableViewOptions = [
@@ -489,6 +506,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				setViewIsReady(false);
 				view.worker(preparedCrew).then((result) => {
 					setPreparedCrew(result);
+					const f = result.find(ff => ff.symbol === 'black_admiral_crew');
+					console.log(f);
 					setViewIsReady(true);
 				});
 			}
