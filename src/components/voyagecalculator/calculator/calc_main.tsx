@@ -15,7 +15,7 @@ export const Calculator = () => {
 	const { voyage_type } = React.useContext(CalculatorContext).voyageConfig;
 
 	return (
-		<QPConfigProvider>
+		<QPConfigProvider pageId={'voyage_calc'}>
 			<React.Fragment>
 				{playerData && (
 					<PlayerCalculator
@@ -58,7 +58,7 @@ const PlayerCalculator = (props: PlayerCalculatorProps) => {
 		{ rememberForever: true }
 	);
 
-	const [qpConfig, setQPConfig, applyQp] = useQPConfig(`${props.dbid}/voyage`);
+	const [qpConfig, setQPConfig, applyQp] = useQPConfig();
 
 	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
@@ -84,7 +84,7 @@ const NonPlayerCalculator = () => {
 	const [calcOptions, setCalcOptions] = React.useState<GameWorkerOptions>({} as GameWorkerOptions);
 	const [telemetryOptIn, setTelemetryOptIn] = React.useState<boolean>(false);
 	//const [qpConfig, setQPConfig] = React.useState<QuipmentProspectConfig>(DefaultQuipmentConfig);
-	const [qpConfig, setQPConfig, applyQp] = useQPConfig(`voyage`);
+	const [qpConfig, setQPConfig, applyQp] = useQPConfig();
 
 	const userPrefs: IUserPrefsContext = {
 		calculator, setCalculator,
