@@ -20,6 +20,9 @@ import { navToCrewPage } from '../../utils/nav';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { SkillPicker } from '../base/skillpicker';
 import { PlayerCrew } from '../../model/player';
+import { QPContext } from '../qpconfig/provider';
+import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -31,7 +34,9 @@ type EventCrewTableProps = {
 
 export const EventCrewTable = (props: EventCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const qpContext = React.useContext(QPContext);
 	const { t, tfmt } = globalContext.localized;
+	const [qpConfig, setQpConfig, applyQp] = qpContext.useQPConfig();
 
 	const { playerData, buffConfig } = globalContext.player;
 	const { rosterType, eventData, phaseIndex } = props;
@@ -166,6 +171,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		showPotential
 	);
 
+	const flexRow = OptionsPanelFlexRow;
+
 	return (
 		<React.Fragment>
 			<div ref={crewAnchor} />
@@ -228,9 +235,12 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					}
 				</Form.Group>
 			</Form>
-			<div style={{margin: '0.5em 0'}}>
-				{t('hints.filter_by_skill')}:&nbsp;&nbsp;
-				<SkillPicker multiple short value={skillFilter} setValue={setSkillFilter} />
+			<div style={{...flexRow, justifyContent: 'flex-start', alignItems: 'center', gap: '1em'}}>
+				<div style={{margin: '0.5em 0'}}>
+					{t('hints.filter_by_skill')}:&nbsp;&nbsp;
+					<SkillPicker multiple short value={skillFilter} setValue={setSkillFilter} />
+				</div>
+				<QuipmentProspectsOptions config={qpConfig} setConfig={setQpConfig} hideVoyageOptions={true} />
 			</div>
 			<SearchableTable
 				id='eventplanner'

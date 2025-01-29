@@ -15,7 +15,9 @@ Datacore ("we," "us," or "our") is a fan-driven companion tool for the mobile ga
 
         Player Data JSON: When you opt-in, you can upload your STT Player Data JSON to Datacore for personalized features.
 
-        Discord User Data: If you use the Bot, we may collect your Discord user ID and interactions with the Bot.
+        Discord User Data: If you use the Bot, we may collect the results of commands issued to the Bot.
+
+        We do not record your usage unless you have been invited to test a non-production deployment. In this case, usage may be recorded for debugging purposes.
 
     - 1.2 Automatically Collected Data
 
@@ -51,13 +53,13 @@ Datacore ("we," "us," or "our") is a fan-driven companion tool for the mobile ga
 
     - Under GDPR and other applicable laws, you have the right to:
 
-    - Access the data we hold about you.
+        - Access the data we hold about you.
 
-    - Request data correction or deletion.
+        - Request data correction or deletion.
 
-    - Withdraw your consent for data processing.
+        - Withdraw your consent for data processing.
 
-    - To exercise these rights, contact us at admin@datacore.app.
+        - To exercise these rights, contact us at admin@datacore.app.
 
 6. Data Security
 
