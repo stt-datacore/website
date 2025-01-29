@@ -11,6 +11,7 @@ import { EventPicker } from '../components/eventplanner/eventpicker';
 import { getEvents } from '../utils/events';
 
 import { IEventData } from '../components/eventplanner/model';
+import { DefaultQuipmentConfig, QPConfigProvider, QuipmentProspectConfig } from '../components/qpconfig/provider';
 
 const EventPlannerPage = () => {
 	const { t } = React.useContext(GlobalContext).localized;
@@ -22,7 +23,9 @@ const EventPlannerPage = () => {
 			playerPromptType='recommend'
 		>
 			<React.Fragment>
+			<QPConfigProvider pageId={'event_planner'}>
 				<EventPlannerSetup />
+			</QPConfigProvider>
 			</React.Fragment>
 		</DataPageLayout>
 	);
@@ -48,7 +51,8 @@ const EventPlannerSetup = () => {
 			{activeEvents.length > 0 && (
 				<React.Fragment>
 					<RosterPicker
-						rosterType={rosterType} setRosterType={setRosterType}
+						rosterType={rosterType}
+						setRosterType={setRosterType}
 						setRosterCrew={setRosterCrew}
 					/>
 					{rosterCrew &&

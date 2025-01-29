@@ -38,7 +38,7 @@ export const DefaultQuipmentConfig: QuipmentProspectConfig = {
 };
 
 export interface IQPConfigContext {
-    useQPConfig: (pageId: string) => [QuipmentProspectConfig, (value: QuipmentProspectConfig) => void, (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig) => (PlayerCrew | CrewMember)]
+    useQPConfig: () => [QuipmentProspectConfig, (value: QuipmentProspectConfig) => void, (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig) => (PlayerCrew | CrewMember)]
     //usePrepareRoster: (pageId: string) => ((crew: (PlayerCrew | CrewMember)[]) => (PlayerCrew | CrewMember)[])
 }
 
@@ -50,13 +50,21 @@ const DefaultQPContextData: IQPConfigContext = {
 export const QPContext = React.createContext(DefaultQPContextData);
 
 interface QPConfigProps {
+	pageId: string;
     children: JSX.Element
 }
 
 export const QPConfigProvider = (props: QPConfigProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { children } = props;
+	const { playerData } = globalContext.player;
+	const dbidKey = playerData ? `${playerData.player.dbid}/` : '';
+    const { children, pageId } = props;
     const quipment: ItemWithBonus[] = globalContext.core.items.filter(f => f.type === 14).map(m => getItemWithBonus(m));
+	const [config, setConfig] = useStateWithStorage(`${pageId}/${dbidKey}qpConfig`, { ...DefaultQuipmentConfig, pageId } as QuipmentProspectConfig, { rememberForever: !!playerData });
+
+	const applyQp = (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig): (PlayerCrew | CrewMember) => {
+		return applyPageQp(config, crew, voyageConfig);
+	}
 
     const data: IQPConfigContext = {
         ...DefaultQPContextData,
@@ -67,12 +75,8 @@ export const QPConfigProvider = (props: QPConfigProps) => {
         {children}
     </QPContext.Provider>)
 
-    function useQPConfig(pageId: string): [QuipmentProspectConfig, (value: QuipmentProspectConfig) => void, (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig) => (PlayerCrew | CrewMember)] {
-        const [config, setConfig] = useStateWithStorage(`${pageId}/qpConfig`, { ...DefaultQuipmentConfig, pageId } as QuipmentProspectConfig, { rememberForever: true });
-        const applyQp = (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig): (PlayerCrew | CrewMember) => {
-            return applyPageQp(config, crew, voyageConfig);
-        }
-        return [config, setConfig, applyQp];
+    function useQPConfig(): [QuipmentProspectConfig, (value: QuipmentProspectConfig) => void, (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig) => (PlayerCrew | CrewMember)] {
+		return [config, setConfig, applyQp];
     }
 
     function applyPageQp(config: QuipmentProspectConfig, crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig) {

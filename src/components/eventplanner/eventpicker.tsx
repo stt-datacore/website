@@ -20,6 +20,8 @@ import { GatherPlanner } from '../gather/gather_planner';
 import ShipTable from '../ship/shiptable';
 import { AvatarView } from '../item_presenters/avatarview';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
+import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { QPContext } from '../qpconfig/provider';
 
 interface ISelectOptions {
 	key: string;
@@ -35,6 +37,7 @@ type EventPickerProps = {
 
 export const EventPicker = (props: EventPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const qpContext = React.useContext(QPContext);
 	const { t } = globalContext.localized;
 	const { playerData, buffConfig, ephemeral } = globalContext.player;
 	const { events, rosterType } = props;
@@ -157,6 +160,7 @@ export const EventPicker = (props: EventPickerProps) => {
 				</div>
 			)}
 			{!!eventData.featured_ships.length && <EventFeaturedShips event={eventData} />}
+
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
 
 			{playerData && (
