@@ -337,7 +337,7 @@ export function isImmortal(crew: PlayerCrew): boolean {
 export const PREPARE_MAX_RARITY = 6;
 
 export function isQuipped<T extends PlayerCrew>(crew: T) {
-	if (!!crew.kwipment?.length && !!crew.kwipment[0]) {
+	if (!!crew.kwipment?.length) {
 		if (typeof crew.kwipment[0] === 'number') {
 			return crew.kwipment.some(k => !!k);
 		}
