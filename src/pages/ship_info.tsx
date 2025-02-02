@@ -55,7 +55,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const { ship: shipKey, setShip: setShipKey } = props;
 	const { playerShips, playerData } = context.player;
 	const { crew: coreCrew } = context.core;
-	const [ships, setShips] = React.useState<Ship[]>(loadShips());
+	const [ships, setShips] = React.useState<Ship[]>([]);
 	const [inputShip, setInputShip] = React.useState<Ship>();
 	const [ship, setShip] = React.useState<Ship>();
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
@@ -75,13 +75,26 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [activeTabIndex, setActiveTabIndex] = React.useState<number>(0);
 
 	React.useEffect(() => {
-		if (inputShip && crewStations?.length && inputShip.battle_stations?.length === crewStations.length) {
-			setShip(setupShip(inputShip, crewStations) || JSON.parse(JSON.stringify(inputShip)));
-		}
-		else if (inputShip && crewStations?.length !== inputShip.battle_stations?.length) {
+		if (inputShip && crewStations.length !== inputShip.battle_stations?.length) {
 			setCrewStations(inputShip.battle_stations?.map(b => undefined as PlayerCrew | CrewMember | undefined) ?? []);
 		}
-	}, [crewStations, inputShip]);
+	}, [inputShip]);
+
+	React.useEffect(() => {
+		const c = inputShip?.battle_stations?.length ?? 0;
+		if (inputShip && !!inputShip.battle_stations?.length && crewStations.length === inputShip.battle_stations.length) {
+			let i = 0;
+			if (ship?.battle_stations?.length && ship.battle_stations?.length === crewStations.length) {
+				for (i = 0; i < c; i++) {
+					if (ship.battle_stations[i].crew?.id !== crewStations[i]?.id) break;
+				}
+			}
+
+			if (i < c) {
+				setShip(setupShip(inputShip, crewStations));
+			}
+		}
+	}, [crewStations]);
 
 	React.useEffect(() => {
 		setShips(loadShips());
@@ -183,7 +196,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				ignoreSkills={ignoreSkills}
 				isOpponent={true}
 				onlyImmortal={onlyImmortal}
-				pageId={'shipInfo'}
+				pageId={'opponentInfo'}
 				setCrewStations={setOpponentStations}
 				ship={opponentShip}
 				setShip={(ship) => setOpponentShip(ship)}

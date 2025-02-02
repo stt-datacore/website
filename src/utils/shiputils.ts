@@ -362,14 +362,14 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | false {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | undefined {
 	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
 	}
 
 	if (!ship?.battle_stations?.length || (!ignoreSeats && !crewStations?.length) || (!ignoreSeats && crewStations.length !== ship.battle_stations.length)) {
 		if (ship.battle_stations === undefined) return ship;
-		else return false;
+		else return undefined;
 	}
 
 	let new_bs = ship.battle_stations.map(m => ({...m, crew: undefined } as BattleStation));
