@@ -266,6 +266,7 @@ export interface RankScoring {
     tertiary_rarity: number;
     trait: number;
     velocity: number;
+    crit: number;
     voyage: number;
 }
 

@@ -1473,6 +1473,7 @@
         "trait_rank": "Trait Rank",
         "voyage_rank": "Voyage Rank",
         "scores": {
+            "crit": "Elevated Crit",
             "am_seating": "Antimatter Seats",
             "collections": "Stat-Boosting Collections",
             "gauntlet": "Gauntlet",

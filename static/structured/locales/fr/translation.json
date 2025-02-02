@@ -1484,6 +1484,7 @@
         "trait_rank": "Rang du trait",
         "voyage_rank": "Rang Voyage",
         "scores": {
+            "crit": "Critique élevée",
             "am_seating": "Sièges antimatière",
             "collections": "Collections améliorant les statistiques",
             "gauntlet": "Gantelet",

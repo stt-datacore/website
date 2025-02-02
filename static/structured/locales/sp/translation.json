@@ -1477,6 +1477,7 @@
         "trait_rank": "Rango del rasgo",
         "voyage_rank": "Rango de Viaje",
         "scores": {
+            "crit": "Crítico elevado",
             "am_seating": "Asientos de antimateria",
             "collections": "Colecciones que mejoran las estadísticas",
             "gauntlet": "Reto",

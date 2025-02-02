@@ -1472,6 +1472,7 @@
         "trait_rank": "Eigenschaftsrang",
         "voyage_rank": "Reiserang",
         "scores": {
+            "crit": "Erhöhte Krit",
             "am_seating": "Antimaterie-Sitze",
             "collections": "Stat-Boosting-Sammlungen",
             "gauntlet": "Herausforderung",

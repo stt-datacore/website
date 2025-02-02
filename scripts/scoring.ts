@@ -10,6 +10,7 @@ import { getItemWithBonus, ItemWithBonus } from '../src/utils/itemutils';
 import { TraitNames } from '../src/model/traits';
 import { potentialCols } from '../src/components/stats/utils';
 import { GameEvent } from '../src/model/player';
+import { Gauntlet } from '../src/model/gauntlets';
 
 const STATIC_PATH = `${__dirname}/../../static/structured/`;
 const DEBUG = process.argv.includes('--debug');
@@ -65,6 +66,22 @@ function normalizeQPowers(qpowers: QPowers[]) {
     }
 
     qpowers.sort((a, b) => b.avg - a.avg);
+}
+
+function elacrit(gauntlets: Gauntlet[], crew: CrewMember) {
+    let ec = 0;
+    for (let g of gauntlets) {
+        if (!g.contest_data) continue;
+        let f = crew.traits.filter(f => g.contest_data!.traits.includes(f))
+        if (f.length === 3) ec += 65;
+        else if (f.length === 2) ec += 45;
+        else if (f.length === 1) ec += 25;
+        else if (f.length === 0) ec += 5;
+        if (crew.skill_order.includes(g.contest_data!.featured_skill)) {
+            ec += 5;
+        }
+    }
+    return ec;
 }
 
 // function compileEventCrew(crew: CrewMember[]) {
@@ -305,6 +322,16 @@ export function score() {
     const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
     items.length = 0;
 
+    const gauntlets = (() => {
+        let gs = JSON.parse(fs.readFileSync(STATIC_PATH + 'gauntlets.json', 'utf-8')) as Gauntlet[]
+        let ghash = {} as {[key:string]: Gauntlet};
+        for (let g of gs) {
+            if (!g.contest_data) continue;
+            let hash = g.contest_data.featured_skill + "_" + g.contest_data.traits.join("_");
+            ghash[hash] = g
+        }
+        return Object.values(ghash);
+    })();
     const collections = JSON.parse(fs.readFileSync(STATIC_PATH + 'collections.json', 'utf-8')) as Collection[];
     const TRAIT_NAMES = JSON.parse(fs.readFileSync(STATIC_PATH + 'translation_en.json', 'utf-8')).trait_names as TraitNames;
     const buffcap = JSON.parse(fs.readFileSync(STATIC_PATH + 'all_buffs.json', 'utf-8'));
@@ -521,6 +548,21 @@ export function score() {
         results.push({
             symbol: c.symbol,
             rarity: c.max_rarity,
+            score: elacrit(gauntlets,c)
+        });
+    }
+
+    let elacrits = normalize(results);
+
+    if (DEBUG) console.log("Elevated Crit Gauntlet Score")
+    if (DEBUG) console.log(elacrits.slice(0, 20));
+
+    results = [].slice();
+
+    for (let c of crew) {
+        results.push({
+            symbol: c.symbol,
+            rarity: c.max_rarity,
             score: c.traits.map(m => lookupAMSeatsByTrait(m)).flat().length
         });
     }
@@ -580,11 +622,13 @@ export function score() {
         let colscore_n = cols.find(f => f.symbol === c.symbol)!.score;
         let pcs_n = pcolscores.find(f => f.symbol === c.symbol)!.score;
         let velocity_n = velocities.find(f => f.symbol === c.symbol)!.score;
+        let crit_n = elacrits.find(f => f.symbol === c.symbol)!.score;
 
         c.ranks.scores.trait = trait_n;
         c.ranks.scores.collections = colscore_n;
         c.ranks.scores.potential_cols = pcs_n;
         c.ranks.scores.velocity = velocity_n;
+        c.ranks.scores.crit = crit_n;
 
         let ship_n = c.ranks.scores.ship.overall;
 
@@ -603,6 +647,7 @@ export function score() {
         tert_rare_n *= 0.3;
         velocity_n *= 0.2;
         voyage_n *= 7;
+        crit_n *= 0.2;
 
         let scores = [
             amseat_n,
@@ -618,6 +663,7 @@ export function score() {
             tert_rare_n,
             velocity_n,
             voyage_n,
+            crit_n
         ];
 
         results.push({

@@ -14,6 +14,7 @@ const RankFields = [
     "voyage",
     "shuttle",
     "gauntlet",
+    "crit",
     "ship",
     "quipment",
     "collections",
