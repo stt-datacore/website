@@ -642,7 +642,7 @@ export function normalizeScores(scores: Score[]) {
     // Compute overall from normalized component scores
     scores.forEach((score) => {
         if (score.type === 'defense') {
-            score.overall_final = ((score.fbb_final * 1) + score.arena_final);
+            score.overall_final = ((score.fbb_final * 1.75) + score.arena_final);
         }
         else {
             score.overall_final = (score.fbb_final + score.arena_final);
