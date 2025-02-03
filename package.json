@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
+    "precalculate": "yarn tsc --project ./tsconfig.node.json && node build/scripts/precalculate.js",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "clean": "gatsby clean",
