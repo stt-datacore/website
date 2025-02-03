@@ -90,6 +90,7 @@ export interface Score {
     arena_data: ScoreTotal[];
 
     kind: 'crew' | 'ship';
+    type: 'defense' | 'offense',
 
     name: string;
     symbol: string;
@@ -171,7 +172,7 @@ export type ScoreDataConfig = {
     bypass_crew?: boolean
 }
 
-export function createScore(kind: 'crew' | 'ship', symbol: string) {
+export function createScore(kind: 'crew' | 'ship', symbol: string, type: 'offense' | 'defense') {
     return {
         kind,
         symbol,
@@ -183,7 +184,8 @@ export function createScore(kind: 'crew' | 'ship', symbol: string) {
         overall: 0,
         overall_final: 0,
         fbb_data: [],
-        arena_data: []
+        arena_data: [],
+        type
     } as Score;
 }
 
@@ -639,7 +641,12 @@ export function normalizeScores(scores: Score[]) {
     const fbb_max = {} as { [key: string]: number };
     // Compute overall from normalized component scores
     scores.forEach((score) => {
-        score.overall_final = (score.fbb_final + score.arena_final);
+        if (score.type === 'defense') {
+            score.overall_final = ((score.fbb_final) + score.arena_final);
+        }
+        else {
+            score.overall_final = (score.fbb_final + score.arena_final);
+        }
 
         [score.arena_data, score.fbb_data].forEach((data, idx) => {
             data.forEach((unit) => {
@@ -748,9 +755,22 @@ export function processScores(
         });
     }
 
+    const getMaxDuration = (scores: Scoreable[]) => {
+        scores.sort((a, b) => b.duration - a.duration);
+        return scores[0].duration;
+    }
+
+    const getMaxTotalDamage = (scores: Scoreable[]) => {
+        scores.sort((a, b) => b.total_damage - a.total_damage);
+        return scores[0].total_damage;
+    }
+
     const getTopScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
         if (mode === 'fbb') {
             if (score_mode === 'defense') {
+                // let maxdur = getMaxDuration(scores);
+                // let maxdmg = getMaxTotalDamage(scores);
+                // return scores.map(ss => ((ss.duration / maxdur) * 1) + ((ss.total_damage / maxdmg) * 1)).reduce((p, n) => p > n ? p : n, 0);
                 return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
             }
             else {
@@ -774,11 +794,11 @@ export function processScores(
         }
     }
 
-    const getMyScore = (top: number, score: Scoreable, mode: 'arena' | 'fbb') => {
+    const getMyScore = (top: number, score: Scoreable, mode: 'arena' | 'fbb', maxdmg?: number, maxdur?: number) => {
         if (mode === 'fbb') {
-            if (score_mode === 'defense') {
+            if (score_mode === 'defense' && maxdmg && maxdur) {
                 //return arenaruns.length - score.average_index;
-                return score.duration * score.total_damage;
+                return  score.duration * score.total_damage; //((score.duration / maxdur) * 1) + ((score.total_damage / maxdmg) * 1);
             }
             else {
                 return score.total_damage;
@@ -841,10 +861,12 @@ export function processScores(
             const raw_score = score.fbb_data.find(f => f.group === bg)!;
             const ls_fbb = getLikeScores(score, 'fbb', bg);
             const topscore_fbb = getTopScore(ls_fbb, 'fbb');
+            let maxdur = getMaxDuration(ls_fbb);
+            let maxdmg = getMaxTotalDamage(ls_fbb);
 
             score.name = c.name!;
 
-            let my_fbb_score = getMyScore(topscore_fbb, raw_score, 'fbb');
+            let my_fbb_score = getMyScore(topscore_fbb, raw_score, 'fbb', maxdmg, maxdur);
             let my_fbb = (my_fbb_score / topscore_fbb) * 100;
 
             raw_score.final = my_fbb * raw_score.average_compat;
@@ -942,7 +964,8 @@ export const createScoreData = (config: ScoreDataConfig) => {
             score = scores.find(cs => cs.symbol === item.symbol);
 
             if (!score) {
-                score = createScore(score_type, item.symbol);
+                let type: "defense" | "offense" = ("accuracy" in item) ? 'offense' : (characterizeCrew(item) < 0 ? 'defense' : 'offense')
+                score = createScore(score_type, item.symbol, type);
                 scores.push(score);
             }
 
