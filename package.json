@@ -8,7 +8,6 @@
     "check": "tsc --noEmit",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
-    "buildpc": "tsc scripts/precalculate.ts --skipLibCheck",
     "clean": "gatsby clean",
     "develop": "gatsby develop -p 8881",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
