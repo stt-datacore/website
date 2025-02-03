@@ -285,11 +285,11 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
     const ship_2 = shipscores.filter(ss => ss.arena_data.some(ad => ad.total_damage) && ss.fbb_data.some(fd => fd.total_damage));
 
     console.log("Scoring Offense ...");
-    processScores(crew, ships, offs_2, 'offense', arenaruns.length);
+    processScores(crew, ships, offs_2, 'offense', arenaruns.length, fbbruns.length);
     console.log("Scoring Defense ...");
-    processScores(crew, ships,defs_2, 'defense', arenaruns.length);
+    processScores(crew, ships,defs_2, 'defense', arenaruns.length, fbbruns.length);
     console.log("Scoring Ships ...");
-    processScores(crew, ships,ship_2, 'ship', arenaruns.length);
+    processScores(crew, ships,ship_2, 'ship', arenaruns.length, fbbruns.length);
 
     console.log("Mapping best crew to ships...");
 
@@ -392,7 +392,7 @@ async function processCrewShipStats(rate = 10, arena_variance = 0, fbb_variance 
 
     const ship_3 = shipscores.filter(ss => ss.arena_data.some(ad => ad.total_damage) && ss.fbb_data.some(fd => fd.total_damage));
 
-    processScores(crew, ships, ship_3, 'ship', arenaruns.length);
+    processScores(crew, ships, ship_3, 'ship', arenaruns.length, fbbruns.length);
 
     console.log("Factoring ship grades into final crew grades.");
 

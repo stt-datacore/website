@@ -642,7 +642,7 @@ export function normalizeScores(scores: Score[]) {
     // Compute overall from normalized component scores
     scores.forEach((score) => {
         if (score.type === 'defense') {
-            score.overall_final = ((score.fbb_final * 1.5) + score.arena_final);
+            score.overall_final = ((score.fbb_final * 1) + score.arena_final);
         }
         else {
             score.overall_final = (score.fbb_final + score.arena_final);
@@ -720,7 +720,7 @@ export function getCompatibleCrew(ship: Ship, roster: CrewMember[], mode: 'fbb' 
 export function processScores(
     crew: CrewMember[],
     ships: Ship[],
-    scores: Score[], score_mode: 'defense' | 'offense' | 'ship', arena_length: number) {
+    scores: Score[], score_mode: 'defense' | 'offense' | 'ship', arena_length: number, fbb_length: number) {
     scores.forEach((score) => {
         score.arena_data.sort((a, b) => a.group - b.group);
         score.fbb_data.sort((a, b) => b.group - a.group);
@@ -765,13 +765,18 @@ export function processScores(
         return scores[0].total_damage;
     }
 
+    const DurMul = 700;
+    const DmgMul = 500;
+
     const getTopScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
         if (mode === 'fbb') {
             if (score_mode === 'defense') {
+                // let high = scores.map(score => fbb_length - score.average_index).reduce((p, n) => p == -1 || p > n ? n : p, -1);
+                // return fbb_length - high;
                 let maxdur = getMaxDuration(scores);
                 let maxdmg = getMaxTotalDamage(scores);
-                return scores.map(ss => ((ss.duration / maxdur) * 5) + ((ss.total_damage / maxdmg) * 2)).reduce((p, n) => p > n ? p : n, 0);
-                //return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
+                return scores.map(ss => ((ss.duration / maxdur) * DurMul) * ((ss.total_damage / maxdmg) * DmgMul)).reduce((p, n) => p > n ? p : n, 0);
+                // //return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
             }
             else {
                 return scores.map(ss => ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
@@ -797,9 +802,10 @@ export function processScores(
     const getMyScore = (top: number, score: Scoreable, mode: 'arena' | 'fbb', maxdmg?: number, maxdur?: number) => {
         if (mode === 'fbb') {
             if (score_mode === 'defense' && maxdmg && maxdur) {
+                // return fbb_length - score.average_index;
                 //return arenaruns.length - score.average_index;
                 //return score.duration * score.total_damage;
-                return  ((score.duration / maxdur) * 5) + ((score.total_damage / maxdmg) * 2);
+                return ((score.duration / maxdur) * DurMul) * ((score.total_damage / maxdmg) * DmgMul);
             }
             else {
                 return score.total_damage;
