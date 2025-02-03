@@ -642,7 +642,7 @@ export function normalizeScores(scores: Score[]) {
     // Compute overall from normalized component scores
     scores.forEach((score) => {
         if (score.type === 'defense') {
-            score.overall_final = ((score.fbb_final) + score.arena_final);
+            score.overall_final = ((score.fbb_final * 1.5) + score.arena_final);
         }
         else {
             score.overall_final = (score.fbb_final + score.arena_final);
@@ -768,10 +768,10 @@ export function processScores(
     const getTopScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
         if (mode === 'fbb') {
             if (score_mode === 'defense') {
-                // let maxdur = getMaxDuration(scores);
-                // let maxdmg = getMaxTotalDamage(scores);
-                // return scores.map(ss => ((ss.duration / maxdur) * 1) + ((ss.total_damage / maxdmg) * 1)).reduce((p, n) => p > n ? p : n, 0);
-                return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
+                let maxdur = getMaxDuration(scores);
+                let maxdmg = getMaxTotalDamage(scores);
+                return scores.map(ss => ((ss.duration / maxdur) * 5) + ((ss.total_damage / maxdmg) * 2)).reduce((p, n) => p > n ? p : n, 0);
+                //return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
             }
             else {
                 return scores.map(ss => ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
@@ -798,7 +798,8 @@ export function processScores(
         if (mode === 'fbb') {
             if (score_mode === 'defense' && maxdmg && maxdur) {
                 //return arenaruns.length - score.average_index;
-                return  score.duration * score.total_damage; //((score.duration / maxdur) * 1) + ((score.total_damage / maxdmg) * 1);
+                //return score.duration * score.total_damage;
+                return  ((score.duration / maxdur) * 5) + ((score.total_damage / maxdmg) * 2);
             }
             else {
                 return score.total_damage;
