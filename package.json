@@ -6,12 +6,6 @@
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
-    "precalculate": "yarn tsc --project ./tsconfig.node.json && node build/scripts/precalculate.js",
-    "shipcalc": "yarn tsc --project ./tsconfig.node.json && node build/scripts/shipcalc.js",
-    "shipcalc-fresh": "yarn tsc --project ./tsconfig.node.json && node build/scripts/shipcalc.js --fresh",
-    "scoring": "yarn tsc --project ./tsconfig.node.json && node build/scripts/scoring.js --debug",
-    "build-scripts": "yarn tsc --project ./tsconfig.node.json",
-    "eventstats": "yarn tsc --project ./tsconfig.node.json && node build/scripts/eventstats.js",
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "buildpc": "tsc scripts/precalculate.ts --skipLibCheck",
