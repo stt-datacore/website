@@ -765,8 +765,8 @@ export function processScores(
         return scores[0].total_damage;
     }
 
-    const DurMul = 700;
-    const DmgMul = 500;
+    const DurMul = 5.25;
+    const DmgMul = 2.75;
 
     const getTopScore = (scores: Scoreable[], mode: 'arena' | 'fbb') => {
         if (mode === 'fbb') {
@@ -775,7 +775,7 @@ export function processScores(
                 // return fbb_length - high;
                 let maxdur = getMaxDuration(scores);
                 let maxdmg = getMaxTotalDamage(scores);
-                return scores.map(ss => ((ss.duration / maxdur) * DurMul) * ((ss.total_damage / maxdmg) * DmgMul)).reduce((p, n) => p > n ? p : n, 0);
+                return scores.map(ss => ((ss.duration / maxdur) * DurMul) + ((ss.total_damage / maxdmg) * DmgMul)).reduce((p, n) => p > n ? p : n, 0);
                 // //return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
             }
             else {
@@ -783,8 +783,18 @@ export function processScores(
             }
         }
         else {
-            let high = scores.map(score => arena_length - score.average_index).reduce((p, n) => p == -1 || p > n ? n : p, -1);
-            return arena_length - high;
+            if (score_mode === 'defense') {
+                // let high = scores.map(score => fbb_length - score.average_index).reduce((p, n) => p == -1 || p > n ? n : p, -1);
+                // return fbb_length - high;
+                let maxdur = getMaxDuration(scores);
+                let maxdmg = getMaxTotalDamage(scores);
+                return scores.map(ss => ((ss.duration / maxdur) * DurMul) + ((ss.total_damage / maxdmg) * DmgMul)).reduce((p, n) => p > n ? p : n, 0);
+                // //return scores.map(ss => ss.duration * ss.total_damage).reduce((p, n) => p > n ? p : n, 0);
+            }
+            else {
+                let high = scores.map(score => arena_length - score.average_index).reduce((p, n) => p == -1 || p > n ? n : p, -1);
+                return arena_length - high;
+            }
         }
     }
 
@@ -805,14 +815,22 @@ export function processScores(
                 // return fbb_length - score.average_index;
                 //return arenaruns.length - score.average_index;
                 //return score.duration * score.total_damage;
-                return ((score.duration / maxdur) * DurMul) * ((score.total_damage / maxdmg) * DmgMul);
+                return ((score.duration / maxdur) * DurMul) + ((score.total_damage / maxdmg) * DmgMul);
             }
             else {
                 return score.total_damage;
             }
         }
         else {
-            return arena_length - score.average_index;
+            if (score_mode === 'defense' && maxdmg && maxdur) {
+                // return fbb_length - score.average_index;
+                //return arenaruns.length - score.average_index;
+                //return score.duration * score.total_damage;
+                return ((score.duration / maxdur) * DurMul) + ((score.total_damage / maxdmg) * DmgMul);
+            }
+            else {
+                return arena_length - score.average_index;
+            }
         }
     }
 

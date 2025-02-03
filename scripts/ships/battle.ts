@@ -214,7 +214,7 @@ export const runBattles = (
                 battle_mode = `fbb_${boss.id - 1}` as BattleMode;
                 if (newstaff.length === 1) {
                     if (c?.action.ability?.type === 2) {
-                        // newstaff.push(c);
+                        newstaff.push(c);
                     }
                     else if (crewtype !== 'defense') {
                         let compathr = hrpool.filter(
