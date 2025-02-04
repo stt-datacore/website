@@ -45,6 +45,18 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				marginLeft: 0,
 				flexWrap: "wrap"}}>
 				<StatLabel
+					title={t('rank_names.datascore')}
+					size='jumbo'
+					value={<div
+						style={{
+							fontWeight: "bold",
+							color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
+						}}
+					>
+						{crew.ranks.scores.overall_grade}
+					</div>}
+				/>
+				<StatLabel
 					title={t('rank_names.cab_grade')}
 					size='jumbo'
 					value={
@@ -60,18 +72,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						</div>
 					}
 				/>
-				<StatLabel
-					title={t('rank_names.datacore_grade')}
-					size='jumbo'
-					value={<div
-						style={{
-							fontWeight: "bold",
-							color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
-						}}
-					>
-						{crew.ranks.scores.overall_grade}
-					</div>}
-				/>
+
 				<StatLabel title={t('rank_names.voyage_rank')}
 					value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
 				<StatLabel title={t('rank_names.gauntlet_rank')}

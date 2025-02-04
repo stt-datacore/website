@@ -1159,18 +1159,17 @@ export class CrewPresenter extends React.Component<
                                         isMobile ? "left" : "space-between",
                                 }}
                             >
+
                                 <StatLabel
-                                    title={t('rank_names.cab_grade')}
+                                    title={t('rank_names.datascore')}
                                     value={
                                         <div
                                             style={{
                                                 fontWeight: "bold",
-                                                color:
-                                                    gradeToColor(crew.cab_ov_grade as string) ??
-                                                    undefined,
+                                                color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
                                             }}
                                         >
-                                            {crew.cab_ov_grade ?? "?"}
+                                            {crew.ranks.scores.overall_grade}
                                         </div>
                                     }
                                 />
@@ -1197,15 +1196,17 @@ export class CrewPresenter extends React.Component<
                                 }}
                             >
                                 <StatLabel
-                                    title={t('rank_names.datacore_grade')}
+                                    title={t('rank_names.cab_grade')}
                                     value={
                                         <div
                                             style={{
                                                 fontWeight: "bold",
-                                                color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
+                                                color:
+                                                    gradeToColor(crew.cab_ov_grade as string) ??
+                                                    undefined,
                                             }}
                                         >
-                                            {crew.ranks.scores.overall_grade}
+                                            {crew.cab_ov_grade ?? "?"}
                                         </div>
                                     }
                                 />
