@@ -1178,7 +1178,7 @@ export class CrewPresenter extends React.Component<
                                     value={"" + crew.ranks.voyRank}
                                 />
 
-                                <StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov ?? "?"} />
+                                <StatLabel title={t('rank_names.scores.overall_rank')} value={crew.ranks.scores.overall_rank ?? "?"} />
                             </div>
                         </div>
                     )}

@@ -90,11 +90,15 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				alignItems: "center",
 				flexWrap: "wrap"}}>
 
-				<StatLabel
-						title={t('rank_names.cab_rank')}
-						value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
-						/>
-				<StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov || '?'} />
+			<StatLabel
+				title={t('rank_names.scores.overall_rank')}
+				value={crew.ranks.scores.overall_rank ? rankLinker(false, crew.ranks.scores.overall_rank, crew.symbol, 'ranks.scores.overall', 'descending', 'rarity:'+crew.max_rarity) : '?'}
+				/>
+
+			<StatLabel
+				title={t('rank_names.cab_rank')}
+				value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
+				/>
 
 				{!isNever && <>
 					{crew.in_portal && !!crew.unique_polestar_combos?.length &&

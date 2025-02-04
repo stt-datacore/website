@@ -66,13 +66,12 @@ export const RosterTable = (props: RosterTableProps) => {
 	const [prospects, setProspects] = React.useState<LockedProspect[]>([] as LockedProspect[]);
 
 	const rosterPlusProspects = props.rosterCrew.slice();
-	const lockableCrew = [] as LockedProspect[];
-
-	if (props.rosterType === 'myCrew') {
+	const lockableCrew = React.useMemo(() => {
+		const newLockableCrew = [] as LockedProspect[];
 		if (initHighlight !== '') {
 			const highlighted = props.rosterCrew.find(crew => crew.symbol === initHighlight);
 			if (highlighted) {
-				lockableCrew.push({
+				newLockableCrew.push({
 					symbol: highlighted.symbol,
 					name: highlighted.name,
 					rarity: highlighted.rarity,
@@ -82,42 +81,46 @@ export const RosterTable = (props: RosterTableProps) => {
 			}
 		}
 
-		prospects.forEach(prospect => {
-			const crew = globalContext.core.crew.find(crew => crew.symbol === prospect.symbol);
-			if (crew) {
-				const crewman = {
-					... oneCrewCopy(crew),
-					id: rosterPlusProspects.length,
-					prospect: true,
-					have: false,
-					rarity: prospect.rarity,
-					level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
-					immortal: CompletionState.DisplayAsImmortalUnowned
-				} as IRosterCrew;
-				CONFIG.SKILLS_SHORT.forEach(skill => {
-					let score = { core: 0, range_min: 0, range_max: 0 };
-					if (crewman.base_skills[skill.name]) {
-						if (crewman.rarity === crew.max_rarity)
-							score = crewman.base_skills[skill.name];
-						else
-							score = crewman.skill_data[crewman.rarity-1].base_skills[skill.name];
+		if (props.rosterType === 'myCrew') {
+
+			prospects.forEach(prospect => {
+				const crew = globalContext.core.crew.find(crew => crew.symbol === prospect.symbol);
+				if (crew) {
+					const crewman = {
+						... oneCrewCopy(crew),
+						id: rosterPlusProspects.length,
+						prospect: true,
+						have: false,
+						rarity: prospect.rarity,
+						level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
+						immortal: CompletionState.DisplayAsImmortalUnowned
+					} as IRosterCrew;
+					CONFIG.SKILLS_SHORT.forEach(skill => {
+						let score = { core: 0, range_min: 0, range_max: 0 };
+						if (crewman.base_skills[skill.name]) {
+							if (crewman.rarity === crew.max_rarity)
+								score = crewman.base_skills[skill.name];
+							else
+								score = crewman.skill_data[crewman.rarity-1].base_skills[skill.name];
+						}
+						crewman.base_skills[skill.name] = score;
+					});
+					if (playerData && playerBuffs) {
+						applyCrewBuffs(crewman, playerBuffs);
 					}
-					crewman.base_skills[skill.name] = score;
-				});
-				if (playerData && playerBuffs) {
-					applyCrewBuffs(crewman, playerBuffs);
+					rosterPlusProspects.push(crewman);
+					newLockableCrew.push({
+						symbol: crewman.symbol,
+						name: crewman.name,
+						rarity: crewman.rarity,
+						level: crewman.level,
+						prospect: crewman.prospect
+					});
 				}
-				rosterPlusProspects.push(crewman);
-				lockableCrew.push({
-					symbol: crewman.symbol,
-					name: crewman.name,
-					rarity: crewman.rarity,
-					level: crewman.level,
-					prospect: crewman.prospect
-				});
-			}
-		});
-	}
+			});
+		}
+		return newLockableCrew;
+	}, [initHighlight, prospects]);
 
 	const providerValue = {
 		pageId: props.pageId,
