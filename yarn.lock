@@ -15619,7 +15619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"showdown@npm:^2.1.0":
+"showdown@npm:^2.0.6":
   version: 2.1.0
   resolution: "showdown@npm:2.1.0"
   dependencies:
@@ -16336,7 +16336,7 @@ __metadata:
     seedrandom: "npm:^3.0.5"
     semantic-ui-css: "npm:^2.5.0"
     semantic-ui-react: "npm:^2.1.5"
-    showdown: "npm:^2.1.0"
+    showdown: "npm:^2.0.6"
     start-server-and-test: "npm:^2.0.3"
     tinycolor2: "npm:^1.6.0"
     typescript: "npm:^5.4.5"
