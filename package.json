@@ -90,6 +90,5 @@
     "showdown": "^2.0.6",
     "start-server-and-test": "^2.0.3",
     "typescript": "^5.4.5"
-  },
-  "packageManager": "yarn@4.6.0"
+  }
 }
