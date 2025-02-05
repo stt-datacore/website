@@ -7,6 +7,8 @@ import { IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow, prettyCrewColumnTitle } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
 import { gradeToColor } from '../../../utils/crewutils';
+import { formatRank } from '../../ship/utils';
+import { GlobalContext } from '../../../context/globalcontext';
 
 const RankFields = [
     "overall",
@@ -51,6 +53,7 @@ type CrewRankCellsProps = {
 
 export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
 	const { crew } = props;
+    const { t } = React.useContext(GlobalContext).localized;
     const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
     const rarityLabels = CONFIG.RARITIES.map(m => m.name);
@@ -65,13 +68,15 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
 			{RankFields.slice(1).map(field => {
                 let val = 0;
                 if (field === 'ship')
-                    val = Number((crew.ranks.scores.ship.overall * 10).toFixed(2));
+                    val = Number((crew.ranks.scores.ship.overall).toFixed(4));
                 else
-                    val = Number(((crew.ranks.scores[field])).toFixed(2));
+                    val = Number(((crew.ranks.scores[field])).toFixed(4));
                 if (typeof val !== 'number') return <></>
+
                 return (<Table.Cell key={`scores.${field}`} textAlign='center'>
                     <span style={{color: gradeToColor(val / 100)}}>
-					    {val}
+                        {field === 'ship' && !!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
+					    {field !== 'ship' && val}
                     </span>
 				</Table.Cell>)
 			})}

@@ -4,8 +4,8 @@ import { gradeToColor } from '../../utils/crewutils';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { TranslateMethod } from '../../model/player';
 
-export function formatRank(kind: string, rank: number | undefined, t: TranslateMethod) {
-    if (!rank) return <></>;
+export function formatRank(kind: string, score: number | undefined, t: TranslateMethod, divisor = 100) {
+    if (!score) return <></>;
 
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
@@ -16,13 +16,13 @@ export function formatRank(kind: string, rank: number | undefined, t: TranslateM
     if (kind === 's') {
         return <div style={{...flexCol, justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'left'}}>
             <span style={{color: clr, fontWeight: 'bold'}}>{t(`rank_names.advantage.${kind}`)}</span>
-            <span style={{color: gradeToColor(rank / 10) || undefined}}>{rank.toFixed(2)}</span>
+            <span style={{color: gradeToColor(score / divisor) || undefined}}>{Number(score.toFixed(4))}</span>
         </div>
     }
     else {
         return <div style={{...flexRow, justifyContent: 'space-between'}}>
             <span style={{color: clr, fontWeight: 'bold'}}>{t(`rank_names.advantage.${kind}`)}</span>
-            <span style={{color: gradeToColor(rank / 10) || undefined}}>{rank.toFixed(2)}</span>
+            <span style={{color: gradeToColor(score / divisor) || undefined}}>{Number(score.toFixed(4))}</span>
         </div>
     }
 
