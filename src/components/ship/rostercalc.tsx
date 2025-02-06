@@ -56,24 +56,23 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { running, runWorker, cancel } = multiWorker;
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
-    const [sugWait, setSugWait] = React.useState<number | undefined>();
     const { ships, crew, opponentStations, opponentShip, setUseOpponents, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
     const [hideGraph, setHideGraph] = React.useState(true);
     const [battleConfig, setBattleConfig] = React.useState<BattleConfig>({});
-    const [activeSuggestion, setActiveSuggestion] = React.useState<ShipWorkerItem | undefined>(undefined);
-    const [suggestions, setSuggestions] = React.useState<ShipWorkerItem[]>([]);
+    const [resultIdx, setResultIdx] = React.useState<number | undefined>(undefined);
+    const [results, setResults] = React.useState<ShipWorkerItem[]>([]);
     const [lastBattleMode, setLastBattleMode] = useStateWithStorage<BattleMode | null>(`${pageId}/${ship.symbol}/lastBattleMode`, null, { rememberForever: true });
     const [battleMode, setBattleMode] = useStateWithStorage<BattleMode>(`${pageId}/${ship.symbol}/battleMode`, lastBattleMode ?? 'pvp');
     const [powerDepth, internalSetPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
-    const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, false, { rememberForever: true });
-    const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
-    const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
+    const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
+    // const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
+    // const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
     const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
     const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0.2, { rememberForever: true });
     const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
@@ -83,7 +82,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [activationOffsets, setActivationOffsets] = useStateWithStorage<number[]>(`${pageId}/${ship.symbol}/activationOffsets`, ship.battle_stations!.map(m => 0), { rememberForever: true });
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
     const [advancedPowerSettings, setAdvancedPowerSettings] = useStateWithStorage(`${pageId}/${ship.symbol}/advancedPower`, DefaultAdvancedCrewPower, { rememberForever: true });
-    const [resultCache, setResultCache] = React.useState([] as ShipWorkerItem[]);
     const [progressMsg, setProgressMsg] = React.useState<string>('');
 
     const battleModes = [] as DropdownItemProps[];
@@ -170,7 +168,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
     });
 
-    const suggOpts = suggestions?.map((sug, idx) => {
+    const suggOpts = results?.map((sug, idx) => {
         return {
             key: `_sug_${idx}`,
             value: idx,
@@ -437,16 +435,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }, [ship]);
 
     React.useEffect(() => {
-        if (!activeSuggestion) return;
-        setCrewStations(activeSuggestion?.crew as PlayerCrew[] ?? ships[shipIdx].battle_stations?.map(b => undefined));
-    }, [activeSuggestion]);
-
-    React.useEffect(() => {
-        if (suggestions?.length && (!activeSuggestion || sugWait !== undefined)) {
-            setSuggestion(sugWait ?? 0);
-            setSugWait(undefined);
-        }
-    }, [sugWait, suggestions]);
+        updateActiveCrew();
+    }, [resultIdx, results]);
 
     React.useEffect(() => {
         if (crew?.length && ship.battle_stations?.length) {
@@ -466,7 +456,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             width: isMobile ? '100%' : '70%'
         }}>
             {true && <div style={{ display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
-                <h3>{ship.name}{!!opponentShip && <> v. {opponentShip.name}</>}</h3>
+                <h3>{ship.name}{!fbb_mode && !!opponentShip && <> v. {opponentShip.name}</>}</h3>
                 {progressMsg ? (running ? globalContext.core.spin(progressMsg || t('spinners.default')) : progressMsg) : t('global.idle')}
             </div>}
             {true && <div style={{ display: 'inline', textAlign: 'left', width: '100%' }}>
@@ -477,8 +467,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     scrolling
                     selection
                     clearable
-                    value={getSuggestion()}
-                    onChange={(e, { value }) => setSuggestion(value as number)}
+                    value={resultIdx}
+                    onChange={(e, { value }) => setResultIdx(value as number)}
                     options={suggOpts}
                 />
             </div>}
@@ -836,9 +826,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length &&
                     <Button color='green' onClick={() => recommend(true)}>{t('ship.calc.run_current_line_up')}</Button>}
                 {!running && <Button onClick={() => clearAll()}>{t('global.clear')}</Button>}
-                {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && (!activeSuggestion?.attacks?.length || hideGraph) &&
+                {!running && crewStations?.filter(c => !!c).length === ship?.battle_stations?.length && resultIdx !== undefined && (!results[resultIdx]?.attacks?.length || hideGraph) &&
                     <Button onClick={() => {
-                        if (!hideGraph && !activeSuggestion?.attacks?.length) {
+                        if (!hideGraph && resultIdx !== undefined && !results[resultIdx]?.attacks?.length) {
                             recommend(true)
                         }
                         else {
@@ -849,13 +839,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             <div style={{ marginTop: '1em' }}>
                 {t('base.crew')}: {crewEstimate.toLocaleString()}
             </div>
-            {!!activeSuggestion?.attacks?.length && !hideGraph &&
+            {resultIdx !== undefined && !!results[resultIdx]?.attacks?.length && !hideGraph &&
                 <div className={'ui segment'} style={{ width: '100%' }}>
                     <Label as='a' corner='right' onClick={() => setHideGraph(true)}>
                         <Icon name='delete' style={{ cursor: 'pointer' }} />
                     </Label>
                     <div style={{ width: '100%', height: '540px', overflow: 'scroll' }}>
-                        <BattleGraph battle={activeSuggestion} />
+                        <BattleGraph battle={results[resultIdx]} />
                     </div>
                 </div>}
         </div>
@@ -942,12 +932,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     function recommend(current?: boolean) {
         if (running) {
             cancel();
-            setProgressMsg(`${t('global.aborted')}; ${t('global.n_results', { n: `${resultCache.length}`})}`)
-            if (resultCache.length) {
-                setSuggestions([...resultCache]);
-                resultCache.length = 0;
-                setSugWait(0);
-            }
+            setProgressMsg(`${t('global.aborted')}; ${t('global.n_results', { n: `${results.length}`})}`)
             return;
         }
         if (ships?.length && crew?.length) {
@@ -956,7 +941,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (battleMode === 'fbb_4') max_rarity = 5;
 
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
-            resultCache.length = 0;
+            results.length = 0;
             let ccrew = undefined as PlayerCrew | CrewMember | undefined;
             const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew(max_rarity);
             if (!current && battleMode === 'skirmish' && chosenCrew?.length) {
@@ -994,12 +979,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 rate
             } as ShipWorkerConfig;
 
-            setProgressMsg('');
-            setActiveSuggestion(undefined);
-            setSuggestions([]);
-            setSugWait(undefined);
-
-            // runWorker('shipworker', config, workerMessage);
+            results.length = 0;
             runWorker({ config, callback: workerMessage, fbb_mode, max_workers: numWorkers });
         }
     }
@@ -1010,49 +990,34 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }
 
     function clearAll() {
-        setSuggestions([]);
-        setSuggestion(undefined);
-        setActiveSuggestion(undefined);
-        setSugWait(undefined);
-        setResultCache([].concat());
+        cancel();
+        setResultIdx(undefined);
+        setResults([].slice());
         setProgressMsg('');
-        //setCrewStations(crewStations.map(c => undefined));
     }
 
-    function setSuggestion(idx: number | undefined) {
-        if (!suggestions?.length || !ships[shipIdx]) return;
-        if (idx === undefined || idx < 0 || idx >= suggestions.length) {
-            setActiveSuggestion(undefined);
+    function updateActiveCrew() {
+        if (resultIdx === undefined || !results.length || resultIdx >= results.length) {
+            setCrewStations(ship.battle_stations!.map(bs => undefined));
+            return;
         }
-        else {
-            setActiveSuggestion(suggestions[idx]);
-        }
+        const sug = results[resultIdx];
+        setCrewStations(sug.crew as PlayerCrew[]);
     }
 
-    function getSuggestion() {
-        let idx = suggestions?.findIndex(fi => fi === activeSuggestion);
-        if (idx === -1) return undefined;
-        return idx;
-    }
-
-    function workerMessage(
-        //result: { data: { result: { ships?: ShipWorkerItem[], run_time?: number, total_iterations?: number, format?: string, options?: any, result?: ShipWorkerItem }, inProgress: boolean } }
-        result: ShipMultiWorkerStatus
-    ) {
+    function workerMessage(result: ShipMultiWorkerStatus) {
         if (!result.data.inProgress && result.data.result.items?.length) {
-
-            if (result.data.result.items.length === 1 && suggestions?.length && suggestions.length > 1) {
+            if (result.data.result.items.length === 1 && results?.length && results.length > 1) {
                 let r = result.data.result.items[0];
-                let sug = suggestions.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1.id) === idx))
+                let sug = results.findIndex(f => f.crew.every((cr1, idx) => r.crew.findIndex(cr2 => cr2 === cr1.id) === idx))
                 if (sug !== -1) {
-                    suggestions[sug] = fromTransport(r);
-                    setSugWait(sug);
-                    setSuggestions([...suggestions]);
+                    results[sug] = fromTransport(r);
+                    setResults([...results]);
                     setProgressMsg(t('ship.calc.calc_summary', {
                         message: t('global.completed'),
                         count: `${result.data.result.total_iterations?.toLocaleString()}`,
                         time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                        accepted: `${suggestions?.length.toLocaleString()}`
+                        accepted: `${results.length.toLocaleString()}`
                     }));
 
                     return;
@@ -1062,10 +1027,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 message: t('global.completed'),
                 count: `${result.data.result.total_iterations?.toLocaleString()}`,
                 time: formatRunTime(Math.round(result.data.result.run_time ?? 0), t),
-                accepted: `${result.data.result.items?.length.toLocaleString()}`
+                accepted: `${results.length.toLocaleString()}`
             }));
-            setSugWait(0);
-            setSuggestions(result.data.result.items.map(i => fromTransport(i)));
+
+            setResults([...results]);
+            setResultIdx(0);
         }
         else if (result.data.inProgress && result.data.result.count) {
             setProgressMsg(
@@ -1074,20 +1040,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         percent: `${result.data.result.percent?.toLocaleString()}`,
                         count: `${result.data.result.count?.toLocaleString()}`,
                         progress: `${result.data.result.progress?.toLocaleString()}`,
-                        accepted: `${suggestions?.length.toLocaleString()}`
+                        accepted: `${results.length.toLocaleString()}`
                     }
                 )
             )
         }
         else if (result.data.inProgress && result.data.result.result) {
-            resultCache.push(fromTransport(result.data.result.result));
-            let new_cache = resultCache.concat().sort((a, b) => compareShipResults(a, b, fbb_mode));
-            setSuggestion(undefined);
-            setTimeout(() => {
-                setResultCache(new_cache);
-                setSuggestions(new_cache);
-                setSugWait(0);
-            });
+            results.push(fromTransport(result.data.result.result));
+            results.sort((a, b) => compareShipResults(a, b, fbb_mode));
+            setResults([...results]);
+            setResultIdx(0);
         }
     }
 

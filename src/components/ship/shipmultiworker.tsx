@@ -39,6 +39,7 @@ export interface ShipMultiWorkerConfig extends IMultiWorkerConfig<ShipWorkerConf
 export const ShipMultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
 
 export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  ShipMultiWorkerState, ShipMultiWorkerConfig, ShipWorkerConfig, ShipWorkerTransportItem> {
+    protected itemPassAccepted: boolean = true;
     constructor(props: ShipMultiWorkerProps) {
         super(props);
     }

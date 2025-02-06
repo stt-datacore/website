@@ -26,6 +26,8 @@ export interface MultiWorkerProps {
 
 export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState extends IMultiWorkerState, TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig extends WorkerConfigBase<TItem>, TItem> extends
     React.Component<TProps, TState> {
+        protected abstract readonly itemPassAccepted: boolean;
+
         static contextType = GlobalContext;
         declare context: React.ContextType<typeof GlobalContext>;
 
@@ -174,13 +176,15 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
         }
 
         private readonly updateBigCounts = () => {
-            let bigcount = Object.values(this.progresses).map(m => m.count).reduce((p, n) => p + n, 0n);
-            let bigprogress = Object.values(this.progresses).map(m => BigInt(m.progress ?? 0n)).reduce((p, n) => p + n, 0n);
-            let bigaccepted = Object.values(this.progresses).map(m => BigInt(m.accepted)).reduce((p, n) => p + n, 0n);
+            let bigcount = Object.values(this.progresses).map(m => m.count).reduce((p, n) => (p ?? 0n) + (n ?? 0n), 0n);
+            let bigprogress = Object.values(this.progresses).map(m => BigInt(m.progress ?? 0n)).reduce((p, n) => (p ?? 0n) + (n ?? 0n), 0n);
             this.count = bigcount;
             this.progress = bigprogress;
-            this.accepted = bigaccepted;
             this.percent = this.count ? Number(((bigprogress * 100n) / bigcount).toString()) : 0;
+            if (!this.itemPassAccepted) {
+                let bigaccepted = Object.values(this.progresses).map(m => BigInt(m.accepted)).reduce((p, n) => (p ?? 0n) + (n ?? 0n), 0n);
+                this.accepted = bigaccepted;
+            }
         }
 
         private workerMessage = (message: any): void => {
@@ -218,7 +222,6 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
                         }
                     }
                 });
-
             }
             else if (msg?.data?.inProgress && msg?.data?.id && msg?.data?.result?.result) {
                 if (!this.lastResult) {
@@ -226,8 +229,7 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
                 }
 
                 if (!this.onItem(msg)) return;
-                this.updateBigCounts();
-
+                if (this.itemPassAccepted) this.accepted++;
                 this.lastResult = msg.data.result.result;
 
                 this.callback({
@@ -242,12 +244,12 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
             }
             else if (msg?.data?.inProgress === false) {
                 this.running[idx] = false;
-                this.progresses[msg.data.id] = {
-                    ...this.progresses[msg.data.id],
-                    count: msg.data.result.total_iterations!,
-                    time: msg.data.result.run_time!,
-                    accepted: msg.data.result.accepted ?? 0n
-                }
+                // this.progresses[msg.data.id] = {
+                //     ...this.progresses[msg.data.id],
+                //     count: msg.data.result.total_iterations!,
+                //     time: msg.data.result.run_time!,
+                //     accepted: msg.data.result.accepted ?? 0n
+                // }
 
                 if (DEBUG_MODE) console.log(`Worker ${idx} is finished.`);
 

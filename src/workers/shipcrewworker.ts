@@ -157,6 +157,8 @@ const ShipCrewWorker = {
                 return (xseen.every(x => x) && yseen.every(y => y));
             });
 
+            results.length = 0;
+
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
@@ -193,20 +195,17 @@ const ShipCrewWorker = {
                     if (last_high === null) {
                         last_high = attack;
                         accepted = true;
-                        results.push(attack);
                     }
                     else {
                         let d = compareShipResults(attack, last_high, fbb_mode);
                         if (d < 0 || (attack.win && !fbb_mode)) {
                             accepted = true;
-                            results.push(attack);
-                            if (attack > last_high) {
-                                last_high = attack;
-                            }
+                            last_high = attack;
                         }
                     }
 
                     if (accepted) {
+                        results.push(attack);
                         reportProgress({ result: attack });
                         accepted = false;
                     }
@@ -228,6 +227,13 @@ const ShipCrewWorker = {
                     let max = results[0].arena_metric;
                     result.percentile = (result.arena_metric / max) * 100;
                 }
+            });
+
+            reportProgress({
+                percent: 100,
+                progress: count,
+                count,
+                accepted: BigInt(results.length),
             });
 
             const endtime = new Date();
