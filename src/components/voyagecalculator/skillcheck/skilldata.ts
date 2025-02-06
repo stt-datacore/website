@@ -2,7 +2,7 @@ import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
 import { IVoyageCalcConfig } from '../../../model/voyage';
 import CONFIG from '../../CONFIG';
-import { IEssentialData, IEssentialMatrixData } from '../../dataset_presenters/model';
+import { IEssentialData } from '../../dataset_presenters/model';
 import { IProspectiveConfig } from '../lineupeditor/model';
 import { voySkillScore } from '../utils';
 
@@ -74,51 +74,3 @@ export function getSkillData(voyageConfig: IVoyageCalcConfig | IProspectiveConfi
 
 	return data;
 }
-
-export interface ISkillPairData extends IEssentialMatrixData {
-	coverage: PlayerCrew[];
-	coverage_count: number;
-};
-
-export function getSkillPairData(voyageConfig: IVoyageCalcConfig | IProspectiveConfig, skills: string[]): ISkillPairData[] {
-	const data: ISkillPairData[] = [];
-
-	const assignedCrew: PlayerCrew[] = [];
-	voyageConfig.crew_slots.forEach(cs => {
-		if (cs.crew) assignedCrew.push(cs.crew);
-	});
-
-	for (let i = 0; i < skills.length; i++) {
-		for (let j = i; j < skills.length; j++) {
-			const coverageCrew: PlayerCrew[] = assignedCrew.filter(ac =>
-				Object.keys(ac.base_skills).includes(skills[i]) || Object.keys(ac.base_skills).includes(skills[j])
-			).sort((a, b) => gauntletScore(b, skills[i], skills[j]) - gauntletScore(a, skills[i], skills[j]));
-			data.push({
-				id: (i*skills.length)+j+1,
-				name:  `${skills[i]},${skills[j]}`,
-				rowId: skills[i],
-				columnId: skills[j],
-				coverage: coverageCrew,
-				coverage_count: coverageCrew.length
-			});
-		}
-	}
-
-	return data;
-}
-
-export function gauntletScore(crew: PlayerCrew, skillA: string, skillB: string): number {
-	const a: Skill | undefined = crew.skills[skillA];
-	const b: Skill | undefined = crew.skills[skillB];
-
-	let score: number = 0;
-
-	const averageA: number = a ? (a.range_min + a.range_max) / 2 : 0;
-	score += (averageA * 3);
-	if (skillA !== skillB) {
-		const averageB: number = b ? (b.range_min + b.range_max) / 2 : 0;
-		score += (averageB * 3);
-	}
-
-	return Math.floor(score);
-};

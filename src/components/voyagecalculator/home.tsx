@@ -8,29 +8,30 @@ import {
 import { GameEvent, Voyage, VoyageDescription } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { ITrackedVoyage, IVoyageCrew, IVoyageEventContent, IVoyageHistory, IVoyageInputConfig } from '../../model/voyage';
-import { IEventData } from '../eventplanner/model';
 import { GlobalContext } from '../../context/globalcontext';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTraits } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
-import { ICalculatorContext, CalculatorContext } from './context';
-import { Calculator } from './calculator/calc_main';
-import { CIVASMessage } from './civas';
-import { ConfigCard } from './configcard';
-import { ConfigEditor } from './configeditor';
-import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { VoyageStatsAccordion } from './stats/stats_accordion';
-
+import { IEventData } from '../eventplanner/model';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { OptionsPanelFlexColumn } from '../stats/utils';
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
 import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
+
+import { ICalculatorContext, CalculatorContext } from './context';
+import { CIVASMessage } from './civas';
+import { ConfigCard } from './configcard';
+import { ConfigEditor } from './configeditor';
+import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
+import { Calculator } from './calculator/calc_main';
+import { EncounterHelperAccordion } from './encounters/encounterhelper/encounterhelper';
 import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
 import { StatsRewardsAccordion } from './rewards/rewards_accordion';
-import { OptionsPanelFlexColumn } from '../stats/utils';
 import { SkillCheckAccordion } from './skillcheck/accordion';
+import { VoyageStatsAccordion } from './stats/stats_accordion';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -589,7 +590,13 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
 					voyageConfig={runningVoyage}
+					roster={myCrew}
 				/>
+				{voyageConfig.voyage_type === 'encounter' && (
+					<EncounterHelperAccordion
+						voyageConfig={runningVoyage}
+					/>
+				)}
 				<StatsRewardsAccordion
 					voyage={runningVoyage}
 					roster={myCrew}

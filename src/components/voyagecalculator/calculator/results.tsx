@@ -218,6 +218,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 						highlightedSkills={highlightedSkills}
 						setHighlightedSkills={setHighlightedSkills}
 						voyageConfig={voyageConfig}
+						roster={fullRoster}
 						launchLineupEditor={(trigger: ILineupEditorTrigger) => setEditorTrigger(trigger)}
 					/>
 					<QuipmentProspectAccordion

@@ -11,7 +11,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../model/player';
-import { Estimate, IVoyageCalcConfig } from '../../../model/voyage';
+import { Estimate, IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
 import { formatTime } from '../../../utils/voyageutils';
 
@@ -21,12 +21,13 @@ import { AvatarView } from '../../item_presenters/avatarview';
 
 import { getCrewTraitBonus, getCrewEventBonus } from '../utils';
 import { SkillCheck } from '../skillcheck/skillcheck';
-import { ProficiencyCheck } from '../skillcheck/proficiencycheck';
+import { ProficiencyCheck } from '../encounters/proficiencycheck/proficiencycheck';
 
 import { IControlVoyage, IProspectiveConfig, IProspectiveCrewSlot } from './model';
 import { EditorContext } from './context';
 
 type ProspectiveSummaryProps = {
+	roster: IVoyageCrew[];
 	control: IControlVoyage | undefined;
 	saveVoyage: () => void;
 	resetVoyage: () => void;
@@ -35,7 +36,7 @@ type ProspectiveSummaryProps = {
 export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { prospectiveConfig, prospectiveEstimate, seekAlternateCrew, renderActions, dismissEditor } = React.useContext(EditorContext);
-	const { control, saveVoyage, resetVoyage } = props;
+	const { roster, control, saveVoyage, resetVoyage } = props;
 
 	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
 
@@ -78,7 +79,9 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
 				/>
-				{prospectiveConfig.voyage_type === 'encounter' &&  <ProspectiveProficiency />}
+				{prospectiveConfig.voyage_type === 'encounter' &&  (
+					<ProspectiveProficiency roster={roster} />
+				)}
 			</Modal.Content>
 			<Modal.Actions>
 				{renderActions()}
@@ -410,15 +413,20 @@ const ProspectiveSkillCheck = (props: ProspectiveSkillCheckProps) => {
 	);
 };
 
-const ProspectiveProficiency = () => {
-	const { prospectiveConfig } = React.useContext(EditorContext);
+type ProspectiveProficiencyProps = {
+	roster: IVoyageCrew[];
+};
 
+const ProspectiveProficiency = (props: ProspectiveProficiencyProps) => {
+	const { prospectiveConfig } = React.useContext(EditorContext);
+	const { roster } = props;
 	return (
 		<React.Fragment>
 			<Header as='h4'>Prospective Proficiency</Header>
 			<ProficiencyCheck
 				id='prospective/proficiencycheck'
 				voyageConfig={prospectiveConfig}
+				roster={roster}
 			/>
 		</React.Fragment>
 	);

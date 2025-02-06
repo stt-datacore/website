@@ -8,20 +8,22 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
-import { IVoyageCalcConfig } from '../../../model/voyage';
+import { IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
 import { ILineupEditorTrigger } from '../lineupeditor/lineupeditor';
-import { ProficiencyCheck } from './proficiencycheck';
+import { ProficiencyCheck } from '../encounters/proficiencycheck/proficiencycheck';
 import { SkillCheck } from './skillcheck';
 
 type SkillCheckAccordionProps = {
 	voyageConfig: IVoyageCalcConfig;
+	roster: IVoyageCrew[];
 	launchLineupEditor?: (trigger: ILineupEditorTrigger) => void;
 	highlightedSkills?: string[];
 	setHighlightedSkills?: (value: string[]) => void
 };
 
 export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
-	const { voyageConfig, launchLineupEditor } = props;
+	const { voyageConfig, roster, launchLineupEditor } = props;
+
 	const [isActive, setIsActive] = React.useState<boolean>(false);
 
 	const [highlightedSkills, setHighlightedSkills] = React.useMemo(() => {
@@ -57,6 +59,7 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 								<ProficiencyCheck
 									id='result/proficiencycheck'
 									voyageConfig={voyageConfig}
+									roster={roster}
 								/>
 							</React.Fragment>
 						)}
