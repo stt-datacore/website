@@ -9,6 +9,7 @@ import {
 } from 'semantic-ui-react';
 
 import { Voyage } from '../../../../model/player';
+import { VoyageRefreshData } from '../../../../model/voyage';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { IEncounter } from '../model';
 import { IContestAssignments } from './championdata';
@@ -52,6 +53,8 @@ export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
 
 export const EncounterHelper = (props: EncounterHelperProps) => {
 	const { voyageConfig } = props;
+
+	const [refreshData, setRefreshData] = React.useState<VoyageRefreshData[] | undefined>(undefined);
 
 	const [encounter, setEncounter] = React.useState<IEncounter | undefined>(undefined);
 	const [assignments, setAssignments] = React.useState<IContestAssignments>({});
@@ -97,17 +100,17 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 
 				<EncounterImportComponent
 					voyage={voyageConfig}
-					setData={setEncounter}
+					setData={handleRefreshData}
 					clearData={() => setEncounter(undefined)}
-					data={encounter}
-					/>
-
-				{/* <form method='post' action='https://app.startrektimelines.com/voyage/refresh' target='_blank'>
-					<input type='text' name='voyage_status_id' value={voyageConfig.id} />
-					<input value='Post' type='submit' />
-				</form> */}
+					data={refreshData}
+				/>
 			</React.Fragment>
 		);
+	}
+
+	function handleRefreshData(refreshData: VoyageRefreshData[] | undefined): void {
+		// TODO: validate encounter in refresh data
+		setRefreshData(refreshData);
 	}
 };
 

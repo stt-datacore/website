@@ -5,11 +5,12 @@ import { Gauntlet, GauntletRoot } from "../../../../model/gauntlets";
 import { JsonInputForm } from "../../../base/jsoninputform";
 import { Notification } from "../../../page/notification";
 import { Voyage } from "../../../../model/player";
+import { VoyageRefreshData } from "../../../../model/voyage";
 
 export interface EncounterImportProps {
     voyage: Voyage
-    data?: any;
-    setData: (value?: any) => void;
+    data?: VoyageRefreshData[];
+    setData: (value?: VoyageRefreshData[]) => void;
     setError?: (value: string) => void;
     clearData: () => void;
     currentHasRemote?: boolean;
@@ -31,7 +32,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
         if (collapsed === undefined) setCollapsed(true);
     }, [currentHasRemote]);
 
-    const validateVoyage = (json: any) => {
+    const validateVoyage = (json: VoyageRefreshData[]) => {
         if (!json) {
             return ("No data");
         }

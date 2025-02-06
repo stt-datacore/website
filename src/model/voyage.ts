@@ -635,11 +635,12 @@ export interface VoyageRefreshCharacter {
 export interface VoyageRefreshVoyage {
 	id: number;
 	seconds_since_last_dilemma: number;
-	state: string;
+	state: string;	// started
 	voyage_duration: number;
 	hp: number;
 	time_to_next_event: number;
-	encounter: VoyageRefreshEncounter;
+	log_index?: number;	// Dilemma voyages only
+	encounter?: VoyageRefreshEncounter;	// Encounter voyages only
 };
 
 export interface VoyageRefreshEncounter extends VoyageEncounterCommon {
@@ -662,7 +663,7 @@ export interface EncounterContest {
 	title_reference: string;
 	narrative_reference: string;
 	skills: EncounterContestSkills;
-	state: string;	// unresolved, succeeded
+	state: string;	// unresolved, succeed
 };
 
 export interface EncounterContestSkills {
