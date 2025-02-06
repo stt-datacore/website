@@ -857,6 +857,13 @@
             "title": "Mode d'affichage"
         }
     },
+    "fleet": {
+        "import": {
+            "click_here": "Cliquez ici pour télécharger vos données",
+            "heading": "Vous pouvez accéder aux données de votre flotte de la même manière que vous accédez actuellement aux données de vos joueurs.",
+            "title": "Données de la flotte"
+        }
+    },
     "global": {
         "set_as_default_view": "Définir comme vue par défaut",
         "aborted": "Terminé",
@@ -1226,7 +1233,8 @@
     "json_types": {
         "gauntlet_data": "données de gantelet",
         "player_data": "données du joueur",
-        "quest_data": "données de quête"
+        "quest_data": "données de quête",
+        "fleet_data": "données de la flotte"
     },
     "menu": {
         "about_title": "À propos",

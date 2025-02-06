@@ -5,22 +5,22 @@ export interface FleetResponse {
     fleet: Fleet
   }
   export interface Fleet {
-    id: number
-    name: string
-    enrollment: string
-    description: string
-    maxsize: number
-    cursize: number
-    created: number
-    nicon_index: number
-    nleader_player_dbid: number
-    nstarbase_level: number
-    nleader_login: number
-    slabel: string
-    nmin_level: number
+    // id: number
+    // name: string
+    // enrollment: string
+    // description: string
+    // maxsize: number
+    // cursize: number
+    // created: number
+    // nicon_index: number
+    // nleader_player_dbid: number
+    // nstarbase_level: number
+    // nleader_login: number
+    // slabel: string
+    // nmin_level: number
     members: Member[]
     squads: Squad[]
-    leaderboard: Leaderboard[]
+    //leaderboard: Leaderboard[]
   }
 
   export interface Member {
@@ -29,7 +29,7 @@ export interface FleetResponse {
     pid: number
     rank: string
     last_update?: string
-    crew_avatar: string
+    crew_avatar: CrewAvatar
     squad: string
     squad_id: number
     level: number

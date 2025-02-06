@@ -849,6 +849,13 @@
             "title": "View Mode"
         }
     },
+    "fleet": {
+        "import": {
+            "click_here": "Click here to upload your data",
+            "heading": "You can access your fleet data in a similar way to how you access your player data, currently.",
+            "title": "Fleet Data"
+        }
+    },
     "global": {
         "set_as_default_view": "Set as default view",
         "aborted": "Aborted",
@@ -1215,7 +1222,8 @@
     "json_types": {
         "gauntlet_data": "gauntlet data",
         "player_data": "player data",
-        "quest_data": "quest data"
+        "quest_data": "quest data",
+        "fleet_data": "fleet data"
     },
     "menu": {
         "about_title": "About",

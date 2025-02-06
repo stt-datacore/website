@@ -858,6 +858,13 @@
             "title": "Modo de vista"
         }
     },
+    "fleet": {
+        "import": {
+            "click_here": "Haz clic aquí para cargar tus datos",
+            "heading": "Puedes acceder a los datos de tu flota de forma similar a como accedes a los datos de tus jugadores actualmente.",
+            "title": "Datos de la flota"
+        }
+    },
     "global": {
         "set_as_default_view": "Establecer como vista predeterminada",
         "aborted": "Abortado",
@@ -1226,7 +1233,8 @@
     "json_types": {
         "gauntlet_data": "datos del reto",
         "player_data": "datos del jugador",
-        "quest_data": "datos de la misión"
+        "quest_data": "datos de la misión",
+        "fleet_data": "datos de la flota"
     },
     "menu": {
         "about_title": "Sobre",

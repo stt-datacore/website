@@ -52,6 +52,11 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			link: "/charts"
 		},
 		{
+			title: t('global.fleet'),
+			link: "/fleet",
+			checkVisible: () => !!playerData?.player.fleet?.id
+		},
+		{
 			title: t('menu.player.share_profile'),
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => requestPanel('dashboard', 'share')
@@ -123,6 +128,7 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			customAction: (e, data) => { if (reset) reset(); }
 		}
 	] as NavItem[];
+
 
 	if (props.vertical) {
 		return (
