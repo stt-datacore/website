@@ -92,7 +92,8 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
                     requestDismiss={() => setCollapsed(!collapsed)}
                     config={{
                         postValues: {
-                            "voyage_status_id": voyage.id
+                            "voyage_status_id": voyage.id,
+                            "new_only": true
                         },
                         pasteInMobile: true,
                         dataUrl: PLAYERLINK,
