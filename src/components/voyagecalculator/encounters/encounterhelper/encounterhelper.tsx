@@ -15,6 +15,7 @@ import { IContestAssignments } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
 import { EncounterEditor } from './encountereditor';
+import { EncounterImportComponent } from './encounterimporter';
 
 type EncounterHelperProps = {
 	voyageConfig: Voyage;
@@ -93,10 +94,18 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 					traitPool={voyageConfig.event_content?.encounter_traits}
 					encounter={encounter}
 				/>
-				<form method='post' action='https://app.startrektimelines.com/voyage/refresh' target='_blank'>
+
+				<EncounterImportComponent
+					voyage={voyageConfig}
+					setData={setEncounter}
+					clearData={() => setEncounter(undefined)}
+					data={encounter}
+					/>
+
+				{/* <form method='post' action='https://app.startrektimelines.com/voyage/refresh' target='_blank'>
 					<input type='text' name='voyage_status_id' value={voyageConfig.id} />
 					<input value='Post' type='submit' />
-				</form>
+				</form> */}
 			</React.Fragment>
 		);
 	}
@@ -111,7 +120,7 @@ const EncounterCritTraits = (props: EncounterCritTraitsProps) => {
 	const { encounter } = props;
 	return (
 		<Label.Group>
-			{encounter.critTraits.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map(critTrait => (
+			{encounter?.critTraits?.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map(critTrait => (
 				<Label key={critTrait} content={TRAIT_NAMES[critTrait]} />
 			))}
 		</Label.Group>

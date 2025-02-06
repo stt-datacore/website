@@ -2231,6 +2231,12 @@
             "current": "Aktuelle Reisen",
             "custom_voyages": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
+        },
+        "import": {
+            "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
+            "heading": "Sie können auf Ihre Live-Reisedaten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen.",
+            "title": "Live-Reisedaten"
         }
+
     }
 }

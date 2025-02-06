@@ -2244,6 +2244,12 @@
             "current": "Viajes actuales",
             "custom": "Viajes personalizados",
             "upcoming": "Próximos viajes"
+        },
+        "import": {
+            "click_here": "Haz clic aquí para cargar tus datos",
+            "heading": "Puedes acceder a los datos de tu viaje en vivo de forma similar a como accedes a los datos de tu jugador actualmente.",
+            "title": "Datos de viaje en vivo"
         }
+
     }
 }

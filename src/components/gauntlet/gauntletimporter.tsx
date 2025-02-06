@@ -51,7 +51,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
                         {t('gauntlet.import.click_here')}
 						</p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>{t('gauntlet.live.title')}</a></b>
+                            <b></b>
                         </p>
                         </div>
                     }

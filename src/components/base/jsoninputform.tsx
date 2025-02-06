@@ -10,6 +10,7 @@ export interface JsonImportConfig {
     androidFileHint: string;
     iOSFileHint: string;
 	pasteInMobile?: boolean;
+	postValues?: any;
 }
 
 export interface JsonInputFormProps<T> {
@@ -25,8 +26,8 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 	const { t, tfmt } = globalContext.localized;
 
 	const { setValidInput, requestDismiss } = props;
-
-    const { pasteInMobile, dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
+	const title = props.title ?? 'json_form';
+    const { postValues, pasteInMobile, dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
 
 	const [inputData, setInputData] = React.useState<T | undefined>(undefined);
 	const [fullInput, setFullInput] = React.useState('');
@@ -115,9 +116,22 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 						<p>{errorMessage}</p>
 					</Message>
 				)}
+				{!!postValues && <form style={{display: "none"}} target="_blank" action={DATALINK} method="post">
+  						<button type="submit" id={`__${title}_data_link`}> </button>
+						{Object.entries(postValues).map(([key, value]) => {
+							return (
+								<input type="hidden" name={key} value={value?.toString()} />
+							)
+						})}
+				</form>}
 			</Card.Content>
 		</Card>
 	);
+
+	function postClick() {
+		const el = document.getElementById(`__${title}_data_link`);
+		if (el) el.click();
+	}
 
 	function renderCopyPaste(): JSX.Element {
 		return (
@@ -128,7 +142,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 				</Header>
 				<p>
 					{tfmt('json.copy_and_paste.description_1', {
-						'data': <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						'data': <a  href={postValues ? '#' : DATALINK} onClick={() => postValues ? postClick() : null} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
 								</a>
 					})}
