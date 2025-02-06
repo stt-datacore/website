@@ -8,7 +8,7 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
-import { IVoyageCalcConfig } from '../../../../model/voyage';
+import { Voyage } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { IEncounter } from '../model';
 import { IContestAssignments } from './championdata';
@@ -17,7 +17,7 @@ import { ContestsTable } from './contests';
 import { EncounterEditor } from './encountereditor';
 
 type EncounterHelperProps = {
-	voyageConfig: IVoyageCalcConfig;
+	voyageConfig: Voyage;
 };
 
 export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
@@ -94,7 +94,7 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 					encounter={encounter}
 				/>
 				<form method='post' action='https://app.startrektimelines.com/voyage/refresh' target='_blank'>
-					<input type='text' name='voyage_status_id' value='67274117' />
+					<input type='text' name='voyage_status_id' value={voyageConfig.id} />
 					<input value='Post' type='submit' />
 				</form>
 			</React.Fragment>
