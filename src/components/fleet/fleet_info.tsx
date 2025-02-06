@@ -12,8 +12,12 @@ import { ColorName } from './colorname';
 import { appelate, printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
 import { downloadData } from '../../utils/crewutils';
+import { getIconPath } from '../../utils/assets';
 
-type FleetInfoPageProps = {};
+type FleetInfoPageProps = {
+	fleet_id: number;
+	fleet_data: Fleet
+};
 
 type FleetInfoPageState = {
 	fleet_id?: number;
@@ -84,8 +88,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		fleet ??= this.state.fleet_data;
 		if (!fleet) return;
 		fleet.members.forEach((member) => {
-			if (member.crew_avatar.startsWith("crew_portraits") && !member.crew_avatar.endsWith("_sm.png")) {
-				member.crew_avatar = member.crew_avatar.replace("_icon.png", "_sm.png");
+			if (member.crew_avatar.icon.file.startsWith("crew_portraits") && !member.crew_avatar.icon.file.endsWith("_sm.png")) {
+				member.crew_avatar.icon.file = member.crew_avatar.icon.file.replace("_icon.png", "_sm.png");
 			}
 			if (member.rank === "LEADER") {
 				member.rank = "ADMIRAL";
@@ -232,64 +236,65 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	render() {
-		const { sortDirection, sortField, fleet_id, errorMessage, errorTitle, fleet_data, factions, events, access_token, username, password } = this.state;
+		const { sortDirection, sortField, errorMessage, errorTitle, factions, events, access_token, username, password } = this.state;
+		const { fleet_data, fleet_id } = this.props;
 		const { playerData } = this.context.player;
 
 		if (!playerData) return <></>;
 
-		if (!access_token) {
+		// if (!access_token) {
 
-			return (<React.Fragment>
-				{!!errorMessage && (
-					<Message style={{backgroundColor: 'darkorange'}}>
-						<Message.Header>{errorTitle}</Message.Header>
-						<pre>{errorMessage.toString()}</pre>
-					</Message>
-				)}
-				<Form>
-				<div className={'ui segment'}
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'flex-start',
-						justifyContent: 'left'
-					}}>
-					<h3>Sign-in for {playerData.player.character.display_name}</h3>
-					<b>
-						<p>
-							Use your DisruptorBeam sign-in credentials to get a token to retrieve your fleet data.
-						</p>
-						<p>
-							<u>The sign-in credentials must match the DBID of the current player data!</u>
-						</p>
-						<p>
-							This will grant you an access token to view your fleet information that should stay current for quite a while (or until you clear your browser data.)
-						</p>
-						<p>
-							This token does not enable automatically getting player data! That process is too expensive, and the player can't be known beforehand, anyway.
-						</p>
-					</b>
-					<h4>Username:</h4>
-					<Input
-						size='large'
-						id={`u${playerData.player.dbid}_username`}
-						value={username}
-						onChange={(e, { value }) => this.setState({ ... this.state, username: value })}
-						/>
-					<h4>Password:</h4>
-					<Input
-						size='large'
-						id={`u${playerData.player.dbid}_password`}
-						type='password'
-						value={password}
-						onChange={(e, { value }) => this.setState({ ... this.state, password: value })}
-						/>
-					<br />
-					<Button onClick={(e) => this.signinClick()}>Sign In</Button>
-				</div>
-				</Form>
-			</React.Fragment>)
-		}
+		// 	return (<React.Fragment>
+		// 		{!!errorMessage && (
+		// 			<Message style={{backgroundColor: 'darkorange'}}>
+		// 				<Message.Header>{errorTitle}</Message.Header>
+		// 				<pre>{errorMessage.toString()}</pre>
+		// 			</Message>
+		// 		)}
+		// 		<Form>
+		// 		<div className={'ui segment'}
+		// 			style={{
+		// 				display: 'flex',
+		// 				flexDirection: 'column',
+		// 				alignItems: 'flex-start',
+		// 				justifyContent: 'left'
+		// 			}}>
+		// 			<h3>Sign-in for {playerData.player.character.display_name}</h3>
+		// 			<b>
+		// 				<p>
+		// 					Use your DisruptorBeam sign-in credentials to get a token to retrieve your fleet data.
+		// 				</p>
+		// 				<p>
+		// 					<u>The sign-in credentials must match the DBID of the current player data!</u>
+		// 				</p>
+		// 				<p>
+		// 					This will grant you an access token to view your fleet information that should stay current for quite a while (or until you clear your browser data.)
+		// 				</p>
+		// 				<p>
+		// 					This token does not enable automatically getting player data! That process is too expensive, and the player can't be known beforehand, anyway.
+		// 				</p>
+		// 			</b>
+		// 			<h4>Username:</h4>
+		// 			<Input
+		// 				size='large'
+		// 				id={`u${playerData.player.dbid}_username`}
+		// 				value={username}
+		// 				onChange={(e, { value }) => this.setState({ ... this.state, username: value })}
+		// 				/>
+		// 			<h4>Password:</h4>
+		// 			<Input
+		// 				size='large'
+		// 				id={`u${playerData.player.dbid}_password`}
+		// 				type='password'
+		// 				value={password}
+		// 				onChange={(e, { value }) => this.setState({ ... this.state, password: value })}
+		// 				/>
+		// 			<br />
+		// 			<Button onClick={(e) => this.signinClick()}>Sign In</Button>
+		// 		</div>
+		// 		</Form>
+		// 	</React.Fragment>)
+		// }
 
 		if (fleet_id === undefined || fleet_data === undefined || errorMessage !== undefined) {
 			return (
@@ -315,84 +320,44 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		this.processData(fleet_data);
 
 		let imageUrl = 'icons_icon_faction_starfleet.png';
-		if (factions && factions[fleet_data.nicon_index]) {
-			imageUrl = factions[fleet_data.nicon_index].icon;
-		}
+		// if (factions && factions[fleet_data.nicon_index]) {
+		// 	imageUrl = factions[fleet_data.nicon_index].icon;
+		// }
 
-		let event1: EventInstance | undefined = undefined;
-		let event2: EventInstance | undefined = undefined;
-		let event3: EventInstance | undefined = undefined;
+		// let event1: EventInstance | undefined = undefined;
+		// let event2: EventInstance | undefined = undefined;
+		// let event3: EventInstance | undefined = undefined;
 
-		if (events) {
-			if (events[0].event_name === fleet_data.leaderboard[0].event_name) {
-				event1 = events[0];
-				event2 = events[1];
-				event3 = events[2];
-			} else {
-				event1 = events.find(ev => ev.event_name === fleet_data.leaderboard[0].event_name);
-				event2 = events.find(ev => ev.event_name === fleet_data.leaderboard[1].event_name);
-				event3 = events.find(ev => ev.event_name === fleet_data.leaderboard[2].event_name);
+		// if (events) {
+		// 	if (events[0].event_name === fleet_data.leaderboard[0].event_name) {
+		// 		event1 = events[0];
+		// 		event2 = events[1];
+		// 		event3 = events[2];
+		// 	} else {
+		// 		event1 = events.find(ev => ev.event_name === fleet_data.leaderboard[0].event_name);
+		// 		event2 = events.find(ev => ev.event_name === fleet_data.leaderboard[1].event_name);
+		// 		event3 = events.find(ev => ev.event_name === fleet_data.leaderboard[2].event_name);
+		// 	}
+		// }
+
+		const memberIcons = {} as {[key:string]: string}
+
+		fleet_data.members.forEach((member) => {
+			memberIcons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
+			if (!member.squadron_event_rank) {
+				let squad = fleet_data.squads.find(f => f.id == member.squad_id);
+				if (squad) {
+					member.squadron_event_rank = squad.event_rank;
+					member.squad = squad.name;
+				}
+				else {
+					member.squad = '';
+				}
 			}
-		}
+		})
 
 		return (
 			<React.Fragment>
-			<Item.Group>
-				<Item>
-					<Item.Image size="tiny" src={`${process.env.GATSBY_ASSETS_URL}${imageUrl}`} />
-
-					<Item.Content>
-						<Item.Header><ColorName text={fleet_data.name} /></Item.Header>
-						<Item.Meta>
-							<Label>Starbase level: {fleet_data.nstarbase_level}</Label>
-							<Label>
-								Size: {fleet_data.cursize} / {fleet_data.maxsize}
-							</Label>
-							<Label>Created: {new Date(fleet_data.created).toLocaleDateString()}</Label>
-							<Label>
-								Enrollment {fleet_data.enrollment} (min level: {fleet_data.nmin_level})
-								</Label>
-						</Item.Meta>
-					</Item.Content>
-				</Item>
-			</Item.Group>
-
-			{event1 && <div style={{display: 'flex', flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-				<table>
-					<tbody>
-						<tr>
-							<th>
-								{' '}
-								<Link to={`/event_info?instance_id=${event1?.instance_id}`}>
-									{fleet_data.leaderboard[0].event_name}
-								</Link>
-							</th>
-							<th>
-								{' '}
-								<Link to={`/event_info?instance_id=${event2?.instance_id}`}>
-									{fleet_data.leaderboard[1].event_name}
-								</Link>
-							</th>
-							<th>
-								{' '}
-								<Link to={`/event_info?instance_id=${event3?.instance_id}`}>
-									{fleet_data.leaderboard[2].event_name}
-								</Link>
-							</th>
-						</tr>
-						<tr>
-							<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event1?.image}`} /></td>
-							<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event2?.image}`} /></td>
-							<td><Image size="medium" src={`${process.env.GATSBY_ASSETS_URL}${event3?.image}`} /></td>
-						</tr>
-						<tr>
-							<td align="center">Fleet rank: {fleet_data.leaderboard[0].fleet_rank}</td>
-							<td align="center">Fleet rank: {fleet_data.leaderboard[1].fleet_rank}</td>
-							<td align="center">Fleet rank: {fleet_data.leaderboard[2].fleet_rank}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>}
 
 			<Header as="h3">Members</Header>
 			<div style={{
@@ -487,7 +452,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 									<div style={{ gridArea: 'icon' }}>
 										<img
 											width={48}
-											src={`${process.env.GATSBY_ASSETS_URL}${member.crew_avatar || 'crew_portraits_cm_empty_sm.png'}`}
+											src={`${process.env.GATSBY_ASSETS_URL}${memberIcons[member.dbid] || 'crew_portraits_cm_empty_sm.png'}`}
 										/>
 									</div>
 									<div style={{ gridArea: 'stats' }}>
@@ -523,7 +488,6 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 					))}
 				</Table.Body>
 			</Table>
-			<Button style={{margin: "0.5em 0"}} onClick={(e) => this.clearToken()}>Clear Access Token</Button>
 			</React.Fragment>
 		);
 	}

@@ -849,6 +849,13 @@
             "title": "Ansichtsmodus"
         }
     },
+    "fleet": {
+        "import": {
+            "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
+            "heading": "Sie können auf Ihre Flottendaten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen.",
+            "title": "Flottendaten"
+        }
+    },
     "global": {
         "set_as_default_view": "Als Standardansicht festlegen",
         "aborted": "Abgebrochen",
@@ -1214,7 +1221,8 @@
     "json_types": {
         "gauntlet_data": "Herausforderungsdaten",
         "player_data": "Spielerdaten",
-        "quest_data": "Quest-Daten"
+        "quest_data": "Quest-Daten",
+        "fleet_data": "Flottendaten"
     },
     "menu": {
         "about_title": "Über uns",
