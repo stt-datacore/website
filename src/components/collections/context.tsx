@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from '../../utils/storage';
-import { MapFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collectionfilter';
+import { CollectionFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collectionfilter';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
 import { Filter } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
@@ -10,7 +10,7 @@ import { Modal } from 'semantic-ui-react';
 import { CollectionDetails } from './overview_modal';
 
 const DefaultConfig = {
-    mapFilter: {} as MapFilterOptions,
+    mapFilter: {} as CollectionFilterOptions,
     searchFilter: '',
     rarityFilter: [],
     fuseFilter: '',
@@ -154,7 +154,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setCollectionSettings({ ... collectionSettings, searchFilter })
     }
 
-    function setMapFilter(mapFilter: MapFilterOptions) {
+    function setMapFilter(mapFilter: CollectionFilterOptions) {
         setCollectionSettings({ ... collectionSettings, mapFilter })
     }
 

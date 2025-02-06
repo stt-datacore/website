@@ -1,13 +1,13 @@
 import React from 'react';
 import { Label, Modal, Grid, Segment, Input, Icon, Image, Popup } from 'semantic-ui-react';
 
-import { GlobalContext } from '../../context/globalcontext';
-import { MilestoneBuff, PlayerCollection } from '../../model/player';
-import { CollectionDetails } from './overview_modal';
-import { formatColString } from './context';
-import { getAllStatBuffs } from '../../utils/collectionutils';
-import { getIconPath } from '../../utils/assets';
-import { Collection } from '../../model/game-elements';
+import { GlobalContext } from '../../../context/globalcontext';
+import { MilestoneBuff, PlayerCollection } from '../../../model/player';
+import { CollectionDetails } from '../overview_modal';
+import { formatColString } from '../context';
+import { getAllStatBuffs } from '../../../utils/collectionutils';
+import { getIconPath } from '../../../utils/assets';
+import { Collection } from '../../../model/game-elements';
 
 export const CollectionsOverview = () => {
 	const globalContext = React.useContext(GlobalContext);

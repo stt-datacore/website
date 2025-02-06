@@ -1,7 +1,7 @@
 import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
 import {
-    CollectionMap,
-    CollectionGroup,
+    CollectionInfo,
+    CollectionCombo,
     CollectionWorkerConfig,
     CollectionWorkerResult,
     ColComboMap,
@@ -10,10 +10,10 @@ import {
 import { PlayerCollection, PlayerCrew } from "../model/player";
 import { getPermutations, makeAllCombos } from "../utils/misc";
 
-function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: PlayerCollection[]) {
-    let cname = colOptimized.collection.name;
-    let mneeded = colOptimized.collection.needed ?? 0;
-    let tc = colOptimized.combinedUnique;
+function makeOptimizedCombos(colCombos: CollectionCombo, playerCollections: PlayerCollection[]) {
+    let cname = colCombos.collection.name;
+    let mneeded = colCombos.collection.needed ?? 0;
+    let tc = colCombos.combinedUnique;
     let isect = [...new Set(tc.map(c => c.collections)?.flat())];
 
     const pc = playerCollections.filter(col => !!col.needed && isect.includes(col.name));
@@ -59,10 +59,10 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
     });
 
     less = [...new Set(less.map(l => l.split(" / ")).flat())];
-    let eOut = exact.map(e => e.split(" / ")).filter(n => !n.some(nc => nc === colOptimized.name));
+    let eOut = exact.map(e => e.split(" / ")).filter(n => !n.some(nc => nc === colCombos.name));
 
     if (!less.length) return eOut;
-    //console.log(`${colOptimized.name}: Size of 'less': ${less.length}`);
+    //console.log(`${colCombos.name}: Size of 'less': ${less.length}`);
     let limit = Number.POSITIVE_INFINITY;
 
     if (less.length >= 10) {
@@ -76,7 +76,7 @@ function makeOptimizedCombos(colOptimized: CollectionGroup, playerCollections: P
             });
         });
         needmap.sort((a, b) => {
-            let r = (b.n / colOptimized.collection.needed!) - (a.n / colOptimized.collection.needed!);
+            let r = (b.n / colCombos.collection.needed!) - (a.n / colCombos.collection.needed!);
             if (!r) {
                 r = a.str.localeCompare(b.str);
             }
@@ -231,7 +231,7 @@ const CollectionOptimizer = {
                 let map = {
                     collection: col,
                     crew: c.crew.map(csym => workingCrew.find(f => f.symbol === csym) as PlayerCrew)
-                } as CollectionMap;
+                } as CollectionInfo;
 
                 map.crew = normalCollectionSort(map.crew, searchFilter, searches, favorites);
                 map.neededStars = neededStars(map.crew, map.collection.needed ?? 0);
@@ -270,7 +270,7 @@ const CollectionOptimizer = {
                     return r;
                 });
 
-            const colGroups = preFiltered.filter((x) => {
+            const colData = preFiltered.filter((x) => {
                 let bPass =
                     x.collection !== undefined &&
                     x.crew?.length &&
@@ -288,7 +288,7 @@ const CollectionOptimizer = {
                 return !!bPass;
             });
 
-            const linkScores = {} as { [key: string]: CollectionMap[] };
+            const linkScores = {} as { [key: string]: CollectionInfo[] };
 
             colInfo.forEach((ci) => {
                 ci.relatives.forEach((cirkey) => {
@@ -318,11 +318,11 @@ const CollectionOptimizer = {
                 });
             });
 
-            const createOptimizerGroups = (colGroups: CollectionMap[]) => {
-                const colOptimized = Object.keys(linkScores)
+            const createOptimizerGroups = (colData: CollectionInfo[]) => {
+                const colCombos = Object.keys(linkScores)
                     .map((key, idx) => {
                         let unique = linkScores[key].map((c) => c.crew).flat();
-                        let col = colGroups.find((f) => f.collection.name === key);
+                        let col = colData.find((f) => f.collection.name === key);
 
                         let common = [...unique];
                         common = common.filter(
@@ -381,7 +381,7 @@ const CollectionOptimizer = {
                             collection: col?.collection,
                             neededStars: neededStars(unique),
                             uniqueCost: starCost(unique, undefined, costMode === "sale"),
-                        } as CollectionGroup;
+                        } as CollectionCombo;
                     })
                     .filter((g) => !!g.maps?.length && g.maps.some((gm) => gm.completes))
                     .sort((a, b) => {
@@ -418,7 +418,7 @@ const CollectionOptimizer = {
                         return r;
                     });
 
-                const createCombos = (col: CollectionGroup): ColComboMap[] => {
+                const createCombos = (col: CollectionCombo): ColComboMap[] => {
                     const mneed = col.collection.needed!;
 
                     let result = makeOptimizedCombos(col, playerCollections);
@@ -440,7 +440,7 @@ const CollectionOptimizer = {
                     //         const colCounts = {} as { [key: string]: { count: number, need: number, crew: string[] } };
 
                     //         if (cols?.length) {
-                    //             let good = [] as CollectionMap[];
+                    //             let good = [] as CollectionInfo[];
 
                     //             let allcrew = cols.map(c => c.crew).flat();
                     //             allcrew = allcrew.filter((f, i) => f && allcrew.findIndex(f2 => f2 && f2.symbol === f.symbol) === i);
@@ -483,12 +483,12 @@ const CollectionOptimizer = {
                     for (let test of result) {
                         let cols = test.map((tc) =>
                             col.maps.find((f) => f.collection.name === tc)
-                        ) as CollectionMap[];
+                        ) as CollectionInfo[];
 
                         const colCounts = {} as { [key: string]: { count: number, need: number, crew: string[] } };
 
                         if (cols?.length) {
-                            let good = [] as CollectionMap[];
+                            let good = [] as CollectionInfo[];
 
                             let allcrew = cols.map(c => c.crew).flat();
                             allcrew = allcrew.filter((f, i) => f && allcrew.findIndex(f2 => f2 && f2.symbol === f.symbol) === i);
@@ -547,7 +547,7 @@ const CollectionOptimizer = {
                     }
                 };
 
-                for (let col of colOptimized) {
+                for (let col of colCombos) {
                     col.combos = createCombos(col);
                     if (mapFilter?.rewardFilter?.length) {
                         col.combos?.sort((a, b) => {
@@ -582,7 +582,7 @@ const CollectionOptimizer = {
                     }
                 }
 
-                return colOptimized
+                return colCombos
                     .filter((c) => c.combos?.length)
                     .map((fc) => {
                         if (mapFilter?.rewardFilter?.length) {
@@ -660,7 +660,7 @@ const CollectionOptimizer = {
                     });
             };
 
-            const colOptimized = createOptimizerGroups(preFiltered.map(g => {
+            const colCombos = createOptimizerGroups(preFiltered.map(g => {
                 return {
                     ...g,
                     crew: g.crew.filter(f => f.have || (f.immortal !== undefined && f.immortal >= -1))
@@ -669,7 +669,7 @@ const CollectionOptimizer = {
 
             const newCostMap = [] as ComboCostMap[];
 
-            colOptimized.forEach((col) => {
+            colCombos.forEach((col) => {
                 let seengroups = {} as { [key: string]: ComboCostMap };
                 col.comboCost = [];
 
@@ -711,8 +711,8 @@ const CollectionOptimizer = {
                 col.comboCost = cm.map(m => m.cost);
             });
 
-            if (colOptimized?.length) {
-                colOptimized.forEach(col => {
+            if (colCombos?.length) {
+                colCombos.forEach(col => {
                     let map = newCostMap.filter(f => f.collection === col.collection.name);
                     map = map.filter(mf => (!byCost || (byCost && !!mf.cost)) && mf.crew.length <= (col.collection.needed ?? 0));
                     map.sort((a, b) => {
@@ -723,16 +723,16 @@ const CollectionOptimizer = {
                 });
             }
 
-            if (colOptimized?.length) {
+            if (colCombos?.length) {
                 if (byCost) {
-                    colOptimized.forEach(col => {
+                    colCombos.forEach(col => {
                         let map = newCostMap.filter(f => f.collection === col.collection.name);
                         map = map.sort((a, b) => a.cost - b.cost);
                         col.combos = map.map(m => m.combo);
                         col.comboCost = map.map(m => m.cost);
                     });
 
-                    colOptimized.sort((a, b) => {
+                    colCombos.sort((a, b) => {
                         let acost = 0;
                         let bcost = 0;
 
@@ -763,7 +763,7 @@ const CollectionOptimizer = {
                 }
                 else if (!filterProps.mapFilter.rewardFilter?.length) {
                     const honor = playerData.player.honor;
-                    colOptimized.sort((a, b) => {
+                    colCombos.sort((a, b) => {
                         let r = 0;
 
                         let aneeded = a.collection.neededCost ?? 0;
@@ -790,7 +790,7 @@ const CollectionOptimizer = {
                 }
             }
 
-            let fc = colOptimized.filter((col) => {
+            let fc = colCombos.filter((col) => {
                 if (!showIncomplete && col.collection.owned < (col.collection.milestone.goal as number)) return false;
 
                 if (col.combos) {
@@ -837,9 +837,9 @@ const CollectionOptimizer = {
             });
 
             resolve({
-                groups: fc,
-                maps: colGroups,
-                costMap: newCostMap
+                combos: fc,
+                collections: colData,
+                comboCostMap: newCostMap
             });
 
         });

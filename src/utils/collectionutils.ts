@@ -1,5 +1,5 @@
 import { RewardsGridNeed } from "../model/crew";
-import { MapFilterOptions, CollectionMap, CollectionGroup, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
+import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
 import { BuffBase, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from "../model/player";
 import { getCollectionRewards } from "./itemutils";
 import { EquipmentItem } from "../model/equipment";
@@ -30,7 +30,7 @@ export const checkRewardFilter = (collection: PlayerCollection, filters: string[
     return result;
 }
 
-export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCollection[], colGroup2: PlayerCollection[], short?: boolean): number {
+export function compareRewards(mapFilter: CollectionFilterOptions, colGroup1: PlayerCollection[], colGroup2: PlayerCollection[], short?: boolean): number {
     if (!mapFilter?.rewardFilter) return 0;
 
     let ayes = 0;
@@ -59,7 +59,7 @@ export function compareRewards(mapFilter: MapFilterOptions, colGroup1: PlayerCol
     return r;
 }
 
-export function rewardsFilterPassFail(mapFilter: MapFilterOptions, colGroup: PlayerCollection[], short?: boolean): boolean {
+export function rewardsFilterPassFail(mapFilter: CollectionFilterOptions, colGroup: PlayerCollection[], short?: boolean): boolean {
     if (!mapFilter?.rewardFilter?.length) return true;
 
     let ayes = 0;
@@ -88,7 +88,7 @@ export interface CiteInventory {
     rarity: number;
 }
 
-export const makeCiteNeeds = (item: CollectionMap | CollectionGroup | PlayerCrew, combo?: string, inventory?: CiteInventory[]) => {
+export const makeCiteNeeds = (item: CollectionInfo | CollectionCombo | PlayerCrew, combo?: string, inventory?: CiteInventory[]) => {
     const gridneed = [] as RewardsGridNeed[];
 
     if ("rarity" in item) {
@@ -187,22 +187,22 @@ export const checkCommonFilter = (filters: CollectionsToolSettings, crew: Player
     return true;
 }
 
-export const findOptCombo = (col: CollectionGroup, combo: string) => {
+export const findOptCombo = (col: CollectionCombo, combo: string) => {
     return col.combos?.find(cbo => cbo.names.join(" / ") === combo);
 }
 
-export const getOptCols = (col: CollectionGroup, combo?: string) => {
+export const getOptCols = (col: CollectionCombo, combo?: string) => {
     if (!combo) {
         return col.maps;
     }
     else {
         let fc = findOptCombo(col, combo);
-        if (fc) return fc.names.map(s => col.maps.find(cm => cm.collection.name === s.replace("* ", ''))).filter(f => f) as CollectionMap[];
+        if (fc) return fc.names.map(s => col.maps.find(cm => cm.collection.name === s.replace("* ", ''))).filter(f => f) as CollectionInfo[];
         return [];
     }
 }
 
-export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', searches?: string[], combo?: string) => {
+export const getOptCrew = (col: CollectionCombo, costMode: 'normal' | 'sale', searches?: string[], combo?: string) => {
     let crewmap: PlayerCrew[];
     let cols = getOptCols(col, combo);
     if (!combo) {
@@ -291,7 +291,7 @@ export const getOptCrew = (col: CollectionGroup, costMode: 'normal' | 'sale', se
 
 }
 
-export const findColGroupsCrew = (costMap: ComboCostMap[], col: CollectionGroup, combo?: string) => {
+export const findColGroupsCrew = (costMap: ComboCostMap[], col: CollectionCombo, combo?: string) => {
     return costMap.find(f => f.collection === col.collection.name && (!combo || f.combo.names.join(" / ") === combo))?.crew ?? [];
 }
 

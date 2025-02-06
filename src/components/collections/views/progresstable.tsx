@@ -1,12 +1,12 @@
 import { Link } from 'gatsby';
 import React from 'react';
 import { Popup, Icon, Form, Dropdown, Checkbox, Table } from 'semantic-ui-react';
-import { GlobalContext } from '../../context/globalcontext';
-import { Filter } from '../../model/game-elements';
-import { PlayerCollection } from '../../model/player';
-import { useStateWithStorage } from '../../utils/storage';
-import { makeRewards, RewardsGrid } from '../crewtables/rewards';
-import { ITableConfigRow, SearchableTable } from '../searchabletable';
+import { GlobalContext } from '../../../context/globalcontext';
+import { Filter } from '../../../model/game-elements';
+import { PlayerCollection } from '../../../model/player';
+import { useStateWithStorage } from '../../../utils/storage';
+import { makeRewards, RewardsGrid } from '../../crewtables/rewards';
+import { ITableConfigRow, SearchableTable } from '../../searchabletable';
 
 export interface ProgressTableProps {
 	playerCollections: PlayerCollection[];
@@ -33,9 +33,9 @@ export const ProgressTable = (props: ProgressTableProps) => {
 	//	= Regular expression against symbol, * Special test case
 	const rewardOptions = makeRewards(t);
 
-	if (workerRunning) {
-		return context.core.spin(t('spinners.default'));
-	}
+	// if (workerRunning) {
+	// 	return context.core.spin(t('spinners.default'));
+	// }
 	return (
 		<React.Fragment>
 			<div style={{ margin: '.5em 0' }}>

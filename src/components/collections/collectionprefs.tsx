@@ -2,7 +2,7 @@ import React from "react"
 import { GlobalContext } from "../../context/globalcontext"
 import { CollectionsContext } from "./context";
 import { Checkbox, Pagination, Dropdown, Form, DropdownItemProps } from "semantic-ui-react";
-import { CollectionGroup, CollectionMatchMode, ComboCostMap } from "../../model/collectionfilter";
+import { CollectionCombo, CollectionMatchMode, ComboCostMap } from "../../model/collectionfilter";
 import { appelate } from "../../utils/misc";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { RewardFilter } from "./rewardfilter";
@@ -11,7 +11,7 @@ import CONFIG from "../CONFIG";
 
 
 export interface CollectionPrefsProps {
-    colOptimized: CollectionGroup[];
+    colCombos: CollectionCombo[];
     playerCollections: PlayerCollection[];
     workerRunning: boolean;
     mode: 'crew' | 'group' | 'optimizer';
@@ -28,7 +28,7 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
 
     const [allCrew, setAllCrew] = React.useState<PlayerCrew[]>([]);
 
-    const { mode, colOptimized } = props;
+    const { mode, colCombos } = props;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
@@ -70,12 +70,12 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
     });
 
     React.useEffect(() => {
-        let crewprep = colOptimized.map((col) => col.combinedUnique).flat();
+        let crewprep = colCombos.map((col) => col.combinedUnique).flat();
         crewprep = crewprep.filter((fc, idx) => crewprep.findIndex(fi => fi.symbol === fc.symbol) === idx)
             .sort((a, b) => a.name.localeCompare(b.name));
 
         setAllCrew(crewprep);
-    }, [colOptimized]);
+    }, [colCombos]);
 
     return (<div style={{
         display: "flex",

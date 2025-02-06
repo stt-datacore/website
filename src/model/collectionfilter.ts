@@ -1,12 +1,12 @@
 import { Filter } from "./game-elements";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 
-export interface MapFilterOptions {
+export interface CollectionFilterOptions {
 	collectionsFilter?: number[];
 	rewardFilter?: string[];
 }
 
-export interface CollectionMap {
+export interface CollectionInfo {
 	collection: PlayerCollection;
 	crew: PlayerCrew[];
 	neededStars?: number[];
@@ -28,9 +28,9 @@ export interface ComboCostMap {
     exact: boolean;
 }
 
-export interface CollectionGroup {
+export interface CollectionCombo {
 	name: string;
-	maps: CollectionMap[];
+	maps: CollectionInfo[];
 	combinedUnique: PlayerCrew[];
 	crewInCommon: PlayerCrew[];
 	collection: PlayerCollection;
@@ -46,7 +46,7 @@ export interface CollectionGroup {
 
 export interface CollectionsToolSettings {
     short: boolean;
-    mapFilter: MapFilterOptions;
+    mapFilter: CollectionFilterOptions;
     searchFilter: string;
     rarityFilter: number[];
     fuseFilter: string;
@@ -73,8 +73,8 @@ export interface ICollectionsContext extends CollectionsToolSettings {
     short: boolean;
     setShort: (value: boolean) => void;
 
-    mapFilter: MapFilterOptions;
-    setMapFilter: (options: MapFilterOptions) => void;
+    mapFilter: CollectionFilterOptions;
+    setMapFilter: (options: CollectionFilterOptions) => void;
 
     searchFilter: string;
     setSearchFilter: (value?: string) => void;
@@ -129,7 +129,7 @@ export interface CollectionWorkerConfig {
 }
 
 export interface CollectionWorkerResult {
-    groups: CollectionGroup[];
-    maps: CollectionMap[];
-    costMap: ComboCostMap[];
+    combos: CollectionCombo[];
+    collections: CollectionInfo[];
+    comboCostMap: ComboCostMap[];
 }

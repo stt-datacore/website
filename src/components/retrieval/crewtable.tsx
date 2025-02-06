@@ -78,7 +78,7 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 				filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 				showFilterOptions={true}
 			/>
-			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, filteredCrew, buffConfig)} targetGroup='retrievalGroup' />
+			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='retrievalGroup' />
 		</React.Fragment>
 	);
 };

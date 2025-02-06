@@ -4,13 +4,13 @@ import { GlobalContext } from '../../context/globalcontext';
 import { BuffBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
 import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import { TinyStore } from '../../utils/tiny';
-import CollectionsOverviewComponent from './overview';
+import { CollectionsOverview } from './views/overview';
 import { CollectionsContext, CollectionFilterProvider } from './context';
 import { CollectionsViews } from './collectionsviews';
 import { checkCommonFilter, rewardsFilterPassFail } from '../../utils/collectionutils';
 import { WorkerProvider } from '../../context/workercontext';
 
-const CollectionsTool = () => {
+export const CollectionPlanner = () => {
 	const context = React.useContext(GlobalContext);
 	const { playerData } = context.player;
 	const { crew, collections: allCollections } = context.core;
@@ -19,8 +19,7 @@ const CollectionsTool = () => {
 		return context.core.spin ? context.core.spin() : <></>;
 	}
 
-	if (!playerData) return <CollectionsOverviewComponent />;
-	// ... etc ...
+	if (!playerData) return <CollectionsOverview />;
 
 	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
 	const myCrew = crewCopy(playerData.player.character.crew);
@@ -320,4 +319,4 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 };
 
 
-export default CollectionsTool;
+export default CollectionPlanner;

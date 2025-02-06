@@ -1,12 +1,12 @@
 import React from 'react';
-import { PlayerCollection, PlayerCrew } from '../../model/player';
+import { PlayerCollection, PlayerCrew } from '../../../model/player';
 import { Icon } from 'semantic-ui-react';
-import { RewardsGrid } from '../crewtables/rewards';
-import { CrewItemsView } from '../item_presenters/crew_items';
-import ItemDisplay from '../itemdisplay';
-import { GlobalContext } from '../../context/globalcontext';
-import { makeCiteNeeds } from '../../utils/collectionutils';
-import { AvatarView } from '../item_presenters/avatarview';
+import { RewardsGrid } from '../../crewtables/rewards';
+import { CrewItemsView } from '../../item_presenters/crew_items';
+import ItemDisplay from '../../itemdisplay';
+import { GlobalContext } from '../../../context/globalcontext';
+import { makeCiteNeeds } from '../../../utils/collectionutils';
+import { AvatarView } from '../../item_presenters/avatarview';
 
 
 export interface CollectionsCrewCardProps {

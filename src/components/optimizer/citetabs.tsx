@@ -1,6 +1,5 @@
 import React from "react"
 import { Segment, Icon, Tab } from "semantic-ui-react"
-import { navToCrewPage } from "../../utils/nav"
 import { CrewHoverStat } from "../hovering/crewhoverstat"
 import { CiteOptContext } from "./context"
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat"

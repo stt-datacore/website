@@ -314,7 +314,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
                 const { buffConfig, playerData } = this.context.player;
                 const { crew: allCrew } = this.context.core;
                 if (playerData && "player" in playerData) {
-                    navToCrewPage(displayItem, playerData.player.character.crew, buffConfig, allCrew);
+                    navToCrewPage(displayItem);
                 }
                 else {
                     navigate("/crew/" + displayItem.symbol);
