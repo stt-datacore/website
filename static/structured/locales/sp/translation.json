@@ -859,6 +859,18 @@
         }
     },
     "fleet": {
+        "description": "Utilice esta herramienta para obtener información sobre su flota.",
+        "members": "Miembros",
+        "squadrons": "Escuadrones",
+        "member_columns": {
+            "name": "{{global.name}}",
+            "rank": "{{rank_names.rank}}",
+            "event_rank": "Rango de evento",
+            "squadron": "Escuadrón",
+            "dailies": "Diarios",
+            "last_active": "Último activo",
+            "squadron_event_rank": "Rango de escuadrón"
+        },
         "import": {
             "click_here": "Haz clic aquí para cargar tus datos",
             "heading": "Puedes acceder a los datos de tu flota de forma similar a como accedes a los datos de tus jugadores actualmente.",

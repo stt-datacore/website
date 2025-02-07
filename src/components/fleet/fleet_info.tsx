@@ -3,7 +3,7 @@ import { Header, Label, Message, Icon, Table, Item, Image, Input, FormInput, But
 import { Link } from 'gatsby';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { Fleet, Member } from '../../model/fleet';
+import { Fleet, Member, ProfileData } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
 import { TinyStore } from '../../utils/tiny';
 import { FleetResponse } from '../../model/fleet';
@@ -13,6 +13,10 @@ import { appelate, printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
 import { downloadData } from '../../utils/crewutils';
 import { getIconPath } from '../../utils/assets';
+import moment from "moment";
+import 'moment/locale/fr';
+import 'moment/locale/de';
+import 'moment/locale/es';
 
 type FleetInfoPageProps = {
 	fleet_id: number;
@@ -33,7 +37,7 @@ type FleetInfoPageState = {
 	sortDirection?: 'ascending' | 'descending';
 };
 //
-const rankOrder = ['Admiral', 'Squadron Leader', 'Officer', 'Member'];
+const rankOrder = ['LEADER', 'OFFICER', 'SQUADRON_LEADER', 'MEMBER'];
 
 class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	static contextType = GlobalContext;
@@ -85,31 +89,42 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	private processData(fleet?: Fleet) {
+		const { t } = this.context.localized;
 		fleet ??= this.state.fleet_data;
 		if (!fleet) return;
 		fleet.members.forEach((member) => {
 			if (member.crew_avatar.icon.file.startsWith("crew_portraits") && !member.crew_avatar.icon.file.endsWith("_sm.png")) {
 				member.crew_avatar.icon.file = member.crew_avatar.icon.file.replace("_icon.png", "_sm.png");
 			}
+			let ranks = [] as string[];
+
 			if (member.rank === "LEADER") {
-				member.rank = "ADMIRAL";
+				ranks.push("admiral");
+			}
+			else if (member.rank !== 'SQUADRON_LEADER') {
+				ranks.push(member.rank?.toLowerCase() ?? 'member');
 			}
 
 			if (member.squad_id) {
-				let squad = fleet?.squads.find(s => s.id === member.squad_id)
+				let squad = fleet?.squads.find(s => s.id == member.squad_id)
 				if (squad) {
-					if (squad.leader === member.dbid) {
-						member.rank = "SQUADRON LEADER";
+					if (member.squad_rank === 'LEADER') {
+						member.squad_leader = true;
+						ranks.push('squadron_leader');
+						ranks = ranks.filter(f => f !== 'member');
+						if (member.rank === 'MEMBER') {
+							member.rank = 'SQUADRON_LEADER';
+						}
 					}
-
+					member.squad = squad.name;
 					member.squadron_event_rank = squad.event_rank;
 				}
 			}
+
 			if (member.daily_meta_progress?.goal === -1) {
 				member.daily_meta_progress.goal = 0;
 			}
-
-			member.rank = appelate(member.rank);
+			member.display_rank = ranks.map(rank => t(`global.${rank}`)).join(", ") ?? member.rank
 		});
 
 		const { sortDirection, sortField } = this.state;
@@ -122,6 +137,8 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			fleet.members.sort((a, b) => {
 				let r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
 				if (r === 0) {
+					if (!a.squad_leader && b.squad_leader) return 1;
+					if (!b.squad_leader && a.squad_leader) return -1;
 					r = a.display_name.localeCompare(b.display_name);
 				}
 				return r * mult;
@@ -157,32 +174,37 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	private refreshData() {
-		const { access_token } = this.state;
 		const { playerData } = this.context.player;
-
-		if (!access_token || !playerData) {
+		const dbids = this.props.fleet_data.members.map(m => m.dbid);
+		if (!playerData) {
 			return;
 		}
 
-		let fleet_id = playerData.player.fleet.id;
-		this.setState({ ... this.state, fleet_id });
-
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info?fleetid=` + fleet_id, {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info`, {
 				method: 'POST',
-				body: JSON.stringify({ access_token }),
+				body: JSON.stringify({ dbids: dbids }),
 				headers: {
 					'Content-type': "application/json"
 				}
 			})
 			.then(response => response.json())
-			.then((fleetData: FleetResponse) => {
-				this.tiny?.setValue('access_token', fleetData.access_token, true);
-				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token });
+			.then((fleetData: ProfileData[]) => {
+				if (fleetData) {
+					for (let player of fleetData) {
+						let pinfo = this.props.fleet_data.members.find(m => m.dbid.toString() == player.dbid);
+						if (pinfo) {
+							pinfo.last_update = new Date(player.lastUpdate);
+							pinfo.hash = player.hash;
+						}
+					}
+				}
 			})
 			.catch(err => {
 				this.setState({ errorMessage: err });
+			})
+			.finally(() => {
+				this.setState({ ... this.state, fleet_data: this.props.fleet_data , fleet_id: this.props.fleet_id })
 			});
-
 	}
 
 	readonly signinClick = () => {
@@ -237,9 +259,9 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 	render() {
 		const { sortDirection, sortField, errorMessage, errorTitle, factions, events, access_token, username, password } = this.state;
-		const { fleet_data, fleet_id } = this.props;
+		const { fleet_data, fleet_id } = this.state;
 		const { playerData } = this.context.player;
-
+		const { t } = this.context.localized;
 		if (!playerData) return <></>;
 
 		// if (!access_token) {
@@ -307,7 +329,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				)}
 				{!errorMessage && (
 					<div>
-						<Icon loading name="spinner" /> Loading...
+						<Icon loading name="spinner" /> {t('spinners.default')}
 					</div>
 				)}
 				{/* <p>
@@ -359,7 +381,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 		return (
 			<React.Fragment>
 
-			<Header as="h3">Members</Header>
+			<Header as="h3">{t('fleet.members')}</Header>
 			<div style={{
 				display: 'flex',
 				flexDirection: 'row',
@@ -370,17 +392,17 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			}}>
 				<div
 					className='ui button'
-					onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, true) }}
+					onClick={(e) => { if (this.props.fleet_data?.members) this._exportItems(this.props.fleet_data.members, true) }}
 					style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
 				>
-					<span style={{ margin: '0 2em 0 0' }}>Copy to Clipboard</span><i className='clipboard icon' />
+					<span style={{ margin: '0 2em 0 0' }}>{t('share_profile.export.export_clipboard')}</span><i className='clipboard icon' />
 				</div>
 				<div
 					className='ui button'
-					onClick={(e) => { if (this.state.fleet_data?.members) this._exportItems(this.state.fleet_data.members, false) }}
+					onClick={(e) => { if (this.props.fleet_data?.members) this._exportItems(this.props.fleet_data.members, false) }}
 					style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
 				>
-					<span style={{ margin: '0 2em 0 0' }}>Download CSV</span><i className='download icon' />
+					<span style={{ margin: '0 2em 0 0' }}>{t('share_profile.export.export_csv')}</span><i className='download icon' />
 				</div>
 			</div>
 			<Table celled selectable sortable striped collapsing unstackable compact="very">
@@ -388,59 +410,59 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 					<Table.Row>
 						<Table.HeaderCell
 							sorted={sortField === 'name' ? sortDirection : undefined}
-							width={2}
+							width={4}
 							onClick={(e) => this.sortClick('name')}
 							>
-							Name
+							{t('fleet.member_columns.name')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortField === 'event_rank' ? sortDirection : undefined}
 							width={1}
 							onClick={(e) => this.sortClick('event_rank')}
 							>
-							Event Rank
+							{t('fleet.member_columns.event_rank')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortField === 'squadron_event_rank' ? sortDirection : undefined}
 							width={1}
 							onClick={(e) => this.sortClick('squadron_event_rank')}
 							>
-							Squad Rank
+							{t('fleet.member_columns.squadron_event_rank')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortField === 'squad' ? sortDirection : undefined}
 							width={2}
 							onClick={(e) => this.sortClick('squad')}
 							>
-							Squadron
+							{t('fleet.member_columns.squadron')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortField === 'rank' ? sortDirection : undefined}
 							width={1}
 							onClick={(e) => this.sortClick('rank')}
 							>
-							Rank
+							{t('fleet.member_columns.rank')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortField === 'daily_activity' ? sortDirection : undefined}
 							width={1}
 							onClick={(e) => this.sortClick('daily_activity')}
 							>
-							Dailies
+							{t('fleet.member_columns.dailies')}
 						</Table.HeaderCell>
 						<Table.HeaderCell
 							sorted={sortField === 'last_active' ? sortDirection : undefined}
 							width={1}
 							onClick={(e) => this.sortClick('last_active')}
 							>
-							Last Active
+							{t('fleet.member_columns.last_active')}
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{fleet_data.members.map((member, idx) => (
 						<Table.Row key={idx}>
-							<Table.Cell>
+							<Table.Cell width={3}>
 								<div
 									style={{
 										display: 'grid',
@@ -465,24 +487,24 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 										</span>
 									</div>
 									<div style={{ gridArea: 'description' }}>
-										{member.last_update && (
-											<Label size="tiny">
-												Last profile upload: {new Date(Date.parse(member.last_update)).toLocaleDateString()}
-											</Label>
-										)}
+										{t('base.level') + " " + member.level.toString()}
+										{!!member.last_update && <p>
+										{t('global.last_updated_colon')} {this._momentDate(member.last_update!)}
+										</p>}
+
 									</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell>{member.event_rank}</Table.Cell>
 							<Table.Cell>{member.squadron_event_rank}</Table.Cell>
 							<Table.Cell><ColorName text={member.squad} /></Table.Cell>
-							<Table.Cell>{member.rank}</Table.Cell>
+							<Table.Cell>{member.display_rank ?? member.rank}</Table.Cell>
 							<Table.Cell>
 								{member.daily_meta_progress?.progress} / {member.daily_meta_progress?.goal}
 								<br/>({member.daily_activity})
 							</Table.Cell>
 							<Table.Cell>
-								{!!member.last_active && printShortDistance(undefined, member.last_active, true)}
+								{!!member.last_active && printShortDistance(undefined, member.last_active, true, t)}
 							</Table.Cell>
 						</Table.Row>
 					))}
@@ -501,6 +523,10 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			return;
 		}
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'members.csv');
+	}
+
+	_momentDate(date: Date) {
+		return moment(date).utc(false).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).format("MMM D, y")
 	}
 }
 

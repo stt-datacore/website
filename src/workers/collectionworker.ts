@@ -157,7 +157,7 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
     });
 }
 
-interface CollectionInfo {
+interface LocalCollectionInfo {
     name: string;
     crew: string[];
     relatives: string[];
@@ -203,13 +203,13 @@ const CollectionOptimizer = {
                 crew: [],
                 relatives: [],
                 needed: col.needed ?? 0
-            } as CollectionInfo));
+            } as LocalCollectionInfo));
 
             colInfo.forEach((col) => {
                 col.crew = eligCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
             });
 
-            const workingCrew = [... new Set(colInfo.map((col: CollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
+            const workingCrew = [... new Set(colInfo.map((col: LocalCollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
 
             workingCrew.forEach((crew) => {
                 let crewcols = colInfo.filter(c => crew.collections.includes(c.name));

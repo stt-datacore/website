@@ -850,6 +850,18 @@
         }
     },
     "fleet": {
+        "description": "Use this tool to get information about your fleet.",
+        "members": "Members",
+        "squadrons": "Squadons",
+        "member_columns": {
+            "name": "{{global.name}}",
+            "rank": "{{rank_names.rank}}",
+            "event_rank": "Event Rank",
+            "squadron": "Squadron",
+            "dailies": "Dailies",
+            "last_active": "Last Active",
+            "squadron_event_rank": "Squad Rank"
+        },
         "import": {
             "click_here": "Click here to upload your data",
             "heading": "You can access your fleet data in a similar way to how you access your player data, currently.",

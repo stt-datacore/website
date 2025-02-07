@@ -111,7 +111,7 @@ export const FleetImportComponent = (props: FleetImporterProps) => {
                     title={`Fleet Input Form`}
                     validateInput={validateFleet}
                     setValidInput={(fleet) => {
-                        //if (fleet) setCollapsed(true);
+                        if (fleet) setCollapsed(true);
                         setFleet(fleet);
                     }}
 

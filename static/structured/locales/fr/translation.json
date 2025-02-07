@@ -858,6 +858,18 @@
         }
     },
     "fleet": {
+        "description": "Utilisez cet outil pour obtenir des informations sur votre flotte.",
+        "members": "Membres",
+        "squadrons": "Escadrons",
+        "member_columns": {
+            "name": "{{global.name}}",
+            "rank": "{{rank_names.rank}}",
+            "event_rank": "Rang de l'événement",
+            "squadron": "Escadron",
+            "dailies": "Quotidiens",
+            "last_active": "Dernier actif",
+            "squadron_event_rank": "Rang de l'escadron"
+        },
         "import": {
             "click_here": "Cliquez ici pour télécharger vos données",
             "heading": "Vous pouvez accéder aux données de votre flotte de la même manière que vous accédez actuellement aux données de vos joueurs.",
@@ -867,7 +879,7 @@
     "global": {
         "set_as_default_view": "Définir comme vue par défaut",
         "aborted": "Terminé",
-        "admiral": "Avorté",
+        "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
         "adventure": "Aventure",
         "and": "et",

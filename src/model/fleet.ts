@@ -1,3 +1,4 @@
+import { BuffStatTable } from "../utils/voyageutils"
 import { CrewAvatar } from "./player"
 
 export interface FleetResponse {
@@ -28,10 +29,13 @@ export interface FleetResponse {
     display_name: string
     pid: number
     rank: string
-    last_update?: string
+    display_rank?: string
+    last_update?: Date
     crew_avatar: CrewAvatar
     squad: string
     squad_id: number
+    squad_rank: string
+    squad_leader?: boolean
     level: number
     last_active: number
     daily_activity: number
@@ -42,6 +46,7 @@ export interface FleetResponse {
     starbase_activity: number;
     event_rank: number
     squadron_event_rank?: number;
+    hash?: string;
   }
 
   export interface Squad {
@@ -56,4 +61,40 @@ export interface FleetResponse {
     fleet_rank: number
     index: number
     event_name: string
+  }
+
+
+  export interface ProfileData {
+    id: number
+    dbid: string
+    captainName: string
+    sttAccessToken: any
+    hash: string
+    metadata: ProfileMetadata
+    lastUpdate: string
+    buffConfig: BuffStatTable
+    shortCrewList: ShortCrewList
+    userId: number
+    creationDate: string
+    updatedAt: string
+  }
+
+  export interface ProfileMetadata {
+    open_collection_ids: number[]
+  }
+
+  export interface ShortCrewList {
+    crew: ShortCrew[]
+    c_stored_immortals: number[]
+    stored_immortals: StoredImmortal[]
+  }
+
+  export interface ShortCrew {
+    id: number
+    rarity: number
+  }
+
+  export interface StoredImmortal {
+    id: number
+    quantity: number
   }

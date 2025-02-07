@@ -850,6 +850,18 @@
         }
     },
     "fleet": {
+        "description": "Verwenden Sie dieses Tool, um Informationen zu Ihrer Flotte zu erhalten.",
+        "members": "Mitglieder",
+        "squadrons": "Staffeln",
+        "member_columns": {
+            "name": "{{global.name}}",
+            "rank": "{{rank_names.rank}}",
+            "event_rank": "Event-Rang",
+            "squadron": "Staffel",
+            "dailies": "Tagesaufgaben",
+            "last_active": "Zuletzt aktiv",
+            "squadron_event_rank": "Staffel-Rang"
+        },
         "import": {
             "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
             "heading": "Sie können auf Ihre Flottendaten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen.",

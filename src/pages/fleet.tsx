@@ -9,20 +9,22 @@ import FleetInfoPage from '../components/fleet/fleet_info';
 import { FleetImportComponent } from '../components/fleet/fleetimporter';
 import { Fleet, Member } from '../model/fleet';
 import { useStateWithStorage } from '../utils/storage';
+import { ColorName } from '../components/fleet/colorname';
 
 const FleetPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-
+	const { t } = globalContext.localized;
 	const [fleet, setFleet] = useStateWithStorage<Fleet | undefined>('fleet_info', undefined);
 
 	const dbid = playerData?.player.dbid ?? '';
 	const guild = playerData?.player.fleet?.id ?? 0;
-
+	const fleetName = playerData?.player.fleet.slabel
 	return (
 		<DataPageLayout
-			pageTitle='Fleet Info'
-			pageDescription='Use this tool to get information about your fleet.'
+			pageTitle={fleetName || t('global.fleet')}
+			pageTitleJSX={fleetName ? <ColorName text={fleetName} /> : undefined}
+			pageDescription={t('fleet.description')}
 			playerPromptType='require'
             demands={['factions', 'event_instances']}
 		>

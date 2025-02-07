@@ -458,10 +458,10 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             .map(mc => ({ ...mc, polestar_traits: [] as string[], contains_unique: false }))
             .filter(f =>
                 //f.max_rarity === 5 &&
-                f.cab_ov_rank >= cabOv &&
+                f.cab_ov_rank && f.cab_ov_rank >= cabOv &&
                 f.in_portal &&
                 f.unique_polestar_combos?.length &&
-                (!rarities.length || rarities.includes(f.max_rarity)));
+                (!rarities.length || rarities.includes(f.max_rarity ?? 0)));
 
         if (finalcrew.length === 1) {
             let tpf = tpop.find(tf => tf.symbol === finalcrew[0].symbol);
