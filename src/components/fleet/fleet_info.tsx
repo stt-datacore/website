@@ -200,7 +200,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				}
 			})
 			.catch(err => {
-				this.setState({ errorMessage: err });
+				//this.setState({ errorMessage: err });
 			})
 			.finally(() => {
 				this.setState({ ... this.state, fleet_data: this.props.fleet_data , fleet_id: this.props.fleet_id })
