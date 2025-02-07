@@ -28,10 +28,13 @@ export interface FleetResponse {
     display_name: string
     pid: number
     rank: string
+    display_rank?: string
     last_update?: string
     crew_avatar: CrewAvatar
     squad: string
     squad_id: number
+    squad_rank: string
+    squad_leader?: boolean
     level: number
     last_active: number
     daily_activity: number

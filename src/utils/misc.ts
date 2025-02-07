@@ -239,7 +239,8 @@ export function arraysUnion<T>(arr: T[][]) {
 	return newarr;
 }
 
-export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
+export function printShortDistance(d?: Date, n?: number, nothousand?: boolean, t?: TranslateMethod) {
+
     let now = new Date();
 
 	if (d) {
@@ -256,6 +257,9 @@ export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
 
     if (days) {
         hours = Math.floor(hours);
+		if (t) {
+			return `${t('duration.n_d', { days })} ${t('duration.n_h', { hours })}`
+		}
         return `${days} d ${hours} h`;
     }
     else {
@@ -264,9 +268,15 @@ export function printShortDistance(d?: Date, n?: number, nothousand?: boolean) {
         min = Math.floor(min);
 
         if (hours >= 1) {
-            return `${hours} h ${min} m`;
+			if (t) {
+				return `${t('duration.n_h', { hours })} ${t('duration.n_m', { minutes: min })}`
+			}
+			return `${hours} h ${min} m`;
         }
         else {
+			if (t) {
+				return `${t('duration.n_m', { minutes: min })}`
+			}
             return `${min} m`;
         }
     }
