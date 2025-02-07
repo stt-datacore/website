@@ -174,7 +174,8 @@ type TableView =
 	'v_ranks' |
 	'crewutility' |
 	'qp_score' |
-	'qp_best';
+	'qp_best' |
+	'dc_ranks';
 
 interface IToggleableFilter {
 	id: string;
@@ -517,8 +518,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				setViewIsReady(false);
 				view.worker(preparedCrew).then((result) => {
 					setPreparedCrew(result);
-					const f = result.find(ff => ff.symbol === 'black_admiral_crew');
-					console.log(f);
 					setViewIsReady(true);
 				});
 			}
@@ -531,14 +530,28 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
 
 	React.useEffect(() => {
+		if (tableView === 'dc_ranks') {
+			// Clear all filters
+			setCrewFilters([].slice());
+			return;
+		}
+
+		let filterIndex = -1;
+
 		if (!tableView.startsWith("qp_")) {
-			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
+			filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
+			if (filterIndex >= 0) {
+				crewFilters.splice(filterIndex, 1);
+			}
+		}
+		if (tableView !== 'ship') {
+			filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'ship_abilities');
 
 			if (filterIndex >= 0) {
 				crewFilters.splice(filterIndex, 1);
-				setCrewFilters([ ... crewFilters ]);
 			}
 		}
+		setCrewFilters([ ... crewFilters ]);
 	}, [tableView]);
 
 	React.useEffect(() => {
