@@ -8,11 +8,13 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
-import { Voyage } from '../../../../model/player';
+import { PlayerCrew, Voyage } from '../../../../model/player';
 import { EncounterStartingSkills, VoyageRefreshData } from '../../../../model/voyage';
 import { GlobalContext } from '../../../../context/globalcontext';
+
 import { IContest, IContestSkill, IEncounter } from '../model';
-import { IContestAssignments } from './championdata';
+
+import { getChampionCrewData, IChampionCrewData, IContestAssignments } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
 import { EncounterImportComponent } from './encounterimporter';
@@ -46,11 +48,10 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 	const { voyageConfig } = props;
 
 	const [encounter, setEncounter] = React.useState<IEncounter | undefined>(undefined);
-	const [assignments, setAssignments] = React.useState<IContestAssignments>({});
 
-	React.useEffect(() => {
-		setAssignments({});
-	}, [encounter]);
+	const voyageCrew = React.useMemo<PlayerCrew[]>(() => {
+		return voyageConfig.crew_slots.map(cs => cs.crew);
+	}, [voyageConfig]);
 
 	return (
 		<React.Fragment>
@@ -61,23 +62,9 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 			/>
 			{encounter && (
 				<Segment key={encounter.id}>
-					<EncounterCritTraits
+					<Encounter
+						voyageCrew={voyageCrew}
 						encounter={encounter}
-					/>
-					<ContestsTable
-						encounter={encounter}
-						assignments={assignments}
-					/>
-					<Button	/* Reset assignments */
-						content='Reset assignments'
-						onClick={() => setAssignments({})}
-					/>
-					<ChampionsTable
-						id={`champions/${encounter.id}`}
-						voyageConfig={voyageConfig}
-						encounter={encounter}
-						assignments={assignments}
-						setAssignments={setAssignments}
 					/>
 				</Segment>
 			)}
@@ -91,21 +78,22 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 		refreshData.forEach(rd => {
 			rd.character?.voyage.forEach(voyage => {
 				if (voyage.encounter) {
-					const defaultSkills: EncounterStartingSkills = voyage.encounter.skills;
+					const startingSkills: EncounterStartingSkills = voyage.encounter.skills;
 					const incrementProf: number = voyage.encounter.increment_prof;
 					const traits: string[] = voyage.encounter.traits;
 					const contests: IContest[] = [];
 					voyage.encounter.contests_data.forEach((cd, contestIndex) => {
 						const skills: IContestSkill[] = [];
+						const critChance: number = cd.boss_crit_chance ?? 0;
 						Object.keys(cd.skills).forEach(skillKey => {
 							const skill: string = cd.skills[skillKey];
 							skills.push({
 								skill,
-								range_min: defaultSkills[skill].min_prof,
-								range_max: defaultSkills[skill].max_prof + (contestIndex * incrementProf)
+								range_min: cd.boss_min_prof ?? startingSkills[skill].min_prof,
+								range_max: cd.boss_max_prof ?? startingSkills[skill].max_prof + (contestIndex * incrementProf)
 							})
 						});
-						contests.push({ skills });
+						contests.push({ skills, critChance });
 					});
 					encounter = { id: voyage.encounter.id, critTraits: traits, contests };
 				}
@@ -113,6 +101,55 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 		});
 		setEncounter(encounter);
 	}
+};
+
+type EncounterProps = {
+	voyageCrew: PlayerCrew[];
+	encounter: IEncounter;
+};
+
+const Encounter = (props: EncounterProps) => {
+	const { voyageCrew, encounter } = props;
+
+	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
+	const [assignments, setAssignments] = React.useState<IContestAssignments>({});
+
+	React.useEffect(() => {
+		setAssignments({});
+	}, [encounter]);
+
+	React.useEffect(() => {
+		getChampionCrewData(voyageCrew, encounter, assignments, championData).then(updatedData => {
+			setChampionData(updatedData);
+		});
+	}, [voyageCrew, encounter, assignments]);
+
+	if (!championData) return <></>;
+
+	return (
+		<React.Fragment>
+			<EncounterCritTraits
+				encounter={encounter}
+			/>
+			<ContestsTable
+				encounter={encounter}
+				championData={championData}
+				assignments={assignments}
+			/>
+			<Button	/* Reset assignments */
+				content='Reset assignments'
+				onClick={() => setAssignments({})}
+			/>
+			<ChampionsTable
+				id={`champions/${encounter.id}`}
+				voyageCrew={voyageCrew}
+				encounter={encounter}
+				championData={championData}
+				assignments={assignments}
+				setAssignments={setAssignments}
+			/>
+		</React.Fragment>
+	);
 };
 
 type EncounterCritTraitsProps = {

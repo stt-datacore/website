@@ -15,7 +15,7 @@ export function getCrewGauntletAverage(crew: PlayerCrew, skills: string[]): numb
 
 export function getCrewCritChance(crew: PlayerCrew, traits: string[]): number {
 	const critCount: number = traits.filter(trait => crew.traits.includes(trait)).length;
-	return [.05, .25, .45, .65][critCount];
+	return [5, 25, 45, 65][critCount];
 }
 
 export function crewIsShortSkilled(crew: PlayerCrew, skills: string[]): boolean {
@@ -160,7 +160,7 @@ export function simulateRoll(contestant: IContestant): number {
 		const range: number = skill.range_max - skill.range_min;
 		for (let j = 0; j < 3; j++) {
 			const roll: number = skill.range_min + Math.floor(Math.random() * range);
-			const critFactor: number = contestant.critChance > Math.random() ? 2 : 1;
+			const critFactor: number = contestant.critChance > (Math.random() * 100) ? 2 : 1;
 			result += (roll * critFactor);
 		}
 	});

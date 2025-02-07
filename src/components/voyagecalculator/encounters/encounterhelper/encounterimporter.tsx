@@ -94,7 +94,8 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
                     config={{
                         postValues: {
                             "voyage_status_id": voyage.id,
-                            "new_only": true
+                            "new_only": true,
+                            "client_api": 25
                         },
                         pasteInMobile: true,
                         dataUrl: PLAYERLINK,

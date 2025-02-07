@@ -7,16 +7,17 @@ import {
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 import { IContest, IContestSkill, IEncounter, IExpectedRoll } from '../model';
 import { formatContestResult, getExpectedRoll } from '../utils';
-import { IChampion, IChampionContest, IContestAssignments, makeContestId } from './championdata';
 import { ProficiencyRanges } from '../common/ranges';
+import { IChampion, IChampionContest, IChampionCrewData, IContestAssignments, makeContestId } from './championdata';
 
 type ContestsTableProps = {
 	encounter: IEncounter;
+	championData: IChampionCrewData[];
 	assignments: IContestAssignments;
 };
 
 export const ContestsTable = (props: ContestsTableProps) => {
-	const { encounter, assignments } = props;
+	const { encounter, championData, assignments } = props;
 
 	const contestIds: string[] = encounter.contests.map((contest, contestIndex) => makeContestId(contest, contestIndex));
 
@@ -68,6 +69,9 @@ export const ContestsTable = (props: ContestsTableProps) => {
 				<Table.Body>
 					{encounter.contests.map((contest, contestIndex) => {
 						const contestId: string = contestIds[contestIndex];
+						const assignedContest: IChampionContest | undefined = championData.find(crew =>
+							crew.id === assignments[contestId]?.crewId
+						)?.contests[contestId];
 						return (
 							<Table.Row key={contestId}>
 								<Table.Cell textAlign='center'>
@@ -77,21 +81,21 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{renderSkills(contest.skills)}
 								</Table.Cell>
 								<Table.Cell>
-									{assignments[contestId] && (<CrewLabel crew={assignments[contestId].champion.crew} />)}
-									{!assignments[contestId] && <>(Unassigned)</>}
+									{assignedContest && (<CrewLabel crew={assignedContest.champion.crew} />)}
+									{!assignedContest && <>(Unassigned)</>}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{renderChampionSkills(contestIndex)}
+									{assignedContest && renderChampionSkills(assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{renderContest(contestIndex)}
+									{renderContest(contestIndex, assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{assignments[contestId] && (<>{assignments[contestId].champion.critChance*100}%</>)}
+									{assignedContest && (<>{assignedContest.champion.critChance}%</>)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{assignments[contestId]?.result && <>{formatContestResult(assignments[contestId].result)}</>}
-									{!assignments[contestId] && <>0%</>}
+									{assignedContest?.result && <>{formatContestResult(assignedContest.result)}</>}
+									{!assignedContest && <>0%</>}
 								</Table.Cell>
 							</Table.Row>
 						)
@@ -105,9 +109,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		return <ProficiencyRanges skills={skills} />;
 	}
 
-	function renderChampionSkills(contestIndex: number): JSX.Element {
-		const contest: IChampionContest | undefined = assignments[contestIds[contestIndex]];
-		if (!contest) return <></>;
+	function renderChampionSkills(contest: IChampionContest): JSX.Element {
 		const champion: IChampion = contest.champion;
 		const contestSkills: IContestSkill[] = contest.skills.map(contestSkill => {
 			const championSkill: IContestSkill | undefined = champion.skills.find(championSkill =>
@@ -123,9 +125,9 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		return renderSkills(contestSkills);
 	}
 
-	function renderContest(contestIndex: number): JSX.Element {
+	function renderContest(contestIndex: number, assignedContest: IChampionContest | undefined): JSX.Element {
 		const contest: IContest = encounter.contests[contestIndex];
-		const championRoll: IExpectedRoll | undefined = assignments[contestIds[contestIndex]]?.champion_roll;
+		const championRoll: IExpectedRoll | undefined = assignedContest?.champion_roll;
 		const challengerRoll: IExpectedRoll = getExpectedRoll(contest.skills);
 		return (
 			<React.Fragment>

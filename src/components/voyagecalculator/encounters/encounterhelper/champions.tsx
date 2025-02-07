@@ -7,7 +7,6 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../../model/player';
-import { IVoyageCalcConfig } from '../../../../model/voyage';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 
 import CONFIG from '../../../CONFIG';
@@ -20,27 +19,21 @@ import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { ContestSimulatorModal } from '../contestsimulator/modal';
 
-import { IChampion, IChampionCrewData, IChampionContest, IEndurableSkill, getChampionCrewData, makeContestId, IContestAssignments } from './championdata';
+import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment } from './championdata';
 
 type ChampionsTableProps = {
 	id: string;
-	voyageConfig: IVoyageCalcConfig;
+	voyageCrew: PlayerCrew[];
 	encounter: IEncounter;
+	championData: IChampionCrewData[];
 	assignments: IContestAssignments;
 	setAssignments: (assignments: IContestAssignments) => void;
 };
 
 export const ChampionsTable = (props: ChampionsTableProps) => {
-	const { voyageConfig, encounter, assignments, setAssignments } = props;
+	const { voyageCrew, encounter, championData, assignments, setAssignments } = props;
 
-	const [data, setData] = React.useState<IChampionCrewData[] | undefined>(undefined);
 	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
-
-	React.useEffect(() => {
-		getChampionCrewData(voyageConfig, encounter, assignments, data).then(updatedData => {
-			setData(updatedData);
-		});
-	}, [voyageConfig, encounter, assignments]);
 
 	const tableSetup = React.useMemo<IDataTableSetup>(() => {
 		const columns: IDataTableColumn[] = [
@@ -62,13 +55,13 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				title: 'Crit Chance',
 				align: 'center',
 				sortField: { id: 'crit_chance', firstSort: 'descending' },
-				renderCell: (datum: IEssentialData) => <>{(datum as IChampionCrewData).crit_chance * 100}%</>
+				renderCell: (datum: IEssentialData) => <>{(datum as IChampionCrewData).crit_chance}%</>
 			}
 		];
 		encounter.contests.forEach((contest, contestIndex) => {
 			const contestId: string = makeContestId(contest, contestIndex);
-			const viableChampions: number = voyageConfig.crew_slots.filter(crewSlot =>
-				contest.skills.some(contestSkill => Object.keys(crewSlot.crew.skills).includes(contestSkill.skill))
+			const viableChampions: number = voyageCrew.filter(crew =>
+				contest.skills.some(contestSkill => Object.keys(crew.skills).includes(contestSkill.skill))
 			).length;
 			columns.push(
 				{
@@ -87,8 +80,8 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 					renderCell: (datum: IEssentialData) => (
 						<ChampionContestCell
 							contest={(datum as IChampionCrewData).contests[contestId]}
-							assignedChampion={assignments[contestId]?.champion}
-							assignContestChampion={assignContestChampion}
+							assignment={assignments[contestId]}
+							assignCrew={assignContestChampion}
 							setSimulatorTrigger={setSimulatorTrigger}
 						/>
 					)
@@ -99,7 +92,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			columns,
 			rowsPerPage: 12
 		};
-	}, [voyageConfig, encounter, assignments]);
+	}, [championData]);
 
 	return (
 		<React.Fragment>
@@ -107,23 +100,19 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				Voyage Crew
 			</Header>
 			<p>Your crew's expected odds of winning each contest are listed below. Tap the odds to simulate that contest with higher confidence. Tap <Icon name='check circle outline' fitted /> to assign the crew to that contest.</p>
-			{data && (
-				<React.Fragment>
-					<DataTable
-						id={`${props.id}/datatable`}
-						data={data}
-						setup={tableSetup}
-					/>
-					{simulatorTrigger && (
-						<ChampionContestSimulator
-							voyageConfig={voyageConfig}
-							critTraits={encounter.critTraits}
-							contest={simulatorTrigger}
-							assignments={assignments}
-							cancelTrigger={() => setSimulatorTrigger(undefined)}
-						/>
-					)}
-				</React.Fragment>
+			<DataTable
+				id={`${props.id}/datatable`}
+				data={championData}
+				setup={tableSetup}
+			/>
+			{simulatorTrigger && (
+				<ChampionContestSimulator
+					voyageCrew={voyageCrew}
+					critTraits={encounter.critTraits}
+					contest={simulatorTrigger}
+					assignments={assignments}
+					cancelTrigger={() => setSimulatorTrigger(undefined)}
+				/>
 			)}
 		</React.Fragment>
 	);
@@ -162,33 +151,49 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return <ProficiencyRanges skills={skills} sort />;
 	}
 
-	function assignContestChampion(contest: IChampionContest | undefined, champion: IChampion): void {
+	function assignContestChampion(contest: IChampionContest | undefined, crew: PlayerCrew): void {
 		// Remove from existing assignment, if necessary
 		let existingContestId: string | undefined;
 		Object.keys(assignments).forEach(contestId => {
-			if (assignments[contestId].champion.crew.id === champion.crew.id)
+			if (assignments[contestId].crewId === crew.id)
 				existingContestId = contestId;
 		});
 		if (existingContestId) delete assignments[existingContestId];
-		if (contest) assignments[contest.id] = contest;
+		if (contest) {
+			const enduringSkills: IContestSkill[] = [];
+			Object.keys(crew.skills).forEach(skill => {
+				if (!contest.skills.map(cs => cs.skill).includes(skill)) {
+					enduringSkills.push({
+						skill,
+						range_min: Math.floor(crew.skills[skill].range_min / 2),
+						range_max: Math.floor(crew.skills[skill].range_max / 2)
+					});
+				}
+			});
+			assignments[contest.id] = {
+				index: contest.index,
+				crewId: crew.id,
+				enduring_skills: enduringSkills
+			};
+		};
 		setAssignments({...assignments});
 	}
 };
 
 type ChampionContestCellProps = {
 	contest: IChampionContest;
-	assignedChampion: IChampion | undefined;
-	assignContestChampion: (contest: IChampionContest | undefined, champion: IChampion) => void;
+	assignment: IContestAssignment | undefined;
+	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
 	setSimulatorTrigger: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
-	const { contest, assignedChampion, assignContestChampion, setSimulatorTrigger } = props;
+	const { contest, assignment, assignCrew: assignCrew, setSimulatorTrigger } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
 
-	const isAssigned: boolean = !!assignedChampion && (assignedChampion.crew.id === contest.champion.crew.id);
+	const isAssigned: boolean = !!assignment && (assignment.crewId === contest.champion.crew.id);
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', rowGap: '.5em' }}>
@@ -207,7 +212,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						</Button>
 						<Button	/* Assign CHAMPION_NAME to this contest */
 							title={`Assign ${contest.champion.crew.name} to this contest`}
-							onClick={() => assignContestChampion(!isAssigned ? contest : undefined, contest.champion)}
+							onClick={() => assignCrew(!isAssigned ? contest : undefined, contest.champion.crew)}
 							icon={isAssigned ? 'check circle' : 'check circle outline'}
 						/>
 					</Button.Group>
@@ -267,7 +272,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 };
 
 type ChampionContestSimulatorProps = {
-	voyageConfig: IVoyageCalcConfig;
+	voyageCrew: PlayerCrew[];
 	critTraits: string[];
 	contest: IChampionContest;
 	assignments: IContestAssignments;
@@ -275,15 +280,15 @@ type ChampionContestSimulatorProps = {
 };
 
 const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
-	const { voyageConfig, critTraits, contest, assignments, cancelTrigger } = props;
+	const { voyageCrew, critTraits, contest, assignments, cancelTrigger } = props;
 
 	const boostedPool = React.useMemo<PlayerCrew[]>(() => {
-		return voyageConfig.crew_slots.map(cs => {
-			const crew: PlayerCrew = oneCrewCopy(cs.crew) as PlayerCrew;
+		return voyageCrew.map(voyager => {
+			const crew: PlayerCrew = oneCrewCopy(voyager) as PlayerCrew;
 			Object.keys(assignments).forEach(contestId => {
-				const assignedContest: IChampionContest | undefined = assignments[contestId];
-				if (assignedContest && assignedContest.index < contest.index && assignedContest.champion.crew.id !== crew.id) {
-					assignedContest.champion.enduring_skills.forEach(es => {
+				const assignment: IContestAssignment | undefined = assignments[contestId];
+				if (assignment && assignment.index < contest.index && assignment.crewId !== crew.id) {
+					assignment.enduring_skills.forEach(es => {
 						if (Object.keys(crew.skills).includes(es.skill)) {
 							crew.skills[es.skill].range_min += es.range_min;
 							crew.skills[es.skill].range_max += es.range_max;
@@ -293,7 +298,7 @@ const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
 			});
 			return crew;
 		});
-	}, [voyageConfig, contest, assignments]);
+	}, [voyageCrew, contest, assignments]);
 
 	return (
 		<ContestSimulatorModal

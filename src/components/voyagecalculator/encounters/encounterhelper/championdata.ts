@@ -1,5 +1,4 @@
 import { PlayerCrew } from '../../../../model/player';
-import { IVoyageCalcConfig } from '../../../../model/voyage';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 import { IContest, IExpectedRoll, IContestant, IContestSkill, IContestResult, IEncounter } from '../model';
 import { getCrewCritChance, getExpectedRoll, makeContestant, simulateContest } from '../utils';
@@ -26,7 +25,6 @@ export interface IChampionContest extends IContest {
 
 export interface IChampion extends IContestant {
 	crew: PlayerCrew;
-	enduring_skills: IContestSkill[];
 };
 
 export interface IEndurableSkill extends IContestSkill {
@@ -40,7 +38,13 @@ export interface IChampionContestResult extends IContestResult {
 };
 
 export interface IContestAssignments {
-	[contestId: string]: IChampionContest;
+	[contestId: string]: IContestAssignment;
+};
+
+export interface IContestAssignment {
+	index: number;
+	crewId: number;
+	enduring_skills: IContestSkill[];
 };
 
 export function makeContestId(contest: IContest, contestIndex: number): string {
@@ -50,7 +54,7 @@ export function makeContestId(contest: IContest, contestIndex: number): string {
 }
 
 export async function getChampionCrewData(
-	voyageConfig: IVoyageCalcConfig,
+	voyageCrew: PlayerCrew[],
 	encounter: IEncounter,
 	assignments: IContestAssignments,
 	previousCrewData?: IChampionCrewData[]
@@ -63,8 +67,8 @@ export async function getChampionCrewData(
 
 	const promises: Promise<IChampionContestResult>[] = [];
 
-	const data: IChampionCrewData[] = voyageConfig.crew_slots.map(crewSlot => {
-		const crewData: IChampionCrewData = oneCrewCopy(crewSlot.crew) as IChampionCrewData;
+	const data: IChampionCrewData[] = voyageCrew.map(crew => {
+		const crewData: IChampionCrewData = oneCrewCopy(crew) as IChampionCrewData;
 
 		crewData.best_proficiency = Object.keys(crewData.skills).reduce((prev, curr) => {
 			const max: number = crewData.skills[curr].range_max;
@@ -82,9 +86,9 @@ export async function getChampionCrewData(
 
 			const boostedSkills: IContestSkill[] = [];
 			for (let preIndex = 0; preIndex < contestIndex; preIndex++) {
-				const preChampion: IChampion | undefined = assignments[contestIds[preIndex]]?.champion;
-				if (preChampion && preChampion.crew.id !== crewData.id) {
-					preChampion.enduring_skills.forEach(es => {
+				const preAssignment: IContestAssignment | undefined = assignments[contestIds[preIndex]];
+				if (preAssignment && preAssignment.crewId !== crewData.id) {
+					preAssignment.enduring_skills.forEach(es => {
 						const championSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === es.skill);
 						if (championSkill) {
 							const boostedSkill: IContestSkill | undefined = boostedSkills.find(bs => bs.skill === es.skill);
@@ -109,7 +113,7 @@ export async function getChampionCrewData(
 			const championRoll: IExpectedRoll = getExpectedRoll(champion.skills);
 			const challenger: IContestant = {
 				skills: contest.skills,
-				critChance: 0
+				critChance: contest.critChance
 			};
 
 			const endurableSkills: IEndurableSkill[] = [];
@@ -129,7 +133,6 @@ export async function getChampionCrewData(
 					});
 				}
 			});
-			champion.enduring_skills = endurableSkills;
 
 			// Reuse previous contest data, if available and unchanged
 			//	Otherwise queue for simulation
@@ -154,6 +157,7 @@ export async function getChampionCrewData(
 				id: contestId,
 				index: contestIndex,
 				skills: contest.skills,
+				critChance: contest.critChance,
 				champion,
 				champion_roll: championRoll,
 				challenger,

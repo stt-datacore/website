@@ -84,7 +84,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 				title: 'Crit Chance',
 				align: 'center',
 				sortField: { id: 'crit_chance', firstSort: 'descending' },
-				renderCell: (datum: IEssentialData) => <>{(datum as IProficientCrew).crit_chance * 100}%</>
+				renderCell: (datum: IEssentialData) => <>{(datum as IProficientCrew).crit_chance}%</>
 			}
 		);
 	}

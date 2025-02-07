@@ -8,6 +8,7 @@ export interface IEncounter {
 
 export interface IContest {
 	skills: IContestSkill[];
+	critChance: number;
 };
 
 export interface IContestSkill {

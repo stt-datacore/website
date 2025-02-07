@@ -2,7 +2,7 @@
 import { VPDetails } from '../utils/voyagevp';
 import { BaseSkills } from './crew';
 import { Icon } from './game-elements';
-import { Aggregates, CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
 import { Ship } from './ship';
 
 // Voyage calculator require crew.skills
@@ -625,6 +625,7 @@ export interface VoyageRefreshData {
 	action: 'update' | 'ephemeral';
 	character?: VoyageRefreshCharacter;
 	voyage_narrative?: VoyageNarrative[];
+	rewards?: PendingRewards;
 };
 
 export interface VoyageRefreshCharacter {
@@ -664,6 +665,9 @@ export interface EncounterContest {
 	narrative_reference: string;
 	skills: EncounterContestSkills;
 	state: string;	// unresolved, succeed
+	boss_min_prof?: number;
+	boss_max_prof?: number;
+	boss_crit_chance?: number;
 };
 
 export interface EncounterContestSkills {
