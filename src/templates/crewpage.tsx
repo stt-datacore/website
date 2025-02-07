@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet as HelmetDep } from 'react-helmet';
 import { Image, Divider, Rating, Button, Icon } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
 
@@ -178,7 +178,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
 			this.setState({ ...this.state, itemBig: !this.state.itemBig });
 		}
-
+		const Helmet = HelmetDep as any;
 		return (
 			<>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>

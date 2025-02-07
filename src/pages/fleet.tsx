@@ -9,6 +9,7 @@ import FleetInfoPage from '../components/fleet/fleet_info';
 import { FleetImportComponent } from '../components/fleet/fleetimporter';
 import { Fleet, Member } from '../model/fleet';
 import { useStateWithStorage } from '../utils/storage';
+import { ColorName } from '../components/fleet/colorname';
 
 const FleetPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -22,6 +23,7 @@ const FleetPage = () => {
 	return (
 		<DataPageLayout
 			pageTitle={fleetName || t('global.fleet')}
+			pageTitleJSX={fleetName ? <ColorName text={fleetName} /> : undefined}
 			pageDescription={t('fleet.description')}
 			playerPromptType='require'
             demands={['factions', 'event_instances']}

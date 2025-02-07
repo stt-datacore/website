@@ -1,6 +1,6 @@
 import React from 'react';
 import { withPrefix, graphql, useStaticQuery } from 'gatsby';
-import { Helmet } from 'react-helmet';
+import { Helmet as HelmetDep } from 'react-helmet';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { ValidDemands } from '../../context/datacontext';
@@ -22,11 +22,13 @@ export interface DataPageLayoutProps {
 	 * Title of the page, for use in both datapage header, title, and meta tags
 	 */
 	pageTitle?: string;
+	pageTitleJSX?: JSX.Element;
 
 	/**
 	 * One or two-sentence description of the page, for use in both datapage header and meta tags
 	 */
 	pageDescription?: string;
+	pageDescriptionJSX?: JSX.Element;
 
 	/**
 	 * Default demands are crew, items, ship_schematics, all_buffs, and cadet
@@ -70,7 +72,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const alertContext = React.useContext(AlertContext);
 	const { drawAlertModal } = alertContext;
 
-	const { children, pageId, pageTitle, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
+	const { children, pageId, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -128,10 +130,10 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 							setActivePanel={setDashboardPanel}
 						/>
 						<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
-							{pageTitle && (
+							{(!!pageTitleJSX || !!pageTitle) && (
 								<React.Fragment>
-									<Header as='h2'>{pageTitle}</Header>
-									{pageDescription && <p>{pageDescription}</p>}
+									<Header as='h2'>{pageTitleJSX || pageTitle}</Header>
+									{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
 								</React.Fragment>
 							)}
 							<PlayerHeader
@@ -193,7 +195,7 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 	`);
 
 	if (DEBUG_MODE) console.log("Helmet component render");
-
+	const Helmet = HelmetDep as any;
 	return (
 		<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
 			{title && <title>{title}</title>}
