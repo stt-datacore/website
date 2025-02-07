@@ -3,7 +3,7 @@ import { Header, Label, Message, Icon, Table, Item, Image, Input, FormInput, But
 import { Link } from 'gatsby';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { Fleet, Member } from '../../model/fleet';
+import { Fleet, Member, ProfileData } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
 import { TinyStore } from '../../utils/tiny';
 import { FleetResponse } from '../../model/fleet';
@@ -13,6 +13,10 @@ import { appelate, printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
 import { downloadData } from '../../utils/crewutils';
 import { getIconPath } from '../../utils/assets';
+import moment from "moment";
+import 'moment/locale/fr';
+import 'moment/locale/de';
+import 'moment/locale/es';
 
 type FleetInfoPageProps = {
 	fleet_id: number;
@@ -170,32 +174,37 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 	}
 
 	private refreshData() {
-		const { access_token } = this.state;
 		const { playerData } = this.context.player;
-
-		if (!access_token || !playerData) {
+		const dbids = this.props.fleet_data.members.map(m => m.dbid);
+		if (!playerData) {
 			return;
 		}
 
-		let fleet_id = playerData.player.fleet.id;
-		this.setState({ ... this.state, fleet_id });
-
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info?fleetid=` + fleet_id, {
+		fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info`, {
 				method: 'POST',
-				body: JSON.stringify({ access_token }),
+				body: JSON.stringify({ dbids: dbids }),
 				headers: {
 					'Content-type': "application/json"
 				}
 			})
 			.then(response => response.json())
-			.then((fleetData: FleetResponse) => {
-				this.tiny?.setValue('access_token', fleetData.access_token, true);
-				this.setState({ fleet_data: fleetData.fleet, access_token: fleetData.access_token });
+			.then((fleetData: ProfileData[]) => {
+				if (fleetData) {
+					for (let player of fleetData) {
+						let pinfo = this.props.fleet_data.members.find(m => m.dbid.toString() == player.dbid);
+						if (pinfo) {
+							pinfo.last_update = new Date(player.lastUpdate);
+							pinfo.hash = player.hash;
+						}
+					}
+				}
 			})
 			.catch(err => {
 				this.setState({ errorMessage: err });
+			})
+			.finally(() => {
+				this.setState({ ... this.state, fleet_data: this.props.fleet_data , fleet_id: this.props.fleet_id })
 			});
-
 	}
 
 	readonly signinClick = () => {
@@ -250,7 +259,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 
 	render() {
 		const { sortDirection, sortField, errorMessage, errorTitle, factions, events, access_token, username, password } = this.state;
-		const { fleet_data, fleet_id } = this.props;
+		const { fleet_data, fleet_id } = this.state;
 		const { playerData } = this.context.player;
 		const { t } = this.context.localized;
 		if (!playerData) return <></>;
@@ -401,7 +410,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 					<Table.Row>
 						<Table.HeaderCell
 							sorted={sortField === 'name' ? sortDirection : undefined}
-							width={2}
+							width={4}
 							onClick={(e) => this.sortClick('name')}
 							>
 							{t('fleet.member_columns.name')}
@@ -453,7 +462,7 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 				<Table.Body>
 					{fleet_data.members.map((member, idx) => (
 						<Table.Row key={idx}>
-							<Table.Cell>
+							<Table.Cell width={3}>
 								<div
 									style={{
 										display: 'grid',
@@ -479,6 +488,10 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 									</div>
 									<div style={{ gridArea: 'description' }}>
 										{t('base.level') + " " + member.level.toString()}
+										{!!member.last_update && <p>
+										{t('global.last_updated_colon')} {this._momentDate(member.last_update!)}
+										</p>}
+
 									</div>
 								</div>
 							</Table.Cell>
@@ -510,6 +523,10 @@ class FleetInfoPage extends Component<FleetInfoPageProps, FleetInfoPageState> {
 			return;
 		}
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'members.csv');
+	}
+
+	_momentDate(date: Date) {
+		return moment(date).utc(false).locale(this.context.localized.language === 'sp' ? 'es' : this.context.localized.language).format("MMM D, y")
 	}
 }
 
