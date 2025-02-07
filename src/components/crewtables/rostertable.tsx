@@ -530,11 +530,11 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
 
 	React.useEffect(() => {
-		if (tableView === 'dc_ranks') {
-			// Clear all filters
-			setCrewFilters([].slice());
-			return;
-		}
+		// if (tableView === 'dc_ranks') {
+		// 	// Clear all filters
+		// 	setCrewFilters([].slice());
+		// 	return;
+		// }
 
 		let filterIndex = -1;
 
