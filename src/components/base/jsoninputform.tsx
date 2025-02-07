@@ -142,9 +142,11 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 				</Header>
 				<p>
 					{tfmt('json.copy_and_paste.description_1', {
-						'data': <a  href={postValues ? '#' : DATALINK} onClick={() => postValues ? postClick() : null} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
-								</a>
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+									{caption}
+								</span>
 					})}
 					<br />{t('json.copy_and_paste.description_2')}
 				</p>
@@ -200,10 +202,12 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{t('json.upload_file.title')}
 				</Header>
 				<p>
-					{tfmt('json.upload_file.description_1', {
-						data: <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-							{caption}
-						</a>
+					{tfmt('json.copy_and_paste.description_1', {
+						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+									{caption}
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+									{caption}
+								</span>
 					})}
 					<br />{t('json.upload_file.description_2')}
 				</p>
