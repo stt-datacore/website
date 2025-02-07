@@ -13,16 +13,16 @@ import { useStateWithStorage } from '../utils/storage';
 const FleetPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-
+	const { t } = globalContext.localized;
 	const [fleet, setFleet] = useStateWithStorage<Fleet | undefined>('fleet_info', undefined);
 
 	const dbid = playerData?.player.dbid ?? '';
 	const guild = playerData?.player.fleet?.id ?? 0;
-
+	const fleetName = playerData?.player.fleet.slabel
 	return (
 		<DataPageLayout
-			pageTitle='Fleet Info'
-			pageDescription='Use this tool to get information about your fleet.'
+			pageTitle={fleetName || t('global.fleet')}
+			pageDescription={t('fleet.description')}
 			playerPromptType='require'
             demands={['factions', 'event_instances']}
 		>

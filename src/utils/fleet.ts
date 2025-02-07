@@ -33,7 +33,7 @@ export function exportMemberFields(): ExportField[] {
 		},
 		{
 			label: 'Image',
-			value: (row: Member) => row.crew_avatar
+			value: (row: Member) => row.crew_avatar.icon.file
 		}
 	];
 }
