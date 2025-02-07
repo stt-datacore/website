@@ -4,6 +4,7 @@ import {
 	Button,
 	Icon,
 	Label,
+	Message,
 	Segment,
 	SemanticICONS
 } from 'semantic-ui-react';
@@ -67,6 +68,11 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 						encounter={encounter}
 					/>
 				</Segment>
+			)}
+			{!encounter && (
+				<Message>
+					No encounter data found. Please try again when your voyage has reached an encounter.
+				</Message>
 			)}
 		</React.Fragment>
 	);

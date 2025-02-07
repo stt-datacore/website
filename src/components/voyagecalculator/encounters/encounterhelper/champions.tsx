@@ -13,6 +13,7 @@ import CONFIG from '../../../CONFIG';
 import { IDataTableColumn, IDataTableSetup, IEssentialData } from '../../../dataset_presenters/model';
 import { DataTable } from '../../../dataset_presenters/datatable';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
+import { AvatarView } from '../../../item_presenters/avatarview';
 
 import { IContestSkill, IEncounter } from '../model';
 import { formatContestResult } from '../utils';
@@ -60,13 +61,10 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		];
 		encounter.contests.forEach((contest, contestIndex) => {
 			const contestId: string = makeContestId(contest, contestIndex);
-			const viableChampions: number = voyageCrew.filter(crew =>
-				contest.skills.some(contestSkill => Object.keys(crew.skills).includes(contestSkill.skill))
-			).length;
 			columns.push(
 				{
 					id: `contests.${contestId}.odds`,
-					title: renderContestColumnHeader(contest.skills, viableChampions),
+					title: renderContestColumnHeader(contest.skills, assignments[contestId]),
 					align: 'center',
 					sortField: {
 						id: `contests.${contestId}.odds`,
@@ -80,8 +78,8 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 					renderCell: (datum: IEssentialData) => (
 						<ChampionContestCell
 							contest={(datum as IChampionCrewData).contests[contestId]}
-							assignment={assignments[contestId]}
-							assignCrew={assignContestChampion}
+							assignedContest={getAssignedContest((datum as IChampionCrewData).contests[contestId])}
+							assignCrew={assignCrewToContest}
 							setSimulatorTrigger={setSimulatorTrigger}
 						/>
 					)
@@ -133,13 +131,37 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return sortDirection === 'descending' ? b.odds - a.odds : a.odds - b.odds;
 	}
 
-	function renderContestColumnHeader(contestSkills: IContestSkill[], viableChampions: number): JSX.Element {
+	function renderContestColumnHeader(contestSkills: IContestSkill[], assignment: IContestAssignment | undefined): JSX.Element {
+		const skillIcons: JSX.Element[] = contestSkills.map(cs =>
+			<img key={cs.skill}
+				src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`}
+				style={{ height: '1.1em', verticalAlign: 'middle' }}
+				className='invertibleIcon'
+			/>
+		);
+		if (assignment) {
+			return (
+				<span	/* CREW_NAME is assigned to this contest */
+					title={`${assignment.crew.name} is assigned to this contest`}
+					style={{ display: 'inline-flex', alignItems: 'center', columnGap: '.5em' }}
+				>
+					<span>{skillIcons}</span>
+					<AvatarView mode='crew' item={assignment.crew} size={32} />
+				</span>
+			);
+		}
+		const assignedIds: number[] = Object.keys(assignments).map(contestId => assignments[contestId].crew.id);
+		const viableChampions: number = voyageCrew.filter(crew =>
+			contestSkills.some(contestSkill => Object.keys(crew.skills).includes(contestSkill.skill))
+				&& !assignedIds.includes(crew.id)
+		).length;
 		return (
-			<span title={`Your voyage has ${viableChampions} viable crew for this contest`}>
-				{contestSkills.map(cs => (
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-				))}
-				{` `}({viableChampions})
+			<span	/* Your voyage has N viable crew for this contest */
+				title={`Your voyage has ${viableChampions} viable crew for this contest`}
+				style={{ display: 'inline-flex', alignItems: 'center', columnGap: '.5em' }}
+			>
+				<span>{skillIcons}</span>
+				<span>({viableChampions})</span>
 			</span>
 		);
 	}
@@ -151,11 +173,20 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return <ProficiencyRanges skills={skills} sort />;
 	}
 
-	function assignContestChampion(contest: IChampionContest | undefined, crew: PlayerCrew): void {
+	function getAssignedContest(contest: IChampionContest): string | undefined {
+		let assignedContest: string | undefined;
+		Object.keys(assignments).forEach(contestId => {
+			if (assignments[contestId].crew.id === contest.champion.crew.id)
+				assignedContest = contestId;
+		});
+		return assignedContest;
+	}
+
+	function assignCrewToContest(contest: IChampionContest | undefined, crew: PlayerCrew): void {
 		// Remove from existing assignment, if necessary
 		let existingContestId: string | undefined;
 		Object.keys(assignments).forEach(contestId => {
-			if (assignments[contestId].crewId === crew.id)
+			if (assignments[contestId].crew.id === crew.id)
 				existingContestId = contestId;
 		});
 		if (existingContestId) delete assignments[existingContestId];
@@ -172,7 +203,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			});
 			assignments[contest.id] = {
 				index: contest.index,
-				crewId: crew.id,
+				crew,
 				enduring_skills: enduringSkills
 			};
 		};
@@ -182,18 +213,19 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 
 type ChampionContestCellProps = {
 	contest: IChampionContest;
-	assignment: IContestAssignment | undefined;
+	assignedContest: string | undefined;
 	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
 	setSimulatorTrigger: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
-	const { contest, assignment, assignCrew: assignCrew, setSimulatorTrigger } = props;
+	const { contest, assignedContest, assignCrew, setSimulatorTrigger } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
 
-	const isAssigned: boolean = !!assignment && (assignment.crewId === contest.champion.crew.id);
+	const isAssigned: boolean = !!assignedContest;
+	const isAssignedHere: boolean = assignedContest === contest.id;
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', rowGap: '.5em' }}>
@@ -201,7 +233,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				{!contest.result && <Icon loading name='spinner' />}
 				{contest.result && (
 					<Button.Group
-						color={isAssigned ? 'blue' : undefined}
+						color={isAssignedHere ? 'blue' : undefined}
 						compact
 					>
 						<Button	/* Simulate contest */
@@ -212,9 +244,13 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						</Button>
 						<Button	/* Assign CHAMPION_NAME to this contest */
 							title={`Assign ${contest.champion.crew.name} to this contest`}
-							onClick={() => assignCrew(!isAssigned ? contest : undefined, contest.champion.crew)}
-							icon={isAssigned ? 'check circle' : 'check circle outline'}
-						/>
+							onClick={() => assignCrew(!isAssignedHere ? contest : undefined, contest.champion.crew)}
+							icon
+						>
+							{!isAssigned && <Icon name='check circle outline' />}
+							{isAssignedHere && <Icon name='check circle' />}
+							{isAssigned && !isAssignedHere && <Icon name='minus circle' color='yellow' />}
+						</Button>
 					</Button.Group>
 				)}
 			</div>
@@ -246,7 +282,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		const skill: string = endurableSkill.skill;
 		const contests: number = endurableSkill.contests_boosted;
 		const average: number = endurableSkill.range_min + Math.floor((endurableSkill.range_max - endurableSkill.range_min) / 2);
-		const title: string = `If selected for this contest, ${contest.champion.crew.name}'s unused ${CONFIG.SKILLS[skill]} skill will boost ${contests} later contest${contests !== 1 ? 's' : ''} by ${endurableSkill.range_min}-${endurableSkill.range_max} per ${CONFIG.SKILLS[skill]} roll for an expected total boost of +${average*3}${contests > 1 ? ' per contest' : ''}`;
+		const title: string = `If selected for this contest, ${contest.champion.crew.name}'s unused ${CONFIG.SKILLS[skill]} skill will boost ${contests} later contest${contests !== 1 ? 's' : ''} by +(${endurableSkill.range_min}-${endurableSkill.range_max}) per ${CONFIG.SKILLS[skill]} roll for an expected total boost of +${average*3}${contests > 1 ? ' per contest' : ''}`;
 		return (
 			<Label key={skill} title={title}>
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
@@ -260,7 +296,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					<span>
 						+{average*3}
 					</span>
-					{isAssigned && (
+					{isAssignedHere && (
 						<span>
 							<Icon name='arrow alternate circle right' color='green' />
 						</span>
@@ -287,7 +323,7 @@ const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
 			const crew: PlayerCrew = oneCrewCopy(voyager) as PlayerCrew;
 			Object.keys(assignments).forEach(contestId => {
 				const assignment: IContestAssignment | undefined = assignments[contestId];
-				if (assignment && assignment.index < contest.index && assignment.crewId !== crew.id) {
+				if (assignment && assignment.index < contest.index && assignment.crew.id !== crew.id) {
 					assignment.enduring_skills.forEach(es => {
 						if (Object.keys(crew.skills).includes(es.skill)) {
 							crew.skills[es.skill].range_min += es.range_min;

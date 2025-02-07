@@ -43,7 +43,7 @@ export interface IContestAssignments {
 
 export interface IContestAssignment {
 	index: number;
-	crewId: number;
+	crew: PlayerCrew;
 	enduring_skills: IContestSkill[];
 };
 
@@ -87,7 +87,7 @@ export async function getChampionCrewData(
 			const boostedSkills: IContestSkill[] = [];
 			for (let preIndex = 0; preIndex < contestIndex; preIndex++) {
 				const preAssignment: IContestAssignment | undefined = assignments[contestIds[preIndex]];
-				if (preAssignment && preAssignment.crewId !== crewData.id) {
+				if (preAssignment && preAssignment.crew.id !== crewData.id) {
 					preAssignment.enduring_skills.forEach(es => {
 						const championSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === es.skill);
 						if (championSkill) {

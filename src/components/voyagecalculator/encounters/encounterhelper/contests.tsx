@@ -70,7 +70,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 					{encounter.contests.map((contest, contestIndex) => {
 						const contestId: string = contestIds[contestIndex];
 						const assignedContest: IChampionContest | undefined = championData.find(crew =>
-							crew.id === assignments[contestId]?.crewId
+							crew.id === assignments[contestId]?.crew.id
 						)?.contests[contestId];
 						return (
 							<Table.Row key={contestId}>
@@ -98,7 +98,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{!assignedContest && <>0%</>}
 								</Table.Cell>
 							</Table.Row>
-						)
+						);
 					})}
 				</Table.Body>
 			</Table>
