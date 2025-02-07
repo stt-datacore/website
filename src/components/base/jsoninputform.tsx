@@ -311,9 +311,9 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 			let testData = JSON.parse(testInput);
 			if (testData) {
 				// Test for playerData array glitch
-				if (Array.isArray(testData)) {
-					testData = {...testData[0]};
-				}
+				// if (Array.isArray(testData)) {
+				// 	testData = {...testData[0]};
+				// }
                 let val = validateInput(testData);
                 if (val === true) {
                     setInputData(testData);
