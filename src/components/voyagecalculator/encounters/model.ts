@@ -1,6 +1,7 @@
 import { PlayerCrew } from '../../../model/player';
 
 export interface IEncounter {
+	id: number;
 	contests: IContest[];
 	critTraits: string[];
 };

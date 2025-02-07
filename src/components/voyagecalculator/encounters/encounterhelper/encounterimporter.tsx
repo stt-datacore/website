@@ -106,7 +106,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
                     title={`Voyage Input Form`}
                     validateInput={validateVoyage}
                     setValidInput={(voyage) => {
-                        //if (gauntlet) setCollapsed(true);
+                        if (voyage) setCollapsed(true);
                         setData(voyage);
                     }}
 

@@ -652,7 +652,7 @@ export interface VoyageRefreshEncounter extends VoyageEncounterCommon {
 	encounter_vp_multiplier: number;
 	contests_count: number;
 	increment_prof: number;
-	skills: EncounterSkills;
+	skills: EncounterStartingSkills;
 	contest_antimatter_penalty: number;
 	revive_cost: EncounterReviveCost;
 };
@@ -671,11 +671,11 @@ export interface EncounterContestSkills {
 	secondary_skill?: string;
 };
 
-export interface EncounterSkills {
-	[key: string]: EncounterSkill;	// key is command_skill, etc
+export interface EncounterStartingSkills {
+	[key: string]: EncounterStartingSkill;	// key is command_skill, etc
 };
 
-export interface EncounterSkill {
+export interface EncounterStartingSkill {
 	min_prof: number;
 	max_prof: number;
 };

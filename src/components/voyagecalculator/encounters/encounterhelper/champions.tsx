@@ -23,6 +23,7 @@ import { ContestSimulatorModal } from '../contestsimulator/modal';
 import { IChampion, IChampionCrewData, IChampionContest, IEndurableSkill, getChampionCrewData, makeContestId, IContestAssignments } from './championdata';
 
 type ChampionsTableProps = {
+	id: string;
 	voyageConfig: IVoyageCalcConfig;
 	encounter: IEncounter;
 	assignments: IContestAssignments;
@@ -74,7 +75,15 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 					id: `contests.${contestId}.odds`,
 					title: renderContestColumnHeader(contest.skills, viableChampions),
 					align: 'center',
-					sortField: { id: `contests.${contestId}.odds`, firstSort: 'descending' },
+					sortField: {
+						id: `contests.${contestId}.odds`,
+						firstSort: 'descending',
+						customSort: (a: IEssentialData, b: IEssentialData, sortDirection: 'ascending' | 'descending') => {
+							const aContest: IChampionContest = (a as IChampionCrewData).contests[contestId];
+							const bContest: IChampionContest = (b as IChampionCrewData).contests[contestId];
+							return championContestSort(aContest, bContest, sortDirection);
+						}
+					},
 					renderCell: (datum: IEssentialData) => (
 						<ChampionContestCell
 							contest={(datum as IChampionCrewData).contests[contestId]}
@@ -101,7 +110,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			{data && (
 				<React.Fragment>
 					<DataTable
-						id='encounterhelper/crewdatatable'
+						id={`${props.id}/datatable`}
 						data={data}
 						setup={tableSetup}
 					/>
@@ -118,6 +127,22 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			)}
 		</React.Fragment>
 	);
+
+	function championContestSort(a: IChampionContest, b: IChampionContest, sortDirection: 'ascending' | 'descending'): number {
+		const avgEndurable = (contest: IChampionContest) =>
+			contest.endurable_skills.reduce((prev, curr) => prev + ((curr.range_min + curr.range_max) / 2), 0);
+		if (a.odds === b.odds) {
+			if (a.odds === 1) {
+				const aEndurable: number = avgEndurable(a);
+				const bEndurable: number = avgEndurable(b);
+				return sortDirection === 'descending' ? bEndurable - aEndurable : aEndurable - bEndurable;
+			}
+			const aRoll: number = a.champion_roll.average;
+			const bRoll: number = b.champion_roll.average;
+			return sortDirection === 'descending' ? bRoll - aRoll : aRoll - bRoll;
+		}
+		return sortDirection === 'descending' ? b.odds - a.odds : a.odds - b.odds;
+	}
 
 	function renderContestColumnHeader(contestSkills: IContestSkill[], viableChampions: number): JSX.Element {
 		return (

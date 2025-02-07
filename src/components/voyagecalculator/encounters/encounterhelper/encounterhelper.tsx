@@ -9,13 +9,12 @@ import {
 } from 'semantic-ui-react';
 
 import { Voyage } from '../../../../model/player';
-import { VoyageRefreshData } from '../../../../model/voyage';
+import { EncounterStartingSkills, VoyageRefreshData } from '../../../../model/voyage';
 import { GlobalContext } from '../../../../context/globalcontext';
-import { IEncounter } from '../model';
+import { IContest, IContestSkill, IEncounter } from '../model';
 import { IContestAssignments } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
-import { EncounterEditor } from './encountereditor';
 import { EncounterImportComponent } from './encounterimporter';
 
 type EncounterHelperProps = {
@@ -37,24 +36,14 @@ export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
 				Encounter helper (Experimental)
 			</Accordion.Title>
 			<Accordion.Content active={isActive}>
-				{isActive && renderContent()}
+				{isActive && <EncounterHelper voyageConfig={voyageConfig} />}
 			</Accordion.Content>
 		</Accordion>
 	);
-
-	function renderContent(): JSX.Element {
-		return (
-			<Segment>
-				<EncounterHelper voyageConfig={voyageConfig} />
-			</Segment>
-		);
-	}
 };
 
 export const EncounterHelper = (props: EncounterHelperProps) => {
 	const { voyageConfig } = props;
-
-	const [refreshData, setRefreshData] = React.useState<VoyageRefreshData[] | undefined>(undefined);
 
 	const [encounter, setEncounter] = React.useState<IEncounter | undefined>(undefined);
 	const [assignments, setAssignments] = React.useState<IContestAssignments>({});
@@ -63,54 +52,66 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 		setAssignments({});
 	}, [encounter]);
 
-	if (!encounter) return renderEditorTrigger();
-
 	return (
 		<React.Fragment>
-			<div style={{ display: 'flex', alignItems: 'center' }}>
-				<EncounterCritTraits
-					encounter={encounter}
-				/>
-				{renderEditorTrigger()}
-			</div>
-			<ContestsTable
-				encounter={encounter}
-				assignments={assignments}
+			<EncounterImportComponent
+				voyage={voyageConfig}
+				setData={handleRefreshData}
+				clearData={() => setEncounter(undefined)}
 			/>
-			<Button	/* Reset assignments */
-				content='Reset assignments'
-				onClick={() => setAssignments({})}
-			/>
-			<ChampionsTable
-				voyageConfig={voyageConfig}
-				encounter={encounter}
-				assignments={assignments}
-				setAssignments={setAssignments}
-			/>
+			{encounter && (
+				<Segment key={encounter.id}>
+					<EncounterCritTraits
+						encounter={encounter}
+					/>
+					<ContestsTable
+						encounter={encounter}
+						assignments={assignments}
+					/>
+					<Button	/* Reset assignments */
+						content='Reset assignments'
+						onClick={() => setAssignments({})}
+					/>
+					<ChampionsTable
+						id={`champions/${encounter.id}`}
+						voyageConfig={voyageConfig}
+						encounter={encounter}
+						assignments={assignments}
+						setAssignments={setAssignments}
+					/>
+				</Segment>
+			)}
 		</React.Fragment>
 	);
 
-	function renderEditorTrigger(): JSX.Element {
-		return (
-			<React.Fragment>
-				<EncounterEditor
-					traitPool={voyageConfig.event_content?.encounter_traits}
-					encounter={encounter}
-				/>
-
-				<EncounterImportComponent
-					voyage={voyageConfig}
-					setData={handleRefreshData}
-					clearData={() => setEncounter(undefined)}
-					data={refreshData}
-				/>
-			</React.Fragment>
-		);
-	}
-
+	// Convert VoyageRefreshData to IEncounter
 	function handleRefreshData(refreshData: VoyageRefreshData[] | undefined): void {
-		// TODO: validate encounter in refresh data
-		setRefreshData(refreshData);
+		if (!refreshData) return;
+		let encounter: IEncounter | undefined;
+		refreshData.forEach(rd => {
+			rd.character?.voyage.forEach(voyage => {
+				if (voyage.encounter) {
+					const defaultSkills: EncounterStartingSkills = voyage.encounter.skills;
+					const incrementProf: number = voyage.encounter.increment_prof;
+					const traits: string[] = voyage.encounter.traits;
+					const contests: IContest[] = [];
+					voyage.encounter.contests_data.forEach((cd, contestIndex) => {
+						const skills: IContestSkill[] = [];
+						Object.keys(cd.skills).forEach(skillKey => {
+							const skill: string = cd.skills[skillKey];
+							skills.push({
+								skill,
+								range_min: defaultSkills[skill].min_prof,
+								range_max: defaultSkills[skill].max_prof + (contestIndex * incrementProf)
+							})
+						});
+						contests.push({ skills });
+					});
+					encounter = { id: voyage.encounter.id, critTraits: traits, contests };
+				}
+			});
+		});
+		setEncounter(encounter);
 	}
 };
 
