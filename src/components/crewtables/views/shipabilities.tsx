@@ -242,10 +242,10 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	};
 
 	React.useEffect(() => {
-		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'ship_abilities');
+		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'ship');
 		if (index >= 0) crewFilters.splice(index, 1);
 		if ((shipCrew) || (selectedSeats?.length) || selectedRankings?.length || availableSeats?.length) {
-			crewFilters.push({ id: 'ship_abilities', filterTest: filterByShipAbility });
+			crewFilters.push({ id: 'ship', filterTest: filterByShipAbility });
 		}
 		setCrewFilters([...crewFilters]);
 	}, [shipCrew, selectedSeats, selectedRankings, availableSeats]);

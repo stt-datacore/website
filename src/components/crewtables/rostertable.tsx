@@ -490,9 +490,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		crewFilters.forEach(crewFilter => {
 			const toggleable = toggleableFilters.find(toggleableFilter => toggleableFilter.id === crewFilter.id);
 			if ((toggleable && !toggleable.available)) resetList.push(crewFilter.id);
-			// Check for form filter
-			const formcondition = tableViews.find(ff => ff.id === crewFilter.id && ff.form);
-			if (formcondition && formcondition.id !== activeView?.id) resetList.push(crewFilter.id);
 		});
 		resetList.forEach(filterId => {
 			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
@@ -504,6 +501,20 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		setCrewMarkups([...crewMarkups]);
 		// TODO: Also reset ship options on view change?
 	}, [rosterType]);
+
+	React.useEffect(() => {
+		const activeView = tableViews.find(view => view.id === tableView);
+		const resetList = [] as string[];
+		crewFilters.forEach(crewFilter => {
+			const formcondition = tableViews.find(filterView => filterView.id === crewFilter.id && !!filterView.form);
+			if (formcondition && formcondition.id !== activeView?.id) resetList.push(crewFilter.id);
+		});
+		resetList.forEach(filterId => {
+			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
+			if (filterIndex >= 0) crewFilters.splice(filterIndex, 1);
+		});
+		setCrewFilters([...crewFilters]);
+	}, [tableView]);
 
 	React.useEffect(() => {
 		// Apply roster markups, i.e. add sortable fields to crew
