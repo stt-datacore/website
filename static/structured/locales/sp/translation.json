@@ -860,11 +860,15 @@
         }
     },
     "fleet": {
+        "only_officers": "Ocultar no oficiales",
+        "only_event": "Mostrar solo participantes del evento",
         "description": "Utilice esta herramienta para obtener información sobre su flota.",
         "members": "Miembros",
         "squadrons": "Escuadrones",
         "member_columns": {
-            "name": "{{global.name}}",
+            "display_name": "{{global.name}}",
+            "last_update": "{{global.last_updated}}",
+            "level": "{{base.level}}",
             "rank": "{{rank_names.rank}}",
             "event_rank": "Rango de evento",
             "squadron": "Escuadrón",
@@ -963,6 +967,7 @@
             "voyage_consumable": "Fichas de avivamiento del viaje"
         },
         "items": "Artículos",
+        "last_updated": "Última actualización",
         "last_updated_colon": "Última actualización:",
         "load_default_settings": "Cargar configuración predeterminada",
         "load_defaults": "Cargar predeterminadas",

@@ -851,11 +851,15 @@
         }
     },
     "fleet": {
+        "only_officers": "Nicht-Offiziere ausblenden",
+        "only_event": "Nur Veranstaltungsteilnehmer anzeigen",
         "description": "Verwenden Sie dieses Tool, um Informationen zu Ihrer Flotte zu erhalten.",
         "members": "Mitglieder",
         "squadrons": "Staffeln",
         "member_columns": {
-            "name": "{{global.name}}",
+            "display_name": "{{global.name}}",
+            "last_update": "{{global.last_updated}}",
+            "level": "{{base.level}}",
             "rank": "{{rank_names.rank}}",
             "event_rank": "Event-Rang",
             "squadron": "Staffel",
@@ -954,6 +958,7 @@
             "voyage_consumable": "Reise-Wiederbelebungs-Token"
         },
         "items": "Artikele",
+        "last_updated": "Zuletzt aktualisiert",
         "last_updated_colon": "Zuletzt aktualisiert:",
         "load_default_settings": "Standardeinstellungen laden",
         "load_defaults": "Standards laden",

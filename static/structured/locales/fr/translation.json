@@ -859,11 +859,15 @@
         }
     },
     "fleet": {
+        "only_officers": "Masquer les non-officiers",
+        "only_event": "Afficher uniquement les participants à l'événement",
         "description": "Utilisez cet outil pour obtenir des informations sur votre flotte.",
         "members": "Membres",
         "squadrons": "Escadrons",
         "member_columns": {
-            "name": "{{global.name}}",
+            "display_name": "{{global.name}}",
+            "last_update": "{{global.last_updated}}",
+            "level": "{{base.level}}",
             "rank": "{{rank_names.rank}}",
             "event_rank": "Rang de l'événement",
             "squadron": "Escadron",
@@ -962,6 +966,7 @@
             "voyage_consumable": "Jetons de relance du voyage"
         },
         "items": "Articles",
+        "last_updated": "Dernière mise à jour",
         "last_updated_colon": "Dernière mise à jour :",
         "load_default_settings": "Charger les paramètres par défaut",
         "load_defaults": "Charger les défauts",

@@ -851,11 +851,15 @@
         }
     },
     "fleet": {
+        "only_officers": "Hide non-officers",
+        "only_event": "Show only event participants",
         "description": "Use this tool to get information about your fleet.",
         "members": "Members",
         "squadrons": "Squadons",
         "member_columns": {
-            "name": "{{global.name}}",
+            "display_name": "{{global.name}}",
+            "last_update": "{{global.last_updated}}",
+            "level": "{{base.level}}",
             "rank": "{{rank_names.rank}}",
             "event_rank": "Event Rank",
             "squadron": "Squadron",
@@ -954,6 +958,7 @@
             "voyage_consumable": "Voyage Revival Tokens"
         },
         "items": "Items",
+        "last_updated": "Last Updated",
         "last_updated_colon": "Last Updated:",
         "load_default_settings": "Load Default Settings",
         "load_defaults": "Load Defaults",
