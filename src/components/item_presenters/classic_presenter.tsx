@@ -184,13 +184,25 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 };
 
 const CrossFuses = (props: { crew: CrewMember }) => {
+	const globalContext = React.useContext(GlobalContext);
 	const { crew } = props;
-	const { tfmt } = React.useContext(GlobalContext).localized;
+	const { tfmt } = globalContext.localized;
 	if (crew.cross_fuse_targets && "symbol" in crew.cross_fuse_targets && crew.cross_fuse_targets.symbol) {
 		return (
 			<p>
 				{tfmt('crew_page.can_cross_fuse_with', {
 					crew: <Link to={`/crew/${crew.cross_fuse_targets.symbol}/`}>{crew.cross_fuse_targets.name}</Link>
+				})}
+			</p>
+		);
+	}
+	else if (crew.cross_fuse_sources?.length) {
+		const [crew1, crew2] = crew.cross_fuse_sources.map(s => globalContext.core.crew.find(fc => fc.symbol === s)!);
+		return (
+			<p>
+				{tfmt('crew_page.fusion_sources', {
+					crew1: <Link to={`/crew/${crew1.symbol}/`}>{crew1.name}</Link>,
+					crew2: <Link to={`/crew/${crew2.symbol}/`}>{crew2.name}</Link>
 				})}
 			</p>
 		);

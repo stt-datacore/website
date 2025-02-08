@@ -350,6 +350,7 @@
         "all_fuse_skill_fffe_colon": "Les compétences de tout des fusionments lorsqu'elles sont entièrement nivelées et entièrement équipées :",
         "all_fuses_ellipses": "Tous les fusibles...",
         "can_cross_fuse_with": "Peut effectuer une fusion croisée avec {{crew}}",
+        "fusion_sources": "Produit de fusion croisée de {{crew1}} et {{crew 2}}",
         "coined_by": "inventé par {{name}}",
         "max_buffs_applied": "Maximum effets appliqués",
         "no_buffs_applied": "Aucun effets appliqués",

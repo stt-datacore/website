@@ -352,6 +352,7 @@
         "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
         "all_fuses_ellipses": "Todos los fusibles...",
         "can_cross_fuse_with": "Puede realizar fusión cruzada con {{crew}}",
+        "fusion_sources": "Producto fusionado cruzado de {{crew1}} y {{crew 2}}",
         "coined_by": "acuñado por {{name}}",
         "max_buffs_applied": "Efectos máximos aplicados",
         "no_buffs_applied": "No se aplican efectos",

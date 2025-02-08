@@ -350,6 +350,7 @@
         "all_fuse_skill_fffe_colon": "Skills at all fuses when fully leveled and fully equipped:",
         "all_fuses_ellipses": "All fuses...",
         "can_cross_fuse_with": "Can cross-fuse with {{crew}}",
+        "fusion_sources": "Cross-fuse product of {{crew1}} and {{crew2}}",
         "coined_by": "coined by {{name}}",
         "max_buffs_applied": "Max buffs applied",
         "no_buffs_applied": "No buffs applied",

@@ -350,6 +350,7 @@
         "all_fuse_skill_fffe_colon": "Fertigkeiten bei allen Sicherungen bei vollem Level und voller Ausrüstung:",
         "all_fuses_ellipses": "Alle Sicherungen...",
         "can_cross_fuse_with": "Kann mit {{crew}} kreuzfusionieren",
+        "fusion_sources": "Kreuzfusioniertes Produkt von {{crew1}} und {{crew 2}}",
         "coined_by": "geprägt von {{name}}",
         "max_buffs_applied": "Maximal Buffs angewendete",
         "no_buffs_applied": "Keine Buffs angewendet",

@@ -7,6 +7,11 @@ export interface CrossFuseTarget {
     name?: string;
 }
 
+export interface CrossFuseInfo {
+    sources: string[];
+    result: string;
+}
+
 export interface MarkdownInfo {
     author: string;
     modified: Date;
@@ -88,6 +93,7 @@ export interface CrewMember extends QuipmentScores {
     ship_battle: ShipBonus;
     action: ShipAction;
     cross_fuse_targets: CrossFuseTarget | [];
+    cross_fuse_sources?: string[];
     skill_data: SkillData[];
     intermediate_skill_data: IntermediateSkillData[];
     is_craftable: boolean;
