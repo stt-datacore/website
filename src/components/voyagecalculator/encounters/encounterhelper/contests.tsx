@@ -70,7 +70,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 					{encounter.contests.map((contest, contestIndex) => {
 						const contestId: string = contestIds[contestIndex];
 						const assignedContest: IChampionContest | undefined = championData.find(crew =>
-							crew.id === assignments[contestId]?.crew.id
+							crew.id === assignments[contestId].crew?.id
 						)?.contests[contestId];
 						return (
 							<Table.Row key={contestId}>

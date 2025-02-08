@@ -20,7 +20,8 @@ import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { ContestSimulatorModal } from '../contestsimulator/modal';
 
-import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment } from './championdata';
+import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, IUnusedSkills } from './championdata';
+import { BaseSkills } from '../../../../model/crew';
 
 type ChampionsTableProps = {
 	id: string;
@@ -78,7 +79,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 					renderCell: (datum: IEssentialData) => (
 						<ChampionContestCell
 							contest={(datum as IChampionCrewData).contests[contestId]}
-							assignedContest={getAssignedContest((datum as IChampionCrewData).contests[contestId])}
+							assignments={assignments}
 							assignCrew={assignCrewToContest}
 							setSimulatorTrigger={setSimulatorTrigger}
 						/>
@@ -131,7 +132,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return sortDirection === 'descending' ? b.odds - a.odds : a.odds - b.odds;
 	}
 
-	function renderContestColumnHeader(contestSkills: IContestSkill[], assignment: IContestAssignment | undefined): JSX.Element {
+	function renderContestColumnHeader(contestSkills: IContestSkill[], assignment: IContestAssignment): JSX.Element {
 		const skillIcons: JSX.Element[] = contestSkills.map(cs =>
 			<img key={cs.skill}
 				src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`}
@@ -139,7 +140,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				className='invertibleIcon'
 			/>
 		);
-		if (assignment) {
+		if (assignment.crew) {
 			return (
 				<span	/* CREW_NAME is assigned to this contest */
 					title={`${assignment.crew.name} is assigned to this contest`}
@@ -150,7 +151,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				</span>
 			);
 		}
-		const assignedIds: number[] = Object.keys(assignments).map(contestId => assignments[contestId].crew.id);
+		const assignedIds: number[] = Object.keys(assignments).map(contestId => assignments[contestId].crew?.id ?? -1);
 		const viableChampions: number = voyageCrew.filter(crew =>
 			contestSkills.some(contestSkill => Object.keys(crew.skills).includes(contestSkill.skill))
 				&& !assignedIds.includes(crew.id)
@@ -173,59 +174,67 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return <ProficiencyRanges skills={skills} sort />;
 	}
 
-	function getAssignedContest(contest: IChampionContest): string | undefined {
-		let assignedContest: string | undefined;
-		Object.keys(assignments).forEach(contestId => {
-			if (assignments[contestId].crew.id === contest.champion.crew.id)
-				assignedContest = contestId;
-		});
-		return assignedContest;
-	}
-
 	function assignCrewToContest(contest: IChampionContest | undefined, crew: PlayerCrew): void {
-		// Remove from existing assignment, if necessary
-		let existingContestId: string | undefined;
+		// Remove crew from existing assignment, if necessary
 		Object.keys(assignments).forEach(contestId => {
-			if (assignments[contestId].crew.id === crew.id)
-				existingContestId = contestId;
+			if (assignments[contestId].crew?.id === crew.id)
+				assignments[contestId].crew = undefined;
 		});
-		if (existingContestId) delete assignments[existingContestId];
-		if (contest) {
-			const enduringSkills: IContestSkill[] = [];
-			Object.keys(crew.skills).forEach(skill => {
-				if (!contest.skills.map(cs => cs.skill).includes(skill)) {
-					enduringSkills.push({
-						skill,
-						range_min: Math.floor(crew.skills[skill].range_min / 2),
-						range_max: Math.floor(crew.skills[skill].range_max / 2)
-					});
-				}
-			});
-			assignments[contest.id] = {
-				index: contest.index,
-				crew,
-				enduring_skills: enduringSkills
-			};
+		if (contest) assignments[contest.id].crew = crew;
+
+		const unusedSkills: IUnusedSkills = {
+			command_skill: { min: 0, max: 0 },
+			diplomacy_skill: { min: 0, max: 0 },
+			engineering_skill: { min: 0, max: 0 },
+			medicine_skill: { min: 0, max: 0 },
+			science_skill: { min: 0, max: 0 },
+			security_skill: { min: 0, max: 0 }
 		};
+
+		encounter.contests.forEach((contest, contestIndex) => {
+			const contestId: string = makeContestId(contest, contestIndex);
+			const assignment: IContestAssignment = assignments[contestId];
+			assignment.unusedSkills = JSON.parse(JSON.stringify(unusedSkills));
+			if (assignment.crew) {
+				const crewSkills: BaseSkills = assignment.crew.skills;
+				Object.keys(crewSkills).filter(skill =>
+					!contest.skills.map(cs => cs.skill).includes(skill)
+				).forEach(unusedSkill => {
+					const min: number = unusedSkills[unusedSkill].min + crewSkills[unusedSkill].range_min;
+					const max: number = unusedSkills[unusedSkill].max + crewSkills[unusedSkill].range_max;
+					unusedSkills[unusedSkill].min += Math.floor(min / 2);
+					unusedSkills[unusedSkill].max += Math.floor(max / 2);
+				});
+			}
+		});
+
 		setAssignments({...assignments});
 	}
 };
 
 type ChampionContestCellProps = {
 	contest: IChampionContest;
-	assignedContest: string | undefined;
+	assignments: IContestAssignments;
 	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
 	setSimulatorTrigger: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
-	const { contest, assignedContest, assignCrew, setSimulatorTrigger } = props;
+	const { contest, assignments, assignCrew, setSimulatorTrigger } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
 
-	const isAssigned: boolean = !!assignedContest;
-	const isAssignedHere: boolean = assignedContest === contest.id;
+	const assignedContest: string | undefined = getAssignedContest();
+
+	const crewIsAssigned: boolean = !!assignedContest;
+	const crewIsAssignedHere: boolean = assignedContest === contest.id;
+	const contestIsAssigned: boolean = !!assignments[contest.id].crew;
+
+	const boostedSkills: number = Object.keys(assignments[contest.id].unusedSkills).filter(unusedSkill =>
+		assignments[contest.id].unusedSkills[unusedSkill].min > 0 &&
+			contest.skills.map(cs => cs.skill).includes(unusedSkill)
+	).length;
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', rowGap: '.5em' }}>
@@ -233,7 +242,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				{!contest.result && <Icon loading name='spinner' />}
 				{contest.result && (
 					<Button.Group
-						color={isAssignedHere ? 'blue' : undefined}
+						color={crewIsAssignedHere ? 'blue' : undefined}
 						compact
 					>
 						<Button	/* Simulate contest */
@@ -244,12 +253,12 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						</Button>
 						<Button	/* Assign CHAMPION_NAME to this contest */
 							title={`Assign ${contest.champion.crew.name} to this contest`}
-							onClick={() => assignCrew(!isAssignedHere ? contest : undefined, contest.champion.crew)}
+							onClick={() => assignCrew(!crewIsAssignedHere ? contest : undefined, contest.champion.crew)}
 							icon
 						>
-							{!isAssigned && <Icon name='check circle outline' />}
-							{isAssignedHere && <Icon name='check circle' />}
-							{isAssigned && !isAssignedHere && <Icon name='minus circle' color='yellow' />}
+							{!crewIsAssigned && !contestIsAssigned && <Icon name='check circle outline' />}
+							{crewIsAssignedHere && <Icon name='check circle' />}
+							{((crewIsAssigned || contestIsAssigned) && !crewIsAssignedHere) && <Icon name='check circle outline' color='grey' />}
 						</Button>
 					</Button.Group>
 				)}
@@ -258,7 +267,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				<span title={`${contest.champion.crew.name}'s expected score for this contest (without critical rolls)`}>
 					{contest.champion_roll.average}
 				</span>
-				{contest.boosted_skills.length > 0 && (
+				{boostedSkills > 0 && (
 					<span>
 						<Icon name='arrow alternate circle up' color='green' fitted />
 					</span>
@@ -278,6 +287,15 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		</div>
 	);
 
+	function getAssignedContest(): string | undefined {
+		let assignedContest: string | undefined;
+		Object.keys(assignments).forEach(contestId => {
+			if (assignments[contestId].crew?.id === contest.champion.crew.id)
+				assignedContest = contestId;
+		});
+		return assignedContest;
+	}
+
 	function renderEndurableSkill(endurableSkill: IEndurableSkill): JSX.Element {
 		const skill: string = endurableSkill.skill;
 		const contests: number = endurableSkill.contests_boosted;
@@ -296,7 +314,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					<span>
 						+{average*3}
 					</span>
-					{isAssignedHere && (
+					{crewIsAssignedHere && (
 						<span>
 							<Icon name='arrow alternate circle right' color='green' />
 						</span>
@@ -319,17 +337,13 @@ const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
 	const { voyageCrew, critTraits, contest, assignments, cancelTrigger } = props;
 
 	const boostedPool = React.useMemo<PlayerCrew[]>(() => {
+		const unusedSkills: IUnusedSkills = assignments[contest.id].unusedSkills;
 		return voyageCrew.map(voyager => {
 			const crew: PlayerCrew = oneCrewCopy(voyager) as PlayerCrew;
-			Object.keys(assignments).forEach(contestId => {
-				const assignment: IContestAssignment | undefined = assignments[contestId];
-				if (assignment && assignment.index < contest.index && assignment.crew.id !== crew.id) {
-					assignment.enduring_skills.forEach(es => {
-						if (Object.keys(crew.skills).includes(es.skill)) {
-							crew.skills[es.skill].range_min += es.range_min;
-							crew.skills[es.skill].range_max += es.range_max;
-						}
-					});
+			Object.keys(crew.skills).forEach(skill => {
+				if (contest.skills.map(cs => cs.skill).includes(skill)) {
+					crew.skills[skill].range_min += unusedSkills[skill].min;
+					crew.skills[skill].range_max += unusedSkills[skill].max;
 				}
 			});
 			return crew;

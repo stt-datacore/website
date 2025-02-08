@@ -15,7 +15,7 @@ import { GlobalContext } from '../../../../context/globalcontext';
 
 import { IContest, IContestSkill, IEncounter } from '../model';
 
-import { getChampionCrewData, IChampionCrewData, IContestAssignments } from './championdata';
+import { getChampionCrewData, IChampionCrewData, IContestAssignments, IUnusedSkills, makeContestId } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
 import { EncounterImportComponent } from './encounterimporter';
@@ -49,6 +49,7 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 	const { voyageConfig } = props;
 
 	const [encounter, setEncounter] = React.useState<IEncounter | undefined>(undefined);
+	const [errorMessage, setErrorMessage] = React.useState<number>(0);
 
 	const voyageCrew = React.useMemo<PlayerCrew[]>(() => {
 		return voyageConfig.crew_slots.map(cs => cs.crew);
@@ -69,9 +70,18 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 					/>
 				</Segment>
 			)}
-			{!encounter && (
+			{errorMessage > 0 && (
 				<Message>
-					No encounter data found. Please try again when your voyage has reached an encounter.
+					{errorMessage === 1 && (
+						<span	/* No encounter data found. Please try again when your voyage has reached an encounter. */>
+							No encounter data found. Please try again when your voyage has reached an encounter.
+						</span>
+					)}
+					{errorMessage === 400 && (
+						<span	/* The imported data is not valid. Please confirm the voyage data link is correct and try again. */>
+							The imported data is not valid. Please confirm the voyage data link is correct and try again.
+						</span>
+					)}
 				</Message>
 			)}
 		</React.Fragment>
@@ -81,31 +91,38 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 	function handleRefreshData(refreshData: VoyageRefreshData[] | undefined): void {
 		if (!refreshData) return;
 		let encounter: IEncounter | undefined;
-		refreshData.forEach(rd => {
-			rd.character?.voyage.forEach(voyage => {
-				if (voyage.encounter) {
-					const startingSkills: EncounterStartingSkills = voyage.encounter.skills;
-					const incrementProf: number = voyage.encounter.increment_prof;
-					const traits: string[] = voyage.encounter.traits;
-					const contests: IContest[] = [];
-					voyage.encounter.contests_data.forEach((cd, contestIndex) => {
-						const skills: IContestSkill[] = [];
-						const critChance: number = cd.boss_crit_chance ?? 0;
-						Object.keys(cd.skills).forEach(skillKey => {
-							const skill: string = cd.skills[skillKey];
-							skills.push({
-								skill,
-								range_min: cd.boss_min_prof ?? startingSkills[skill].min_prof,
-								range_max: cd.boss_max_prof ?? startingSkills[skill].max_prof + (contestIndex * incrementProf)
-							})
+		try {
+			refreshData.forEach(rd => {
+				rd.character?.voyage.forEach(voyage => {
+					if (voyage.encounter) {
+						const startingSkills: EncounterStartingSkills = voyage.encounter.skills;
+						const incrementProf: number = voyage.encounter.increment_prof;
+						const traits: string[] = voyage.encounter.traits;
+						const contests: IContest[] = [];
+						voyage.encounter.contests_data.forEach((cd, contestIndex) => {
+							const skills: IContestSkill[] = [];
+							const critChance: number = cd.boss_crit_chance ?? 0;
+							Object.keys(cd.skills).forEach(skillKey => {
+								const skill: string = cd.skills[skillKey];
+								skills.push({
+									skill,
+									range_min: cd.boss_min_prof ?? startingSkills[skill].min_prof,
+									range_max: cd.boss_max_prof ?? startingSkills[skill].max_prof + (contestIndex * incrementProf)
+								})
+							});
+							contests.push({ skills, critChance });
 						});
-						contests.push({ skills, critChance });
-					});
-					encounter = { id: voyage.encounter.id, critTraits: traits, contests };
-				}
+						encounter = { id: voyage.encounter.id, critTraits: traits, contests };
+					}
+				});
 			});
-		});
-		setEncounter(encounter);
+			setEncounter(encounter);
+			setErrorMessage(!!encounter ? 0 : 1);
+		}
+		catch (e) {
+			console.log(e);
+			setErrorMessage(400);
+		}
 	}
 };
 
@@ -118,10 +135,10 @@ const Encounter = (props: EncounterProps) => {
 	const { voyageCrew, encounter } = props;
 
 	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
-	const [assignments, setAssignments] = React.useState<IContestAssignments>({});
+	const [assignments, setAssignments] = React.useState<IContestAssignments>(getDefaultAssignments());
 
 	React.useEffect(() => {
-		setAssignments({});
+		setAssignments(getDefaultAssignments());
 	}, [encounter]);
 
 	React.useEffect(() => {
@@ -144,7 +161,7 @@ const Encounter = (props: EncounterProps) => {
 			/>
 			<Button	/* Reset assignments */
 				content='Reset assignments'
-				onClick={() => setAssignments({})}
+				onClick={() => setAssignments(getDefaultAssignments())}
 			/>
 			<ChampionsTable
 				id={`champions/${encounter.id}`}
@@ -156,6 +173,26 @@ const Encounter = (props: EncounterProps) => {
 			/>
 		</React.Fragment>
 	);
+
+	function getDefaultAssignments(): IContestAssignments {
+		const assignments: IContestAssignments = {};
+		const unusedSkills: IUnusedSkills = {
+			command_skill: { min: 0, max: 0 },
+			diplomacy_skill: { min: 0, max: 0 },
+			engineering_skill: { min: 0, max: 0 },
+			medicine_skill: { min: 0, max: 0 },
+			science_skill: { min: 0, max: 0 },
+			security_skill: { min: 0, max: 0 }
+		};
+		encounter.contests.forEach((contest, contestIndex) => {
+			const contestId: string = makeContestId(contest, contestIndex);
+			assignments[contestId] = {
+				index: contestIndex,
+				unusedSkills
+			};
+		});
+		return assignments;
+	}
 };
 
 type EncounterCritTraitsProps = {

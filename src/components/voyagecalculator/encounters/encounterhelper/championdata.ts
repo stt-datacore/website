@@ -17,7 +17,6 @@ export interface IChampionContest extends IContest {
 	champion_roll: IExpectedRoll;
 	challenger: IContestant;
 	challenger_roll: IExpectedRoll;
-	boosted_skills: IContestSkill[];
 	result: IChampionContestResult | undefined;
 	odds: number;
 	endurable_skills: IEndurableSkill[];
@@ -43,8 +42,17 @@ export interface IContestAssignments {
 
 export interface IContestAssignment {
 	index: number;
-	crew: PlayerCrew;
-	enduring_skills: IContestSkill[];
+	unusedSkills: IUnusedSkills;
+	crew?: PlayerCrew;
+};
+
+export interface IUnusedSkills {
+	[key: string]: IUnusedSkill;
+};
+
+export interface IUnusedSkill {
+	min: number;
+	max: number;
 };
 
 export function makeContestId(contest: IContest, contestIndex: number): string {
@@ -84,31 +92,16 @@ export async function getChampionCrewData(
 			const skills: string[] = contest.skills.map(cs => cs.skill);
 			const champion: IChampion = makeContestant(skills, encounter.critTraits, crewData) as IChampion;
 
-			const boostedSkills: IContestSkill[] = [];
-			for (let preIndex = 0; preIndex < contestIndex; preIndex++) {
-				const preAssignment: IContestAssignment | undefined = assignments[contestIds[preIndex]];
-				if (preAssignment && preAssignment.crew.id !== crewData.id) {
-					preAssignment.enduring_skills.forEach(es => {
-						const championSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === es.skill);
-						if (championSkill) {
-							const boostedSkill: IContestSkill | undefined = boostedSkills.find(bs => bs.skill === es.skill);
-							if (boostedSkill) {
-								boostedSkill.range_min += es.range_min;
-								boostedSkill.range_max += es.range_max;
-							}
-							else {
-								boostedSkills.push({
-									skill: es.skill,
-									range_min: es.range_min,
-									range_max: es.range_max,
-								});
-							}
-							championSkill.range_min += es.range_min;
-							championSkill.range_max += es.range_max;
-						}
-					});
+			const unusedSkills: IUnusedSkills = assignments[contestId].unusedSkills;
+			Object.keys(crewData.skills).forEach(skill => {
+				if (contest.skills.map(cs => cs.skill).includes(skill)) {
+					const championSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === skill);
+					if (championSkill) {
+						championSkill.range_min += unusedSkills[skill].min;
+						championSkill.range_max += unusedSkills[skill].max;
+					}
 				}
-			}
+			});
 
 			const championRoll: IExpectedRoll = getExpectedRoll(champion.skills);
 			const challenger: IContestant = {
@@ -117,18 +110,20 @@ export async function getChampionCrewData(
 			};
 
 			const endurableSkills: IEndurableSkill[] = [];
-			Object.keys(crewData.skills).filter(skill => !skills.includes(skill)).forEach(crewSkill => {
+			Object.keys(crewData.skills).filter(skill => !skills.includes(skill)).forEach(unusedSkill => {
 				let postContestsBoosted: number = 0;
 				for (let postIndex = contestIndex + 1; postIndex < encounter.contests.length; postIndex++) {
 					const postContest: IContest = encounter.contests[postIndex];
-					if (postContest.skills.filter(cs => cs.skill === crewSkill).length > 0)
+					if (postContest.skills.filter(cs => cs.skill === unusedSkill).length > 0)
 						postContestsBoosted++;
 				}
 				if (postContestsBoosted > 0) {
+					const min: number = unusedSkills[unusedSkill].min + crew.skills[unusedSkill].range_min;
+					const max: number = unusedSkills[unusedSkill].max + crew.skills[unusedSkill].range_max;
 					endurableSkills.push({
-						skill: crewSkill,
-						range_min: Math.floor(crewData.skills[crewSkill].range_min / 2),
-						range_max: Math.floor(crewData.skills[crewSkill].range_max / 2),
+						skill: unusedSkill,
+						range_min: Math.floor(min / 2),
+						range_max: Math.floor(max / 2),
 						contests_boosted: postContestsBoosted
 					});
 				}
@@ -162,7 +157,6 @@ export async function getChampionCrewData(
 				champion_roll: championRoll,
 				challenger,
 				challenger_roll: challengerRolls[contestIndex],
-				boosted_skills: boostedSkills,
 				result: previousResult && !oddsNeeded ? previousResult : undefined,
 				odds: previousResult && !oddsNeeded ? previousResult.oddsA : 0,
 				endurable_skills: endurableSkills
