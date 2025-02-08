@@ -5,7 +5,7 @@ import DataPageLayout from '../components/page/datapagelayout';
 
 import { PlayerBossBattle } from '../components/fleetbossbattles/player';
 import { NonPlayerBossBattle } from '../components/fleetbossbattles/nonplayer';
-import FleetInfoPage from '../components/fleet/fleet_info';
+import { FleetInfoPage } from '../components/fleet/fleet_info';
 import { FleetImportComponent } from '../components/fleet/fleetimporter';
 import { Fleet, Member } from '../model/fleet';
 import { useStateWithStorage } from '../utils/storage';
