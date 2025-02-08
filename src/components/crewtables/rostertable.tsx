@@ -533,25 +533,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
 
 	React.useEffect(() => {
-		let filterIndex = -1;
-
-		if (!tableView.startsWith("qp_")) {
-			filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
-			if (filterIndex >= 0) {
-				crewFilters.splice(filterIndex, 1);
-			}
-		}
-		if (tableView !== 'ship') {
-			filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'ship_abilities');
-
-			if (filterIndex >= 0) {
-				crewFilters.splice(filterIndex, 1);
-			}
-		}
-		setCrewFilters([ ... crewFilters ]);
-	}, [tableView]);
-
-	React.useEffect(() => {
 
 		setDataPrepared({
 			rosterType,
