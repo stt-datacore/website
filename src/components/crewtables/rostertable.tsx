@@ -490,6 +490,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		crewFilters.forEach(crewFilter => {
 			const toggleable = toggleableFilters.find(toggleableFilter => toggleableFilter.id === crewFilter.id);
 			if ((toggleable && !toggleable.available)) resetList.push(crewFilter.id);
+			// Check for form filter
+			const formcondition = tableViews.find(ff => ff.id === crewFilter.id && ff.form);
+			if (formcondition && formcondition.id !== activeView?.id) resetList.push(crewFilter.id);
 		});
 		resetList.forEach(filterId => {
 			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
@@ -530,12 +533,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
 
 	React.useEffect(() => {
-		// if (tableView === 'dc_ranks') {
-		// 	// Clear all filters
-		// 	setCrewFilters([].slice());
-		// 	return;
-		// }
-
 		let filterIndex = -1;
 
 		if (!tableView.startsWith("qp_")) {

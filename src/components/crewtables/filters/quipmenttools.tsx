@@ -53,9 +53,9 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	};
 
 	React.useEffect(() => {
-		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
+		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'qp_best');
 		if (index >= 0) crewFilters.splice(index, 1);
-        crewFilters.push({ id: 'quipmenttools', filterTest: filterCrew });
+        crewFilters.push({ id: 'qp_best', filterTest: filterCrew });
         const fidx = slotFilterOptions.findIndex(option => option.value === slotFilter);
         if (fidx >= 0) {
             setSlots(fidx);
