@@ -51,9 +51,6 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 	const [factions, setFactions] = React.useState([] as StaticFaction[]);
 	const [events, setEvents] = React.useState([] as EventInstance[]);
 
-	const [sortField, setSortField] = React.useState('');
-	const [sortDirection, setSortDirection] = React.useState<'ascending' | 'descending'>('ascending');
-
 	React.useEffect(() => {
 		if (inputFleetData) {
 			fetchRemoteDetails(inputFleetData);
@@ -62,7 +59,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 
 	const { fleetData, memberIcons } = React.useMemo(() => {
 		if (processedFleetData) {
-			const fleetData = sortFleetData(processedFleetData);
+			const fleetData = processedFleetData;
 			const icons = {} as {[key:string]: string}
 			fleetData?.members.forEach((member) => {
 				icons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
@@ -80,7 +77,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 			return { fleetData, memberIcons: icons };
 		}
 		return { fleetData: undefined, memberIcons: {} }
-	}, [sortField, sortDirection, processedFleetData]);
+	}, [processedFleetData]);
 
 	if (!playerData) return <></>;
 
@@ -367,67 +364,6 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 			member.display_rank = ranks.map(rank => t(`global.${rank}`)).join(", ") ?? member.rank
 		});
 
-		return fleet;
-	}
-
-	function sortClick(field: string) {
-		if (sortField === field) {
-			if (sortDirection === 'descending') {
-				setSortDirection('ascending');
-			}
-			else {
-				setSortDirection('descending')
-			}
-		}
-		else {
-			setSortField(field);
-		}
-	}
-
-	function sortFleetData(fleet: Fleet) {
-		const mult = sortDirection === 'descending' ? -1 : 1;
-
-		if (!sortField || sortField === 'name') {
-			fleet.members.sort((a, b) => mult * a.display_name.localeCompare(b.display_name));
-		}
-		else if (sortField === 'rank') {
-			fleet.members.sort((a, b) => {
-				let r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
-				if (r === 0) {
-					if (!a.squad_leader && b.squad_leader) return 1;
-					if (!b.squad_leader && a.squad_leader) return -1;
-					r = a.display_name.localeCompare(b.display_name);
-				}
-				return r * mult;
-			});
-		}
-		else if (sortField === 'squad') {
-			fleet.members.sort((a, b) => {
-				let r = a.squad.localeCompare(b.squad);
-				if (r === 0) {
-					r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
-					if (r === 0) {
-						r = a.display_name.localeCompare(b.display_name);
-					}
-				}
-				return r * mult;
-			});
-		}
-		else {
-			fleet.members.sort((a, b) => {
-				if (a[sortField] === null && b[sortField] === null) return 0;
-				else if (a[sortField] === null) return 1;
-				else if (b[sortField] === null) return -1;
-				let r = (a[sortField] - b[sortField]);
-				if (r === 0) {
-					r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
-					if (r === 0) {
-						r = a.display_name.localeCompare(b.display_name);
-					}
-				}
-				return r * mult;
-			});
-		}
 		return fleet;
 	}
 
