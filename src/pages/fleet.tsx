@@ -22,7 +22,9 @@ const FleetPage = () => {
 	const fleetName = playerData?.player.fleet.slabel;
 
 	if (typeof window !== 'undefined') {
-		window['fleetDataSetter'] = setFleet;
+		window['fleetDataSetter'] = (value: string) => {
+            setFleet(JSON.parse(value));
+        }
 	}
 
 	return (
