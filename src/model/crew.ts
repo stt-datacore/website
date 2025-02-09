@@ -237,6 +237,9 @@ export interface ShipScores {
     arena: number,
     fbb: number,
     kind: 'offense' | 'defense' | 'ship',
+    overall_rank: number,
+    arena_rank: number,
+    fbb_rank: number,
     divisions: {
         fbb: {
             1?: number,
@@ -259,6 +262,7 @@ export interface RankScoring {
     collections: number;
     gauntlet: number;
     main_cast: number;
+    rarity_overall_rank: number;
     overall_grade: string;
     overall_rank: number;
     overall: number;
@@ -279,8 +283,21 @@ export interface RankScoring {
 export interface Ranks {
     voyRank: number;
     gauntletRank: number;
+    shuttleRank: number;
     chronCostRank: number;
     traitRank: number;
+
+    ship_rank: number;
+    skill_rarity_rank: number;
+    tertiary_rarity_rank: number;
+    crit_rank: number;
+    velocity_rank: number;
+    potential_cols_rank: number;
+    main_cast_rank: number;
+    am_seating_rank: number;
+    collections_rank: number;
+    quipment_rank: number;
+
     scores: RankScoring;
     B_SEC?: number;
     A_SEC?: number;

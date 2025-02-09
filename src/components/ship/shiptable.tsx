@@ -12,7 +12,7 @@ import { isMobile } from 'react-device-detect';
 import { getShipsInUse, mergeShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
-import { formatRank } from './utils';
+import { formatShipScore } from './utils';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 type ShipTableProps = {
@@ -473,17 +473,17 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 							{withranks && <>
 								<Table.Cell>
 									<div style={{display: 'flex'}}>
-										{formatRank('ship', ship.ranks?.overall, t)}
+										{formatShipScore('ship', ship.ranks?.overall, t)}
 									</div>
 								</Table.Cell>
 								<Table.Cell>
 									<div style={{display: 'flex'}}>
-										{formatRank('ship', ship.ranks?.arena, t)}
+										{formatShipScore('ship', ship.ranks?.arena, t)}
 									</div>
 								</Table.Cell>
 								<Table.Cell>
 									<div style={{display: 'flex'}}>
-										{formatRank('ship', ship.ranks?.fbb, t)}
+										{formatShipScore('ship', ship.ranks?.fbb, t)}
 									</div>
 								</Table.Cell>
 							</>}

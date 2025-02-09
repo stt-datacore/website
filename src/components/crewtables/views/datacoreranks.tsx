@@ -7,10 +7,10 @@ import { IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow, prettyCrewColumnTitle } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
 import { gradeToColor } from '../../../utils/crewutils';
-import { formatRank } from '../../ship/utils';
+import { formatShipScore } from '../../ship/utils';
 import { GlobalContext } from '../../../context/globalcontext';
 
-const RankFields = [
+const ScoreFields = [
     "overall",
     "rarity_overall",
     "voyage",
@@ -29,9 +29,28 @@ const RankFields = [
     "velocity",
 ]
 
+const RankFields = [
+    "overall_rank",
+    "rarity_overall_rank",
+    "voyRank",
+    "shuttleRank",
+    "gauntletRank",
+    "crit_rank",
+    "ship_rank",
+    "quipment_rank",
+    "collections_rank",
+    "traitRank",
+    "main_cast_rank",
+    "potential_cols_rank",
+    "skill_rarity_rank",
+    "am_seating_rank",
+    "tertiary_rarity_rank",
+    "velocity_rank",
+]
+
 export const getDataCoreRanksTableConfig = (t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
-    RankFields.forEach(field => {
+    ScoreFields.forEach(field => {
         tableConfig.push({
 			width: 1,
 			column: `ranks.scores.${field}`,
@@ -65,19 +84,27 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
 				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }</small>
 				<small style={{color: dcGradeColor}}>&nbsp;&nbsp;&nbsp;&nbsp;{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }</small>
 			</Table.Cell>
-			{RankFields.slice(1).map(field => {
+			{ScoreFields.slice(1).map((field, idx) => {
                 let val = 0;
-                if (field === 'ship')
+                let rank = 0;
+                if (field === 'ship') {
                     val = Number((crew.ranks.scores.ship.overall).toFixed(4));
-                else
+                    rank = crew.ranks.scores.ship.overall_rank;
+                }
+                else {
                     val = Number(((crew.ranks.scores[field])).toFixed(4));
+                    rank = crew.ranks[RankFields[idx + 1]] || crew.ranks.scores[RankFields[idx + 1]];
+                }
                 if (typeof val !== 'number') return <></>
 
                 return (<Table.Cell key={`scores.${field}`} textAlign='center'>
                     <span style={{color: gradeToColor(val / 100)}}>
-                        {field === 'ship' && !!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
+                        {field === 'ship' && !!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
 					    {field !== 'ship' && val}
                     </span>
+                    <p style={{fontSize: '0.8em'}}>
+                        #{rank}
+                    </p>
 				</Table.Cell>)
 			})}
 		</React.Fragment>

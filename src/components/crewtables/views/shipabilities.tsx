@@ -18,7 +18,7 @@ import { TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import { CrewMember } from '../../../model/crew';
 import { OptionsPanelFlexRow } from '../../stats/utils';
-import { formatRank } from '../../ship/utils';
+import { formatShipScore } from '../../ship/utils';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -103,13 +103,16 @@ export const CrewShipCells = (props: CrewCellProps) => {
 		<React.Fragment>
 			{withranks && <>
 				<Table.Cell textAlign='center'>
-					{!!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
+					{!!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
+					<p style={{fontSize: '0.8em'}}>#{crew.ranks.scores.ship.overall_rank}</p>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{!!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.arena, t)}
+					{!!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.arena, t)}
+					<p style={{fontSize: '0.8em'}}>#{crew.ranks.scores.ship.arena_rank}</p>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{!!crew.ranks.scores.ship && formatRank(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.fbb, t)}
+					{!!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.fbb, t)}
+					<p style={{fontSize: '0.8em'}}>#{crew.ranks.scores.ship.fbb_rank}</p>
 				</Table.Cell>
 			</>}
 			<Table.Cell textAlign='center'>

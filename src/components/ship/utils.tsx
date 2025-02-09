@@ -4,7 +4,7 @@ import { gradeToColor } from '../../utils/crewutils';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { TranslateMethod } from '../../model/player';
 
-export function formatRank(kind: string, score: number | undefined, t: TranslateMethod, divisor = 100) {
+export function formatShipScore(kind: string, score: number | undefined, t: TranslateMethod, divisor = 100) {
     if (!score) return <></>;
 
     const flexRow = OptionsPanelFlexRow;
