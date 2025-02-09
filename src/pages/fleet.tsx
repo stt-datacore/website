@@ -19,7 +19,12 @@ const FleetPage = () => {
 
 	const dbid = playerData?.player.dbid ?? '';
 	const guild = playerData?.player.fleet?.id ?? 0;
-	const fleetName = playerData?.player.fleet.slabel
+	const fleetName = playerData?.player.fleet.slabel;
+
+	if (typeof window !== 'undefined') {
+		window['fleetDataSetter'] = setFleet;
+	}
+
 	return (
 		<DataPageLayout
 			pageTitle={fleetName || t('global.fleet')}
