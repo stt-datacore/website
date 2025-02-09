@@ -9,6 +9,7 @@ import CONFIG from "../CONFIG";
 import { mergeItems } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
 import { getChrons } from "../../utils/playerutils";
+import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 
 export interface PlayerResource {
     name: string;
@@ -39,6 +40,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     if (!playerData?.player) return <></>;
 
     const currentEvent = globalContext.player.ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
+    const ceCrew = (() => {
+        if (currentEvent?.featured_crew?.length) {
+            return globalContext.core.crew.find(f => f.symbol === currentEvent.featured_crew[0].symbol)!
+        }
+        else {
+            return undefined;
+        }
+    })();
 
     const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
 
@@ -190,6 +199,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             justifyContent: isMobile || narrow ? 'center' : 'space-evenly',
             alignItems: 'center'
         }}>
+
         <Label title={'Close player at-a-glance panel'} as='a' corner='right' onClick={requestDismiss}>
             <Icon name='delete' style={{ cursor: 'pointer' }} />
         </Label>
@@ -214,7 +224,16 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 onClick={() => navigate('/eventplanner')}
                 title={currentEvent.name}>
                 <img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '2em', margin: 0 }} />
-                <h3 style={{ margin: 0 }}>{currentEvent.victory_points?.toLocaleString()}&nbsp;{t('shuttle_helper.event.vp')}</h3>
+                <h3 style={{ margin: 0 }}>
+                    {currentEvent.victory_points?.toLocaleString()}&nbsp;{t('shuttle_helper.event.vp')}
+                </h3>
+                <h3 style={{ margin: 0 }}>
+                    &nbsp;&mdash;&nbsp;
+                </h3>
+                {!!ceCrew && <img src={`${process.env.GATSBY_ASSETS_URL}${ceCrew.imageUrlPortrait}`} style={{ height: '2em', margin: 0 }} />}
+                <h3 style={{ margin: 0 }}>
+                    {currentEvent.name}
+                </h3>
             </div>}
             <div style={{
                 gridArea: 'v2',
