@@ -6,6 +6,7 @@ import {
 	Label
 } from 'semantic-ui-react';
 
+import { BaseSkills } from '../../../../model/crew';
 import { PlayerCrew } from '../../../../model/player';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 
@@ -21,7 +22,6 @@ import { ProficiencyRanges } from '../common/ranges';
 import { ContestSimulatorModal } from '../contestsimulator/modal';
 
 import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, IUnusedSkills } from './championdata';
-import { BaseSkills } from '../../../../model/crew';
 
 type ChampionsTableProps = {
 	id: string;
@@ -264,8 +264,10 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				)}
 			</div>
 			<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
-				<span title={`${contest.champion.crew.name}'s expected score for this contest (without critical rolls)`}>
-					{contest.champion_roll.average}
+				<span	/* CREW_NAME's average score for this contest */
+					title={`${contest.champion.crew.name}'s average score for this contest`}
+				>
+					{contest.result?.simulated ? contest.result.simulated.a.average : contest.champion_roll.average}
 				</span>
 				{boostedSkills > 0 && (
 					<span>
@@ -275,8 +277,10 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				<span>
 					vs
 				</span>
-				<span title={`Opponent's expected score for this contest`}>
-					{contest.challenger_roll.average}
+				<span	/* Opponent's average score for this contest */
+					title={`Opponent's average score for this contest`}
+				>
+					{contest.result?.simulated ? contest.result.simulated.b.average : contest.challenger_roll.average}
 				</span>
 			</div>
 			{contest.endurable_skills.length > 0 && (
@@ -300,7 +304,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		const skill: string = endurableSkill.skill;
 		const contests: number = endurableSkill.contests_boosted;
 		const average: number = endurableSkill.range_min + Math.floor((endurableSkill.range_max - endurableSkill.range_min) / 2);
-		const title: string = `If selected for this contest, ${contest.champion.crew.name}'s unused ${CONFIG.SKILLS[skill]} skill will boost ${contests} later contest${contests !== 1 ? 's' : ''} by +(${endurableSkill.range_min}-${endurableSkill.range_max}) per ${CONFIG.SKILLS[skill]} roll for an expected total boost of +${average*3}${contests > 1 ? ' per contest' : ''}`;
+		const title: string = `If selected for this contest, ${contest.champion.crew.name}'s unused ${CONFIG.SKILLS[skill]} skill will boost ${contests} later contest${contests !== 1 ? 's' : ''} by +(${endurableSkill.range_min}-${endurableSkill.range_max}) per ${CONFIG.SKILLS[skill]} roll for an average total boost of +${average*3}${contests > 1 ? ' per contest' : ''}`;
 		return (
 			<Label key={skill} title={title}>
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>

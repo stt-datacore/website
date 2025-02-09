@@ -1,8 +1,8 @@
 import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
-import { IContestant, IContestResult, IContestSkill, IExpectedRoll } from './model';
+import { IContestant, IContestResult, IContestSkill, IExpectedScore } from './model';
 
-export function getCrewGauntletAverage(crew: PlayerCrew, skills: string[]): number {
+export function getCrewSkillsScore(crew: PlayerCrew, skills: string[]): number {
 	let score: number = 0;
 	// Input skills may be the same, so distinct first
 	[...new Set<string>([...skills])].forEach(skill => {
@@ -58,7 +58,7 @@ export function makeContestant(skills: string[], traits: string[], crew?: Player
 	};
 }
 
-export function getExpectedRoll(contestSkills: IContestSkill[]): IExpectedRoll {
+export function getExpectedScore(contestSkills: IContestSkill[]): IExpectedScore {
 	let minScore: number = 0;
 	let maxScore: number = 0;
 	let avgScore: number = 0;
@@ -96,8 +96,8 @@ export function simulateContest(
 			}
 		}
 
-		const aRoll: IExpectedRoll = getExpectedRoll(a.skills);
-		const bRoll: IExpectedRoll = getExpectedRoll(b.skills);
+		const aRoll: IExpectedScore = getExpectedScore(a.skills);
+		const bRoll: IExpectedScore = getExpectedScore(b.skills);
 
 		let oddsA: number | undefined;
 		if (aRoll.max === 0) oddsA = 0;	// Contestant A has no skills; A's odds of winning = 0%
@@ -112,11 +112,14 @@ export function simulateContest(
 			return;
 		}
 
+		let aSample: number[] = [];
+		let bSample: number[] = [];
+
 		// Compare simulated scores
 		//	Method A: Sample simulations (slower, but can throw out outliers)
 		if (percentile < 1) {
-			const aSample: number[] = sampleRolls(a, simulations, percentile);
-			const bSample: number[] = sampleRolls(b, simulations, percentile);
+			aSample = sampleRolls(a, simulations, percentile);
+			bSample = sampleRolls(b, simulations, percentile);
 			const aWins: number[] = aSample.map(scoreA => {
 				return bSample.filter(scoreB => scoreA > scoreB).length / bSample.length;
 			});
@@ -129,6 +132,8 @@ export function simulateContest(
 				const aRoll: number = simulateRoll(a);
 				const bRoll: number = simulateRoll(b);
 				if (aRoll > bRoll) aWins++;
+				aSample.push(aRoll);
+				bSample.push(bRoll);
 			}
 			oddsA = aWins/simulations;
 		}
@@ -137,7 +142,21 @@ export function simulateContest(
 		if (oddsA > 0.999) oddsA = 0.999;
 		if (oddsA < 0.001) oddsA = 0.001;
 
-		resolve({ oddsA, simulated: true });
+		resolve({
+			oddsA,
+			simulated: {
+				a: {
+					average: Math.floor(aSample.reduce((prev, curr) => prev + curr, 0) / aSample.length),
+					min: aSample.reduce((prev, curr) => Math.min(prev, curr), 0),
+					max: aSample.reduce((prev, curr) => Math.max(prev, curr), 0)
+				},
+				b: {
+					average: Math.floor(bSample.reduce((prev, curr) => prev + curr, 0) / bSample.length),
+					min: bSample.reduce((prev, curr) => Math.min(prev, curr), 0),
+					max: bSample.reduce((prev, curr) => Math.max(prev, curr), 0)
+				}
+			}
+		});
 	});
 }
 

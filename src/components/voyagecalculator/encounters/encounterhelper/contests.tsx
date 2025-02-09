@@ -5,8 +5,8 @@ import {
 } from 'semantic-ui-react';
 
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
-import { IContest, IContestSkill, IEncounter, IExpectedRoll } from '../model';
-import { formatContestResult, getExpectedRoll } from '../utils';
+import { IContest, IContestSkill, IEncounter, IExpectedScore } from '../model';
+import { formatContestResult, getExpectedScore } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { IChampion, IChampionContest, IChampionCrewData, IContestAssignments, makeContestId } from './championdata';
 
@@ -41,23 +41,28 @@ export const ContestsTable = (props: ContestsTableProps) => {
 						>
 							Opponent
 						</Table.HeaderCell>
+						<Table.HeaderCell	/* Crit Chance */
+							textAlign='center'
+						>
+							Crit Chance
+						</Table.HeaderCell>
 						<Table.HeaderCell	/* Assigned Crew */>
 							Assigned Crew
 						</Table.HeaderCell>
-						<Table.HeaderCell	/* Proficiency */
+						<Table.HeaderCell	/* Skills */
 							textAlign='center'
 						>
-							Proficiency
-						</Table.HeaderCell>
-						<Table.HeaderCell	/* Scores */
-							textAlign='center'
-						>
-							Scores
+							Skills
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Crit Chance */
 							textAlign='center'
 						>
 							Crit Chance
+						</Table.HeaderCell>
+						<Table.HeaderCell	/* Average Score */
+							textAlign='center'
+						>
+							Average Score
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Odds of Winning */
 							textAlign='center'
@@ -80,6 +85,9 @@ export const ContestsTable = (props: ContestsTableProps) => {
 								<Table.Cell textAlign='center'>
 									{renderSkills(contest.skills)}
 								</Table.Cell>
+								<Table.Cell textAlign='center'>
+									{contest.critChance}%
+								</Table.Cell>
 								<Table.Cell>
 									{assignedContest && (<CrewLabel crew={assignedContest.champion.crew} />)}
 									{!assignedContest && <>(Unassigned)</>}
@@ -88,10 +96,10 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{assignedContest && renderChampionSkills(assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{renderContest(contestIndex, assignedContest)}
+									{assignedContest && (<>{assignedContest.champion.critChance}%</>)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{assignedContest && (<>{assignedContest.champion.critChance}%</>)}
+									{renderContest(contestIndex, assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest?.result && <>{formatContestResult(assignedContest.result)}</>}
@@ -126,13 +134,29 @@ export const ContestsTable = (props: ContestsTableProps) => {
 	}
 
 	function renderContest(contestIndex: number, assignedContest: IChampionContest | undefined): JSX.Element {
+		if (assignedContest) {
+			return (
+				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+					<span>
+						{assignedContest.result?.simulated ? assignedContest.result.simulated.a.average : assignedContest.champion_roll.average}
+					</span>
+					<span>
+						vs
+					</span>
+					<span>
+						{assignedContest.result?.simulated ? assignedContest.result.simulated.b.average : assignedContest.challenger_roll.average}
+					</span>
+				</div>
+			);
+		}
 		const contest: IContest = encounter.contests[contestIndex];
-		const championRoll: IExpectedRoll | undefined = assignedContest?.champion_roll;
-		const challengerRoll: IExpectedRoll = getExpectedRoll(contest.skills);
+		const challengerRoll: IExpectedScore = getExpectedScore(contest.skills);
 		return (
-			<React.Fragment>
-				{championRoll?.average ?? 0} vs {challengerRoll.average}
-			</React.Fragment>
+			<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+				<span>0</span>
+				<span>vs</span>
+				<span>{challengerRoll.average}</span>
+			</div>
 		);
 	}
 };

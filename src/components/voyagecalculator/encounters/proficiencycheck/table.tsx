@@ -86,7 +86,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 					id: `scored_skills.${skillId}.score`,
 					firstSort: 'descending'
 				},
-				renderCell: (datum: IEssentialData) => renderGauntletScore(datum as IProficientCrew, skillId)
+				renderCell: (datum: IEssentialData) => renderContestScore(datum as IProficientCrew, skillId)
 			});
 		});
 
@@ -140,7 +140,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		);
 	}
 
-	function renderGauntletScore(crew: IProficientCrew, skillId: string): JSX.Element {
+	function renderContestScore(crew: IProficientCrew, skillId: string): JSX.Element {
 		const scoredSkill: IScoredSkill = crew.scored_skills[skillId];
 		if (scoredSkill.score === 0) return <></>;
 		return (

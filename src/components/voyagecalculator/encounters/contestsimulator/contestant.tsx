@@ -10,8 +10,8 @@ import {
 } from 'semantic-ui-react';
 
 import { AvatarView } from '../../../item_presenters/avatarview';
-import { IContestant, IContestSkill, IExpectedRoll } from '../model';
-import { getExpectedRoll } from '../utils';
+import { IContestant, IContestSkill, IExpectedScore } from '../model';
+import { getExpectedScore } from '../utils';
 import { ProficiencyRangeInput } from '../common/rangeinput';
 
 type ContestantProps = {
@@ -25,7 +25,7 @@ type ContestantProps = {
 export const Contestant = (props: ContestantProps) => {
 	const { skills, contestant, wins, editContestant, dismissContestant } = props;
 
-	const expectedRoll: IExpectedRoll = getExpectedRoll(contestant.skills);
+	const expectedRoll: IExpectedScore = getExpectedScore(contestant.skills);
 
 	const critChanceOptions: DropdownItemProps[] = [
 		{ key: '0%', value: 0, text: '0%' },

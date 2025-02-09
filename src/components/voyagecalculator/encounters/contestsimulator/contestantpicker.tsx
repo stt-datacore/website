@@ -15,10 +15,10 @@ import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 import { CrewPortrait } from '../../../dataset_presenters/elements/crewportrait';
 
 import { IContestant } from '../model';
-import { getCrewCritChance, getCrewGauntletAverage, makeContestant } from '../utils';
+import { getCrewCritChance, getCrewSkillsScore, makeContestant } from '../utils';
 
 interface IProficientCrew extends PlayerCrew {
-	scored_gauntlet: number;
+	scored_contest: number;
 	scored_command_skill: number;
 	scored_diplomacy_skill: number;
 	scored_engineering_skill: number;
@@ -50,9 +50,9 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	const data = React.useMemo<IProficientCrew[]>(() => {
 		return crewPool.map(crew => {
 			const proficientCrew: IProficientCrew = oneCrewCopy(crew) as IProficientCrew;
-			proficientCrew.scored_gauntlet = getCrewGauntletAverage(proficientCrew, skills);
+			proficientCrew.scored_contest = getCrewSkillsScore(proficientCrew, skills);
 			Object.keys(CONFIG.SKILLS).forEach(skill => {
-				proficientCrew[`scored_${skill}`] = getCrewGauntletAverage(proficientCrew, [skill]);
+				proficientCrew[`scored_${skill}`] = getCrewSkillsScore(proficientCrew, [skill]);
 			});
 			proficientCrew.crit_chance = traits && traits.length > 0 ? getCrewCritChance(proficientCrew, traits) : 0;
 			proficientCrew.crit_potential = (traitPool ?? []).filter(critTrait =>
@@ -70,11 +70,11 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 			renderCell: (datum: IEssentialData) => renderCrewLabel(datum as PlayerCrew)
 		},
 		{	/* Score */
-			id: 'scored_gauntlet',
+			id: 'scored_contest',
 			title: 'Score',
 			align: 'center',
-			sortField: { id: 'scored_gauntlet', firstSort: 'descending' },
-			renderCell: (datum: IEssentialData) => renderGauntletScore(datum as IProficientCrew)
+			sortField: { id: 'scored_contest', firstSort: 'descending' },
+			renderCell: (datum: IEssentialData) => renderContestScore(datum as IProficientCrew)
 		}
 	];
 	if (traits && traits.length > 0) {
@@ -119,7 +119,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	const tableSetup: IDataTableSetup = {
 		columns,
 		rowsPerPage: 12,
-		defaultSort: { id: 'scored_gauntlet', firstSort: 'descending' }
+		defaultSort: { id: 'scored_contest', firstSort: 'descending' }
 	};
 
 	return (
@@ -161,9 +161,9 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderGauntletScore(crew: IProficientCrew): JSX.Element {
-		if (crew.scored_gauntlet === 0) return <></>;
-		return <>{crew.scored_gauntlet}</>;
+	function renderContestScore(crew: IProficientCrew): JSX.Element {
+		if (crew.scored_contest === 0) return <></>;
+		return <>{crew.scored_contest}</>;
 	}
 
 	function renderCritPotential(crew: IProficientCrew): JSX.Element {

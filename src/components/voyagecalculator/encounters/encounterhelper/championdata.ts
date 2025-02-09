@@ -1,7 +1,7 @@
 import { PlayerCrew } from '../../../../model/player';
 import { oneCrewCopy } from '../../../../utils/crewutils';
-import { IContest, IExpectedRoll, IContestant, IContestSkill, IContestResult, IEncounter } from '../model';
-import { getCrewCritChance, getExpectedRoll, makeContestant, simulateContest } from '../utils';
+import { IContest, IExpectedScore, IContestant, IContestSkill, IContestResult, IEncounter } from '../model';
+import { getCrewCritChance, getExpectedScore, makeContestant, simulateContest } from '../utils';
 
 export interface IChampionCrewData extends PlayerCrew {
 	best_proficiency: number;
@@ -14,9 +14,9 @@ export interface IChampionContest extends IContest {
 	id: string;
 	index: number;
 	champion: IChampion;
-	champion_roll: IExpectedRoll;
+	champion_roll: IExpectedScore;
 	challenger: IContestant;
-	challenger_roll: IExpectedRoll;
+	challenger_roll: IExpectedScore;
 	result: IChampionContestResult | undefined;
 	odds: number;
 	endurable_skills: IEndurableSkill[];
@@ -69,8 +69,8 @@ export async function getChampionCrewData(
 ): Promise<IChampionCrewData[]> {
 	const contestIds: string[] = encounter.contests.map((contest, contestIndex) => makeContestId(contest, contestIndex));
 
-	const challengerRolls: IExpectedRoll[] = encounter.contests.map(contest =>
-		getExpectedRoll(contest.skills)
+	const challengerRolls: IExpectedScore[] = encounter.contests.map(contest =>
+		getExpectedScore(contest.skills)
 	);
 
 	const promises: Promise<IChampionContestResult>[] = [];
@@ -103,7 +103,7 @@ export async function getChampionCrewData(
 				}
 			});
 
-			const championRoll: IExpectedRoll = getExpectedRoll(champion.skills);
+			const championRoll: IExpectedScore = getExpectedScore(champion.skills);
 			const challenger: IContestant = {
 				skills: contest.skills,
 				critChance: contest.critChance

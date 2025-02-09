@@ -23,7 +23,7 @@ export interface IContestant {
 	critChance: number;
 };
 
-export interface IExpectedRoll {
+export interface IExpectedScore {
 	average: number;
 	min: number;
 	max: number;
@@ -31,5 +31,10 @@ export interface IExpectedRoll {
 
 export interface IContestResult {
 	oddsA: number;
-	simulated: boolean;
+	simulated: false | ISimulatedResults;
+};
+
+export interface ISimulatedResults {
+	a: IExpectedScore;
+	b: IExpectedScore;
 };

@@ -3,7 +3,7 @@ import { IVoyageCalcConfig } from '../../../../model/voyage';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 import { IEssentialMatrixData } from '../../../dataset_presenters/model';
 import { IProspectiveConfig } from '../../lineupeditor/model';
-import { getCrewGauntletAverage } from '../utils';
+import { getCrewSkillsScore } from '../utils';
 
 export interface ISkillPairData extends IEssentialMatrixData {
 	coverage: PlayerCrew[];
@@ -23,7 +23,7 @@ export function getSkillPairData(voyageConfig: IVoyageCalcConfig | IProspectiveC
 			const coverageCrew: PlayerCrew[] = assignedCrew.filter(ac =>
 				Object.keys(ac.base_skills).includes(skills[i]) || Object.keys(ac.base_skills).includes(skills[j])
 			).sort((a, b) =>
-				getCrewGauntletAverage(b, [skills[i], skills[j]]) - getCrewGauntletAverage(a, [skills[i], skills[j]])
+				getCrewSkillsScore(b, [skills[i], skills[j]]) - getCrewSkillsScore(a, [skills[i], skills[j]])
 			);
 			data.push({
 				id: (i * skills.length) + j + 1,
@@ -64,13 +64,13 @@ export function getProficientCrewData(voyageConfig: IVoyageCalcConfig | IProspec
 			for (let i = 0; i < skills.length; i++) {
 				proficientCrew.scored_skills[skills[i]] = {
 					skills: [skills[i]],
-					score: getCrewGauntletAverage(proficientCrew, [skills[i]])
+					score: getCrewSkillsScore(proficientCrew, [skills[i]])
 				};
 				for (let j = i + 1; j < skills.length; j++) {
 					const skillId: string = skills[i]+','+skills[j];
 					proficientCrew.scored_skills[skillId] = {
 						skills: [skills[i], skills[j]],
-						score: getCrewGauntletAverage(proficientCrew, [skills[i], skills[j]])
+						score: getCrewSkillsScore(proficientCrew, [skills[i], skills[j]])
 					};
 				}
 			}

@@ -11,7 +11,7 @@ import { GlobalContext } from '../../../../context/globalcontext';
 import { IDataMatrixField, IDataMatrixSetup, IEssentialMatrixData } from '../../../dataset_presenters/model';
 import { DataMatrix } from '../../../dataset_presenters/datamatrix';;
 
-import { crewIsShortSkilled, getCrewGauntletAverage } from '../utils';
+import { crewIsShortSkilled, getCrewSkillsScore } from '../utils';
 
 import { ProficiencyContext } from './context';
 import { ISkillPairData } from './data';
@@ -75,7 +75,7 @@ export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 						onClick={() => simulateContest({ skills: [datum.rowId, datum.columnId], crew: bestCrew })}
 						title='Simulate contest'
 					>
-						{getCrewGauntletAverage(bestCrew, [datum.rowId, datum.columnId])}
+						{getCrewSkillsScore(bestCrew, [datum.rowId, datum.columnId])}
 						{crewIsShortSkilled(bestCrew, [datum.rowId, datum.columnId]) && <>*</>}
 					</Label>
 					<CrewCritTraits
