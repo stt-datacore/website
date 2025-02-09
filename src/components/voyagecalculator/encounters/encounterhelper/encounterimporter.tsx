@@ -1,126 +1,140 @@
-import React from "react";
+import React from 'react';
 
-import { GlobalContext } from "../../../../context/globalcontext";
-import { Gauntlet, GauntletRoot } from "../../../../model/gauntlets";
-import { JsonInputForm } from "../../../base/jsoninputform";
-import { Notification } from "../../../page/notification";
-import { Voyage } from "../../../../model/player";
-import { VoyageRefreshData } from "../../../../model/voyage";
+import { Voyage } from '../../../../model/player';
+import { EncounterStartingSkills, VoyageRefreshData } from '../../../../model/voyage';
+import { GlobalContext } from '../../../../context/globalcontext';
+import { JsonInputForm } from '../../../base/jsoninputform';
+import { Notification } from '../../../page/notification';
+import { IContest, IContestSkill, IEncounter } from '../model';
 
 export interface EncounterImportProps {
-    voyage: Voyage
-    data?: VoyageRefreshData[];
-    setData: (value?: VoyageRefreshData[]) => void;
-    setError?: (value: string) => void;
-    clearData: () => void;
-    currentHasRemote?: boolean;
-}
+	voyage: Voyage
+	setData: (value?: VoyageRefreshData[]) => void;
+	currentHasRemote: boolean;
+};
 
 export const EncounterImportComponent = (props: EncounterImportProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { voyage, setData, currentHasRemote } = props;
 
-    const { currentHasRemote, data: data, setData: setData, setError, clearData: clearData } = props;
-    const context = React.useContext(GlobalContext);
-    const { playerData } = context.player;
-    const { t } = context.localized;
-    const { voyage } = props;
+	const [collapsed, setCollapsed] = React.useState<boolean>(false);
 
-    const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
+	return (
+		<React.Fragment>
+			{!currentHasRemote && (
+				<Notification
+					header='Additional Data Required'
+					content={renderImportMessage()}
+					icon='database'
+					warning
+				/>
+			)}
+			{currentHasRemote && (
+				<Notification
+					header='Encounter Data Loaded!'
+					content={renderUpdateMessage()}
+					icon='database'
+					color='blue'
+					onClick={() => setCollapsed(false)}
+				/>
+			)}
+			{(!collapsed || !currentHasRemote) && renderInputForm()}
+		</React.Fragment>
+	);
 
-    const hasPlayer = !!playerData;
+	function renderImportMessage(): JSX.Element {
+		return (
+			<p>
+				The Encounter Helper requires additional data that is not present in your player data. You can access and import the required data by following the instructions below.
+			</p>
+		);
+	}
 
-    React.useEffect(() => {
-        if (collapsed === undefined) setCollapsed(true);
-    }, [currentHasRemote]);
+	function renderUpdateMessage(): JSX.Element {
+		return (
+			<p>
+				{collapsed && <>View your best crew for this encounter below or tap here to update your encounter data.</>}
+				{!collapsed && <>Follow the instructions below to update your encounter data.</>}
+			</p>
+		);
+	}
 
-    const validateVoyage = (json: VoyageRefreshData[]) => {
-        if (!json) {
-            return ("No data");
-        }
-        return true;
-    }
+	function renderInputForm(): JSX.Element {
+		const DATALINK: string = 'https://app.startrektimelines.com/voyage/refresh';
+		return (
+			<JsonInputForm
+				requestDismiss={currentHasRemote ? () => setCollapsed(!collapsed) : undefined}
+				config={{
+					postValues: {
+						'voyage_status_id': voyage.id,
+						'new_only': true,
+						'client_api': 25
+					},
+					pasteInMobile: true,
+					dataUrl: DATALINK,
+					dataName: 'voyage data',
+					jsonHint: '[{"action":"update","character":',
+					androidFileHint: 'refresh_customization.json',
+					iOSFileHint: 'status?id'
+				}}
+				validateInput={validateJson}
+				setValidInput={(json) => {
+					setData(json);
+					setCollapsed(true);
+				}}
+			/>
+		);
+	}
 
-    function renderCopyPaste(): JSX.Element {
+	function validateJson(json: VoyageRefreshData[]): true | string {
+		if (!json) return ('No data');
 
-        const PLAYERLINK = 'https://app.startrektimelines.com/voyage/refresh';
+		let encounter: IEncounter | undefined;
 
-        return (
-            <React.Fragment>
-                {!currentHasRemote && <Notification
-                    color={'blue'}
-                    header={t('voyage.import.title')}
-                    content={
-                        <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
-                        <p>{t('voyage.import.heading')}</p>
-                        <p>
-                        {t('voyage.import.click_here')}
-                        </p>
-                        <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>
-                            <b></b>
-                        </a>
-                        </b>
-                        </p>
-                        </div>
-                    }
-                    icon="database"
-                />}
+		try {
+			encounter = getEncounterFromJson(json);
+		}
+		catch (e) {	/* The imported data is not valid. Please confirm the voyage data link is correct and try again. */
+			console.log(e);
+			return 'The imported data is not valid. Please confirm the voyage data link is correct and try again.';
+		}
 
-                {currentHasRemote && <Notification
-                    color={'blue'}
-                    header={t('voyage.import.title')}
-                    content={
-                        <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
-                        <p>
-                            Live voyage data is already present.
-                        </p>
-                        <p>
-                            Click here to update your data if you wish to refresh your data.
-                        </p>
-                        <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>{t('voyage.import.title')}</a></b>
-                        </p>
-                        <p style={{textAlign: "right"}}>
-                            <b style={{fontSize:"0.8em"}}>(To clear all live gauntlet data, <a title={'Clear All Gauntlet Data'} onClick={() => clearData()}>Click Here</a>)</b>
-                        </p>
-                        </div>
-                    }
-                    icon="database"
-                />}
+		if (!encounter) {
+			/* No encounter data found. Please try again when your voyage has reached an encounter. */
+			return 'No encounter data found. Please try again when your voyage has reached an encounter.';
+		}
 
-                {hasPlayer && (!collapsed) &&
+		return true;
+	}
+};
 
-                <JsonInputForm
-                    requestDismiss={() => setCollapsed(!collapsed)}
-                    config={{
-                        postValues: {
-                            "voyage_status_id": voyage.id,
-                            "new_only": true,
-                            "client_api": 25
-                        },
-                        pasteInMobile: true,
-                        dataUrl: PLAYERLINK,
-                        dataName: "voyage data",
-                        jsonHint: '[{"action":"update","character":',
-                        androidFileHint: 'refresh_customization.json',
-                        iOSFileHint: 'status?id'
-                    }}
-                    title={`Voyage Input Form`}
-                    validateInput={validateVoyage}
-                    setValidInput={(voyage) => {
-                        if (voyage) setCollapsed(true);
-                        setData(voyage);
-                    }}
-
-                />}
-            </React.Fragment>
-        );
-    }
-
-    return <>
-
-    <div className='ui segment'>
-        {renderCopyPaste()}
-    </div>
-
-    </>
+// Convert VoyageRefreshData to IEncounter
+export function getEncounterFromJson(voyageRefresh: VoyageRefreshData[]): IEncounter | undefined {
+	let encounter: IEncounter | undefined;
+	voyageRefresh.forEach(refresh => {
+		refresh.character?.voyage.forEach(voyage => {
+			if (voyage.encounter) {
+				const startingSkills: EncounterStartingSkills = voyage.encounter.skills;
+				const incrementProf: number = voyage.encounter.increment_prof;
+				const traits: string[] = voyage.encounter.traits;
+				const contests: IContest[] = [];
+				voyage.encounter.contests_data.forEach((cd, contestIndex) => {
+					const skills: IContestSkill[] = [];
+					const critChance: number = cd.boss_crit_chance ?? 0;
+					Object.keys(cd.skills).forEach(skillKey => {
+						const skill: string = cd.skills[skillKey];
+						skills.push({
+							skill,
+							range_min: cd.boss_min_prof ?? startingSkills[skill].min_prof,
+							range_max: cd.boss_max_prof ?? startingSkills[skill].max_prof + (contestIndex * incrementProf)
+						})
+					});
+					contests.push({ skills, critChance });
+				});
+				encounter = { id: voyage.encounter.id, critTraits: traits, contests };
+			}
+		});
+	});
+	return encounter;
 }
