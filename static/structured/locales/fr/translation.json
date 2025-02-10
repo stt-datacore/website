@@ -646,7 +646,7 @@
         "node_n": "Nodule {{n}}",
         "partial_solve": "Partiellement résolu",
         "popup": {
-            "crew_solved": "{{crew}} a résolu un nodule !",
+            "crew_solved": "Marquer {{crew}} comme solution",
             "mark_as_tried": "Marquer comme essayé"
         },
         "possible_solutions": {

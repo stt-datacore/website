@@ -638,7 +638,7 @@
         "node_n": "Knoten {{n}}",
         "partial_solve": "Teilweise gelöst",
         "popup": {
-            "crew_solved": "{{crew}} hat einen Knoten gelöst!",
+            "crew_solved": "{{crew}} als Lösung markieren",
             "mark_as_tried": "Als versucht markieren"
         },
         "possible_solutions": {

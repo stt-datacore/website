@@ -646,7 +646,7 @@
         "node_n": "Nódulo {{n}}",
         "partial_solve": "Parcialmente resuelto",
         "popup": {
-            "crew_solved": "¡{{crew}} resolvió un nódulo!",
+            "crew_solved": "Marcar {{crew}} como solución",
             "mark_as_tried": "Marcar como probado"
         },
         "possible_solutions": {
