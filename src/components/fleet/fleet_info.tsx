@@ -52,20 +52,20 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 	// const [factions, setFactions] = React.useState([] as StaticFaction[]);
 	// const [events, setEvents] = React.useState([] as EventInstance[]);
 
-	const [onlyOfficers, setOnlyOfficers] = useStateWithStorage<boolean>('fleet/only_officers', false);
-	const [onlyEvent, setOnlyEvent] = useStateWithStorage<boolean>('fleet/only_event', false);
+	const [onlyOfficers, setOnlyOfficers] = useStateWithStorage<boolean>('fleet/only_officers', false, { rememberForever: true });
+	const [onlyEvent, setOnlyEvent] = useStateWithStorage<boolean>('fleet/only_event', false, { rememberForever: true });
 
 	React.useEffect(() => {
 		if (inputFleetData) {
 			fetchRemoteDetails(inputFleetData);
 		}
-	}, [inputFleetData, onlyOfficers, onlyEvent]);
+	}, [inputFleetData]);
 
 	const { fleetData, memberIcons } = React.useMemo(() => {
 		if (processedFleetData) {
-			const fleetData = processedFleetData;
+			const fleetData = { ...processedFleetData, members: [...processedFleetData.members] };
 			const icons = {} as {[key:string]: string}
-			fleetData?.members.forEach((member) => {
+			fleetData.members = fleetData.members.filter((member) => {
 				icons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
 				if (!member.squadron_event_rank) {
 					let squad = inputFleetData.squads.find(f => f.id == member.squad_id);
@@ -77,11 +77,18 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 						member.squad = '';
 					}
 				}
+				if (onlyOfficers && member.rank === 'MEMBER') {
+					return false;
+				}
+				if (onlyEvent && !member.event_rank) {
+					return false;
+				}
+				return true;
 			});
 			return { fleetData, memberIcons: icons };
 		}
 		return { fleetData: undefined, memberIcons: {} }
-	}, [processedFleetData]);
+	}, [processedFleetData, onlyOfficers, onlyEvent]);
 
 	if (!playerData) return <></>;
 
@@ -309,13 +316,6 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 			}
 
 			member.display_rank = ranks.map(rank => t(`global.${rank}`)).join(", ") ?? member.rank
-
-			if (onlyOfficers && member.rank === 'MEMBER') {
-				return false;
-			}
-			if (onlyEvent && !member.event_rank) {
-				return false;
-			}
 
 			return true;
 		});
