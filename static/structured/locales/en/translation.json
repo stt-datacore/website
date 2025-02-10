@@ -638,7 +638,7 @@
         "node_n": "Node {{n}}",
         "partial_solve": "Partial Solve",
         "popup": {
-            "crew_solved": "{{crew}} solved a node!",
+            "crew_solved": "Mark {{crew}} as a solution",
             "mark_as_tried": "Mark as tried"
         },
         "possible_solutions": {
