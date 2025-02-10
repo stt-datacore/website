@@ -31,7 +31,7 @@ export interface IExpectedScore {
 
 export interface IContestResult {
 	oddsA: number;
-	simulated: false | ISimulatedResults;
+	simulated?: ISimulatedResults;
 };
 
 export interface ISimulatedResults {

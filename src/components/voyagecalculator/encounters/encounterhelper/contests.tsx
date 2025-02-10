@@ -138,13 +138,13 @@ export const ContestsTable = (props: ContestsTableProps) => {
 			return (
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 					<span>
-						{assignedContest.result?.simulated ? assignedContest.result.simulated.a.average : assignedContest.champion_roll.average}
+						{assignedContest.result?.simulated?.a.average ?? assignedContest.champion_roll.average}
 					</span>
 					<span>
 						vs
 					</span>
 					<span>
-						{assignedContest.result?.simulated ? assignedContest.result.simulated.b.average : assignedContest.challenger_roll.average}
+						{assignedContest.result?.simulated?.b.average ?? assignedContest.challenger_roll.average}
 					</span>
 				</div>
 			);

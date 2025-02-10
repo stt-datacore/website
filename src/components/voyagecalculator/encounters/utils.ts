@@ -91,7 +91,7 @@ export function simulateContest(
 					isSame = false;
 			});
 			if (isSame) {
-				resolve({ oddsA: .5, simulated: false });
+				resolve({ oddsA: .5 });
 				return;
 			}
 		}
@@ -108,7 +108,7 @@ export function simulateContest(
 			oddsA = 1;	// Contestant A's min > B's max = A wins 100%
 
 		if (oddsA) {
-			resolve({ oddsA, simulated: false });
+			resolve({ oddsA });
 			return;
 		}
 

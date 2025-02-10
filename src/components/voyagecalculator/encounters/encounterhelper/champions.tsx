@@ -267,7 +267,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				<span	/* CREW_NAME's average score for this contest */
 					title={`${contest.champion.crew.name}'s average score for this contest`}
 				>
-					{contest.result?.simulated ? contest.result.simulated.a.average : contest.champion_roll.average}
+					{contest.result?.simulated?.a.average ?? contest.champion_roll.average}
 				</span>
 				{boostedSkills > 0 && (
 					<span>
@@ -280,7 +280,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				<span	/* Opponent's average score for this contest */
 					title={`Opponent's average score for this contest`}
 				>
-					{contest.result?.simulated ? contest.result.simulated.b.average : contest.challenger_roll.average}
+					{contest.result?.simulated?.b.average ?? contest.challenger_roll.average}
 				</span>
 			</div>
 			{contest.endurable_skills.length > 0 && (
