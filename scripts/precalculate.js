@@ -387,14 +387,15 @@ function main() {
 		if (!mdData) {
 			console.log(`Crew ${crew.name} not found!`);
 		} else {
-			crew.bigbook_tier = mdData.meta.bigbook_tier ? Number.parseInt(mdData.meta.bigbook_tier) : undefined;
+			crew.bigbook_tier = -1; // mdData.meta.bigbook_tier ? Number.parseInt(mdData.meta.bigbook_tier) : undefined;
 			crew.events = mdData.meta.events ? Number.parseInt(mdData.meta.events) : 0;
-			if (crew.is_craftable) {
-				crew.in_portal = true;
-			}
-			else {
-				crew.in_portal = !!mdData.meta.in_portal;
-			}
+
+			// if (crew.is_craftable) {
+			// 	crew.in_portal = true;
+			// }
+			// else {
+			// 	crew.in_portal = !!mdData.meta.in_portal;
+			// }
 
 			if (mdData.meta.date) {
 				// Date is in European format :) "dd/mm/yyyy"
