@@ -4,7 +4,7 @@ rarity: 5
 series: vst
 memory_alpha:
 bigbook_tier: -1
-in_portal:
+in_portal: true
 date:
 published: true
 ---
