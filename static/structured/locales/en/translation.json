@@ -1515,6 +1515,7 @@
             "skill_rarity": "Skill Rarity",
             "tertiary_rarity": "Tertiary Skill Rarity",
             "trait": "Traits",
+            "skill_positions": "Skill Positions",
             "velocity": "Velocity",
             "voyage": "Voyage"
         }

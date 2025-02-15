@@ -9,9 +9,11 @@ import { TranslateMethod } from '../../../model/player';
 import { gradeToColor } from '../../../utils/crewutils';
 import { formatShipScore } from '../../ship/utils';
 import { GlobalContext } from '../../../context/globalcontext';
+import CABExplanation from '../../explanations/cabexplanation';
 
 const ScoreFields = [
     "overall",
+    "cab",
     "rarity_overall",
     "voyage",
     "shuttle",
@@ -23,6 +25,7 @@ const ScoreFields = [
     "trait",
     "main_cast",
     "potential_cols",
+    "skill_positions",
     "skill_rarity",
     "am_seating",
     "tertiary_rarity",
@@ -31,6 +34,7 @@ const ScoreFields = [
 
 const RankFields = [
     "overall_rank",
+    "cab",
     "rarity_overall_rank",
     "voyRank",
     "shuttleRank",
@@ -42,6 +46,7 @@ const RankFields = [
     "traitRank",
     "main_cast_rank",
     "potential_cols_rank",
+    "skill_positions_rank",
     "skill_rarity_rank",
     "am_seating_rank",
     "tertiary_rarity_rank",
@@ -51,16 +56,23 @@ const RankFields = [
 export const getDataCoreRanksTableConfig = (t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
     ScoreFields.forEach(field => {
-        tableConfig.push({
-			width: 1,
-			column: `ranks.scores.${field}`,
-			title: t(`rank_names.scores.${field}`),
-            reverse: true
-		});
-        if (field === 'ship') {
-            tableConfig[tableConfig.length - 1].customCompare = ((a: IRosterCrew, b: IRosterCrew) => {
-                return a.ranks.scores.ship.overall - b.ranks.scores.ship.overall
+        if (field === 'cab') {
+            tableConfig.push(
+                { width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
+            )
+        }
+        else {
+            tableConfig.push({
+                width: 1,
+                column: `ranks.scores.${field}`,
+                title: t(`rank_names.scores.${field}`),
+                reverse: true
             });
+            if (field === 'ship') {
+                tableConfig[tableConfig.length - 1].customCompare = ((a: IRosterCrew, b: IRosterCrew) => {
+                    return a.ranks.scores.ship.overall - b.ranks.scores.ship.overall
+                });
+            }
         }
 	});
 	return tableConfig;
@@ -76,6 +88,8 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
     const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
     const rarityLabels = CONFIG.RARITIES.map(m => m.name);
+    const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
+    const cabColor = gradeToColor(Number(crew.cab_ov) / 16) ?? undefined;
 
 	return (
 		<React.Fragment>
@@ -84,7 +98,21 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
 				<small><span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>{rarityLabels[crew.max_rarity]}</span><br />{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }</small>
 				<small style={{color: dcGradeColor}}>&nbsp;&nbsp;&nbsp;&nbsp;{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }</small>
 			</Table.Cell>
-			{ScoreFields.slice(1).map((field, idx) => {
+            <Table.Cell textAlign='center'>
+                <b style={{color: cabColor}}>{crew.cab_ov}</b><br />
+                <small>
+                    <span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
+                        {rarityLabels[crew.max_rarity]}
+                    </span>
+                    <br />
+                    {crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }
+                </small>
+                <small style={{color: gradeColor}}>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {crew.cab_ov_grade ? crew.cab_ov_grade : "?" }
+                </small>
+            </Table.Cell>
+			{ScoreFields.slice(2).map((field, idx) => {
                 let val = 0;
                 let rank = 0;
                 if (field === 'ship') {
@@ -93,7 +121,7 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
                 }
                 else {
                     val = Number(((crew.ranks.scores[field])).toFixed(4));
-                    rank = crew.ranks[RankFields[idx + 1]] || crew.ranks.scores[RankFields[idx + 1]];
+                    rank = crew.ranks[RankFields[idx + 2]] || crew.ranks.scores[RankFields[idx + 2]];
                 }
                 if (typeof val !== 'number') return <></>
 

@@ -1526,6 +1526,7 @@
             "skill_rarity": "Rareté de la compétence",
             "tertiary_rarity": "Rareté de la compétence tertiaire",
             "trait": "Traits",
+            "skill_positions": "Postes de compétences",
             "velocity": "Vitesse",
             "voyage": "Voyage"
         }

@@ -278,6 +278,7 @@ export interface RankScoring {
     velocity: number;
     crit: number;
     voyage: number;
+    skill_positions: number;
 }
 
 export interface Ranks {
@@ -297,6 +298,7 @@ export interface Ranks {
     am_seating_rank: number;
     collections_rank: number;
     quipment_rank: number;
+    skill_positions_rank: number;
 
     scores: RankScoring;
     B_SEC?: number;

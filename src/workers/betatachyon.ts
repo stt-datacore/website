@@ -4,10 +4,11 @@ import { Collection, PolestarCombo } from "../model/game-elements";
 import { PlayerCrew } from "../model/player";
 import { AntimatterSeatMap } from "../model/voyage";
 import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";
+import { getSkillOrderStats, getSkillOrderScore } from "../utils/crewutils";
 import { calcItemDemands } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
-import { BuffStatTable, getSkillOrderScore, getSkillOrderStats, lookupAMSeatsByTrait, SkillRarityReport } from "../utils/voyageutils";
+import { BuffStatTable, lookupAMSeatsByTrait } from "../utils/voyageutils";
 
 export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffStatTable, nowrite?: boolean) {
     const getMultiplier = (skill: string, stat: string) => {

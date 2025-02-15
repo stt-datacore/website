@@ -1,6 +1,6 @@
 import React from "react"
 import { GlobalContext } from "../context/globalcontext"
-import { getSkillOrderStats, SkillRarityReport } from "../utils/voyageutils";
+import { getSkillOrderStats, SkillRarityReport } from "../utils/crewutils";
 import { ITableConfigRow, SearchableTable } from "./searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "./stats/utils";
 import { CrewMember } from "../model/crew";

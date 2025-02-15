@@ -1519,6 +1519,7 @@
             "skill_rarity": "Rareza de la habilidad",
             "tertiary_rarity": "Rareza de la habilidad terciaria",
             "trait": "Rasgos",
+            "skill_positions": "Puestos de habilidad",
             "velocity": "Velocidad",
             "voyage": "Viaje"
         }
