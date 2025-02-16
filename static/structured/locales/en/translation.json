@@ -2256,6 +2256,11 @@
             "current": "Current Voyages",
             "custom": "Custom Voyages",
             "upcoming": "Upcoming Voyages"
+        },
+        "import": {
+            "click_here": "Click here to upload your data",
+            "heading": "You can access your live voyage data in a similar way to how you access your player data, currently.",
+            "title": "Live voyage data"
         }
     }
 }

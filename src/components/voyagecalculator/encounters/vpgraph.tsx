@@ -7,8 +7,8 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
-import { Estimate, IVoyageCalcConfig } from '../../model/voyage';
-import { GlobalContext } from '../../context/globalcontext';
+import { Estimate, IVoyageCalcConfig } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 
 type VPGraphProps = {
 	voyageConfig: IVoyageCalcConfig;

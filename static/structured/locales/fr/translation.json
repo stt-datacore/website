@@ -2271,6 +2271,12 @@
             "current": "Voyages en cours",
             "custom": "Voyages personnalisés",
             "upcoming": "Voyages à venir"
+        },
+        "import": {
+            "click_here": "Cliquez ici pour télécharger vos données",
+            "heading": "Vous pouvez accéder à vos données de voyage en direct de la même manière que vous accédez actuellement à vos données de joueur.",
+            "title": "Données de voyage en direct"
         }
+
     }
 }

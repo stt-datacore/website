@@ -1,7 +1,8 @@
 // import { Helper } from '../components/voyagecalculator/helpers/Helper';
 import { VPDetails } from '../utils/voyagevp';
 import { BaseSkills } from './crew';
-import { Aggregates, CrewSlot, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { Icon } from './game-elements';
+import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
 import { Ship } from './ship';
 
 // Voyage calculator require crew.skills
@@ -22,18 +23,9 @@ export interface IVoyageInputConfig {
 };
 
 // Support for event voyage info
-export interface IVoyageEventContent {
-	voyage_symbol: string;	// encounter_voyage
+export interface IVoyageEventContent extends VoyageEncounterCommon {
 	primary_skill: string;
 	secondary_skill: string;
-	antimatter_bonus_per_crew_trait: number;
-	antimatter_bonus_crew_traits: string[];
-	antimatter_bonus_for_featured_crew: number;
-	featured_crews: string[];
-	antimatter_bonus_per_ship_trait: number;
-	antimatter_bonus_ship_traits: string[];
-	antimatter_bonus_for_featured_ship: number;
-	featured_ships: string[];
 	encounter_traits?: string[];
     encounter_times?: number[];
 };
@@ -609,3 +601,98 @@ export const AntimatterSeatMap =  [
         ]
     }
 ];
+
+// The following are all modeled directly from game data
+
+export interface VoyageEncounterCommon {
+	voyage_symbol: string;	// encounter_voyage
+	antimatter_bonus_per_crew_trait: number;
+	antimatter_bonus_crew_traits: string[];
+	antimatter_bonus_for_featured_crew: number;
+	featured_crews: string[];
+	antimatter_bonus_per_ship_trait: number;
+	antimatter_bonus_ship_traits: string[];
+	antimatter_bonus_for_featured_ship: number;
+	featured_ships: string[];
+};
+
+// POST: https://app.startrektimelines.com/voyage/refresh
+//	Required params: voyage_status_id
+//	Optional params: new_only, client_api
+//	Response: VoyageRefreshData[]
+
+export interface VoyageRefreshData {
+	action: 'update' | 'ephemeral';
+	character?: VoyageRefreshCharacter;
+	voyage_narrative?: VoyageNarrative[];
+	rewards?: PendingRewards;
+};
+
+export interface VoyageRefreshCharacter {
+	id: number;
+	voyage: VoyageRefreshVoyage[];
+};
+
+export interface VoyageRefreshVoyage {
+	id: number;
+	seconds_since_last_dilemma: number;
+	state: string;	// started
+	voyage_duration: number;
+	hp: number;
+	time_to_next_event: number;
+	log_index?: number;	// Dilemma voyages only
+	encounter?: VoyageRefreshEncounter;	// Encounter voyages only
+};
+
+export interface VoyageRefreshEncounter extends VoyageEncounterCommon {
+	id: number;
+	character_id: number;
+	state: string;	// unresolved
+	contests_data: EncounterContest[];
+	traits: string[];
+	encounter_vp_multiplier: number;
+	contests_count: number;
+	increment_prof: number;
+	skills: EncounterStartingSkills;
+	contest_antimatter_penalty: number;
+	revive_cost: EncounterReviveCost;
+};
+
+export interface EncounterContest {
+	desc_id: number;
+	icon: Icon;
+	title_reference: string;
+	narrative_reference: string;
+	skills: EncounterContestSkills;
+	state: string;	// unresolved, succeed
+	boss_min_prof?: number;
+	boss_max_prof?: number;
+	boss_crit_chance?: number;
+};
+
+export interface EncounterContestSkills {
+	primary_skill: string;
+	secondary_skill?: string;
+};
+
+export interface EncounterStartingSkills {
+	[key: string]: EncounterStartingSkill;	// key is command_skill, etc
+};
+
+export interface EncounterStartingSkill {
+	min_prof: number;
+	max_prof: number;
+};
+
+export interface EncounterReviveCost {
+	currency: number;
+	amount: number;
+};
+
+export interface VoyageNarrative {
+	index: number;
+	text: string;
+	encounter_type: string;
+	event_time: number;
+	crew: string[];	// crew symbol
+};

@@ -112,6 +112,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 				)}
 				{activeView === 'summary' && (
 					<ProspectiveSummary
+						roster={roster}
 						control={control}
 						saveVoyage={saveVoyage}
 						resetVoyage={resetVoyage}
