@@ -882,6 +882,7 @@
         }
     },
     "global": {
+        "colon": " : ",
         "set_as_default_view": "Définir comme vue par défaut",
         "aborted": "Terminé",
         "admiral": "Amiral",

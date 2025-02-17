@@ -874,6 +874,7 @@
         }
     },
     "global": {
+        "colon": " : ",
         "set_as_default_view": "Als Standardansicht festlegen",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",

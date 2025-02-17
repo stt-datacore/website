@@ -883,6 +883,7 @@
         }
     },
     "global": {
+        "colon": ": ",
         "set_as_default_view": "Establecer como vista predeterminada",
         "aborted": "Abortado",
         "admiral": "Almirante",

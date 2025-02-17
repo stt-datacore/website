@@ -874,6 +874,7 @@
         }
     },
     "global": {
+        "colon": ": ",
         "set_as_default_view": "Set as default view",
         "aborted": "Aborted",
         "admiral": "Admiral",

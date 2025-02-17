@@ -607,7 +607,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			}
 			else {
 				if (str[i] === '}' && i < c - 1 && str[i + 1] === '}') {
-					if (csp) output.push(`{{${csp}}}`);
+					if (csp === ':') output.push('{{global.colon}}')
+					else if (csp) output.push(`{{${csp}}}`);
 					csp = '';
 					inthing = false;
 					i++;
