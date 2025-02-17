@@ -4,11 +4,12 @@ import { Modal, Message, Checkbox, Button } from 'semantic-ui-react';
 import { PlayerCrew, VoyageCrewSlot } from '../../model/player';
 import { IVoyageCalcConfig, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
+
+import CONFIG from '../CONFIG';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { LineupViewer } from '../voyagecalculator/lineupviewer/lineup_accordion';
 
 import { HistoryContext } from './context';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { postVoyage, SyncState, updateVoyageInHistory } from './utils';
 
 type VoyageModalProps = {
@@ -46,7 +47,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 						<Message>
 							<p>{t('voyage.unable_to_track_revivals')}</p>
 							<Checkbox	/* This voyage was revived. */
-								label='This voyage was revived.'
+								label={t('voyage.voyage_history.revived')}
 								checked={isRevived}
 								onChange={(e, data) => noteRevival(data.checked as boolean)}
 								disabled={syncState === SyncState.ReadOnly}
@@ -54,7 +55,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 						</Message>
 						<Message style={{ marginTop: '1em' }}>
 							<Button /* Delete voyage from history */
-								content='Delete voyage from history'
+								content={t('voyage.voyage_history.delete_from_history')}
 								color='red'
 								icon='trash'
 								onClick={removeVoyage}

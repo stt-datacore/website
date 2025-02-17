@@ -6,11 +6,12 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
+import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage } from '../../model/voyage';
 import { downloadData } from '../../utils/crewutils';
 
 import { HistoryContext } from './context';
 import { getTrackedData, NEW_TRACKER_ID, postTrackedData, SyncState } from './utils';
-import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage } from '../../model/voyage';
 
 const IMPORT_ONLY = true;
 
@@ -264,10 +265,12 @@ const AdvancedOptions = () => {
 };
 
 const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+
 	const button: IManageButton = {
 		key: 'voyage.tracking.export',
 		icon: 'download',
-		content: 'Save history to device',
+		content: t('voyage.voyage_history.export_history'),
 		show: true,
 		onClick: () => exportHistory()
 	};
@@ -275,7 +278,7 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	return (
 		<Message>
 			<Message.Content>
-				<p>Remote sync and other history management options are in development.</p>
+				<p>{t('voyage.voyage_history.manage_placeholder')}</p>
 				<Button key={button.key}
 					icon={button.icon}
 					content={button.content}

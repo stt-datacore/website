@@ -103,9 +103,9 @@ export const ResultPane = (props: ResultPaneProps) => {
 			return (
 				<React.Fragment>
 					<Image inline size='mini' src='/media/voyage-wait-icon.gif' />
-					Calculation in progress. Please wait...{` `}
+					{t('voyage.results.messages.calculating')}
 					<Button compact style={{ marginLeft: '1em' }}
-						content='Abort' onClick={() => abortCalculation(request.id)} />
+						content={t('voyage.results.actions.abort')} onClick={() => abortCalculation(request.id)} />
 				</React.Fragment>
 			);
 		}
@@ -113,8 +113,13 @@ export const ResultPane = (props: ResultPaneProps) => {
 		inputs.unshift('considered crew: '+request.consideredCrew.length);
 		return (
 			<React.Fragment>
-				Calculated by <b>{request.calcHelper.calcName}</b> calculator ({inputs.join(', ')}){` `}
-				in {((request.calcHelper.perf.end-request.calcHelper.perf.start)/1000).toFixed(2)} seconds!
+				{
+					tfmt('voyage.results.messages.completed_with_inputs', {
+						calculator: <b>{request.calcHelper.calcName}</b>,
+						inputs: <>{inputs.join(', ')}</>,
+						seconds: <>{((request.calcHelper.perf.end-request.calcHelper.perf.start)/1000).toFixed(2)}</>
+					})
+				}
 			</React.Fragment>
 		);
 	};
@@ -139,9 +144,13 @@ export const ResultPane = (props: ResultPaneProps) => {
 							</div>
 							{proposal.estimate.vpDetails && (
 								<div>
-									{t('voyage.estimate.projected_vp')}: <b>{proposal.estimate.vpDetails.total_vp.toLocaleString()}</b>
+									{tfmt('voyage.estimate.projected_vp', {
+										n: <b>{proposal.estimate.vpDetails.total_vp.toLocaleString()}</b>
+									})}
 									{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
-									{` `}event crew bonus: <b>+{t('global.n_%', { n: Math.round((proposal.eventCrewBonus ?? 0) * 100) })}</b>
+									{` `}{tfmt('voyage.estimate.event_crew_bonus', {
+										n: <b>+{t('global.n_%', { n: Math.round((proposal.eventCrewBonus ?? 0) * 100) })}</b>
+									})}
 								</div>
 							)}
 							{analysis !== '' && (
@@ -153,8 +162,8 @@ export const ResultPane = (props: ResultPaneProps) => {
 						<div>
 							<Button.Group>
 								{configSource === 'player' && voyageConfig.voyage_type === 'dilemma' &&
-									<Popup position='top center'
-										content={<>Track this recommendation</>}
+									<Popup position='top center'	/* Track this recommendation */
+										content={<>{t('voyage.results.actions.track')}</>}
 										trigger={
 											<Button icon onClick={() => trackResult(resultId, voyageConfig, request.bestShip.ship.symbol, proposal.estimate)} disabled={syncState === SyncState.ReadOnly}>
 												<Icon name={iconTrack[trackState]} color={trackState === 1 ? 'green' : undefined} />
@@ -162,22 +171,22 @@ export const ResultPane = (props: ResultPaneProps) => {
 										}
 									/>
 								}
-								<Popup position='top center'
-									content={<>Get more confident estimate</>}
+								<Popup position='top center'	/* Get more confident estimate */
+									content={<>{t('voyage.results.actions.confident')}</>}
 									trigger={
 										<Button icon onClick={() => { if (confidenceState !== 1) estimateResult(resultId, voyageConfig, 30000); }}>
 											<Icon name={iconConfidence[confidenceState]} color={confidenceState === 2 ? 'green' : undefined} />
 										</Button>
 									}
 								/>
-								<Popup position='top center'
-									content={<>Edit lineup</>}
+								<Popup position='top center'	/* Edit lineup */
+									content={<>{t('voyage.results.actions.edit')}</>}
 									trigger={
 										<Button icon='pencil' onClick={() => setEditorTrigger({ view: 'summary' })} />
 									}
 								/>
-								<Popup position='top center'
-									content={<>Dismiss this recommendation</>}
+								<Popup position='top center'	/* Dismiss this recommendation */
+									content={<>{t('voyage.results.actions.dismiss')}</>}
 									trigger={
 										<Button icon='ban' onClick={() => dismissResult(resultId)} />
 									}

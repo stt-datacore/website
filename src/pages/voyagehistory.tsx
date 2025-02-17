@@ -1,16 +1,22 @@
 import React from 'react';
 import { Link } from 'gatsby';
 
+import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
 
 const VoyageHistoryPage = () => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	return (
 		<DataPageLayout
-			pageTitle='Voyage History'
-			pageDescription='Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.'
+			pageTitle={t('menu.tools.voyage_history')}
+			pageDescription={t('voyage.history.description')}
 		>
 			<React.Fragment>
-				<p>The Voyage History tool has moved to the <Link to='/voyage/'>Voyage Calculator</Link>. Please update your bookmarks as needed.</p>
+				<p>
+					{tfmt('voyage.history.moved', {
+						link: <Link to='/voyage/'>{t('menu.tools.voyage_calculator')}</Link>
+					})}
+				</p>
 			</React.Fragment>
 		</DataPageLayout>
 	);

@@ -114,13 +114,17 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 			let analysis: string = '';
 			if (result.calcState === CalculatorState.Done && result.proposal) {
 				const recommended: string[] = getRecommendedList(result.proposal, bestValues);
-				if (results.length === 1)
-					analysis = 'Recommended for all criteria';
+				if (results.length === 1)	//	Recommended for all criteria
+					analysis = t('voyage.estimate.analysis.all_criteria');
 				else {
-					if (recommended.length > 0)
-						analysis = ' Recommended for ' + recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ');
-					else
-						analysis = ' Proposed alternative';
+					if (recommended.length > 0)	{	// Recommended for MODE
+						analysis = t('voyage.estimate.analysis.recommended_for_mode', {
+							mode: recommended.map((method) => getRecommendedValue(method, bestValues)).join(', ')
+						});
+					}
+					else {	// Proposed alternative
+						analysis = t('voyage.estimate.analysis.proposed_alternative');
+					}
 				}
 			}
 			analyses.push(analysis);
@@ -161,7 +165,11 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>Recommended Lineups</Header>
+			<Header	/* Recommended Lineups */
+				as='h3'
+			>
+				{t('voyage.estimate.recommended_lineups')}
+			</Header>
 			<Tab
 				menu={{ pointing: true }}
 				panes={panes}
@@ -246,7 +254,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 				sortValue = bestValues.total_vp.toLocaleString();
 				break;
 			case 'event_crew_bonus':
-				sortName = 'event crew bonus';
+				// sortName = 'event crew bonus';
 				sortValue = `+${t('global.n_%', { n: Math.round((bestValues.event_crew_bonus ?? 0) * 100) })}`;
 				break;
 		}

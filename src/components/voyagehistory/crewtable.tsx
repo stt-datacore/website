@@ -1,23 +1,33 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Header, Form, Dropdown, Table, Rating, Modal, Icon, Button } from 'semantic-ui-react';
+import {
+	Button,
+	Dropdown,
+	DropdownItemProps,
+	Form,
+	Icon,
+	Modal,
+	Rating,
+	Table
+} from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../model/player';
 import { ITrackedCrewMember, ITrackedAssignmentsBySkill, ITrackedVoyage } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
-import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
-import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { formatTime } from '../../utils/voyageutils';
 
+import CONFIG from '../CONFIG';
+import { SearchableTable, ITableConfigRow } from '../searchabletable';
+import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
+import { CrewPreparer } from '../item_presenters/crew_preparer';
+
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
-import { CrewPreparer } from '../item_presenters/crew_preparer';
 
 export const CrewTable = () => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
+	const { t, tfmt } = globalContext.localized;
 	const { history } = React.useContext(HistoryContext);
 
 	const [data, setData] = React.useState<ITrackedCrewMember[]>([] as ITrackedCrewMember[]);
@@ -93,22 +103,22 @@ export const CrewTable = () => {
 
 	if (history.voyages.length === 0) return <></>;
 
-	const reportDayOptions = [
-		{ key: 'all', value: undefined, text: 'Show all voyages' },
-		{ key: 'year', value: 365, text: 'Show voyages from last year' },
-		{ key: 'half', value: 180, text: 'Show voyages from last 180 days' },
-		{ key: 'quarter', value: 90, text: 'Show voyages from last 90 days' },
-		{ key: 'months', value: 60, text: 'Show voyages from last 60 days' },
-		{ key: 'month', value: 30, text: 'Show voyages from last month' },
-		{ key: 'week', value: 7, text: 'Show voyages from last week' }
+	const reportDayOptions: DropdownItemProps[] = [
+		{ /* Show all voyages */ key: 'all', value: undefined, text: t('voyage.crew_history.options.report.all') },
+		{ /* Show voyages from last year */ key: 'year', value: 365, text: t('voyage.crew_history.options.report.year') },
+		{ /* Show voyages from last 180 days */ key: 'half', value: 180, text: t('voyage.crew_history.options.report.half') },
+		{ /* Show voyages from last 90 days */ key: 'quarter', value: 90, text: t('voyage.crew_history.options.report.quarter') },
+		{ /* Show voyages from last 60 days */ key: 'months', value: 60, text: t('voyage.crew_history.options.report.months') },
+		{ /* Show voyages from last month */ key: 'month', value: 30, text: t('voyage.crew_history.options.report.month') },
+		{ /* Show voyages from last week */ key: 'week', value: 7, text: t('voyage.crew_history.options.report.week') }
 	];
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: 'Crew', pseudocolumns: ['name', 'date_added'] },
-		{ width: 1, column: 'max_rarity', title: 'Rarity', reverse: true },
-		{ width: 1, column: 'assignments.length', title: 'Voyages', reverse: true },
-		{ width: 1, column: 'average_estimate', title: 'Average', reverse: true },
-		{ width: 1, column: 'last_assignment.created_at', title: 'Last Used', reverse: true }
+		{ /* Crew */ width: 3, column: 'name', title: t('voyage.crew_history.columns.crew'), pseudocolumns: ['name', 'date_added'] },
+		{ /* Rarity */ width: 1, column: 'max_rarity', title: t('voyage.crew_history.columns.rarity'), reverse: true },
+		{ /* Voyages */ width: 1, column: 'assignments.length', title: t('voyage.crew_history.columns.voyages'), reverse: true },
+		{ /* Average */ width: 1, column: 'average_estimate', title: t('voyage.crew_history.columns.average'), reverse: true },
+		{ /* Last Used */ width: 1, column: 'last_assignment.created_at', title: t('voyage.crew_history.columns.last_used'), reverse: true }
 	];
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({
@@ -123,8 +133,8 @@ export const CrewTable = () => {
 		<React.Fragment>
 			<Form>
 				<Form.Group inline>
-					<Form.Field
-						placeholder='Filter by date'
+					<Form.Field	/* Filter by date */
+						placeholder={t('hints.filter_by_date')}
 						control={Dropdown}
 						selection
 						clearable
@@ -143,7 +153,8 @@ export const CrewTable = () => {
 				showFilterOptions={true}
 			/>
 			<div>
-				The skill cells indicate what percentage of time the respective crew is used when the column is the voyage primary{!primaryOnly && <>{` `}or secondary</>}.
+				{!primaryOnly && t('voyage.crew_history.notes.skill_cells')}
+				{primaryOnly && t('voyage.crew_history.notes.skill_cells_primary')}
 			</div>
 			{activeVoyage &&
 				<VoyageModal voyage={activeVoyage}
@@ -224,6 +235,7 @@ type CrewSkillModalProps = {
 };
 
 const CrewSkillModal = (props: CrewSkillModalProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { history } = React.useContext(HistoryContext);
 	const { crew, reportDays } = props;
 
@@ -254,7 +266,13 @@ const CrewSkillModal = (props: CrewSkillModalProps) => {
 			closeIcon
 		>
 			<Modal.Header>
-				{crew.name}<span style={{ marginLeft: '2em' }}>({!reportDays ? 'All Voyages' : `Last ${reportDays} Days`})</span>
+				{crew.name}
+				<span style={{ marginLeft: '2em' }}>
+					(
+						{!reportDays && t('voyage.crew_history.skill_modal.header_detail.all')}
+						{reportDays && tfmt('voyage.crew_history.skill_modal.header_detail.last_n_days', { n: `${reportDays}` })}
+					)
+				</span>
 			</Modal.Header>
 			<Modal.Content scrolling>
 				<Table definition celled striped>
@@ -286,7 +304,7 @@ const CrewSkillModal = (props: CrewSkillModalProps) => {
 					</Table.Body>
 				</Table>
 				<div>
-					Each cell indicates what percentage of time {crew.name} is used when the row is the voyage primary and the column is the voyage secondary.
+					{tfmt('voyage.crew_history.skill_modal.notes.crew_skill', { crew: crew.name })}
 				</div>
 			</Modal.Content>
 			<Modal.Actions>

@@ -266,10 +266,9 @@ const RunningTracker = (props: RunningTrackerProps) => {
 	if (tracked) return (
 		<span>
 			{` `}
-			{/* {tfmt('voyage.other_msg.initial_estimate', {
+			{tfmt('voyage.calc.other_msg.initial_estimate', {
 				time: <b><span style={{ whiteSpace: 'nowrap' }}>{formatTime(tracked.estimate.median)}</span></b>
-			})} */}
-			Your initial estimate was <b><span style={{ whiteSpace: 'nowrap' }}>{formatTime(tracked.estimate.median)}</span></b>.
+			})}
 		</span>
 	);
 

@@ -28,6 +28,7 @@
     },
     "base": {
         "all_crew": "Show all crew",
+        "antimatter": "Antimatter",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",
@@ -39,6 +40,7 @@
         "crew": "Crew",
         "crewman": "Crew",
         "crewmen": "Crew",
+        "date": "Date",
         "event_ships": "Event Ships",
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
@@ -61,6 +63,7 @@
         "on_shuttle": "On shuttle",
         "on_voyage": "On voyage",
         "one_slot": "1 slot",
+        "primary": "Primary",
         "pseudocolumns": {
             "collections.length": "{{base.collections}}",
             "date_added": "{{base.release_date}}",
@@ -84,6 +87,7 @@
         "release_date": "Release Date",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Rewards",
+        "secondary": "Secondary",
         "ship_taits": "Ship Traits",
         "ship_trait": "Ship Trait",
         "short_name": "Short Name",
@@ -223,7 +227,8 @@
         "total_ev": "Total EV"
     },
     "clipboard": {
-        "copied_exclaim": "Copied!"
+        "copied_exclaim": "Copied!",
+        "copy": "Copy to clipboard"
     },
     "collections": {
         "additional_milestones": "Additional collection milestones",
@@ -987,9 +992,11 @@
         "obtained": "Obtained",
         "officer": "Officer",
         "optional": "Optional",
+        "options": "Options",
         "or": "or",
         "percentile": "Percentile",
         "permalink": "permalink",
+        "please_wait_ellipses": "Please wait...",
         "portal": "Portal",
         "presets": "Presets",
         "quarter_short": "Q",
@@ -1053,6 +1060,7 @@
         "filter_by_availability": "Filter by availability",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",
+        "filter_by_date": "Filter by date",
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_listed_status": "Filter by listed status",
@@ -1064,6 +1072,7 @@
         "filter_by_progress": "Filter by progress",
         "filter_by_rarity": "Filter by rarity",
         "filter_by_retrieval_options": "Filter by retrieval options",
+        "filter_by_revivals": "Filter by revivals",
         "filter_by_reward": "Filter by reward",
         "filter_by_secondary_skill": "Filter by secondary skill",
         "filter_by_series": "Filter by series",
@@ -2139,6 +2148,12 @@
             "dilemma_chance": "Chance of {{time}}h dilemma: {{chance}}%",
             "estimate": "Estimate",
             "estimate_time": "Estimate: {{time}}",
+            "estimated_at": {
+                "estimated": "estimated at {{time}}",
+                "failed": "failed at {{time}}",
+                "recalled": "recalled at {{time}}"
+            },
+            "event_crew_bonus": "event crew bonus{{:}} {{n}}",
             "expected_range": "(expected range: {{a}} to {{b}})",
             "first_refill": "First Refill",
             "legend": {
@@ -2149,10 +2164,11 @@
             "n_refills": "{{n}} Refills",
             "no_refills": "No Refills",
             "one_refill": "One Refill",
-            "projected_vp": "Projected VP",
+            "projected_vp": "Projected VP{{:}} {{n}}",
             "recommendations": {
                 "antimatter": "starting antimatter",
                 "dilemma": "dilemma chance",
+                "event_crew_bonus": "event crew bonus",
                 "median": "estimated runtime",
                 "minimum": "guaranteed minimum",
                 "moonshot": "moonshot",
@@ -2166,10 +2182,17 @@
             "two_refills": "Two Refills",
             "voyage_end": "This voyage will end at {{time}}.",
             "voyage_extend": "Subsequent refills will extend it by {{time}}.",
-            "voyage_long_advice": "For a {{h}} hour voyage you will need {{r}} refills at a cost of {{d}} dilithium (or {{re}} {{global.item_types.voyage_consumable}}.)"
+            "voyage_long_advice": "For a {{h}} hour voyage you will need {{r}} refills at a cost of {{d}} dilithium (or {{re}} {{global.item_types.voyage_consumable}}.)",
+            "with_n_am_left": "with {{n}} AM left"
         },
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
+            "menu": {
+                "crew": "Crew",
+                "manage": "Manage History",
+                "voyages": "Voyages"
+            },
+            "moved": "The Voyage History tool has moved to the {{link}}. Please update your bookmarks as needed.",
             "not_yet": "You don't have any voyage history yet. Start tracking voyages from the crew calculator.",
             "title": "{{menu.tools.voyage_history}}"
         },
@@ -2231,11 +2254,11 @@
         "skills": {
             "primary": {
                 "name": "Primary skill",
-                "placeholder": "{{quipment_ranks.primary}}"
+                "placeholder": "{{base.primary}}"
             },
             "secondary": {
                 "name": "Secondary skill",
-                "placeholder": "{{quipment_ranks.secondary}}"
+                "placeholder": "{{base.secondary}}"
             }
         },
         "tracking": {
@@ -2249,11 +2272,12 @@
         "unable_to_track_revivals": "DataCore cannot automatically track when a voyage has been revived, but you can manually note the revival here.",
         "view": {
             "active_voyage": "View running voyage",
+            "all_voyages": "View all voyages",
             "crew_calculator": "View crew calculator",
             "voyage_history": "View voyage history"
         },
         "voyages": {
-            "all": "All voyages",
+            "all": "All Voyages",
             "current": "Current Voyages",
             "custom": "Custom Voyages",
             "upcoming": "Upcoming Voyages"
@@ -2262,6 +2286,112 @@
             "click_here": "Click here to upload your data",
             "heading": "You can access your live voyage data in a similar way to how you access your player data, currently.",
             "title": "Live voyage data"
+        },
+        "civas": {
+            "datatypes": {
+                "active": "your running voyage",
+                "recommended": "this recommendation"
+            },
+			"description": "Pro tip: use {{link}} to help you keep track of your voyagers, runtimes, and estimates. Tap the button below to copy the details of {{datatype}} to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{{version}}).",
+            "title": "Captain Idol's Voyage Analysis Sheet"
+        },
+        "crew_history": {
+            "columns": {
+                "average": "Average",
+                "crew": "{{base.crew}}",
+                "last_used": "Last Used",
+                "rarity": "{{base.rarity}}",
+                "voyages": "{{base.voyages}}"
+            },
+            "notes": {
+                "skill_cells": "The skill cells indicate what percentage of time the respective crew is used when the column is the voyage primary or secondary.",
+                "skill_cells_primary": "The skill cells indicate what percentage of time the respective crew is used when the column is the voyage primary."
+            },
+            "options": {
+                "report": {
+                    "all": "{{voyage.show_all_voyages}}",
+                    "year": "Show voyages from last year",
+                    "half": "Show voyages from last 180 days",
+                    "quarter": "Show voyages from last 90 days",
+                    "months": "Show voyages from last 60 days",
+                    "month": "Show voyages from last month",
+                    "week": "Show voyages from last week"
+                }
+            },
+            "skill_modal": {
+                "header_detail": {
+                    "all": "{{voyage.voyages.all}}",
+                    "last_n_days": "Last {{n}} Days"
+                },
+                "notes": {
+                    "crew_skill": "Each cell indicates what percentage of time {{crew}} is used when the row is the voyage primary and the column is the voyage secondary."
+                }
+            }
+        },
+        "nonplayer": {
+            "description": "Import your player data to help tailor this tool to your current voyage and roster. Otherwise, you can manually create a voyage and view the best crew in the game for any possible configuration.",
+            "title": "No Voyage Configuration Available"
+        },
+        "results": {
+            "actions": {
+                "abort": "Abort",
+                "confident": "Get more confident estimate",
+                "dismiss": "Dismiss this recommendation",
+                "edit": "Edit lineup",
+                "track": "Track this recommendation"
+            },
+            "messages": {
+                "calculating": "Calculation in progress. Please wait...",
+                "completed_with_inputs": "Calculated by {{calculator}} calculator ({{inputs}}) in {{seconds}} seconds!",
+                "generic_error": "The voyage calculator encountered an error!",
+                "failed_with_inputs": "The voyage calculator is unable to recommend lineups for the requested options ({{inputs}}). Please try again using different options."
+            }
+        },
+        "running_voyage": "Running Voyage",
+        "show_all_voyages": "Show all voyages",
+        "telemetry": {
+            "description": "We use anonymous statistics aggregated from voyage calculations to improve DataCore and power our {{link}}.",
+            "options": {
+                "opt_in": "Permit DataCore to collect anonymous voyage stats"
+            },
+            "title": "Privacy Notice"
+        },
+        "voyage_history": {
+            "columns": {
+                "antimatter": "{{base.antimatter}}",
+                "date": "{{base.date}}",
+                "initial_estimate": "Initial Estimate",
+                "last_estimate": "Last Estimate",
+                "primary": "{{base.primary}}",
+                "secondary": "{{base.secondary}}",
+                "ship_trait": "{{base.ship_trait}}"
+            },
+            "delete_from_history": "Delete voyage from history",
+            "export_history": "Save history to device",
+            "manage_placeholder": "Remote sync and other history management options are in development.",
+            "options": {
+                "revival": {
+                    "all": "{{voyage.show_all_voyages}}",
+                    "hide": "Hide revived voyages",
+                    "revived": "Only show revived voyages"
+                },
+                "skill": {
+                    "all": "{{voyage.show_all_voyages}}",
+                    "cmd": "Only show voyages with command",
+                    "dip": "Only show voyages with diplomacy",
+                    "eng": "Only show voyages with engineering",
+                    "med": "Only show voyages with medicine",
+                    "sci": "Only show voyages with science",
+                    "sec": "Only show voyages with security"
+                }
+            },
+            "revived": "This voyage was revived.",
+            "tips": {
+                "tip1": "Once you start tracking a voyage, update your player data while your voyage is running to automatically track your current runtime and estimate.",
+                "tip2": "You may want to check on the voyage in-game shortly before importing your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.",
+                "tip3": "Because voyages can be recalled at any time, we use last estimates (rather than actual voyage runtimes) as a more consistent metric to compare voyage lengths. We recommend updating your player data after recalling a voyage to keep track of your recall time and to get a final last estimate.",
+                "title": "Tips"
+            }
         }
     }
 }

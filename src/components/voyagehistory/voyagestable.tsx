@@ -1,14 +1,22 @@
 import React from 'react';
-import { Table, Form, Dropdown, Pagination, Message, Header, DropdownItemProps } from 'semantic-ui-react';
+import {
+	Dropdown,
+	DropdownItemProps,
+	Form,
+	Message,
+	Pagination,
+	Table
+} from 'semantic-ui-react';
 
 import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
 
+import CONFIG from '../CONFIG';
+
 import { HistoryContext } from './context';
-import { VoyageModal } from './voyagemodal';
 import { deleteTrackedData, removeVoyageFromHistory, SyncState } from './utils';
+import { VoyageModal } from './voyagemodal';
 
 interface ITableState {
 	data: ITrackedVoyage[];
@@ -32,9 +40,8 @@ interface ITableColumn {
 
 export const VoyagesTable = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { SHIP_TRAIT_NAMES, t, tfmt } = globalContext.localized;
 	const { ephemeral } = globalContext.player;
-	const { t } = globalContext.localized;
-	const { SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
@@ -56,29 +63,29 @@ export const VoyagesTable = () => {
 	if (history.voyages.length === 0) return <></>;
 
 	const skillOptions: DropdownItemProps[] = [
-		{ key: 'all', value: '', text: 'Show all voyages' },
-		{ key: 'cmd', value: 'command_skill', text: 'Only show voyages with command' },
-		{ key: 'dip', value: 'diplomacy_skill', text: 'Only show voyages with diplomacy' },
-		{ key: 'eng', value: 'engineering_skill', text: 'Only show voyages with engineering' },
-		{ key: 'med', value: 'medicine_skill', text: 'Only show voyages with medicine' },
-		{ key: 'sci', value: 'science_skill', text: 'Only show voyages with science' },
-		{ key: 'sec', value: 'security_skill', text: 'Only show voyages with security' }
+		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.voyage_history.options.skill.all') },
+		{ /* Only show voyages with command */ key: 'cmd', value: 'command_skill', text: t('voyage.voyage_history.options.skill.cmd') },
+		{ /* Only show voyages with diplomacy */ key: 'dip', value: 'diplomacy_skill', text: t('voyage.voyage_history.options.skill.dip') },
+		{ /* Only show voyages with engineering */ key: 'eng', value: 'engineering_skill', text: t('voyage.voyage_history.options.skill.eng') },
+		{ /* Only show voyages with medicine */ key: 'med', value: 'medicine_skill', text: t('voyage.voyage_history.options.skill.med') },
+		{ /* Only show voyages with science */ key: 'sci', value: 'science_skill', text: t('voyage.voyage_history.options.skill.sci') },
+		{ /* Only show voyages with security */ key: 'sec', value: 'security_skill', text: t('voyage.voyage_history.options.skill.sec') }
 	];
 
 	const revivalOptions: DropdownItemProps[] = [
-		{ key: 'all', value: '', text: 'Show all voyages' },
-		{ key: 'hide', value: 'hide', text: 'Hide revived voyages' },
-		{ key: 'revived', value: 'revived', text: 'Only show revived voyages' }
+		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.voyage_history.options.revival.all') },
+		{ /* Hide revived voyages */ key: 'hide', value: 'hide', text: t('voyage.voyage_history.options.revival.hide') },
+		{ /* Only show revived voyages */ key: 'revived', value: 'revived', text: t('voyage.voyage_history.options.revival.revived') }
 	];
 
 	const tableConfig: ITableColumn[] = [
-		{ column: 'created_at', title: 'Date', align: 'left', firstSort: 'descending' },
-		{ column: 'skills.primary_skill', title: 'Primary' },
-		{ column: 'skills.secondary_skill', title: 'Secondary' },
-		{ column: '_shipTrait', title: 'Ship Trait' },
-		{ column: 'max_hp', title: 'Antimatter', firstSort: 'descending' },
-		{ column: 'estimate.median', title: 'Initial Estimate', firstSort: 'descending' },
-		{ column: 'checkpoint.estimate.median', title: 'Last Estimate', firstSort: 'descending' }
+		{ /* Date */ column: 'created_at', title: t('voyage.voyage_history.columns.date'), align: 'left', firstSort: 'descending' },
+		{ /* Primary */ column: 'skills.primary_skill', title: t('voyage.voyage_history.columns.primary') },
+		{ /* Secondary */ column: 'skills.secondary_skill', title: t('voyage.voyage_history.columns.secondary') },
+		{ /* Ship Trait */ column: '_shipTrait', title: t('voyage.voyage_history.columns.ship_trait') },
+		{ /* Antimatter */ column: 'max_hp', title: t('voyage.voyage_history.columns.antimatter'), firstSort: 'descending' },
+		{ /* Initial Estimate */ column: 'estimate.median', title: t('voyage.voyage_history.columns.initial_estimate'), firstSort: 'descending' },
+		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.columns.last_estimate'), firstSort: 'descending' }
 	];
 
 	// Filter
@@ -98,8 +105,8 @@ export const VoyagesTable = () => {
 		<React.Fragment>
 			<Form>
 				<Form.Group inline>
-					<Form.Field
-						placeholder='Filter by skill'
+					<Form.Field	/* Filter by skill */
+						placeholder={t('hints.filter_by_skill')}
 						control={Dropdown}
 						selection
 						clearable
@@ -107,8 +114,8 @@ export const VoyagesTable = () => {
 						value={skillFilter}
 						onChange={(e, { value }) => setSkillFilter(value as string)}
 					/>
-					<Form.Field
-						placeholder='Filter by revivals'
+					<Form.Field	/* Filter by revivals */
+						placeholder={t('hints.filter_by_revivals')}
 						control={Dropdown}
 						selection
 						clearable
@@ -168,7 +175,7 @@ export const VoyagesTable = () => {
 			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 				<Table.Cell>
 					{dtCreated.toLocaleDateString()}
-					{isRunning && <><br/>Running Voyage</>}
+					{isRunning && <><br/>{t('voyage.running_voyage')}</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
@@ -203,8 +210,10 @@ export const VoyagesTable = () => {
 			<React.Fragment>
 				<b>{formatTime(checkpoint.estimate.median, t)}</b>
 				<div>
-					({estimateType} at {formatTime(checkpoint.runtime, t)}
-					{checkpoint.hp > 0 && <><br />with {checkpoint.hp} AM left</>})
+					(
+						{tfmt(`voyage.estimate.estimated_at.${estimateType}`, { time: formatTime(checkpoint.runtime, t) })}
+						{checkpoint.hp > 0 && <><br />{tfmt('voyage.estimate.with_n_am_left', { n: <>{checkpoint.hp}</> })}</>}
+					)
 				</div>
 			</React.Fragment>
 		);
@@ -310,13 +319,18 @@ export const VoyagesTable = () => {
 };
 
 const HistoryTips = () => {
+	const { t } = React.useContext(GlobalContext).localized;
+
 	return (
 		<Message style={{ margin: '1em 0' }}>
 			<Message.Content>
-				<Message.Header>Tips</Message.Header>
-				<p>Once you start tracking a voyage, update your player data while your voyage is running to automatically track your current runtime and estimate.</p>
-				<p>You may want to check on the voyage in-game shortly before importing your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.</p>
-				<p>Because voyages can be recalled at any time, we use last estimates (rather than actual voyage runtimes) as a more consistent metric to compare voyage lengths. We recommend updating your player data after recalling a voyage to keep track of your recall time and to get a final last estimate.</p>
+				<Message.Header	/* Tips */
+				>
+					{t('voyage.voyage_history.tips.title')}
+				</Message.Header>
+				<p>{t('voyage.voyage_history.tips.tip1')}</p>
+				<p>{t('voyage.voyage_history.tips.tip2')}</p>
+				<p>{t('voyage.voyage_history.tips.tip3')}</p>
 			</Message.Content>
 		</Message>
 	);

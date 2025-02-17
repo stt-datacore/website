@@ -9,21 +9,30 @@ import { Link } from 'gatsby';
 import { CrewMember } from '../../../model/crew';
 import { PlayerData } from '../../../model/player';
 import { IResultProposal, IVoyageInputConfig } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 import { BuffStatTable } from '../../../utils/voyageutils';
 import CONFIG from '../../CONFIG';
 import { UserPrefsContext } from './userprefs';
 
 export const TelemetryOptions = () => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const userPrefs = React.useContext(UserPrefsContext);
 	return (
 		<Message style={{ marginTop: '2em' }}>
 			<Message.Content>
-				<Message.Header>Privacy Notice</Message.Header>
-				<p>We use anonymous statistics aggregated from voyage calculations to improve DataCore and power our <b><Link to='/hall_of_fame'>Voyage Hall of Fame</Link></b>.</p>
+				<Message.Header	/* Privacy Notice */
+				>
+					{t('voyage.telemetry.title')}
+				</Message.Header>
+				<p>
+					{tfmt('voyage.telemetry.description', {
+						link: <b><Link to='/hall_of_fame'>{t('menu.game_info.voyage_hof')}</Link></b>
+					})}
+				</p>
 				<Form>
-					<Form.Field
+					<Form.Field	/* Permit DataCore to collect anonymous voyage stats */
 						control={Checkbox}
-						label={<label>Permit DataCore to collect anonymous voyage stats</label>}
+						label={<label>{t('voyage.telemetry.options.opt_in')}</label>}
 						checked={userPrefs.telemetryOptIn}
 						onChange={(e, { checked }) => userPrefs.setTelemetryOptIn(checked) }
 					/>

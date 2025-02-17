@@ -5,8 +5,8 @@ import { CompactCrew, PlayerCrew, Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageCrew } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
+import CONFIG from '../CONFIG';
 
 type RosterPickerProps = {
 	configSource: 'player' | 'custom';
@@ -18,6 +18,7 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { playerData, playerShips, ephemeral } = globalContext.player;
 	const { configSource, rosterType, setRosterType, setRosterCrew, setRosterShips } = props;
 
@@ -48,15 +49,15 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
 				<Icon name='users' />
 				<Step.Content>
-					<Step.Title>Owned Crew</Step.Title>
-					<Step.Description>Only consider your owned crew</Step.Description>
+					<Step.Title>{t('tool_roster_picker.owned_crew.title')}</Step.Title>
+					<Step.Description>{t('tool_roster_picker.owned_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
 				<Icon name='fire' />
 				<Step.Content>
-					<Step.Title>Best Possible Voyage</Step.Title>
-					<Step.Description>Consider all ships and crew in the game</Step.Description>
+					<Step.Title>{t('tool_roster_picker.all_crew.title')}</Step.Title>
+					<Step.Description>{t('tool_roster_picker.all_crew.description')}</Step.Description>
 				</Step.Content>
 			</Step>
 		</Step.Group>
