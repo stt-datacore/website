@@ -28,7 +28,6 @@
     },
     "base": {
         "all_crew": "Show all crew",
-        "antimatter": "Antimatter",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
         "cab_power": "CAB",
@@ -2121,6 +2120,12 @@
             }
         },
         "crew_finder_hints": {
+            "best_rank": {
+                "optimal": "Select the {{top}} for this seat",
+                "prefilter": "Filter by these skills, then select the {{top}}",
+                "top": "top crew",
+                "top_ordinal": "{{ordinal}} crew from the top"
+            },
             "on_shuttle": "On shuttle",
             "on_voyage": "On voyage",
             "unfreeze_crew": "Unfreeze crew"
@@ -2358,7 +2363,7 @@
         },
         "voyage_history": {
             "columns": {
-                "antimatter": "{{base.antimatter}}",
+                "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",
                 "initial_estimate": "Initial Estimate",
                 "last_estimate": "Last Estimate",

@@ -39,12 +39,14 @@ export const CrewFinder = (props: CrewFinderProps) => {
 		};
 	}
 	else if (bestRank) {
+		const top: string = bestRank.rank === 1
+			? t('voyage.crew_finder_hints.best_rank.top')
+			: t('voyage.crew_finder_hints.best_rank.top_ordinal', { ordinal: addPostfix(bestRank.rank) });
 		let content: string = '';
 		if (bestRank.skills.length === 0)
-			content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
-		else {
-			content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
-		}
+			content = t('voyage.crew_finder_hints.best_rank.optimal', { top });
+		else
+			content = t('voyage.crew_finder_hints.best_rank.prefilter', { top });
 		popup = {
 			content,
 			trigger:
