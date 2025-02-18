@@ -1522,7 +1522,8 @@
             "trait": "Rasgos",
             "skill_positions": "Puestos de habilidad",
             "velocity": "Velocidad",
-            "voyage": "Viaje"
+            "voyage": "Viaje",
+            "variant": "Variante"
         }
     },
     "ranking_method": {

@@ -1529,7 +1529,8 @@
             "trait": "Traits",
             "skill_positions": "Postes de compétences",
             "velocity": "Vitesse",
-            "voyage": "Voyage"
+            "voyage": "Voyage",
+            "variant": "Variante"
         }
     },
     "ranking_method": {

@@ -1517,7 +1517,8 @@
             "trait": "Eigenschaften",
             "skill_positions": "Kompetenzpositionen",
             "velocity": "Geschwindigkeit",
-            "voyage": "Reise"
+            "voyage": "Reise",
+            "variant": "Variante"
         }
     },
     "ranking_method": {
