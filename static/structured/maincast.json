@@ -3,29 +3,29 @@
         "kirk",
         "spock",
         "mccoy",
-        "sulu",
-        "chekov",
+        "scott",
         "uhura",
-        "scott"
+        "sulu",
+        "chekov"
     ],
     "tng": [
         "picard",
         "riker",
         "data",
         "laforge",
-        "troi",
         "worf",
         "crusher",
+        "troi",
         "wesley"
     ],
     "ds9": [
         "sisko",
         "kira",
-        "odo",
+        "dax",
+        "bashir",
         "obrien",
         "worf",
-        "bashir",
-        "dax",
+        "odo",
         "quark",
         "garak"
     ],
@@ -33,10 +33,10 @@
         "janeway",
         "chakotay",
         "tuvok",
-        "neelix",
-        "torres",
         "paris",
+        "torres",
         "kim",
+        "neelix",
         "seven",
         "kes"
     ],
@@ -44,31 +44,39 @@
         "archer",
         "tpol",
         "tucker",
-        "reed",
-        "mayweather",
         "phlox",
-        "sato"
+        "reed",
+        "sato",
+        "mayweather"
     ],
     "dsc": [
         "burnham",
         "saru",
         "tilly",
-        "georgiou",
-        "owosekun",
-        "detmer",
         "stamets",
         "culber",
+        "owosekun",
+        "detmer",
+        "georgiou",
         "booker"
+    ],
+    "pic": [
+        "picard",
+        "raffi",
+        "seven",
+        "rios",
+        "jurati",
+        "elnor"
     ],
     "snw": [
         "pike",
         "number_one",
         "spock",
+        "chapel",
         "uhura",
         "mbenga",
-        "ortegas",
         "laan",
-        "chapel"
+        "ortegas"
     ],
     "low": [
         "mariner",
