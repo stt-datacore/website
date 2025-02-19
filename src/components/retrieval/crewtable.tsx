@@ -17,6 +17,7 @@ import { CombosModal } from './combos';
 import CONFIG from '../CONFIG';
 import { PlayerCrew } from '../../model/player';
 import { RetrievalContext } from './context';
+import { renderCabColumn, renderDataScoreColumn } from '../crewtables/views/base';
 
 type RetrievalCrewTableProps = {
  	filteredCrew: IRosterCrew[];
@@ -35,7 +36,7 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: ['name', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['highest_owned_rarity'] },
-		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier') },
+		{ width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore') },
 		{ width: 1, column: 'cab_ov', title: t('base.cab_power'), reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{ width: 1, column: 'ranks.voyRank', title: t('base.voyage') },
 		{ width: 1, column: 'ranks.gauntletRank', title: t('base.gauntlet') },
@@ -134,12 +135,11 @@ const CrewRow = (props: CrewRowProps) => {
 	function renderDefaultCells(): JSX.Element {
 		return (
 			<React.Fragment>
-				{/* <Table.Cell textAlign='center'>
-					<b>{formatTierLabel(crew)}</b>
-				</Table.Cell> */}
 				<Table.Cell textAlign='center'>
-					<b>{crew.cab_ov}</b>
-					<br /><small>{rarityLabels[crew.max_rarity]} #{crew.cab_ov_rank}</small>
+					{renderDataScoreColumn(crew)}
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{renderCabColumn(crew)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>#{crew.ranks.voyRank}</b>
