@@ -30,13 +30,13 @@ export const RetrievalEnergy = () => {
 	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? defaultSeconds); // 48
 	const qPerBoost = 50;
 	let energyMessage = [] as JSX.Element[];
-	energyMessage.push(<>{t('retrieval.energy.guaranteed_legendary')}</>);
+	energyMessage.push(tfmt('retrieval.energy.guaranteed_legendary'));
 	if (energy.quantity < qTarget) {
 		const regenerationTime = getSecondsRemaining(qTarget, energy.quantity);
-		energyMessage[0] = <>{tfmt('retrieval.energy.quantum_regeneration', {
+		energyMessage[0] = tfmt('retrieval.energy.quantum_regeneration', {
 			target: printQuantum(qTarget),
 			time: formatTime(regenerationTime, t, true)
-		})}</>;
+		});
 		let daysCanBoost = 0, qTotal = energy.quantity;
 		while (qTotal < qTarget) {
 			daysCanBoost++;
@@ -45,21 +45,21 @@ export const RetrievalEnergy = () => {
 		const timeBoosted = getSecondsRemaining(qTarget, energy.quantity+(daysCanBoost*qPerBoost));
 
 		if (timeBoosted <= 0) {
-			energyMessage.push(<>{tfmt('retrieval.energy.spend_90_immediately', {
+			energyMessage.push(tfmt('retrieval.energy.spend_90_immediately', {
 				target: printQuantum(qTarget)
-			})}</>);
+			}));
 		}
 		else if (daysCanBoost > 1) {
-			energyMessage.push(<>{tfmt('retrieval.energy.spend_90_daily', {
+			energyMessage.push(tfmt('retrieval.energy.spend_90_daily', {
 				target: printQuantum(qTarget),
 				time: formatTime(timeBoosted, t, true)
-			})}</>);
+			}));
 		}
 		else {
-			energyMessage.push(<>{tfmt('retrieval.energy.spend_90', {
+			energyMessage.push(tfmt('retrieval.energy.spend_90', {
 				target: printQuantum(qTarget),
 				time: formatTime(timeBoosted, t, true)
-			})}</>);
+			}));
 		}
 	}
 	const flexRow = OptionsPanelFlexRow;
