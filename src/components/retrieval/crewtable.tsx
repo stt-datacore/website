@@ -50,7 +50,7 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 			customCompare: (a: PlayerCrew, b: PlayerCrew, conf) => {
 				let r = 0;
 				if (conf.field === 'retrievable' || !market) {
-					r = a.unique_polestar_combos!.length - b.unique_polestar_combos!.length;
+					r = (a.unique_polestar_combos?.length ?? 0) - (b.unique_polestar_combos?.length ?? 0);
 				}
 				else if (conf.field === 'price') {
 					a.price ??= 0;
