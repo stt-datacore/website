@@ -5,6 +5,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../../model/player';
+import { GlobalContext } from '../../../../context/globalcontext';
 import { IContestant } from '../model';
 import { Contest } from './contest';
 
@@ -21,6 +22,7 @@ type ContestSimulatorModalProps = {
 };
 
 export const ContestSimulatorModal = (props: ContestSimulatorModalProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { dismissSimulator } = props;
 	return (
 		<Modal
@@ -29,7 +31,7 @@ export const ContestSimulatorModal = (props: ContestSimulatorModalProps) => {
 			size='small'
 		>
 			<Modal.Header	/* Contest Simulator */>
-				Contest Simulator
+				{t('voyage.contests.contest_simulator')}
 			</Modal.Header>
 			<Modal.Content scrolling>
 				<Contest
@@ -45,7 +47,7 @@ export const ContestSimulatorModal = (props: ContestSimulatorModalProps) => {
 			</Modal.Content>
 			<Modal.Actions>
 				<Button	/* Close */
-					content='Close'
+					content={t('global.close')}
 					onClick={dismissSimulator}
 				/>
 			</Modal.Actions>

@@ -1,10 +1,12 @@
 import React from 'react';
 import {
-	Button
+	Button,
+	Form
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../../model/player';
 import { IVoyageCalcConfig, IVoyageCrew } from '../../../../model/voyage';
+import { GlobalContext } from '../../../../context/globalcontext';
 
 import CONFIG from '../../../CONFIG';
 
@@ -29,6 +31,7 @@ type ProficiencyCheckProps = {
 };
 
 export const ProficiencyCheck = (props: ProficiencyCheckProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { id, voyageConfig, roster } = props;
 
 	const [layout, setLayout] = React.useState<string>('halfmatrix');
@@ -61,16 +64,20 @@ export const ProficiencyCheck = (props: ProficiencyCheckProps) => {
 		<ProficiencyContext.Provider value={proficiencyContext}>
 			<React.Fragment>
 				<div>
-					Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.{` `}
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' /> represents a crew's number of potential crit traits.
+					{t('voyage.contests.notes.scores')}{` `}
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />{` `}{t('voyage.contests.notes.crit_icon')}
 				</div>
 				<div style={{ margin: '1em 0' }}>
-					Toggle layout:{` `}
-					<Button.Group>
-						<Button icon='expand' color={layout === 'matrix' ? 'blue' : undefined} onClick={() => setLayout('matrix')} />
-						<Button icon='compress' color={layout === 'halfmatrix' ? 'blue' : undefined} onClick={() => setLayout('halfmatrix')} />
-						<Button icon='table' color={layout === 'table' ? 'blue' : undefined} onClick={() => setLayout('table')} />
-					</Button.Group>
+					<Form>
+						<Form.Field inline>
+							<label>{t('global.toggle_layout')}{t('global.colon')}</label>
+							<Button.Group>
+								<Button icon='expand' color={layout === 'matrix' ? 'blue' : undefined} onClick={() => setLayout('matrix')} />
+								<Button icon='compress' color={layout === 'halfmatrix' ? 'blue' : undefined} onClick={() => setLayout('halfmatrix')} />
+								<Button icon='table' color={layout === 'table' ? 'blue' : undefined} onClick={() => setLayout('table')} />
+							</Button.Group>
+						</Form.Field>
+					</Form>
 				</div>
 				{(layout === 'matrix' || layout === 'halfmatrix') && (
 					<ProficiencyMatrix

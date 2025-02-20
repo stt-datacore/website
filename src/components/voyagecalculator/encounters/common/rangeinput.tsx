@@ -3,6 +3,7 @@ import {
 	Input
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../../../context/globalcontext';
 import { IContestSkill } from '../model';
 
 type ProficiencyRangeInputProps = {
@@ -11,18 +12,19 @@ type ProficiencyRangeInputProps = {
 };
 
 export const ProficiencyRangeInput = (props: ProficiencyRangeInputProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { contestSkill, onChange } = props;
 	return (
 		<div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
 			<ProficiencyInput	/* Min */
-				placeholder='Min'
+				placeholder={t('voyage.contests.min')}
 				field='range_min'
 				contestSkill={contestSkill}
 				onChange={onChange}
 			/>
 			-
 			<ProficiencyInput	/* Max */
-				placeholder='Max'
+				placeholder={t('voyage.contests.max')}
 				field='range_max'
 				contestSkill={contestSkill}
 				onChange={onChange}

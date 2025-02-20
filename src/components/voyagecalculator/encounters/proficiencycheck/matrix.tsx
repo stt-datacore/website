@@ -22,6 +22,7 @@ type ProficiencyMatrixProps = {
 };
 
 export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, sortedSkills, data, simulateContest } = React.useContext(ProficiencyContext);
 
 	const fields: IDataMatrixField[] = sortedSkills.map(skill => {
@@ -73,7 +74,7 @@ export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 					<Label	/* Simulate contest */
 						style={{ cursor: 'pointer' }}
 						onClick={() => simulateContest({ skills: [datum.rowId, datum.columnId], crew: bestCrew })}
-						title='Simulate contest'
+						title={t('voyage.contests.simulate_contest')}
 					>
 						{getCrewSkillsScore(bestCrew, [datum.rowId, datum.columnId])}
 						{crewIsShortSkilled(bestCrew, [datum.rowId, datum.columnId]) && <>*</>}

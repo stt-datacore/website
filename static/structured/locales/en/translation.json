@@ -63,6 +63,7 @@
         "on_voyage": "On voyage",
         "one_slot": "1 slot",
         "primary": "Primary",
+        "proficiency": "Proficiency",
         "pseudocolumns": {
             "collections.length": "{{base.collections}}",
             "date_added": "{{base.release_date}}",
@@ -86,6 +87,7 @@
         "release_date": "Release Date",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Rewards",
+        "score": "Score",
         "secondary": "Secondary",
         "ship_taits": "Ship Traits",
         "ship_trait": "Ship Trait",
@@ -981,6 +983,7 @@
         "n_results": "{{n}} results",
         "n_total_x": "{{n}} total {{x}}",
         "n_x": "{{n}} {{x}}",
+        "na": "N/A",
         "name": "Name",
         "never": "Never",
         "new": "New",
@@ -1022,6 +1025,7 @@
         "shown": "Shown",
         "sort_by": "Sort by",
         "squadron_leader": "Squadron Leader",
+        "toggle_layout": "Toggle layout",
         "uncheck_all": "Uncheck all",
         "view_options": "View Options",
         "viewing_stats_for_x": "Viewing stats for {{x}}",
@@ -2297,8 +2301,28 @@
                 "active": "your running voyage",
                 "recommended": "this recommendation"
             },
-			"description": "Pro tip: use {{link}} to help you keep track of your voyagers, runtimes, and estimates. Tap the button below to copy the details of {{datatype}} to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{{version}}).",
+            "description": "Pro tip: use {{link}} to help you keep track of your voyagers, runtimes, and estimates. Tap the button below to copy the details of {{datatype}} to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{{version}}).",
             "title": "Captain Idol's Voyage Analysis Sheet"
+        },
+        "contests": {
+            "avg": "Avg",
+            "contestant": "Contestant",
+            "contest_simulator": "Contest Simulator",
+            "crit_chance": "Crit Chance",
+            "max": "{{global.max}}",
+            "min": "{{global.min}}",
+            "n_viable_crew": "Your voyage has {{n}} viable crew for this contest",
+            "no_skill": "No skill",
+            "notes": {
+                "crit_icon": "represents a crew's number of potential crit traits.",
+                "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
+                "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
+            },
+            "search_for_contestant": "Search for contestant",
+            "search_for_contestant_by_name": "Search for contestant by name",
+            "select_crit_chance": "Select crit chance",
+            "simulate_contest": "Simulate contest",
+            "wins": "Wins"
         },
         "crew_history": {
             "columns": {
@@ -2348,12 +2372,23 @@
             "messages": {
                 "calculating": "Calculation in progress. Please wait...",
                 "completed_with_inputs": "Calculated by {{calculator}} calculator ({{inputs}}) in {{seconds}} seconds!",
-                "generic_error": "The voyage calculator encountered an error!",
-                "failed_with_inputs": "The voyage calculator is unable to recommend lineups for the requested options ({{inputs}}). Please try again using different options."
+                "failed_with_inputs": "The voyage calculator is unable to recommend lineups for the requested options ({{inputs}}). Please try again using different options.",
+                "generic_error": "The voyage calculator encountered an error!"
             }
         },
         "running_voyage": "Running Voyage",
         "show_all_voyages": "Show all voyages",
+        "skill_check": {
+            "fields": {
+                "best_minimum": "Best Minimum",
+                "best_proficiency": "Best Proficiency",
+                "crew_with_skill": "Crew with Skill",
+                "fail_point": "Skill Check Fail Point",
+                "paired_skills": "Paired Skills",
+                "voyage_score": "Voyage Score"
+            },
+            "title": "Skill check"
+        },
         "telemetry": {
             "description": "We use anonymous statistics aggregated from voyage calculations to improve DataCore and power our {{link}}.",
             "options": {
