@@ -130,13 +130,13 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	const columns: IDataTableColumn[] = [
 		{	/* Voyage Seat */
 			id: 'slot',
-			title: 'Voyage Seat',
+			title: t('voyage.editor.fields.voyage_seat'),
 			sortField: { id: 'id' },
 			renderCell: (datum: IEssentialData) => renderSlotName(datum as IAlternateSlotData)
 		},
 		{	/* Voyage */
 			id: 'voyage',
-			title: 'Voyage',
+			title: t('base.voyage'),
 			align: 'center',
 			sortField: { id: 'diff_voyage_total', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_voyage_total`]} showNoChange />
@@ -164,9 +164,9 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 			sortField: { id: 'diff_antimatter', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_antimatter`]} />
 		},
-		{
+		{	/* Estimate */
 			id: 'estimate',
-			title: 'Estimate',
+			title: t('voyage.estimate.estimate'),
 			align: 'center',
 			sortField: { id: 'runtime', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => renderEstimate((datum as IAlternateSlotData))
@@ -184,7 +184,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 			id={`${id}/seatpicker/datapicker`}
 			data={data}
 			closePicker={handleSelectedIds}
-			title={`Alternate Seats for ${alternateCrew.name}`}
+			title={t('voyage.editor.alternate_seats_for_crew', { crew: alternateCrew.name })}
 			selection
 			closeOnChange
 			renderPreface={renderPreface}
@@ -231,11 +231,11 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	function renderPreface(): JSX.Element {
 		const currentSlot: IProspectiveCrewSlot | undefined = prospectiveConfig.crew_slots.find(cs => cs.crew?.id === alternateCrew.id);
 		return (
-			<React.Fragment>
-				<p>Select a voyage seat. Any existing crew in that seat will be replaced by {alternateCrew.name}, resulting in the listed changes to the prospective voyage.</p>
+			<React.Fragment	/* Select a voyage seat. Any existing crew in that seat will be replaced by CREW, resulting in the listed changes to the prospective voyage. */>
+				<p>{t('voyage.editor.select_slot', { crew: alternateCrew.name })}</p>
 				{currentSlot && (
-					<Message>
-						<Icon name='info circle' /> {alternateCrew.name} is already seated as the {currentSlot.name} on this prospective voyage. The estimates below account for {alternateCrew.name} in a new seat while leaving the {currentSlot.name} seat unassigned.
+					<Message	/* CREW is already seated as the SEAT on this prospective voyage. The estimates below account for CREW in a new seat while leaving the SEAT seat unassigned. */>
+						<Icon name='info circle' /> {t('voyage.editor.slotted_message', { crew: alternateCrew.name, seat: currentSlot.name })}
 					</Message>
 				)}
 			</React.Fragment>
@@ -309,6 +309,7 @@ type GridAlternateSlotProps = {
 };
 
 const GridAlternateSlot = (props: GridAlternateSlotProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { sortedSkills } = React.useContext(EditorContext);
 	const { alternateSlot, renderCrewSwap, renderEstimate } = props;
@@ -342,14 +343,18 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 					<Table striped compact unstackable>
 						<Table.Body>
 							<Table.Row>
-								<Table.Cell textAlign='center'>
-									<b>Voyage</b>
+								<Table.Cell	/* Voyage */
+									textAlign='center'
+								>
+									<b>{t('base.voyage')}</b>
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 								</Table.Cell>
-								<Table.Cell textAlign='center'>
-									<b>Estimate</b>
+								<Table.Cell /* Estimate */
+									textAlign='center'
+								>
+									<b>{t('voyage.estimate.estimate')}</b>
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>

@@ -95,6 +95,7 @@
         "shuttle": "Shuttle",
         "shuttles": "Shuttles",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
+        "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Uniquely Retrievable",
         "voyage": "Voyage",
@@ -2164,6 +2165,16 @@
             },
             "event_crew_bonus": "event crew bonus{{:}} {{n}}",
             "expected_range": "(expected range: {{a}} to {{b}})",
+            "fields": {
+                "antimatter": "Starting Antimatter",
+                "dilemma": "Dilemma Chance",
+                "event_crew_bonus": "Event Crew Bonus",
+                "h_dilemma_chance": "{{h}}h Chance",
+                "median": "Estimated Runtime",
+                "minimum": "Guaranteed Minimum",
+                "moonshot": "Moonshot",
+                "total_vp": "Projected VP"
+            },
             "first_refill": "First Refill",
             "legend": {
                 "chance_%": "Chance (%)",
@@ -2356,6 +2367,39 @@
                     "crew_skill": "Each cell indicates what percentage of time {{crew}} is used when the row is the voyage primary and the column is the voyage secondary."
                 }
             }
+        },
+        "editor": {
+            "alternate_seats_for_crew": "Alternate Seats for {{crew}}",
+            "compared": "Compared to the existing recommendation:",
+            "fields": {
+                "max_proficiency": "Max Proficiency",
+                "voyage_score": "Voyage Score",
+                "voyage_seat": "Voyage Seat"
+            },
+            "missing_voyagers_message": "Please assign crew to all voyage seats.",
+            "n_viable_crew": "Your prospective voyage has {{n}} crew with this skill",
+            "options": {
+                "show_prospective_voyagers": "Only show prospective voyagers",
+                "skill_values": "Show skill values in table"
+            },
+            "prospective": {
+                "assigned_slot": "Prospective Voyage Seat",
+                "lineup": "Prospective Lineup",
+                "proficiency": "Prospective Proficiency",
+                "skill_check": "Prospective Skill Check",
+                "voyage": "Prospective Voyage"
+            },
+            "reset_recommendation": "Reset to existing recommendation",
+            "save_recommendation": "Save as new recommendation",
+            "search_for_alternates": "Search for alternate crew",
+            "search_for_alternates_by_name": "Search for alternate voyage crew by name",
+            "select_slot": "Select a voyage seat. Any existing crew in that seat will be replaced by {{crew}}, resulting in the listed changes to the prospective voyage.",
+            "slotted_message": "{{crew}} is already seated as the {{seat}} on this prospective voyage. The estimates below account for {{crew}} in a new seat while leaving the {{seat}} seat unassigned.",
+            "target_seat": "Select a crew for {{seat}}.",
+            "target_seat_replacement": "Select a crew to replace {{crew}} as {{seat}}.",
+            "target_view_alternates": "or tap any crew below to view alternate crew for that seat.",
+            "targeting_message": "Only showing viable {{seat}} alternates",
+            "view_voyage": "View prospective voyage"
         },
         "nonplayer": {
             "description": "Import your player data to help tailor this tool to your current voyage and roster. Otherwise, you can manually create a voyage and view the best crew in the game for any possible configuration.",

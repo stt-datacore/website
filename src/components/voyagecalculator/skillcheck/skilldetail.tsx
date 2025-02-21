@@ -83,7 +83,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 						{rows.map(row => (
 							<Table.Row key={row.field}>
 								<Table.Cell>
-									{row.title}
+									{row.title}{t('global.colon')}
 								</Table.Cell>
 								<Table.Cell textAlign='right'>
 									{!baselineData && renderRowValue(row)}
@@ -117,7 +117,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<div	/* Paired Skills */
 					>
-						{t('voyage.skill_check.fields.paired_skills')}
+						{t('voyage.skill_check.fields.paired_skills')}{t('global.colon')}
 					</div>
 					<div>
 						{renderPairedSkills()}

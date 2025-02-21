@@ -65,7 +65,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 			centered={false}
 		>
 			<Modal.Header	/* Prospective Voyage */>
-				Prospective Voyage
+				{t('voyage.editor.prospective.voyage')}
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{renderTopLines()}
@@ -107,13 +107,13 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 								})}
 							</p>
 							{!isValidConfig && (
-								<p><Icon name='exclamation triangle' color='yellow' /> Please assign crew to all voyage seats.</p>
+								<p><Icon name='exclamation triangle' color='yellow' /> {t('voyage.editor.missing_voyagers_message')}</p>
 							)}
 						</div>
 						<div>
 							{isEdited && (
 								<Button	/* Save as new recommendation */
-									content='Save as new recommendation'
+									content={t('voyage.editor.save_recommendation')}
 									color={isValidConfig ? 'green' : undefined}
 									size='large'
 									disabled={!isValidConfig}
@@ -124,8 +124,8 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 					</div>
 				</Message>
 				{control && isEdited && (
-					<Segment attached='bottom'>
-						<p>Compared to the existing recommendation:</p>
+					<Segment attached='bottom'	/* Compared to the existing recommendation: */>
+						<p>{t('voyage.editor.compared')}</p>
 						<ToplinesCompared
 							currentConfig={prospectiveConfig}
 							currentEstimate={prospectiveEstimate}
@@ -134,7 +134,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 						/>
 						<div style={{ marginTop: '2em', display: 'flex', justifyContent: 'flex-end', columnGap: '1em' }}>
 							<Button	/* Reset to existing recommendation */
-								content='Reset to existing recommendation'
+								content={t('voyage.editor.reset_recommendation')}
 								onClick={() => resetVoyage()}
 							/>
 						</div>
@@ -170,21 +170,21 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 	const toplines: IToplines[] = [
 		{	/* Estimate */
 			key: 'result',
-			title: 'Estimate',
+			title: t('voyage.estimate.estimate'),
 			currentValue: currentEstimate.refills[0].result,
 			baselineValue: baselineEstimate.refills[0].result,
 			renderValue: renderAsTime
 		},
-		{	/* Guaranteed minimum */
+		{	/* Guaranteed Minimum */
 			key: 'saferResult',
-			title: 'Guaranteed minimum',
+			title: t('voyage.estimate.fields.minimum'),
 			currentValue: currentEstimate.refills[0].saferResult,
 			baselineValue: baselineEstimate.refills[0].saferResult,
 			renderValue: renderAsTime
 		},
 		{	/* Moonshot */
 			key: 'moonshotResult',
-			title: 'Moonshot',
+			title: t('voyage.estimate.fields.moonshot'),
 			currentValue: currentEstimate.refills[0].moonshotResult,
 			baselineValue: baselineEstimate.refills[0].moonshotResult,
 			renderValue: renderAsTime
@@ -193,9 +193,9 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 
 	if (currentEstimate.refills[0].lastDil === baselineEstimate.refills[0].lastDil) {
 		toplines.push(
-			{	/* LAST_DILh chance */
+			{	/* LAST_DILh Chance */
 				key: 'dilChance',
-				title: `${currentEstimate.refills[0].lastDil}h chance`,
+				title: t('voyage.estimate.fields.h_dilemma_chance', { h: currentEstimate.refills[0].lastDil }),
 				currentValue: currentEstimate.refills[0].dilChance,
 				baselineValue: baselineEstimate.refills[0].dilChance,
 				renderValue: renderAsPercent
@@ -207,14 +207,14 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 		toplines.push(
 			{	/* Projected VP */
 				key: 'projected_vp',
-				title: 'Projected VP',
+				title: t('voyage.estimate.fields.total_vp'),
 				currentValue: currentEstimate.vpDetails?.total_vp ?? 0,
 				baselineValue: baselineEstimate.vpDetails?.total_vp ?? 0,
 				renderValue: renderVP
 			},
-			{	/* Event crew bonus */
+			{	/* Event Crew Bonus */
 				key: 'event_bonus',
-				title: 'Event crew bonus',
+				title: t('voyage.estimate.fields.event_crew_bonus'),
 				currentValue: Math.round(currentConfig.crew_slots.reduce((prev, curr) => prev + (curr.crew ? getCrewEventBonus(currentConfig, curr.crew) : 0), 0) * 100),
 				baselineValue: Math.round(baselineConfig.crew_slots.reduce((prev, curr) => prev + getCrewEventBonus(baselineConfig, curr.crew), 0) * 100),
 				renderValue: renderAsPercent
@@ -225,7 +225,7 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 	toplines.push(
 		{	/* Antimatter */
 			key: 'max_hp',
-			title: 'Antimatter',
+			title: t('ship.antimatter'),
 			currentValue: currentConfig.max_hp,
 			baselineValue: baselineConfig.max_hp,
 			renderValue: renderAntimatter
@@ -247,7 +247,7 @@ const ToplinesCompared = (props: ToplinesComparedProps) => {
 							{table.map(row => (
 								<Table.Row key={row.key}>
 									<Table.Cell>
-										{row.title}:
+										{row.title}{t('global.colon')}
 									</Table.Cell>
 									<Table.Cell textAlign='right'>
 										<NumericDiff
@@ -278,19 +278,24 @@ type ProspectiveCrewSlotsProps = {
 };
 
 const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { prospectiveConfig, seekAlternateCrew } = React.useContext(EditorContext);
 	const { control, onClick, highlightedSkills } = props;
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Lineup</Header>
+			<Header	/* Prospective Lineup */
+				as='h4'
+			>
+				{t('voyage.editor.prospective.lineup')}
+			</Header>
 			<p>
 				<Button	/* Search for alternate crew */
 					icon='search'
-					content='Search for alternate crew'
+					content={t('voyage.editor.search_for_alternates')}
 					onClick={() => seekAlternateCrew()}
 				/>
-				{` `} or tap any crew below to view alternate crew for that seat.
+				{` `}{t('voyage.editor.target_view_alternates')}
 			</p>
 			<Grid columns={2} centered stackable>
 				<Grid.Column>
@@ -397,11 +402,16 @@ type ProspectiveSkillCheckProps = {
 };
 
 const ProspectiveSkillCheck = (props: ProspectiveSkillCheckProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { prospectiveConfig } = React.useContext(EditorContext);
 	const { control, highlightedSkills, setHighlightedSkills } = props;
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Skill Check</Header>
+			<Header	/* Prospective Skill Check */
+				as='h4'
+			>
+				{t('voyage.editor.prospective.skill_check')}
+			</Header>
 			<SkillCheck
 				highlightedSkills={highlightedSkills}
 				setHighlightedSkills={setHighlightedSkills}
@@ -418,11 +428,16 @@ type ProspectiveProficiencyProps = {
 };
 
 const ProspectiveProficiency = (props: ProspectiveProficiencyProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { prospectiveConfig } = React.useContext(EditorContext);
 	const { roster } = props;
 	return (
 		<React.Fragment>
-			<Header as='h4'>Prospective Proficiency</Header>
+			<Header	/* Prospective Proficiency */
+				as='h4'
+			>
+				{t('voyage.editor.prospective.proficiency')}
+			</Header>
 			<ProficiencyCheck
 				id='prospective/proficiencycheck'
 				voyageConfig={prospectiveConfig}
