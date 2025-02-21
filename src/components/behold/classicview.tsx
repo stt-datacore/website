@@ -88,8 +88,12 @@ const CardCrew = (props: CardCrewProps) => {
 					</Card.Header>
 					<ClassicPresenter
 						crew={crew}
-						fields={['rarity', 'skills', 'rank_highlights', 'ranks', 'fuses', 'crew_demands', 'traits', 'collections', 'cross_fuses', 'date_added']}
+						fields={['rarity', 'skills', 'rank_highlights', 'ship_ability', 'ranks', 'fuses', 'crew_demands', 'traits', 'collections', 'cross_fuses', 'date_added']}
 						fieldOverrides={fieldOverrides}
+						fieldScale={[{
+							field: 'ship_ability',
+							fontSize: '0.8em'
+						}]}
 						compact={true}
 					/>
 					{/* <div style={{ marginTop: '1em' }}>

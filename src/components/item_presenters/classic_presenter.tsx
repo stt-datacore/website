@@ -52,19 +52,26 @@ export interface IFieldOverride {
 	override: (crew: CrewMember, compact?: boolean) => JSX.Element;
 };
 
+export interface IFieldScale {
+	field: ValidField,
+	scale?: number
+	fontSize?: string
+}
+
 type ClassicPresenterProps = {
 	crew: CrewMember;
 	markdownRemark?: any;
 	fields?: ValidField[];
 	fieldOverrides?: IFieldOverride[];
 	compact?: boolean;
+	fieldScale?: IFieldScale[]
 };
 
 export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { crew, compact, markdownRemark } = props;
+	const { crew, compact, markdownRemark, fieldScale } = props;
 	const myCrew = playerData ? playerData.player.character.crew : undefined;
 
 	const fields = props.fields ?? defaultFields;
@@ -128,6 +135,10 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 			if (field === 'traits')
 				elements.push(<Traits key={field} crew={crew} />);
+		}
+		let fscale = fieldScale?.find(f => f.field === field);
+		if (fscale) {
+			elements[elements.length - 1] = <div key={field} style={{scale: `${fscale.scale || ''}`, fontSize: fscale.fontSize }}>{elements[elements.length - 1]}</div>
 		}
 	});
 
