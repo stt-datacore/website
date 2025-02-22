@@ -10,6 +10,7 @@ import ItemDisplay from '../components/itemdisplay';
 
 import { mergeItems } from '../utils/itemutils';
 import CONFIG from './CONFIG';
+import { AvatarView } from './item_presenters/avatarview';
 
 export const UnneededItems = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -81,9 +82,9 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 			}
 		})
 	).sort((a, b) => {
-		if (a.rarity === b.rarity) 
+		if (a.rarity === b.rarity)
 			return a.name.localeCompare(b.name);
-			
+
 		return b.rarity - a.rarity;
 	});
 
@@ -365,15 +366,12 @@ const FuelGrid = (props: FuelGridProps) => {
 							justifyContent: 'top',
 							alignItems: 'center',
 						}}>
-							<ItemDisplay
+							<AvatarView
+								mode='item'
 								targetGroup='unneeded_items'
-								playerData={playerData}
-								allItems={items}
-								itemSymbol={item.symbol}
-								src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+								item={item}
+								useDirect={true}
 								size={64}
-								maxRarity={item.rarity}
-								rarity={item.rarity}
 							/>
 							<p>
 								{linkToWiki ? renderLink(item.name, item.name_english) : item.name}

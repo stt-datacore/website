@@ -20,9 +20,10 @@ export interface CiteConfig {
     nameFilter: string,
     priSkills: string[];
     secSkills: string[];
-    seatSkills: string[];  
+    seatSkills: string[];
     checks: SymCheck[];
     showEV: boolean;
+    collections?: number[];
 }
 
 export interface CiteEngineResults {
@@ -30,7 +31,7 @@ export interface CiteEngineResults {
     skoMap?: { [key: string]: SkillOrderRarity };
 }
 
-export interface ICitationOptimizerContext {	
+export interface ICitationOptimizerContext {
     engine: CiteEngine;
     setEngine: (value: CiteEngine) => void;
     customSorter?: (left: PlayerCrew, right: PlayerCrew) => number;
@@ -49,7 +50,7 @@ export const DefaultCiteConfig = {
     nameFilter: '',
     priSkills: [],
     secSkills: [],
-    seatSkills: [],  
+    seatSkills: [],
     checks: [],
     showEV: false
 } as CiteConfig;
@@ -91,10 +92,10 @@ export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {
     const crewSkills = {} as { [key: string]: string };
     for (let crew of globalContext.core.crew) {
         let sko = printSkillOrder(crew).replace(/_skill/g, '');
-        crewSkills[crew.symbol] = sko;        
+        crewSkills[crew.symbol] = sko;
     }
 
-    
+
     const data = {
         results,
         setResults,
@@ -106,7 +107,7 @@ export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {
         setAppliedProspects,
         crewSkills
     }
-    
+
     return <CiteOptContext.Provider value={data}>
         {children}
     </CiteOptContext.Provider>

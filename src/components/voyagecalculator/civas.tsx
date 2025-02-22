@@ -1,11 +1,15 @@
 import React from 'react';
-import { Message, Button, Popup } from 'semantic-ui-react';
+import {
+	Button,
+	Popup,
+	Message
+} from 'semantic-ui-react';
 
 import { Voyage } from '../../model/player';
-import { Estimate } from '../../model/worker';
-import { IVoyageCalcConfig } from '../../model/voyage';
-import CONFIG from '../CONFIG';
+import { Estimate, IVoyageCalcConfig } from '../../model/voyage';
 import { UnifiedWorker } from '../../typings/worker';
+import CONFIG from '../CONFIG';
+
 type CIVASMessageProps = {
 	voyageConfig: IVoyageCalcConfig | Voyage;
 	estimate?: Estimate;

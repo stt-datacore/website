@@ -122,15 +122,15 @@ function formatItem(page: NavItem, style?: React.CSSProperties) {
         return <hr style={{color:"#777"}} />
     }
     return (
-        <div title={page.tooltip ?? page.textTitle ?? (typeof page.title === 'string' ? page.title : '')} 
+        <div title={page.tooltip ?? page.textTitle ?? (typeof page.title === 'string' ? page.title : '')}
             style={{
-                textAlign: 'left', 
-                display: 'flex', 
-                flexDirection: 'row', 
+                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'row',
                 alignItems: "center",
                 justifyContent: 'center',
                 width: '100%',
-                margin: 0, 
+                margin: 0,
                 padding: 0,
                 ...style
                 }}>
