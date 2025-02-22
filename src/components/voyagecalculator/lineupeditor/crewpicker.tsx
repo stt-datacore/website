@@ -202,7 +202,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			closeOnChange
 			preFilteredIds={filteredIds}
 			search
-			searchPlaceholder={t('voyage.editor.search_for_alternates_by_name')}
+			searchPlaceholder={t('global.search_for_x_by_name', { x: t('voyage.editor.alternate_crew_alt') })}
 			renderOptions={renderOptions}
 			renderPreface={targeting ? renderReplacement : undefined}
 			renderActions={renderActions}

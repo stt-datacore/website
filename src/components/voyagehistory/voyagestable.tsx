@@ -63,29 +63,32 @@ export const VoyagesTable = () => {
 	if (history.voyages.length === 0) return <></>;
 
 	const skillOptions: DropdownItemProps[] = [
-		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.voyage_history.options.skill.all') },
-		{ /* Only show voyages with command */ key: 'cmd', value: 'command_skill', text: t('voyage.voyage_history.options.skill.cmd') },
-		{ /* Only show voyages with diplomacy */ key: 'dip', value: 'diplomacy_skill', text: t('voyage.voyage_history.options.skill.dip') },
-		{ /* Only show voyages with engineering */ key: 'eng', value: 'engineering_skill', text: t('voyage.voyage_history.options.skill.eng') },
-		{ /* Only show voyages with medicine */ key: 'med', value: 'medicine_skill', text: t('voyage.voyage_history.options.skill.med') },
-		{ /* Only show voyages with science */ key: 'sci', value: 'science_skill', text: t('voyage.voyage_history.options.skill.sci') },
-		{ /* Only show voyages with security */ key: 'sec', value: 'security_skill', text: t('voyage.voyage_history.options.skill.sec') }
+		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.show_all_voyages') }
 	];
+	CONFIG.SKILLS_SHORT.forEach(ss => {
+		skillOptions.push(
+			{	/* Only show voyages with SKILL */
+				key: ss.short,
+				value: ss.name,
+				text: t('voyage.voyage_history.options.voyage_skill', { skill: CONFIG.SKILLS[ss.name] })
+			}
+		);
+	});
 
 	const revivalOptions: DropdownItemProps[] = [
-		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.voyage_history.options.revival.all') },
+		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.show_all_voyages') },
 		{ /* Hide revived voyages */ key: 'hide', value: 'hide', text: t('voyage.voyage_history.options.revival.hide') },
 		{ /* Only show revived voyages */ key: 'revived', value: 'revived', text: t('voyage.voyage_history.options.revival.revived') }
 	];
 
 	const tableConfig: ITableColumn[] = [
-		{ /* Date */ column: 'created_at', title: t('voyage.voyage_history.columns.date'), align: 'left', firstSort: 'descending' },
-		{ /* Primary */ column: 'skills.primary_skill', title: t('voyage.voyage_history.columns.primary') },
-		{ /* Secondary */ column: 'skills.secondary_skill', title: t('voyage.voyage_history.columns.secondary') },
-		{ /* Ship Trait */ column: '_shipTrait', title: t('voyage.voyage_history.columns.ship_trait') },
-		{ /* Antimatter */ column: 'max_hp', title: t('voyage.voyage_history.columns.antimatter'), firstSort: 'descending' },
-		{ /* Initial Estimate */ column: 'estimate.median', title: t('voyage.voyage_history.columns.initial_estimate'), firstSort: 'descending' },
-		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.columns.last_estimate'), firstSort: 'descending' }
+		{ /* Date */ column: 'created_at', title: t('voyage.voyage_history.fields.date'), align: 'left', firstSort: 'descending' },
+		{ /* Primary */ column: 'skills.primary_skill', title: t('voyage.voyage_history.fields.primary') },
+		{ /* Secondary */ column: 'skills.secondary_skill', title: t('voyage.voyage_history.fields.secondary') },
+		{ /* Ship Trait */ column: '_shipTrait', title: t('voyage.voyage_history.fields.ship_trait') },
+		{ /* Antimatter */ column: 'max_hp', title: t('voyage.voyage_history.fields.antimatter'), firstSort: 'descending' },
+		{ /* Initial Estimate */ column: 'estimate.median', title: t('voyage.voyage_history.fields.initial_estimate'), firstSort: 'descending' },
+		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.fields.last_estimate'), firstSort: 'descending' }
 	];
 
 	// Filter
@@ -105,8 +108,8 @@ export const VoyagesTable = () => {
 		<React.Fragment>
 			<Form>
 				<Form.Group inline>
-					<Form.Field	/* Filter by skill */
-						placeholder={t('hints.filter_by_skill')}
+					<Form.Field	/* Filter by voyage skill */
+						placeholder={t('hints.filter_by_voyage_skill')}
 						control={Dropdown}
 						selection
 						clearable

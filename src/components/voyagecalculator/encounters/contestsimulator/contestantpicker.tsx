@@ -123,14 +123,14 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	};
 
 	return (
-		<DataPicker
+		<DataPicker	/* Search for contestant by name */
 			id={`${props.id}/datapicker`}
 			data={data}
 			closePicker={(selectedIds: Set<number>) => selectContestant(selectedIds, crewPool, setContestant)}
 			selection
 			closeOnChange
 			search
-			searchPlaceholder={t('voyage.contests.search_for_contestant_by_name')}
+			searchPlaceholder={t('global.search_for_x_by_name', { x: t('voyage.contests.contestant_alt') })}
 			renderPreface={renderPreface}
 			gridSetup={gridSetup}
 			tableSetup={tableSetup}

@@ -892,6 +892,8 @@
         "any": "Any",
         "apply_filters": "Apply Filters",
         "approx": "Approx.",
+        "average": "Average",
+        "avg": "Avg",
         "base": "Base",
         "bonus": "Bonus",
         "bonuses": "Bonuses",
@@ -1018,6 +1020,7 @@
         "search_crew": "Search crew",
         "search_crew_ellipses": "Search crew...",
         "search_ellipses": "Search...",
+        "search_for_x_by_name": "Search for {{x}} by name",
         "search_items": "Search items",
         "search_items_ellipses": "Search items...",
         "show": "Show",
@@ -1093,6 +1096,7 @@
         "filter_by_trait": "Filter by trait",
         "filter_by_trait_or_series": "Filter by trait or series",
         "filter_by_voyage_seating": "Filter by voyage seating",
+        "filter_by_voyage_skill": "Filter by voyage skill",
         "filter_crew_by_rank": "Filter crew by rank",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
@@ -2334,28 +2338,28 @@
             "title": "Captain Idol's Voyage Analysis Sheet"
         },
         "contests": {
-            "avg": "Avg",
+            "avg": "{{global.avg}}",
             "contestant": "Contestant",
+            "contestant_alt": "contestant",
             "contest_simulator": "Contest Simulator",
             "crit_chance": "Crit Chance",
             "max": "{{global.max}}",
             "min": "{{global.min}}",
             "n_viable_crew": "Your voyage has {{n}} viable crew for this contest",
-            "no_skill": "No skill",
+            "no_skill": "No Skill",
             "notes": {
                 "crit_icon": "represents a crew's number of potential crit traits.",
                 "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
                 "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
             },
             "search_for_contestant": "Search for contestant",
-            "search_for_contestant_by_name": "Search for contestant by name",
             "select_crit_chance": "Select crit chance",
             "simulate_contest": "Simulate contest",
             "wins": "Wins"
         },
         "crew_history": {
-            "columns": {
-                "average": "Average",
+            "fields": {
+                "average": "{{global.average}}",
                 "crew": "{{base.crew}}",
                 "last_used": "Last Used",
                 "rarity": "{{base.rarity}}",
@@ -2366,14 +2370,14 @@
                 "skill_cells_primary": "The skill cells indicate what percentage of time the respective crew is used when the column is the voyage primary."
             },
             "options": {
-                "report": {
-                    "all": "{{voyage.show_all_voyages}}",
-                    "year": "Show voyages from last year",
-                    "half": "Show voyages from last 180 days",
-                    "quarter": "Show voyages from last 90 days",
-                    "months": "Show voyages from last 60 days",
-                    "month": "Show voyages from last month",
-                    "week": "Show voyages from last week"
+                "report": "Show voyages from last {{period}}",
+                "report_period": {
+                    "year": "year",
+                    "half": "180 days",
+                    "quarter": "90 days",
+                    "months": "60 days",
+                    "month": "month",
+                    "week": "week"
                 }
             },
             "skill_modal": {
@@ -2387,6 +2391,8 @@
             }
         },
         "editor": {
+            "alternate_crew": "Alternate Voyage Crew",
+            "alternate_crew_alt": "alternate voyage crew",
             "alternate_seats_for_crew": "Alternate Seats for {{crew}}",
             "compared": "Compared to the existing recommendation:",
             "fields": {
@@ -2410,7 +2416,6 @@
             "reset_recommendation": "Reset to existing recommendation",
             "save_recommendation": "Save as new recommendation",
             "search_for_alternates": "Search for alternate crew",
-            "search_for_alternates_by_name": "Search for alternate voyage crew by name",
             "select_slot": "Select a voyage seat. Any existing crew in that seat will be replaced by {{crew}}, resulting in the listed changes to the prospective voyage.",
             "slotted_message": "{{crew}} is already seated as the {{seat}} on this prospective voyage. The estimates below account for {{crew}} in a new seat while leaving the {{seat}} seat unassigned.",
             "target_seat": "Select a crew for {{seat}}.",
@@ -2459,7 +2464,9 @@
             "title": "Privacy Notice"
         },
         "voyage_history": {
-            "columns": {
+            "delete_from_history": "Delete voyage from history",
+            "export_history": "Save history to device",
+            "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",
                 "initial_estimate": "Initial Estimate",
@@ -2468,24 +2475,13 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
-            "delete_from_history": "Delete voyage from history",
-            "export_history": "Save history to device",
             "manage_placeholder": "Remote sync and other history management options are in development.",
             "options": {
                 "revival": {
-                    "all": "{{voyage.show_all_voyages}}",
                     "hide": "Hide revived voyages",
                     "revived": "Only show revived voyages"
                 },
-                "skill": {
-                    "all": "{{voyage.show_all_voyages}}",
-                    "cmd": "Only show voyages with command",
-                    "dip": "Only show voyages with diplomacy",
-                    "eng": "Only show voyages with engineering",
-                    "med": "Only show voyages with medicine",
-                    "sci": "Only show voyages with science",
-                    "sec": "Only show voyages with security"
-                }
+                "voyage_skill": "Only show voyages with {{skill}}"
             },
             "revived": "This voyage was revived.",
             "tips": {

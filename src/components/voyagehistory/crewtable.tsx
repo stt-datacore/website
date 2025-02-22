@@ -104,21 +104,49 @@ export const CrewTable = () => {
 	if (history.voyages.length === 0) return <></>;
 
 	const reportDayOptions: DropdownItemProps[] = [
-		{ /* Show all voyages */ key: 'all', value: undefined, text: t('voyage.crew_history.options.report.all') },
-		{ /* Show voyages from last year */ key: 'year', value: 365, text: t('voyage.crew_history.options.report.year') },
-		{ /* Show voyages from last 180 days */ key: 'half', value: 180, text: t('voyage.crew_history.options.report.half') },
-		{ /* Show voyages from last 90 days */ key: 'quarter', value: 90, text: t('voyage.crew_history.options.report.quarter') },
-		{ /* Show voyages from last 60 days */ key: 'months', value: 60, text: t('voyage.crew_history.options.report.months') },
-		{ /* Show voyages from last month */ key: 'month', value: 30, text: t('voyage.crew_history.options.report.month') },
-		{ /* Show voyages from last week */ key: 'week', value: 7, text: t('voyage.crew_history.options.report.week') }
+		{	/* Show all voyages */
+			key: 'all',
+			value: undefined,
+			text: t('voyage.show_all_voyages')
+		},
+		{	/* Show voyages from last year */
+			key: 'year',
+			value: 365,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.year') })
+		},
+		{	/* Show voyages from last 180 days */
+			key: 'half',
+			value: 180,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.half') })
+		},
+		{	/* Show voyages from last 90 days */
+			key: 'quarter',
+			value: 90,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.quarter') })
+		},
+		{	/* Show voyages from last 60 days */
+			key: 'months',
+			value: 60,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.months') })
+		},
+		{	/* Show voyages from last month */
+			key: 'month',
+			value: 30,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.month') })
+		},
+		{	/* Show voyages from last week */
+			key: 'week',
+			value: 7,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.week') })
+		}
 	];
 
 	const tableConfig: ITableConfigRow[] = [
-		{ /* Crew */ width: 3, column: 'name', title: t('voyage.crew_history.columns.crew'), pseudocolumns: ['name', 'date_added'] },
-		{ /* Rarity */ width: 1, column: 'max_rarity', title: t('voyage.crew_history.columns.rarity'), reverse: true },
-		{ /* Voyages */ width: 1, column: 'assignments.length', title: t('voyage.crew_history.columns.voyages'), reverse: true },
-		{ /* Average */ width: 1, column: 'average_estimate', title: t('voyage.crew_history.columns.average'), reverse: true },
-		{ /* Last Used */ width: 1, column: 'last_assignment.created_at', title: t('voyage.crew_history.columns.last_used'), reverse: true }
+		{ /* Crew */ width: 3, column: 'name', title: t('voyage.crew_history.fields.crew'), pseudocolumns: ['name', 'date_added'] },
+		{ /* Rarity */ width: 1, column: 'max_rarity', title: t('voyage.crew_history.fields.rarity'), reverse: true },
+		{ /* Voyages */ width: 1, column: 'assignments.length', title: t('voyage.crew_history.fields.voyages'), reverse: true },
+		{ /* Average */ width: 1, column: 'average_estimate', title: t('voyage.crew_history.fields.average'), reverse: true },
+		{ /* Last Used */ width: 1, column: 'last_assignment.created_at', title: t('voyage.crew_history.fields.last_used'), reverse: true }
 	];
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({
