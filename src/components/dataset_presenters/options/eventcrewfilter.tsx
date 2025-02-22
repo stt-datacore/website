@@ -6,6 +6,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
 import { IEventData } from '../../eventplanner/model';
 
 type EventCrewFilterProps = {
@@ -15,17 +16,22 @@ type EventCrewFilterProps = {
 };
 
 export const EventCrewFilter = (props: EventCrewFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { value, setValue, events } = props;
 
 	const eventOptions = React.useMemo<DropdownItemProps[]>(() => {
 		const eventTypes = {
-			'gather' : 'Galaxy',
-			'shuttles': 'Faction',
-			'skirmish': 'Skirmish',
-			'voyage': 'Voyage'
+			'gather' : t('event_type.gather'),
+			'shuttles': t('event_type.shuttles'),
+			'skirmish': t('event_type.skirmish'),
+			'voyage': t('event_type.voyage')
 		};
 		const eventOptions: DropdownItemProps[] = [
-			{ key: 'all', value: '', text: 'Show all crew' }	/* Show all crew */
+			{	/* Show all crew */
+				key: 'all',
+				value: '',
+				text: t('base.all_crew')
+			}
 		];
 		events.filter(eventData => eventData.seconds_to_end > 0)
 			.sort((a, b) => a.seconds_to_start - b.seconds_to_start)
@@ -52,22 +58,22 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 		{	/* Only show event crew */
 			key: 'all',
 			value: 'is:bonus',
-			text: 'Only show event crew'
+			text: t('options.event_status.bonus')
 		},
 		{	/* Hide event crew */
-			key: `not:bonus`,
-			value: `not:bonus`,
-			text: `Hide event crew`
+			key: 'not:bonus',
+			value: 'not:bonus',
+			text: t('options.event_status.bonus_hide')
 		},
 		{	/* Only show featured crew */
-			key: `is:featured`,
-			value: `is:featured`,
-			text: `Only show featured crew`
+			key: 'is:featured',
+			value: 'is:featured',
+			text: t('options.event_status.featured')
 		},
 		{	/* Hide featured crew */
-			key: `not:featured`,
-			value: `not:featured`,
-			text: `Hide featured crew`
+			key: 'not:featured',
+			value: 'not:featured',
+			text: t('options.event_status.featured_hide')
 		}
 	];
 
@@ -78,7 +84,7 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 	return (
 		<React.Fragment>
 			<Form.Field	/* Filter by event */
-				placeholder='Filter by event'
+				placeholder={t('hints.filter_by_event')}
 				control={Dropdown}
 				selection
 				clearable
@@ -88,7 +94,7 @@ export const EventCrewFilter = (props: EventCrewFilterProps) => {
 			/>
 			{eventValue !== '' && (
 				<Form.Field	/* Filter by bonus */
-					placeholder='Filter by bonus'
+					placeholder={t('hints.filter_by_bonus')}
 					control={Dropdown}
 					selection
 					options={bonusOptions}

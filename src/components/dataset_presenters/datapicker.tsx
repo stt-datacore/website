@@ -10,6 +10,7 @@ import {
 	Segment
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IDataPickerState, IEssentialData } from './model';
@@ -37,6 +38,8 @@ type DataPickerProps = {
 };
 
 export const DataPicker = (props: DataPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+
 	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
 	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(new Set<number>());
 
@@ -106,7 +109,7 @@ export const DataPicker = (props: DataPickerProps) => {
 				ref={inputRef}
 				fluid size='mini'
 				iconPosition='left'
-				placeholder={props.searchPlaceholder ?? 'Search by name'}
+				placeholder={props.searchPlaceholder ?? t('global.search_by_name')}
 				value={searchQuery}
 				onChange={(e, { value }) => setSearchQuery(value as string)}
 			>
@@ -126,7 +129,7 @@ export const DataPicker = (props: DataPickerProps) => {
 					<div style={{ position: 'sticky', top: '0', zIndex: '100', marginBottom: '1em' }}>
 						<Message attached onDismiss={() => setShowOptions(false)}>
 							<Message.Header	/* Options */>
-								<Icon name='cog' /> Options
+								<Icon name='cog' /> {t('global.options')}
 							</Message.Header>
 						</Message>
 						<Segment attached='bottom'>
@@ -139,7 +142,7 @@ export const DataPicker = (props: DataPickerProps) => {
 						style={{ cursor: 'pointer' }}
 						onClick={() => setShowOptions(true)}
 					>
-						<Icon name='info circle' /> Some results may be hidden due to your current search options.
+						<Icon name='info circle' /> {t('global.filters_warning')}
 					</Message>
 				)}
 				{props.renderPreface && (
@@ -187,7 +190,7 @@ export const DataPicker = (props: DataPickerProps) => {
 					{props.renderActions && props.renderActions(dataPickerState)}
 					{!props.renderActions && (
 						<Button onClick={() => props.closePicker(pendingSelectedIds, false)}>
-							Close
+							{t('global.close')}
 						</Button>
 					)}
 				</div>

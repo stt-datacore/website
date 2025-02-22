@@ -102,6 +102,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 				<SkillToggler
 					value={skillFilter}
 					setValue={(value: string[]) => setSkillFilter(value)}
+					maxSkills={1}
 				/>
 			</Form>
 			<DataTable

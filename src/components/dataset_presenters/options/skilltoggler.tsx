@@ -4,20 +4,25 @@ import {
 	Form
 } from 'semantic-ui-react';
 
-import CONFIG from '../../CONFIG';
 import { PlayerCrew } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
+import CONFIG from '../../CONFIG';
 
 type SkillTogglerProps = {
 	value: string[];
 	setValue: (skills: string[]) => void;
+	maxSkills?: number;
 };
 
 export const SkillToggler = (props: SkillTogglerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { value, setValue } = props;
+
+	const maxSkills: number = props.maxSkills ?? 3;
 
 	return (
 		<Form.Field inline>
-			<label>Filter by skills:</label>
+			<label>{t('hints.filter_by_skill')}{t('global.colon')}</label>
 			<Button.Group>
 				{Object.keys(CONFIG.SKILLS).map(skill => (
 					<Button
@@ -34,9 +39,17 @@ export const SkillToggler = (props: SkillTogglerProps) => {
 
 	function toggleSkill(skill: string): void {
 		const addSkill: boolean = !value.includes(skill);
-		if (addSkill && value.length === 3) return;
-		const skills: string[] = value.filter(s => s !== skill);
-		if (addSkill) skills.push(skill);
+		let skills: string[] = [];
+		// Toggle skill if only 1 skill allowed
+		if (maxSkills === 1) {
+			if (addSkill) skills = [skill];
+		}
+		// Otherwise toggle skill until maxSkills is reached
+		else {
+			if (addSkill && value.length === maxSkills) return;
+			skills = value.filter(s => s !== skill);
+			if (addSkill) skills.push(skill);
+		}
 		setValue([...skills]);
 	}
 };

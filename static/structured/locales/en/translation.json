@@ -922,6 +922,7 @@
         "exclusive": "Exclusive",
         "experimental": "Experimental",
         "filters": "Filters",
+        "filters_warning": "Some results may be hidden due to your current search options.",
         "fleet": "Fleet",
         "group_by": "Group by",
         "hidden": "Hidden",
@@ -990,6 +991,7 @@
         "new": "New",
         "no": "No",
         "no_items_found": "No items found",
+        "no_search_results_found": "No results found. Please try different search options.",
         "none": "None",
         "notes": "Notes",
         "obtained": "Obtained",
@@ -1011,6 +1013,7 @@
         "running": "Running",
         "save": "Save",
         "search": "Search",
+        "search_by_name": "Search by name",
         "search_by_name_or_trait_ellipses": "Search by name or trait...",
         "search_crew": "Search crew",
         "search_crew_ellipses": "Search crew...",
@@ -1062,9 +1065,11 @@
         "apply_buffs": "Apply stat buffs",
         "display_buffs": "Display Buffs",
         "filter_by_availability": "Filter by availability",
+        "filter_by_bonus": "Filter by bonus",
         "filter_by_collections": "Filter by collections",
         "filter_by_crew": "Filter by crew",
         "filter_by_date": "Filter by date",
+        "filter_by_event": "Filter by event",
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_listed_status": "Filter by listed status",
@@ -1074,6 +1079,7 @@
         "filter_by_portal_status": "Filter by portal status",
         "filter_by_primary_skill": "Filter by primary skill",
         "filter_by_progress": "Filter by progress",
+        "filter_by_quipped_status": "Filter by quipped status",
         "filter_by_rarity": "Filter by rarity",
         "filter_by_retrieval_options": "Filter by retrieval options",
         "filter_by_revivals": "Filter by revivals",
@@ -1361,12 +1367,23 @@
     },
     "options": {
         "crew_status": {
+            "active": "Only show active crew",
+            "active_hide": "Hide active crew",
             "favorites": "Only show favorite crew",
             "frozen": "Only show frozen crew",
             "frozen_dupes": "Only show frozen duplicate crew",
+            "frozen_hide": "Hide frozen crew",
             "idle": "Only show idle crew",
             "none": "Show all crew",
-            "thawed": "Only show unfrozen crew"
+            "shuttler": "Only show crew on running shuttles",
+            "thawed": "Only show unfrozen crew",
+            "voyager": "Only show crew on running voyages"
+        },
+        "event_status": {
+            "bonus": "Only show event crew",
+            "bonus_hide": "Hide event crew",
+            "featured": "Only show featured crew",
+            "featured_hide": "Hide featured crew"
         },
         "portal_status": {
             "none": "{{options.roster_maintenance.none}}",
@@ -1390,6 +1407,7 @@
             "priority": "Only show fully-fused non-immortals",
             "quippable": "Only show quippable crew",
             "quipped": "Only show quipped crew",
+            "quipped_hide": "Hide quipped crew",
             "threshold": "Only show crew needing 2 fuses"
         },
         "text_match": {
