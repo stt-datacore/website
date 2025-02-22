@@ -2,10 +2,12 @@ import React from 'react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { TranslateMethod } from '../../model/player';
+import { printQuantum } from './context';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 export const RetrievalEnergy = () => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
+	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
 	if (!playerData) return <></>;
@@ -27,13 +29,13 @@ export const RetrievalEnergy = () => {
 	const qTarget = 900;
 	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? defaultSeconds); // 48
 	const qPerBoost = 50;
-
-	let energyMessage = t('retrieval.energy.guaranteed_legendary');
+	let energyMessage = [] as JSX.Element[];
+	energyMessage.push(tfmt('retrieval.energy.guaranteed_legendary'));
 	if (energy.quantity < qTarget) {
 		const regenerationTime = getSecondsRemaining(qTarget, energy.quantity);
-		energyMessage = t('retrieval.energy.quantum_regeneration', {
-			target: `${qTarget}`,
-			time: formatTime(regenerationTime, t)
+		energyMessage[0] = tfmt('retrieval.energy.quantum_regeneration', {
+			target: printQuantum(qTarget),
+			time: formatTime(regenerationTime, t, true)
 		});
 		let daysCanBoost = 0, qTotal = energy.quantity;
 		while (qTotal < qTarget) {
@@ -43,40 +45,40 @@ export const RetrievalEnergy = () => {
 		const timeBoosted = getSecondsRemaining(qTarget, energy.quantity+(daysCanBoost*qPerBoost));
 
 		if (timeBoosted <= 0) {
-			energyMessage += t('retrieval.energy.spend_90_immediately', {
-				target: `${qTarget}`
-			});
+			energyMessage.push(tfmt('retrieval.energy.spend_90_immediately', {
+				target: printQuantum(qTarget)
+			}));
 		}
 		else if (daysCanBoost > 1) {
-			energyMessage += t('retrieval.energy.spend_90_daily', {
-				target: `${qTarget}`,
-				time: formatTime(timeBoosted, t)
-			});
+			energyMessage.push(tfmt('retrieval.energy.spend_90_daily', {
+				target: printQuantum(qTarget),
+				time: formatTime(timeBoosted, t, true)
+			}));
 		}
 		else {
-			energyMessage += t('retrieval.energy.spend_90', {
-				target: `${qTarget}`,
-				time: formatTime(timeBoosted, t)
-			});
+			energyMessage.push(tfmt('retrieval.energy.spend_90', {
+				target: printQuantum(qTarget),
+				time: formatTime(timeBoosted, t, true)
+			}));
 		}
 	}
-
+	const flexRow = OptionsPanelFlexRow;
 	return (
-		<p>{t('global.item_types.quantum')}: <strong>{energy.quantity}</strong>. {energyMessage}</p>
+		<div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em'}}>{t('global.item_types.quantum')}: <strong>{printQuantum(energy.quantity)}</strong>. {energyMessage}</div>
 	);
 
 	function getSecondsRemaining(target: number, quantity: number): number {
 		return ((target-quantity)*(energy.regeneration?.seconds ?? defaultSeconds))+energy.regenerated_at;
 	}
 
-	function formatTime(seconds: number, t?: TranslateMethod): string {
+	function formatTime(seconds: number, t?: TranslateMethod, compact?: boolean): string {
 		let d = Math.floor(seconds/(3600*24)),
 			h = Math.floor(seconds%(3600*24)/3600),
 			m = Math.floor(seconds%3600/60);
-
+		const cpt = compact ? '_compact' : '';
 		if (t) {
-			if (d === 0) return `${t('duration.n_h', { hours: `${h}` })} ${t('duration.n_m', { minutes: `${m}` })}`;
-			return `${t('duration.n_d', { days: `${d}` })} ${t('duration.n_h', { hours: `${h}` })} ${t('duration.n_m', { minutes: `${m}` })}`
+			if (d === 0) return `${t(`duration.n_h${cpt}`, { hours: `${h}` })} ${t(`duration.n_m${cpt}`, { minutes: `${m}` })}`;
+			return `${t(`duration.n_d${cpt}`, { days: `${d}` })} ${t(`duration.n_h${cpt}`, { hours: `${h}` })} ${t(`duration.n_m${cpt}`, { minutes: `${m}` })}`
 		}
 		else {
 			if (d == 0) return `${h}h ${m}m`;

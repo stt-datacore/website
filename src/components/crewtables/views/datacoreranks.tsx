@@ -24,6 +24,7 @@ const ScoreFields = [
     "collections",
     "trait",
     "main_cast",
+    "variant",
     "potential_cols",
     "skill_positions",
     "skill_rarity",
@@ -45,6 +46,7 @@ const RankFields = [
     "collections_rank",
     "traitRank",
     "main_cast_rank",
+    "variant_rank",
     "potential_cols_rank",
     "skill_positions_rank",
     "skill_rarity_rank",
@@ -71,6 +73,11 @@ export const getDataCoreRanksTableConfig = (t: TranslateMethod) => {
             if (field === 'ship') {
                 tableConfig[tableConfig.length - 1].customCompare = ((a: IRosterCrew, b: IRosterCrew) => {
                     return a.ranks.scores.ship.overall - b.ranks.scores.ship.overall
+                });
+            }
+            else {
+                tableConfig[tableConfig.length - 1].customCompare = ((a: IRosterCrew, b: IRosterCrew) => {
+                    return a.ranks.scores[field] - b.ranks.scores[field] || b.ranks[`${field}_rank`] - a.ranks[`${field}_rank`] || a.max_rarity - b.max_rarity;
                 });
             }
         }

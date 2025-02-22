@@ -1553,7 +1553,8 @@
             "trait": "Traits",
             "skill_positions": "Skill Positions",
             "velocity": "Velocity",
-            "voyage": "Voyage"
+            "voyage": "Voyage",
+            "variant": "Variant"
         }
     },
     "ranking_method": {

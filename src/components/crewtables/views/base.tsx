@@ -149,9 +149,8 @@ type CrewCellProps = {
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew, pageId, tableType } = props;
+	const { crew, tableType } = props;
 	const { t } = React.useContext(GlobalContext).localized;
-	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
 	const tiny = TinyStore.getStore("index");
 
 	const navToSearch = (crew: IRosterCrew) => {
@@ -160,10 +159,6 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	};
 	const qbslots = qbitsToSlots(crew.q_bits);
 	//const tuvixColor = crew.ranks.scores?.tuvix ? gradeToColor(crew.ranks.scores.tuvix / 100) ?? undefined : undefined;
-	const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
-	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
-	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
-	const cabColor = gradeToColor(Number(crew.cab_ov) / 16) ?? undefined;
 
 	return (
 		<React.Fragment>
@@ -171,32 +166,10 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
 			</Table.Cell> */}
 			<Table.Cell textAlign='center'>
-				<b style={{color: datacoreColor}}>{crew.ranks.scores?.overall ?? 0}</b><br />
-				<small>
-					<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
-						{rarityLabels[crew.max_rarity]}
-					</span>
-					<br />
-					{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }
-				</small>
-				<small style={{color: dcGradeColor}}>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }
-				</small>
+				{renderDataScoreColumn(crew)}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				<b style={{color: cabColor}}>{crew.cab_ov}</b><br />
-				<small>
-					<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
-						{rarityLabels[crew.max_rarity]}
-					</span>
-					<br />
-					{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }
-				</small>
-				<small style={{color: gradeColor}}>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					{crew.cab_ov_grade ? crew.cab_ov_grade : "?" }
-				</small>
+				{renderCabColumn(crew)}
 			</Table.Cell>
 			{/* <Table.Cell textAlign='center'>
 				<b style={{color: tuvixColor}}>{crew.ranks.scores?.tuvix ?? 0}</b><br />
@@ -318,3 +291,49 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	)
 	}
 };
+
+export function renderDataScoreColumn(crew: CrewMember) {
+	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
+	const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
+	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
+
+	return (
+		<React.Fragment>
+			<b style={{color: datacoreColor}}>{crew.ranks.scores?.overall ?? 0}</b><br />
+				<small>
+					<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
+						{rarityLabels[crew.max_rarity]}
+					</span>
+					<br />
+					{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }
+				</small>
+				<small style={{color: dcGradeColor}}>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }
+				</small>
+		</React.Fragment>
+	)
+}
+
+export function renderCabColumn(crew: CrewMember) {
+	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
+	const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
+	const cabColor = gradeToColor(Number(crew.cab_ov) / 16) ?? undefined;
+
+	return (
+		<React.Fragment>
+			<b style={{color: cabColor}}>{crew.cab_ov}</b><br />
+			<small>
+				<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
+					{rarityLabels[crew.max_rarity]}
+				</span>
+				<br />
+				{crew.cab_ov_rank ? "#" + crew.cab_ov_rank : "?" }
+			</small>
+			<small style={{color: gradeColor}}>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				{crew.cab_ov_grade ? crew.cab_ov_grade : "?" }
+			</small>
+		</React.Fragment>
+	)
+}

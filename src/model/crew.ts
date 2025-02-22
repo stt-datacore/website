@@ -279,6 +279,7 @@ export interface RankScoring {
     crit: number;
     voyage: number;
     skill_positions: number;
+    variant: number;
 }
 
 export interface Ranks {
@@ -299,6 +300,7 @@ export interface Ranks {
     collections_rank: number;
     quipment_rank: number;
     skill_positions_rank: number;
+    variant_rank: number;
 
     scores: RankScoring;
     B_SEC?: number;
