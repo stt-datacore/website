@@ -9,6 +9,7 @@ import {
 } from 'semantic-ui-react';
 
 import { IVoyageCalcConfig, IVoyageCrew } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 import { ILineupEditorTrigger } from '../lineupeditor/lineupeditor';
 import { ProficiencyCheck } from '../encounters/proficiencycheck/proficiencycheck';
 import { SkillCheck } from './skillcheck';
@@ -22,6 +23,7 @@ type SkillCheckAccordionProps = {
 };
 
 export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, roster, launchLineupEditor } = props;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
@@ -35,12 +37,12 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 
 	return (
 		<Accordion>
-			<Accordion.Title
+			<Accordion.Title	/* Skill check */
 				active={isActive}
 				onClick={() => setIsActive(!isActive)}
 			>
 				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
-				Skill check
+				{t('voyage.skill_check.title')}
 			</Accordion.Title>
 			<Accordion.Content active={isActive}>
 				{isActive && (
@@ -53,8 +55,10 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 						/>
 						{voyageConfig.voyage_type === 'encounter' && (
 							<React.Fragment>
-								<Header as='h4'>
-									Proficiency
+								<Header	/* Proficiency */
+									as='h4'
+								>
+									{t('base.proficiency')}
 								</Header>
 								<ProficiencyCheck
 									id='result/proficiencycheck'
@@ -66,9 +70,9 @@ export const SkillCheckAccordion = (props: SkillCheckAccordionProps) => {
 						{launchLineupEditor && (
 							<div style={{ marginTop: '2em', textAlign: 'right' }}>
 								<Button /* Edit lineup */
-									content='Edit lineup'
+									content={t('voyage.results.actions.edit')}
 									icon='pencil'
-									onClick={() => launchLineupEditor({ view: 'crewpicker' })}
+									onClick={() => launchLineupEditor({ view: 'summary' })}
 								/>
 							</div>
 						)}

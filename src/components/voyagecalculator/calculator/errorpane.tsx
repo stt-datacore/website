@@ -1,6 +1,13 @@
-import React from "react";
-import { Message, Button, Popup, Tab } from "semantic-ui-react";
-import { IVoyageRequest } from "../../../model/voyage";
+import React from 'react';
+import {
+	Button,
+	Message,
+	Popup,
+	Tab
+} from 'semantic-ui-react';
+
+import { IVoyageRequest } from '../../../model/voyage';
+import { GlobalContext } from '../../../context/globalcontext';
 
 export type ErrorPaneProps = {
 	resultId: string;
@@ -11,16 +18,17 @@ export type ErrorPaneProps = {
 };
 
 export const ErrorPane = (props: ErrorPaneProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { resultId, errorMessage, requests, requestId, dismissResult } = props;
 
 	const request = requests.find(r => r.id === requestId);
-	if (!request) return (<></>);
+	if (!request) return <></>;
 
 	const renderInputOptions = () => {
 		if (!request.calcHelper) return <></>;
 		const inputs = Object.entries(request.calcHelper.calcOptions).map(entry => entry[0]+': '+entry[1]);
 		inputs.unshift('considered crew: '+request.consideredCrew.length);
-		return (<>{inputs.join(', ')}</>);
+		return <>{inputs.join(', ')}</>;
 	};
 
 	return (
@@ -28,12 +36,12 @@ export const ErrorPane = (props: ErrorPaneProps) => {
 			<Message attached negative>
 				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', rowGap: '1em' }}>
 					<div>
-						{errorMessage ?? 'The voyage calculator encountered an error!'}
+						{errorMessage ?? t('voyage.results.messages.generic_error')}
 					</div>
 					<div>
 						<Button.Group>
 							<Popup position='top center'
-								content={<>Dismiss this recommendation</>}
+								content={<>{t('voyage.results.actions.dismiss')}</>}
 								trigger={
 									<Button icon='ban' onClick={() => dismissResult(resultId)} />
 								}
@@ -43,7 +51,7 @@ export const ErrorPane = (props: ErrorPaneProps) => {
 				</div>
 			</Message>
 			<Tab.Pane>
-				<p>The voyage calculator is unable to recommend lineups for the requested options ({renderInputOptions()}). Please try again using different options.</p>
+				<p>{tfmt('voyage.results.messages.failed_with_inputs', { inputs: renderInputOptions() })}</p>
 			</Tab.Pane>
 		</React.Fragment>
 	);

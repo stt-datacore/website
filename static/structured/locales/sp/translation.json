@@ -39,6 +39,7 @@
         "crew": "Tripulación",
         "crewman": "Tripulante",
         "crewmen": "Tripulantes",
+        "date": "Fecha",
         "event_ships": "Buques de eventos",
         "featured_ships": "Buques destacados",
         "featured_traits": "Características destacadas",
@@ -63,6 +64,8 @@
         "on_shuttle": "En lanzadera",
         "on_voyage": "En viaje",
         "one_slot": "1 espacio",
+        "primary": "Primario",
+        "proficiency": "Competencia",
         "pseudocolumns": {
             "collections.length": "{{base.collections}}",
             "date_added": "{{base.release_date}}",
@@ -86,12 +89,15 @@
         "release_date": "Debut",
         "retrieval": "{{retrieval.modes.retrieval}}",
         "rewards": "Recompensas",
+        "score": "Puntaje",
+        "secondary": "Secundario",
         "ship_taits": "Rasgos del buque",
         "ship_trait": "Rasgos del buque",
         "short_name": "Nombre corto",
         "shuttle": "Lanzadera",
         "shuttles": "Lanzaderas",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
+        "status": "Estado",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
         "voyage": "Viaje",
@@ -225,7 +231,8 @@
         "total_ev": "VE totales"
     },
     "clipboard": {
-        "copied_exclaim": "¡Copiada!"
+        "copied_exclaim": "¡Copiada!",
+        "copy": "{{share_profile.export.export_clipboard}}"
     },
     "collections": {
         "additional_milestones": "Hitos de recolección adicionales",
@@ -352,8 +359,8 @@
         "all_fuse_skill_fffe_colon": "Habilidades en todos los fusibles cuando están completamente nivelados y equipados:",
         "all_fuses_ellipses": "Todos los fusibles...",
         "can_cross_fuse_with": "Puede realizar fusión cruzada con {{crew}}",
-        "fusion_sources": "Producto fusionado cruzado de {{crew1}} y {{crew 2}}",
         "coined_by": "acuñado por {{name}}",
+        "fusion_sources": "Producto fusionado cruzado de {{crew1}} y {{crew 2}}",
         "max_buffs_applied": "Efectos máximos aplicados",
         "no_buffs_applied": "No se aplican efectos",
         "notes": {
@@ -427,7 +434,6 @@
         }
     },
     "crew_views": {
-        "n_missions_to_next": "{{n}} misiones para la siguiente",
         "advanced_analysis": "Análisis Avanzado",
         "base": "Mostrar habilidades básicas",
         "crew_utility": "Mostrar utilidad para la tripulación",
@@ -435,6 +441,7 @@
         "faction_items": "{{n}} artículos de facción",
         "gauntlet": "Mostrar rangos de reto",
         "max_quipment": "Mostrar Quipo máximo",
+        "n_missions_to_next": "{{n}} misiones para la siguiente",
         "preview": "Vista previa de {{crew}} en tu lista",
         "prospect": {
             "description": "Agrega miembros potenciales de los tripulantes para ver cómo encajan en tu lista actual.",
@@ -719,6 +726,29 @@
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmado resuelto",
         "x_y_solved": "{{x}}/{{y}} resuelto"
     },
+    "fleet": {
+        "description": "Utilice esta herramienta para obtener información sobre su flota.",
+        "import": {
+            "click_here": "Haz clic aquí para cargar tus datos",
+            "heading": "Puedes acceder a los datos de tu flota de forma similar a como accedes a los datos de tus jugadores actualmente.",
+            "title": "Datos de la flota"
+        },
+        "member_columns": {
+            "dailies": "Diarios",
+            "display_name": "{{global.name}}",
+            "event_rank": "Rango de evento",
+            "last_active": "Último activo",
+            "last_update": "{{global.last_updated}}",
+            "level": "{{base.level}}",
+            "rank": "{{rank_names.rank}}",
+            "squadron": "Escuadrón",
+            "squadron_event_rank": "Rango de escuadrón"
+        },
+        "members": "Miembros",
+        "only_event": "Mostrar solo participantes del evento",
+        "only_officers": "Ocultar no oficiales",
+        "squadrons": "Escuadrones"
+    },
     "gather": {
         "item_filter": {
             "all_items": "Mostrar todos los artículos",
@@ -859,32 +889,7 @@
             "title": "Modo de vista"
         }
     },
-    "fleet": {
-        "only_officers": "Ocultar no oficiales",
-        "only_event": "Mostrar solo participantes del evento",
-        "description": "Utilice esta herramienta para obtener información sobre su flota.",
-        "members": "Miembros",
-        "squadrons": "Escuadrones",
-        "member_columns": {
-            "display_name": "{{global.name}}",
-            "last_update": "{{global.last_updated}}",
-            "level": "{{base.level}}",
-            "rank": "{{rank_names.rank}}",
-            "event_rank": "Rango de evento",
-            "squadron": "Escuadrón",
-            "dailies": "Diarios",
-            "last_active": "Último activo",
-            "squadron_event_rank": "Rango de escuadrón"
-        },
-        "import": {
-            "click_here": "Haz clic aquí para cargar tus datos",
-            "heading": "Puedes acceder a los datos de tu flota de forma similar a como accedes a los datos de tus jugadores actualmente.",
-            "title": "Datos de la flota"
-        }
-    },
     "global": {
-        "colon": ": ",
-        "set_as_default_view": "Establecer como vista predeterminada",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -894,6 +899,8 @@
         "any": "Cualquier",
         "apply_filters": "Aplicar filtros",
         "approx": "Approx.",
+        "average": "Promedio",
+        "avg": "Prmdo.",
         "base": "Base",
         "bonus": "Bonificacion",
         "bonuses": "Bonificaciones",
@@ -905,6 +912,7 @@
         "clear_all": "Borrar todo",
         "clear_cache": "Limpiar cache",
         "close": "Cerca",
+        "colon": ": ",
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
         "create": "Crear",
@@ -924,6 +932,7 @@
         "exclusive": "Exclusivo",
         "experimental": "Experimental",
         "filters": "Filtros",
+        "filters_warning": "Algunos resultados pueden estar ocultos debido a sus opciones de búsqueda actuales.",
         "fleet": "Flota",
         "group_by": "Agrupar por",
         "hidden": "Oculto",
@@ -985,6 +994,7 @@
         "n_available": "{{n}} disponible",
         "n_results": "{{n}} resultados",
         "n_x": "{{n}} {{x}}",
+        "na": "N/A",
         "name": "Nombre",
         "never": "Nunca",
         "new": "Nuevo",
@@ -992,14 +1002,17 @@
         "new_m": "Neuvo",
         "no": "No",
         "no_items_found": "No se encontraron elementos",
+        "no_search_results_found": "No se han encontrado resultados. Pruebe con diferentes opciones de búsqueda.",
         "none": "Ninguna",
         "notes": "Notas",
         "obtained": "Obtenido por",
         "officer": "Oficial",
         "optional": "Opcional",
+        "options": "Opciones",
         "or": "o",
         "percentile": "Percentil",
         "permalink": "enlace permanente",
+        "please_wait_ellipses": "Espere por favor...",
         "portal": "Portal",
         "presets": "Preestablecidos",
         "quarter_short": "T",
@@ -1011,12 +1024,15 @@
         "running": "Ejecutando",
         "save": "Guardar",
         "search": "Buscar",
+        "search_by_name": "Buscar por nombre",
         "search_by_name_or_trait_ellipses": "Buscar por nombre o rasgo...",
         "search_crew": "Buscar por tripulación",
         "search_crew_ellipses": "Buscar por tripulación...",
         "search_ellipses": "Buscar...",
+        "search_for_x_by_name": "Buscar {{x}} por nombre",
         "search_items": "Buscar por artículo",
         "search_items_ellipses": "Buscar por artículo...",
+        "set_as_default_view": "Establecer como vista predeterminada",
         "show": "Reloj",
         "show_all": "Mostrar todo",
         "show_less": "Muestra menos",
@@ -1026,6 +1042,7 @@
         "shown": "Mostrado",
         "sort_by": "Ordenar por",
         "squadron_leader": "Líder de escuadrón",
+        "toggle_layout": "Cambiar diseño",
         "uncheck_all": "Desmarcar todo",
         "view_options": "Ver las opciones",
         "viewing_stats_for_x": "Visualización de estadísticas para {{x}}",
@@ -1061,8 +1078,11 @@
         "apply_buffs": "Aplicar efectos",
         "display_buffs": "Mostrar efectos",
         "filter_by_availability": "Filtrar por disponibilidad",
+        "filter_by_bonus": "Filtrar por bonificación",
         "filter_by_collections": "Filtrar por colecciones",
         "filter_by_crew": "Filtrar por tripulación",
+        "filter_by_date": "Filtrar por fecha",
+        "filter_by_event": "Filtrar por evento",
         "filter_by_event_type": "Filtrar por tipo de evento",
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_listed_status": "Filtrar por estado de listado",
@@ -1072,8 +1092,10 @@
         "filter_by_portal_status": "Filtrar por estado del portal",
         "filter_by_primary_skill": "Filtrar por habilidad principal",
         "filter_by_progress": "Filtrar por progreso",
+        "filter_by_quipped_status": "Filtrar por estado de quipo",
         "filter_by_rarity": "Filtrar por rareza",
         "filter_by_retrieval_options": "Filtrar por opciones de recuperación",
+        "filter_by_revivals": "Filtrar por reapariciones",
         "filter_by_reward": "Filtrar por recompensa",
         "filter_by_secondary_skill": "Filtrar por habilidad secundaria",
         "filter_by_series": "Filtrar por serie",
@@ -1084,6 +1106,7 @@
         "filter_by_trait": "Filtrar por rasgo",
         "filter_by_trait_or_series": "Filtrar por rasgo o serie",
         "filter_by_voyage_seating": "Filtrar por asientos de viaje",
+        "filter_by_voyage_skill": "Filtrar por habilidad de viaje",
         "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
@@ -1250,10 +1273,10 @@
         }
     },
     "json_types": {
+        "fleet_data": "datos de la flota",
         "gauntlet_data": "datos del reto",
         "player_data": "datos del jugador",
-        "quest_data": "datos de la misión",
-        "fleet_data": "datos de la flota"
+        "quest_data": "datos de la misión"
     },
     "menu": {
         "about_title": "Sobre",
@@ -1318,40 +1341,40 @@
     "obtained": {
         "long": {
             "Achievement": "Logro",
-            "Continuum": "Continuo",
-            "Launch": "Lanzamiento del juego",
             "BossBattle": "Puente del Capitán",
             "Collection": "Hito de Colecciones",
+            "Continuum": "Continuo",
             "Event": "Evento",
             "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
-            "Pack": "Paquete",
-            "Giveaway": "Sorteo",
             "Faction": "Tienda des Facciones",
             "Fuse": "Fusión Exclusiva",
             "Gauntlet": "Reto Exclusivo",
+            "Giveaway": "Sorteo",
             "Honor Hall": "Salón de Honor",
+            "Launch": "Lanzamiento del juego",
             "Mega": "Mega Recurrente",
             "Missions": "Misión del Tablero Principal",
+            "Pack": "Paquete",
             "Pack/Giveaway": "Paquete/Sorteo",
             "Voyage": "Viaje Exclusiva",
             "WebStore": "Tienda Virtual"
         },
         "short": {
             "Achievement": "Logro",
-            "Continuum": "Continuum",
-            "Launch": "Lanzamiento",
             "BossBattle": "Puente",
             "Collection": "Colecciones",
+            "Continuum": "Continuum",
             "Event": "Evento",
             "Event/Pack/Giveaway": "Evento/Paquete/Sorteo",
-            "Pack": "Paquete",
-            "Giveaway": "Sorteo",
             "Faction": "Faccione",
             "Fuse": "Fusión",
             "Gauntlet": "Reto",
+            "Giveaway": "Sorteo",
             "Honor Hall": "Salón de Honor",
+            "Launch": "Lanzamiento",
             "Mega": "Mega",
             "Missions": "Misión",
+            "Pack": "Paquete",
             "Pack/Giveaway": "Paquete/Sorteo",
             "Voyage": "Viaje",
             "WebStore": "Tienda Virtual"
@@ -1359,12 +1382,23 @@
     },
     "options": {
         "crew_status": {
-            "favorites": "Mostrar sólo el tripulación favorito",
-            "frozen": "Mostrar sólo tripulación congelada",
-            "frozen_dupes": "Mostrar sólo tripulación duplicada congelada",
-            "idle": "Mostrar sólo tripulación inactivo",
-            "none": "Mostrar toda la tripulación",
-            "thawed": "Mostrar sólo la tripulación descongelada"
+            "active": "Mostrar solo tripulantes activos",
+            "active_hide": "Ocultar tripulantes activos",
+            "favorites": "Mostrar sólo los tripulantes favoritos",
+            "frozen": "Mostrar sólo los tripulantes congeladas",
+            "frozen_dupes": "Mostrar sólo los tripulantes duplicados y congelados",
+            "frozen_hide": "Ocultar tripulantes congelados",
+            "idle": "Mostrar sólo los tripulantes inactivos",
+            "none": "Mostrar toda los tripulantes",
+            "shuttler": "Mostrar solo tripulantes en transbordadores en funcionamiento",
+            "thawed": "Mostrar sólo los tripulantes descongelados",
+            "voyager": "Mostrar solo tripulantes en viajes en funcionamiento"
+        },
+        "event_status": {
+            "bonus": "Only show event crew",
+            "bonus_hide": "Hide event crew",
+            "featured": "Only show featured crew",
+            "featured_hide": "Hide featured crew"
         },
         "portal_status": {
             "none": "{{options.roster_maintenance.none}}",
@@ -1388,6 +1422,7 @@
             "priority": "Mostrar sólo no inmortales completamente fusionados",
             "quippable": "Solo mostrar tripulación equipable",
             "quipped": "Mostrar sólo al tripulación quipada",
+            "quipped_hide": "Ocultar tripulantes quipados",
             "threshold": "Solo muestra al tripulación que necesita 2 fusibles"
         },
         "text_match": {
@@ -1486,45 +1521,45 @@
         "top_quipment": "Quipo de primera"
     },
     "rank_names": {
-        "datascore": "DataScore",
-        "tuvix": "Tuvix",
-        "datacore_rating": "Clasificación de DataCore",
-        "datacore_grade": "Grado DataCore",
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",
         "cab_rank": "Rango de CAB",
         "cab_rating": "Clasificación de CAB",
+        "datacore_grade": "Grado DataCore",
+        "datacore_rating": "Clasificación de DataCore",
+        "datascore": "DataScore",
         "fbb_rank": "Jefe",
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
-        "scoring": "Clasificaciones y puntuaciones",
-        "ship_rank": "Rango del Buque",
-        "trait_rank": "Rango del rasgo",
-        "voyage_rank": "Rango de Viaje",
         "scores": {
-            "crit": "Crítico elevado",
             "am_seating": "Asientos de antimateria",
             "collections": "Colecciones que mejoran las estadísticas",
+            "crit": "Crítico elevado",
             "gauntlet": "Reto",
             "main_cast": "Elenco principal",
+            "overall": "General",
             "overall_grade": "Grado general",
             "overall_rank": "Rango general",
-            "overall": "General",
             "potential_cols": "Colecciones potenciales",
             "quipment": "Quipo",
             "rarity_overall": "General (en rareza)",
             "ship": "Habilidad de buque",
             "shuttle": "Base",
+            "skill_positions": "Puestos de habilidad",
             "skill_rarity": "Rareza de la habilidad",
             "tertiary_rarity": "Rareza de la habilidad terciaria",
             "trait": "Rasgos",
-            "skill_positions": "Puestos de habilidad",
+            "variant": "Variante",
             "velocity": "Velocidad",
-            "voyage": "Viaje",
-            "variant": "Variante"
-        }
+            "voyage": "Viaje"
+        },
+        "scoring": "Clasificaciones y puntuaciones",
+        "ship_rank": "Rango del Buque",
+        "trait_rank": "Rango del rasgo",
+        "tuvix": "Tuvix",
+        "voyage_rank": "Rango de Viaje"
     },
     "ranking_method": {
         "advantage": {
@@ -2091,12 +2126,12 @@
         "traits": {
             "exclude_launch": "Exclude launch crew",
             "hide_only_one": "Ocultar rasgos con uno solo tripulante",
+            "only_show_potential_collections": "Mostrar solo colecciones potenciales",
+            "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
             "show_variant_traits": "Mostrar rasgos de variantes de la tripulación",
-            "show_visible": "Mostrar rasgos visibles",
-            "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
-            "only_show_potential_collections": "Mostrar solo colecciones potenciales"
+            "show_visible": "Mostrar rasgos visibles"
         }
     },
     "tool_roster_picker": {
@@ -2128,6 +2163,12 @@
             }
         },
         "crew_finder_hints": {
+            "best_rank": {
+                "optimal": "Selecciona el {{top}} para este puesto",
+                "prefilter": "Filtra por estas habilidades, luego selecciona el {{top}}",
+                "top": "tripulantes superior",
+                "top_ordinal": "tripulante {{ordinal}} de la parte superior"
+            },
             "on_shuttle": "En lanzadera",
             "on_voyage": "En viaje",
             "unfreeze_crew": "Descongelar equipo"
@@ -2155,7 +2196,23 @@
             "dilemma_chance": "Probabilidad de dilema de {{time}}h: {{chance}}%",
             "estimate": "Estimado",
             "estimate_time": "Estimado: {{time}}",
+            "estimated_at": {
+                "estimated": "estimado a las {{time}}",
+                "failed": "falló a las {{time}}",
+                "recalled": "recalled a las {{time}}"
+            },
+            "event_crew_bonus": "bonificación de los tripulantes del evento{{:}} {{n}}",
             "expected_range": "(rango esperado: {{a}} a {{b}})",
+            "fields": {
+                "antimatter": "Antimateria inicial",
+                "dilemma": "Probabilidad de dilema",
+                "event_crew_bonus": "Bonificación de los tripulantes de evento",
+                "h_dilemma_chance": "Probabilidad de {{h}}h",
+                "median": "Tiempo de ejecución estimado",
+                "minimum": "Mínimo garantizado",
+                "moonshot": "Lanzamiento a la luna",
+                "total_vp": "PV proyectado"
+            },
             "first_refill": "Primera recarga",
             "legend": {
                 "chance_%": "Probabilidad (%)",
@@ -2165,10 +2222,11 @@
             "n_refills": "{{n}} recargas",
             "no_refills": "Sin recargas",
             "one_refill": "Una recarga",
-            "projected_vp": "PV proyectado",
+            "projected_vp": "PV proyectado{{:}} {{n}}",
             "recommendations": {
                 "antimatter": "antimateria inicial",
                 "dilemma": "posibilidad de dilema",
+                "event_crew_bonus": "bonificación de los tripulantes de evento",
                 "median": "tiempo de ejecución estimado",
                 "minimum": "mínimo garantizado",
                 "moonshot": "lanzamiento a la luna",
@@ -2182,12 +2240,23 @@
             "two_refills": "Dos recargas",
             "voyage_end": "Este viaje finalizará a las {{time}}.",
             "voyage_extend": "Las recargas posteriores lo extenderán por {{time}}.",
-            "voyage_long_advice": "Para un viaje de {{h}} horas, necesitarás {{r}} recargas a un costo de {{d}} dilitio (o {{re}} {{global.item_types.voyage_consumable}})."
+            "voyage_long_advice": "Para un viaje de {{h}} horas, necesitarás {{r}} recargas a un costo de {{d}} dilitio (o {{re}} {{global.item_types.voyage_consumable}}).",
+            "with_n_am_left": "con {{n}} AM restante"
         },
         "history": {
             "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
+            "menu": {
+                "crew": "Tripulantes",
+                "manage": "Administrar historial",
+                "voyages": "Viajes"
+            },
             "not_yet": "Aún no tienes ningún historial de viajes. Comienza a hacer un seguimiento de los viajes desde la calculadora de tripulación.",
             "title": "{{menu.tools.voyage_history}}"
+        },
+        "import": {
+            "click_here": "Haz clic aquí para cargar tus datos",
+            "heading": "Puedes acceder a los datos de tu viaje en vivo de forma similar a como accedes a los datos de tu jugador actualmente.",
+            "title": "Datos de viaje en vivo"
         },
         "lineup": {
             "crew_trait_bonuses": "Bonificaciones de los rasgos de la tripulación",
@@ -2247,11 +2316,11 @@
         "skills": {
             "primary": {
                 "name": "Habilidad primaria",
-                "placeholder": "{{quipment_ranks.primary}}"
+                "placeholder": "{{base.primary}}"
             },
             "secondary": {
                 "name": "Habilidad secundaria",
-                "placeholder": "{{quipment_ranks.secondary}}"
+                "placeholder": "{{base.secondary}}"
             }
         },
         "tracking": {
@@ -2269,16 +2338,10 @@
             "voyage_history": "Ver historial de viaje"
         },
         "voyages": {
-            "all": "Todos los viajes",
+            "all": "Todos los Viajes",
             "current": "Viajes actuales",
             "custom": "Viajes personalizados",
             "upcoming": "Próximos viajes"
-        },
-        "import": {
-            "click_here": "Haz clic aquí para cargar tus datos",
-            "heading": "Puedes acceder a los datos de tu viaje en vivo de forma similar a como accedes a los datos de tu jugador actualmente.",
-            "title": "Datos de viaje en vivo"
         }
-
     }
 }

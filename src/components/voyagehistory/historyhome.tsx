@@ -3,12 +3,13 @@ import {
 	Menu
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
+
 import { HistoryContext } from './context';
-import { VoyagesTable } from './voyagestable';
 import { CrewTable } from './crewtable';
 import { DataManagement } from './manage';
 import { SyncState } from './utils';
-import { GlobalContext } from '../../context/globalcontext';
+import { VoyagesTable } from './voyagestable';
 
 type HistoryHomeProps = {
 	postRemote: boolean;
@@ -17,9 +18,11 @@ type HistoryHomeProps = {
 };
 
 export const HistoryHome = (props: HistoryHomeProps) => {
-	const { history } = React.useContext(HistoryContext);
-	const [activeItem, setActiveItem] = React.useState<string>('voyages');
 	const { t } = React.useContext(GlobalContext).localized;
+	const { history } = React.useContext(HistoryContext);
+
+	const [activeItem, setActiveItem] = React.useState<string>('voyages');
+
 	if (history.voyages.length === 0) {
 		return (
 			<React.Fragment>
@@ -37,18 +40,18 @@ export const HistoryHome = (props: HistoryHomeProps) => {
 	return (
 		<React.Fragment>
 			<Menu secondary>
-				<Menu.Item
-					content='Voyages'
+				<Menu.Item	/* Voyages */
+					content={t('voyage.history.menu.voyages')}
 					active={activeItem === 'voyages'}
 					onClick={() => setActiveItem('voyages')}
 				/>
-				<Menu.Item
-					content='Crew'
+				<Menu.Item	/* Crew */
+					content={t('voyage.history.menu.crew')}
 					active={activeItem === 'crew'}
 					onClick={() => setActiveItem('crew')}
 				/>
-				<Menu.Item
-					content='Manage History'
+				<Menu.Item	/* Manage History */
+					content={t('voyage.history.menu.manage')}
 					active={activeItem === 'manage'}
 					onClick={() => setActiveItem('manage')}
 				/>

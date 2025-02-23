@@ -5,6 +5,7 @@ import {
 	Table
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
 import { IDataMatrixSetup, IEssentialMatrixData } from './model';
 
 type DataMatrixProps = {
@@ -17,6 +18,7 @@ type DataMatrixProps = {
 };
 
 export const DataMatrix = (props: DataMatrixProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { setup } = props;
 
 	const selectedIds: Set<number> = props.selectedIds ?? new Set<number>();
@@ -26,9 +28,9 @@ export const DataMatrix = (props: DataMatrixProps) => {
 		return data;
 	}, [props.data]);
 
-	//	0 results found. Please try different search options.
+	// No results found. Please try different search options.
 	if (data.length === 0)
-		return <>0 results found. Please try different search options.</>;
+		return <>{t('global.no_search_results_found')}</>;
 
 	const defaultTableProps: StrictTableProps = {
 		definition: true,

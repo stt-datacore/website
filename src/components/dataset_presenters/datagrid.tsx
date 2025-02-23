@@ -6,6 +6,7 @@ import {
 	StrictGridProps
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IDataGridSetup, IDataSortField, IEssentialData } from './model';
@@ -27,6 +28,7 @@ type DataGridProps = {
 };
 
 export const DataGrid = (props: DataGridProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { setup } = props;
 
 	// Persist sort preference
@@ -48,9 +50,9 @@ export const DataGrid = (props: DataGridProps) => {
 	// Pagination
 	const itemsPerPage = 24, itemsToShow = itemsPerPage * paginationPage;
 
-	//	0 results found. Please try different search options.
+	// No results found. Please try different search options.
 	if (data.length === 0)
-		return <>0 results found. Please try different search options.</>;
+		return <>{t('global.no_search_results_found')}</>;
 
 	const defaultGridProps: StrictGridProps = {
 		columns: 4,
@@ -82,7 +84,7 @@ export const DataGrid = (props: DataGridProps) => {
 				<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
 					onChange={(inView, _entry) => { if (inView) setPaginationPage(prevState => prevState + 1); }}
 				>
-					<Icon loading name='spinner' /> Loading...
+					<Icon loading name='spinner' /> {t('global.loading_ellipses')}
 				</InView>
 			)}
 		</React.Fragment>

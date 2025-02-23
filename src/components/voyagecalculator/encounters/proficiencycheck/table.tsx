@@ -21,7 +21,7 @@ type ProficiencyTableProps = {
 };
 
 export const ProficiencyTable = (props: ProficiencyTableProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
+	const { t, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, sortedSkills, simulateContest } = React.useContext(ProficiencyContext);
 
 	const [skillFilter, setSkillFilter] = React.useState<string[]>([]);
@@ -53,15 +53,15 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		}
 
 		const columns: IDataTableColumn[] = [
-			{
+			{	/* Crew */
 				id: 'name',
-				title: 'Crew',
+				title: t('base.crew'),
 				sortField: { id: 'name', stringValue: true },
 				renderCell: (datum: IEssentialData) => <CrewLabel crew={datum as IProficientCrew} />
 			},
 			{	/* Skills */
 				id: 'skills',
-				title: 'Skills',
+				title: t('base.skills'),
 				align: 'center',
 				sortField: { id: 'best_proficiency', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => renderCrewSkills(datum as IProficientCrew)
@@ -102,6 +102,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 				<SkillToggler
 					value={skillFilter}
 					setValue={(value: string[]) => setSkillFilter(value)}
+					maxSkills={1}
 				/>
 			</Form>
 			<DataTable
@@ -114,7 +115,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 
 	function renderSkillHeader(skills: string[], crewCount: number): JSX.Element {
 		return (
-			<span title={`Your voyage has ${crewCount} viable crew for this contest`}>
+			<span title={t('voyage.contests.n_viable_crew', { n: crewCount })}>
 				{skills.map(skill => (
 					<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				))}
@@ -147,7 +148,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 			<div	/* Simulate contest */
 				style={{ cursor: 'pointer' }}
 				onClick={() => simulateContest({ skills: scoredSkill.skills, crew })}
-				title='Simulate contest'
+				title={t('voyage.contests.simulate_contest')}
 			>
 				{scoredSkill.score}{crewIsShortSkilled(crew, scoredSkill.skills) && <>*</>}
 			</div>

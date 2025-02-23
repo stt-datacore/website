@@ -93,7 +93,13 @@ export const CalculatorForm = () => {
 			{/* <BestShipCard voyageConfig={voyageConfig} bestShip={bestShip} /> */}
 			<ResultsGroup requests={requests} setRequests={setRequests} results={results} setResults={setResults} />
 			<div style={{ marginTop: '1em' }}>
-				{requests.length > 0 && <Header as='h3'>Options</Header>}
+				{requests.length > 0 && (
+					<Header	/* Options */
+						as='h3'
+					>
+						{t('global.options')}
+					</Header>
+				)}
 				<Form>
 					<CrewOptions updateConsideredCrew={setConsideredCrew} />
 					<Form.Group inline>

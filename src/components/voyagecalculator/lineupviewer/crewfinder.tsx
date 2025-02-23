@@ -15,7 +15,8 @@ export type CrewFinderProps = {
 };
 
 export const CrewFinder = (props: CrewFinderProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const { localized } = React.useContext(GlobalContext);
+	const { t, language } = localized;
 	const { crew, bestRank } = props;
 
 	let popup = { content: '', trigger: <></> };
@@ -39,12 +40,14 @@ export const CrewFinder = (props: CrewFinderProps) => {
 		};
 	}
 	else if (bestRank) {
+		const top: string = bestRank.rank === 1
+			? t('voyage.crew_finder_hints.best_rank.top')
+			: t('voyage.crew_finder_hints.best_rank.top_ordinal', { ordinal: addPostfix(bestRank.rank, language) });
 		let content: string = '';
 		if (bestRank.skills.length === 0)
-			content = `Select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'} for this seat`;
-		else {
-			content = `Filter by these skills, then select the ${bestRank.rank === 1 ? 'top crew' : addPostfix(bestRank.rank) + ' crew from the top'}`;
-		}
+			content = t('voyage.crew_finder_hints.best_rank.optimal', { top });
+		else
+			content = t('voyage.crew_finder_hints.best_rank.prefilter', { top });
 		popup = {
 			content,
 			trigger:
@@ -65,7 +68,14 @@ export const CrewFinder = (props: CrewFinderProps) => {
 		} />
 	);
 
-	function addPostfix(pos: number): string {
+	function addPostfix(pos: number, lang: string): string {
+		if (lang === 'sp') return `${pos}o`;
+		else if (lang === 'de') return `${pos}.`;
+		else if (lang === 'fr') {
+			if ((pos % 10) == 1) return `${pos}er`;
+			else return `${pos}ème`;
+
+		}
 		const POSITION_POSTFIX: string[] = [
 			'th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'
 		];

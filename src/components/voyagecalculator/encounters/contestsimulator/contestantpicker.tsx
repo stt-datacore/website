@@ -40,7 +40,7 @@ type ContestantPickerProps = {
 };
 
 export const ContestantPicker = (props: ContestantPickerProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
+	const { t, tfmt, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
 	const { skills, traits, traitPool, crewPool, setContestant, dismissPicker } = props;
 
 	const gridSetup: IDataGridSetup = {
@@ -65,13 +65,13 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	const columns: IDataTableColumn[] = [
 		{	/* Crew */
 			id: 'name',
-			title: 'Crew',
+			title: t('base.crew'),
 			sortField: { id: 'name', stringValue: true },
 			renderCell: (datum: IEssentialData) => renderCrewLabel(datum as PlayerCrew)
 		},
 		{	/* Score */
 			id: 'scored_contest',
-			title: 'Score',
+			title: t('base.score'),
 			align: 'center',
 			sortField: { id: 'scored_contest', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => renderContestScore(datum as IProficientCrew)
@@ -81,7 +81,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		columns.push(
 			{	/* Crit Chance */
 				id: 'crit_chance',
-				title: 'Crit Chance',
+				title: t('voyage.contests.crit_chance'),
 				align: 'center',
 				sortField: { id: 'crit_chance', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => <>{(datum as IProficientCrew).crit_chance}%</>
@@ -123,14 +123,14 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	};
 
 	return (
-		<DataPicker
+		<DataPicker	/* Search for contestant by name */
 			id={`${props.id}/datapicker`}
 			data={data}
 			closePicker={(selectedIds: Set<number>) => selectContestant(selectedIds, crewPool, setContestant)}
 			selection
 			closeOnChange
 			search
-			searchPlaceholder='Search for contestant by name'
+			searchPlaceholder={t('global.search_for_x_by_name', { x: t('voyage.contests.contestant_alt') })}
 			renderPreface={renderPreface}
 			gridSetup={gridSetup}
 			tableSetup={tableSetup}
@@ -140,12 +140,17 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	function renderPreface(): JSX.Element {
 		return (
 			<React.Fragment>
-				Select a contestant to simulate in a {skills.map(skill => (
-					<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.2em', verticalAlign: 'middle' }} className='invertibleIcon' />
-				))} contest. Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.
+				{tfmt('voyage.contests.notes.simulate_contestant', {
+					skills: <>{
+						skills.map(skill => (
+							<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.2em', verticalAlign: 'middle' }} className='invertibleIcon' />
+						))
+					}</>
+				})}
+				{` `}{t('voyage.contests.notes.scores')}
 				{traitPool && traitPool.length > 0 && (
 					<span>
-						{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' /> represents a crew's number of potential crit traits.
+						{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />{` `}{t('voyage.contests.notes.crit_icon')}
 					</span>
 				)}
 			</React.Fragment>

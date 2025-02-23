@@ -4,21 +4,15 @@ import { Modal, Form, Button, Dropdown, Table, DropdownItemProps } from 'semanti
 import { VoyageSkills } from '../../model/player';
 import { IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 import { lookupAMTraitsBySeat } from '../../utils/voyageutils';
-
-interface ISelectOption {
-	key: string;
-	value: string;
-	text: string;
-};
+import CONFIG from '../CONFIG';
 
 interface IEditOptions {
-	skills: ISelectOption[];
-	ships: ISelectOption[];
-	traits: ISelectOption[];
-	trait_seats: { [skill: string]: ISelectOption[] }
+	skills: DropdownItemProps[];
+	ships: DropdownItemProps[];
+	traits: DropdownItemProps[];
+	trait_seats: { [skill: string]: DropdownItemProps[] }
 };
 
 type ConfigEditorProps = {
@@ -144,7 +138,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				'veteran','villain','vulcan'
 			];
 
-			const skillsList: ISelectOption[] = [];
+			const skillsList: DropdownItemProps[] = [];
 			for (let skill in CONFIG.SKILLS) {
 				skillsList.push({
 					key: skill,
@@ -153,7 +147,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				});
 			}
 
-			const shipTraitsList: ISelectOption[] = knownShipTraits.map(trait => {
+			const shipTraitsList: DropdownItemProps[] = knownShipTraits.map(trait => {
 				return {
 					key: trait,
 					value: trait,
@@ -165,9 +159,9 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 				value: '',
 				text: `(${t('voyage.custom.no_trait')})`
 			});
-			shipTraitsList.sort((a, b) => a.text.localeCompare(b.text));
+			shipTraitsList.sort((a, b) => (a.text as string).localeCompare(b.text as string));
 
-			const crewTraitLists = {} as { [skill: string]: ISelectOption[] }
+			const crewTraitLists = {} as { [skill: string]: DropdownItemProps[] }
 
 			Object.keys(CONFIG.SKILLS).forEach((skill) => {
 				crewTraitLists[skill] = lookupAMTraitsBySeat(skill).map(trait => {
@@ -182,7 +176,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 					value: '',
 					text: `(${t('voyage.custom.no_trait')})`
 				});
-				crewTraitLists[skill].sort((a, b) => a.text.localeCompare(b.text));
+				crewTraitLists[skill].sort((a, b) => (a.text as string).localeCompare(b.text as string));
 			});
 
 			// const crewTraitsList: ISelectOption[] = knownCrewTraits.map(trait => {

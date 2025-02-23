@@ -7,12 +7,12 @@ import {
 
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../CONFIG';
-import { getCrewEventBonus, POPUP_DELAY, voySkillScore } from '../utils';
+import { POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
 export const Aggregates = () => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { voyageConfig, ship, shipData, assignments, launchLineupEditor } = React.useContext(ViewerContext);
+	const { voyageConfig, ship, shipData } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
@@ -46,31 +46,9 @@ export const Aggregates = () => {
 		return (
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
-					{/* {renderVPRow()} */}
 					{renderAntimatterRow()}
 				</Table.Body>
 			</Table>
-		);
-	}
-
-	function renderVPRow(): JSX.Element {
-		if (voyageConfig.voyage_type !== 'encounter') return <></>;
-		const totalVP: number = Math.round(assignments.reduce((prev, curr) => prev + getCrewEventBonus(voyageConfig, curr.crew), 0) * 100);
-		return (
-			<Table.Row>
-				<Table.Cell>{t('voyage.estimate.base_event_vp')}</Table.Cell>
-				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
-				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-					<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>+{t('global.n_%', { n: totalVP })}</span>}>
-						<Popup.Content>
-							VP calculations are based on assumptions from the test voyage event and may not be accurate for this event or events going forward.
-						</Popup.Content>
-					</Popup>
-				</Table.Cell>
-				<Table.Cell className='iconic' textAlign='center'>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
-				</Table.Cell>
-			</Table.Row>
 		);
 	}
 

@@ -28,7 +28,9 @@ type SkillDetailProps = {
 export const SkillDetail = (props: SkillDetailProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, currentData, baselineData, setHighlighted, highlighted } = props;
-	const [proficiencyMode, setProficiencyMode] = React.useState(false);
+
+	const [proficiencyMode, setProficiencyMode] = React.useState<boolean>(false);
+
 	const renderAsTime = (value: number) => <>{formatTime(value, t)}</>;
 
 	interface ISkillDetailRow {
@@ -39,19 +41,19 @@ export const SkillDetail = (props: SkillDetailProps) => {
 	};
 
 	const rows: ISkillDetailRow[] = [
-		{	/* Voyage score */
+		{	/* Voyage Score */
 			field: 'score',
-			title: 'Voyage score',
+			title: t('voyage.skill_check.fields.voyage_score'),
 			adjustValue: (value: number) => Math.floor(value)
 		},
-		{	/* Skill check fail point */
+		{	/* Skill Check Fail Point */
 			field: 'fail_point',
-			title: 'Skill check fail point',
+			title: t('voyage.skill_check.fields.fail_point'),
 			renderValue: renderAsTime
 		},
-		{	/* Crew with skill */
+		{	/* Crew with Skill */
 			field: 'crew_count',
-			title: 'Crew with skill'
+			title: t('voyage.skill_check.fields.crew_with_skill')
 		}
 	];
 
@@ -81,7 +83,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 						{rows.map(row => (
 							<Table.Row key={row.field}>
 								<Table.Cell>
-									{row.title}:
+									{row.title}{t('global.colon')}
 								</Table.Cell>
 								<Table.Cell textAlign='right'>
 									{!baselineData && renderRowValue(row)}
@@ -101,8 +103,8 @@ export const SkillDetail = (props: SkillDetailProps) => {
 						))}
 						<Table.Row style={{cursor: 'pointer'}} onClick={() => setProficiencyMode(!proficiencyMode)}>
 							<Table.Cell>
-								{!proficiencyMode && <>Best proficiency:</>}
-								{proficiencyMode && <>Best minimum:</>}
+								{!proficiencyMode && <>{t('voyage.skill_check.fields.best_proficiency')}</>}
+								{proficiencyMode && <>{t('voyage.skill_check.fields.best_minimum')}</>}
 							</Table.Cell>
 							<Table.Cell textAlign='right'>
 								{renderProficiency(proficiencyMode)}
@@ -112,8 +114,11 @@ export const SkillDetail = (props: SkillDetailProps) => {
 				</Table>
 			</Segment>
 			<Message attached='bottom'>
-				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-					<div>Paired skills:</div>
+				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+					<div	/* Paired Skills */
+					>
+						{t('voyage.skill_check.fields.paired_skills')}{t('global.colon')}
+					</div>
 					<div>
 						{renderPairedSkills()}
 					</div>
@@ -130,20 +135,19 @@ export const SkillDetail = (props: SkillDetailProps) => {
 	}
 
 	function renderProficiency(proficiencyMode: boolean): JSX.Element {
-		// Voyage history does not have reliable proficiency values for individual crew
+		const currentValue: number = proficiencyMode ? currentData.best_minimum : currentData.best_proficiency;
 
-		const number = proficiencyMode ? currentData.best_minimum : currentData.best_proficiency;
+		// Voyage history does not have reliable proficiency values for individual crew, so return N/A
+		if (currentValue === 0) return <>{t('global.na')}</>;
+		if (!baselineData) return <b>{currentValue}</b>;
 
-		if (number === 0) return <>N/A</>;
-		if (!baselineData) return <b>{number}</b>;
-
-		const base_number = proficiencyMode ? baselineData.best_minimum : baselineData.best_proficiency;
+		const baselineValue: number = proficiencyMode ? baselineData.best_minimum : baselineData.best_proficiency;
 
 		return (
 			<NumericDiff
 				compare={{
-					currentValue: number,
-					baselineValue: base_number,
+					currentValue: currentValue,
+					baselineValue: baselineValue,
 					showCurrentValue: true
 				}}
 				justifyContent='flex-end'

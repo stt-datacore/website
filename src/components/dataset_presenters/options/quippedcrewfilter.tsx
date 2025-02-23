@@ -6,6 +6,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
 import { qbitsToSlots } from '../../../utils/crewutils';
 
 type QuippedCrewFilterProps = {
@@ -14,32 +15,33 @@ type QuippedCrewFilterProps = {
 };
 
 export const QuippedCrewFilter = (props: QuippedCrewFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { value, setValue } = props;
 	const filterOptions: DropdownItemProps[] = [
 		{	/* Show all crew */
 			key: 'all',
 			value: '',
-			text: 'Show all crew'
+			text: t('base.all_crew')
 		},
 		{	/* Only show quipped crew */
 			key: 'is:quipped',
 			value: 'is:quipped',
-			text: 'Only show quipped crew'
+			text: t('options.roster_maintenance.quipped')
 		},
 		{	/* Hide quipped crew */
 			key: 'not:quipped',
 			value: 'not:quipped',
-			text: 'Hide quipped crew'
+			text: t('options.roster_maintenance.quipped_hide')
 		},
-		{	/* Only show crew with unlocked quipment slots */
+		{	/* Only show quippable crew */
 			key: 'is:quippable',
 			value: 'is:quippable',
-			text: 'Only show crew with unlocked quipment slots'
+			text: t('options.roster_maintenance.quippable')
 		}
 	];
 	return (
 		<Form.Field	/* Filter by quipped status */
-			placeholder='Filter by quipped status'
+			placeholder={t('hints.filter_by_quipped_status')}
 			control={Dropdown}
 			selection
 			clearable

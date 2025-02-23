@@ -5,6 +5,7 @@ import {
 	Table
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IDataSortField, IDataTableColumn, IDataTableSetup, IEssentialData } from './model';
@@ -26,6 +27,7 @@ type DataTableProps = {
 };
 
 export const DataTable = (props: DataTableProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { setup } = props;
 
 	// Persist sort preference
@@ -89,8 +91,8 @@ export const DataTable = (props: DataTableProps) => {
 					{data.length === 0 && (
 						<Table.Row>
 							<Table.Cell colSpan={columnCount} textAlign='center'>
-								{/* 0 results found. Please try different search options. */}
-								<p>0 results found. Please try different search options.</p>
+								{/* No results found. Please try different search options. */}
+								<p>{t('global.no_search_results_found')}</p>
 							</Table.Cell>
 						</Table.Row>
 					)}

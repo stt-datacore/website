@@ -141,7 +141,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 			<React.Fragment>
 				{activeView !== 'summary' && (
 					<Button	/* View prospective voyage */
-						title='View prospective voyage'
+						title={t('voyage.editor.view_voyage')}
 						icon='vcard'
 						onClick={() => {
 							setSlotTarget(undefined);
@@ -152,7 +152,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 				)}
 				{activeView !== 'crewpicker' && (
 					<Button	/* Search for alternate crew */
-						title='Search for alternate crew'
+						title={t('voyage.editor.search_for_alternates')}
 						icon='search'
 						onClick={() => {
 							setSlotTarget(undefined);
@@ -162,7 +162,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 					/>
 				)}
 				<Button	/* Close */
-					content='Close'
+					content={t('global.close')}
 					onClick={dismissEditor}
 				/>
 			</React.Fragment>

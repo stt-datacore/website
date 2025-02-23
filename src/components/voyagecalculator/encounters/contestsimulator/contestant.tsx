@@ -9,6 +9,7 @@ import {
 	Table
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../../../context/globalcontext';
 import { AvatarView } from '../../../item_presenters/avatarview';
 import { IContestant, IContestSkill, IExpectedScore } from '../model';
 import { getExpectedScore } from '../utils';
@@ -23,6 +24,7 @@ type ContestantProps = {
 };
 
 export const Contestant = (props: ContestantProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { skills, contestant, wins, editContestant, dismissContestant } = props;
 
 	const expectedRoll: IExpectedScore = getExpectedScore(contestant.skills);
@@ -41,7 +43,7 @@ export const Contestant = (props: ContestantProps) => {
 		<React.Fragment>
 			<Message attached onDismiss={dismissContestant}>
 				<Message.Header style={{ textAlign: 'center' }}>
-					{contestant.crew?.name ?? 'Contestant'}
+					{contestant.crew?.name ?? t('voyage.contests.contestant')}
 				</Message.Header>
 				<div style={{ display: 'flex', justifyContent: 'center' }}>
 					{contestant.crew && (
@@ -64,12 +66,14 @@ export const Contestant = (props: ContestantProps) => {
 					<Table.Body>
 						{skills.map(skill => renderContestantSkill(skill))}
 						<Table.Row>
-							<Table.Cell textAlign='center'>
-								Crit Chance
+							<Table.Cell	/* Crit Chance */
+								textAlign='center'
+							>
+								{t('voyage.contests.crit_chance')}
 							</Table.Cell>
 							<Table.Cell textAlign='center'>
 								<Dropdown	/* Select crit chance */
-									placeholder='Select crit chance'
+									placeholder={t('voyage.contests.select_crit_chance')}
 									selection
 									options={critChanceOptions}
 									value={contestant.critChance}
@@ -82,23 +86,21 @@ export const Contestant = (props: ContestantProps) => {
 			</Segment>
 			<Message attached='bottom'>
 				<Statistic.Group size='mini' widths='four'>
-					<Statistic>
+					<Statistic	/* Avg */>
 						<Statistic.Value>{expectedRoll.average}</Statistic.Value>
-						<Statistic.Label>Avg</Statistic.Label>
+						<Statistic.Label>{t('voyage.contests.avg')}</Statistic.Label>
 					</Statistic>
-					<Statistic>
+					<Statistic	/* Min */>
 						<Statistic.Value>{expectedRoll.min}</Statistic.Value>
-						<Statistic.Label>Min</Statistic.Label>
+						<Statistic.Label>{t('voyage.contests.min')}</Statistic.Label>
 					</Statistic>
-					<Statistic>
+					<Statistic	/* Max */>
 						<Statistic.Value>{expectedRoll.max}</Statistic.Value>
-						<Statistic.Label>Max</Statistic.Label>
+						<Statistic.Label>{t('voyage.contests.max')}</Statistic.Label>
 					</Statistic>
-					<Statistic>
-						<Statistic.Value>
-							{wins}
-						</Statistic.Value>
-						<Statistic.Label>Wins</Statistic.Label>
+					<Statistic	/* Wins */>
+						<Statistic.Value>{wins}</Statistic.Value>
+						<Statistic.Label>{t('voyage.contests.wins')}</Statistic.Label>
 					</Statistic>
 				</Statistic.Group>
 			</Message>
@@ -121,7 +123,7 @@ export const Contestant = (props: ContestantProps) => {
 						/>
 					)}
 					{!contestantSkill && (
-						<>No skill</>
+						<>{t('voyage.contests.no_skill')}</>
 					)}
 				</Table.Cell>
 			</Table.Row>

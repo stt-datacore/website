@@ -47,6 +47,7 @@ export const VoyageHome = () => {
 
 const NonPlayerHome = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 
 	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
 	const [eventData, setEventData] = React.useState<IEventData[]>([]);
@@ -88,10 +89,12 @@ const NonPlayerHome = () => {
 
 	return (
 		<React.Fragment>
-			<Header as='h3'>
-				No Voyage Configuration Available
+			<Header	/* No Voyage Configuration Available */
+				as='h3'
+			>
+				{t('voyage.nonplayer.title')}
 			</Header>
-			<p>Import your player data to help tailor this tool to your current voyage and roster. Otherwise, you can manually create a voyage and view the best crew in the game for any possible configuration.</p>
+			<p>{t('voyage.nonplayer.description')}</p>
 			<ConfigEditor presetConfigs={[]} updateConfig={setVoyageConfig} />
 		</React.Fragment>
 	);
@@ -419,7 +422,11 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	function renderVoyagePicker(): JSX.Element {
 		return (
 			<React.Fragment>
-				<Header as='h3'>{t('voyage.voyages.current')}</Header>
+				<Header	/* Current Voyages */
+					as='h3'
+				>
+					{t('voyage.voyages.current')}
+				</Header>
 				{playerConfigs.map(voyageConfig => (
 					<ConfigCard
 						key={voyageConfig.voyage_type}
@@ -431,7 +438,11 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 				{upcomingConfigs.length > 0 && (
 					<React.Fragment>
-						<Header as='h3'>{t('voyage.voyages.upcoming')}</Header>
+						<Header	/* Upcoming Voyages */
+							as='h3'
+						>
+							{t('voyage.voyages.upcoming')}
+						</Header>
 						{upcomingConfigs.map(voyageConfig => (
 							<ConfigCard
 								key={voyageConfig.voyage_type}
@@ -443,14 +454,22 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					</React.Fragment>
 				)}
 
-				<Header as='h3'>{t('voyage.custom_voyage')}</Header>
+				<Header	/* Custom Voyages */
+					as='h3'
+				>
+					{t('voyage.custom_voyage')}
+				</Header>
 				<p>{t('voyage.custom_voyage_description')}</p>
 				<ConfigEditor
 					presetConfigs={playerConfigs.concat(upcomingConfigs)}
 					updateConfig={loadCustomConfig}
 				/>
 
-				<Header as='h3'>{t('voyage.history.title')}</Header>
+				<Header	/* Voyage History */
+					as='h3'
+				>
+					{t('voyage.history.title')}
+				</Header>
 				<p>{t('voyage.history.description')}</p>
 				<HistoryHome
 					postRemote={postRemote}
@@ -474,7 +493,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	function renderViewButton(voyageConfig: IVoyageInputConfig, configSource: 'player' | 'custom' = 'player'): JSX.Element {
 		const running: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
 		return (
-			<Button
+			<Button	/* View running voyage OR View crew calculator */
 				size='large'
 				color='blue'
 				icon={running ? 'rocket' : 'users'}
@@ -506,7 +525,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 	function renderCancelButton(): JSX.Element {
 		return (
-			<Button
+			<Button	/* All voyages */
 				size='large'
 				icon='backward'
 				content={t('voyage.voyages.all')}

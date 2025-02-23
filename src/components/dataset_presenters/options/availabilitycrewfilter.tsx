@@ -6,6 +6,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../model/player';
+import { GlobalContext } from '../../../context/globalcontext';
 
 type AvailabilityCrewFilterProps = {
 	value: string;
@@ -14,6 +15,7 @@ type AvailabilityCrewFilterProps = {
 };
 
 export const AvailabilityCrewFilter = (props: AvailabilityCrewFilterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { value, setValue, rosterCrew } = props;
 
 	const activeCrew = React.useMemo(() => {
@@ -26,22 +28,22 @@ export const AvailabilityCrewFilter = (props: AvailabilityCrewFilterProps) => {
 		{	/* Show all crew */
 			key: 'all',
 			value: '',
-			text: 'Show all crew'
+			text: t('base.all_crew')
 		},
 		{	/* Only show idle crew */
 			key: 'is:idle',
 			value: 'is:idle',
-			text: 'Only show idle crew'
+			text: t('options.crew_status.idle')
 		},
 		{	/* Only show frozen crew */
 			key: 'is:frozen',
 			value: 'is:frozen',
-			text: 'Only show frozen crew'
+			text: t('options.crew_status.frozen')
 		},
 		{	/* Hide frozen crew */
 			key: 'not:frozen',
 			value: 'not:frozen',
-			text: 'Hide frozen crew'
+			text: t('options.crew_status.frozen_hide')
 		}
 	];
 
@@ -51,7 +53,7 @@ export const AvailabilityCrewFilter = (props: AvailabilityCrewFilterProps) => {
 			{	/* Only show active crew */
 				key: 'is:active',
 				value: 'is:active',
-				text: 'Only show active crew'
+				text: t('options.crew_status.active')
 			}
 		);
 	}
@@ -62,7 +64,7 @@ export const AvailabilityCrewFilter = (props: AvailabilityCrewFilterProps) => {
 			{	/* Only show crew on running shuttles */
 				key: 'is:shuttler',
 				value: 'is:shuttler',
-				text: 'Only show crew on running shuttles'
+				text: t('options.crew_status.shuttler')
 			}
 		);
 	}
@@ -71,7 +73,7 @@ export const AvailabilityCrewFilter = (props: AvailabilityCrewFilterProps) => {
 			{	/* Only show crew on running voyages */
 				key: 'is:voyager',
 				value: 'is:voyager',
-				text: 'Only show crew on running voyages'
+				text: t('options.crew_status.voyager')
 			}
 		);
 	}
@@ -81,14 +83,14 @@ export const AvailabilityCrewFilter = (props: AvailabilityCrewFilterProps) => {
 			{	/* Hide active crew */
 				key: 'not:active',
 				value: 'not:active',
-				text: 'Hide active crew'
+				text: t('options.crew_options.active_hide')
 			}
 		);
 	}
 
 	return (
 		<Form.Field	/* Filter by availability */
-			placeholder='Filter by availability'
+			placeholder={t('hints.filter_by_availability')}
 			control={Dropdown}
 			selection
 			clearable

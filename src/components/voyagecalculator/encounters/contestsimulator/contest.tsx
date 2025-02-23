@@ -6,6 +6,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../../model/player';
+import { GlobalContext } from '../../../../context/globalcontext';
 import { IContestant, IContestResult } from '../model';
 import { formatContestResult, makeContestant, simulateContest } from '../utils';
 import { Contestant } from './contestant';
@@ -31,6 +32,7 @@ type ContestProps = {
 };
 
 export const Contest = (props: ContestProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { skills, traits, traitPool, aPool, bPool } = props;
 
 	const [contestantA, setContestantA] = React.useState<IContestant>(initContestant(props.a));
@@ -58,7 +60,7 @@ export const Contest = (props: ContestProps) => {
 					/>
 					{aPool && (
 						<Button	/* Search for contestant */
-							content='Search for contestant'
+							content={t('voyage.contests.search_for_contestant')}
 							icon='search'
 							fluid
 							onClick={() => setPickerTrigger({ pool: aPool, setContestant: setContestantA })}
@@ -75,7 +77,7 @@ export const Contest = (props: ContestProps) => {
 					/>
 					{bPool && (
 						<Button	/* Search for contestant */
-							content='Search for contestant'
+							content={t('voyage.contests.search_for_contestant')}
 							icon='search'
 							fluid
 							onClick={() => setPickerTrigger({ pool: bPool, setContestant: setContestantB })}

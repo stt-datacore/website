@@ -9,7 +9,6 @@ import {
 import { Skill } from '../../../model/crew';
 import { IVoyageCrew } from '../../../model/voyage';
 import { GlobalContext } from '../../../context/globalcontext';
-import { gradeToColor } from '../../../utils/crewutils';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import CONFIG from '../../CONFIG';
@@ -23,7 +22,6 @@ import { crewMatchesEventFilter, EventCrewFilter } from '../../dataset_presenter
 import { crewMatchesQuippedFilter, QuippedCrewFilter } from '../../dataset_presenters/options/quippedcrewfilter';
 import { crewMatchesSkillFilter, SkillToggler } from '../../dataset_presenters/options/skilltoggler';
 import { AvatarView } from '../../item_presenters/avatarview';
-import { OptionsPanelFlexRow } from '../../stats/utils';
 
 import { CalculatorContext } from '../context';
 
@@ -65,7 +63,7 @@ type AlternateCrewPickerProps = {
 };
 
 export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { id, prospectiveConfig, sortedSkills, renderActions, dismissEditor } = React.useContext(EditorContext);
 	const { roster, targeting, setAlternate } = props;
@@ -129,29 +127,29 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 
 	const tableSetup = React.useMemo<IDataTableSetup>(() => {
 		const columns: IDataTableColumn[] = [
-			{	/* Prospective voyage seat */
+			{	/* Prospective Voyage Seat */
 				id: 'slot',
-				title: <Icon name='vcard' title='Prospective voyage seat' />,
+				title: <Icon name='vcard' title={t('voyage.editor.prospective.assigned_slot')} />,
 				align: 'center',
 				sortField: { id: 'assigned_slot' },
 				renderCell: (datum: IEssentialData) => renderCrewAssignment(datum as IAlternateCrewData)
 			},
-			{
+			{	/* Crew */
 				id: 'name',
-				title: 'Crew',
+				title: t('base.crew'),
 				sortField: { id: 'name', stringValue: true },
 				renderCell: (datum: IEssentialData) => <CrewLabel crew={datum as IAlternateCrewData} />
 			},
-			{
+			{	/* Status */
 				id: 'status',
-				title: 'Status',
+				title: t('base.status'),
 				align: 'center',
 				sortField: { id: 'status' },
 				renderCell: (datum: IEssentialData) => renderCrewStatus(datum as IAlternateCrewData)
 			},
-			{
+			{	/* Voyage */
 				id: 'voyage',
-				title: 'Voyage',
+				title: t('base.voyage'),
 				align: 'center',
 				sortField: { id: 'voyage_total', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => <>{Math.floor((datum as IAlternateCrewData).voyage_total)}</>
@@ -169,7 +167,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 				},
 				renderCell: (datum: IEssentialData) => (
 					<React.Fragment>
-						{datum[`scored_${skill}`] > 0 ? Math.floor(datum[`scored_${skill}`]): ''}
+						{datum[`scored_${skill}`] > 0 ? Math.floor(datum[`scored_${skill}`]) : ''}
 					</React.Fragment>
 				)
 			});
@@ -204,7 +202,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			closeOnChange
 			preFilteredIds={filteredIds}
 			search
-			searchPlaceholder='Search for alternate voyage crew by name'
+			searchPlaceholder={t('global.search_for_x_by_name', { x: t('voyage.editor.alternate_crew_alt') })}
 			renderOptions={renderOptions}
 			renderPreface={targeting ? renderReplacement : undefined}
 			renderActions={renderActions}
@@ -241,28 +239,45 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 	}
 
 	function renderSkillHeader(skill: string): JSX.Element {
-		const n = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill))?.length || 0;
-
+		const crewCount: number = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill)).length;
 		return (
-			<span title={`Your prospective voyage has ${n} crew with this skill`}>
+			<span title={t('voyage.editor.n_viable_crew', { n: crewCount })}>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
-				{!!n && <sup style={{ fontSize: '0.9em', fontWeight: 'bold', margin: '0 0.5em' }}>{n}</sup>}
+				{` `}({crewCount})
 			</span>
 		);
 	}
 
 	function renderReplacement(): JSX.Element {
-		const flexRow = OptionsPanelFlexRow;
 		if (!targeting) return <></>;
+		const seat: JSX.Element = (
+			<React.Fragment>
+				<img
+					src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`}
+					style={{ height: '1em' }}
+					className='invertibleIcon'
+				/>
+				{` `}{t(`voyage.seats.${targeting.slot.symbol}`)}
+			</React.Fragment>
+		);
 		return (
-			<div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', alignItems: 'center'}}>
+			<div style={{ display: 'flex', alignItems: 'center', columnGap: '0.3em' }}>
 				{targeting.slot.crew && (
-					<>Select a crew to replace <AvatarView mode='crew' item={targeting.slot.crew} size={32} /> {targeting.slot.crew.name} as <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${targeting.slot.symbol}`)}:</>
+					<React.Fragment	/* Select a crew to replace CREW as SEAT .*/>
+						{tfmt('voyage.editor.target_seat_replacement', {
+							crew: <><AvatarView mode='crew' item={targeting.slot.crew} size={32} /> {targeting.slot.crew.name}</>,
+							seat
+						})}
+					</React.Fragment>
 				)}
 				{!targeting.slot.crew && (
-					<>Select a crew for <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{height: '16px'}} /> {t(`voyage.seats.${targeting.slot.symbol}`)}:</>
+					<React.Fragment	/* Select a crew for SEAT .*/>
+						{tfmt('voyage.editor.target_seat', {
+							seat
+						})}
+					</React.Fragment>
 				)}
 			</div>
 		);
@@ -322,7 +337,7 @@ type AlternatePickerOptionsProps = {
 };
 
 const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const calculatorContext = React.useContext(CalculatorContext);
 	const { filters, setFilters, skillMode, setSkillMode, prospectMode, setProspectMode, targeting } = props;
 
@@ -363,15 +378,15 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 					inline
 					width={8}
 				>
-					<label>Show skill values in table:</label>
+					<label>{t('voyage.editor.options.skill_values')}{t('global.colon')}</label>
 					<Button.Group>
-						<Button	/* Voyage score */
-							content='Voyage score'
+						<Button	/* Voyage Score */
+							content={t('voyage.editor.fields.voyage_score')}
 							color={skillMode === 'voyage' ? 'blue' : undefined}
 							onClick={() => setSkillMode('voyage')}
 						/>
-						<Button	/* Max proficiency */
-							content='Max proficiency'
+						<Button	/* Max Proficiency */
+							content={t('voyage.editor.fields.max_proficiency')}
 							color={skillMode === 'proficiency' ? 'blue' : undefined}
 							onClick={() => setSkillMode('proficiency')}
 						/>
@@ -379,7 +394,7 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 				</Form.Field>
 				<Form.Field>
 					<Button	/* Only show prospective voyagers */
-						content='Only show prospective voyagers'
+						content={t('voyage.editor.options.show_prospective_voyagers')}
 						color={prospectMode ? 'blue' : undefined}
 						onClick={() => {
 							if (!prospectMode) setFilters({...defaultFilters});
@@ -389,7 +404,7 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 				</Form.Field>
 				<Form.Field>
 					<Button	/* Reset */
-						content='Reset'
+						content={t('global.reset')}
 						onClick={() => {
 							setFilters({...defaultFilters});
 							setSkillMode('voyage');
@@ -399,14 +414,16 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 				</Form.Field>
 			</Form.Group>
 			{targeting && (
-				<Message>
+				<Message	/* Only showing viable SEAT alternates */>
 					<Icon name='info circle' />
 					<span style={{ marginRight: '1em' }}>
-						Only showing viable <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)} alternates
+						{tfmt('voyage.editor.targeting_message', {
+							seat: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)}</>
+						})}
 					</span>
 					<Button	/* Cancel */
-						content='Cancel'
-						onClick={() => { targeting.cancel(); }}
+						content={t('global.cancel')}
+						onClick={() => targeting.cancel()}
 						compact
 					/>
 				</Message>
