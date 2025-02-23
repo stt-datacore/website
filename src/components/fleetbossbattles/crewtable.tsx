@@ -81,9 +81,9 @@ const CrewTable = (props: CrewTableProps) => {
 		</>
 	);
 
-	function renderTableRow(crew: BossCrew, idx: number): JSX.Element {
+	function renderTableRow(crew: BossCrew, _idx: number): JSX.Element {
 		return (
-			<Table.Row key={idx}>
+			<Table.Row key={crew.symbol}>
 				<Table.Cell>
 					<div
 						style={{

@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Dropdown, Image, Header } from 'semantic-ui-react';
 
 import { LockedProspect } from '../../model/game-elements';
-import { ComputedSkill } from '../../model/crew';
+import { ComputedSkill, CrewMember } from '../../model/crew';
 import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -18,6 +18,10 @@ import { applySkillBuff } from '../../utils/crewutils';
 import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
 import ShipTable from '../ship/shiptable';
+import { AvatarView } from '../item_presenters/avatarview';
+import { ShipHoverStat } from '../hovering/shiphoverstat';
+import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { QPContext } from '../qpconfig/provider';
 
 interface ISelectOptions {
 	key: string;
@@ -33,35 +37,43 @@ type EventPickerProps = {
 
 export const EventPicker = (props: EventPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const qpContext = React.useContext(QPContext);
 	const { t } = globalContext.localized;
-	const { playerData, buffConfig } = globalContext.player;
+	const { playerData, buffConfig, ephemeral } = globalContext.player;
 	const { events, rosterType } = props;
+	const [init, setInit] = React.useState(false);
+	const [eventIndex, setEventIndex] = useStateWithStorage<number>('eventplanner/eventIndex', 0);
+	const [phaseIndex, setPhaseIndex] = useStateWithStorage<number>('eventplanner/phaseIndex', 0);
+	const [prospects, setProspects] = useStateWithStorage<LockedProspect[]>('eventplanner/prospects', []);
 
-	const [eventIndex, setEventIndex] = useStateWithStorage('eventplanner/eventIndex', 0);
-	const [phaseIndex, setPhaseIndex] = useStateWithStorage('eventplanner/phaseIndex', 0);
-	const [prospects, setProspects] = useStateWithStorage('eventplanner/prospects', [] as LockedProspect[]);
-
-	const [bonusCrew, setBonusCrew] = React.useState([] as IRosterCrew[]);
-	const [rosterCrew, setRosterCrew] = React.useState([] as IRosterCrew[]);
-	const [lockable, setLockable] = React.useState([] as LockedProspect[]);
+	const [bonusCrew, setBonusCrew] = React.useState<IRosterCrew[]>([]);
+	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[]>([]);
+	const [lockable, setLockable] = React.useState<LockedProspect[]>([]);
 
 	React.useEffect(() => {
-		const eventData = events[eventIndex];
-		const bonusCrew = globalContext.core.crew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
-		bonusCrew.sort((a, b)=>a.name.localeCompare(b.name));
+		const eventData: IEventData = events[eventIndex];
+		const bonusCrew: CrewMember[] = globalContext.core.crew.filter(c => eventData.bonus.includes(c.symbol));
+		bonusCrew.sort((a, b) => a.name.localeCompare(b.name));
 		setBonusCrew([...bonusCrew.map(b => b as IRosterCrew)]);
+		if (!init && ephemeral && eventData) {
+			const currEvent = ephemeral.events?.find(e => e.seconds_to_start === 0 && e.seconds_to_end > 0);
+			if (currEvent && currEvent.symbol === eventData.symbol && currEvent.opened_phase) {
+				setPhaseIndex(currEvent.opened_phase);
+			}
+			setInit(true);
+		}
 	}, [events, eventIndex]);
 
 	React.useEffect(() => {
-		const rosterCrew = JSON.parse(JSON.stringify(props.rosterCrew)) as IRosterCrew[];
-		const lockable = [] as LockedProspect[];
+		const rosterCrew: IRosterCrew[] = JSON.parse(JSON.stringify(props.rosterCrew)) as IRosterCrew[];
+		const lockable: LockedProspect[] = [];
 
 		if (rosterType === 'myCrew' && playerData && buffConfig) {
 			prospects.forEach((p) => {
 				const crew = globalContext.core.crew.find((c) => c.symbol === p.symbol);
 				if (crew) {
-					const prospect = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
-					prospect.id = rosterCrew.length+1;
+					const prospect: IRosterCrew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+					prospect.id = rosterCrew.length + 1;
 					prospect.prospect = true;
 					prospect.statusIcon = 'add user';
 					prospect.have = false;
@@ -69,12 +81,12 @@ export const EventPicker = (props: EventPickerProps) => {
 					prospect.level = 100;
 					prospect.immortal = CompletionState.DisplayAsImmortalUnowned;
 					CONFIG.SKILLS_SHORT.forEach(skill => {
-						let score: ComputedSkill = { core: 0, min: 0, max: 0 };
+						let score: ComputedSkill = { core: 0, min: 0, max: 0, skill: skill.name };
 						if (prospect.base_skills[skill.name]) {
 							if (prospect.rarity === prospect.max_rarity)
 								score = applySkillBuff(buffConfig, skill.name, prospect.base_skills[skill.name]);
 							else
-								score = applySkillBuff(buffConfig, skill.name, prospect.skill_data[prospect.rarity-1].base_skills[skill.name]);
+								score = applySkillBuff(buffConfig, skill.name, prospect.skill_data[prospect.rarity - 1].base_skills[skill.name]);
 						}
 						prospect[skill.name] = score;
 					});
@@ -94,7 +106,7 @@ export const EventPicker = (props: EventPickerProps) => {
 		setLockable([...lockable]);
 	}, [props.rosterCrew, prospects]);
 
-	const eventsList = [] as ISelectOptions[];
+	const eventsList: ISelectOptions[] = [];
 	events.forEach((activeEvent, eventId) => {
 		eventsList.push(
 			{
@@ -112,8 +124,8 @@ export const EventPicker = (props: EventPickerProps) => {
 		'voyage': t('event_type.voyage')
 	};
 
-	const phaseList = [] as ISelectOptions[];
-	const eventData = (eventIndex >= events.length) ? events[0] : events[eventIndex];
+	const phaseList: ISelectOptions[] = [];
+	const eventData: IEventData = (eventIndex >= events.length) ? events[0] : events[eventIndex];
 	if (eventIndex >= events.length) {
 		setEventIndex(0);
 	}
@@ -137,38 +149,39 @@ export const EventPicker = (props: EventPickerProps) => {
 					selection
 					options={eventsList}
 					value={eventIndex}
-					onChange={(e, { value }) => setEventIndex(value as number) }
+					onChange={(e, { value }) => setEventIndex(value as number)}
 				/>
 			</Form>
 			<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${eventData.image}`} />
 			<div>{eventData.description}</div>
 			{phaseList.length > 1 && (
 				<div style={{ margin: '1em 0' }}>
-					{t('event_planner.select_phase')}: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number) } />
+					{t('event_planner.select_phase')}: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number)} />
 				</div>
 			)}
+			{!!eventData.featured_ships.length && <EventFeaturedShips event={eventData} />}
+
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
 
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
-					{eventData.content_types[phaseIndex] === 'gather' && eventData.seconds_to_start === 0 && eventData.seconds_to_end > 0 &&  <GatherPlanner eventSymbol={eventData.symbol} />}
+					{eventData.content_types[phaseIndex] === 'gather' && eventData.seconds_to_start === 0 && eventData.seconds_to_end > 0 && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
 
-			{playerData && eventData.content_types[phaseIndex] === 'voyage' && !!eventData.bonus_ship?.length &&
-				<div style={{marginTop: "0.5em"}}>
-					<div style={{margin: "0.5em 0"}}>
+			{playerData && eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
+				<div style={{ marginTop: "0.5em" }}>
+					<div style={{ margin: "0.5em 0" }}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ShipTable event_ships={eventData.bonus_ship}
-						high_bonus={eventData.featured_ship}
-						event_ship_traits={eventData.bonus_ship_traits}
-						/>
+					<ShipTable event_ships={eventData.bonus_ships}
+						high_bonus={eventData.featured_ships}
+						event_ship_traits={eventData.activeContent?.antimatter_bonus_ship_traits}
+					/>
 				</div>
 			}
-
 		</React.Fragment>
 	);
 };
@@ -229,3 +242,51 @@ const EventShuttles = (props: EventShuttlesProps) => {
 		</React.Fragment>
 	);
 };
+
+interface FeaturedShipsProps {
+	event: IEventData;
+}
+
+const EventFeaturedShips = (props: FeaturedShipsProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { playerShips } = globalContext.player;
+	const { ships } = globalContext.core;
+	const { event } = props;
+
+	return (<>
+		<h4>{t('base.featured_ships')}</h4>
+		<div style={{
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		justifyContent: 'space-evenly'
+	}}>
+		<ShipHoverStat targetGroup='event_featured_ships' />
+		{event.featured_ships.map((symbol) => {
+			const ship = (playerShips ?? ships).find(f => f.symbol === symbol);
+			if (!ship) return <></>;
+			else {
+				return (
+					<div style={{
+						display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+						gap: '0.5em'
+					}}>
+						<AvatarView
+							crewBackground='rich'
+							targetGroup='event_featured_ships'
+							key={`event_featured_ship_avatar_${symbol}`}
+							mode='ship'
+							item={ship}
+							size={72}
+						/>
+						<i>{ship.name}</i>
+					</div>)
+			}
+		})}
+
+
+	</div></>)
+
+}

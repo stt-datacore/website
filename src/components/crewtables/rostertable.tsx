@@ -26,12 +26,14 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getItemWithBonus } from '../../utils/itemutils';
+import { getItemWithBonus, getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
+import { ObtainedFilter } from './filters/crewobtained';
+import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -64,13 +66,12 @@ export const RosterTable = (props: RosterTableProps) => {
 	const [prospects, setProspects] = React.useState<LockedProspect[]>([] as LockedProspect[]);
 
 	const rosterPlusProspects = props.rosterCrew.slice();
-	const lockableCrew = [] as LockedProspect[];
-
-	if (props.rosterType === 'myCrew') {
+	const lockableCrew = React.useMemo(() => {
+		const newLockableCrew = [] as LockedProspect[];
 		if (initHighlight !== '') {
 			const highlighted = props.rosterCrew.find(crew => crew.symbol === initHighlight);
 			if (highlighted) {
-				lockableCrew.push({
+				newLockableCrew.push({
 					symbol: highlighted.symbol,
 					name: highlighted.name,
 					rarity: highlighted.rarity,
@@ -80,42 +81,46 @@ export const RosterTable = (props: RosterTableProps) => {
 			}
 		}
 
-		prospects.forEach(prospect => {
-			const crew = globalContext.core.crew.find(crew => crew.symbol === prospect.symbol);
-			if (crew) {
-				const crewman = {
-					... oneCrewCopy(crew),
-					id: rosterPlusProspects.length,
-					prospect: true,
-					have: false,
-					rarity: prospect.rarity,
-					level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
-					immortal: CompletionState.DisplayAsImmortalUnowned
-				} as IRosterCrew;
-				CONFIG.SKILLS_SHORT.forEach(skill => {
-					let score = { core: 0, range_min: 0, range_max: 0 };
-					if (crewman.base_skills[skill.name]) {
-						if (crewman.rarity === crew.max_rarity)
-							score = crewman.base_skills[skill.name];
-						else
-							score = crewman.skill_data[crewman.rarity-1].base_skills[skill.name];
+		if (props.rosterType === 'myCrew') {
+
+			prospects.forEach(prospect => {
+				const crew = globalContext.core.crew.find(crew => crew.symbol === prospect.symbol);
+				if (crew) {
+					const crewman = {
+						... oneCrewCopy(crew),
+						id: rosterPlusProspects.length,
+						prospect: true,
+						have: false,
+						rarity: prospect.rarity,
+						level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
+						immortal: CompletionState.DisplayAsImmortalUnowned
+					} as IRosterCrew;
+					CONFIG.SKILLS_SHORT.forEach(skill => {
+						let score = { core: 0, range_min: 0, range_max: 0 };
+						if (crewman.base_skills[skill.name]) {
+							if (crewman.rarity === crew.max_rarity)
+								score = crewman.base_skills[skill.name];
+							else
+								score = crewman.skill_data[crewman.rarity-1].base_skills[skill.name];
+						}
+						crewman.base_skills[skill.name] = score;
+					});
+					if (playerData && playerBuffs) {
+						applyCrewBuffs(crewman, playerBuffs);
 					}
-					crewman.base_skills[skill.name] = score;
-				});
-				if (playerData && playerBuffs) {
-					applyCrewBuffs(crewman, playerBuffs);
+					rosterPlusProspects.push(crewman);
+					newLockableCrew.push({
+						symbol: crewman.symbol,
+						name: crewman.name,
+						rarity: crewman.rarity,
+						level: crewman.level,
+						prospect: crewman.prospect
+					});
 				}
-				rosterPlusProspects.push(crewman);
-				lockableCrew.push({
-					symbol: crewman.symbol,
-					name: crewman.name,
-					rarity: crewman.rarity,
-					level: crewman.level,
-					prospect: crewman.prospect
-				});
-			}
-		});
-	}
+			});
+		}
+		return newLockableCrew;
+	}, [initHighlight, prospects]);
 
 	const providerValue = {
 		pageId: props.pageId,
@@ -169,7 +174,8 @@ type TableView =
 	'v_ranks' |
 	'crewutility' |
 	'qp_score' |
-	'qp_best';
+	'qp_best' |
+	'dc_ranks';
 
 interface IToggleableFilter {
 	id: string;
@@ -218,6 +224,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 
+	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
@@ -225,7 +232,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
-	const quipment = globalContext.core.items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
+	const quipment = getQuipmentAsItemWithBonus(globalContext.core.items);
+
+	const shipranks = globalContext.core.crew.some(c => c.ranks.scores.ship);
 
 	const getActiveBuffs = () => {
 		if (buffMode === 'none' || !buffMode) return undefined;
@@ -260,8 +269,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
 				/>,
-			tableConfig: getShipTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewShipCells crew={crew} />
+			tableConfig: getShipTableConfig(t, shipranks),
+			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
 		},
 		{
 			id: 'g_ranks',
@@ -282,6 +291,13 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
+		},
+		{
+			id: 'dc_ranks',
+			available: true,
+			optionText: t('rank_names.scoring'),
+			tableConfig: getDataCoreRanksTableConfig(t),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
 		},
 		{
 			id: 'qp_score',
@@ -342,6 +358,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					questFilter={questFilter}
+					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
 					maxxed={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
 					quipment={quipment}
@@ -426,6 +444,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 				/>
 		},
+		{
+			id: 'obtained',
+			available: (['allCrew'].includes(rosterType)),
+			form:
+				<ObtainedFilter
+					key='filter_allcrew_obtained'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>
+		},
 	] as IToggleableFilter[];
 
 	const tableViewOptions = [
@@ -474,6 +503,20 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}, [rosterType]);
 
 	React.useEffect(() => {
+		const activeView = tableViews.find(view => view.id === tableView);
+		const resetList = [] as string[];
+		crewFilters.forEach(crewFilter => {
+			const formcondition = tableViews.find(filterView => filterView.id === crewFilter.id && !!filterView.form);
+			if (formcondition && formcondition.id !== activeView?.id) resetList.push(crewFilter.id);
+		});
+		resetList.forEach(filterId => {
+			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === filterId);
+			if (filterIndex >= 0) crewFilters.splice(filterIndex, 1);
+		});
+		setCrewFilters([...crewFilters]);
+	}, [tableView]);
+
+	React.useEffect(() => {
 		// Apply roster markups, i.e. add sortable fields to crew
 		const prepareCrew = async () => {
 			const preparedCrew = rosterCrew.slice();
@@ -499,17 +542,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		};
 		prepareCrew();
 	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
-
-	React.useEffect(() => {
-		if (!tableView.startsWith("qp_")) {
-			const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'quipmenttools');
-
-			if (filterIndex >= 0) {
-				crewFilters.splice(filterIndex, 1);
-				setCrewFilters([ ... crewFilters ]);
-			}
-		}
-	}, [tableView]);
 
 	React.useEffect(() => {
 

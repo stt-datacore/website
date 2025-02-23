@@ -2,20 +2,22 @@ import React from 'react';
 
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from '../../utils/storage';
-import { MapFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings } from '../../model/collectionfilter';
+import { CollectionFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collectionfilter';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
 import { Filter } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
+import { Modal } from 'semantic-ui-react';
+import { CollectionDetails } from './overview_modal';
 
 const DefaultConfig = {
-    mapFilter: {} as MapFilterOptions,
+    mapFilter: {} as CollectionFilterOptions,
     searchFilter: '',
     rarityFilter: [],
     fuseFilter: '',
     ownedFilter: '',
     costMode: 'normal',
     short: false,
-    matchMode: 'normal',    
+    matchMode: 'normal',
     byCost: false,
     tierFilter: 1,
     hardFilter: false,
@@ -41,6 +43,9 @@ const DefaultData = {
     setFavorited: () => null,
     setShowIncomplete: () => null,
     showThisCrew: () => false,
+    setCollectionSettings: () => null,
+    modalInstance: null,
+    setModalInstance: () => false
 } as ICollectionsContext;
 
 export const CollectionsContext = React.createContext<ICollectionsContext>(DefaultData);
@@ -54,58 +59,7 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
     const { children, pageId } = props;
 
     const [collectionSettings, setCollectionSettings] = useStateWithStorage(pageId +'/collectionSettings', DefaultConfig, { rememberForever: true });
-
-    const setTierFilter = (tierFilter: number) => {
-        setCollectionSettings({ ... collectionSettings, tierFilter })
-    }
-
-    const setOwnedFilter = (ownedFilter: string) => {
-        setCollectionSettings({ ... collectionSettings, ownedFilter })
-    }
-
-    const setFuseFilter = (fuseFilter: string) => {
-        setCollectionSettings({ ... collectionSettings, fuseFilter })
-    }
-
-    const setRarityFilter = (rarityFilter: number[]) => {
-        setCollectionSettings({ ... collectionSettings, rarityFilter })
-    }
-
-    const setSearchFilter = (searchFilter: string) => {
-        setCollectionSettings({ ... collectionSettings, searchFilter })
-    }
-
-    const setMapFilter = (mapFilter: MapFilterOptions) => {
-        setCollectionSettings({ ... collectionSettings, mapFilter })
-    }
-
-	const setShort = (short: boolean) => {
-        setCollectionSettings({ ... collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
-    }
-
-	const setCostMode = (costMode: "normal" | "sale") => {
-        setCollectionSettings({ ... collectionSettings, costMode })
-    }
-
-	const setMatchMode = (matchMode: CollectionMatchMode) => {
-        setCollectionSettings({ ... collectionSettings, matchMode, mapFilter: { ...collectionSettings.mapFilter } })
-    }
-
-	const setShowIncomplete = (showIncomplete: boolean) => {
-        setCollectionSettings({ ... collectionSettings, showIncomplete, mapFilter: { ...collectionSettings.mapFilter } })
-    }
-
-    const setByCost = (byCost: boolean) => {
-        setCollectionSettings({ ... collectionSettings, byCost, mapFilter: { ...collectionSettings.mapFilter } })
-	}
-
-	const setFavorited = (favorited: boolean) => {
-        setCollectionSettings({ ... collectionSettings, favorited, mapFilter: { ...collectionSettings.mapFilter } })
-	}
-
-    const setHardFilter = (hardFilter: boolean) => {
-        setCollectionSettings({ ... collectionSettings, hardFilter, mapFilter: { ...collectionSettings.mapFilter } })
-	}
+	const [modalInstance, setModalInstance] = React.useState(null as CollectionModalDisplayOptions | null);
 
     const data = {
         ... collectionSettings,
@@ -126,11 +80,36 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setCostMode,
         setMatchMode,
         setShowIncomplete,
-        showThisCrew
+        showThisCrew,
+        setCollectionSettings,
+        modalInstance,
+        setModalInstance
     } as ICollectionsContext;
 
     return (<CollectionsContext.Provider value={data}>
-        {children}    
+        <React.Fragment>
+            {children}
+            {modalInstance !== null && (
+				<Modal
+					open
+					size="large"
+					onClose={() => setModalInstance(null)}
+					closeIcon
+				>
+					<Modal.Header>
+						{modalInstance.collection.name}
+					</Modal.Header>
+					<Modal.Description>
+						<div style={{ marginLeft: '1.5em', marginBottom: '1em' }}>
+							{formatColString(modalInstance.collection.description!)}
+						</div>
+					</Modal.Description>
+					<Modal.Content scrolling>
+						<CollectionDetails collection={modalInstance.collection} pageId={modalInstance.pageId} activeTab={modalInstance.activeTab} />
+					</Modal.Content>
+				</Modal>
+			)}
+        </React.Fragment>
     </CollectionsContext.Provider>)
 
     function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
@@ -155,6 +134,101 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         return crewMatchesSearchFilter(crew, filters, filterType);
     }
 
-} 
+    function setTierFilter(tierFilter: number) {
+        setCollectionSettings({ ... collectionSettings, tierFilter })
+    }
 
+    function setOwnedFilter(ownedFilter: string) {
+        setCollectionSettings({ ... collectionSettings, ownedFilter })
+    }
+
+    function setFuseFilter(fuseFilter: string) {
+        setCollectionSettings({ ... collectionSettings, fuseFilter })
+    }
+
+    function setRarityFilter(rarityFilter: number[]) {
+        setCollectionSettings({ ... collectionSettings, rarityFilter })
+    }
+
+    function setSearchFilter(searchFilter: string) {
+        setCollectionSettings({ ... collectionSettings, searchFilter })
+    }
+
+    function setMapFilter(mapFilter: CollectionFilterOptions) {
+        setCollectionSettings({ ... collectionSettings, mapFilter })
+    }
+
+	function setShort(short: boolean) {
+        setCollectionSettings({ ... collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
+    }
+
+	function setCostMode(costMode: "normal" | "sale") {
+        setCollectionSettings({ ... collectionSettings, costMode })
+    }
+
+	function setMatchMode(matchMode: CollectionMatchMode) {
+        setCollectionSettings({ ... collectionSettings, matchMode, mapFilter: { ...collectionSettings.mapFilter } })
+    }
+
+	function setShowIncomplete(showIncomplete: boolean) {
+        setCollectionSettings({ ... collectionSettings, showIncomplete, mapFilter: { ...collectionSettings.mapFilter } })
+    }
+
+    function setByCost(byCost: boolean) {
+        setCollectionSettings({ ... collectionSettings, byCost, mapFilter: { ...collectionSettings.mapFilter } })
+	}
+
+	function setFavorited(favorited: boolean) {
+        setCollectionSettings({ ... collectionSettings, favorited, mapFilter: { ...collectionSettings.mapFilter } })
+	}
+
+    function setHardFilter(hardFilter: boolean) {
+        setCollectionSettings({ ... collectionSettings, hardFilter, mapFilter: { ...collectionSettings.mapFilter } })
+	}
+
+}
+
+
+
+/**
+ * Format collection description text by parsing the markup
+ * @param text The collection text to parse and format
+ * @param style Optional style to include on the output DIV
+ * @param className Optional className to include on the output DIV (comes before style in rendering)
+ * @param linkFunc Optional on-click function
+ * @param linkValue Optional value (parsed contents used otherwise)
+ * @returns {JSX.Element} Formatted collection description
+ */
+export const formatColString = (text: string, style?: React.CSSProperties, className?: string, linkFunc?: (value: string) => void, linkValue?: string) => {
+	const greg = new RegExp(/(.+)\<([A-Fa-f0-9#]+)\>\<b\>(.+)\<\/b\>\<\/color\>(.+)/);
+	const greg2 = new RegExp(/(.+)\<span style\=\"color:([A-Fa-f0-9#]+)\"\>\<b\>(.+)\<\/b\>\<\/span\>(.+)/);
+
+	let testA = greg.test(text);
+	let testB = greg2.test(text);
+
+	if (!testA && !testB) {
+		if (linkFunc && linkValue) {
+			return <div className={className} style={{ ...(style ?? {}), cursor: "pointer" }} onClick={(e) => linkFunc(linkValue)}>{text}</div>;
+		}
+		else {
+			return <div className={className} style={style}>{text}</div>;
+		}
+
+	}
+
+	if (testA) {
+		const result = greg.exec(text);
+
+		return result && <div style={style}>
+			{result[1]}<b style={{ color: result[2], cursor: linkFunc ? 'pointer' : undefined }} onClick={(e) => linkFunc ? linkFunc(linkValue ?? result[3]) : null}>{result[3]}</b>{result[4]}
+		</div> || <>{text}</>
+	}
+	else {
+		const result = greg2.exec(text);
+
+		return result && <div className={className} style={style}>
+			{result[1]}<b style={{ color: result[2], cursor: linkFunc ? 'pointer' : undefined }} onClick={(e) => linkFunc ? linkFunc(linkValue ?? result[3]) : null}>{result[3]}</b>{result[4]}
+		</div> || <>{text}</>
+	}
+}
 

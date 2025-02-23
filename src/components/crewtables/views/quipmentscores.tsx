@@ -4,8 +4,9 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { gradeToColor, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
+import { gradeToColor, missionsToNext, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
 import { TranslateMethod } from "../../../model/player";
+import { GlobalContext } from "../../../context/globalcontext";
 
 
 
@@ -48,6 +49,7 @@ export const getQuipmentTableConfig = (t: TranslateMethod, excludeQBits?: boolea
 }
 
 export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
+    const { t } = React.useContext(GlobalContext).localized;
     const { excludeGrade, excludeSpecialty, excludeQBits, excludeSkills, crew, top } = props;
 
     const quipment_score = crew.quipment_score ?? 0;
@@ -59,6 +61,8 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
     const q_grade = quipment_score / top_quipment;
     const tr_grade = trait_score / top_trait;
     const qbslots = crew.q_bits === undefined ? 4 : qbitsToSlots(crew.q_bits);
+
+    const to_next = crew.q_bits >= 1300 ? 0 : missionsToNext(crew.q_bits);
 
     return <React.Fragment>
         {!excludeGrade && <Table.Cell>
@@ -98,17 +102,22 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
                 </div>
             </Table.Cell>
         })}
-        {!excludeQBits && <Table.Cell>
+        {!excludeQBits && <Table.Cell style={{textAlign: 'center'}}>
            {qbslots !== undefined && <div title={
                 crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
                 }>
                 <div>
-                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits}
+                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits.toLocaleString()}
                 </div>
                 {crew.immortal === -1 &&
                 <div style={{fontSize:"0.8em"}}>
-                    ({qbslots} Slot{qbslots != 1 ? 's' : ''})
+                    ({t('base.n_slots', { n: `${qbslots}`})})
                 </div>}
+                {!!to_next && crew.immortal === -1 &&
+                <div style={{fontSize:"0.8em"}}>
+                    ({t('crew_views.n_missions_to_next', { n: to_next })})
+                </div>
+                }
             </div> || <>N/A</>}
         </Table.Cell>}
     </React.Fragment>
