@@ -1002,7 +1002,6 @@
         "or": "or",
         "percentile": "Percentile",
         "permalink": "permalink",
-        "please_wait_ellipses": "Please wait...",
         "portal": "Portal",
         "presets": "Presets",
         "quarter_short": "Q",
@@ -2029,6 +2028,7 @@
         "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
+        "please_wait": "Please wait...",
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {

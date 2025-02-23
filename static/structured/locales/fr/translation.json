@@ -1012,7 +1012,6 @@
         "or": "ou",
         "percentile": "Centile",
         "permalink": "lien permanent",
-        "please_wait_ellipses": "S'il vous plaît, attendez...",
         "portal": "Portail",
         "presets": "Prédéfinies",
         "quarter_short": "T",
@@ -2044,6 +2043,7 @@
         "cite_opt": "Chargement l'Optimiseur des mentions honorable...",
         "default": "Chargement des données...",
         "demands": "Calcul des demandes de l'équipage...",
+        "please_wait": "S'il vous plaît, attendez...",
         "quipment": "Calcul de l'équipement..."
     },
     "stat_trends": {

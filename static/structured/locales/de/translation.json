@@ -1002,7 +1002,6 @@
         "or": "oder",
         "percentile": "Perzentil",
         "permalink": "Permalink",
-        "please_wait_ellipses": "Bitte warten...",
         "portal": "Zeitportal",
         "presets": "Presets",
         "quarter_short": "Q",
@@ -2031,6 +2030,7 @@
         "cite_opt": "Laden Ehrenvolle Erwähnung Optimierer...",
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
+        "please_wait": "Bitte warten...",
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {

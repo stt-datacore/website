@@ -64,7 +64,7 @@ export const CIVASMessage = (props: CIVASMessageProps) => {
 						})}
 					</p>
 					<Popup
-						content={exportState === ExportState.Done ? t('clipboard.copied_exclaim') : t('global.please_wait_ellipses')}
+						content={exportState === ExportState.Done ? t('clipboard.copied_exclaim') : t('spinners.calculating_voyage_estimate')}
 						on='click'
 						position='right center'
 						size='tiny'

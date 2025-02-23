@@ -1012,7 +1012,6 @@
         "or": "o",
         "percentile": "Percentil",
         "permalink": "enlace permanente",
-        "please_wait_ellipses": "Espere por favor...",
         "portal": "Portal",
         "presets": "Preestablecidos",
         "quarter_short": "T",
@@ -2044,6 +2043,7 @@
         "cite_opt": "Cargando Distinción de Honor Optimizador...",
         "default": "Cargando datos...",
         "demands": "Cálculo de las demandas de la tripulante...",
+        "please_wait": "Espere por favor...",
         "quipment": "Quipo de cálculo..."
     },
     "stat_trends": {
