@@ -1235,6 +1235,7 @@
                 },
                 "title": "Des instructions détaillées..."
             },
+            "paste_here_placeholder": "Collez vos {{data}} ici",
             "title": "Copier et Coller"
         },
         "or": "OU",
@@ -2162,6 +2163,34 @@
                 "initial_estimate": "Votre estimation initiale était de {{time}}."
             }
         },
+        "civas": {
+            "datatypes": {
+                "active": "votre parcours de voyage",
+                "recommended": "cette recommandation"
+            },
+            "description": "Conseil de pro : utilisez {{link}} pour vous aider à suivre vos déplacements, vos temps d'exécution et vos estimations. Appuyez sur le bouton ci-dessous pour copier les détails de {{datatype}} dans le presse-papiers afin que les données pertinentes puissent être collées directement dans votre feuille Google CIVAS (actuellement v{{version}}).",
+            "title": "Captain Idol's Voyage Analysis Sheet"
+        },
+        "contests": {
+            "avg": "{{global.avg}}",
+            "contest_simulator": "Simulateur de combat",
+            "contestant": "Combattant",
+            "contestant_alt": "combattant",
+            "crit_chance": "Chances de critique",
+            "max": "{{global.max}}",
+            "min": "{{global.min}}",
+            "n_viable_crew": "Votre voyage a {{n}} d'équipiers viables pour ce concours",
+            "no_skill": "Aucune compétence",
+            "notes": {
+                "crit_icon": "represents a crew's number of potential crit traits.",
+                "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
+                "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
+            },
+            "search_for_contestant": "Search for contestant",
+            "select_crit_chance": "Select crit chance",
+            "simulate_contest": "Simulate contest",
+            "wins": "Wins"
+        },
         "crew_finder_hints": {
             "best_rank": {
                 "optimal": "Sélectionnez le {{top}} pour ce siège",
@@ -2173,6 +2202,39 @@
             "on_voyage": "En voyage",
             "unfreeze_crew": "Dégeler l'équipier"
         },
+        "crew_history": {
+            "fields": {
+                "average": "{{global.average}}",
+                "crew": "{{base.crew}}",
+                "last_used": "Dernière utilisation",
+                "rarity": "{{base.rarity}}",
+                "voyages": "{{base.voyages}}"
+            },
+            "notes": {
+                "skill_cells": "Les cellules de compétences indiquent le pourcentage de temps pendant lequel l'équipage respectif est utilisé lorsque la colonne est la colonne principale ou secondaire du voyage.",
+                "skill_cells_primary": "Les cellules du tableau des compétences indiquent le pourcentage de temps pendant lequel l'équipage respectif est utilisé lorsque la colonne est la colonne principale du voyage."
+            },
+            "options": {
+                "report": "Afficher les voyages {{period}}",
+                "report_period": {
+                    "half": "des 180 derniers jours",
+                    "month": "du mois dernier",
+                    "months": "des 60 derniers jours",
+                    "quarter": "des 90 derniers jours",
+                    "week": "de la semaine dernière",
+                    "year": "de l'année dernière"
+                }
+            },
+            "skill_modal": {
+                "header_detail": {
+                    "all": "{{voyage.voyages.all}}",
+                    "last_n_days": "Last {{n}} Days"
+                },
+                "notes": {
+                    "crew_skill": "Each cell indicates what percentage of time {{crew}} is used when the row is the voyage primary and the column is the voyage secondary."
+                }
+            }
+        },
         "current_voyage_x": "{{x}} actuel",
         "custom": {
             "no_trait": "Aucun trait"
@@ -2183,6 +2245,40 @@
         "custom_voyage_editor": "Éditeur de voyages personnalisés",
         "custom_voyage_x": "{{x}} personnalisé",
         "dilemma_chance_h_y": "Probabilité d'un dilemme de {{h]} heures : {{y}} %",
+        "editor": {
+            "alternate_crew": "Équipage de voyage alternatif",
+            "alternate_crew_alt": "équipage de voyage alternatif",
+            "alternate_seats_for_crew": "Sièges alternatifs pour {{crew}}",
+            "compared": "Par rapport à la recommandation existante{{:}}",
+            "fields": {
+                "max_proficiency": "Compétence maximale",
+                "voyage_score": "Score de voyage",
+                "voyage_seat": "Siège de voyage"
+            },
+            "missing_voyagers_message": "Veuillez affecter un équipier à tous les sièges du voyage.",
+            "n_viable_crew": "Votre futur voyage compte {{n}} équipiers possédant cette compétence",
+            "options": {
+                "show_prospective_voyagers": "Afficher uniquement les voyageurs potentiels",
+                "skill_values": "Afficher les valeurs de compétences dans le tableau"
+            },
+            "prospective": {
+                "assigned_slot": "Prospective Voyage Seat",
+                "lineup": "Proposition de composition",
+                "proficiency": "Compétence prospective",
+                "skill_check": "Vérification des compétences prospectives",
+                "voyage": "Voyage prospectif"
+            },
+            "reset_recommendation": "Réinitialiser la recommandation existante",
+            "save_recommendation": "Enregistrer comme nouvelle recommandation",
+            "search_for_alternates": "Rechercher un équipage alternatif",
+            "select_slot": "Sélectionnez un siège de voyage. Tout équipage existant sur ce siège sera remplacé par {{crew}}, ce qui entraînera les modifications répertoriées pour le voyage potentiel.",
+            "slotted_message": "{{crew}} est déjà assis en tant que {{seat}} sur ce voyage potentiel. Les estimations ci-dessous tiennent compte de {{crew}} dans un nouveau siège tout en laissant le siège {{seat}} non attribué.",
+            "target_seat": "Sélectionnez un équipage pour {{seat}}.",
+            "target_seat_replacement": "Sélectionnez un équipage pour remplacer {{crew}} en tant que {{seat}}.",
+            "target_view_alternates": "ou appuyez sur n'importe quel équipage ci-dessous pour afficher l'équipage alternatif pour ce siège.",
+            "targeting_message": "Afficher uniquement les alternatives viables pour {{seat}}",
+            "view_voyage": "Afficher le voyage potentiel"
+        },
         "encounter_traits": "Traits critiques de rencontre",
         "estimate": {
             "1_refill": "1 recharge",
@@ -2250,6 +2346,7 @@
                 "manage": "Gérer l'historique",
                 "voyages": "Voyages"
             },
+            "moved": "L'outil Historique des voyages a été déplacé vers le {{link}}. Veuillez mettre à jour vos favoris si nécessaire.",
             "not_yet": "Vous n'avez pas encore d'historique de voyage. Commencez à suivre les voyages à partir du calculateur d'équipage.",
             "title": "{{menu.tools.voyage_history}}"
         },
@@ -2266,6 +2363,10 @@
             "title": "Composition du voyage"
         },
         "loading_voyage_tool_ellipses": "Chargement de l'outil de voyage...",
+        "nonplayer": {
+            "description": "Importez vos données de joueur pour adapter cet outil à votre voyage et à votre liste actuels. Sinon, vous pouvez créer manuellement un voyage et afficher le meilleur équipage du jeu pour n'importe quelle configuration possible.",
+            "title": "Aucune configuration de voyage disponible"
+        },
         "or_n_h_if_dupes_dismissed": "ou {{n}} {{h}} si tous les équiipers en double sont renvoyés.",
         "overrun_problem_text": {
             "line_1": "ATTENTION !!! Un problème potentiel avec la durée de voyage signalée a été détecté.",
@@ -2299,6 +2400,22 @@
             "voyage_prefs": "Préférence de compétence de voyage",
             "voyage_prefs_explain": "Si une préférence de compétence de voyage est sélectionnée, l'ordre des compétences de l'équipage est trié de sorte que les compétences correspondantes viennent en premier."
         },
+        "results": {
+            "actions": {
+                "abort": "Abandonner",
+                "confident": "Obtenez une estimation plus fiable",
+                "dismiss": "Rejeter cette recommandation",
+                "edit": "Modifier la composition",
+                "track": "Suivre cette recommandation"
+            },
+            "messages": {
+                "calculating": "Calcul en cours. Veuillez patienter...",
+                "completed_with_inputs": "Calculé par la calculatrice {{calculator}} ({{inputs}}) en {{seconds}} secondes !",
+                "failed_with_inputs": "Le calculateur de voyage n'est pas en mesure de recommander des alignements pour les options demandées ({{inputs}}). Veuillez réessayer en utilisant des options différentes.",
+                "generic_error": "Le calculateur de voyage a rencontré une erreur !"
+            }
+        },
+        "running_voyage": "Voyage en cours d'exécution",
         "seats": {
             "captain_slot": "Premier officier",
             "chief_communications_officer": "Officier des communications",
@@ -2313,6 +2430,18 @@
             "science_officer": "Officier scientifique adjoint",
             "security_officer": "Officier tactique"
         },
+        "show_all_voyages": "Afficher tous les voyages",
+        "skill_check": {
+            "fields": {
+                "best_minimum": "Meilleur minimum",
+                "best_proficiency": "Meilleure compétence",
+                "crew_with_skill": "Équipage avec compétence",
+                "fail_point": "Point d'échec du contrôle de compétence",
+                "paired_skills": "Compétences jumelées",
+                "voyage_score": "Score de voyage"
+            },
+            "title": "Vérification des compétences"
+        },
         "skills": {
             "primary": {
                 "name": "Compétence principale",
@@ -2322,6 +2451,13 @@
                 "name": "Compétence secondaire",
                 "placeholder": "{{base.secondary}}"
             }
+        },
+        "telemetry": {
+            "description": "Nous utilisons des statistiques anonymes agrégées à partir de calculs de voyage pour améliorer DataCore et alimenter notre {{link}}.",
+            "options": {
+                "opt_in": "Autoriser DataCore à collecter des statistiques de voyage anonymes"
+            },
+            "title": "Avis de confidentialité"
         },
         "tracking": {
             "not_tracking": "Vous ne suivez pas ce voyage.",
@@ -2334,8 +2470,37 @@
         "unable_to_track_revivals": "DataCore ne peut pas suivre automatiquement le moment où un voyage a été relancé, mais vous pouvez noter manuellement la relance ici.",
         "view": {
             "active_voyage": "Afficher le voyage en cours",
+            "all_voyages": "Voir tous les voyages",
             "crew_calculator": "Afficher le calculateur d'équipage",
             "voyage_history": "Afficher l'historique des voyages"
+        },
+        "voyage_history": {
+            "delete_from_history": "Supprimer le voyage de l'historique",
+            "export_history": "Enregistrer l'historique sur l'appareil",
+            "fields": {
+                "antimatter": "{{ship.antimatter}}",
+                "date": "{{base.date}}",
+                "initial_estimate": "Estimation initiale",
+                "last_estimate": "Dernière estimation",
+                "primary": "{{base.primary}}",
+                "secondary": "{{base.secondary}}",
+                "ship_trait": "{{base.ship_trait}}"
+            },
+            "manage_placeholder": "La synchronisation à distance et d'autres options de gestion de l'historique sont en cours de développement.",
+            "options": {
+                "revival": {
+                    "hide": "Masquer les voyages réactivés",
+                    "revived": "Afficher uniquement les voyages réactivés"
+                },
+                "voyage_skill": "Afficher uniquement les voyages avec {{skill}}"
+            },
+            "revived": "Ce voyage a été relancé.",
+            "tips": {
+                "tip1": "Une fois que vous commencez à suivre un voyage, mettez à jour vos données de joueur pendant que votre voyage est en cours pour suivre automatiquement votre durée d'exécution actuelle et votre estimation.",
+                "tip2": "Vous souhaiterez peut-être vérifier le voyage dans le jeu peu de temps avant d'importer vos données de joueur dans DataCore. Votre antimatière restante n'est mise à jour dans vos données de joueur que lorsque la durée d'exécution du voyage affichée est mise à jour dans le jeu, ce qui peut conduire à des estimations obsolètes sur DataCore.",
+                "tip3": "Étant donné que les voyages peuvent être rappelés à tout moment, nous utilisons les dernières estimations (plutôt que les durées de voyage réelles) comme mesure plus cohérente pour comparer les durées de voyage. Nous vous recommandons de mettre à jour vos données de joueur après avoir rappelé un voyage pour garder une trace de votre temps de rappel et pour obtenir une dernière estimation finale.",
+                "title": "Conseils"
+            }
         },
         "voyages": {
             "all": "Tous les Voyages",

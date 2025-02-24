@@ -2233,7 +2233,7 @@
             "alternate_crew": "Alternate Voyage Crew",
             "alternate_crew_alt": "alternate voyage crew",
             "alternate_seats_for_crew": "Alternate Seats for {{crew}}",
-            "compared": "Compared to the existing recommendation:",
+            "compared": "Compared to the existing recommendation{{:}}",
             "fields": {
                 "max_proficiency": "Max Proficiency",
                 "voyage_score": "Voyage Score",
