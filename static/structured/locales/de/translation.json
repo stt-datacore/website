@@ -146,7 +146,7 @@
                 "antimatter": "Eigenschaften von Antimaterie",
                 "citeEffort": "Maximaler Aufwand",
                 "collections": "Sammlungen verbessern erhöhte Statistiken",
-                "equipment": "Rüstzeugspunktzahl",
+                "quipment": "Rüstzeugspunktzahl",
                 "groupSparsity": "Reisegruppenknappheit",
                 "improved": "Verbesserte Reise",
                 "magic": "Maßgrenze (Magische Zahl)",
@@ -1002,7 +1002,6 @@
         "or": "oder",
         "percentile": "Perzentil",
         "permalink": "Permalink",
-        "please_wait_ellipses": "Bitte warten...",
         "portal": "Zeitportal",
         "presets": "Presets",
         "quarter_short": "Q",
@@ -1224,6 +1223,7 @@
                 },
                 "title": "Detaillierte Anleitung..."
             },
+            "paste_here_placeholder": "Fügen Sie hier Ihre {{data}} ein",
             "title": "Kopieren und Einfügen"
         },
         "or": "ODER",
@@ -1570,9 +1570,6 @@
     "retrieval": {
         "allow_unowned": "Unbesessene Crew zulassen",
         "assume_in_game_favorites": "Spielfavoriten dynamisch zur Wunschliste hinzufügen",
-        "calc_summary": "{{ship.calc.calc_summary}}",
-        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
-        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
         "combo": "Combo",
         "combo_length": "Combos Größe",
         "combo_needs": {
@@ -1825,7 +1822,8 @@
         "battle_mode": "Kampfmodus",
         "battle_stations": "Kampfstationen",
         "bonus_ability": "Bonusfähigkeit",
-        "boosts": "Leistungssteigerung",
+        "boost": "Verstärkung",
+        "boosts": "Verstärkungen",
         "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "calc": {
             "advanced": {
@@ -2031,6 +2029,7 @@
         "cite_opt": "Laden Ehrenvolle Erwähnung Optimierer...",
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
+        "please_wait": "Bitte warten...",
         "quipment": "Berechnungsausrüstung..."
     },
     "stat_trends": {
@@ -2065,7 +2064,8 @@
             "name": "{{global.name}}",
             "owned": "{{crew_state.owned}}",
             "percentage": "Crew-Nachfragerate",
-            "popular_trait": "Häufigstes Merkmal"
+            "popular_trait": "Häufigstes Merkmal",
+            "quantity": "{{global.quantity}}"
         },
         "last_release": "Letzte Veröffentlichung",
         "new_high": "Neuer Highscore",
@@ -2149,6 +2149,34 @@
                 "initial_estimate": "Ihre anfängliche Schätzung war {{time}}."
             }
         },
+        "civas": {
+            "datatypes": {
+                "active": "hrer aktuellen Reise",
+                "recommended": "dieser Empfehlung"
+            },
+            "description": "Profi-Tipp: Verwenden Sie {{link}}, um den Überblick über Ihre Reisenden, Laufzeiten und Schätzungen zu behalten. Tippen Sie auf die Schaltfläche unten, um die Details {{datatype}} in die Zwischenablage zu kopieren, damit die relevanten Daten direkt in Ihr CIVAS Google Sheet (derzeit v{{version}}) eingefügt werden können.",
+            "title": "Captain Idol's Voyage Analysis Sheet"
+        },
+        "contests": {
+            "avg": "{{global.avg}}",
+            "contest_simulator": "Kampfsimulator",
+            "contestant": "Kämpfer",
+            "contestant_alt": "Kämpfer",
+            "crit_chance": "Kritische Trefferchance",
+            "max": "{{global.max}}",
+            "min": "{{global.min}}",
+            "n_viable_crew": "Ihre Reise verfügt über {{n}} geeignete Crewmitglieder für diesen Wettbewerb",
+            "no_skill": "Keine Fähigkeit",
+            "notes": {
+                "crit_icon": "represents a crew's number of potential crit traits.",
+                "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
+                "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
+            },
+            "search_for_contestant": "Search for contestant",
+            "select_crit_chance": "Select crit chance",
+            "simulate_contest": "Simulate contest",
+            "wins": "Wins"
+        },
         "crew_finder_hints": {
             "best_rank": {
                 "optimal": "Wählen Sie das {{top}} für diesen Sitz aus",
@@ -2160,6 +2188,39 @@
             "on_voyage": "Auf Reise",
             "unfreeze_crew": "Crew freigeben"
         },
+        "crew_history": {
+            "fields": {
+                "average": "{{global.average}}",
+                "crew": "{{base.crew}}",
+                "last_used": "Zuletzt verwendet",
+                "rarity": "{{base.rarity}}",
+                "voyages": "{{base.voyages}}"
+            },
+            "notes": {
+                "skill_cells": "Die Fertigkeitstabellenzellen geben an, wie viel Prozent der Zeit die jeweilige Crew verwendet wird, wenn die Spalte die primäre oder sekundäre Reise ist.",
+                "skill_cells_primary": "Die Fertigkeitstabellenzellen geben an, wie viel Prozent der Zeit die jeweilige Crew verwendet wird, wenn die Spalte die primäre Reise ist."
+            },
+            "options": {
+                "report": "Reisen {{period}} anzeigen",
+                "report_period": {
+                    "half": "der letzten 180 Tage",
+                    "month": "des letzten Monats",
+                    "months": "der letzten 60 Tage",
+                    "quarter": "der letzten 90 Tage",
+                    "week": "der letzten Woche",
+                    "year": "des letzten Jahres"
+                }
+            },
+            "skill_modal": {
+                "header_detail": {
+                    "all": "{{voyage.voyages.all}}",
+                    "last_n_days": "Last {{n}} Days"
+                },
+                "notes": {
+                    "crew_skill": "Each cell indicates what percentage of time {{crew}} is used when the row is the voyage primary and the column is the voyage secondary."
+                }
+            }
+        },
         "current_voyage_x": "Aktuelle {{x}}",
         "custom": {
             "no_trait": "Kein Merkmal"
@@ -2170,6 +2231,40 @@
         "custom_voyage_editor": "Individueller Reiseeditor",
         "custom_voyage_x": "Individuelle {{x}}",
         "dilemma_chance_h_y": "Chance auf ein {{h}}-Stunden-Dilemma: {{y}} %",
+        "editor": {
+            "alternate_crew": "Alternative Reisecrew",
+            "alternate_crew_alt": "alternative Reisecrew",
+            "alternate_seats_for_crew": "Alternative Sitzplätze für {{crew}}",
+            "compared": "Im Vergleich zur bestehenden Empfehlung{{:}}",
+            "fields": {
+                "max_proficiency": "Maximale Kompetenz",
+                "voyage_score": "Reisepunktzahl",
+                "voyage_seat": "Reisesitz"
+            },
+            "missing_voyagers_message": "Bitte weisen Sie allen Reiseplätzen Crewmitglieder zu.",
+            "n_viable_crew": "Ihre voraussichtliche Reise verfügt über {{n}} Crewmitglieder mit dieser Fähigkeit",
+            "options": {
+                "show_prospective_voyagers": "Nur potenzielle Reisende anzeigen",
+                "skill_values": "Fähigkeitswerte in Tabelle anzeigen"
+            },
+            "prospective": {
+                "assigned_slot": "Voraussichtlicher Reisesitz",
+                "lineup": "Voraussichtliche Aufstellung",
+                "proficiency": "Voraussichtliche Kompetenz",
+                "skill_check": "Voraussichtliche Fähigkeitsüberprüfung",
+                "voyage": "Voraussichtliche Reise"
+            },
+            "reset_recommendation": "Auf vorhandene Empfehlung zurücksetzen",
+            "save_recommendation": "Als neue Empfehlung speichern",
+            "search_for_alternates": "Nach alternativer Crew suchen",
+            "select_slot": "Wählen Sie einen Reisesitz aus. Jede vorhandene Crew auf diesem Sitz wird durch {{crew}} ersetzt, was zu den aufgeführten Änderungen an der geplanten Reise führt.",
+            "slotted_message": "{{crew}} sitzt bereits als {{seat}} auf dieser geplanten Reise. Die folgenden Schätzungen berücksichtigen {{crew}} auf einem neuen Sitz, während der Sitz {{seat}} nicht zugewiesen wird.",
+            "target_seat": "Wählen Sie eine Crew für {{seat}} aus.",
+            "target_seat_replacement": "Wählen Sie eine Crew aus, die {{crew}} als {{seat}} ersetzen soll.",
+            "target_view_alternates": "oder tippen Sie unten auf eine beliebige Crew, um die alternative Crew für diesen Sitz anzuzeigen.",
+            "targeting_message": "Es werden nur mögliche {{seat}}-Alternativen angezeigt",
+            "view_voyage": "Voraussichtliche Reise anzeigen"
+        },
         "encounter_traits": "Kritische Begegnungsmerkmale",
         "estimate": {
             "1_refill": "1 Nachfüllung",
@@ -2186,7 +2281,7 @@
             "estimated_at": {
                 "estimated": "geschätzt um {{time}}",
                 "failed": "fehlgeschlagen um {{time}}",
-                "received": "zurückgerufen um {{time}}"
+                "recalled": "zurückgerufen um {{time}}"
             },
             "event_crew_bonus": "Ereignis-Crew-Bonus{{:}} {{n}}",
             "expected_range": "(erwarteter Bereich: {{a}} bis {{b}})",
@@ -2237,6 +2332,7 @@
                 "manage": "Verlauf verwalten",
                 "voyages": "Reisen"
             },
+            "moved": "Das Reiseverlaufstool wurde in den {{link}} verschoben. Bitte aktualisieren Sie Ihre Lesezeichen nach Bedarf.",
             "not_yet": "Sie haben noch keinen Reiseverlauf. Beginnen Sie mit der Verfolgung von Reisen über den Crew-Rechner.",
             "title": "{{menu.tools.voyage_history}}"
         },
@@ -2253,6 +2349,10 @@
             "title": "Reiseaufstellung"
         },
         "loading_voyage_tool_ellipses": "Reisetool wird geladen ...",
+        "nonplayer": {
+            "description": "Importieren Sie Ihre Spielerdaten, um dieses Tool an Ihre aktuelle Reise und Ihren aktuellen Kader anzupassen. Andernfalls können Sie manuell eine Reise erstellen und die beste Crew im Spiel für jede mögliche Konfiguration anzeigen.",
+            "title": "Keine Reisekonfiguration verfügbar"
+        },
         "or_n_h_if_dupes_dismissed": "oder {{n}} {{h}}, wenn die gesamte doppelte Crew entlassen wird.",
         "overrun_problem_text": {
             "line_1": "WARNUNG!!! Es wurde ein potenzielles Problem mit der gemeldeten Reisezeit erkannt.",
@@ -2286,6 +2386,22 @@
             "voyage_prefs": "Bevorzugte Fähigkeiten der Reise",
             "voyage_prefs_explain": "Wenn eine bevorzugte Reisefertigkeit ausgewählt wird, wird die Fertigkeitsreihenfolge der Crew so sortiert, dass passende Fertigkeiten zuerst angezeigt werden."
         },
+        "results": {
+            "actions": {
+                "abort": "Abbrechen",
+                "confident": "Erhalten Sie eine zuverlässigere Schätzung",
+                "dismiss": "Diese Empfehlung ablehnen",
+                "edit": "Aufstellung bearbeiten",
+                "track": "Diese Empfehlung verfolgen"
+            },
+            "messages": {
+                "calculating": "Berechnung läuft. Bitte warten...",
+                "completed_with_inputs": "Berechnet vom {{calculator}}-Rechner ({{inputs}}) in {{seconds}} Sekunden!",
+                "failed_with_inputs": "Der Reiserechner kann keine Aufstellungen für die angeforderten Optionen ({{inputs}}) empfehlen. Bitte versuchen Sie es erneut mit anderen Optionen.",
+                "generic_error": "Beim Reiserechner ist ein Fehler aufgetreten!"
+            }
+        },
+        "running_voyage": "Aktive Reise",
         "seats": {
             "captain_slot": "Erster Offizier",
             "chief_communications_officer": "Kommunikationsoffizier",
@@ -2300,6 +2416,18 @@
             "science_officer": "Stellvertretender Wissenschaftsoffizier",
             "security_officer": "Taktischer Offizier"
         },
+        "show_all_voyages": "Alle Reisen anzeigen",
+        "skill_check": {
+            "fields": {
+                "best_minimum": "Bestes Minimum",
+                "best_proficiency": "Beste Kompetenz",
+                "crew_with_skill": "Crew mit Fähigkeit",
+                "fail_point": "Fehlerpunkt bei Fähigkeitsprüfung",
+                "paired_skills": "Gepaarte Fähigkeiten",
+                "voyage_score": "Reisepunktzahl"
+            },
+            "title": "Fähigkeitstest"
+        },
         "skills": {
             "primary": {
                 "name": "Primäre Fähigkeit",
@@ -2309,6 +2437,13 @@
                 "name": "Sekundäre Fähigkeit",
                 "placeholder": "{{base.secondary}}"
             }
+        },
+        "telemetry": {
+            "description": "Wir verwenden aus Reiseroutenberechnungen aggregierte anonyme Statistiken, um DataCore zu verbessern und unsere {{link}} zu füllen.",
+            "options": {
+                "opt_in": "Erlauben Sie DataCore, anonyme Reisestatistiken zu sammeln"
+            },
+            "title": "Datenschutzhinweis"
         },
         "tracking": {
             "not_tracking": "Sie verfolgen diese Reise nicht.",
@@ -2321,13 +2456,42 @@
         "unable_to_track_revivals": "DataCore kann nicht automatisch verfolgen, wann eine Reise wiederbelebt wurde, aber Sie können die Wiederbelebung hier manuell vermerken.",
         "view": {
             "active_voyage": "Laufende Reise anzeigen",
+            "all_voyages": "Alle Reisen anzeigen",
             "crew_calculator": "Crew-Rechner anzeigen",
             "voyage_history": "Reiseverlauf anzeigen"
+        },
+        "voyage_history": {
+            "delete_from_history": "Reise aus Verlauf löschen",
+            "export_history": "Verlauf auf Gerät speichern",
+            "fields": {
+                "antimatter": "{{ship.antimatter}}",
+                "date": "{{base.date}}",
+                "initial_estimate": "Erste Schätzung",
+                "last_estimate": "Letzte Schätzung",
+                "primary": "{{base.primary}}",
+                "secondary": "{{base.secondary}}",
+                "ship_trait": "{{base.ship_trait}}"
+            },
+            "manage_placeholder": "Remote-Synchronisierung und andere Optionen zur Verlaufsverwaltung sind in der Entwicklung.",
+            "options": {
+                "revival": {
+                    "hide": "Wiederbelebte Reisen verbergen",
+                    "revived": "Nur wiederbelebte Reisen anzeigen"
+                },
+                "voyage_skill": "Nur Reisen mit {{skill}} anzeigen"
+            },
+            "revived": "Diese Reise wurde wiederbelebt.",
+            "tips": {
+                "tip1": "Sobald Sie mit der Verfolgung einer Reise beginnen, aktualisieren Sie Ihre Spielerdaten, während die Reise läuft, um Ihre aktuelle Laufzeit und Schätzung automatisch zu verfolgen.",
+                "tip2": "Sie sollten die Reise im Spiel überprüfen, kurz bevor Sie Ihre Spielerdaten in DataCore importieren. Ihre verbleibende Antimaterie wird in Ihren Spielerdaten nur aktualisiert, wenn die angezeigte Reiselaufzeit im Spiel aktualisiert wird, was zu veralteten Schätzungen in DataCore führen kann.",
+                "tip3": "Da Reisen jederzeit zurückgerufen werden können, verwenden wir letzte Schätzungen (anstelle der tatsächlichen Reiselaufzeiten) als konsistentere Metrik zum Vergleichen der Reiselängen. Wir empfehlen, Ihre Spielerdaten nach dem Zurückrufen einer Reise zu aktualisieren, um Ihre Rückrufzeit zu verfolgen und eine endgültige letzte Schätzung zu erhalten.",
+                "title": "Tipps"
+            }
         },
         "voyages": {
             "all": "Alle Reisen",
             "current": "Aktuelle Reisen",
-            "custom_voyages": "Individuelle Reisen",
+            "custom": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
         }
     }

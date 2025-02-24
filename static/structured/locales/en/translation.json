@@ -1002,7 +1002,6 @@
         "or": "or",
         "percentile": "Percentile",
         "permalink": "permalink",
-        "please_wait_ellipses": "Please wait...",
         "portal": "Portal",
         "presets": "Presets",
         "quarter_short": "Q",
@@ -1823,6 +1822,7 @@
         "battle_mode": "Battle mode",
         "battle_stations": "Battle Stations",
         "bonus_ability": "Bonus Ability",
+        "boost": "Boost",
         "boosts": "Boosts",
         "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "calc": {
@@ -2029,6 +2029,7 @@
         "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
+        "please_wait": "Please wait...",
         "quipment": "Calculating quipment..."
     },
     "stat_trends": {
@@ -2061,6 +2062,7 @@
             "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
             "latest_usage": "Latest usage",
             "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
             "percentage": "Crew demand rate",
             "popular_trait": "Most frequent trait",
             "quantity": "{{global.quantity}}"
@@ -2233,7 +2235,7 @@
             "alternate_crew": "Alternate Voyage Crew",
             "alternate_crew_alt": "alternate voyage crew",
             "alternate_seats_for_crew": "Alternate Seats for {{crew}}",
-            "compared": "Compared to the existing recommendation:",
+            "compared": "Compared to the existing recommendation{{:}}",
             "fields": {
                 "max_proficiency": "Max Proficiency",
                 "voyage_score": "Voyage Score",
