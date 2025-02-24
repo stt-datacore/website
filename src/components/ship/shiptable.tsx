@@ -14,6 +14,8 @@ import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
 import { formatShipScore } from './utils';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { ITableConfigRow, SearchableTable } from '../searchabletable';
+import { omniSearchFilter } from '../../utils/omnisearch';
 
 type ShipTableProps = {
 	event_ships?: string[];
@@ -22,19 +24,13 @@ type ShipTableProps = {
 };
 
 type ShipTableState = {
-	column: string | null;
-	direction: 'descending' | 'ascending' | null;
-	searchFilter: string;
 	data: Ship[];
 	originals: Ship[];
-	pagination_rows: number;
-	pagination_page: number;
 	activeShip?: Ship | null;
 	rarityFilter?: number[];
 	grantFilter?: string[];
 	abilityFilter: string[];
 	traitFilter: string[];
-	textFilter?: string;
 	shipsInUse?: ShipInUse[];
 	onlyUsed?: boolean;
 	ownership?: 'owned' | 'unowned'
@@ -58,11 +54,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 
 		this.state = {
 			onlyUsed: this.tiny.getValue<boolean>('only_used'),
-			column: this.props.event_ships ? 'antimatter' : null,
-			direction: this.props.event_ships ? 'descending' : null,
-			searchFilter: '',
-			pagination_rows: 10,
-			pagination_page: 1,
 			data: [],
 			originals: [],
 			abilityFilter: [],
@@ -125,7 +116,8 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 				{
 					skill: 'diplomacy_skill'
 				}
-			]
+			],
+			ranks: { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: schematics.length + 1, fbb_rank: schematics.length + 1, arena_rank: schematics.length + 1, divisions: { fbb: {}, arena: {} } }
 		} as Ship;
 
 		schematics.push({
@@ -135,6 +127,10 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			id: 1,
 			icon: constellation.icon!
 		});
+
+		for (let ship of schematics) {
+			ship.ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: schematics.length + 1, fbb_rank: schematics.length + 1, arena_rank: schematics.length + 1, divisions: { fbb: {}, arena: {} } }
+		}
 
 		if (this.context.player.playerShips?.length && this.context.player.playerData) {
 			let playerships = [...this.context.player.playerData.player.character.ships];
@@ -173,59 +169,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		return ship;
 	}
 
-	_onChangePage(activePage) {
-		this.setState({ pagination_page: activePage });
-	}
-
-	_handleSort(clickedColumn) {
-		const { column, direction } = this.state;
-		let { data } = this.state;
-
-		const sortConfig: IConfigSortData = {
-			field: clickedColumn,
-			direction: clickedColumn === column ? direction : (direction === 'descending' ? 'ascending' : 'descending')
-		};
-
-		let sorted = {} as IResultSortDataBy;
-
-		if(sortConfig.field === 'max_level') {
-			sortConfig.direction = clickedColumn !== column ? direction : (direction === 'descending' ? 'ascending' : 'descending');
-			const newdata = [...data];
-			newdata.sort((a, b) => {
-				let r = 0;
-				r = (a.max_level ?? 0) - (b.max_level ?? 0);
-				if (r) {
-					return sortConfig.direction === 'descending' ? -r : r;
-				}
-				r = (a.level ?? 0) - (b.level ?? 0);
-
-				if (this.state.rarityFilter?.length === 1) {
-					return sortConfig.direction === 'descending' ? -r : r;
-				}
-				else {
-					return -r;
-				}
-			});
-			sorted = {
-				field: 'max_level',
-				direction: sortConfig.direction ?? 'ascending',
-				result: newdata
-			}
-		}
-		else {
-			sorted = sortDataBy(data, sortConfig);
-		}
-
-		const sortResult = sorted;
-
-		this.setState({
-			column: sortResult.field,
-			direction: sortResult.direction,
-			pagination_page: 1,
-			data: sortResult.result
-		});
-	}
-
 	private readonly setRarityFilter = (filter: number[] | undefined) => {
 		window.setTimeout(() => {
 			this.setState({...this.state, rarityFilter: filter});
@@ -256,22 +199,15 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		})
 	}
 
-	private readonly setTextFilter = (filter?: string) => {
-		this.setState({ ...this.state, textFilter: filter });
-	}
-
 	private readonly setOnlyUsed = (value?: boolean) => {
 		this.tiny.setValue('only_used', value)
 		this.setState({ ...this.state, onlyUsed: value });
 	}
 
 	render() {
-		const flexRow = OptionsPanelFlexRow;
-		const flexCol = OptionsPanelFlexColumn;
 		const { localized } = this.context;
 		const { t, SHIP_TRAIT_NAMES } = localized;
-		const trait_names = localized.SHIP_TRAIT_NAMES;
-		const { ownership, textFilter, grantFilter, traitFilter, abilityFilter, rarityFilter, column, direction, pagination_rows, pagination_page } = this.state;
+		const { ownership, grantFilter, traitFilter, abilityFilter, rarityFilter } = this.state;
 
 		const dataContext = this.context;
 		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
@@ -285,28 +221,36 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
 			if (ownership === 'owned' && !ship.owned) return false;
 			if (ownership === 'unowned' && ship.owned) return false;
-			if (textFilter?.length) {
-				const usearch = textFilter.toLocaleUpperCase();
-				if (!ship.name?.toLocaleUpperCase().includes(usearch)
-					&& !ship.traits?.some(t => t.toLocaleUpperCase().includes(usearch))
-					&& !ship.traits_hidden?.some(t => t.toLocaleUpperCase().includes(textFilter))) return false;
-			}
 			if (this.state.onlyUsed && this.state.shipsInUse?.length) {
 				return this.state.shipsInUse.some(usage => usage.ship.id === ship.id);
 			}
 			return true;
-		})
+		});
 
-		let totalPages = Math.ceil(data.length / this.state.pagination_rows);
-
-		const navToShip = (ship: Ship) => {
-			navigate('/ship_info?ship='+ship.symbol);
-		}
-
-		const withranks = data.some(s => s.ranks);
-		// Pagination
-
-		data = data.slice(pagination_rows * (pagination_page - 1), pagination_rows * pagination_page);
+		const tableConfig = [
+			{ width: 3, column: 'name', title: t('ship.ship') },
+			{ width: 1, column: 'ranks.overall', title: t('rank_names.ship_rank'), reverse: true },
+			{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
+			{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
+			{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
+			{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
+			{ width: 1, column: 'attack', title: t('ship.attack'), reverse: true },
+			{ width: 1, column: 'evasion', title: t('ship.evasion'), reverse: true },
+			{ width: 1, column: 'hull', title: t('ship.hull'), reverse: true },
+			{ width: 1, column: 'shields', title: t('ship.shields'), reverse: true },
+			{
+				width: 1,
+				column: 'level',
+				title: t('ship.level'),
+				reverse: true,
+				customCompare: (a, b) => {
+					let r = 0;
+					r = (a.max_level ?? 0) - (b.max_level ?? 0);
+					if (!r) r = (a.level ?? 0) - (b.level ?? 0);
+					return r;
+				}
+			},
+		] as ITableConfigRow[];
 
 		return (<div>
 			{!this.props.event_ships?.length &&
@@ -315,6 +259,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 				display: "flex",
 				flexDirection: "column",
 				gap: "0.5em",
+				marginBottom: '0.5em'
 			}}>
 				<div style={{
 					display: "flex",
@@ -332,20 +277,6 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
 					{!!this.hasPlayer && <ShipOwnership selectedValue={this.state.ownership} setSelectedValue={this.setOwnedFilter} />}
 				</div>
-				<div>
-				<Input
-					style={{ width: isMobile ? '100%' : '30%' }}
-					iconPosition="left"
-					placeholder={t('global.search_by_name_or_trait_ellipses')}
-					value={textFilter}
-					onChange={(e, { value }) => this.setTextFilter(value)}>
-						<input />
-						<Icon name='search' />
-						<Button icon onClick={() => this.setTextFilter('')} >
-							<Icon name='delete' />
-						</Button>
-				</Input>
-				</div>
 			</div>}
 			{!this.props.event_ships?.length && !!this.hasPlayer &&
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
@@ -354,179 +285,89 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			{!!this.props.event_ships?.length &&
 				<div>
 					<div style={{margin: '0.25em 0'}}>
-						<b>{t('base.featured_ships')}: </b>&nbsp;{this.props.high_bonus?.map(sym => this.state.data.find(f => f.symbol === sym)?.name || '').join(", ")}
+						<b>{t('base.featured_ships{{:}}')} </b>&nbsp;{this.props.high_bonus?.map(sym => this.state.data.find(f => f.symbol === sym)?.name || '').join(", ")}
 					</div>
 					<div style={{margin: '0.25em 0'}}>
-						<b>{t('base.featured_traits')}: </b>&nbsp;{this.props.event_ship_traits?.map(sym => SHIP_TRAIT_NAMES[sym]).join(", ")}
+						<b>{t('base.featured_traits{{:}}')} </b>&nbsp;{this.props.event_ship_traits?.map(sym => SHIP_TRAIT_NAMES[sym]).join(", ")}
 					</div>
 				</div>
 			}
-			<Table sortable celled selectable striped collapsing unstackable compact="very">
-				<Table.Header>
-					<Table.Row>
-						<Table.HeaderCell
-							width={3}
-							sorted={column === 'name' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('name')}
-						>
-							{t('ship.ship')}
-						</Table.HeaderCell>
-						{withranks && <>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'ranks.overall' ? direction ?? undefined  : undefined}
-								onClick={() => this._handleSort('ranks.overall')}
-								>
-								{t('rank_names.ship_rank')}
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'ranks.arena' ? direction ?? undefined  : undefined}
-								onClick={() => this._handleSort('ranks.arena')}
-								>
-
-								{t('rank_names.arena_rank')}
-							</Table.HeaderCell>
-							<Table.HeaderCell
-								width={1}
-								sorted={column === 'ranks.fbb' ? direction ?? undefined  : undefined}
-								onClick={() => this._handleSort('ranks.fbb')}
-								>
-								{t('rank_names.fbb_rank')}
-							</Table.HeaderCell>
-						</>}
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'antimatter' ? direction ?? undefined  : undefined}
-							onClick={() => this._handleSort('antimatter')}
-						>
-							{t('ship.antimatter')}
-						</Table.HeaderCell>
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'accuracy' ? direction ?? undefined  : undefined}
-							onClick={() => this._handleSort('accuracy')}
-						>
-							{t('ship.accuracy')}
-						</Table.HeaderCell>
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'attack' ? direction ?? undefined  : undefined}
-							onClick={() => this._handleSort('attack')}
-						>
-							{t('ship.attack')}
-						</Table.HeaderCell>
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'evasion' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('evasion')}
-						>
-							{t('ship.evasion')}
-						</Table.HeaderCell>
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'hull' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('hull')}
-						>
-							{t('ship.hull')}
-						</Table.HeaderCell>
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'shields' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('shields')}
-						>
-							{t('ship.shields')}
-						</Table.HeaderCell>
-						<Table.HeaderCell
-							width={1}
-							sorted={column === 'max_level' ? direction ?? undefined : undefined}
-							onClick={() => this._handleSort('max_level')}
-						>
-							{t('ship.level')}
-						</Table.HeaderCell>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{data.map((ship, idx) => (
-						<Table.Row key={idx}>
-							<Table.Cell>
-								<div
-									style={{
-										display: 'grid',
-										gridTemplateColumns: '60px auto',
-										gridTemplateAreas: `'icon stats' 'icon description' 'icon usages'`,
-										gridGap: '1px'
-									}}
-								>
-									<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
-										<ShipTarget inputItem={ship} targetGroup='ships'>
-											<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
-										</ShipTarget>
-									</div>
-									<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
-										<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
-									</div>
-									<div style={{ gridArea: 'description' }}>{ship.traits?.map(trait => trait_names[trait]).join(', ')}</div>
-									<div style={{ gridArea: 'usages', fontWeight: 'bold'}}>{this.printUsage(ship)}</div>
-								</div>
-							</Table.Cell>
-							{withranks && <>
-								<Table.Cell>
-									<div style={{display: 'flex'}}>
-										{formatShipScore('ship', ship.ranks?.overall, t)}
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<div style={{display: 'flex'}}>
-										{formatShipScore('ship', ship.ranks?.arena, t)}
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<div style={{display: 'flex'}}>
-										{formatShipScore('ship', ship.ranks?.fbb, t)}
-									</div>
-								</Table.Cell>
-							</>}
-							<Table.Cell>{ship.antimatter}</Table.Cell>
-							<Table.Cell>{ship.accuracy}</Table.Cell>
-							<Table.Cell>{ship.attack} ({ship.attacks_per_second}/s)</Table.Cell>
-							<Table.Cell>{ship.evasion}</Table.Cell>
-							<Table.Cell>{ship.hull}</Table.Cell>
-							<Table.Cell>{ship.shields} (regen {ship.shield_regen})</Table.Cell>
-							<Table.Cell>
-								{ship.level && <> {ship.level} / {ship.max_level} </>
-								|| <>{ship.max_level}</>}
-
-
-								</Table.Cell>
-						</Table.Row>
-					))}
-				</Table.Body>
-				<Table.Footer>
-					<Table.Row>
-						<Table.HeaderCell colSpan="8">
-							<Pagination
-								totalPages={totalPages}
-								activePage={pagination_page}
-								onPageChange={(event, { activePage }) => this._onChangePage(activePage)}
-							/>
-							<span style={{ paddingLeft: '2em' }}>
-							 	{t('global.rows_per_page')}:{' '}
-								<Dropdown
-									inline
-									options={pagingOptions}
-									value={pagination_rows}
-									onChange={(event, { value }) =>
-										this.setState({ ... this.state, pagination_page: 1, pagination_rows: value as number })
-									}
-								/>
-							</span>
-						</Table.HeaderCell>
-					</Table.Row>
-				</Table.Footer>
-			</Table>
+			<SearchableTable
+				data={data}
+				config={tableConfig}
+				renderTableRow={(row, idx) => this.renderTableRow(row, idx)}
+				filterRow={(row, filter, filterType) => this.filterRow(row, filter, filterType)}
+				/>
 			<ShipHoverStat targetGroup='ships' />
 			</div>);
+	}
+
+	filterRow(row: Ship, filter: any, filterType?: string) {
+		const { SHIP_TRAIT_NAMES } = this.context.localized;
+		return omniSearchFilter(row, filter, filterType, ['name', 'flavor', {
+			field: 'traits',
+			customMatch: (value, text) => {
+				return (value as Ship).traits?.some(t => SHIP_TRAIT_NAMES[t].toLowerCase().includes(text.toLowerCase())) ||
+					(value as Ship).traits_hidden?.some(t => t.toLowerCase().includes(text.toLowerCase())) || false;
+			}
+		}]);
+	}
+
+	renderTableRow(ship: Ship, idx?: number) {
+		const { t, SHIP_TRAIT_NAMES } = this.context.localized;
+		const navToShip = (ship: Ship) => {
+			navigate('/ship_info?ship='+ship.symbol);
+		}
+
+		return (<Table.Row key={idx}>
+			<Table.Cell>
+				<div
+					style={{
+						display: 'grid',
+						gridTemplateColumns: '60px auto',
+						gridTemplateAreas: `'icon stats' 'icon description' 'icon usages'`,
+						gridGap: '1px'
+					}}
+				>
+					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
+						<ShipTarget inputItem={ship} targetGroup='ships'>
+							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+						</ShipTarget>
+					</div>
+					<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
+						<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
+					</div>
+					<div style={{ gridArea: 'description' }}>{ship.traits?.map(trait => SHIP_TRAIT_NAMES[trait]).join(', ')}</div>
+					<div style={{ gridArea: 'usages', fontWeight: 'bold'}}>{this.printUsage(ship)}</div>
+				</div>
+			</Table.Cell>
+			<Table.Cell>
+				<div style={{display: 'flex'}}>
+					{formatShipScore('ship', ship.ranks?.overall, t)}
+				</div>
+			</Table.Cell>
+			<Table.Cell>
+				<div style={{display: 'flex'}}>
+					{formatShipScore('ship', ship.ranks?.arena, t)}
+				</div>
+			</Table.Cell>
+			<Table.Cell>
+				<div style={{display: 'flex'}}>
+					{formatShipScore('ship', ship.ranks?.fbb, t)}
+				</div>
+			</Table.Cell>
+			<Table.Cell>{ship.antimatter}</Table.Cell>
+			<Table.Cell>{ship.accuracy}</Table.Cell>
+			<Table.Cell>{ship.attack} ({ship.attacks_per_second}/s)</Table.Cell>
+			<Table.Cell>{ship.evasion}</Table.Cell>
+			<Table.Cell>{ship.hull}</Table.Cell>
+			<Table.Cell>{ship.shields} ({t('ship.regen')} {ship.shield_regen})</Table.Cell>
+			<Table.Cell>
+				{ship.level && <> {ship.level} / {ship.max_level} </>
+				|| <>{ship.max_level}</>}
+				</Table.Cell>
+		</Table.Row>
+)
 	}
 }
 

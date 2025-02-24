@@ -205,6 +205,9 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>
                                 {ship.name}
                             </a>
+                            <p style={{fontSize: '0.8em', fontStyle: 'italic'}}>
+                                {ship.flavor}
+                            </p>
                         </h3>
                         <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
                             <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('item_state.item_is_shown', { item: 'base.ship', level: 'ship.max_level'})}>
