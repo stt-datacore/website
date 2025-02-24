@@ -1,8 +1,4 @@
 const fs = require('fs');
-const showdown = require('showdown');
-const ExcelJS = require('exceljs');
-require('lodash.combinations');
-const _ = require('lodash');
 
 const STATIC_PATH = `${__dirname}/../static/structured/locales`;
 
