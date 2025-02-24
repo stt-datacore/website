@@ -1712,5 +1712,19 @@
                 "skill": "engineering_skill"
             }
         ]
+    },
+    {
+        "symbol": "fed_farragut_ship",
+        "battle_stations": [
+            {
+                "skill": "command_skill"
+            },
+            {
+                "skill": "engineering_skill"
+            },
+            {
+                "skill": "security_skill"
+            }
+        ]
     }
 ]
