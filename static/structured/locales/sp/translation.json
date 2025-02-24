@@ -53,8 +53,6 @@
         "live_results": "Resultados en vivo (el cálculo será más lento)",
         "n_slots": "{{n}} espacios",
         "n_to_next": "{{n}} al próximo",
-        "n_total_x": "{{n}} {{x}} en total",
-        "n_x": "{{n}} {{x}}",
         "never_in_portal": "Nunca en el portal",
         "not_in_portal": "No en el portal",
         "not_uniquely_retrievable": "No se puede recuperar de forma única",
@@ -175,7 +173,7 @@
         "calc_specific_rarity": "Calcular rareza específica",
         "columns": {
             "antimatter_traits": "Rasgos\nde antimateria",
-            "comparar": "Comparar",
+            "compare": "Comparar",
             "crew": "{{base.crew}}",
             "ev_per_cite": "VE por\ncita",
             "final_ev": "VE final",
@@ -637,7 +635,7 @@
                     "solved_nodes": "Nodos resueltos",
                     "traits": "Rasgos",
                     "unique": "Único",
-                    "valores predeterminados": "valores predeterminados"
+                    "defaults": "valores predeterminados"
                 },
                 "title": "Personalizar exportación"
             },
@@ -698,7 +696,7 @@
             "user_prefs": {
                 "confirm_solves": "Confirmar rasgo resuelto",
                 "show_ship_ability": "Mostrar capacidad del buque",
-                "título": "Preferencias de usuario"
+                "title": "Preferencias de usuario"
             },
             "warn": "Es posible que las soluciones correctas no aparezcan en la lista con la configuración actual."
         },
@@ -806,7 +804,6 @@
         "note_owned_crew_power_calc_msg": "Nota: Si se detecta tripulación propia, entonces su nivel actual en su lista puede usarse para calcular su rango, dependiendo de la configuración del filtro.",
         "note_unleveled_crew_max_highlight_pair_msg": "Nota: Los equipos propios sin nivel que se muestran al máximo tienen competencias subrayadas y resaltadas en verde.",
         "note_unleveled_crew_max_highlight_table_msg": "Nota: Los equipos propios sin nivel que se muestran al máximo están resaltados en verde.",
-        "notes": {},
         "only_highlight_active_round": "Resaltar solo la ronda activa",
         "opponent_table": {
             "opponent": "Oponente",
@@ -993,6 +990,7 @@
         "n_%": "{{n}}%",
         "n_available": "{{n}} disponible",
         "n_results": "{{n}} resultados",
+        "n_total_x": "{{n}} {{x}} en total",
         "n_x": "{{n}} {{x}}",
         "na": "N/A",
         "name": "Nombre",
@@ -1521,6 +1519,13 @@
         "top_quipment": "Quipo de primera"
     },
     "rank_names": {
+        "advantage": {
+            "d": "D",
+            "defense": "Defensa (Reparación/Evasión)",
+            "o": "O",
+            "offense": "Ofensa (Precisión/Daño)",
+            "select": "Seleccione una ventaja"
+        },
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",
@@ -1562,13 +1567,6 @@
         "voyage_rank": "Rango de Viaje"
     },
     "ranking_method": {
-        "advantage": {
-            "d": "D",
-            "defense": "Defensa (Reparación/Evasión)",
-            "o": "O",
-            "offense": "Ofensa (Precisión/Daño)",
-            "select": "Seleccione una ventaja"
-        },
         "delta_t": "Delta T",
         "early_boom": "Máximo Más Temprano",
         "guaranteed_minimum": "Mínimo garantizado",
@@ -1582,9 +1580,6 @@
     "retrieval": {
         "allow_unowned": "Permitir tripulación sin propietario",
         "assume_in_game_favorites": "Agregar dinámicamente los favoritos del juego a la lista de deseos",
-        "calc_summary": "{{ship.calc.calc_summary}}",
-        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
-        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
         "combo": "Combo",
         "combo_length": "Tamaño de los combos",
         "combo_needs": {
@@ -2079,7 +2074,8 @@
             "name": "{{global.name}}",
             "owned": "{{crew_state.owned}}",
             "percentage": "Tasa de demanda de la tripulación",
-            "popular_trait": "Rasgo más frecuente"
+            "popular_trait": "Rasgo más frecuente",
+            "quantity": "{{global.quantity}}"
         },
         "last_release": "Último lanzamiento",
         "new_high": "Nueva Máxima",
@@ -2374,7 +2370,7 @@
             "line_3": "Abra el juego y luego regrese a DataCore con una copia nueva de sus datos de jugador para garantizar una estimación más precisa."
         },
         "picker_options": {
-            "congelado": "Considere tripulación congelada",
+            "frozen": "Considere tripulación congelada",
             "encounter_traits": "Equilibra las competencias con las bonificaciones de rasgos críticos",
             "shuttle": "Considere tripulación en lanzaderas activas",
             "sub_title": "Se considerará un total de {{n}} tripulantes para este viaje.",

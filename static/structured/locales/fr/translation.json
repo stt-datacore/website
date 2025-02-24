@@ -1582,9 +1582,6 @@
     "retrieval": {
         "allow_unowned": "Autoriser l'équipage sans propriétaire",
         "assume_in_game_favorites": "Ajoutez dynamiquement les favoris du jeu à la liste de souhaits",
-        "calc_summary": "{{ship.calc.calc_summary}}",
-        "calculating_pct_ellipses": "{{ship.calc.calculating_pct_ellipses}}",
-        "calculating_pct_ellipses_verbose": "{{ship.calc.calculating_pct_ellipses_verbose}}",
         "combo": "Combo",
         "combo_length": "Taille des combos",
         "combo_needs": {
@@ -1641,7 +1638,7 @@
             "listed": "Répertorié",
             "min_polestars": "Min. allumettes d'étoile polaire",
             "modes": {
-                "list_price": "{{retrieval.market.columns.high}}",
+                "high": "{{retrieval.market.columns.high}}",
                 "orders": "Ordres non exécutées",
                 "sold_last_day": "Vente la plus rapide"
             },
@@ -2079,7 +2076,8 @@
             "name": "{{global.name}}",
             "owned": "{{crew_state.owned}}",
             "percentage": "Taux de demande de l'équipage",
-            "popular_trait": "Trait le plus fréquent"
+            "popular_trait": "Trait le plus fréquent",
+            "quantity": "{{global.quantity}}"
         },
         "last_release": "Dernière publication",
         "new_high": "Nouveau Élevé",
@@ -2375,7 +2373,7 @@
         },
         "picker_options": {
             "encounter_traits": "Équilibrez les compétences avec les bonus de traits critiques",
-            "freezen": "Considérez l'équipage gelé",
+            "frozen": "Considérez l'équipage gelé",
             "shuttle": "Considérez l'équipage sur les navettes actives",
             "sub_title": "Un total de {{n}} des équipiers seront pris en considération pour ce voyage.",
             "title": "Équipiers à prendre en considération",

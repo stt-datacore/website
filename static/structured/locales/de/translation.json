@@ -146,7 +146,7 @@
                 "antimatter": "Eigenschaften von Antimaterie",
                 "citeEffort": "Maximaler Aufwand",
                 "collections": "Sammlungen verbessern erhöhte Statistiken",
-                "equipment": "Rüstzeugspunktzahl",
+                "quipment": "Rüstzeugspunktzahl",
                 "groupSparsity": "Reisegruppenknappheit",
                 "improved": "Verbesserte Reise",
                 "magic": "Maßgrenze (Magische Zahl)",
@@ -1822,7 +1822,8 @@
         "battle_mode": "Kampfmodus",
         "battle_stations": "Kampfstationen",
         "bonus_ability": "Bonusfähigkeit",
-        "boosts": "Leistungssteigerung",
+        "boost": "Verstärkung",
+        "boosts": "Verstärkungen",
         "boosts_x_by_y": "Steigert {{x}} um {{y}}",
         "calc": {
             "advanced": {
@@ -2063,7 +2064,8 @@
             "name": "{{global.name}}",
             "owned": "{{crew_state.owned}}",
             "percentage": "Crew-Nachfragerate",
-            "popular_trait": "Häufigstes Merkmal"
+            "popular_trait": "Häufigstes Merkmal",
+            "quantity": "{{global.quantity}}"
         },
         "last_release": "Letzte Veröffentlichung",
         "new_high": "Neuer Highscore",
@@ -2279,7 +2281,7 @@
             "estimated_at": {
                 "estimated": "geschätzt um {{time}}",
                 "failed": "fehlgeschlagen um {{time}}",
-                "received": "zurückgerufen um {{time}}"
+                "recalled": "zurückgerufen um {{time}}"
             },
             "event_crew_bonus": "Ereignis-Crew-Bonus{{:}} {{n}}",
             "expected_range": "(erwarteter Bereich: {{a}} bis {{b}})",
@@ -2348,8 +2350,8 @@
         },
         "loading_voyage_tool_ellipses": "Reisetool wird geladen ...",
         "nonplayer": {
-            "Beschreibung": "Importieren Sie Ihre Spielerdaten, um dieses Tool an Ihre aktuelle Reise und Ihren aktuellen Kader anzupassen. Andernfalls können Sie manuell eine Reise erstellen und die beste Crew im Spiel für jede mögliche Konfiguration anzeigen.",
-            "Titel": "Keine Reisekonfiguration verfügbar"
+            "description": "Importieren Sie Ihre Spielerdaten, um dieses Tool an Ihre aktuelle Reise und Ihren aktuellen Kader anzupassen. Andernfalls können Sie manuell eine Reise erstellen und die beste Crew im Spiel für jede mögliche Konfiguration anzeigen.",
+            "title": "Keine Reisekonfiguration verfügbar"
         },
         "or_n_h_if_dupes_dismissed": "oder {{n}} {{h}}, wenn die gesamte doppelte Crew entlassen wird.",
         "overrun_problem_text": {
@@ -2489,7 +2491,7 @@
         "voyages": {
             "all": "Alle Reisen",
             "current": "Aktuelle Reisen",
-            "custom_voyages": "Individuelle Reisen",
+            "custom": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
         }
     }

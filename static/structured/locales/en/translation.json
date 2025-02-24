@@ -1822,6 +1822,7 @@
         "battle_mode": "Battle mode",
         "battle_stations": "Battle Stations",
         "bonus_ability": "Bonus Ability",
+        "boost": "Boost",
         "boosts": "Boosts",
         "boosts_x_by_y": "Boosts {{x}} by {{y}}",
         "calc": {
@@ -2061,6 +2062,7 @@
             "latest_crew": "{{stat_trends.trait_columns.latest_crew}}",
             "latest_usage": "Latest usage",
             "name": "{{global.name}}",
+            "owned": "{{crew_state.owned}}",
             "percentage": "Crew demand rate",
             "popular_trait": "Most frequent trait",
             "quantity": "{{global.quantity}}"
