@@ -1,5 +1,4 @@
 import { CrewMember } from "./crew";
-import { EquipmentItem } from "./equipment";
 import { Icon } from "./game-elements";
 import { Reward } from "./player";
 

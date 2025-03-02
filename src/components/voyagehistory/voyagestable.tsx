@@ -1,25 +1,48 @@
 import React from 'react';
-import { Table, Form, Dropdown, Pagination, Message } from 'semantic-ui-react';
+import {
+	Dropdown,
+	DropdownItemProps,
+	Form,
+	Message,
+	Pagination,
+	Table
+} from 'semantic-ui-react';
 
 import { ITrackedVoyage, ITrackedCheckpoint } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
 
-import { HistoryContext } from './context';
-import { VoyageModal } from './voyagemodal';
-import { removeVoyageFromHistory } from './utils';
+import CONFIG from '../CONFIG';
 
-type VoyagesTableProps = {
-	activeVoyageId: number;
+import { HistoryContext } from './context';
+import { deleteTrackedData, removeVoyageFromHistory, SyncState } from './utils';
+import { VoyageModal } from './voyagemodal';
+
+interface ITableState {
+	data: ITrackedVoyage[];
+	column: string;
+	direction: 'ascending' | 'descending' | undefined;
 };
 
-export const VoyagesTable = (props: VoyagesTableProps) => {
+interface ITableAction {
+	type: string;
+	data?: ITrackedVoyage[];
+	column?: string;
+	direction?: 'ascending' | 'descending';
+};
+
+interface ITableColumn {
+	column: string;
+	title: string;
+	align?: 'left' | 'center' | 'right';
+	firstSort?: 'ascending' | 'descending';
+};
+
+export const VoyagesTable = () => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
-	const { SHIP_TRAIT_NAMES } = globalContext.localized;
-	const { history, setHistory } = React.useContext(HistoryContext);
-	const { activeVoyageId } = props;
+	const { SHIP_TRAIT_NAMES, t, tfmt } = globalContext.localized;
+	const { ephemeral } = globalContext.player;
+	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
 	const [state, dispatch] = React.useReducer(reducer, {
@@ -31,70 +54,62 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 
 	const [skillFilter, setSkillFilter] = React.useState<string>('');
 	const [revivalFilter, setRevivalFilter] = React.useState<string>('');
-	const [paginationPage, setPaginationPage] = React.useState(1);
+	const [paginationPage, setPaginationPage] = React.useState<number>(1);
 
 	React.useEffect(() => {
 		dispatch({ type: 'UPDATE_DATA', data: history.voyages });
 	}, [history]);
 
-	interface IDropdownOption {
-		key: string;
-		value: string;
-		text: string;
-	};
+	if (history.voyages.length === 0) return <></>;
 
-	const skillOptions = [
-		{ key: 'all', value: '', text: 'Show all voyages' },
-		{ key: 'cmd', value: 'command_skill', text: 'Only show voyages with command' },
-		{ key: 'dip', value: 'diplomacy_skill', text: 'Only show voyages with diplomacy' },
-		{ key: 'eng', value: 'engineering_skill', text: 'Only show voyages with engineering' },
-		{ key: 'med', value: 'medicine_skill', text: 'Only show voyages with medicine' },
-		{ key: 'sci', value: 'science_skill', text: 'Only show voyages with science' },
-		{ key: 'sec', value: 'security_skill', text: 'Only show voyages with security' }
-	] as IDropdownOption[];
+	const skillOptions: DropdownItemProps[] = [
+		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.show_all_voyages') }
+	];
+	CONFIG.SKILLS_SHORT.forEach(ss => {
+		skillOptions.push(
+			{	/* Only show voyages with SKILL */
+				key: ss.short,
+				value: ss.name,
+				text: t('voyage.voyage_history.options.voyage_skill', { skill: CONFIG.SKILLS[ss.name] })
+			}
+		);
+	});
 
-	const revivalOptions = [
-		{ key: 'all', value: '', text: 'Show all voyages' },
-		{ key: 'hide', value: 'hide', text: 'Hide revived voyages' },
-		{ key: 'revived', value: 'revived', text: 'Only show revived voyages' }
-	] as IDropdownOption[];
+	const revivalOptions: DropdownItemProps[] = [
+		{ /* Show all voyages */ key: 'all', value: '', text: t('voyage.show_all_voyages') },
+		{ /* Hide revived voyages */ key: 'hide', value: 'hide', text: t('voyage.voyage_history.options.revival.hide') },
+		{ /* Only show revived voyages */ key: 'revived', value: 'revived', text: t('voyage.voyage_history.options.revival.revived') }
+	];
 
-	interface ICustomRow {
-		column: string;
-		title: string;
-		align: 'left' | 'center' | 'right' | undefined;
-		descendFirst?: boolean;
-	};
-
-	const tableConfig = [
-		{ column: 'created_at', title: 'Date', align: 'left', descendFirst: true },
-		{ column: 'skills.primary_skill', title: 'Primary' },
-		{ column: 'skills.secondary_skill', title: 'Secondary' },
-		{ column: '_shipTrait', title: 'Ship Trait' },
-		{ column: 'max_hp', title: 'Antimatter', descendFirst: true },
-		{ column: 'estimate.median', title: 'Initial Estimate', descendFirst: true },
-		{ column: 'checkpoint.estimate.median', title: 'Last Estimate', descendFirst: true }
-	] as ICustomRow[];
+	const tableConfig: ITableColumn[] = [
+		{ /* Date */ column: 'created_at', title: t('voyage.voyage_history.fields.date'), align: 'left', firstSort: 'descending' },
+		{ /* Primary */ column: 'skills.primary_skill', title: t('voyage.voyage_history.fields.primary') },
+		{ /* Secondary */ column: 'skills.secondary_skill', title: t('voyage.voyage_history.fields.secondary') },
+		{ /* Ship Trait */ column: '_shipTrait', title: t('voyage.voyage_history.fields.ship_trait') },
+		{ /* Antimatter */ column: 'max_hp', title: t('voyage.voyage_history.fields.antimatter'), firstSort: 'descending' },
+		{ /* Initial Estimate */ column: 'estimate.median', title: t('voyage.voyage_history.fields.initial_estimate'), firstSort: 'descending' },
+		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.fields.last_estimate'), firstSort: 'descending' }
+	];
 
 	// Filter
-	const filteredData = data.filter(row => {
+	const filteredData: ITrackedVoyage[] = data.filter(row => {
 		if (skillFilter && !([row.skills.primary_skill, row.skills.secondary_skill].includes(skillFilter))) return false;
 		if (revivalFilter === 'hide' && row.revivals > 0) return false;
 		if (revivalFilter === 'revived' && row.revivals === 0) return false;
 		return true;
-	}) as ITrackedVoyage[];
+	});
 
 	// Pagination
-	const rowsPerPage = 10;
-	const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-	const pagedData = filteredData.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage) as ITrackedVoyage[];
+	const rowsPerPage: number = 10;
+	const totalPages: number = Math.ceil(filteredData.length / rowsPerPage);
+	const pagedData: ITrackedVoyage[] = filteredData.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage);
 
 	return (
 		<React.Fragment>
 			<Form>
 				<Form.Group inline>
-					<Form.Field
-						placeholder='Filter by skill'
+					<Form.Field	/* Filter by voyage skill */
+						placeholder={t('hints.filter_by_voyage_skill')}
 						control={Dropdown}
 						selection
 						clearable
@@ -102,8 +117,8 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 						value={skillFilter}
 						onChange={(e, { value }) => setSkillFilter(value as string)}
 					/>
-					<Form.Field
-						placeholder='Filter by revivals'
+					<Form.Field	/* Filter by revivals */
+						placeholder={t('hints.filter_by_revivals')}
 						control={Dropdown}
 						selection
 						clearable
@@ -120,7 +135,11 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 							<Table.HeaderCell key={idx}
 								textAlign={cell.align ?? 'center'}
 								sorted={column === cell.column ? direction : undefined}
-								onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, descendFirst: cell.descendFirst })}
+								onClick={() => dispatch({
+									type: 'CHANGE_SORT',
+									column: cell.column,
+									direction: state.column === cell.column ? (state.direction === 'ascending' ? 'descending' : 'ascending') : (cell.firstSort ?? 'ascending')
+								})}
 							>
 								{cell.title}
 							</Table.HeaderCell>
@@ -142,31 +161,24 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<Message style={{ margin: '1em 0' }}>
-				<Message.Content>
-					<Message.Header>Tips</Message.Header>
-					<p>Once you start tracking a voyage, update your player data while your voyage is running to automatically track your current runtime and estimate.</p>
-					<p>You may want to check on the voyage in-game shortly before importing your player data to DataCore. Your remaining antimatter only gets updated in your player data when the displayed voyage runtime is updated in-game, which may lead to stale estimates on DataCore.</p>
-					<p>Because voyages can be recalled at any time, we use <i>last estimates</i> (rather than actual voyage runtimes) as a more consistent metric to compare voyage lengths. We recommend updating your player data after recalling a voyage to keep track of your recall time and to get a final last estimate.</p>
-					<p>Voyage history does not synchronize across multiple devices. You can only update a voyage estimate on the device where you initially tracked it.</p>
-				</Message.Content>
-			</Message>
 			{activeVoyage &&
 				<VoyageModal voyage={activeVoyage}
 					onClose={() => setActiveVoyage(undefined)}
 					onRemove={() => removeTrackedVoyage(activeVoyage.tracker_id)}
 				/>
 			}
+			<HistoryTips />
 		</React.Fragment>
 	);
 
 	function renderTableRow(row: ITrackedVoyage): JSX.Element {
-		const dtCreated = new Date(row.created_at);
+		const dtCreated: Date = new Date(row.created_at);
+		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
 		return (
 			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 				<Table.Cell>
 					{dtCreated.toLocaleDateString()}
-					{activeVoyageId > 0 && row.voyage_id === activeVoyageId && <><br/>Active Voyage</>}
+					{isRunning && <><br/>{t('voyage.running_voyage')}</>}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
@@ -192,7 +204,7 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 	}
 
 	function renderLastEstimate(checkpoint: ITrackedCheckpoint): JSX.Element {
-		let estimateType = 'estimated';
+		let estimateType: string = 'estimated';
 		if (['completed', 'recalled'].includes(checkpoint.state))
 			estimateType = 'recalled';
 		else if (checkpoint.state === 'failed')
@@ -201,23 +213,47 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 			<React.Fragment>
 				<b>{formatTime(checkpoint.estimate.median, t)}</b>
 				<div>
-					({estimateType} at {formatTime(checkpoint.runtime, t)}
-					{checkpoint.hp > 0 && <><br />with {checkpoint.hp} AM left</>})
+					(
+						{tfmt(`voyage.estimate.estimated_at.${estimateType}`, { time: formatTime(checkpoint.runtime, t) })}
+						{checkpoint.hp > 0 && <><br />{tfmt('voyage.estimate.with_n_am_left', { n: <>{checkpoint.hp}</> })}</>}
+					)
 				</div>
 			</React.Fragment>
 		);
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
-		removeVoyageFromHistory(history, trackerId);
-		setHistory({...history});
-		setActiveVoyage(undefined);
+		if (syncState === SyncState.RemoteReady) {
+			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
+				if (success) {
+					removeVoyageFromHistory(history, trackerId);
+					setHistory({...history});
+					setActiveVoyage(undefined);
+				}
+				else {
+					throw('Failed removeTrackedVoyage -> deleteTrackedData');
+				}
+			}).catch(e => {
+				setMessageId('voyage.history_msg.failed_to_delete');
+				console.log(e);
+			});
+		}
+		else if (syncState === SyncState.LocalOnly) {
+			removeVoyageFromHistory(history, trackerId);
+			setHistory({...history});
+			setActiveVoyage(undefined);
+		}
+		else {
+			setMessageId('voyage.history_msg.invalid_sync_state');
+			console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
+		}
 	}
 
-	function reducer(state: any, action: any): any {
+	function reducer(state: ITableState, action: ITableAction): ITableState {
 		switch (action.type) {
 			case 'UPDATE_DATA':
-				const updatedData = action.data.slice();
+				if (!action.data) return state;
+				const updatedData: ITrackedVoyage[] = action.data.slice();
 				sorter(updatedData, 'created_at', 'descending');
 				return {
 					column: 'created_at',
@@ -225,16 +261,13 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 					direction: 'descending'
 				};
 			case 'CHANGE_SORT':
-				let direction = action.descendFirst ? 'descending' : 'ascending';
-				// Reverse sort
-				if (state.column === action.column) {
-					direction = state.direction === 'ascending' ? 'descending' : 'ascending';
-				}
-				const data = state.data.slice();
-				sorter(data, action.column, direction);
+				if (!action.column) return state;
+				const sortableData: ITrackedVoyage[] = state.data.slice();
+				const direction: 'ascending' | 'descending' = action.direction ?? 'ascending';
+				sorter(sortableData, action.column, direction);
 				return {
 					column: action.column,
-					data: data,
+					data: sortableData,
 					direction
 				};
 			default:
@@ -242,11 +275,11 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 		}
 	}
 
-	function sorter(data: ITrackedVoyage[], column: string, direction: string): void {
+	function sorter(data: ITrackedVoyage[], column: string, direction: 'ascending' | 'descending'): void {
 		const sortBy = (comps: ((a: ITrackedVoyage, b: ITrackedVoyage) => number)[]) => {
 			data.sort((a, b) => {
 				const tests = comps.slice();
-				let test = 0;
+				let test: number = 0;
 				while (tests.length > 0 && test === 0) {
 					let shtest = tests.shift();
 					test = shtest ? shtest(a, b) : 0;
@@ -286,4 +319,22 @@ export const VoyagesTable = (props: VoyagesTableProps) => {
 		sortBy([compareNumberColumn, compareDateDesc]);
 		return;
 	}
+};
+
+const HistoryTips = () => {
+	const { t } = React.useContext(GlobalContext).localized;
+
+	return (
+		<Message style={{ margin: '1em 0' }}>
+			<Message.Content>
+				<Message.Header	/* Tips */
+				>
+					{t('voyage.voyage_history.tips.title')}
+				</Message.Header>
+				<p>{t('voyage.voyage_history.tips.tip1')}</p>
+				<p>{t('voyage.voyage_history.tips.tip2')}</p>
+				<p>{t('voyage.voyage_history.tips.tip3')}</p>
+			</Message.Content>
+		</Message>
+	);
 };

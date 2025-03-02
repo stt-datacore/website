@@ -9,6 +9,7 @@ export interface ColorNameProps {
 export const ColorName = (props: ColorNameProps) => {
 
     const { text } = props;
+    if (!text) return <></>
     const segments = [] as JSX.Element[];
 
     let splits = text.split("<#");

@@ -14,6 +14,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	defaultOptions: T;
 
 	renderTrigger?: () => JSX.Element;
+	beforeOpen?: (data: any, options: T) => void;
 	pickerModal: typeof OptionsModal<T>;
 	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
 
@@ -26,7 +27,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
-	const { handleSelect, isOpen, contextData, setIsOpen } = props;
+	const { handleSelect, isOpen, contextData, setIsOpen, beforeOpen } = props;
 
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
@@ -72,7 +73,12 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		<Modal
 			open={modalIsOpen}
 			onClose={closeModal}
-			onOpen={() => setModalIsOpen(true)}
+			onOpen={() => {
+				if (beforeOpen) {
+					beforeOpen(contextData, options);
+				}
+				setModalIsOpen(true);
+			}}
 			trigger={props.renderTrigger ? props.renderTrigger() : renderDefaultTrigger()}
 			size='tiny'
 			centered={false}

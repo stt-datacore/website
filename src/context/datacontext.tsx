@@ -3,7 +3,7 @@ import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { Collection, Constellation, KeystoneBase, Polestar } from '../model/game-elements';
+import { Collection, Constellation, KeystoneBase, Polestar, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
@@ -11,11 +11,12 @@ import { navigate } from 'gatsby';
 import { ContinuumMission } from '../model/continuum';
 import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
-import { EventInstance } from '../model/events';
+import { EventInstance, EventLeaderboard } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
-import { getSkillOrder } from '../utils/crewutils';
 import { highestLevel } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
+import { ICoreData } from './coremodel';
+import { EventStats } from '../utils/event_stats';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -30,6 +31,8 @@ export type ValidDemands =
 	'disputes' |
 	'episodes' |
 	'event_instances' |
+	'event_leaderboards' |
+	'event_stats' |
 	'factions' |
 	'gauntlets' |
 	'items' |
@@ -44,27 +47,6 @@ export type ValidDemands =
 
 export interface DataProviderProperties {
 	children: JSX.Element;
-};
-
-export interface ICoreData {
-	all_buffs: BuffStatTable;
-	battle_stations: BattleStations[];
-	cadet: Mission[];
-	collections: Collection[];
-	crew: CrewMember[];
-	episodes: Mission[];
-	event_instances: EventInstance[];
-	factions: StaticFaction[];
-	gauntlets: Gauntlet[];
-	items: EquipmentItem[];
-	keystones: (KeystoneBase | Polestar | Constellation)[];
-	missions: Mission[];
-	missionsfull: Mission[];
-	objective_events: ObjectiveEvent[];
-	continuum_missions: ContinuumMission[];
-	ship_schematics: Schematics[];
-	ships: Ship[];
-	topQuipmentScores: QuipmentScores[];
 };
 
 export interface ICoreContext extends ICoreData {
@@ -86,6 +68,8 @@ const defaultData = {
 	crew: [] as CrewMember[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
+	event_leaderboards: [] as EventLeaderboard[],
+	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
@@ -148,6 +132,8 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'disputes',
 			'episodes',
 			'event_instances',
+			'event_leaderboards',
+			'event_stats',
 			'factions',
 			'gauntlets',
 			'items',
@@ -339,11 +325,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function processCrew(result: CrewMember[]): CrewMember[] {
 		result.forEach((item) => {
-			item.skill_order = getSkillOrder(item);
-			item.action.cycle_time = item.action.cooldown + item.action.duration;
 			if (typeof item.date_added === 'string') {
 				item.date_added = new Date(item.date_added);
 			}
+			item.post_bigbook_epoch = item.date_added.getTime() > POST_BIGBOOK_EPOCH.getTime();
+			item.bigbook_tier ??= -1;
+			if (!item.id) item.id = item.archetype_id;
 		});
 
 		return result;

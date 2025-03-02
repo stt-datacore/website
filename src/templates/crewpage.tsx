@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet as HelmetDep } from 'react-helmet';
 import { Image, Divider, Rating, Button, Icon } from 'semantic-ui-react';
 import { graphql, navigate } from 'gatsby';
 
@@ -58,7 +58,7 @@ type StaticCrewPageProps = {
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 
 	return (
-		<DataPageLayout pageTitle={''} demands={['items', 'crew', 'keystones', 'cadet']} narrowLayout={true}>
+		<DataPageLayout pageTitle={''} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'keystones']} narrowLayout={true}>
 			<StaticCrewComponent props={props} />
 		</DataPageLayout>
 	);
@@ -76,7 +76,7 @@ interface StaticCrewComponentProps {
 
 class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrewComponentState> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: StaticCrewComponentProps | Readonly<StaticCrewComponentProps>) {
 		super(props);
@@ -155,10 +155,16 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
 
 		if (this.ownedCrew) {
-			let discovered = this.ownedCrew.find(item => item.symbol === crew.symbol);
-			if (discovered) {
-				crew.immortal = discovered.immortal;
-				crew.in_portal ??= discovered.in_portal;
+			let discovered = this.ownedCrew.filter(item => item.symbol === crew.symbol);
+			if (discovered?.length) {
+				let immortal = 0;
+				for (let c of discovered) {
+					if (c.immortal) {
+						immortal = c.immortal;
+						break;
+					}
+				}
+				crew.immortal = immortal;
 			}
 		}
 
@@ -172,7 +178,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			this.stash.setValue('crew_static_big', !this.state.itemBig, true);
 			this.setState({ ...this.state, itemBig: !this.state.itemBig });
 		}
-
+		const Helmet = HelmetDep as any;
 		return (
 			<>
 				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>

@@ -40,18 +40,18 @@ export interface ModalOption {
 
 export abstract class OptionsModal<TOptions extends OptionsBase> extends React.Component<OptionsModalProps<TOptions>, OptionsModalState<TOptions>> {
 	static contextType = GlobalContext;
-	context!: React.ContextType<typeof GlobalContext>;
+	declare context: React.ContextType<typeof GlobalContext>;
 
     protected optionGroups: OptionGroup[];
 
 	constructor(props: OptionsModalProps<TOptions>) {
 		super(props);
-
+		this.optionGroups = [];
 		const newstate = {
 			isDefault: false,
 			isDirty: false,
 			options: props.options ?? this.getDefaultOptions(),
-			modalIsOpen: false            
+			modalIsOpen: false
 		} as OptionsModalState<TOptions>;
 
         this.state = newstate;
@@ -121,7 +121,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
                             </div>
                         )
                     })}
-					
+
 				</Modal.Content>
 				<Modal.Actions>
 					{!isDefault && <Button content={t('global.reset')} onClick={(e) => this.resetOptions()} />}
@@ -147,7 +147,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		this.setOptions({...this.props.options});
 	}
 
-	resetOptions(): void {        
+	resetOptions(): void {
         let newstate = { ... this.state };
 
         for(let group of this.optionGroups){
@@ -171,7 +171,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
         (newopts as OptionsBase)[group.key] = value;
         this.setState({ ... this.state, options: newopts });
     }
-	
+
 	setModalIsOpen(value: boolean) {
 		this.setState({ ... this.state, modalIsOpen: value });
 	}

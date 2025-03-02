@@ -3,13 +3,14 @@ import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion
 import { iOS, mobileCheck } from '../../utils/misc';
 import { GlobalContext } from '../../context/globalcontext';
 
-export interface JsonImportConfig {    
+export interface JsonImportConfig {
     dataUrl: string;
     dataName: string;
     jsonHint: string;
     androidFileHint: string;
     iOSFileHint: string;
 	pasteInMobile?: boolean;
+	postValues?: any;
 }
 
 export interface JsonInputFormProps<T> {
@@ -25,8 +26,8 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 	const { t, tfmt } = globalContext.localized;
 
 	const { setValidInput, requestDismiss } = props;
-    
-    const { pasteInMobile, dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
+	const title = props.title ?? 'json_form';
+    const { postValues, pasteInMobile, dataUrl: DATALINK, dataName: caption, jsonHint, androidFileHint: androidHint, iOSFileHint: iosHint } = props.config;
 
 	const [inputData, setInputData] = React.useState<T | undefined>(undefined);
 	const [fullInput, setFullInput] = React.useState('');
@@ -34,11 +35,14 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 	const [details, setDetails] = React.useState<string | undefined>(undefined);
 	const [loadState, setLoadState] = React.useState(0);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
-	
+
 	React.useEffect(() => {
 		if (inputData) {
 			setValidInput(inputData);
 			setInputData(undefined);
+			setFullInput('');
+			setDisplayedInput('');
+			setLoadState(0);
 		}
 	}, [inputData]);
 
@@ -112,9 +116,22 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 						<p>{errorMessage}</p>
 					</Message>
 				)}
+				{!!postValues && <form style={{display: "none"}} target="_blank" action={DATALINK} method="post">
+  						<button type="submit" id={`__${title}_data_link`}> </button>
+						{Object.entries(postValues).map(([key, value]) => {
+							return (
+								<input type="hidden" name={key} value={value?.toString()} />
+							)
+						})}
+				</form>}
 			</Card.Content>
 		</Card>
 	);
+
+	function postClick() {
+		const el = document.getElementById(`__${title}_data_link`);
+		if (el) el.click();
+	}
 
 	function renderCopyPaste(): JSX.Element {
 		return (
@@ -124,11 +141,13 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{t('json.copy_and_paste.title')}
 				</Header>
 				<p>
-					{tfmt('json.copy_and_paste.description_1', { 
-						'data': <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+					{tfmt('json.copy_and_paste.description_1', {
+						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
-								</a>
-					})}					
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+									{caption}
+								</span>
+					})}
 					<br />{t('json.copy_and_paste.description_2')}
 				</p>
 				<Form>
@@ -163,7 +182,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 							<li>
 								{tfmt('json.copy_and_paste.detailed_instructions.instructions.line_2', {
 									jsonHint: <span style={{ fontFamily: 'monospace' }}>{jsonHint}</span>
-								})}								
+								})}
 							</li>
 							<li>{t('json.copy_and_paste.detailed_instructions.instructions.line_3')}</li>
 							<li>{t('json.copy_and_paste.detailed_instructions.instructions.line_4')}</li>
@@ -183,10 +202,12 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{t('json.upload_file.title')}
 				</Header>
 				<p>
-					{tfmt('json.upload_file.description_1', {
-						data: <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
-							{caption}
-						</a>
+					{tfmt('json.copy_and_paste.description_1', {
+						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+									{caption}
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+									{caption}
+								</span>
 					})}
 					<br />{t('json.upload_file.description_2')}
 				</p>
@@ -227,7 +248,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 									onClick={() => setDetails('android')}
 								/>
 							</Button.Group>
-						</div>						
+						</div>
 						<ol>
 							<li>
 								{tfmt(`json.upload_file.detailed_instructions.${details}.instructions.line_1`, {
@@ -290,9 +311,9 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 			let testData = JSON.parse(testInput);
 			if (testData) {
 				// Test for playerData array glitch
-				if (Array.isArray(testData)) {
-					testData = {...testData[0]};
-				}
+				// if (Array.isArray(testData)) {
+				// 	testData = {...testData[0]};
+				// }
                 let val = validateInput(testData);
                 if (val === true) {
                     setInputData(testData);
