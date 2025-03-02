@@ -40,6 +40,7 @@
         "crewman": "Crew",
         "crewmen": "Crew",
         "date": "Date",
+        "event_crew": "Event Crew",
         "event_ships": "Event Ships",
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
@@ -2265,7 +2266,7 @@
             "targeting_message": "Only showing viable {{seat}} alternates",
             "view_voyage": "View prospective voyage"
         },
-        "encounter_traits": "Encounter crit traits",
+        "encounter_traits": "Encounter Crit Traits",
         "estimate": {
             "1_refill": "1 Refill",
             "analysis": {
