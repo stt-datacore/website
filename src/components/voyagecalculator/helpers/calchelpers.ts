@@ -6,7 +6,7 @@ DataCore(<VoyageTool>): input from UI =>
 
 Calculator Worker(): results =>
 	Unified Worker(): results as message =>
-		Calculator Helper(): ICalcResults =>
+		Calculator Helper(): IResultProposals =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 
@@ -73,11 +73,28 @@ export const CALCULATORS = {
 				{ key: 'estimate', text: 'Best estimate (default)', value: 'estimate' },
 				{ key: 'minimum', text: 'Guaranteed minimum', value: 'minimum' },
 				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
-				{ key: 'any', text: 'Any best', value: 'any' },
-				{ key: 'peak-antimatter', text: 'Peak antimatter (experimental)', value: 'peak-antimatter' },
+				{ key: 'any', text: 'Any best time', value: 'any' },
+				{ key: 'peak-antimatter', text: 'Peak antimatter', value: 'peak-antimatter' },
+				{ key: 'peak-vp', text: 'Peak VP', value: 'peak-vp' },
+				{ key: 'featured-vp', text: 'Featured VP', value: 'featured-vp' },
 				// { key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
 			],
 			default: 'estimate'
+		},
+		{
+			calculators: ['ussjohnjay-mvam'],
+			id: 'proficiency',
+			name: 'Proficiency',
+			description: 'Boost crew with higher max proficiency',
+			control: 'select',
+			options: [
+				{ key: 'prof-0', text: 'Ignore crew proficiency', value: 0 },
+				{ key: 'prof-1', text: 'Any proficiency (default)', value: 1 },
+				{ key: 'prof-2', text: 'Prefer high proficiency', value: 2 },
+				{ key: 'prof-3', text: 'Prefer higher proficiency', value: 3 },
+				{ key: 'prof-5', text: 'Prefer highest proficiency', value: 5 },
+			],
+			default: 1
 		}
 	]
 };

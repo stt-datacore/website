@@ -7,6 +7,7 @@ import { IEventData, IRosterCrew } from '../components/eventplanner/model';
 import { RosterPicker } from '../components/eventplanner/rosterpicker';
 import { HelperMode } from '../components/shuttlehelper/helpermode';
 import { ShuttleHelper, EventShuttleHelper } from '../components/shuttlehelper/shuttlehelper';
+import { QPConfigProvider } from '../components/qpconfig/provider';
 
 const ShuttleHelperPage = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -26,27 +27,29 @@ const ShuttleHelperPage = () => {
 			pageDescription={t('shuttle_helper.heading')}
 			playerPromptType='recommend'
 		>
-			<React.Fragment>
-				<RosterPicker
-					rosterType={rosterType as string}
-					setRosterType={(rosterType: string) => setRosterType(rosterType as 'myCrew' | 'allCrew')}
-					setRosterCrew={setRosterCrew}
-				/>
-				<HelperMode rosterType={rosterType} setEventData={setEventData} />
-				{!eventMode && (
-					<ShuttleHelper key={eventData ? eventData.symbol : 'dailies'}
-						rosterType={rosterType} rosterCrew={rosterCrew}
-						eventData={eventData}
+			<QPConfigProvider pageId={'shuttle_planner'}>
+				<React.Fragment>
+					<RosterPicker
+						rosterType={rosterType as string}
+						setRosterType={(rosterType: string) => setRosterType(rosterType as 'myCrew' | 'allCrew')}
+						setRosterCrew={setRosterCrew}
 					/>
-				)}
-				{eventMode && (
-					<EventShuttleHelper key={eventData.symbol}
-						dbid={`${playerData.player.dbid}`}
-						rosterType={rosterType} rosterCrew={rosterCrew}
-						eventData={eventData}
-					/>
-				)}
-			</React.Fragment>
+					<HelperMode rosterType={rosterType} setEventData={setEventData} />
+					{!eventMode && (
+						<ShuttleHelper key={eventData ? eventData.symbol : 'dailies'}
+							rosterType={rosterType} rosterCrew={rosterCrew}
+							eventData={eventData}
+						/>
+					)}
+					{eventMode && (
+						<EventShuttleHelper key={eventData.symbol}
+							dbid={`${playerData.player.dbid}`}
+							rosterType={rosterType} rosterCrew={rosterCrew}
+							eventData={eventData}
+						/>
+					)}
+				</React.Fragment>
+			</QPConfigProvider>
 		</DataPageLayout>
 	);
 };

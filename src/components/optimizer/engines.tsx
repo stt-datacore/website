@@ -11,6 +11,7 @@ import { CiteMode, PlayerData } from "../../model/player";
 import { UnifiedWorker } from "../../typings/worker";
 import { CiteOptContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
+import { WorkerContext } from "../../context/workercontext";
 
 export type CiteEngine = "original" | "beta_tachyon_pulse";
 
@@ -26,6 +27,13 @@ export const EngineRunnerContext = React.createContext<IEngineRunnerContext>({})
 
 export const EngineRunner = (props: EngineRunnerProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const workerContext = React.useContext(WorkerContext);
+
+    const [requestRun, setRequestRun] = React.useState(false);
+    const [initialized, setInitialized] = React.useState(false);
+
+    const { runWorker: internalRunWorker, cancel } = workerContext;
+
     const { pageId } = props;
     const dbid = globalContext.player.playerData?.player.dbid ?? '';
 
@@ -37,16 +45,14 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
     const { citeConfig, setCiteConfig } = citeContext;
     const { engine, setEngine } = citeContext;
-    const { results, setResults } = citeContext;
+    const { setResults } = citeContext;
 
     const { appliedProspects } = citeContext;
 
-    const { showEV } = citeConfig;
+    const { showEV, rarities } = citeConfig;
 
     const [settingsOpen, setSettingsOpen] = React.useState(false);
-    const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
 
-    const builtIn = createBuiltInPresets();
     const playerData = globalContext.player.playerData ? JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData : undefined;
 
     if (playerData) {
@@ -74,13 +80,22 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
 
     React.useEffect(() => {
-        if (currentWorker) {
-            currentWorker.removeEventListener('message', workerResponse);
-            currentWorker.terminate();
+        if (!initialized) {
+            setRequestRun(true);
         }
-        setResults(undefined);
-        runWorker();
-    }, [currentConfig, engine, citeConfig.rarities, appliedProspects]);
+        else {
+            cancel();
+            runWorker();
+        }
+    }, [currentConfig, engine, rarities, appliedProspects]);
+
+    setTimeout(() => {
+        if (requestRun) {
+            cancel();
+            runWorker();
+            setRequestRun(false);
+        }
+    }, 500);
 
     if (!globalContext.player.playerData) return <></>
 
@@ -146,14 +161,6 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         </React.Fragment>
     );
 
-    function createBuiltInPresets(): BetaTachyonSettings[] {
-        return [
-            {
-                ...DefaultBetaTachyonSettings,
-            },
-        ];
-    }
-
     function workerResponse(message: { data: { result: any; }; }) {
         const result = message.data.result as CiteData;
 
@@ -169,6 +176,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: undefined });
         }
+        setInitialized(true);
     }
 
     function getImmortalSymbols() {
@@ -179,40 +187,32 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     }
 
 	function runWorker() {
-		const worker = new UnifiedWorker();
 		const { buffConfig } = globalContext.player;
         const { crew: allCrew, collections } = globalContext.core;
+		if (!globalContext.player.playerData) return;
 
-		if (!globalContext.player.playerData || !worker) return;
-
-		const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
-
-        worker.addEventListener('message', workerResponse);
-
-		if (engine === 'original') {
-			worker.postMessage({
-				worker: workerName,
-				playerData,
-				allCrew,
-				collections,
-				buffs: buffConfig
-			});
+        const workerName = engine === 'original' ? 'citeOptimizer' : 'ironywrit';
+        setResults(undefined);
+        if (engine === 'original') {
+            setTimeout(() => {
+                internalRunWorker(workerName, {
+                    playerData,
+                    allCrew
+                }, workerResponse);
+            });
 		}
 		else {
-			worker.postMessage({
-				worker: workerName,
-				config: {
+            setTimeout(() => {
+                internalRunWorker(workerName, {
 					playerData,
 					inputCrew: allCrew,
 					collections,
                     immortalizedSymbols: getImmortalSymbols(),
 					buffs: buffConfig,
-					settings: currentConfig,
+					settings: { ...DefaultBetaTachyonSettings, ...currentConfig },
 					coreItems: globalContext.core.items
-				} as BetaTachyonRunnerConfig
-			});
+				} as BetaTachyonRunnerConfig, workerResponse);
+            });
 		}
-
-        setCurrentWorker(worker);
 	}
 };

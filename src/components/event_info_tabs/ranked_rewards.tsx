@@ -3,11 +3,11 @@ import { Table, Image, Label } from 'semantic-ui-react';
 
 import { getIconPath, getRarityColor } from '../../utils/assets';
 import { AtlasIcon, GameEvent } from '../../model/player';
-import { EventData } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import ItemDisplay from '../itemdisplay';
 import { getImageName } from '../../utils/misc';
 import { checkReward } from '../../utils/itemutils';
+import { AvatarView, AvatarViewMode, BasicItem } from '../item_presenters/avatarview';
 
 function getBracketLabel(bracket) {
 	if (bracket.first === bracket.last) { // top brackets aren't really a range
@@ -20,10 +20,11 @@ function getBracketLabel(bracket) {
 	return `${bracket.first} - ${bracket.last}`;
 }
 
-function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
-	const {ranked_brackets} = props.eventData;
+function RankedRewardsTab(props: {eventData: GameEvent}) {
+	const { ranked_brackets } = props.eventData;
 	const context = React.useContext(GlobalContext);
 	const { items } = context.core;
+	const { ITEM_ARCHETYPES } = context.localized;
 
 	return (
 		<Table celled striped compact='very'>
@@ -32,10 +33,19 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 					<Table.Row key={`bracket_${row.first}_${row.last}`}>
 						<Table.Cell width={2}>{getBracketLabel(row)}</Table.Cell>
 						<Table.Cell width={14}>
-							{row.rewards.map(reward => {								
+							{row.rewards.map(reward => {
 								checkReward(items, reward);
+								if (reward.symbol) {
+									const archetype = ITEM_ARCHETYPES[reward.symbol];
+									if (archetype) {
+										reward.full_name = archetype.name;
+										reward.flavor = archetype.flavor;
+									}
+								}
+
+								let rewardTarget = reward.type === 1 ? 'event_info' : reward.type === 8 ? 'event_info_ships' : 'event_info_items';
 								return (
-									<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}} 
+									<Label key={`reward_${reward.id}`} style={{marginBottom: "0.25em"}}
 										color="black" title={reward.full_name}>
 										<div style={{
 											display: "flex",
@@ -44,22 +54,18 @@ function RankedRewardsTab(props: {eventData: GameEvent | EventData}) {
 											alignItems: "center"
 										}}>
 										{reward.icon &&
-										<ItemDisplay
-											quantity={reward.quantity}
-											src={getIconPath(reward.icon)}
-											size={48}
-											rarity={reward.rarity ?? 0}
-											maxRarity={reward.rarity ?? 0}		
-											allCrew={context.core.crew}
-											playerData={context.player.playerData}
-											allItems={context.core.items}
-											itemSymbol={reward.symbol}
-											targetGroup={reward.type === 1 ? 'event_info' : 'event_info_items'}
-											style={{
-												marginRight: "1em"
-											}}
-											
-										/>}
+											<AvatarView
+												mode={reward.type}
+												symbol={reward.symbol}
+												quantity={reward.quantity}
+												src={getIconPath(reward.icon)}
+												targetGroup={rewardTarget}
+												size={48}
+												style={{
+													marginRight: "1em"
+												}}
+											/>
+										}
 										{reward.full_name}
 										{reward.quantity > 1 ? ` x ${reward.quantity}` : ''}
 										</div>

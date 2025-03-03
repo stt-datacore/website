@@ -1,0 +1,75 @@
+import React from 'react';
+import {
+
+} from 'semantic-ui-react';
+
+import { IVoyageCalcConfig } from '../../../model/voyage';
+
+import { IDataGridSetup, IEssentialData } from '../../dataset_presenters/model';
+import { DataGrid } from '../../dataset_presenters/datagrid';
+
+import { IProspectiveConfig } from '../lineupeditor/model';
+
+import { getSkillData, ISkillData } from './skilldata';
+import { SkillDetail } from './skilldetail';
+
+type SkillCheckProps = {
+	id: string;
+	voyageConfig: IVoyageCalcConfig | IProspectiveConfig;
+	baselineConfig?: IVoyageCalcConfig;
+	highlightedSkills: string[];
+	setHighlightedSkills: (value: string[]) => void;
+};
+
+export const SkillCheck = (props: SkillCheckProps) => {
+	const { id, voyageConfig, baselineConfig, highlightedSkills, setHighlightedSkills } = props;
+
+	const data = React.useMemo<ISkillData[]>(() => {
+		return getSkillData(voyageConfig);
+	}, [voyageConfig]);
+
+	const baselineData = React.useMemo<ISkillData[] | undefined>(() => {
+		if (!baselineConfig) return;
+		return getSkillData(baselineConfig);
+	}, [baselineConfig]);
+
+	const gridSetup: IDataGridSetup = {
+		gridProps: {
+			centered: true,
+			columns: 3,
+			stackable: true
+		},
+		renderGridColumn: (datum: IEssentialData) => renderSkill(datum as ISkillData),
+		defaultSort: { id: 'score', firstSort: 'descending' }
+	};
+
+	return (
+		<DataGrid
+			id={`${id}/datagrid`}
+			data={data}
+			setup={gridSetup}
+		/>
+	);
+
+	function renderSkill(skillData: ISkillData): JSX.Element {
+		const baselineSkillData: ISkillData | undefined = baselineData?.find(od =>
+			od.skill === skillData.skill
+		);
+		return (
+			<SkillDetail
+				highlighted={highlightedSkills.includes(skillData.skill)}
+				setHighlighted={(value) => {
+					if (value) {
+						setHighlightedSkills([...highlightedSkills, skillData.skill])
+					}
+					else {
+						setHighlightedSkills(highlightedSkills.filter(f => f !== skillData.skill))
+					}
+				}}
+				voyageConfig={voyageConfig}
+				currentData={skillData}
+				baselineData={baselineSkillData}
+			/>
+		);
+	}
+};
