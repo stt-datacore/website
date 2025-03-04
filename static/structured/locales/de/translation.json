@@ -881,6 +881,7 @@
         }
     },
     "global": {
+        "pending_release": "Ausstehende Veröffentlichung",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",

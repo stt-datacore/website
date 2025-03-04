@@ -130,7 +130,26 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 	}
 	if (['allCrew', 'offers', 'buyBack'].includes(tableType)) {
 		tableConfig.push(
-			{ width: 1, column: 'date_added', title: t('base.release_date'), reverse: true },
+			{
+				width: 1,
+				column: 'date_added',
+				title: t('base.release_date'),
+				reverse: true,
+				customCompare: (a: CrewMember, b: CrewMember) => {
+					a.date_added ??= new Date();
+					b.date_added ??= new Date();
+					if (typeof a.date_added === 'string') a.date_added = new Date(a.date_added);
+					if (typeof b.date_added === 'string') b.date_added = new Date(b.date_added);
+					let m = a.date_added.getTime() - b.date_added.getTime();
+					if (!m) {
+						if (a.preview !== b.preview) {
+							if (a.preview) m = -1;
+							else if (b.preview) m = 1;
+						}
+					}
+					return m;
+				}
+			},
 		);
 
 	}
@@ -213,7 +232,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printPortalStatus(crew, t, true, true)}</b>
 			</Table.Cell>}
 			<Table.Cell textAlign='center' width={2}>
-				{(['allCrew', 'offers', 'buyBack'].includes(tableType)) && new Date(crew.date_added).toLocaleDateString()}
+				{(['allCrew', 'offers', 'buyBack'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
 				{!['allCrew', 'offers', 'buyBack'].includes(tableType) &&
 					<div title={
 						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"

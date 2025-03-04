@@ -887,6 +887,7 @@
         }
     },
     "global": {
+        "pending_release": "Pendiente de publicación",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",

@@ -889,6 +889,7 @@
         }
     },
     "global": {
+        "pending_release": "En attente de publication",
         "aborted": "Terminé",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",

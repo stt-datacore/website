@@ -881,6 +881,7 @@
         }
     },
     "global": {
+        "pending_release": "Pending Release",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
