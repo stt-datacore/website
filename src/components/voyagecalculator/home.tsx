@@ -609,11 +609,11 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
 				/>
-				{/* {voyage.voyage_type === 'encounter' && (
+				{voyage.voyage_type === 'encounter' && (
 					<EncounterHelperAccordion
 						voyageConfig={voyage}
 					/>
-				)} */}
+				)}
 				<StatsRewardsAccordion
 					voyage={voyage}
 					roster={myCrew}
