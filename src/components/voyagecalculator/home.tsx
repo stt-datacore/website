@@ -25,6 +25,7 @@ import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
+import { DEFAULT_ENCOUNTER_TRAITS } from './utils';
 import { Calculator } from './calculator/calc_main';
 import { EncounterHelperAccordion } from './encounters/encounterhelper/encounterhelper';
 import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
@@ -275,7 +276,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				eventConfig.crew_slots.forEach(slot => { slot.trait = ''; });
 
 				// Add encounter traits to voyage event content
-				voyageEventContent.encounter_traits = guessEncounterTraits(voyageEvent, TRAIT_NAMES);
+				voyageEventContent.encounter_traits = DEFAULT_ENCOUNTER_TRAITS; //guessEncounterTraits(voyageEvent, TRAIT_NAMES);
 				voyageEventContent.encounter_times = guessEncounterTimes(voyageEvent, 'minutes');
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {

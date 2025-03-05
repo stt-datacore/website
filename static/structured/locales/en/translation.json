@@ -2266,7 +2266,7 @@
             "targeting_message": "Only showing viable {{seat}} alternates",
             "view_voyage": "View prospective voyage"
         },
-        "encounter_traits": "Encounter Crit Traits",
+        "encounter_traits": "Encounter Traits",
         "estimate": {
             "1_refill": "1 Refill",
             "analysis": {

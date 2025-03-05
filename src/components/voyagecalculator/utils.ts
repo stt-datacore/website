@@ -3,6 +3,10 @@ import { PlayerCrew } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { IVoyageEventContent, IVoyageInputConfig } from '../../model/voyage';
 
+export const DEFAULT_ENCOUNTER_TRAITS: string[] = [
+	'casual', 'explorer', 'hero', 'inspiring', 'investigator', 'marksman', 'playful', 'scoundrel'
+];
+
 export const POPUP_DELAY = 500;
 
 export const voySkillScore = (sk: Skill) => sk.core + (sk.range_min + sk.range_max) / 2;
