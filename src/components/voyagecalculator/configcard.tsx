@@ -1,18 +1,22 @@
 import React from 'react';
 import {
 	Button,
-	Card, CardContent, CardHeader,
+	Card,
+	Header,
 	Image,
-	Label, LabelGroup
+	Label,
+	Table
 } from 'semantic-ui-react';
 
+import { RarityStyle } from '../../model/boss';
 import { CrewMember } from '../../model/crew';
 import { Voyage } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { Estimate, IFullPayloadAssignment, ITrackedCheckpoint, ITrackedVoyage, IVoyageCalcConfig, IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
 import { formatTime } from '../../utils/voyageutils';
+
+import CONFIG from '../CONFIG';
 
 import { HistoryContext } from '../voyagehistory/context';
 import { addCrewToHistory, addVoyageToHistory, createTrackableCrew, createCheckpoint, createTrackableVoyage, estimateTrackedVoyage, getRuntime, NEW_TRACKER_ID, SyncState, postTrackedData } from '../voyagehistory/utils';
@@ -35,18 +39,18 @@ export const ConfigCard = (props: ConfigCardProps) => {
 		case 'encounter': voyageType = t('voyage.type_names.encounter_voyage'); break;
 	}
 
-	const running: Voyage | undefined = ephemeral?.voyage?.find(voyage =>
+	const runningVoyage: Voyage | undefined = ephemeral?.voyage?.find(voyage =>
 		configSource === 'player' && voyage.voyage_type === voyageConfig.voyage_type
 	);
 
 	let runningShip: Ship | undefined;
-	if (running && playerData) {
-		runningShip = playerData.player.character.ships.find(s => s.id === running.ship_id);
+	if (runningVoyage && playerData) {
+		runningShip = playerData.player.character.ships.find(s => s.id === runningVoyage.ship_id);
 	}
 
 	let header: string = '';
-	if (running?.ship_name) {
-		header = `${running.ship_name} (${voyageType})`;
+	if (runningVoyage?.ship_name) {
+		header = `${runningVoyage.ship_name} (${voyageType})`;
 	}
 	else if (configSource === 'custom') {
 		header = t('voyage.custom_voyage_x', { x: voyageType });
@@ -57,32 +61,36 @@ export const ConfigCard = (props: ConfigCardProps) => {
 
 	return (
 		<Card fluid>
-			<CardContent>
+			<Card.Content>
 				{runningShip && <RunningShipIcon ship={runningShip} />}
-				<CardHeader>
+				<Card.Header style={{ marginBottom: '.5em' }}>
 					{header}
-				</CardHeader>
-				<div style={{ marginTop: '.5em', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'end', rowGap: '1em' }}>
+				</Card.Header>
+				<ConfigSkills voyageConfig={voyageConfig} />
+				{voyageConfig.voyage_type === 'encounter' && (
 					<div>
-						<ConfigSkills voyageConfig={voyageConfig} />
-						{voyageConfig.voyage_type === 'encounter' && <EncounterBonuses voyageConfig={voyageConfig} />}
-						{running && (
+						<EncounterBonuses voyageConfig={voyageConfig} />
+					</div>
+				)}
+				<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'end', rowGap: '.5em' }}>
+					<div>
+						{runningVoyage && (
 							<p style={{ marginTop: '1em' }}>
-								<RunningStatus voyage={running} />
-								<RunningTracker voyage={running} ship={runningShip!} />
+								<RunningStatus voyage={runningVoyage} />
+								<RunningTracker voyage={runningVoyage} ship={runningShip!} />
 							</p>
 						)}
-						{!running && configSource === 'player' && (
+						{!runningVoyage && configSource === 'player' && (
 							<p style={{ marginTop: '1em' }}>
 								{t('voyage.awaiting_crew')}
 							</p>
 						)}
 					</div>
-					<div>
+					<div style={{ textAlign: 'right' }}>
 						{renderToggle()}
 					</div>
 				</div>
-			</CardContent>
+			</Card.Content>
 		</Card>
 	);
 };
@@ -112,7 +120,7 @@ const ConfigSkills = (props: ConfigSkillsProps) => {
 	const { voyageConfig } = props;
 
 	return (
-		<LabelGroup size='big'>
+		<Label.Group size='big'>
 			<Label>
 				<Image size='mini' spaced='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.primary_skill}.png`} />
 				{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}
@@ -126,13 +134,20 @@ const ConfigSkills = (props: ConfigSkillsProps) => {
 					{SHIP_TRAIT_NAMES[voyageConfig.ship_trait] ?? voyageConfig.ship_trait}
 				</Label>
 			)}
-		</LabelGroup>
+		</Label.Group>
 	);
 };
 
 interface IBonusLabel {
 	key: string;
 	content: string;
+	rarity: number;
+};
+
+interface IBonusGroup {
+	key: string;
+	header: string;
+	bonuses: IBonusLabel[];
 };
 
 type EncounterBonusesProps = {
@@ -146,20 +161,28 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 
 	if (!voyageConfig.event_content) return <></>;
 
+	const sortLabels = (a: IBonusLabel, b: IBonusLabel) => {
+		if (a.rarity === b.rarity)
+			return a.content.localeCompare(b.content);
+		return b.rarity - a.rarity;
+	};
+
 	const bonusShips: IBonusLabel[] = [];
 	voyageConfig.event_content.featured_ships.forEach(shipSymbol => {
 		const featuredShip: Ship | undefined = globalContext.core.ships.find(ship => ship.symbol === shipSymbol);
 		if (featuredShip) {
 			bonusShips.push({
 				key: featuredShip.symbol,
-				content: featuredShip.name ?? featuredShip.symbol
+				content: featuredShip.name ?? featuredShip.symbol,
+				rarity: featuredShip.rarity
 			})
 		}
 	});
 	voyageConfig.event_content.antimatter_bonus_ship_traits.forEach(shipTrait => {
 		bonusShips.push({
 			key: shipTrait,
-			content: SHIP_TRAIT_NAMES[shipTrait] ?? shipTrait
+			content: SHIP_TRAIT_NAMES[shipTrait] ?? shipTrait,
+			rarity: 0
 		});
 	});
 
@@ -169,14 +192,16 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 		if (featuredCrew) {
 			bonusCrew.push({
 				key: featuredCrew.symbol,
-				content: featuredCrew.name
+				content: featuredCrew.name,
+				rarity: featuredCrew.max_rarity
 			})
 		}
 	});
 	voyageConfig.event_content.antimatter_bonus_crew_traits.forEach(crewTrait => {
 		bonusCrew.push({
 			key: crewTrait,
-			content: TRAIT_NAMES[crewTrait] ?? crewTrait
+			content: TRAIT_NAMES[crewTrait] ?? crewTrait,
+			rarity: 0
 		});
 	});
 
@@ -184,35 +209,78 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 	voyageConfig.event_content.encounter_traits?.forEach(eTrait => {
 		encounterBonus.push({
 			key: eTrait,
-			content: TRAIT_NAMES[eTrait] ?? eTrait
+			content: TRAIT_NAMES[eTrait] ?? eTrait,
+			rarity: 0
 		});
 	})
 
+	const groups: IBonusGroup[] = [
+		{	/* Event Ships */
+			key: 'ships',
+			header: t('base.event_ships'),
+			bonuses: bonusShips
+		},
+		{	/* Event Crew */
+			key: 'crew',
+			header: t('base.event_crew'),
+			bonuses: bonusCrew
+		}
+	];
+
+	if (encounterBonus.length > 0) {
+		groups.push(
+			{	/* Encounter Crit Traits */
+				key: 'crits',
+				header: t('voyage.encounter_traits'),
+				bonuses: encounterBonus
+			}
+		);
+	}
+
 	return (
-		<React.Fragment>
-			{[bonusShips, bonusCrew].map((bonusGroup, idx) => (
-				<LabelGroup key={idx}>
-					{bonusGroup.map(bonus =>
-						<Label key={bonus.key}>
-							{bonus.content}
-						</Label>
-					)}
-				</LabelGroup>
+		<Table basic='very' collapsing compact='very'>
+			{groups.map(group => (
+				<Table.Row key={group.key}>
+					<Table.Cell>
+						<Header as='h5'>
+							{group.header}{t('global.colon')}
+						</Header>
+					</Table.Cell>
+					<Table.Cell>
+						<Label.Group>
+							{group.bonuses.sort(sortLabels).map(bonus =>
+								<Label key={bonus.key} style={getStyleByRarity(bonus.rarity)}>
+									{bonus.content}
+								</Label>
+							)}
+						</Label.Group>
+					</Table.Cell>
+				</Table.Row>
 			))}
-			{!!encounterBonus?.length && (
-				<LabelGroup>
-					<span style={{ fontWeight: 'bold', fontSize: '.9em', paddingRight: '1em' }}>
-						{t('voyage.encounter_traits')}:
-					</span>
-					{encounterBonus.map(bonus =>
-						<Label key={bonus.key}>
-							{bonus.content}
-						</Label>
-					)}
-				</LabelGroup>
-			)}
-		</React.Fragment>
+		</Table>
 	);
+
+	function getStyleByRarity(rarity: number): RarityStyle | undefined {
+		if (rarity === 0) return undefined
+		let background = 'grey', color = 'white';
+		if (rarity === 1) {
+			background = '#9b9b9b';
+		}
+		else if (rarity === 2) {
+			background = '#50aa3c';
+		}
+		else if (rarity === 3) {
+			background = '#5aaaff';
+		}
+		else if (rarity === 4) {
+			background = '#aa2deb';
+		}
+		else if (rarity === 5) {
+			background = '#fdd26a';
+			color = 'black';
+		}
+		return { background, color };
+	}
 };
 
 type RunningStatusProps = {

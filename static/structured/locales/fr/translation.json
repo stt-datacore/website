@@ -40,6 +40,7 @@
         "crewman": "Équipier",
         "crewmen": "Équipiers",
         "date": "Date",
+        "event_crew": "Équipiers d'événement",
         "event_ships": "Vaisseaux événementiels",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
@@ -2278,7 +2279,7 @@
             "targeting_message": "Afficher uniquement les alternatives viables pour {{seat}}",
             "view_voyage": "Afficher le voyage potentiel"
         },
-        "encounter_traits": "Traits critiques de rencontre",
+        "encounter_traits": "Traits de rencontre",
         "estimate": {
             "1_refill": "1 recharge",
             "analysis": {

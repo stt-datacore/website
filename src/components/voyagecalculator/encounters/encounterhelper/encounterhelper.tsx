@@ -35,7 +35,7 @@ export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
 				onClick={() => setIsActive(!isActive)}
 			>
 				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
-				Encounter helper (Experimental)
+				Encounter helper
 			</Accordion.Title>
 			<Accordion.Content active={isActive}>
 				{isActive && <EncounterHelper voyageConfig={voyageConfig} />}

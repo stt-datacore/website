@@ -15,7 +15,6 @@ import { useStateWithStorage } from '../../utils/storage';
 import { IEventData } from '../eventplanner/model';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { OptionsPanelFlexColumn } from '../stats/utils';
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
@@ -26,6 +25,7 @@ import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
+import { DEFAULT_ENCOUNTER_TRAITS } from './utils';
 import { Calculator } from './calculator/calc_main';
 import { EncounterHelperAccordion } from './encounters/encounterhelper/encounterhelper';
 import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
@@ -108,10 +108,10 @@ const NonPlayerHome = () => {
 
 	function renderCancelButton(): JSX.Element {
 		return (
-			<Button
+			<Button	/* All Voyages */
 				size='large'
 				icon='backward'
-				content='Back'
+				content={t('voyage.voyages.all')}
 				onClick={() => setVoyageConfig(undefined)}
 			/>
 		);
@@ -131,8 +131,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { dbid } = props;
 	const { TRAIT_NAMES } = globalContext.localized.english;
+	const { dbid } = props;
+
 	const [history, setHistory] = useStateWithStorage<IVoyageHistory>(
 		dbid+'/voyage/history',
 		defaultHistory,
@@ -202,7 +203,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 
 	// Only show throbber if no existing active view
 	if (!activeView && historyInitState < InitState.Initialized)
-		return <Loader active inline='centered' content='Loading voyage tool...' />;
+		return <Loader active inline='centered' content={t('voyage.loading_voyage_tool_ellipses')} />;
 
 	const historyContext: IHistoryContext = {
 		dbid,
@@ -275,7 +276,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				eventConfig.crew_slots.forEach(slot => { slot.trait = ''; });
 
 				// Add encounter traits to voyage event content
-				voyageEventContent.encounter_traits = guessEncounterTraits(voyageEvent, TRAIT_NAMES);
+				voyageEventContent.encounter_traits = DEFAULT_ENCOUNTER_TRAITS; //guessEncounterTraits(voyageEvent, TRAIT_NAMES);
 				voyageEventContent.encounter_times = guessEncounterTimes(voyageEvent, 'minutes');
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
@@ -491,13 +492,13 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	}
 
 	function renderViewButton(voyageConfig: IVoyageInputConfig, configSource: 'player' | 'custom' = 'player'): JSX.Element {
-		const running: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
+		const runningVoyage: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
 		return (
 			<Button	/* View running voyage OR View crew calculator */
 				size='large'
 				color='blue'
-				icon={running ? 'rocket' : 'users'}
-				content={running ? t('voyage.view.active_voyage') : t('voyage.view.crew_calculator')}
+				icon={runningVoyage ? 'rocket' : 'users'}
+				content={runningVoyage ? t('voyage.view.active_voyage') : t('voyage.view.crew_calculator')}
 				onClick={() => setActiveView({ source: configSource, config: voyageConfig })}
 			/>
 		);
@@ -506,6 +507,17 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	function renderActiveView(): JSX.Element {
 		if (!activeView) return <></>;
 
+		const runningVoyage: Voyage | undefined = ephemeral?.voyage.find(voyage =>
+			activeView.source === 'player' && voyage.voyage_type === activeView.config.voyage_type
+		);
+		// Attach voyage event data, if available
+		if (runningVoyage?.voyage_type === 'encounter') {
+			const activeVoyageEvent: IEventData | undefined = eventData.find(evt =>
+				evt.content_types.includes('voyage') && evt.seconds_to_start === 0 && evt.seconds_to_end > 0
+			);
+			if (activeVoyageEvent) runningVoyage.event_content = activeVoyageEvent.activeContent as IVoyageEventContent;
+		}
+
 		return (
 			<React.Fragment>
 				<ConfigCard
@@ -513,19 +525,27 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					voyageConfig={activeView.config}
 					renderToggle={renderCancelButton}
 				/>
-				<PlayerVoyage
-					configSource={activeView.source}
-					voyageConfig={activeView.config}
-					eventData={eventData}
-					runningShipIds={runningShipIds}
-				/>
+				{!runningVoyage && (
+					<CalculatorSetup
+						key={activeView.source}
+						configSource={activeView.source}
+						voyageConfig={activeView.config}
+						eventData={eventData}
+						runningShipIds={runningShipIds}
+					/>
+				)}
+				{runningVoyage && (
+					<RunningVoyage
+						voyage={runningVoyage}
+					/>
+				)}
 			</React.Fragment>
 		);
 	}
 
 	function renderCancelButton(): JSX.Element {
 		return (
-			<Button	/* All voyages */
+			<Button	/* All Voyages */
 				size='large'
 				icon='backward'
 				content={t('voyage.voyages.all')}
@@ -535,21 +555,19 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	}
 };
 
-type PlayerVoyageProps = {
-	configSource: 'player' | 'custom';
-	voyageConfig: IVoyageInputConfig;
-	eventData: IEventData[];
-	runningShipIds: number[];
+type RunningVoyageProps = {
+	voyage: Voyage;
 };
 
-const PlayerVoyage = (props: PlayerVoyageProps) => {
+const RunningVoyage = (props: RunningVoyageProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
 	const { playerData, ephemeral } = globalContext.player;
-	const { configSource, voyageConfig, eventData, runningShipIds } = props;
+	const { voyage } = props;
+
+	const [highlightedSkills, setHighlightedSkills] = React.useState<string[]>([]);
 
 	// Memoize this since we're adding a hook, above.
-	const myCrew: IVoyageCrew[] = React.useMemo(() => {
+	const myCrew: IVoyageCrew[] = React.useMemo<IVoyageCrew[]>(() => {
 		if (!playerData || !ephemeral) return [];
 		return rosterizeMyCrew(playerData.player.character.crew, ephemeral.activeCrew, ephemeral.voyage);
 	}, [playerData, ephemeral?.activeCrew, ephemeral?.voyage]);
@@ -557,72 +575,52 @@ const PlayerVoyage = (props: PlayerVoyageProps) => {
 	if (!playerData || !ephemeral)
 		return <></>;
 
-	const running: Voyage | undefined = ephemeral.voyage.find(voyage =>
-		configSource === 'player' && voyage.voyage_type === voyageConfig.voyage_type
-	);
-
-	if (!running) {
-		return (
-			<CalculatorSetup
-				key={configSource}
-				configSource={configSource}
-				voyageConfig={voyageConfig}
-				eventData={eventData}
-				runningShipIds={runningShipIds}
-			/>
-		);
-	}
-
-	const ship: Ship | undefined = playerData.player.character.ships.find(s => s.id === running.ship_id);
+	const ship: Ship | undefined = playerData.player.character.ships.find(s => s.id === voyage.ship_id);
 
 	// Active details to pass independently to CIVAS
 	const activeDetails = {
-		created_at: running.created_at,
-		log_index: running.log_index,
-		hp: running.hp
+		created_at: voyage.created_at,
+		log_index: voyage.log_index,
+		hp: voyage.hp
 	};
 
-	const event_data = eventData.find(f => f.seconds_to_start === 0 && f.seconds_to_end > 0 && f.content_types.includes('voyage') && running.voyage_type === 'encounter');
-	const runningVoyage = {...running, event_content: event_data?.activeContent as IVoyageEventContent };
-	const flexCol = OptionsPanelFlexColumn;
-
-	const recalled = runningVoyage.state === 'recalled';
+	const recalled: boolean = voyage.state === 'recalled';
 
 	return (
 		<React.Fragment>
-			<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
+			<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5em' }}>
 				<VoyageStatsAccordion
-					voyageData={runningVoyage}
+					voyageData={voyage}
 					roster={myCrew}
 					rosterType={'myCrew'}
 					playerData={playerData}
 					initialExpand={!recalled}
 				/>
 				<LineupViewerAccordion
-					highlightedSkills={highlightedSkills}
-					voyageConfig={runningVoyage}
+					voyageConfig={voyage}
 					ship={ship}
 					roster={myCrew}
 					rosterType={'myCrew'}
+					highlightedSkills={highlightedSkills}
 				/>
 				<SkillCheckAccordion
+					voyageConfig={voyage}
+					roster={myCrew}
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
-					voyageConfig={runningVoyage}
-					roster={myCrew}
 				/>
-				{/* {voyageConfig.voyage_type === 'encounter' && (
+				{voyage.voyage_type === 'encounter' && (
 					<EncounterHelperAccordion
-						voyageConfig={runningVoyage}
+						voyageConfig={voyage}
 					/>
-				)} */}
+				)}
 				<StatsRewardsAccordion
-					voyage={runningVoyage}
+					voyage={voyage}
 					roster={myCrew}
 					initialExpand={recalled}
-					/>
+				/>
 			</div>
-			<CIVASMessage voyageConfig={running} activeDetails={activeDetails} />
+			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />
 		</React.Fragment>

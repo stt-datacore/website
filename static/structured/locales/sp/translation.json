@@ -40,6 +40,7 @@
         "crewman": "Tripulante",
         "crewmen": "Tripulantes",
         "date": "Fecha",
+        "event_crew": "Tripulantes de evento",
         "event_ships": "Buques de eventos",
         "featured_ships": "Buques destacados",
         "featured_traits": "Características destacadas",
@@ -582,6 +583,7 @@
                     "compact": "Compacto",
                     "coverage_potential": "Potencial de cobertura",
                     "crew_delimiter": "Delimitador de tripulación",
+                    "defaults": "valores predeterminados",
                     "dropdowns": {
                         "bullet": {
                             "full": "Nódulo y número",
@@ -634,8 +636,7 @@
                     "possible_solutions": "Posibles soluciones",
                     "solved_nodes": "Nodos resueltos",
                     "traits": "Rasgos",
-                    "unique": "Único",
-                    "defaults": "valores predeterminados"
+                    "unique": "Único"
                 },
                 "title": "Personalizar exportación"
             },
@@ -2276,7 +2277,7 @@
             "targeting_message": "Solo se muestran alternativas viables de {{seat}}",
             "view_voyage": "Ver posible viaje"
         },
-        "encounter_traits": "Rasgos críticos de encuentro",
+        "encounter_traits": "Rasgos de encuentro",
         "estimate": {
             "1_refill": "1 recarga",
             "analysis": {
@@ -2371,8 +2372,8 @@
             "line_3": "Abra el juego y luego regrese a DataCore con una copia nueva de sus datos de jugador para garantizar una estimación más precisa."
         },
         "picker_options": {
-            "frozen": "Considere tripulación congelada",
             "encounter_traits": "Equilibra las competencias con las bonificaciones de rasgos críticos",
+            "frozen": "Considere tripulación congelada",
             "shuttle": "Considere tripulación en lanzaderas activas",
             "sub_title": "Se considerará un total de {{n}} tripulantes para este viaje.",
             "title": "Tripulantes a considerar",
