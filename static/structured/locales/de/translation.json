@@ -40,6 +40,7 @@
         "crewman": "Crew",
         "crewmen": "Crew",
         "date": "Datum",
+        "event_crew": "Ereignis-Crew",
         "event_ships": "Ereignis Schiffe",
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
@@ -146,13 +147,13 @@
                 "antimatter": "Eigenschaften von Antimaterie",
                 "citeEffort": "Maximaler Aufwand",
                 "collections": "Sammlungen verbessern erhöhte Statistiken",
-                "quipment": "Rüstzeugspunktzahl",
                 "groupSparsity": "Reisegruppenknappheit",
                 "improved": "Verbesserte Reise",
                 "magic": "Maßgrenze (Magische Zahl)",
                 "never": "Niemals im Portal",
                 "portal": "Nicht im Portal",
                 "power": "Basis-Leistungswert",
+                "quipment": "Rüstzeugspunktzahl",
                 "rareness": "Exklusivität",
                 "retrieval": "Abrufquoten",
                 "score": "Gesamtleistungsranking der Liste",
@@ -2265,7 +2266,7 @@
             "targeting_message": "Es werden nur mögliche {{seat}}-Alternativen angezeigt",
             "view_voyage": "Voraussichtliche Reise anzeigen"
         },
-        "encounter_traits": "Kritische Begegnungsmerkmale",
+        "encounter_traits": "Begegnungsmerkmale",
         "estimate": {
             "1_refill": "1 Nachfüllung",
             "analysis": {
