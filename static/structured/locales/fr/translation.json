@@ -890,7 +890,6 @@
         }
     },
     "global": {
-        "pending_release": "En attente de publication",
         "aborted": "Terminé",
         "admiral": "Amiral",
         "advanced_settings": "Réglages Avancés",
@@ -1012,6 +1011,7 @@
         "optional": "Facultatif",
         "options": "Options",
         "or": "ou",
+        "pending_release": "En attente de publication",
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
@@ -2389,6 +2389,7 @@
                 "best": "Compétence principale",
                 "best_2": "Les 2 meilleures compétences de l'équipier"
             },
+            "remove_all": "Retirer les quipements de tout l'équipage",
             "skill_prefs": {
                 "none": "{{global.none}}",
                 "voyage": "Préférer les compétences de voyage",

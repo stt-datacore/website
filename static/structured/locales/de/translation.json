@@ -882,7 +882,6 @@
         }
     },
     "global": {
-        "pending_release": "Ausstehende Veröffentlichung",
         "aborted": "Abgebrochen",
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
@@ -1002,6 +1001,7 @@
         "optional": "Optional",
         "options": "Optionen",
         "or": "oder",
+        "pending_release": "Ausstehende Veröffentlichung",
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
@@ -2377,6 +2377,7 @@
                 "best": "Primäre Fertigkeit",
                 "best_2": "Beste 2 Crew-Fertigkeiten"
             },
+            "remove_all": "Entfernen Sie die Rüstzeugen der gesamten Crew",
             "skill_prefs": {
                 "none": "{{global.none}}",
                 "voyage": "Reisefertigkeiten bevorzugen",

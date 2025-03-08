@@ -65,7 +65,13 @@ export const QuipmentProspectsOptions = (props: QuipmentProspectProps) => {
                         <Checkbox label={t('voyage.quipment.enable')}
                             style={{wordWrap:'wrap'}}
                             checked={config.enabled}
-                            onChange={(e, { checked }) => setConfig({...config, enabled: !!checked })}
+                            onChange={(e, { checked }) => setConfig({...config, enabled: !!checked, remove: !!checked ? false : config.remove })}
+                            />
+                        <Checkbox label={t('voyage.quipment.remove_all')}
+                            disabled={config.enabled}
+                            style={{wordWrap:'wrap'}}
+                            checked={config.remove}
+                            onChange={(e, { checked }) => setConfig({...config, remove: !!checked, enabled: !!checked ? false : config.enabled })}
                             />
                         <Checkbox label={t('voyage.quipment.use_current')}
                             style={{wordWrap:'wrap'}}
@@ -141,7 +147,7 @@ export const QuipmentProspectsOptions = (props: QuipmentProspectProps) => {
 
     function renderTrigger() {
 
-        return <Button color={config.enabled ? 'green' : undefined}>
+        return <Button color={config.enabled ? 'green' : config.remove ? 'orange' : undefined}>
             {t('voyage.quipment.title')}
         </Button>
     }

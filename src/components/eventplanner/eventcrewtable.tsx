@@ -3,7 +3,6 @@ import { Header, Table, Icon, Rating, Form, Checkbox, Message, Popup } from 'sem
 import { Link } from 'gatsby';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
-
 import { GlobalContext } from '../../context/globalcontext';
 
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
@@ -19,7 +18,6 @@ import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { SkillPicker } from '../base/skillpicker';
-import { PlayerCrew } from '../../model/player';
 import { QPContext } from '../qpconfig/provider';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
 import { OptionsPanelFlexRow } from '../stats/utils';
@@ -35,8 +33,8 @@ type EventCrewTableProps = {
 export const EventCrewTable = (props: EventCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const qpContext = React.useContext(QPContext);
-	const { t, tfmt } = globalContext.localized;
-	const [qpConfig, setQpConfig, applyQp] = qpContext.useQPConfig();
+	const { t } = globalContext.localized;
+	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
 
 	const { playerData, buffConfig } = globalContext.player;
 	const { rosterType, eventData, phaseIndex } = props;

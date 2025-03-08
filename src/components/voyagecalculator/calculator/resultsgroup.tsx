@@ -59,7 +59,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	// Full roster (pre-filtering but post-QP) is needed by lineup editor
 	const fullRoster = React.useMemo<IVoyageCrew[]>(() => {
 		return calculatorContext.crew.map(crew => {
-			if (qpConfig.enabled) {
+			if (qpConfig.enabled || qpConfig.remove) {
 				return applyQp(crew, voyageConfig) as IVoyageCrew;
 			}
 			return oneCrewCopy(crew) as IVoyageCrew;

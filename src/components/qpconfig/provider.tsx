@@ -3,7 +3,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { PlayerCrew } from "../../model/player";
 import { CrewMember, QuippedPower } from "../../model/crew";
 import { IVoyageCalcConfig, IVoyageInputConfig } from "../../model/voyage";
-import { oneCrewCopy, qbitsToSlots } from "../../utils/crewutils";
+import { applyCrewBuffs, oneCrewCopy, qbitsToSlots } from "../../utils/crewutils";
 import { calcQLots } from "../../utils/equipment";
 import { getItemWithBonus, ItemWithBonus } from "../../utils/itemutils";
 import { BuffStatTable } from "../../utils/voyageutils";
@@ -21,6 +21,7 @@ export type QuipmentProspectConfig = {
     pageId: string;
 	mode: QuipmentProspectMode;
 	enabled: boolean;
+	remove: boolean;
     current: boolean;
 	voyage: VoyageSkillPreferenceMode;
     slots: number;
@@ -33,6 +34,7 @@ export const DefaultQuipmentConfig: QuipmentProspectConfig = {
 	voyage: 'voyage',
 	current: false,
 	enabled: false,
+	remove: false,
 	slots: 0,
 	calc: 'all'
 };
@@ -76,6 +78,7 @@ export const QPConfigProvider = (props: QPConfigProps) => {
     </QPContext.Provider>)
 
     function useQPConfig(): [QuipmentProspectConfig, (value: QuipmentProspectConfig) => void, (crew: (PlayerCrew | CrewMember), voyageConfig?: IVoyageInputConfig) => (PlayerCrew | CrewMember)] {
+		if (config.enabled && config.remove) config.remove = false;
 		return [config, setConfig, applyQp];
     }
 
@@ -135,8 +138,8 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 		else if (qpConfig.mode === 'best_2') {
 			useQuipment = newcopy.best_quipment_1_2!;
 		}
-		if (!useQuipment) return c;
 
+		if (!useQuipment) return c;
 
 		if (qpConfig.mode === 'best') {
 			newcopy.kwipment = Object.values(useQuipment.skill_quipment[order[0]]).map(q => Number(q.kwipment_id));
@@ -170,8 +173,21 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 		newcopy.kwipment_prospects = true;
 		return newcopy;
 	}
+	else if (qpConfig.remove && c.q_bits >= 100 && c.immortal === -1) {
+		let newcopy = oneCrewCopy(c);
+		newcopy.kwipment = [0, 0, 0, 0];
+		newcopy.kwipment_expiration = [0, 0, 0, 0];
+		if (buffConfig) {
+			newcopy.skills = applyCrewBuffs(newcopy, buffConfig)!
+		}
+		else {
+			newcopy.skills = JSON.parse(JSON.stringify(newcopy.base_skills));
+		}
+		return newcopy;
+	}
 	else {
 		return c;
 	}
+
 }
 

@@ -888,7 +888,6 @@
         }
     },
     "global": {
-        "pending_release": "Pendiente de publicación",
         "aborted": "Abortado",
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
@@ -1010,6 +1009,7 @@
         "optional": "Opcional",
         "options": "Opciones",
         "or": "o",
+        "pending_release": "Pendiente de publicación",
         "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
@@ -2387,6 +2387,7 @@
                 "best": "Habilidad principal",
                 "best_2": "Las 2 mejores habilidades del tripulante"
             },
+            "remove_all": "Retirar los quipos a toda la tripulación.",
             "skill_prefs": {
                 "none": "{{global.none}}",
                 "voyage": "Prefiero las habilidades de viaje",

@@ -882,7 +882,6 @@
         }
     },
     "global": {
-        "pending_release": "Pending Release",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -1002,6 +1001,7 @@
         "optional": "Optional",
         "options": "Options",
         "or": "or",
+        "pending_release": "Pending Release",
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
@@ -2377,6 +2377,7 @@
                 "best": "Primary Skill",
                 "best_2": "Best 2 Crew Skills"
             },
+            "remove_all": "Remove quipment from all crew",
             "skill_prefs": {
                 "none": "{{global.none}}",
                 "voyage": "Prefer Voyage Skills",

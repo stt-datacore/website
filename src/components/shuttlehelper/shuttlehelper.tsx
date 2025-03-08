@@ -24,7 +24,7 @@ type ShuttleHelperProps = {
 export const ShuttleHelper = (props: ShuttleHelperProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const qpContext = React.useContext(QPContext);
-	const [qpConfig, setQpConfig, applyQp] = qpContext.useQPConfig();
+	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
 
 	const { playerData, ephemeral } = globalContext.player;
 

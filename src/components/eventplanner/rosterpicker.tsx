@@ -131,9 +131,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				}
 			}
 
-			if (qpConfig.enabled) {
-				crewman = applyQp(crewman) as IRosterCrew;
-			}
+			crewman = applyQp(crewman) as IRosterCrew;
 			return crewman;
 		});
 
@@ -193,9 +191,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				}
 			});
 			if (globalContext.maxBuffs) applyCrewBuffs(crewman, globalContext.maxBuffs);
-			if (qpConfig.enabled) {
-				crewman = applyQp(crewman) as IRosterCrew;
-			}
+			crewman = applyQp(crewman) as IRosterCrew;
 			return crewman;
 		});
 
