@@ -2,7 +2,7 @@
   "name": "stt-data-core",
   "description": "STT DataCore",
   "author": "ussjohnjay/ironyWrit",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
