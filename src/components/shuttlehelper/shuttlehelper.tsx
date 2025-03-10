@@ -9,6 +9,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { Shuttlers, Shuttle, ShuttleSeat, ISeatAssignment } from './model';
 import { ShuttlersContext, IShuttlersContext } from './context';
 import { Calculator } from './calculator';
+import { QPContext } from '../qpconfig/provider';
+import { QuipmentProspectsOptions } from '../qpconfig/options';
 
 // Use ShuttleHelper when 1) there's no player data, OR 2) there's no active event, OR 3) using allCrew as roster
 //	Shuttles and assignments do NOT persist across sessions
@@ -21,6 +23,9 @@ type ShuttleHelperProps = {
 
 export const ShuttleHelper = (props: ShuttleHelperProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const qpContext = React.useContext(QPContext);
+	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
+
 	const { playerData, ephemeral } = globalContext.player;
 
 	const [activeShuttles, setActiveShuttles] = React.useState<ShuttleAdventure[]>([]);
@@ -54,7 +59,12 @@ export const ShuttleHelper = (props: ShuttleHelperProps) => {
 
 	return (
 		<ShuttlersContext.Provider value={shuttlersContext}>
-			<Calculator />
+			<React.Fragment>
+				<p>
+					<QuipmentProspectsOptions config={qpConfig} setConfig={setQpConfig} />
+				</p>
+				<Calculator />
+			</React.Fragment>
 		</ShuttlersContext.Provider>
 	);
 

@@ -18,7 +18,7 @@ export interface ItemWithBonus {
 	bonusInfo: ItemBonusInfo;
 }
 
-export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[]) {
+export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[], include_missing = false) {
 	let data = [] as EquipmentCommon[];
 	player_items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
@@ -48,6 +48,15 @@ export function mergeItems(player_items: PlayerEquipmentItem[], items: Equipment
 			});
 		}
 	});
+	if (include_missing) {
+		items.forEach((item) => {
+			if (!data.some(d => d.symbol === item.symbol)) {
+				data.push(
+					JSON.parse(JSON.stringify(item))
+				)
+			}
+		})
+	}
 	return data;
 }
 
@@ -129,7 +138,7 @@ export function exportItemsAlt(items: EquipmentCommon[]): string {
 }
 
 export function populateItemCadetSources(items: EquipmentItem[], episodes: Mission[]) {
-	for(const item of items) {					
+	for(const item of items) {
 		for (let ep of episodes) {
 			let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
 			if (quests?.length) {
@@ -142,10 +151,10 @@ export function populateItemCadetSources(items: EquipmentItem[], episodes: Missi
 								mx = (1/mx) * 1.80;
 								let qitem = {
 									type: 4,
-									mastery: x,											
+									mastery: x,
 									name: quest.name,
 									energy_quotient: 1,
-									chance_grade: 5 * mx,						
+									chance_grade: 5 * mx,
 									mission_symbol: quest.symbol,
 									cost: 1,
 									avg_cost: 1/mx,
@@ -154,13 +163,13 @@ export function populateItemCadetSources(items: EquipmentItem[], episodes: Missi
 								} as EquipmentItemSource;
 								if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
 									item.item_sources.push(qitem);
-								}									
+								}
 							}
 							x++;
 						}
 					}
 				}
-			}					
+			}
 		}
 	}
 }
@@ -196,14 +205,14 @@ export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
 export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
     let bonusText = [] as string[];
     let bonuses = {} as { [key: string]: Skill };
-    
+
     if (item.bonuses) {
         for (let [key, value] of Object.entries(item.bonuses)) {
             let bonus = CONFIG.STATS_CONFIG[Number.parseInt(key)];
             if (bonus) {
-                bonusText.push(`+${value} ${bonus.symbol}`);	
+                bonusText.push(`+${value} ${bonus.symbol}`);
                 bonuses[bonus.skill] ??= { core: 0, range_min: 0, range_max: 0 } as Skill;
-                bonuses[bonus.skill][bonus.stat] = value;				
+                bonuses[bonus.skill][bonus.stat] = value;
                 bonuses[bonus.skill].skill = bonus.skill;
             } else {
                 // TODO: what kind of bonus is this?
@@ -268,7 +277,7 @@ export function subtractItemBonus<T extends PlayerCrew>(crew: T, source: Equipme
 export function getQuipmentCrew<T extends CrewMember>(item: EquipmentItem, crew: T[]): T[] {
 	if (item.kwipment) {
 		const bonus = getItemBonuses(item);
-		return crew.filter(f => {			
+		return crew.filter(f => {
 			let mrq = item.max_rarity_requirement ?? f.max_rarity;
 			let rr = mrq >= f.max_rarity;
 
@@ -321,11 +330,11 @@ export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T 
 }
 
 export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
-	if (!items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity)) {
-		let seeditem = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
-
-		items.push({
-			... seeditem,
+ 	let foundItem = items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity);
+	if (!foundItem) {
+		let template_item = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
+		foundItem = {
+			... template_item,
 			...reward,
 			name: reward.name ?? "",
 			symbol: reward.symbol ?? "",
@@ -337,8 +346,11 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 			item_sources: [],
 			archetype_id: reward.id,
 			isReward: !needed
-		});
+		};
+
+		items.push(foundItem);
 	}
+	return foundItem;
 }
 
 
@@ -367,6 +379,10 @@ export function formatDuration(time: number, t?: TranslateMethod) {
 	}
 };
 
+export function getQuipmentAsItemWithBonus(items: EquipmentItem[]) {
+	return items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
+}
+
 export function getItemWithBonus(item: EquipmentItem) {
 	return {
 		item,
@@ -384,13 +400,13 @@ export function sortItemsWithBonus(quipment: ItemWithBonus[], byItemCost?: boole
 		if (byItemCost) {
 			let ac = a.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
 			let bc = b.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
-			r = ac - bc;                                
+			r = ac - bc;
 			if (r) return r;
 		}
 
 		let an = 0;
 		let bn = 0;
-		
+
 		if (skill && skill in a.bonusInfo.bonuses && skill in b.bonusInfo.bonuses) {
 			let ask = a.bonusInfo.bonuses[skill];
 			let bsk = a.bonusInfo.bonuses[skill];

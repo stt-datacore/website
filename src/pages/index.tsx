@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { InitialOptions } from '../model/game-elements';
 import { GlobalContext } from '../context/globalcontext';
@@ -25,6 +25,7 @@ const IndexPage = (props: IndexPageProps) => {
 	const [initOptions, setInitOptions] = React.useState<InitialOptions | undefined>(undefined);
 	const [initHighlight, setInitHighlight] = React.useState('');
 
+	//const [rosterType, setRosterType] = useStateWithStorage<RosterType>(`roster/rosterType`, playerData ? 'myCrew' : 'allCrew');
 	const [rosterType, setRosterType] = React.useState<RosterType>(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [searchExtra, setSearchExtra] = React.useState<string | undefined>(undefined);
@@ -35,15 +36,15 @@ const IndexPage = (props: IndexPageProps) => {
 	const tiny = TinyStore.getStore("index");
 
 	tiny.subscribe((name) => {
-		if (name === "search") {			
-			let search = tiny.getRapid<string>('search') ?? '';			
+		if (name === "search") {
+			let search = tiny.getRapid<string>('search') ?? '';
 			history.pushState({}, "", "/?search=" + search);
 			window.setTimeout(() => {
 				setSearchExtra(search);
-			});			
+			});
 		}
 	});
-	
+
 	React.useEffect(() => {
 		// Check for custom initial table options from URL or <Link state>
 		const initOptions = initSearchableOptions(props.location, searchExtra);
@@ -58,7 +59,7 @@ const IndexPage = (props: IndexPageProps) => {
 	}, [searchExtra]);
 
 	return (
-		<DataPageLayout pageTitle={t('pages.crew_stats')} playerPromptType='recommend'>
+		<DataPageLayout pageTitle={t('pages.crew_stats')} playerPromptType='recommend' demands={['continuum_missions']}>
 			<React.Fragment>
 				<RosterPicker
 					buffMode={playerData ? playerBuffMode : buffMode}

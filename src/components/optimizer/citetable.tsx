@@ -42,7 +42,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
     const { citeConfig, setCiteConfig, engine, results, appliedProspects, crewSkills } = citeContext;
     const { showEV } = citeConfig;
 
-    const skoMap = results?.skoMap ?? {};
+    const skoMap = results?.skoMap ?? undefined;
 
     let training = props.training ?? true;
     const { tabName, data } = props;
@@ -120,7 +120,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                     <Table.HeaderCell
                         onClick={(e) => sort === 'voyages' ? setDirection(direction === 'descending' ? 'ascending' : 'descending') : setSort('voyages')}
                         sorted={sort === 'voyages' ? direction : undefined}>
-                        {tfmt('cite_opt.columns.voyage_groups')}
+                        {tfmt('cite_opt.columns.voyages_groups')}
                     </Table.HeaderCell>
                     {engine === 'beta_tachyon_pulse' &&
                         <React.Fragment>
@@ -180,7 +180,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                     const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
                     const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';
                     //const isProspect = !!crew?.prospect;
-                    const rarecolor = skp !== 'no_order' ? CONFIG.RARITIES[skoMap[skp].rarity].color : undefined;
+                    const rarecolor = skp !== 'no_order' && !!skoMap ? CONFIG.RARITIES[skoMap[skp].rarity].color : undefined;
 
                     return (!!crew && !!sko && !!skp &&
                         <Table.Row key={crew.symbol + idx + tabName} positive={getChecked(crew.symbol)}>
@@ -285,7 +285,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                                         />))}
                                                 </div>
 
-                                                {!!skoMap[skp] && <div>
+                                                {!!skoMap && !!skoMap[skp] && <div>
                                                     <Popup trigger={
                                                         <div style={{ textAlign: 'center' }}>
                                                             <hr style={{ width: "100px", height: "2px", borderRadius: "2px", color: rarecolor, background: rarecolor }} color={rarecolor} />
@@ -454,7 +454,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
             else if (sort === 'skillOrder' && engine === 'beta_tachyon_pulse') {
                 let ska = crewSkills[a.symbol];
                 let skb = crewSkills[b.symbol];
-                r = skoMap[ska].count - skoMap[skb].count;
+                if (skoMap) r = skoMap[ska].count - skoMap[skb].count;
                 if (!r) {
                     r = (a.scoreTrip ?? 0) - (b.scoreTrip ?? 0);
                     if (direction === 'ascending') r *= -1;
