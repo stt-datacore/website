@@ -6,39 +6,33 @@ on:
 
   push:
     branches:
-      - 'sync-beta-mods'
+      - 'master'
 
 jobs:
     merge-master:
-        name: Merge pr or master branches into beta
+        name: Merge master into beta on autosync or PR merge
         runs-on: ubuntu-latest
+        # if: |
+        #   github.ref_name == 'master' ||
+        #   (github.event.pull_request.draft == false &&
+        #   github.event.pull_request.mergeable == true &&
+        #   github.event.pull_request.head.repo.fork == false &&
+        #   contains(github.event.pull_request.labels.*.name, 'dev-'))
         if: |
-          github.ref_name == 'sync-beta-mods' ||
-          (github.event.pull_request.draft == false &&
-          github.event.pull_request.mergeable == true &&
-          github.event.pull_request.head.repo.fork == false &&
-          contains(github.event.pull_request.labels.*.name, 'beta'))
+          github.ref_name == 'master'
 
         steps:
             - name: Website - Checkout
               uses: actions/checkout@v4
               with:
                 repository: stt-datacore/website
-                ref: sync-beta-mods
                 token: ${{ secrets.GITHUB_TOKEN }}
                 path: website
 
             - name: Merge into Beta
-              run: |
-                cd website
-                git config user.name github-actions
-                git config user.email github-actions@github.com
-                git checkout beta
-                git merge -X theirs --no-edit sync-beta-mods
-                git push
 
-              # uses: devmasx/merge-branch@master
-              # with:
-              #   type: now
-              #   target_branch: beta
-              #   github_token: ${{ secrets.GITHUB_TOKEN }}
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: beta
+                github_token: ${{ secrets.GITHUB_TOKEN }}
