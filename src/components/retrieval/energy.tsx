@@ -64,7 +64,7 @@ export const RetrievalEnergy = () => {
 	}
 	const flexRow = OptionsPanelFlexRow;
 	return (
-		<div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em'}}>{t('global.item_types.quantum')}: <strong>{printQuantum(energy.quantity)}</strong>. {energyMessage}</div>
+		<div style={{...flexRow, flexWrap: 'wrap', justifyContent: 'flex-start', gap: '0.25em'}}><div style={{...flexRow, flexWrap: 'nowrap', justifyContent: 'flex-start', gap: '0em'}}>{t('global.item_types.quantum')}:&nbsp;<strong>{printQuantum(energy.quantity)}</strong>.&nbsp;</div> {energyMessage}</div>
 	);
 
 	function getSecondsRemaining(target: number, quantity: number): number {
