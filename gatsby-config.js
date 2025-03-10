@@ -36,7 +36,7 @@ module.exports = {
 			options: {
 				token: process.env.CLOUDFLARE_TOKEN,
 				zoneId: process.env.CLOUDFLARE_ZONE_ID,
-				condition: (api, options) => process.env.GITHUB_REF === 'refs/heads/master',
+				condition: (api, options) => process.env.GITHUB_REF === 'refs/heads/master' || process.env.GITHUB_REF === 'refs/heads/beta',
 			}
 		},
 		{
