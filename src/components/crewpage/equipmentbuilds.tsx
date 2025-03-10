@@ -9,6 +9,7 @@ import ItemSources from '../../components/itemsources';
 import { ItemHoverStat } from '../../components/hovering/itemhoverstat';
 
 import CrewFullEquipTree from './crewfullequiptree';
+import { AvatarView } from '../item_presenters/avatarview';
 
 interface IEquipmentOptions {
 	key: string;
@@ -47,7 +48,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 				items={globalContext.core.items}
 				crew={crew}
 				onClosed={() => setModalVisible(false)}
-			/>			
+			/>
 		</React.Fragment>
 	);
 
@@ -67,12 +68,18 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 				content: (
 					<Header
 						icon={
-							<ItemDisplay
-								src={`${process.env.GATSBY_ASSETS_URL}${equipment.imageUrl}`}
+							<AvatarView
+								mode='item'
 								size={48}
-								maxRarity={equipment.rarity}
-								rarity={equipment.rarity}
-							/>
+								useDirect={true}
+								item={equipment}
+								/>
+							// <ItemDisplay
+							// 	src={`${process.env.GATSBY_ASSETS_URL}${equipment.imageUrl}`}
+							// 	size={48}
+							// 	maxRarity={equipment.rarity}
+							// 	rarity={equipment.rarity}
+							// />
 						}
 						content={equipment.name}
 						subheader={`Level ${es.level}`}

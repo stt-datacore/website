@@ -1,19 +1,81 @@
-import { BossBattlesRoot } from "./boss";
-import { BaseSkills, CrewMember, PlayerSkill, Skill } from "./crew";
-import { PlayerCrew, PlayerData } from "./player";
-import { Ship } from "./ship";
+import { BossBattlesRoot, BossEffect } from "./boss";
+import { BaseSkills, CrewMember, Skill } from "./crew";
+import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
+import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentCommon, EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
-import { ICoreData } from "../context/datacontext";
+import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
+import { IPolestar } from "../components/retrieval/model";
+import { RetrievalCost } from "../utils/retrieval";
+import { Estimate } from "./voyage";
 
-export interface GameWorkerOptionsList {
-    key: number;
-    value: number;
-    text: string;
+export type ComesFrom = {
+    type: number;
+    action: string;
+    bonus: number;
+    aspect: 'ability' | 'power';
 }
+
+
+export interface WorkerConfigBase<T> {
+    max_results?: number
+    max_iterations?: bigint;
+    start_index?: bigint;
+    verbose?: boolean;
+}
+
+export interface IWorkerResults<T> {
+    items: T[]
+    total_iterations: bigint;
+    run_time: number;
+}
+
+export interface IMultiWorkerState {
+    context: IMultiWorkerContext;
+}
+
+export interface IMultiWorkerConfig<TConfig extends WorkerConfigBase<TItem>, TItem> {
+    config: TConfig;
+    max_workers?: number;
+    callback: (progress: IMultiWorkerStatus<TItem>) => void;
+}
+
+export interface IMultiWorkerStatus<T> {
+    data: {
+        result: {
+            items?: T[],
+            run_time?: number,
+            total_iterations?: bigint,
+            options?: any,
+            result?: T,
+            percent?: number;
+            progress?: bigint;
+            count?: bigint;
+            accepted?: bigint;
+        },
+        id: string,
+        inProgress: boolean
+    }
+}
+
+export interface IMultiWorkerContext {
+    runWorker: (options: any) => void;
+    cancel: () => void;
+    workers: number;
+    count: bigint;
+    progress: bigint;
+    percent: number;
+    cancelled: boolean;
+    running: boolean;
+    startTime: Date,
+    endTime?: Date
+    run_time: number;
+}
+
+
 export interface VoyageStatsConfig {
     others?: number[];
     numSims: number;
@@ -31,107 +93,16 @@ export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
 
 export interface GameWorkerOptions {
     strategy?: string;
+    proficiency?: number;
     searchDepth?: number;
     extendsTarget?: number;
-}
-
-export interface CalculatorProps {
-    playerData: PlayerData;
-    allCrew: PlayerCrew[];
-}
-
-export interface AllData extends CalculatorProps {
-    allShips?: Ship[];
-    playerShips?: Ship[];
-    useInVoyage?: boolean;
-    bossData?: BossBattlesRoot;
-    buffConfig?: BuffStatTable;
-}
-
-export interface VoyageConsideration {
-    ship: Ship;
-    score: number;
-    traited: boolean;
-    bestIndex: number;
-    archetype_id: number;
-}
-
-export interface Calculation {
-    id: string;
-    requestId: string;
-    name: string;
-    calcState: number;
-    result?: CalcResult;
-    trackState?: number;
-    confidenceState?: number;
-    errorMessage?: string;
-    telemetrySent?: boolean;
-}
-
-export interface CalcResult extends Calculation {
-    estimate: Estimate;
-    entries: CalcResultEntry[];
-    aggregates: Aggregates;
-    startAM: number;
-}
-
-export interface Estimate {
-    refills: Refill[];
-    dilhr20: number;
-    refillshr20: number;
-    final: boolean;
-    deterministic?: boolean;
-    antimatter?: number;
-}
-
-export interface Refill {
-    all: number[];
-    result: number;
-    safeResult: number;
-    saferResult: number;
-    moonshotResult: number;
-    lastDil: number;
-    dilChance: number;
-    refillCostResult: number;
-}
-
-export interface CalcResultEntry {
-    slotId: number;
-    choice: PlayerCrew;
-    hasTrait: boolean | number;
-}
-
-export interface Aggregates {
-    command_skill: AggregateSkill;
-    science_skill: AggregateSkill;
-    security_skill: AggregateSkill;
-    engineering_skill: AggregateSkill;
-    diplomacy_skill: AggregateSkill;
-    medicine_skill: AggregateSkill;
-}
-
-export interface AggregateSkill extends Skill {
-    skill: PlayerSkill | string;
-}
-
-export interface CalcConfig {
-    estimate: number;
-    minimum: number;
-    moonshot: number;
-    antimatter: number;
-    dilemma: {
-        hour: number;
-        chance: number;
-    };
-    refills?: Refill[];
-    confidence?: number;
 }
 
 export interface JohnJayBest {
     key: string;
     crew: JJBestCrewEntry[];
     traits: number[];
-    skills: BaseSkills;
+    skills: Aggregates;
     estimate: Estimate;
 }
 
@@ -189,6 +160,8 @@ export interface BetaTachyonSettings {
     quipment: number,
     // Voyage Group Sparsity
     groupSparsity: number;
+    // Crew general rareness
+    rareness: number;
 }
 
 export interface SkillOrderRarity {
@@ -289,8 +262,136 @@ export interface QuestSolverCacheItem {
 }
 
 export const EMPTY_SKILL = {
-	skill: undefined,
+	skill: '',
 	core: 0,
 	range_max: 0,
 	range_min: 0
 } as Skill;
+
+
+export interface IMutualPolestarWorkerItem {
+    combo: string[];
+    crew: string[];
+    cost: RetrievalCost
+}
+
+export type PolestarComboSize = 1 | 2 | 3 | 4;
+
+export interface IMutualPolestarWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
+    polestars: IPolestar[];
+    comboSize: PolestarComboSize;
+    allowUnowned: number;
+    no100: boolean;
+}
+
+export interface IPolestarCrew extends CompactCrew {
+    disposition: 'include' | 'exclude' | 'unowned';
+}
+
+export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
+    allPolestars: string[];
+    crew: IPolestarCrew[];
+    comboSize: PolestarComboSize;
+    allowUnowned?: number;
+}
+export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
+    ranking_method: ShipRankingMethod,
+    event_crew?: CrewMember,
+    crew: CrewMember[],
+    battle_mode: BattleMode,
+    rate: number,
+    simulate: boolean,
+    fixed_activation_delay: number,
+    power_depth?: number,
+    max_rarity?: number,
+    min_rarity?: number,
+    opponents?: Ship[],
+    action_types?: number[],
+    ability_types?: number[],
+    max_results?: number
+    defense?: number;
+    offense?: number;
+    get_attacks?: boolean;
+    effects?: BossEffect[];
+    max_duration?: number;
+    ignore_skill?: boolean;
+    activation_offsets?: number[];
+    opponent_variance?: number;
+}
+
+export interface ShipWorkerConfig extends ShipWorkerConfigBase {
+    ship: Ship,
+}
+
+export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
+    ships: Ship[],
+}
+
+
+export interface AttackInstant {
+  actions: ShipAction[];
+  second: number;
+  hull: number;
+  shields: number;
+  attack: number;
+  min_attack: number;
+  max_attack: number;
+  boarding_damage_per_second: number;
+  opponent_boarding_damage_per_second: number;
+  ship: Ship;
+  win?: boolean;
+  opponent_hull: number;
+  opponent_shields: number;
+  opponent_attack: number;
+  opponent_min_attack: number;
+  opponent_max_attack: number;
+  cloaked: boolean;
+  opponent_cloaked: boolean;
+  comes_from: ComesFrom[]
+}
+
+
+export interface ShipWorkerItem {
+    id: number;
+    rate: number;
+    battle_mode: BattleMode;
+    ship: Ship,
+    crew: CrewMember[];
+    attack: number;
+    min_attack: number;
+    max_attack: number;
+    battle_time: number;
+    weighted_attack: number;
+    arena_metric: number;
+    fbb_metric: number;
+    skirmish_metric: number;
+    percentile: number;
+    attacks?: AttackInstant[];
+    win?: boolean;
+    reference_battle?: boolean;
+}
+
+export interface ShipWorkerTransportItem {
+    id: number;
+    rate: number;
+    battle_mode: BattleMode;
+    ship: number,
+    crew: number[];
+    attack: number;
+    min_attack: number;
+    max_attack: number;
+    battle_time: number;
+    weighted_attack: number;
+    arena_metric: number;
+    fbb_metric: number;
+    skirmish_metric: number;
+    percentile: number;
+    attacks?: AttackInstant[];
+    win?: boolean;
+}
+
+
+export interface ShipWorkerResults extends IWorkerResults<ShipWorkerTransportItem> {
+    total_iterations: bigint;
+    run_time: number;
+}

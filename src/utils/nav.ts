@@ -11,6 +11,6 @@ import { BuffStatTable } from "./voyageutils";
  * @param buffs Your active buffs
  * @param allCrew All crew
  */
-export function navToCrewPage(crew: PlayerCrew | CrewMember, ownedCrew: (CrewMember | PlayerCrew)[] | undefined = undefined, buffs: BuffStatTable | undefined = undefined, allCrew: (CrewMember | PlayerCrew)[] | undefined = undefined) {
+export function navToCrewPage(crew: PlayerCrew | CrewMember) {
 	navigate('/crew/' + crew.symbol);
 }

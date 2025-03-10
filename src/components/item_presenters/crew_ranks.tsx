@@ -24,7 +24,8 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 			<div style={{ textAlign: 'center' }}>
 				<StatLabel title={t('rank_names.voyage_rank')} value={crew.ranks.voyRank} />
 				<StatLabel title={t('rank_names.gauntlet_rank')} value={crew.ranks.gauntletRank} />
-				<StatLabel title={t('rank_names.cab_ov_grade')} value={crew.cab_ov_grade} />
+				<StatLabel title={t('rank_names.datascore')} value={crew.ranks.scores.overall_grade} />
+				<StatLabel title={t('rank_names.cab_grade')} value={crew.cab_ov_grade} />
 				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{color: gradeToColor(crew.quipment_grade) ?? undefined}}>{numberToGrade(crew.quipment_grade)}</span>} />}
 			</div>
 		);
@@ -45,6 +46,18 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				marginLeft: 0,
 				flexWrap: "wrap"}}>
 				<StatLabel
+					title={t('rank_names.datascore')}
+					size='jumbo'
+					value={<div
+						style={{
+							fontWeight: "bold",
+							color: gradeToColor(crew.ranks.scores.overall_grade) ?? undefined,
+						}}
+					>
+						{crew.ranks.scores.overall_grade}
+					</div>}
+				/>
+				<StatLabel
 					title={t('rank_names.cab_grade')}
 					size='jumbo'
 					value={
@@ -60,17 +73,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						</div>
 					}
 				/>
-				<StatLabel
-					title={t('global.reserved')}
-					size='jumbo'
-					value={<div
-						style={{
-							fontWeight: "bold",
-						}}
-					>
-						-
-					</div>}
-				/>
+
 				<StatLabel title={t('rank_names.voyage_rank')}
 					value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')}/>
 				<StatLabel title={t('rank_names.gauntlet_rank')}
@@ -88,11 +91,15 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				alignItems: "center",
 				flexWrap: "wrap"}}>
 
-				<StatLabel
-						title={t('rank_names.cab_rank')}
-						value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
-						/>
-				<StatLabel title={t('rank_names.cab_rating')} value={crew.cab_ov || '?'} />
+			<StatLabel
+				title={t('rank_names.scores.overall_rank')}
+				value={crew.ranks.scores.overall_rank ? rankLinker(false, crew.ranks.scores.overall_rank, crew.symbol, 'ranks.scores.overall', 'descending', 'rarity:'+crew.max_rarity) : '?'}
+				/>
+
+			<StatLabel
+				title={t('rank_names.cab_rank')}
+				value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:'+crew.max_rarity) : '?'}
+				/>
 
 				{!isNever && <>
 					{crew.in_portal && !!crew.unique_polestar_combos?.length &&

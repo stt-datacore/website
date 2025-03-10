@@ -2,20 +2,51 @@ import React from 'react';
 import { Message, Table } from 'semantic-ui-react';
 
 import { getIconPath } from '../../utils/assets';
+import { GlobalContext } from '../../context/globalcontext';
+import { glob } from 'fs';
+import { Leaderboard } from '../../model/events';
 
-function LeaderboardTab({leaderboard}) {
+type LiveType = 'na' | 'live' | 'not_live';
+
+function LeaderboardTab(props: { leaderboard: Leaderboard[] }) {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { playerData, ephemeral } = globalContext.player;
+	const [leaderboard, setLeaderboard] = React.useState<Leaderboard[]>(props.leaderboard);
+	const [isLive, setIsLive] = React.useState<LiveType>('na');
+
+	React.useEffect(() => {
+		if (ephemeral?.events) {
+			let f = ephemeral.events.find(f => f.seconds_to_start === 0 && f.seconds_to_end > 0);
+			if (f) {
+				fetch(`https://datacore.app/api/leaderboard?instance_id=${f.instance_id}`)
+					.then(result => result.json())
+					.then((lb) => {
+						setLeaderboard(lb.leaderboard);
+						setIsLive('live');
+					})
+					.catch(e => {
+						setIsLive('not_live');
+						console.log(e)
+					});
+			}
+		}
+	}, [ephemeral]);
+
 	return (
 		<>
-			<Message>
-				If this event is currently active, the leaderboard below might be out of date.
-				(Data is updated only a couple of times a week)
-			</Message>
+			{(!playerData || isLive === 'not_live') && <Message>
+				{t('event_info.active_event_lag_warn')}
+			</Message>}
+			{isLive === 'live' && <Message positive>
+				{t('event_info.active_event')}
+			</Message>}
 			<Table celled striped compact='very'>
 				<Table.Body>
 					{leaderboard.map(member => (
 						<Table.Row key={member.dbid}>
 							<Table.Cell style={{ fontSize: '1.25em' }}>
-								Rank: {member.rank}
+								{t('event_info.rank')}: {member.rank}
 							</Table.Cell>
 							<Table.Cell>
 								<div
@@ -37,12 +68,12 @@ function LeaderboardTab({leaderboard}) {
 										</span>
 									</div>
 									<div style={{ gridArea: 'description' }}>
-										Level {member.level}
+										{t('base.level')} {member.level}
 									</div>
 								</div>
 							</Table.Cell>
 							<Table.Cell style={{ fontSize: '1.25em' }}>
-								Score: {member.score}
+								{t('event_info.score')}: {member.score}
 							</Table.Cell>
 						</Table.Row>
 					))}

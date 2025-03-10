@@ -88,18 +88,22 @@ const CardCrew = (props: CardCrewProps) => {
 					</Card.Header>
 					<ClassicPresenter
 						crew={crew}
-						fields={['rarity', 'skills', 'rank_highlights', 'ranks', 'fuses', 'crew_demands', 'traits', 'collections', 'cross_fuses', 'date_added']}
+						fields={['rarity', 'skills', 'rank_highlights', 'ship_ability', 'ranks', 'fuses', 'crew_demands', 'traits', 'collections', 'cross_fuses', 'date_added']}
 						fieldOverrides={fieldOverrides}
+						fieldScale={[{
+							field: 'ship_ability',
+							fontSize: '0.8em'
+						}]}
 						compact={true}
 					/>
-					<div style={{ marginTop: '1em' }}>
+					{/* <div style={{ marginTop: '1em' }}>
 						{!!crew.markdownContent && <div dangerouslySetInnerHTML={{ __html: marked.parse(crew.markdownContent) }} />}
 						<div style={{ marginTop: '1em', textAlign: 'right' }}>
 							<a href={`https://www.bigbook.app/crew/${crew.symbol}`} target='_blank'>
 								{t('crew_views.view_big_book', { crew: crew.name })}
 							</a>
 						</div>
-					</div>
+					</div> */}
 					<div style={{ marginTop: '2em', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
 						{false && <Button onClick={() => addProspects([crew.symbol])}>
 							<Icon name='add user' color='green' />

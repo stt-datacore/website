@@ -1,0 +1,87 @@
+{
+    "tos": [
+        "kirk",
+        "spock",
+        "mccoy",
+        "scott",
+        "uhura",
+        "sulu",
+        "chekov"
+    ],
+    "tng": [
+        "picard",
+        "riker",
+        "data",
+        "laforge",
+        "worf",
+        "crusher",
+        "troi",
+        "wesley"
+    ],
+    "ds9": [
+        "sisko",
+        "kira",
+        "dax",
+        "bashir",
+        "obrien",
+        "worf",
+        "odo",
+        "quark",
+        "garak"
+    ],
+    "voy": [
+        "janeway",
+        "chakotay",
+        "tuvok",
+        "paris",
+        "torres",
+        "kim",
+        "neelix",
+        "seven",
+        "kes"
+    ],
+    "ent": [
+        "archer",
+        "tpol",
+        "tucker",
+        "phlox",
+        "reed",
+        "sato",
+        "mayweather"
+    ],
+    "dsc": [
+        "burnham",
+        "saru",
+        "tilly",
+        "stamets",
+        "culber",
+        "owosekun",
+        "detmer",
+        "georgiou",
+        "booker"
+    ],
+    "pic": [
+        "picard",
+        "raffi",
+        "seven",
+        "rios",
+        "jurati",
+        "elnor"
+    ],
+    "snw": [
+        "pike",
+        "number_one",
+        "spock",
+        "chapel",
+        "uhura",
+        "mbenga",
+        "laan",
+        "ortegas"
+    ],
+    "low": [
+        "mariner",
+        "boimler",
+        "tendi",
+        "rutherford"
+    ]
+}

@@ -1,11 +1,16 @@
 import React from 'react';
-import { Message, Button, Popup } from 'semantic-ui-react';
+import {
+	Button,
+	Popup,
+	Message
+} from 'semantic-ui-react';
 
 import { Voyage } from '../../model/player';
-import { Estimate } from '../../model/worker';
-import { IVoyageCalcConfig } from '../../model/voyage';
-import CONFIG from '../CONFIG';
+import { Estimate, IVoyageCalcConfig } from '../../model/voyage';
+import { GlobalContext } from '../../context/globalcontext';
 import { UnifiedWorker } from '../../typings/worker';
+import CONFIG from '../CONFIG';
+
 type CIVASMessageProps = {
 	voyageConfig: IVoyageCalcConfig | Voyage;
 	estimate?: Estimate;
@@ -27,7 +32,9 @@ export const CIVASMessage = (props: CIVASMessageProps) => {
 		Done
 	};
 
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, activeDetails } = props;
+
 	const [estimate, setEstimate] = React.useState<Estimate | undefined>(undefined);
 	const [exportState, setExportState] = React.useState(ExportState.None);
 
@@ -45,15 +52,24 @@ export const CIVASMessage = (props: CIVASMessageProps) => {
 		<React.Fragment>
 			<Message style={{ marginTop: '2em' }}>
 				<Message.Content>
-					<Message.Header>Captain Idol's Voyage Analysis Sheet</Message.Header>
-					<p>Pro tip: use <b><a href={CIVASLink} target='_blank'>Captain Idol's Voyage Analysis Sheet</a></b> to help you keep track of your voyagers, runtimes, and estimates. Click the button below to copy the details of {voyageConfig.state !== 'pending' ? 'your active voyage' : 'this recommendation'} to the clipboard so that the relevant data can be pasted directly into your CIVAS Google Sheet (currently v{CIVASVer}).</p>
+					<Message.Header	/* Captain Idol's Voyage Analysis Sheet */
+					>
+						{t('voyage.civas.title')}
+					</Message.Header>
+					<p>
+						{tfmt('voyage.civas.description', {
+							link: <b><a href={CIVASLink} target='_blank'>{t('voyage.civas.title')}</a></b>,
+							datatype: <>{voyageConfig.state !== 'pending' ? t('voyage.civas.datatypes.active') : t('voyage.civas.datatypes.recommended')}</>,
+							version: <>{CIVASVer}</>
+						})}
+					</p>
 					<Popup
-						content={exportState === ExportState.Done ? 'Copied!' : 'Please wait...'}
+						content={exportState === ExportState.Done ? t('clipboard.copied_exclaim') : t('spinners.calculating_voyage_estimate')}
 						on='click'
 						position='right center'
 						size='tiny'
 						trigger={
-							<Button icon='clipboard' content='Copy details to clipboard' onClick={() => exportData()} />
+							<Button icon='clipboard' content={t('clipboard.copy')} onClick={() => exportData()} />
 						}
 					/>
 				</Message.Content>

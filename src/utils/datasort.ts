@@ -17,7 +17,7 @@ export interface IConfigSortData {
 	subsort?: SubSort[]; // rules for tiebreakers e.g. { field, direction }
 	rotateFields?: any[];
 	keepSortOptions?: boolean; // if set to true, don't advance direction or rotateFields
-	customCompare?: (a: any, b: any) => number;
+	customCompare?: (a: any, b: any, config: IConfigSortData) => number;
 }
 
 export interface IResultSortDataBy {
@@ -38,7 +38,7 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 	}
 
 	if (!config.subsort) {
-		config.subsort = [] as Object[];	
+		config.subsort = [] as Object[];
 	}
 
 	// Convert secondary prop to subsort array; try to use subsort instead of secondary from now on
@@ -49,12 +49,12 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 	}
 
 	const sortFactor = direction === 'descending' ? -1 : 1;
-	
+
 	if (config.customCompare) {
 		const compare = config.customCompare;
 
 		result = result.sort((a, b) => {
-			let r = compare(a, b);
+			let r = compare(a, b, config);
 			return r * sortFactor;
 		});
 	}
@@ -65,25 +65,25 @@ export function sortDataBy(data: any[], config: IConfigSortData): IResultSortDat
 				field === 'bigbook_tier' ? getTier(a, direction) : getValueFromPath(a, field),
 				field === 'bigbook_tier' ? getTier(b, direction) : getValueFromPath(b, field)
 			);
-			
+
 			let tiebreaker = 0;
-			
+
 			if (!config.subsort) return sortValue;
-			
+
 			while (sortValue == 0 && tiebreaker < config.subsort.length) {
 				const nextSort = config.subsort[tiebreaker];
 				const nextFactor = nextSort.direction === 'descending' ? -1 : 1;
 				if (nextSort && nextSort.field) {
 					sortValue = nextFactor*compare(
 						getValueFromPath(a, nextSort.field),
-						getValueFromPath(b, nextSort.field)			
+						getValueFromPath(b, nextSort.field)
 					);
 				}
 				tiebreaker++;
 			}
 			return sortValue;
 		});
-	
+
 	}
 
 	return {

@@ -90,6 +90,23 @@ export const estimateLineups = (
 				}
 			}
 
+			if (options.strategy === 'peak-vp' || options.strategy === 'featured-vp') {
+				considered.sort((a, b) => {
+					if (a.vp === b.vp) {
+						if (a.coverage === b.coverage) {
+							if (a.projection.ticks === b.projection.ticks)
+								return b.score - a.score;
+							return b.projection.ticks - a.projection.ticks;
+						}
+						return b.coverage - a.coverage;
+					}
+					return b.vp - a.vp;
+				});
+				for (let i = 0; i < Math.min(altScanDepth, considered.length); i++) {
+					scanKeys.add(considered[i].key);
+				}
+			}
+
 			if (scanKeys.size > 0) {
 				considered = considered.filter(lineup => scanKeys.has(lineup.key));
 				sendProgress(`Narrowing by strategy (${options.strategy})...`);

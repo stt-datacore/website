@@ -1,12 +1,12 @@
 import { Filter } from "./game-elements";
 import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
 
-export interface MapFilterOptions {
+export interface CollectionFilterOptions {
 	collectionsFilter?: number[];
 	rewardFilter?: string[];
 }
 
-export interface CollectionMap {
+export interface CollectionInfo {
 	collection: PlayerCollection;
 	crew: PlayerCrew[];
 	neededStars?: number[];
@@ -28,11 +28,11 @@ export interface ComboCostMap {
     exact: boolean;
 }
 
-export interface CollectionGroup {
+export interface CollectionCombo {
 	name: string;
-	maps: CollectionMap[];
-	uniqueCrew: PlayerCrew[];
-	commonCrew: PlayerCrew[];
+	maps: CollectionInfo[];
+	combinedUnique: PlayerCrew[];
+	crewInCommon: PlayerCrew[];
 	collection: PlayerCollection;
 	nonfullfilling?: number;
 	nonfullfillingRatio?: number;
@@ -46,7 +46,7 @@ export interface CollectionGroup {
 
 export interface CollectionsToolSettings {
     short: boolean;
-    mapFilter: MapFilterOptions;
+    mapFilter: CollectionFilterOptions;
     searchFilter: string;
     rarityFilter: number[];
     fuseFilter: string;
@@ -60,6 +60,11 @@ export interface CollectionsToolSettings {
     byCost: boolean;
 };
 
+export interface CollectionModalDisplayOptions {
+    collection: PlayerCollection;
+    activeTab?: number;
+    pageId?: string;
+}
 
 export interface ICollectionsContext extends CollectionsToolSettings {
     hardFilter: boolean;
@@ -68,8 +73,8 @@ export interface ICollectionsContext extends CollectionsToolSettings {
     short: boolean;
     setShort: (value: boolean) => void;
 
-    mapFilter: MapFilterOptions;
-    setMapFilter: (options: MapFilterOptions) => void;
+    mapFilter: CollectionFilterOptions;
+    setMapFilter: (options: CollectionFilterOptions) => void;
 
     searchFilter: string;
     setSearchFilter: (value?: string) => void;
@@ -105,6 +110,11 @@ export interface ICollectionsContext extends CollectionsToolSettings {
     checkRewardFilter: (collection: PlayerCollection, filters: string[]) => boolean;
 
     showThisCrew: (crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined) => boolean
+
+    setCollectionSettings: (value: CollectionsToolSettings) => void;
+
+    modalInstance: CollectionModalDisplayOptions | null
+    setModalInstance: (value: CollectionModalDisplayOptions | null) => void;
 };
 
 export type CollectionMatchMode = 'normal' | 'exact-only' | 'extended' | 'inexact-only';
@@ -119,7 +129,7 @@ export interface CollectionWorkerConfig {
 }
 
 export interface CollectionWorkerResult {
-    groups: CollectionGroup[];
-    maps: CollectionMap[];
-    costMap: ComboCostMap[];
+    combos: CollectionCombo[];
+    collections: CollectionInfo[];
+    comboCostMap: ComboCostMap[];
 }

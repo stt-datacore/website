@@ -11,6 +11,9 @@ import { applyCrewBuffs } from '../../utils/crewutils';
 import { IRosterCrew } from './model';
 import { TinyStore } from '../../utils/tiny';
 import { CrewMember } from '../../model/crew';
+import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { DefaultQuipmentConfig, QPContext, QuipmentProspectConfig } from '../qpconfig/provider';
+import { useStateWithStorage } from '../../utils/storage';
 
 type RosterPickerProps = {
 	rosterType: string;
@@ -20,6 +23,7 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const qpContext = React.useContext(QPContext);
 	const { t } = globalContext.localized;
 	const { playerData, ephemeral, buffConfig } = globalContext.player;
 	const { rosterType, setRosterType, setRosterCrew } = props;
@@ -27,11 +31,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
+	const [qpConfig, setQpConfig, applyQp] = qpContext.useQPConfig();
+
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
 		initializeRoster(rosterType, true);
 		setRosterType(rosterType);
-	}, [playerData]);
+	}, [playerData, qpConfig]);
 
 	React.useEffect(() => {
 		initializeRoster(rosterType);
@@ -41,22 +47,24 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		return (<></>);
 
 	return (
-		<Step.Group fluid>
-			<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
-				<Icon name='users' />
-				<Step.Content>
-					<Step.Title>{t('tool_roster_picker.owned_crew.title')}</Step.Title>
-					<Step.Description>{t('tool_roster_picker.owned_crew.description')}</Step.Description>
-				</Step.Content>
-			</Step>
-			<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
-				<Icon name='fire' />
-				<Step.Content>
-					<Step.Title>{t('tool_roster_picker.all_crew.title')}</Step.Title>
-					<Step.Description>{t('tool_roster_picker.all_crew.description')}</Step.Description>
-				</Step.Content>
-			</Step>
-		</Step.Group>
+		<React.Fragment>
+			<Step.Group fluid>
+				<Step active={rosterType === 'myCrew'} onClick={() => setRosterType('myCrew')}>
+					<Icon name='users' />
+					<Step.Content>
+						<Step.Title>{t('tool_roster_picker.owned_crew.title')}</Step.Title>
+						<Step.Description>{t('tool_roster_picker.owned_crew.description')}</Step.Description>
+					</Step.Content>
+				</Step>
+				<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
+					<Icon name='fire' />
+					<Step.Content>
+						<Step.Title>{t('tool_roster_picker.all_crew.title')}</Step.Title>
+						<Step.Description>{t('tool_roster_picker.all_crew.description')}</Step.Description>
+					</Step.Content>
+				</Step>
+			</Step.Group>
+		</React.Fragment>
 	);
 
 	function initializeRoster(rosterType: string, forceReload: boolean = false): void {
@@ -83,8 +91,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	}
 
 	function rosterizeMyCrew(): IRosterCrew[] {
-		const rosterCrew = [] as IRosterCrew[];
-		if (!playerData) return rosterCrew;
+		if (!playerData) return [];
 
 		const activeCrewIds = (ephemeral?.activeCrew ?? []).map(ac => {
 			return {
@@ -95,8 +102,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			};
 		});
 
-		playerData.player.character.crew.forEach(crew => {
-			const crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+		const rosterCrew = playerData.player.character.crew.map(crew => {
+			let crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 
 			// Re-attach active_status, id, index properties
 			crewman.active_status = 0;
@@ -123,7 +130,9 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					});
 				}
 			}
-			rosterCrew.push(crewman);
+
+			crewman = applyQp(crewman) as IRosterCrew;
+			return crewman;
 		});
 
 		// Add shared crew to roster
@@ -169,11 +178,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	}
 
 	function rosterizeAllCrew(): IRosterCrew[] {
-		const rosterCrew = [] as IRosterCrew[];
-
 		let crewmanId = 1;
-		globalContext.core.crew.forEach(crew => {
-			const crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+
+		const rosterCrew = globalContext.core.crew.map(crew => {
+			let crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 			crewman.id = crewmanId++;
 			CONFIG.SKILLS_SHORT.forEach((skill) => {
 				crewman[skill.name] = {
@@ -183,7 +191,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				}
 			});
 			if (globalContext.maxBuffs) applyCrewBuffs(crewman, globalContext.maxBuffs);
-			rosterCrew.push(crewman);
+			crewman = applyQp(crewman) as IRosterCrew;
+			return crewman;
 		});
 
 		return rosterCrew;

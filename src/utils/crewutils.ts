@@ -269,13 +269,15 @@ export function applyCrewBuffs(crew: PlayerCrew | CrewMember, buffConfig: BuffSt
 			crew[skill] = {
 				core: core,
 				min: min,
-				max: max
+				max: max,
+				skill
 			};
 		}
 		bs[skill] = {
 			core: core,
 			range_min: min,
-			range_max: max
+			range_max: max,
+			skill
 		};
 	}
 
@@ -335,7 +337,7 @@ export function isImmortal(crew: PlayerCrew): boolean {
 export const PREPARE_MAX_RARITY = 6;
 
 export function isQuipped<T extends PlayerCrew>(crew: T) {
-	if (!!crew.kwipment?.length && !!crew.kwipment[0]) {
+	if (!!crew.kwipment?.length) {
 		if (typeof crew.kwipment[0] === 'number') {
 			return crew.kwipment.some(k => !!k);
 		}
@@ -348,7 +350,7 @@ export function isQuipped<T extends PlayerCrew>(crew: T) {
 	}
 }
 
-export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, quipment?: ItemWithBonus[]): PlayerCrew[] {
+export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
@@ -428,6 +430,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		crew.is_new = owned.is_new;
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
+		if (owned.cap_achiever) crew.cap_achiever = owned.cap_achiever;
 
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
 		if (rarity !== 6) {
@@ -578,7 +581,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let cidx = -1;
 
 	for (let c of allcrew) {
-		for (let crew of prepareOne(c, playerData, buffConfig, undefined, quipment)) {
+		for (let crew of prepareOne(c, playerData, buffConfig, undefined)) {
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
@@ -634,6 +637,29 @@ export function oneCrewCopy<T extends CrewMember>(crew: T): T {
 	let result = JSON.parse(JSON.stringify(crew)) as T;
 	crew.date_added = new Date(crew.date_added);
 	return result;
+}
+
+export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) : CompactCrew {
+	let newcrew = {} as CompactCrew;
+	if (!exclude?.includes("id")) newcrew.id = crew.id;
+	if (!exclude?.includes("symbol")) newcrew.symbol = crew.symbol;
+	if (!exclude?.includes("name")) newcrew.name = crew.name;
+	if (!exclude?.includes("archetype_id")) newcrew.archetype_id = crew.archetype_id;
+	if (!exclude?.includes("level")) newcrew.level = crew.level;
+	if (!exclude?.includes("traits")) newcrew.traits = [...crew.traits];
+	if (!exclude?.includes("max_level")) newcrew.max_level = crew.max_level;
+	if (!exclude?.includes("max_rarity")) newcrew.max_rarity = crew.max_rarity;
+	if (!exclude?.includes("rarity")) newcrew.rarity  = crew.rarity;
+	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? JSON.parse(JSON.stringify(crew.equipment)) : undefined;
+	if (!exclude?.includes("skill_order")) newcrew.skill_order  = [ ...crew.skill_order ];
+	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? JSON.parse(JSON.stringify(crew.base_skills)) : undefined;
+	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? JSON.parse(JSON.stringify(crew.skills)) : undefined;
+	if (!exclude?.includes("favorite")) newcrew.favorite  = crew.favorite;
+	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? JSON.parse(JSON.stringify(crew.ship_battle)) : undefined;
+	if (!exclude?.includes("active_status")) newcrew.active_status  = crew.active_status;
+	if (!exclude?.includes("active_id")) newcrew.active_id  = crew.active_id;
+	if (!exclude?.includes("active_index")) newcrew.active_index  = crew.active_index;
+	return newcrew;
 }
 
 // export function averagePairs(skills: Skill[][]) {
@@ -743,7 +769,7 @@ export function comparePairs(a: Skill[], b: Skill[], featuredSkill?: string, mul
 }
 
 export const emptySkill = {
-	skill: undefined,
+	skill: '',
 	core: 0,
 	range_max: 0,
 	range_min: 0
@@ -757,10 +783,10 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 
 	// const oppo = (("isOpponent" in crew) && crew.isOpponent);
 
-	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill: skill } as Skill });
+	let skills = getSkills(crew).map(skill => { return { core: crew[skill].core, range_max: crew[skill].max, range_min: crew[skill].min, skill } as Skill });
 
 	if (!skills?.length || !skills[0].range_max) {
-		skills = getSkills(crew).map(skill => { return { ...crew.base_skills[skill], skill: skill } as Skill });
+		skills = getSkills(crew).map(skill => { return { ...crew.base_skills[skill], skill } as Skill });
 	}
 
 	if (skills && skills.length) {
@@ -816,6 +842,16 @@ export function qbitsToSlots(q_bits: number | undefined) {
 	return 4;
 }
 
+export function missionsToNext(q_bits: number | undefined) {
+	// 100/250/500/1300
+	q_bits ??= 0;
+	if (q_bits < 100) return Math.ceil((100 - q_bits) / 25);
+	else if (q_bits < 200) return Math.ceil((200 - q_bits) / 25);
+	else if (q_bits < 500) return Math.ceil((500 - q_bits) / 25);
+	else if (q_bits < 1300) return Math.ceil((1300 - q_bits) / 25);
+	return 0;
+}
+
 export function countQuippedSlots(crew: PlayerCrew) {
 	if (crew.kwipment) {
 		let quips = crew.kwipment.map((q : number | number[] | undefined) => {
@@ -863,6 +899,7 @@ export function formatTierLabel(crew: PlayerCrew | CrewMember): string {
 	// 	return '$';
 	// }
 	if (!crew.bigbook_tier || crew.bigbook_tier === -1) {
+		if (crew.post_bigbook_epoch) return '-';
 		return '?';
 	}
 	return `${crew.bigbook_tier}`;
@@ -1053,9 +1090,9 @@ export function numberToGrade(value: number, noneText?: string) {
 }
 
 
-export function gradeToColor(grade: string | number, dryzero?: boolean): string | null {
-
-	if (gradeColorsDisabled || (!grade && dryzero)) return null;
+export function gradeToColor(grade: string | number, dryzero?: boolean): string | undefined {
+	if (!grade) return undefined;
+	if (gradeColorsDisabled || (!grade && dryzero)) return undefined;
 
 	if (typeof grade === 'number' && grade < 1 && grade >= 0) {
 
@@ -1112,7 +1149,7 @@ export function gradeToColor(grade: string | number, dryzero?: boolean): string 
 
 
 	}
-	return null;
+	return undefined;
 }
 
 export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_skill: Skill): ComputedSkill {
@@ -1129,13 +1166,34 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 	return {
 		core: Math.round(base_skill.core * getMultiplier(skill, 'core')),
 		min: Math.round(base_skill.range_min * getMultiplier(skill, 'range_min')),
-		max: Math.round(base_skill.range_max * getMultiplier(skill, 'range_max'))
+		max: Math.round(base_skill.range_max * getMultiplier(skill, 'range_max')),
+		skill: base_skill.skill
 	};
 }
 
-export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[]) {
-	return trait === 'dax' ? 'Dax' : trait === 'tpring' ? "T'Pring" : crewGroup[0].short_name;
+export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | CrewMember, preferEnglish = true) {
+	switch(trait) {
+		case "dax":
+			return 'Dax';
+		case "tpring":
+			return "T'Pring";
+		case "gburnham":
+			return "G. Burnham";
+		case "burnham":
+			return "M. Burnham";
+		case "mburnham_sr":
+			return "M. Burnham, Sr."
+
+		default:
+			if (Array.isArray(crewGroup)) {
+				return (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
+			}
+			else {
+				return (preferEnglish ? crewGroup.short_name_english : '') || crewGroup.short_name;
+			}
+	}
 }
+
 export const crewVariantIgnore = ['sam_lavelle_crew', 'jack_crusher_crew'];
 
 export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): string[] {
@@ -1193,6 +1251,8 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return t('item_state.item_is_shown_unowned', { item, level: immoText, __gender: gender });
 		else if (immo === -4) return t('item_state.item_is_shown_owned', { item, level: immoText, __gender: gender });
 		else if (immo === -2) return t('item_state.item_is_shown', { item, level: immoText, __gender: gender });
+		else if (immo === -10) return t('gauntlet.opponent_table.opponent');
+		else if (immo === -11) return t('gauntlet.live_crew');
 		else if (immo >= 1) {
 			if (immo === 1) {
 				return(t('item_state.item_is_frozen_one'))
@@ -1212,13 +1272,14 @@ export function printImmoText(immo: number | CompletionState, item?: string, imm
 		else if (immo === -3) return `${item} Is Shown ${immoText} (Unowned)`;
 		else if (immo === -4) return `${item} Is Shown ${immoText} (Owned)`;
 		else if (immo === -2) return `${item} Is Shown ${immoText}`;
+		else if (immo === -10) return 'Opponent';
 		else if (immo >= 1) return `${item} Is Frozen (` + (immo === 1 ? "1 copy" : immo.toString() + " copies") + ")";
 		else return `${item} Is Not ${immoText}`;
 	}
 }
 
 export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkills): string[] {
-	let sk: string[] = [];
+	//let sk: string[] = [];
 
 	let bskills: BaseSkills | undefined = undefined;
 
@@ -1228,15 +1289,16 @@ export function getSkills(item: PlayerCrew | CrewMember | CompactCrew | BaseSkil
 	else {
 		bskills = item;
 	}
-
-	if (bskills?.command_skill !== undefined && bskills.command_skill.core > 0) sk.push("command_skill");
-	if (bskills?.science_skill !== undefined && bskills.science_skill.core > 0) sk.push("science_skill");
-	if (bskills?.security_skill !== undefined && bskills.security_skill.core > 0) sk.push("security_skill");
-	if (bskills?.engineering_skill !== undefined && bskills.engineering_skill.core > 0) sk.push("engineering_skill");
-	if (bskills?.diplomacy_skill !== undefined && bskills.diplomacy_skill.core > 0) sk.push("diplomacy_skill");
-	if (bskills?.medicine_skill !== undefined && bskills.medicine_skill.core > 0) sk.push("medicine_skill");
-
-	return sk;
+	if (!bskills) return [];
+	return Object.keys(bskills).filter(skill => bskills[skill] && (bskills[skill].core > 0 || bskills[skill].range_max > 0));
+	// if (bskills?.command_skill !== undefined && (bskills.command_skill.core > 0 || bskills.command_skill.range_max > 0)) sk.push("command_skill");
+	// if (bskills?.science_skill !== undefined && (bskills.science_skill.core > 0 || bskills.science_skill.range_max > 0)) sk.push("science_skill");
+	// if (bskills?.security_skill !== undefined && (bskills.security_skill.core > 0 || bskills.security_skill.range_max > 0)) sk.push("security_skill");
+	// if (bskills?.engineering_skill !== undefined && (bskills.engineering_skill.core > 0 || bskills.engineering_skill.range_max > 0)) sk.push("engineering_skill");
+	// if (bskills?.diplomacy_skill !== undefined && (bskills.diplomacy_skill.core > 0 || bskills.diplomacy_skill.range_max > 0)) sk.push("diplomacy_skill");
+	// if (bskills?.medicine_skill !== undefined && (bskills.medicine_skill.core > 0 || bskills.medicine_skill.range_max > 0)) sk.push("medicine_skill");
+	// if (bskills) sk.sort((a, b) => skillSum(bskills[b] as Skill) - skillSum(bskills[a] as Skill))
+	// return sk;
 }
 
 
@@ -1509,31 +1571,6 @@ export function createShipStatMap(allCrew: (CrewMember | PlayerCrew)[], config?:
 	return tiers ?? {};
 }
 
-export function getSkillOrder<T extends CrewMember>(crew: T) {
-	const sk = [] as ComputedSkill[];
-
-	for (let skill of Object.keys(CONFIG.SKILLS)) {
-		if (skill in crew.base_skills && !!crew.base_skills[skill].core) {
-			sk.push({ ...crew.base_skills[skill], skill: skill });
-		}
-	}
-
-	sk.sort((a, b) => b.core - a.core);
-	const output = [] as string[];
-
-	if (sk.length > 0 && sk[0].skill) {
-		output.push(sk[0].skill);
-	}
-	if (sk.length > 1 && sk[1].skill) {
-		output.push(sk[1].skill);
-	}
-	if (sk.length > 2 && sk[2].skill) {
-		output.push(sk[2].skill);
-	}
-
-	return output;
-}
-
 export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 	return crew.skill_order.join("/");
 }
@@ -1602,8 +1639,8 @@ export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMet
 }
 
 export function getVoyageQuotient<T extends CrewMember>(crew: T) {
-    if (!crew.q_lots?.power) return 0;
-	const q_power = crew.q_lots.power;
+    if (!crew.best_quipment?.skills_hash) return 0;
+	const q_power = Object.values(crew.best_quipment.skills_hash);
     let power = 0;
 	for (let skill in crew.base_skills) {
 		let qp = q_power.find(f => f.skill === skill);
@@ -1642,15 +1679,16 @@ export function skillAdd(a: Skill | ComputedSkill, b: Skill | ComputedSkill): Sk
  * @param mode Specify what to add (optional)
  * @returns The sum of core + ((max+min) * 0.5) (depending on mode) from every element.
  */
-export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[], mode?: 'all' | 'core' | 'proficiency'): number {
+export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[], mode?: 'all' | 'core' | 'proficiency', avg = true): number {
+	const mul = avg ? 0.5 : 1;
 	if (Array.isArray(skills)) {
 		return skills.reduce((p, n) => p + skillSum(n, mode), 0);
 	}
 	else if ("range_max" in skills) {
-		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.range_max + skills.range_min) * 0.5) : 0);
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.range_max + skills.range_min) * mul) : 0);
 	}
 	else {
-		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * 0.5) : 0);
+		return (mode !== 'proficiency' ? skills.core : 0) + (mode !== 'core' ? ((skills.max + skills.min) * mul) : 0);
 	}
 }
 
@@ -1677,3 +1715,77 @@ export function likeSum(skills: Skill[]): { [key: string]: number } {
 	})
 	return output;
 }
+
+export interface SkillRarityReport<T extends CrewMember> {
+	skill: string;
+	position: number;
+	count: number;
+	score: number;
+	crew?: T[],
+	aggregate?: number;
+	data?: any;
+}
+
+export function getSkillOrderStats<T extends CrewMember>(
+	config: {
+		roster: T[],
+		returnCrew?: boolean,
+		computeAggregate?: boolean,
+		max?: number
+	}
+) {
+	const { roster, returnCrew, computeAggregate } = config;
+	const results: SkillRarityReport<T>[] = [];
+	const skills = Object.keys(CONFIG.SKILLS);
+
+	for (let skill of skills) {
+		for (let i = 0; i < 3; i++) {
+			let rf = roster.filter(f => f.skill_order.length > i && f.skill_order[i] == skill);
+			results.push({
+				skill,
+				count: rf.length,
+				position: i,
+				score: 0,
+				crew: returnCrew ? rf : undefined
+			});
+		}
+	}
+
+	const max = config.max || roster.length;
+
+	for (let i = 0; i < 3; i++) {
+		let pc = results.filter(f => f.position === i);
+		if (pc.length) {
+			pc.sort((a, b) => a.count - b.count);
+			pc.forEach((p) => p.score = p.count / max);
+			if (computeAggregate && returnCrew) {
+				for (let item of pc) {
+					item.aggregate = item.crew!.map(c => skillSum(Object.values(c.base_skills))).reduce((p, n) => p > n ? p : n, 0);
+				}
+			}
+		}
+	}
+
+	results.sort((a, b) => {
+		let r = 0;
+		if (!r) r = a.position - b.position;
+		if (!r) r = a.count - b.count;
+		if (!r) r = a.skill.localeCompare(b.skill);
+		return r;
+	});
+
+	return results;
+}
+
+export function getSkillOrderScore(crew: CrewMember, reports: SkillRarityReport<CrewMember>[]) {
+	let results = 0;
+	crew.skill_order.forEach((skill, index) => {
+		let data = reports.find(f => f.skill === skill && f.position === index);
+		if (data) {
+			results += (1 - data.score) * (index + 1);
+		}
+	});
+	//results /= crew.skill_order.length;
+	return results;
+}
+

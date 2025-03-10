@@ -5,6 +5,7 @@ import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
 import NavigationSettings, { NavigationSettingsConfig } from '../page/settings';
 import { Dropdown, Icon } from 'semantic-ui-react';
 import { useStateWithStorage } from '../../utils/storage';
+import { AlertContext } from '../alerts/alertprovider';
 
 type PlayerMenuProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
@@ -14,6 +15,9 @@ type PlayerMenuProps = {
 
 export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
+	const alertContext = React.useContext(AlertContext);
+	const { setAlertOpen, config: alertConfig, drawAlertModal, setRestoreHiddenAlerts } = alertContext;
+
 	const { t } = globalContext.localized;
 	const { reset, showPlayerGlance, setShowPlayerGlance, noGradeColors, setNoGradeColors } = globalContext.player;
 	const [modalOpen, setModalOpen] = React.useState(false);
@@ -48,6 +52,11 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			link: "/charts"
 		},
 		{
+			title: t('global.fleet'),
+			link: "/fleet",
+			checkVisible: () => !!playerData?.player.fleet?.id
+		},
+		{
 			title: t('menu.player.share_profile'),
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => requestPanel('dashboard', 'share')
@@ -66,7 +75,7 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 						/>
 					);
 				}
-				return <Dropdown.Item key='menusettings' disabled>Menu Settings</Dropdown.Item>;
+				return <Dropdown.Item key='menusettings' disabled>{t('menu.player.menu_settings')}</Dropdown.Item>;
 			},
 			customAction: (e, data) => setModalOpen(true)
 		},
@@ -84,12 +93,42 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 				setNoGradeColors(!noGradeColors);
 			}
 		},
+		// {
+		// 	title: <div><Icon name={showBuybackAlerts ? 'toggle off' : 'toggle on'} />&nbsp;{t('alerts.toggle_buyback_alerts')}</div>,
+		// 	checkVisible: (data) => !!playerData,
+		// 	customAction: (e, data) => {
+		// 		setShowBuybackAlerts(!showBuybackAlerts);
+		// 	}
+		// },
+		{
+			title: <div>{t('alerts.name')}</div>,
+			checkVisible: (data) => !!playerData,
+			customRender: (data) => {
+				if (alertConfig) {
+					return drawAlertModal(() => renderSubmenuItem(data, undefined, !props.vertical))
+				}
+				return <Dropdown.Item key='menusettings' disabled>{t('alerts.name')}</Dropdown.Item>;
+			},
+			customAction: (e, data) => {
+				setAlertOpen(true);
+			}
+		},
+		{
+			title: <div>{t('alerts.show_previously_hidden')}</div>,
+			checkVisible: (data) => !!playerData && (alertConfig.alert_fuses || alertConfig.alert_new),
+			customAction: (e, data) => {
+				setTimeout(() => {
+					setRestoreHiddenAlerts(true);
+				});
+			}
+		},
 		{
 			title: t('menu.player.clear_data'),
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => { if (reset) reset(); }
 		}
 	] as NavItem[];
+
 
 	if (props.vertical) {
 		return (

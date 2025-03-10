@@ -39,7 +39,7 @@ export interface HofDetailsProps {
 }
 
 interface Seats {
-    [key: string]: number;    
+    [key: string]: number;
 }
 
 export const HofDetails = (props: HofDetailsProps) => {
@@ -81,7 +81,7 @@ export const HofDetails = (props: HofDetailsProps) => {
     });
 
     const addSeat = (x: number, crew: string) => {
-        let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;        
+        let key = CONFIG.VOYAGE_CREW_SLOTS[x] + "," + crew;
         seatMap[key] ??= 0;
         seatMap[key]++;
     };
@@ -145,7 +145,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                     if (c in crew_seats) {
                         crew_seats[c][CONFIG.VOYAGE_SLOT_SKILLS[x]] ??= 0;
                         crew_seats[c][CONFIG.VOYAGE_SLOT_SKILLS[x]]++;
-                    }                    
+                    }
                     addSeat(x, c);
                     return;
                 }
@@ -187,7 +187,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                     `Loading details for '${featuredList?.map((f) => f.name)?.join(", ") ?? crewSymbol
                     }' ...`
                 )}</div>}
-                
+
             {!!crewSymbol && !!rawVoyages?.length && !!featuredList && (
                 <>
                     <div
@@ -334,16 +334,16 @@ export const HofDetails = (props: HofDetailsProps) => {
                                         if (count < 1) return <></>
                                         return <div> <div
                                             className={'ui label'}
-                                            style={{ 
+                                            style={{
                                                 textAlign: 'left',
-                                                width: "18em", 
-                                                fontSize: "0.8em", 
+                                                width: "18em",
+                                                fontSize: "0.8em",
                                                 lineHeight: "1.2em",
-                                                height: "4.5em", 
-                                                display: 'grid', 
-                                                gridTemplateAreas: "'skill seat value'", 
+                                                height: "4.5em",
+                                                display: 'grid',
+                                                gridTemplateAreas: "'skill seat value'",
                                                 gridTemplateColumns: "64px auto auto",
-                                                alignItems: "center" 
+                                                alignItems: "center"
                                             }}
                                             key={`voycountseat_${seat}_${featured.symbol}`}>
                                             <img style={{ gridArea: 'skill', height: "18px", margin: "0.5em 1em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} />

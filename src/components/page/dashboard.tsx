@@ -9,6 +9,7 @@ import { PlayerShareNotifications, PlayerSharePanel } from '../../components/pla
 import { PlayerGlance } from './playerglance';
 
 type DashboardProps = {
+	openInputPanel: () => void;
 	activePanel: string | undefined;
 	setActivePanel: (panel: string | undefined) => void;
 	narrow: boolean;
@@ -16,10 +17,11 @@ type DashboardProps = {
 
 const Dashboard = (props: DashboardProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 	const isMobile = globalContext.isMobile;
 	const { playerData, showPlayerGlance, setShowPlayerGlance } = globalContext.player;
 	const { t } = globalContext.localized;
-	const { activePanel, setActivePanel, narrow } = props;
+	const { activePanel, setActivePanel, narrow, openInputPanel } = props;
 	const [mobileHideOverride, setMobileHideOverride] = React.useState(false);
 	const [hideOverrideHidden, setHideOverrideHidden] = React.useState(false);
 
@@ -29,6 +31,7 @@ const Dashboard = (props: DashboardProps) => {
 
 			{!!playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
 				<PlayerGlance
+					openPlayerPanel={() => openInputPanel()}
 					t={t}
 					narrow={narrow}
 					requestDismiss={() => { setShowPlayerGlance(false) }} />}
@@ -61,6 +64,8 @@ const Dashboard = (props: DashboardProps) => {
 			}
 			{playerData &&
 				<PlayerShareNotifications
+					dbidHash={dbidHash}
+					setDbidHash={setDbidHash}
 					dbid={`${playerData.player.dbid}`}
 					activePanel={activePanel}
 					setActivePanel={setActivePanel}
@@ -69,6 +74,7 @@ const Dashboard = (props: DashboardProps) => {
 
 			{activePanel === 'share' &&
 				<PlayerSharePanel
+					dbidHash={dbidHash}
 					requestDismiss={() => { setActivePanel(undefined); }}
 				/>
 			}
