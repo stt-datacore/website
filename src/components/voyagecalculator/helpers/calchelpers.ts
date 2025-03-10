@@ -75,6 +75,7 @@ export const CALCULATORS = {
 				{ key: 'moonshot', text: 'Moonshot', value: 'moonshot' },
 				{ key: 'any', text: 'Any best time', value: 'any' },
 				{ key: 'peak-antimatter', text: 'Peak antimatter', value: 'peak-antimatter' },
+				{ key: 'estimate-vp', text: 'Estimate + VP', value: 'estimate-vp' },
 				{ key: 'peak-vp', text: 'Peak VP', value: 'peak-vp' },
 				{ key: 'featured-vp', text: 'Featured VP', value: 'featured-vp' },
 				// { key: 'thorough', text: 'Thorough (slow)', value: 'thorough' }
