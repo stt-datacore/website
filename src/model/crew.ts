@@ -259,10 +259,24 @@ export interface ShipScores {
     }
 }
 
+export interface QuipmentDetails {
+    qpower: number,
+    bpower: number,
+    gpower: number,
+    vpower: number,
+    avg: number,
+    qprice: number,
+    bprice: number,
+    vprice: number,
+    gprice: number
+};
+
 export interface RankScoring {
     am_seating: number;
     collections: number;
     gauntlet: number;
+    gauntlet_plus: number;
+    gauntlet_plus_rank: number;
     main_cast: number;
     rarity_overall_rank: number;
     overall_grade: string;
@@ -274,14 +288,19 @@ export interface RankScoring {
     rarity_overall: number;
     ship: ShipScores;
     shuttle: number;
+    shuttle_plus: number;
+    shuttle_plus_rank: number;
     skill_rarity: number;
     tertiary_rarity: number;
     trait: number;
     velocity: number;
     crit: number;
     voyage: number;
+    voyage_plus: number;
+    voyage_plus_rank: number;
     skill_positions: number;
     variant: number;
+    quipment_details: QuipmentDetails;
 }
 
 export interface Ranks {
