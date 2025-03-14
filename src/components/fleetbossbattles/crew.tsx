@@ -1,16 +1,24 @@
 import React from 'react';
-import { Header, Form, Dropdown, Checkbox, Icon, Message } from 'semantic-ui-react';
+import {
+	Checkbox,
+	Dropdown,
+	DropdownItemProps,
+	Form,
+	Header,
+	Icon,
+	Message
+} from 'semantic-ui-react';
 
-import { BossCrew, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solve, SolveStatus, Solver, Spotter, SpotterPreferences, TraitRarities, ViableCombo } from '../../model/boss';
-import { crewCopy } from '../../utils/crewutils';
+import { BossCrew, FilteredGroup, FilteredGroups, NodeRarities, NodeRarity, Optimizer, PossibleCombo, Solve, SolveStatus, Solver, Spotter, SpotterPreferences, TraitRarities, ViableCombo, SolverNode } from '../../model/boss';
+import { GlobalContext } from '../../context/globalcontext';
+import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 
-import { UserContext, SolverContext } from './context';
+import { UserContext } from './context';
 import CrewGroups from './crewgroups';
 import CrewTable from './crewtable';
 import CrewChecklist from './crewchecklist';
 import { CrewFullExporter } from './crewexporter';
 import { isNodeOpen, getAllCombos, getComboIndexOf, removeCrewNodeCombo } from './fbbutils';
-import { GlobalContext } from '../../context/globalcontext';
 
 type ChainCrewProps = {
 	view: string;
@@ -21,14 +29,13 @@ type ChainCrewProps = {
 
 const ChainCrew = (props: ChainCrewProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { userType, spotterPrefs, setSpotterPrefs, soloPrefs, setSoloPrefs } = React.useContext(UserContext);
-	const { collaboration } = React.useContext(SolverContext);
+	const { userType, bossCrew, spotterPrefs, setSpotterPrefs, soloPrefs, setSoloPrefs } = React.useContext(UserContext);
 	const { view, solver, spotter, updateSpotter } = props;
 
 	const [optimizer, setOptimizer] = React.useState<Optimizer | undefined>(undefined);
 
 	React.useEffect(() => {
-		let resolvedCrew = crewCopy<BossCrew>(solver.crew);
+		let resolvedCrew: BossCrew[] = crewCopy<BossCrew>(solver.crew);
 		if (spotterPrefs.onehand === 'hide') resolvedCrew = filterOneHandExceptions(resolvedCrew);
 		if (spotterPrefs.alpha === 'hide') resolvedCrew = filterAlphaExceptions(resolvedCrew);
 
@@ -50,7 +57,28 @@ const ChainCrew = (props: ChainCrewProps) => {
 					solve.node === node.index && solve.crew.length > 0
 				);
 				if (unconfirmedSolve) {
-					let nodeCrew = crewCopy<BossCrew>(unconfirmedSolve.crew);
+					// Reconstitute boss crew data for unconfirmed crew
+					let nodeCrew: BossCrew[] = [];
+					unconfirmedSolve.crew.forEach(crewSymbol => {
+						const unconfirmedCrew: BossCrew | undefined = bossCrew.find(bc => bc.symbol === crewSymbol);
+						if (unconfirmedCrew) {
+							const bossCrewData: BossCrew = oneCrewCopy<BossCrew>(unconfirmedCrew);
+							nodeCrew.push({
+								...bossCrewData,
+								nodes: [node.index],
+								nodes_rarity: 1,
+								node_matches: {
+									[`node-${node.index}`]: {
+										index: node.index,
+										combos: [unconfirmedSolve.traits],
+										traits: unconfirmedSolve.traits
+									}
+								},
+								onehand_rule: { compliant: 1, exceptions: [] },
+								alpha_rule: { compliant: 1, exceptions: [] }
+							});
+						}
+					});
 					if (spotterPrefs.onehand === 'hide') nodeCrew = filterOneHandExceptions(nodeCrew);
 					if (spotterPrefs.alpha === 'hide') nodeCrew = filterAlphaExceptions(nodeCrew);
 					const nodeCombo: ViableCombo[] = [{ traits: unconfirmedSolve.traits, nodes: [node.index] }];
@@ -83,14 +111,14 @@ const ChainCrew = (props: ChainCrewProps) => {
 		setOptimizer({...optimizer, prefs});
 	}, [soloPrefs]);
 
-	const usableFilterOptions = [
+	const usableFilterOptions: DropdownItemProps[] = [
 		{ key: 'all', text: t('options.crew_status.none'), value: '' },
 		{ key: 'owned', text: t('crew_ownership.owned'), value: 'owned' },
 		{ key: 'thawed', text: t('options.crew_status.thawed'), value: 'thawed' }
 	];
 
 	if (!optimizer)
-		return (<div><Icon loading name='spinner' /> {t('global.loading_ellipses')}</div>);
+		return <div><Icon loading name='spinner' /> {t('global.loading_ellipses')}</div>;
 
 	const showWarning = spotterPrefs.alpha === 'hide' || spotterPrefs.onehand === 'hide'
 		|| soloPrefs.usable === 'owned' || soloPrefs.usable === 'thawed';
@@ -99,14 +127,16 @@ const ChainCrew = (props: ChainCrewProps) => {
 		<div style={{ margin: '2em 0' }}>
 			<Header as='h4'>{t('fbb.possible_solutions.title')}</Header>
 			<p>
-			{t('fbb.possible_solutions.heading')}{` `}
+				{t('fbb.possible_solutions.heading')}{` `}
 				{view === 'crewgroups' && <span>{t('fbb.possible_solutions.tap_trait_solve')}</span>}
-				{view === 'crewtable' && <span>
-					{tfmt('fbb.possible_solutions.tap_approve_decline', {
-						approve: <Icon name='check' />,
-						decline: <Icon name='x' />
-					})}
-					</span>}
+				{view === 'crewtable' && (
+					<span>
+						{tfmt('fbb.possible_solutions.tap_approve_decline', {
+							approve: <Icon name='check' />,
+							decline: <Icon name='x' />
+						})}
+					</span>
+				)}
 			</p>
 
 			<Message>
@@ -146,7 +176,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 						</Form.Group>
 						<Form.Group grouped>
 							<Header as='h4'>{t('fbb.settings.user_prefs.title')}</Header>
-							{userType === 'player' &&
+							{userType === 'player' && (
 								<Form.Field
 									placeholder={t('hints.filter_by_availability')}
 									control={Dropdown}
@@ -156,7 +186,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 									value={soloPrefs.usable}
 									onChange={(e, { value }) => setSoloPrefs({...soloPrefs, usable: value})}
 								/>
-							}
+							)}
 							<Form.Field
 								control={Checkbox}
 								label={t('fbb.settings.user_prefs.show_ship_ability')}
@@ -172,38 +202,41 @@ const ChainCrew = (props: ChainCrewProps) => {
 						</Form.Group>
 					</div>
 				</Form>
-				{showWarning &&
+				{showWarning && (
 					<div>
 						<Icon name='warning sign' color='yellow' /> {t('fbb.settings.warn')}
 					</div>
-				}
+				)}
 			</Message>
 
-			{view === 'crewgroups' &&
+			{view === 'crewgroups' && (
 				<CrewGroups solver={solver} optimizer={optimizer}
 					solveNode={onNodeSolved} markAsTried={onCrewMarked}
 				/>
-			}
-			{view === 'crewtable' &&
+			)}
+			{view === 'crewtable' && (
 				<CrewTable solver={solver} optimizer={optimizer}
 					solveNode={onNodeSolved} markAsTried={onCrewMarked}
 				/>
-			}
+			)}
 
-			<CrewChecklist key={solver.id}
-				attemptedCrew={spotter.attemptedCrew}
-				updateAttempts={updateCrewAttempts}
-			/>
+			<div style={{ margin: '2em 0' }}>
+				<CrewChecklist key={solver.id}
+					attemptedCrew={spotter.attemptedCrew}
+					updateAttempts={updateCrewAttempts}
+				/>
+			</div>
 
 			<Message style={{ margin: '1em 0' }}>
 				<Message.Content>
 					<Message.Header>{t('fbb.tips.title')}</Message.Header>
-					<p><i>{t('fbb.tips.one_hand_exceptions_a')}</i> {t('fbb.tips.one_hand_exceptions_b')}</p>
-					<p><i>{t('fbb.tips.alpha_exceptions_a')}</i> {t('fbb.tips.alpha_exceptions_b')}</p>
-					<p><i>{t('fbb.tips.non_optimals_a')}</i> {t('fbb.tips.non_optimals_b')}</p>
-					<p><i>{t('fbb.tips.coverage_a')}</i> {t('fbb.tips.coverage_b')}</p>
-					<p><i>{t('fbb.tips.trait_colors_a')}</i> {t('fbb.tips.trait_colors_b')}</p>
-					<p><i>{t('fbb.tips.trait_numbers_a')}</i> {t('fbb.tips.trait_numbers_b')}</p>
+					<p><b>One hand exceptions</b> are crew who might be ruled out based on an unofficial rule that eliminates traits if they are shared by more than a handful of crew.</p>
+					<p><b>{t('fbb.tips.one_hand_exceptions_a')}</b> {t('fbb.tips.one_hand_exceptions_b')}</p>
+					<p><b>{t('fbb.tips.alpha_exceptions_a')}</b> {t('fbb.tips.alpha_exceptions_b')}</p>
+					<p><b>{t('fbb.tips.non_optimals_a')}</b> {t('fbb.tips.non_optimals_b')}</p>
+					<p><b>{t('fbb.tips.coverage_a')}</b> {t('fbb.tips.coverage_b')}</p>
+					<p><b>{t('fbb.tips.trait_colors_a')}</b> {t('fbb.tips.trait_colors_b')}</p>
+					<p><b>{t('fbb.tips.trait_numbers_a')}</b> {t('fbb.tips.trait_numbers_b')}</p>
 				</Message.Content>
 			</Message>
 
@@ -232,10 +265,10 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 
 	function getOptimalCombos(crewList: BossCrew[]): ViableCombo[] {
-		const viableCombos = [] as ViableCombo[];
+		const viableCombos: ViableCombo[] = [];
 		crewList.forEach(crew => {
 			Object.values(crew.node_matches).forEach(node => {
-				const existing = viableCombos.find(combo =>
+				const existing: ViableCombo | undefined = viableCombos.find(combo =>
 					combo.traits.length === node.traits.length && combo.traits.every(trait => trait && node.traits.includes(trait))
 				);
 				if (existing) {
@@ -248,12 +281,12 @@ const ChainCrew = (props: ChainCrewProps) => {
 			});
 		});
 		// Identify combo sets that are subsets of other possible combos
-		const optimalCombos = [] as ViableCombo[];
+		const optimalCombos: ViableCombo[] = [];
 		viableCombos.sort((a, b) => b.traits.length - a.traits.length).forEach(combo => {
-			const supersets = optimalCombos.filter(optimal =>
+			const supersets: ViableCombo[] = optimalCombos.filter(optimal =>
 				optimal.traits.length > combo.traits.length && combo.traits.every(trait => optimal.traits.includes(trait))
 			);
-			const newNodes = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
+			const newNodes: number[] = combo.nodes.filter(node => supersets.filter(optimal => optimal.nodes.includes(node)).length === 0);
 			if (newNodes.length > 0) combo.nodes = newNodes;
 			if (supersets.length === 0 || newNodes.length > 0)
 				optimalCombos.push(combo);
@@ -346,7 +379,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 	}
 
 	function onNodeSolved(nodeIndex: number, traits: string[], bypassConfirmation: boolean = false): void {
-		const node = solver.nodes.find(node => node.index === nodeIndex);
+		const node: SolverNode | undefined = solver.nodes.find(node => node.index === nodeIndex);
 		if (!node) return;
 
 		// Reset solved traits to ? if passed an empty traits array
@@ -357,33 +390,24 @@ const ChainCrew = (props: ChainCrewProps) => {
 		// Keep list of crew who can confirm this solve
 		//	If all traits solved AND crew array set, solve status will be unconfirmed
 		//	If all traits solved AND crew array empty, solve status will be confirmed
-		let crew: BossCrew[] = [];
+		const unconfirmedCrew: string[] = [];
 		if (node.solveStatus !== SolveStatus.Unconfirmed && !bypassConfirmation) {
-			crew = solver.crew.slice().filter(crew =>
+			solver.crew.slice().filter(crew =>
 				!!crew.node_matches[`node-${nodeIndex}`]
 					&& traits.every(trait => crew.traits.includes(trait))
-			);
-			crew.forEach(crew => {
-				// Only retain knowledge about the solved node and solved traits
-				crew.nodes_rarity = 1;
-				crew.node_matches = {
-					[`node-${nodeIndex}`]: {
-						index: nodeIndex,
-						combos: [traits],
-						traits: traits
-					}
-				};
+			).forEach(crew => {
+				unconfirmedCrew.push(crew.symbol);
 			});
 		}
 
- 		const solves = [...spotter.solves];
-		const solve = solves.find(solve => solve.node === nodeIndex);
+ 		const solves: Solve[] = JSON.parse(JSON.stringify(spotter.solves));
+		const solve: Solve | undefined = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
-			solve.crew = crew;
+			solve.crew = unconfirmedCrew;
 		}
 		else {
-			solves.push({ node: nodeIndex, traits, crew });
+			solves.push({ node: nodeIndex, traits, crew: unconfirmedCrew });
 		}
 
 		updateSpotter({...spotter, solves});
@@ -391,14 +415,13 @@ const ChainCrew = (props: ChainCrewProps) => {
 
 	function onCrewMarked(crewSymbol: string): void {
 		if (!spotter.attemptedCrew.includes(crewSymbol)) {
-			const attemptedCrew = [...spotter.attemptedCrew];
+			const attemptedCrew: string[] = spotter.attemptedCrew.slice();
 			attemptedCrew.push(crewSymbol);
 			updateSpotter({...spotter, attemptedCrew});
 		}
 	}
 
 	function updateCrewAttempts(attemptedCrew: string[]): void {
-		if (!!collaboration) return;
 		updateSpotter({...spotter, attemptedCrew});
 	}
 };

@@ -1,10 +1,22 @@
 import React from 'react';
-import { Button, Dropdown, Form, Popup } from 'semantic-ui-react';
+import {
+	Button,
+	Icon,
+	Image,
+	Label,
+	Message,
+	Popup,
+	Rating,
+	Segment
+} from 'semantic-ui-react';
 
-import { RetrievalOptions } from '../../model/game-elements';
-
-import { UserContext } from './context'
+import { BossCrew } from '../../model/boss';
 import { GlobalContext } from '../../context/globalcontext';
+
+import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
+import { DataPicker } from '../dataset_presenters/datapicker';
+
+import { SolverContext, UserContext } from './context'
 
 type CrewChecklistProps = {
 	attemptedCrew: string[];
@@ -12,47 +24,41 @@ type CrewChecklistProps = {
 };
 
 const CrewChecklist = (props: CrewChecklistProps) => {
-	const userContext = React.useContext(UserContext);
 	const globalContext = React.useContext(GlobalContext);
-	const { t, tfmt } = globalContext.localized;
+	const { t } = globalContext.localized;
+	const { bossCrew } = React.useContext(UserContext);
+	const { bossBattle } = React.useContext(SolverContext);
+	const { attemptedCrew, updateAttempts } = props;
 
-	const { bossCrew } = userContext;
-	const { updateAttempts } = props;
+	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 
-	const [options, setOptions] = React.useState<RetrievalOptions>({ initialized: false, list: []});
+	const selectedIds = React.useMemo<Set<number>>(() => {
+		const attemptedIds: number[] = bossCrew.filter(crew => attemptedCrew.includes(crew.symbol)).map(crew => crew.id);
+		return new Set<number>([...attemptedIds]);
+	}, [attemptedCrew]);
 
-	React.useEffect(() => {
-		if (props.attemptedCrew)
-			if (options && !options.initialized) populatePlaceholders();
-	}, [props.attemptedCrew]);
+	const gridSetup: IDataGridSetup = {
+		renderGridColumn: renderGridCrew
+	};
 
-	if (!options) {
-		populatePlaceholders();
-		return (<></>);
-	}
-	const copyFull = () => {
-		let str = "Attempted: " + props.attemptedCrew.map(symbol => bossCrew.find(c => c.symbol === symbol)?.name ?? '').join(", ");
-		if (navigator.clipboard) {
-			navigator.clipboard.writeText(str);
-		}
-	}
 	return (
-		<div style={{ margin: '2em 0' }}>
-			{t('fbb.attempted.title')}
-			<Form.Field
-				placeholder={t('behold_helper.search_for_crew')}
-				control={Dropdown}
-				clearable
-				fluid
-				multiple
-				search
-				selection
-				options={options.list}
-				value={props.attemptedCrew}
-				onFocus={() => { if (!options.initialized) populateOptions(); }}
-				onChange={(e, { value }) => updateAttempts(value) }
-			/>
-			<div style={{marginTop:"0.5em"}}>
+		<React.Fragment>
+			<Message	/* Keep track of crew who have been tried for this combo chain. */
+				onDismiss={() => updateAttempts([])}
+				attached
+			>
+				{t('fbb.attempted.title')}
+			</Message>
+			<Segment attached='bottom'>
+				<div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
+					{renderAttempts()}
+					<Button onClick={() => setModalIsOpen(true)}>
+						<Icon name='search' color='red' />
+						Search for crew
+					</Button>
+				</div>
+			</Segment>
+			{attemptedCrew.length > 0 && (
 				<Popup
 					content={t('clipboard.copied_exclaim')}
 					on='click'
@@ -62,31 +68,77 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 						<Button icon='clipboard' content={t('fbb.attempted.clipboard')} onClick={() => copyFull()} />
 					}
 				/>
-			</div>
-		</div>
+			)}
+			{modalIsOpen && (
+				<DataPicker	/* Search for crew by name */
+					id={`fbb/${bossBattle.id}-${bossBattle.chainIndex}/crewchecklist/datapicker`}
+					data={bossCrew}
+					closePicker={handleSelectedIds}
+					preSelectedIds={selectedIds}
+					selection
+					search
+					searchPlaceholder={t('crew_picker.search_by_name')}
+					gridSetup={gridSetup}
+				/>
+			)}
+		</React.Fragment>
 	);
 
-	function populatePlaceholders(): void {
-		const options: RetrievalOptions = { initialized: false, list: [] };
-		if (props.attemptedCrew.length > 0) {
-			let crewList = [...bossCrew];
-			options.list = crewList.filter(c => props.attemptedCrew.includes(c.symbol)).map(c => {
-				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
-			});
-		}
-		else {
-			options.list = [{ key: 0, value: 0, text: 'Loading...' }];
-		}
-		setOptions({...options});
+	function renderAttempts(): JSX.Element {
+		return (
+			<React.Fragment>
+				{Array.from(selectedIds).map(selectedId => {
+					const crew: BossCrew | undefined = bossCrew.find(crew => crew.id === selectedId);
+					if (!crew) return <></>;
+					return (
+						<Label key={crew.id} style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
+							<Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							{crew.name}
+							<Icon name='delete' onClick={() => cancelAttempt(crew.symbol)} />
+						</Label>
+					);
+				})}
+			</React.Fragment>
+		);
 	}
 
-	function populateOptions(): void {
-		const crewList = [...bossCrew];
-		options.list = crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-			return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
+	function renderGridCrew(datum: IEssentialData, isSelected: boolean): JSX.Element {
+		const crew: BossCrew = datum as BossCrew;
+		return (
+			<React.Fragment>
+				<Image>
+					<div style={{ opacity: isSelected ? .5 : 1 }}>
+						<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
+					</div>
+					{isSelected && (
+						<Label corner='right' color='red' icon='x' />
+					)}
+				</Image>
+				<div>{crew.name}</div>
+				<div><Rating defaultRating={crew.highest_owned_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
+			</React.Fragment>
+		);
+	}
+
+	function handleSelectedIds(selectedIds: Set<number>): void {
+		const attemptedCrew: string[] = [];
+		[...selectedIds].forEach(selectedId => {
+			const crew: BossCrew | undefined = bossCrew.find(crew => crew.id === selectedId);
+			if (crew) attemptedCrew.push(crew.symbol);
 		});
-		options.initialized = true;
-		setOptions({...options});
+		updateAttempts(attemptedCrew);
+		setModalIsOpen(false);
+	}
+
+	function cancelAttempt(crewSymbol: string): void {
+		updateAttempts([...attemptedCrew.filter(crew => crew !== crewSymbol)]);
+	}
+
+	function copyFull(): void {
+		const str = "Attempted: " + attemptedCrew.map(symbol => bossCrew.find(c => c.symbol === symbol)?.name ?? '').join(', ');
+		if (navigator.clipboard) {
+			navigator.clipboard.writeText(str);
+		}
 	}
 };
 

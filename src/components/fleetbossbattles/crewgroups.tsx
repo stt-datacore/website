@@ -1,6 +1,14 @@
 import React from 'react';
 import { InView } from 'react-intersection-observer';
-import { Button, Message, Table, Label, Icon, Grid, SemanticWIDTHS } from 'semantic-ui-react';
+import {
+	Button,
+	Grid,
+	Icon,
+	Label,
+	Message,
+	SemanticWIDTHS,
+	Table
+} from 'semantic-ui-react';
 
 import { BossCrew, FilteredGroup, Optimizer, SolveStatus, Solver, SolverNode } from '../../model/boss';
 import { GlobalContext } from '../../context/globalcontext';
@@ -9,14 +17,14 @@ import { UserContext } from './context';
 import { CrewNodeExporter } from './crewexporter';
 import { MarkGroup, MarkCrew } from './markbuttons';
 
-interface CrewGroupsProps {
+const CrewGroupsContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
+
+type CrewGroupsProps = {
 	solver: Solver;
 	optimizer: Optimizer;
 	solveNode: (nodeIndex: number, traits: string[], bypassConfirmation?: boolean) => void;
 	markAsTried: (crewSymbol: string) => void;
 };
-
-const CrewGroupsContext = React.createContext<CrewGroupsProps>({} as CrewGroupsProps);
 
 const CrewGroups = (props: CrewGroupsProps) => {
 	const { solver } = props;
@@ -35,13 +43,12 @@ type NodeGroupsProps = {
 
 const NodeGroups = (props: NodeGroupsProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t, tfmt } = globalContext.localized;
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { t, tfmt, TRAIT_NAMES } = globalContext.localized;
 	const { spotterPrefs } = React.useContext(UserContext);
 	const groupsContext = React.useContext(CrewGroupsContext);
 	const { node } = props;
 
-	// Hide this node if solved authenticated from player data, solve confirmed, or not set to confirm solved traits
+	// Hide this node if solve authenticated from player data, solve confirmed, or not set to confirm solved traits
 	if (node.solveStatus === SolveStatus.Infallible
 		|| node.solveStatus === SolveStatus.Confirmed
 		|| (node.solveStatus === SolveStatus.Unconfirmed && !spotterPrefs.confirmSolves)
@@ -61,17 +68,22 @@ const NodeGroups = (props: NodeGroupsProps) => {
 						<p>
 							{(unconfirmedSolve || partialSolve) && (
 								<span>
-									{(unconfirmedSolve && partialSolve) && 
-									<>{tfmt('fbb.solves.partially_solved', { n: `${node.index+1}`})}{', '}{tfmt('fbb.solves.pending')}</>
-									}
-									{(unconfirmedSolve && !partialSolve) && 
+									{unconfirmedSolve && partialSolve && (
+										<>{tfmt('fbb.solves.partially_solved', { n: `${node.index+1}`})}{', '}{tfmt('fbb.solves.pending')}</>
+									)}
+									{unconfirmedSolve && !partialSolve && (
 										<>{tfmt('fbb.solves.solved', { n: `${node.index+1}`})}{', '}{tfmt('fbb.solves.pending')}</>
-									}
-									{(!unconfirmedSolve && partialSolve) && 
+									)}
+									{!unconfirmedSolve && partialSolve && (
 										<>{tfmt('fbb.solves.partially_solved', { n: `${node.index+1}`})}</>
-									}
+									)}
 									<span style={{ paddingLeft: '1em' }}>
-										<Button compact icon='undo' content={t('fbb.undo_solve')} onClick={() => groupsContext.solveNode(node.index, [])} />
+										<Button	/* Undo Solve */
+											content={t('fbb.undo_solve')}
+											icon='undo'
+											onClick={() => groupsContext.solveNode(node.index, [])}
+											compact
+										/>
 									</span>
 								</span>
 							) || <>{tfmt('fbb.node_n', { n: `${node.index+1}`})}</>}
@@ -84,7 +96,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 			</Message>
 			{nodeGroups.length === 0 && (
 				<Message>
-					{t('fbb.alert_no_solution')}					
+					{t('fbb.alert_no_solution')}
 				</Message>
 			)}
 			{nodeGroups.length > 0 && <GroupTable node={node} data={nodeGroups} />}

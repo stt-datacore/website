@@ -1,7 +1,14 @@
 import React from 'react';
-import { Dropdown, Checkbox, Icon, Message } from 'semantic-ui-react';
+import {
+	Checkbox,
+	Dropdown,
+	DropdownItemProps,
+	Icon,
+	Message
+} from 'semantic-ui-react';
 
-import { BossBattle, BossCrew, BossGroup, ExportPreferences, SoloPreferences, Spotter, SpotterPreferences, Status, UserPreferences } from '../../model/boss';
+import { BossBattle, BossCrew, BossGroup, ComboNode, ExportPreferences, SoloPreferences, Spotter, SpotterPreferences, Status, UserPreferences } from '../../model/boss';
+import { PlayerCrew } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { crewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
@@ -20,6 +27,12 @@ export const DIFFICULTY_NAME = {
 	6: 'Ultra-Nightmare'
 };
 
+enum CollaborationMode {
+	Disabled,
+	Enabled,
+	Failed
+};
+
 type PlayerBossBattleProps = {
 	dbid: string;
 };
@@ -36,9 +49,9 @@ export const PlayerBossBattle = (props: PlayerBossBattleProps) => {
 
 	React.useEffect(() => {
 		// Calculate highest owned rarities
-		const bossCrew = crewCopy(globalContext.core.crew) as BossCrew[];
+		const bossCrew: BossCrew[] = crewCopy(globalContext.core.crew) as BossCrew[];
 		bossCrew.forEach(crew => {
-			const owned = playerData?.player.character.crew.filter(oc => oc.symbol === crew.symbol) ?? [];
+			const owned: PlayerCrew[] = playerData?.player.character.crew.filter(oc => oc.symbol === crew.symbol) ?? [];
 			crew.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
 			crew.only_frozen = owned.length > 0 && owned.filter(oc => oc.immortal > 0).length === owned.length;
 			crew.only_expiring = owned.length > 0 && owned.every(o => !!o.expires_in);
@@ -48,14 +61,14 @@ export const PlayerBossBattle = (props: PlayerBossBattleProps) => {
 
 	if (!playerData) return <></>;
 
-	const providerValue = {
+	const providerValue: IUserContext = {
 		userType: 'player',
-		bossCrew,
+		bossCrew: bossCrew ?? [],
 		userPrefs, setUserPrefs,
 		spotterPrefs, setSpotterPrefs,
 		soloPrefs, setSoloPrefs,
 		exportPrefs, setExportPrefs
-	} as IUserContext;
+	};
 
 	return (
 		<React.Fragment>
@@ -66,28 +79,22 @@ export const PlayerBossBattle = (props: PlayerBossBattleProps) => {
 	);
 };
 
-interface BossBattleOption {
-	key: number;
-	value: number;
-	text: string;
-};
-
 const BossBattlePicker = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { ephemeral } = globalContext.player;
 
-	const [bossBattleOptions, setBossBattleOptions] = React.useState<BossBattleOption[] | undefined>(undefined);
+	const [bossBattleOptions, setBossBattleOptions] = React.useState<DropdownItemProps[] | undefined>(undefined);
 	const [activeBossBattleId, setActiveBossBattleId] = React.useState<number | undefined>(undefined);
-	const [collaborationEnabled, setCollaborationEnabled] = React.useState(false);
+	const [collaborationMode, setCollaborationMode] = React.useState<CollaborationMode>(CollaborationMode.Disabled);
 
 	React.useEffect(() => {
 		if (!ephemeral) return;
-		const bossGroups = ephemeral?.fleetBossBattlesRoot?.groups ?? [] as BossGroup[];
-		const bossBattleOptions = [] as BossBattleOption[];
+		const bossGroups: BossGroup[] = ephemeral?.fleetBossBattlesRoot?.groups ?? [];
+		const bossBattleOptions: DropdownItemProps[] = [];
 		ephemeral.fleetBossBattlesRoot.statuses.forEach(status => {
 			if (status.id && status.combo && status.ends_in) {
-				const unlockedNodes = status.combo.nodes.filter(node => node.unlocked_character);
+				const unlockedNodes: ComboNode[] = status.combo.nodes.filter(node => node.unlocked_character);
 				if (status.combo.nodes.length - unlockedNodes.length > 0) {
 					bossBattleOptions.push(
 						{
@@ -101,43 +108,50 @@ const BossBattlePicker = () => {
 		});
 		setBossBattleOptions([...bossBattleOptions]);
 		if (!activeBossBattleId && bossBattleOptions.length === 1)
-			setActiveBossBattleId(bossBattleOptions[0].value);
+			setActiveBossBattleId(bossBattleOptions[0].value as number);
 	}, [ephemeral]);
 
-	React.useEffect(() => {
-		setCollaborationEnabled(false);
-	}, [activeBossBattleId]);
-
 	if (!bossBattleOptions)
-		return (<><Icon loading name='spinner' /> Loading...</>);
+		return <><Icon loading name='spinner' /> Loading...</>;
 
 	if (bossBattleOptions.length === 0)
 		return <Message>No boss data found. Please import an updated version of your player data.</Message>;
 
 	return (
 		<React.Fragment>
-			{bossBattleOptions.length > 0 &&
-				<div style={{ display: 'flex', flexFlow: 'row wrap', alignItems: 'center', columnGap: '1em' }}>
+			{bossBattleOptions.length > 0 && (
+				<div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: '1em' }}>
 					<Dropdown selection
 						placeholder={t('fbb.select')}
 						options={bossBattleOptions}
 						value={activeBossBattleId}
-						onChange={(e, { value }) => setActiveBossBattleId(value as number)}
+						onChange={(e, { value }) => {
+							setActiveBossBattleId(value as number);
+							setCollaborationMode(CollaborationMode.Disabled);
+						}}
 					/>
-					{/* {activeBossBattleId &&
-						<Checkbox toggle
+					{activeBossBattleId && (
+						<Checkbox	/* Collaborate */
 							label='Collaborate'
-							checked={collaborationEnabled}
-							onClick={() => setCollaborationEnabled(!collaborationEnabled)}
+							checked={collaborationMode === CollaborationMode.Enabled}
+							onClick={() => setCollaborationMode(collaborationMode === CollaborationMode.Enabled ? CollaborationMode.Disabled : CollaborationMode.Enabled)}
+							toggle
 						/>
-					} */}
+					)}
 				</div>
-			}
+			)}
 			{bossBattleOptions.length === 0 && <Message>You have no open fleet boss battles.</Message>}
+			{collaborationMode === CollaborationMode.Failed && (
+				<Message icon negative onDismiss={() => setCollaborationMode(CollaborationMode.Disabled)}>
+					<Icon name='warning sign' />
+					Error! Unable to synchronize. The service may not be available right now. Please try again. If the error persists, contact the DataCore support team.
+				</Message>
+			)}
 			{activeBossBattleId && (
 				<BossBattleSpotter key={activeBossBattleId}
 					bossBattleId={activeBossBattleId}
-					collaborationEnabled={collaborationEnabled}
+					collaborationEnabled={collaborationMode === CollaborationMode.Enabled}
+					abortCollaboration={() => setCollaborationMode(CollaborationMode.Failed)}
 				/>
 			)}
 		</React.Fragment>
@@ -147,12 +161,13 @@ const BossBattlePicker = () => {
 type BossBattleSpotterProps = {
 	bossBattleId: number;
 	collaborationEnabled: boolean;
+	abortCollaboration: () => void;
 };
 
 const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
-	const { bossBattleId, collaborationEnabled } = props;
+	const { bossBattleId, collaborationEnabled, abortCollaboration } = props;
 
 	const [bossBattle, setBossBattle] = React.useState<BossBattle | undefined>(undefined);
 	const [spotter, setSpotter] = useStateWithStorage<Spotter | undefined>(`fbb/${bossBattleId}/spotter`, undefined);
@@ -161,28 +176,28 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 	React.useEffect(() => {
 		if (!playerData || !ephemeral) return;
 
-		const status = ephemeral.fleetBossBattlesRoot.statuses.find(status => status.id === bossBattleId);
+		const status: Status | undefined = ephemeral.fleetBossBattlesRoot.statuses.find(status => status.id === bossBattleId);
 		if (!status || !status.combo) return;
 
-		const bossGroups = ephemeral.fleetBossBattlesRoot?.groups ?? [] as BossGroup[];
-		const chainIndex = status.combo.previous_node_counts.length;
+		const bossGroups: BossGroup[] = ephemeral.fleetBossBattlesRoot?.groups ?? [];
+		const chainIndex: number = status.combo.previous_node_counts.length;
 
-		const bossBattle = {
-			id: status.id,
+		const bossBattle: BossBattle = {
+			id: bossBattleId,
 			fleetId: playerData.player.fleet.id,
 			bossGroup: status.group,
 			difficultyId: status.difficulty_id,
 			chainIndex,
 			chain: {
-				id: `${status.id}-${chainIndex}`,
+				id: `${bossBattleId}-${chainIndex}`,
 				traits: status.combo.traits,
 				nodes: status.combo.nodes
 			},
 			description: describeBoss(bossGroups, status)
-		} as BossBattle;
+		};
 		setBossBattle({...bossBattle});
 
-		if (!spotter || ((!collaborationEnabled) && spotterBattleId !== bossBattle.chain.id)) {
+		if (!spotter || (!collaborationEnabled && spotterBattleId !== bossBattle.chain.id)) {
 			setSpotter({
 				id: bossBattle.chain.id,
 				solves: [],
@@ -201,22 +216,24 @@ const BossBattleSpotter = (props: BossBattleSpotterProps) => {
 
 	return (
 		<React.Fragment>
-			{!collaborationEnabled &&
+			{!collaborationEnabled && (
 				<SoloPlayer
 					bossBattle={bossBattle}
 					spotter={spotter}
 					setSpotter={setSpotter}
 				/>
-			}
-			{collaborationEnabled &&
+			)}
+			{collaborationEnabled && (
 				<Collaborator
 					bossBattleId={bossBattle.id}
+					fleetId={bossBattle.fleetId}
 					localBossBattle={bossBattle}
 					localSpotter={spotter}
 					setLocalSpotter={setSpotter}
 					userRole='player'
+					abortCollaboration={abortCollaboration}
 				/>
-			}
+			)}
 		</React.Fragment>
 	)
 };
@@ -230,13 +247,13 @@ type SoloPlayerProps = {
 const SoloPlayer = (props: SoloPlayerProps) => {
 	const { bossBattle, spotter, setSpotter } = props;
 
-	const chainId = bossBattle.chain.id;
+	const chainId: string = bossBattle.chain.id;
 
-	const providerValue = {
+	const providerValue: ISolverContext = {
 		bossBattleId: bossBattle.id,
 		bossBattle,
 		spotter, setSpotter
-	} as ISolverContext;
+	};
 
 	return (
 		<React.Fragment>
@@ -248,8 +265,8 @@ const SoloPlayer = (props: SoloPlayerProps) => {
 };
 
 const describeBoss = (bossGroups: BossGroup[], bossBattle: Status) => {
-	const description = [] as string[];
-	const bossName = bossGroups.find(group => group.symbol === bossBattle.group)?.name;
+	const description: string[] = [];
+	const bossName: string | undefined = bossGroups.find(group => group.symbol === bossBattle.group)?.name;
 	if (bossName) description.push(bossName);
 	description.push(`${DIFFICULTY_NAME[bossBattle.difficulty_id]}`);
 	return description.join(', ');
