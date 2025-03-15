@@ -222,7 +222,55 @@ export function exportCrewFields(t: TranslateMethod, force_english = true): Expo
 		{
 			label: 'Symbol',
 			value: (row: PlayerCrew) => row.symbol
-		}
+		},
+		{
+			label: 'Q-Bits',
+			value: (row: PlayerCrew) => row.q_bits
+		},
+		{
+			label: 'Quipment Slots',
+			value: (row: PlayerCrew) => qbitsToSlots(row.q_bits)
+		},
+		{
+			label: 'Next Slot',
+			value: (row: PlayerCrew) => qbProgressToNext(row.q_bits)[0]
+		},
+		{
+			label: 'DataScore Rating',
+			value: (row: PlayerCrew) => row.ranks.scores.overall
+		},
+		{
+			label: 'DataScore Rank',
+			value: (row: PlayerCrew) => row.ranks.scores.overall_rank
+		},
+		{
+			label: 'DataScore Grade',
+			value: (row: PlayerCrew) => row.ranks.scores.overall_grade
+		},
+		{
+			label: 'DataScore In-Rarity Rating',
+			value: (row: PlayerCrew) => row.ranks.scores.rarity_overall
+		},
+		{
+			label: 'DataScore In-Rarity Rank',
+			value: (row: PlayerCrew) => row.ranks.scores.rarity_overall_rank
+		},
+		{
+			label: 'Voyage Rating',
+			value: (row: PlayerCrew) => row.ranks.scores.voyage
+		},
+		{
+			label: 'Voyage Rank',
+			value: (row: PlayerCrew) => row.ranks.voyRank
+		},
+		{
+			label: 'Gauntlet Rating',
+			value: (row: PlayerCrew) => row.ranks.scores.gauntlet
+		},
+		{
+			label: 'Gauntlet Rank',
+			value: (row: PlayerCrew) => row.ranks.gauntletRank
+		},
 	];
 
 	if (force_english) CONFIG.setLanguage(oldlang);
@@ -829,7 +877,7 @@ export function qbProgressToNext(q_bits: number): [number, number] {
 	if (q_bits < 200) return [200 - q_bits, 200];
 	if (q_bits < 500) return [500 - q_bits, 500];
 	if (q_bits < 1300) return [1300 - q_bits, 1300];
-	return [q_bits, 0];
+	return [0, 0];
 }
 
 export function qbitsToSlots(q_bits: number | undefined) {

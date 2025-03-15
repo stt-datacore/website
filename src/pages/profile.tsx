@@ -235,8 +235,8 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			}
 		];
 
-		console.log("Avatar Debug");
-		console.log(playerData?.player?.character?.crew_avatar);
+		// console.log("Avatar Debug");
+		// console.log(playerData?.player?.character?.crew_avatar);
 
 		return (
 			playerData?.player &&
