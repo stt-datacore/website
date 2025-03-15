@@ -80,9 +80,8 @@ export const MarkGroup = (props: MarkGroupProps) => {
 				onClose={() => setModalIsOpen(false)}
 				size='tiny'
 			>
-				<Modal.Header>
+				<Modal.Header	/* Identify the traits used to solve Node NODE_INDEX_+1 */ >
 					{t('fbb.identify_solve_n', { n: `${node.index+1}`})}
-					Identify the traits used to solve Node {node.index+1}
 				</Modal.Header>
 				<Modal.Content scrolling style={{ textAlign: 'center' }}>
 					<Header as='h4'>
