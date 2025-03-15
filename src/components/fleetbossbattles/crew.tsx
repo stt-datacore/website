@@ -222,6 +222,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 
 			<div style={{ margin: '2em 0' }}>
 				<CrewChecklist key={solver.id}
+					optimizer={optimizer}
 					attemptedCrew={spotter.attemptedCrew}
 					updateAttempts={updateCrewAttempts}
 				/>

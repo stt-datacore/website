@@ -113,7 +113,12 @@ export const DataPicker = (props: DataPickerProps) => {
 				value={searchQuery}
 				onChange={(e, { value }) => setSearchQuery(value as string)}
 			>
-				<input />
+				<input
+					onKeyUp={(e) => {
+						if (!!props.selection && data.length === 1 && e.key === 'Enter')
+							selectFromQuery();
+					}}
+				/>
 				<Icon name='search' />
 				<Button icon onClick={() => setSearchQuery('')}>
 					<Icon name='delete' />
@@ -170,6 +175,13 @@ export const DataPicker = (props: DataPickerProps) => {
 						handleDblClick={props.selection ? selectAndClose : undefined}
 					/>
 				)}
+				{props.selection && data.length > 0 && (
+					<Message style={{ marginTop: '2em' }}>
+						<Icon name='lightbulb' />
+						{data.length > 1 && <>Double-tap to make a selection more quickly.</>}
+						{data.length === 1 && <>Double-tap or press enter to make a selection more quickly.</>}
+					</Message>
+				)}
 			</React.Fragment>
 		);
 	}
@@ -212,6 +224,15 @@ export const DataPicker = (props: DataPickerProps) => {
 		pendingSelectedIds.add(datumId);
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
 		props.closePicker(pendingSelectedIds, true);
+	}
+
+	function selectFromQuery(): void {
+		pendingSelectedIds.add(data[0].id);
+		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
+		props.closePicker(pendingSelectedIds, true);
+		// setSearchQuery('');
+		// if (pendingSelectedIds.size > 0 && props.closeOnChange)
+		// 	props.closePicker(pendingSelectedIds, true);
 	}
 };
 
