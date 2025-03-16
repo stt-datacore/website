@@ -17,7 +17,7 @@ import {
 import { BossCrew, Optimizer, ViableCombo } from '../../model/boss';
 import { GlobalContext } from '../../context/globalcontext';
 
-import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
+import { IDataGridSetup, IDataPickerState, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
 import { SolverContext, UserContext } from './context'
@@ -111,6 +111,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 					search
 					searchPlaceholder={t('crew_picker.search_by_name')}
 					renderOptions={renderOptions}
+					renderPreface={(state: IDataPickerState) => <CrewPickerPreface state={state} />}
 					gridSetup={gridSetup}
 				/>
 			)}
@@ -281,7 +282,32 @@ const CrewPickerOptions = (props: CrewPickerOptionsProps) => {
 					/>
 				)}
 			</Form.Group>
+			<Form.Group style={{ justifyContent: 'end', marginBottom: '0' }}>
+				<Form.Field>
+					<Button	/* Reset */
+						content={t('global.reset')}
+						onClick={() => setFilters({...defaultFilters})}
+					/>
+				</Form.Field>
+			</Form.Group>
 		</Form>
+	);
+};
+
+type CrewPickerPrefaceProps = {
+	state: IDataPickerState;
+};
+
+const CrewPickerPreface = (props: CrewPickerPrefaceProps) => {
+	const { data } = props.state;
+	if (data.length === 0) return <></>;
+	return (
+		<React.Fragment>
+			Crew who have been marked as tried are tagged <Icon name='x' fitted />. Tap a crew to toggle. You can select multiple crew.
+			{` `}
+			{data.length > 1 && <>Double-tap to select an individual crew more quickly.</>}
+			{data.length === 1 && <>Double-tap or press enter to select an individual crew more quickly.</>}
+		</React.Fragment>
 	);
 };
 

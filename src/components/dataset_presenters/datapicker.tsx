@@ -73,6 +73,7 @@ export const DataPicker = (props: DataPickerProps) => {
 	}, []);
 
 	const dataPickerState: IDataPickerState = {
+		data,
 		pendingSelectedIds, setPendingSelectedIds,
 		searchQuery, setSearchQuery,
 		showOptions, setShowOptions,
@@ -174,13 +175,6 @@ export const DataPicker = (props: DataPickerProps) => {
 						handleClick={props.selection ? toggleDatum : undefined}
 						handleDblClick={props.selection ? selectAndClose : undefined}
 					/>
-				)}
-				{props.selection && data.length > 0 && (
-					<Message style={{ marginTop: '2em' }}>
-						<Icon name='lightbulb' />
-						{data.length > 1 && <>Double-tap to make a selection more quickly.</>}
-						{data.length === 1 && <>Double-tap or press enter to make a selection more quickly.</>}
-					</Message>
 				)}
 			</React.Fragment>
 		);

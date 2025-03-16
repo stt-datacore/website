@@ -54,6 +54,7 @@ export interface IDataSortField {
 };
 
 export interface IDataPickerState {
+	data: IEssentialData[];
 	pendingSelectedIds: Set<number>;
 	setPendingSelectedIds: (pendingSelectedIds: Set<number>) => void;
 	searchQuery: string;
