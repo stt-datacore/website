@@ -11,7 +11,7 @@ import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import ItemsTable, { printRequiredTraits } from '../components/items/itemstable';
+import ItemsTable from '../components/items/itemstable';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -20,6 +20,7 @@ import { renderBonuses } from '../components/item_presenters/item_presenter';
 import { IRosterCrew } from '../components/crewtables/model';
 import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
 import { TinyStore } from '../utils/tiny';
+import { printRequiredTraits } from '../components/items/utils';
 
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };

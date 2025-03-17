@@ -48,71 +48,19 @@ import { CrewPresenter } from "../item_presenters/crew_presenter";
 import { renderBonuses } from "../item_presenters/item_presenter";
 import ItemDisplay from "../itemdisplay";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { ITableConfigRow } from "../searchabletable";
+import { CrewKwipTrial, CrewType, ItemSearchOpts, ItemsTableProps, OwnedType, printRequiredTraits } from "./utils";
+import { useStateWithStorage } from "../../utils/storage";
+import { ItemsContextProvider } from "./contextprovider";
 
 export interface CustomFieldDef {
 	field: string;
 	text: string;
 	format?: (value: any) => string;
 	width?: SemanticWIDTHS;
+	reverse?: boolean
 }
 
-type ItemsTableProps = {
-	/** List of equipment items */
-	data?: EquipmentCommon[] | EquipmentItem[];
-
-	/** Optional alternative navigation method */
-	navigate?: (symbol: string) => void;
-
-	/** Hide features for owned items */
-	hideOwnedInfo?: boolean;
-
-	/** Hide search bar */
-	hideSearch?: boolean;
-
-	/** Add needed but unowned items to list */
-	addNeeded?: boolean;
-
-	pageName?: string;
-
-	noRender?: boolean;
-
-	/** Do not run the worker */
-	noWorker?: boolean;
-
-	/** Put flavor in its own column. */
-	flavor?: boolean;
-
-	/** Put buffs in its own column. */
-	buffs?: boolean;
-
-	crewMode?: boolean;
-
-	types?: number[];
-
-	itemTargetGroup?: string;
-
-	crewTargetGroup?: string;
-
-	customFields?: CustomFieldDef[];
-
-	init_rows?: number;
-};
-
-interface ItemSearchOpts {
-	filterText?: string;
-	itemType?: number[];
-	rarity?: number[];
-}
-
-export type CrewType = "all" | "owned" | "quippable" | "frozen";
-
-interface CrewKwipTrial {
-	symbol: string;
-	kwipment: number[];
-	kwipment_expiration: number[];
-}
-
-type OwnedType = "all" | "owned" | "buildable" | "both";
 
 type ItemsTableState = {
 	column: any;
@@ -134,60 +82,32 @@ type ItemsTableState = {
 	ignoreLimit?: boolean;
 };
 
-export function printRequiredTraits(
-	item: EquipmentCommon,
-	trait_names: { [key: string]: string },
-	t?: TranslateMethod
-): JSX.Element {
-	if (item.kwipment) {
-		if (item.traits_requirement?.length) {
-			let req = item.traits_requirement!;
-			if (item.traits_requirement_operator === "and") {
-				return (
-					<Link
-						to={`/?search=trait:${req.reduce((p, n) =>
-							p ? `${p},${n}` : n
-						)}&filter=Whole%20word`}
-					>
-						{req
-							.map((t) => trait_names[t])
-							.join(
-								` ${t
-									? t("global." + item.traits_requirement_operator)
-									: item.traits_requirement_operator
-								} `
-							)}
-					</Link>
-				);
-			} else {
-				return (
-					<>
-						{req
-							.map((t) => (
-								<Link to={`/?search=trait:${t}&filter=Whole%20word`}>
-									{trait_names[t]}
-								</Link>
-							))
-							.reduce((p, n) =>
-								p ? (
-									<>
-										{p}{" "}
-										{t
-											? t("global." + item.traits_requirement_operator)
-											: item.traits_requirement_operator}{" "}
-										{n}
-									</>
-								) : (
-									n
-								)
-							)}
-					</>
-				);
-			}
-		}
-	}
+export const ItemsTable = (props: ItemsTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { items } = globalContext.core;
+	const pageName = props.pageName ?? 'items_table'
 
-	return <></>;
+	return <React.Fragment>
+		<ItemsContextProvider pageName={pageName}>
+			<React.Fragment>
+				<ItemsTableComponent {...props} />
+			</React.Fragment>
+		</ItemsContextProvider>
+
+	</React.Fragment>
+
+}
+
+
+const ItemsHeaderComponent = (props: ItemsTableProps) => {
+
+}
+
+const ItemsTableComponent = (props: ItemsTableProps) => {
+
+
+	return <>
+	</>
 }
 
 const pagingOptions = [
@@ -197,7 +117,7 @@ const pagingOptions = [
 	{ key: "3", value: 100, text: "100" },
 ];
 
-class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
+class ItemsTableOld extends Component<ItemsTableProps, ItemsTableState> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore;
@@ -1288,6 +1208,53 @@ class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 		const isMobile =
 			typeof window !== "undefined" && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
+		const tableConfig = [
+			{ width: 3, column: "name", title: t("items.columns.item") },
+		] as ITableConfigRow[];
+
+		if (!hideOwnedInfo) {
+			tableConfig.push(
+				{ width: 1, column: 'quantity', title: t("items.columns.quantity"), reverse: true },
+				{ width: 1, column: 'needed', title: t("items.columns.needed"), reverse: true },
+			);
+		}
+
+		if (!types?.length) {
+			tableConfig.push(
+				{ width: 1, column: 'type', title: t("items.columns.item_type"), reverse: false },
+			);
+		}
+
+		tableConfig.push(
+			{ width: 1, column: 'rarity', title: t("items.columns.rarity"), reverse: true },
+		);
+
+		if (buffs) {
+			tableConfig.push(
+				{ width: 1, column: 'buffs', title: t("items.columns.item_buffs"), reverse: true },
+			);
+		}
+
+		if (flavor) {
+			tableConfig.push(
+				{ width: 1, column: 'flavor', title: t("items.columns.flavor"), reverse: false },
+			);
+		}
+
+		if (!hideOwnedInfo) {
+			tableConfig.push(
+				{ width: 1, column: 'factionOnly', title: t("items.faction_only"), reverse: false },
+			);
+		}
+
+		if (!!customFields?.length) {
+			customFields.forEach((field) => {
+				tableConfig.push(
+					{ width: field.width as number ?? 1, column: field.field, title: t("items.faction_only"), reverse: field.reverse },
+				)
+			});
+		}
+
 		return (
 			<div style={{ margin: 0, padding: 0 }}>
 				{!hideSearch && (
@@ -1300,174 +1267,169 @@ class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 							gap: "0.5em",
 						}}
 					>
-						{!hideSearch && (
-							<>
-								{!!crewMode && (<div
-									style={{
-										display: "flex", width: "100%",
-										height: "3em",
-										flexDirection: isMobile ? "column" : "row",
-										justifyContent: "flex-start",
-										alignItems: "center",
-										marginLeft: "0.25em",
-									}}
-								>
-									<div style={{ marginRight: "0.75em", width: isMobile ? "100%" : "50%" }}>
-										<Dropdown
-											fluid
-											search
-											selection
-											clearable
-											placeholder={t("global.search_crew_ellipses")}
-											labeled
-											options={crewChoices}
-											value={crewSelection}
-											onChange={(e, { value }) =>
-												this.setCrewSelection(value as string)
-											}
-										/>
-									</div>
-									<div
-										style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
-									>
-										<Dropdown
-											placeholder={t("hints.filter_by_owned_status")}
-											options={crewTypes}
-											value={crewType}
-											onChange={(e, { value }) =>
-												this.setCrewType(value as CrewType)
-											}
-										/>
-									</div>
-								</div>)}
+						{!!crewMode && (<div
+							style={{
+								display: "flex", width: "100%",
+								height: "3em",
+								flexDirection: isMobile ? "column" : "row",
+								justifyContent: "flex-start",
+								alignItems: "center",
+								marginLeft: "0.25em",
+							}}
+						>
+							<div style={{ marginRight: "0.75em", width: isMobile ? "100%" : "50%" }}>
+								<Dropdown
+									fluid
+									search
+									selection
+									clearable
+									placeholder={t("global.search_crew_ellipses")}
+									labeled
+									options={crewChoices}
+									value={crewSelection}
+									onChange={(e, { value }) =>
+										this.setCrewSelection(value as string)
+									}
+								/>
+							</div>
+							<div
+								style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
+							>
+								<Dropdown
+									placeholder={t("hints.filter_by_owned_status")}
+									options={crewTypes}
+									value={crewType}
+									onChange={(e, { value }) =>
+										this.setCrewType(value as CrewType)
+									}
+								/>
+							</div>
+						</div>)}
+						<div
+							style={{
+								display: "flex",
+								height: "3em",
+								flexDirection: isMobile ? "column" : "row",
+								justifyContent: "flex-start",
+								alignItems: "center",
+								marginLeft: "0.25em",
+							}}
+						>
+							<Input
+								style={{ width: "22em" }}
+								placeholder={t("global.search_items_ellipses")}
+								value={filterText}
+								onChange={(e, { value }) =>
+									this._handleFilter(value as string)
+								}
+							/>
+							<i
+								className="delete icon"
+								title={t("global.clear")}
+								style={{
+									cursor: "pointer",
+									marginLeft: "0.75em",
+								}}
+								onClick={(e) => {
+									this._handleFilter(undefined);
+								}}
+							/>
+							{!buffs && (
+								<div style={{ marginLeft: "0.5em" }}>
+									<Dropdown
+										placeholder={t("hints.filter_by_item_type")}
+										multiple
+										clearable
+										scrolling
+										options={rewardFilterOpts}
+										value={itemType || []}
+										onChange={(e, { value }) =>
+											this._handleItemType(value as number[] | undefined)
+										}
+									/>
+								</div>
+							)}
+							{!buffs && (
+								<div style={{ marginLeft: "0.5em" }}>
+									<Dropdown
+										placeholder={t("hints.filter_by_rarity")}
+										multiple
+										clearable
+										options={rarities}
+										value={rarity || []}
+										onChange={(e, { value }) =>
+											this._handleRarity(value as number[] | undefined)
+										}
+									/>
+								</div>
+							)}
+							{!!buffs && (
+								<div style={{ marginLeft: "0.5em" }}>
+									<Dropdown
+										placeholder={t("hints.filter_by_trait")}
+										multiple
+										clearable
+										scrolling
+										options={traitFilterOpts}
+										value={traits || []}
+										onChange={(e, { value }) =>
+											this._handleTraits(value as string[] | undefined)
+										}
+									/>
+								</div>
+							)}
+							{!!buffs && (
+								<div style={{ marginLeft: "0.5em" }}>
+									<Dropdown
+										placeholder={t("hints.filter_by_skill")}
+										multiple
+										clearable
+										scrolling
+										options={skillmap}
+										value={skills || []}
+										onChange={(e, { value }) =>
+											this._handleSkills(value as string[] | undefined)
+										}
+									/>
+								</div>
+							)}
+							{!!buffs && (
+								<div style={{ marginLeft: "0.5em" }}>
+									<Dropdown
+										placeholder={t("hints.filter_by_owned_status")}
+										scrolling
+										options={ownedOpts}
+										value={ownedQuipment}
+										onChange={(e, { value }) =>
+											this._handleOwned(value as OwnedType)
+										}
+									/>
+								</div>
+							)}
+							{!hideOwnedInfo && (
 								<div
 									style={{
 										display: "flex",
-										height: "3em",
-										flexDirection: isMobile ? "column" : "row",
-										justifyContent: "flex-start",
+										flexDirection: "row",
+										justifyItems: "flex-end",
 										alignItems: "center",
-										marginLeft: "0.25em",
 									}}
 								>
-									<Input
-										style={{ width: "22em" }}
-										placeholder={t("global.search_items_ellipses")}
-										value={filterText}
+									<Checkbox
+										checked={addNeeded}
 										onChange={(e, { value }) =>
-											this._handleFilter(value as string)
+											this._handleAddNeeded(!addNeeded)
 										}
 									/>
-									<i
-										className="delete icon"
-										title={t("global.clear")}
-										style={{
-											cursor: "pointer",
-											marginLeft: "0.75em",
-										}}
-										onClick={(e) => {
-											this._handleFilter(undefined);
-										}}
-									/>
-									{!buffs && (
-										<div style={{ marginLeft: "0.5em" }}>
-											<Dropdown
-												placeholder={t("hints.filter_by_item_type")}
-												multiple
-												clearable
-												scrolling
-												options={rewardFilterOpts}
-												value={itemType || []}
-												onChange={(e, { value }) =>
-													this._handleItemType(value as number[] | undefined)
-												}
-											/>
-										</div>
-									)}
-									{!buffs && (
-										<div style={{ marginLeft: "0.5em" }}>
-											<Dropdown
-												placeholder={t("hints.filter_by_rarity")}
-												multiple
-												clearable
-												options={rarities}
-												value={rarity || []}
-												onChange={(e, { value }) =>
-													this._handleRarity(value as number[] | undefined)
-												}
-											/>
-										</div>
-									)}
-									{buffs && (
-										<div style={{ marginLeft: "0.5em" }}>
-											<Dropdown
-												placeholder={t("hints.filter_by_trait")}
-												multiple
-												clearable
-												scrolling
-												options={traitFilterOpts}
-												value={traits || []}
-												onChange={(e, { value }) =>
-													this._handleTraits(value as string[] | undefined)
-												}
-											/>
-										</div>
-									)}
-									{buffs && (
-										<div style={{ marginLeft: "0.5em" }}>
-											<Dropdown
-												placeholder={t("hints.filter_by_skill")}
-												multiple
-												clearable
-												scrolling
-												options={skillmap}
-												value={skills || []}
-												onChange={(e, { value }) =>
-													this._handleSkills(value as string[] | undefined)
-												}
-											/>
-										</div>
-									)}
-									{buffs && (
-										<div style={{ marginLeft: "0.5em" }}>
-											<Dropdown
-												placeholder={t("hints.filter_by_owned_status")}
-												scrolling
-												options={ownedOpts}
-												value={ownedQuipment}
-												onChange={(e, { value }) =>
-													this._handleOwned(value as OwnedType)
-												}
-											/>
-										</div>
-									)}
-
-									{!hideOwnedInfo && (
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "row",
-												justifyItems: "flex-end",
-												alignItems: "center",
-											}}
-										>
-											<Checkbox
-												checked={addNeeded}
-												onChange={(e, { value }) =>
-													this._handleAddNeeded(!addNeeded)
-												}
-											/>
-											<span
-												style={{ marginLeft: "0.5em", cursor: "pointer" }}
-												onClick={(e) => this._handleAddNeeded(!addNeeded)}
-											>
-												{t("items.show_unowned_needed")}
-											</span>
-										</div>
-									)}
+									<span
+										style={{ marginLeft: "0.5em", cursor: "pointer" }}
+										onClick={(e) => this._handleAddNeeded(!addNeeded)}
+									>
+										{t("items.show_unowned_needed")}
+									</span>
 								</div>
-							</>
-						)}
+							)}
+						</div>
 					</div>
 				)}
 				{(!data || !bReady) && (

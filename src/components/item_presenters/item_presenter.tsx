@@ -14,9 +14,9 @@ import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
-import { printRequiredTraits } from "../items/itemstable";
 import { OptionsPanelFlexColumn } from "../stats/utils";
 import { CrewItemsView } from "./crew_items";
+import { printRequiredTraits } from "../items/utils";
 
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew) {
