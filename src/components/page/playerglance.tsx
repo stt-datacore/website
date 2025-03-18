@@ -75,7 +75,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     resources.push(
         {
-            name: t('global.item_types.chronotons'),
+            name: t('global.item_types.chronitons'),
             quantity: chrons,
             imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`
         },

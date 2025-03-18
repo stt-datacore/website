@@ -400,7 +400,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 					<div>
 						<Header as="h3">
 							{tfmt('items.craft_for_chrons', {
-								cost: <><img title={"Chronotons"} style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()}</>
+								cost: <><img title={"Chronitons"} style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} /> {item_data.item.recipe.craftCost.toLocaleString()}</>
 							})}:</Header>
 						<Grid columns={window.innerWidth < DEFAULT_MOBILE_WIDTH ? 1 : 3} padded>
 							{demands.map((entry, idx) => {

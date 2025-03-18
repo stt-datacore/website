@@ -30,7 +30,7 @@ class MissionCost extends PureComponent<MissionCostProps> {
 					<span>
 						{' ('}
 						<span style={{ display: 'inline-block' }}>
-							{!cadet && <img title={"Chronotons"} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />}
+							{!cadet && <img title={"Chronitons"} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />}
 							{cadet && <img title={"Cadet challenge ticket"} src={`${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`} height={14} />}
 						</span>
 
