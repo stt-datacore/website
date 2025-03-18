@@ -13,7 +13,7 @@ export function makeRewards(t: TranslateMethod) {
 	return [
 		{ key: 'roAnyr', value: '*any', text: t('global.show_all') },
 		{ key: 'roBuff', value: '*buffs', text: t('global.item_types.buff') },
-		{ key: 'roEner', value: 'energy', text: t('global.item_types.chronotons') },
+		{ key: 'roEner', value: 'energy', text: t('global.item_types.chronitons') },
 		{ key: 'roCred', value: 'nonpremium', text: t('global.item_types.credits') },
 		{ key: 'roCrew', value: '=_crew$', text: t('base.crew') },
 		{ key: 'roDili', value: 'premium_purchasable', text: t('global.item_types.dilithium') },
