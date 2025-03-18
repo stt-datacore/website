@@ -37,7 +37,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 
 	function renderCopyPaste(): JSX.Element {
 
-        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=25&only_read_state=true';
+        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=26&only_read_state=true';
 
         return (
 			<React.Fragment>
