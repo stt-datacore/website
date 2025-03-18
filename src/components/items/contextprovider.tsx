@@ -1,10 +1,12 @@
 import React from "react"
 import { useStateWithStorage } from "../../utils/storage";
 import { CrewType, CrewKwipTrial, OwnedType } from "./utils";
+import { EquipmentItem } from "../../model/equipment";
 
 interface HeaderProviderProps {
     pageName: string;
     children: JSX.Element;
+    data: EquipmentItem[];
 }
 
 export interface IItemsTableContext {
@@ -16,7 +18,7 @@ export interface IItemsTableContext {
     trials: CrewKwipTrial[];
     ownedQuipment?: OwnedType;
     ignoreLimit?: boolean;
-
+    data: EquipmentItem[];
     setAddNeeded: (value: boolean) => void;
     setCrewSelection: (value: string) => void;
     setCrewType: (value: CrewType) => void;
@@ -36,6 +38,7 @@ const DefaultTableContextData = {
     trials: [],
     ownedQuipment: undefined,
     ignoreLimit: undefined,
+    data: [],
     setAddNeeded: () => false,
     setCrewSelection: () => false,
     setCrewType: () => false,
@@ -49,7 +52,7 @@ const DefaultTableContextData = {
 export const ItemsProviderContext = React.createContext<IItemsTableContext>(DefaultTableContextData);
 
 export const ItemsContextProvider = (props: HeaderProviderProps) => {
-    const { pageName, children } = props;
+    const { pageName, children, data } = props;
 
     const [addNeeded, setAddNeeded] = useStateWithStorage<boolean>(`${pageName}/add_needed`, false, { rememberForever: true });
 
@@ -62,7 +65,7 @@ export const ItemsContextProvider = (props: HeaderProviderProps) => {
     const [ownedQuipment, setOwnedQuipment] = useStateWithStorage<OwnedType | undefined>(`${pageName}/owned_quipment`, undefined);
     const [ignoreLimit, setIgnoreLimit] = useStateWithStorage<boolean | undefined>(`${pageName}/ignore_limit`, undefined);
 
-    const data: IItemsTableContext = {
+    const contextData: IItemsTableContext = {
         addNeeded,
         crewSelection,
         crewType,
@@ -71,6 +74,7 @@ export const ItemsContextProvider = (props: HeaderProviderProps) => {
         trials,
         ownedQuipment,
         ignoreLimit,
+        data,
         setAddNeeded,
         setCrewSelection,
         setCrewType,
@@ -81,7 +85,7 @@ export const ItemsContextProvider = (props: HeaderProviderProps) => {
         setIgnoreLimit
     }
 
-    return <ItemsProviderContext.Provider value={data}>
+    return <ItemsProviderContext.Provider value={contextData}>
         {children}
     </ItemsProviderContext.Provider>
 }

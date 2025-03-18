@@ -3,6 +3,10 @@ import React from 'react';
 import { EquipmentCommon, EquipmentItem } from '../../model/equipment';
 import { TranslateMethod } from '../../model/player';
 import { CustomFieldDef } from './itemstable';
+import { CrewMember } from '../../model/crew';
+import { ILocalizedData } from '../../context/localizedcontext';
+import { getItemBonuses } from '../../utils/itemutils';
+import CONFIG from '../CONFIG';
 
 export interface ItemsTableProps {
 	/** List of equipment items */
@@ -127,3 +131,168 @@ export function printRequiredTraits(
     return <></>;
 }
 
+export interface FlavorConfig {
+    crew: CrewMember[];
+    localized: ILocalizedData;
+}
+
+export function createFlavor(item: EquipmentItem | EquipmentCommon, config: FlavorConfig) {
+    const { localized, crew } = config;
+    const { t, tfmt } = localized;
+    let output = [] as JSX.Element[];
+
+    let flavor = item.flavor ?? "";
+    if (flavor.startsWith("Equippable by: ")) {
+        let crew = flavor
+            .replace("Equippable by: ", "")
+            .split(", ")
+            ?.map((s) => crew.find((c) => c.name === s || c.symbol === s))
+            .filter((s) => !!s) as CrewMember[];
+        if (crew?.length)
+            output.push(
+                <div>
+                    {tfmt("items.equippable_by", {
+                        crew: crew
+                            .map((crew) => (
+                                <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
+                            ))
+                            .reduce((p, n) => (
+                                <>
+                                    {p}, {n}
+                                </>
+                            )),
+                    })}
+                </div>
+            );
+    }
+    if (output.length) flavor = '';
+
+    if (
+        item.kwipment &&
+        (item.traits_requirement?.length || item.max_rarity_requirement)
+    ) {
+        let found: CrewMember[] | null = null;
+
+        const bonus = getItemBonuses(item as EquipmentItem);
+        const traits = localized.TRAIT_NAMES;
+
+        found = crew.filter((f) => {
+            let mrq = item.max_rarity_requirement ?? f.max_rarity;
+            let rr = mrq >= f.max_rarity;
+
+            if (item.traits_requirement?.length) {
+                if (item.traits_requirement_operator === "and") {
+                    rr &&= item.traits_requirement?.every(
+                        (t) => f.traits.includes(t) || f.traits_hidden.includes(t)
+                    );
+                } else {
+                    rr &&= item.traits_requirement?.some(
+                        (t) => f.traits.includes(t) || f.traits_hidden.includes(t)
+                    );
+                }
+            }
+            rr &&= Object.keys(bonus.bonuses).some(
+                (skill) => skill in f.base_skills
+            );
+
+            return rr;
+        });
+
+        if (found?.length) {
+            flavor ??= "";
+
+            if (flavor?.length) {
+                flavor += "\n";
+            }
+            if (found.length > 5) {
+                if (item.traits_requirement?.length) {
+                    if (item.max_rarity_requirement) {
+                        output.push(
+                            <div>
+                                {tfmt("items.equippable_by_rarity_traits", {
+                                    rarity: (
+                                        <span
+                                            style={{
+                                                color:
+                                                    CONFIG.RARITIES[item.max_rarity_requirement].color,
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            {CONFIG.RARITIES[item.max_rarity_requirement].name}
+                                        </span>
+                                    ),
+                                    traits: printRequiredTraits(item, traits, t),
+                                })}
+                            </div>
+                        );
+                        flavor += t("items.equippable_by_rarity_traits", {
+                            rarity: CONFIG.RARITIES[item.max_rarity_requirement].name,
+                            traits: `${printRequiredTraits(item, traits, t)}`,
+                        });
+                    } else {
+                        output.push(
+                            <>
+                                {tfmt("items.equippable_by_traits", {
+                                    traits: printRequiredTraits(item, traits, t),
+                                })}
+                            </>
+                        );
+                        flavor += t("items.equippable_by_traits", {
+                            traits: `${printRequiredTraits(item, traits)}`,
+                        });
+                    }
+                } else if (item.max_rarity_requirement) {
+                    output.push(
+                        <div>
+                            {tfmt("items.equippable_by_rarity", {
+                                rarity: (
+                                    <span
+                                        style={{
+                                            color:
+                                                CONFIG.RARITIES[item.max_rarity_requirement].color,
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        {CONFIG.RARITIES[item.max_rarity_requirement].name}
+                                    </span>
+                                ),
+                            })}
+                        </div>
+                    );
+                    flavor += t("items.equippable_by_rarity", {
+                        rarity: CONFIG.RARITIES[item.max_rarity_requirement].name,
+                    });
+                } else {
+                    output.push(
+                        <div>{t("items.equippable_by", { crew: found.length.toString() })}</div>
+                    );
+                    flavor += t("items.equippable_by", { crew: found.length.toString() });
+                }
+            } else {
+                output.push(
+                    <div>
+                        {tfmt("items.equippable_by", {
+                            crew: found
+                                .map((crew) => (
+                                    <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
+                                ))
+                                .reduce((p, n) => (
+                                    <>
+                                        {p}, {n}
+                                    </>
+                                )),
+                        })}
+                    </div>
+                );
+
+                flavor += t("items.equippable_by", {
+                    crew: [...found.map((f) => f.symbol)].join(", "),
+                });
+            }
+        }
+    }
+    else if (flavor) {
+        output.push(<>{flavor}</>)
+    }
+    return output;
+}

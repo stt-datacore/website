@@ -82,22 +82,22 @@ type ItemsTableState = {
 	ignoreLimit?: boolean;
 };
 
-export const ItemsTable = (props: ItemsTableProps) => {
+export const NewItemsTable = (props: ItemsTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { items } = globalContext.core;
 	const pageName = props.pageName ?? 'items_table'
 
+	const data = props.data ?? globalContext.player.playerData?.player.character.items ?? globalContext.core.items;
+
 	return <React.Fragment>
-		<ItemsContextProvider pageName={pageName}>
+		<ItemsContextProvider pageName={pageName} data={data as EquipmentItem[]}>
 			<React.Fragment>
 				<ItemsTableComponent {...props} />
 			</React.Fragment>
 		</ItemsContextProvider>
-
 	</React.Fragment>
 
 }
-
 
 const ItemsHeaderComponent = (props: ItemsTableProps) => {
 
@@ -117,7 +117,7 @@ const pagingOptions = [
 	{ key: "3", value: 100, text: "100" },
 ];
 
-class ItemsTableOld extends Component<ItemsTableProps, ItemsTableState> {
+class ItemsTable extends Component<ItemsTableProps, ItemsTableState> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 	readonly tiny: TinyStore;
