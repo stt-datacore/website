@@ -59,6 +59,8 @@ export const DataGrid = (props: DataGridProps) => {
 		textAlign: 'center'
 	};
 
+	// Default column props are optimized for crew picker modal
+	//	Defaults are only used if columns isn't defined in grid props
 	const defaultColumnProps: StrictGridColumnProps = {
 		mobile: 8,	// 2 items per row
 		tablet: 5,	// 3 items per row
@@ -66,7 +68,7 @@ export const DataGrid = (props: DataGridProps) => {
 	};
 
 	const gridProps: StrictGridProps = setup?.gridProps ?? defaultGridProps;
-	const columnProps: StrictGridColumnProps = setup?.columnProps ?? defaultColumnProps;
+	const columnProps: StrictGridColumnProps = setup?.columnProps ?? (setup?.gridProps?.columns ? {} : defaultColumnProps);
 
 	return (
 		<React.Fragment>
