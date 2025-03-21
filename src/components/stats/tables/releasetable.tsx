@@ -189,7 +189,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                 })})</i>}
                                 </>}
 
-                                {!!crew.preview && <i>{t('global.pending_release')}</i>}
+                                {!!crew.preview && <i>({t('global.pending_release')})</i>}
 
                                 <div style={flexRow}>
                                     {canGauntlet(diff.crew[idx]) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
