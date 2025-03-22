@@ -1,4 +1,4 @@
-import { StrictGridProps, StrictTableProps } from 'semantic-ui-react';
+import { StrictGridColumnProps, StrictGridProps, StrictTableProps } from 'semantic-ui-react';
 
 export interface IEssentialData {
 	id: number;
@@ -12,6 +12,7 @@ export interface IEssentialMatrixData extends IEssentialData {
 
 export interface IDataGridSetup {
 	gridProps?: StrictGridProps;
+	columnProps?: StrictGridColumnProps;
 	renderGridColumn?: (datum: IEssentialData, isSelected: boolean) => JSX.Element;
 	defaultSort?: IDataSortField;
 };

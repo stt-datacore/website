@@ -82,7 +82,7 @@ function EventInfoModal(props: EventInfoModalProps) {
 			menuItem: t('event_info.leaderboard'),
 			render: () => (
 				<Tab.Pane attached={false}>
-					<LeaderboardTab leaderboard={leaderboard} />
+					<LeaderboardTab leaderboard={leaderboard} instanceId={eventData?.instance_id} />
 				</Tab.Pane>
 			),
 		},

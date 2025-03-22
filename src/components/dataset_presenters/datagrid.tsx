@@ -3,6 +3,7 @@ import { InView } from 'react-intersection-observer';
 import {
 	Grid,
 	Icon,
+	StrictGridColumnProps,
 	StrictGridProps
 } from 'semantic-ui-react';
 
@@ -55,18 +56,26 @@ export const DataGrid = (props: DataGridProps) => {
 		return <>{t('global.no_search_results_found')}</>;
 
 	const defaultGridProps: StrictGridProps = {
-		columns: 4,
-		doubling: true,
 		textAlign: 'center'
 	};
 
+	// Default column props are optimized for crew picker modal
+	//	Defaults are only used if columns isn't defined in grid props
+	const defaultColumnProps: StrictGridColumnProps = {
+		mobile: 8,	// 2 items per row
+		tablet: 5,	// 3 items per row
+		computer: 4	// 4 items per row
+	};
+
 	const gridProps: StrictGridProps = setup?.gridProps ?? defaultGridProps;
+	const columnProps: StrictGridColumnProps = setup?.columnProps ?? (setup?.gridProps?.columns ? {} : defaultColumnProps);
 
 	return (
 		<React.Fragment>
 			<Grid {...gridProps}>
 				{data.slice(0, itemsToShow).map(datum => (
 					<Grid.Column key={datum.id}
+						{...columnProps}
 						style={{ cursor: props.handleClick ? 'pointer' : undefined }}
 						onClick={(e) => {
 							if (e.detail === 2 && props.handleDblClick)

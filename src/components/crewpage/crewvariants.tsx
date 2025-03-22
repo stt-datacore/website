@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Segment, Header, Grid, Dropdown } from 'semantic-ui-react';
+import { Segment, Header, Grid, Dropdown, Form } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
 import { Variant } from '../../model/game-elements';
@@ -112,24 +112,30 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			<Segment key={idx}>
 				<div style={{display:'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap'}}>
 					<Header as='h4'>{t('crew_page.variants', { crew: group.name })}</Header>
-					<div>
-						<h4><b>{t('global.sort_by')}:&nbsp;&nbsp;</b></h4>
-						<Dropdown options={sortOptions} value={byDate} onChange={(e, { value }) => setByDate(value as boolean)} />
-					</div>
-
+					<Form>
+						<Form.Field
+							control={Dropdown}
+							label={`${t('global.sort_by')}${t('global.colon')}`}
+							options={sortOptions}
+							value={byDate}
+							onChange={(e, { value }) => setByDate(value as boolean)}
+							inline
+						/>
+					</Form>
 				</div>
-
 				<Grid centered padded>
 					{group.trait_variants.map(variant => (
-						<Grid.Column key={variant.symbol} textAlign='center' mobile={8} tablet={5} computer={4}>
-							<AvatarView
-								mode='crew'
-								size={128}
-								targetGroup='variants'
-								item={variant}
-								useDirect={true}
-							/>
-							<div><Link to={`/crew/${variant.symbol}/`}>{variant.name}</Link></div>
+						<Grid.Column key={variant.symbol} mobile={8} tablet={4} computer={3}>
+							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+								<AvatarView
+									mode='crew'
+									size={128}
+									targetGroup='variants'
+									item={variant}
+									useDirect={true}
+								/>
+								<div><Link to={`/crew/${variant.symbol}/`}>{variant.name}</Link></div>
+							</div>
 						</Grid.Column>
 					))}
 				</Grid>

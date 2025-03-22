@@ -37,6 +37,7 @@ export const SkillCheck = (props: SkillCheckProps) => {
 		gridProps: {
 			centered: true,
 			columns: 3,
+			doubling: true,
 			stackable: true
 		},
 		renderGridColumn: (datum: IEssentialData) => renderSkill(datum as ISkillData),

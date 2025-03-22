@@ -25,13 +25,13 @@ export const GridView = () => {
 			{renderShip()}
 			{layout === 'grid-cards' &&
 				<div>
-					<Grid columns={6} doubling centered>
+					<Grid columns={6} doubling centered padded>
 						{renderCards()}
 					</Grid>
 				</div>
 			}
 			{layout === 'grid-icons' &&
-				<Grid doubling centered>
+				<Grid columns={12} doubling centered padded>
 					{renderIcons()}
 				</Grid>
 			}
@@ -98,24 +98,26 @@ export const GridView = () => {
 					const { crew, name, trait, bestRank } = assignment;
 					return (
 						<Grid.Column key={idx}>
-							<Popup mouseEnterDelay={POPUP_DELAY} trigger={
-								<div style={{ cursor: 'help' }}>
-									<AvatarView
-										mode='crew'
-										size={48}
-										item={crew}
-										partialItem={true}
-										ignorePlayer={rosterType !== 'myCrew'}
-										hideRarity={rosterType !== 'myCrew'}
-									/>
+							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', rowGap: '.3em' }}>
+								<Popup mouseEnterDelay={POPUP_DELAY} trigger={
+									<div style={{ cursor: 'help' }}>
+										<AvatarView
+											mode='crew'
+											size={48}
+											item={crew}
+											partialItem={true}
+											ignorePlayer={rosterType !== 'myCrew'}
+											hideRarity={rosterType !== 'myCrew'}
+										/>
+									</div>
+								}>
+									<Popup.Content>
+										<AssignmentCard assignment={assignment} showSkills={true} />
+									</Popup.Content>
+								</Popup>
+								<div style={{ fontSize: '1.1em' }}>
+									{voyageConfig.state === 'pending' && <CrewFinder crew={crew} bestRank={bestRank} />}
 								</div>
-							}>
-								<Popup.Content>
-									<AssignmentCard assignment={assignment} showSkills={true} />
-								</Popup.Content>
-							</Popup>
-							<div style={{ marginTop: '.3em', textAlign: 'center', fontSize: '1.1em' }}>
-								{voyageConfig.state === 'pending' && <CrewFinder crew={crew} bestRank={bestRank} />}
 							</div>
 						</Grid.Column>
 					);
