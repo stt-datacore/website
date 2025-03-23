@@ -130,21 +130,21 @@ const ItemsPage = (props: ItemsPageProps) => {
 			{/* We want both of these to load, even if they are not displayed,
 				because there's work that that must be done every time they are loaded.
 				Re-rendering the page for switching views would cause work to run unnecessarily. */}
-
-			<ItemsTable
-				pageName={"core"}
-				noRender={activeTabIndex !== 0}
-				data={coreItems}
+			<EquipmentTable
+				pageId={'core'}
+				useWorker={false}
+				flavor={true}
 				hideOwnedInfo={true}
-				noWorker={true}
-				flavor={true} />
+				items={globalContext.core.items}
+				noRender={activeTabIndex !== 0}
+				/>
 
 			{hasPlayer &&
 				<WorkerProvider>
 					<EquipmentTable
-					pageId={'items_page'}
+					pageId={'roster'}
 					useWorker={true}
-					items={playerData.player.character.items}
+					items={globalContext.core.items}
 					noRender={activeTabIndex !== 1 || !hasPlayer}
 					/>
 				</WorkerProvider>}
@@ -153,7 +153,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 				noRender={activeTabIndex !== 1 || !hasPlayer} />} */}
 
 			<ItemsTable
-				pageName={"roster"}
+				pageName={"quipment"}
 				types={[14]}
 				buffs={true}
 				crewMode={true}
