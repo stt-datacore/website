@@ -161,8 +161,12 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let dupeChecker = new Set<string>();
 	crew.equipment_slots.forEach(es => {
 		if (fromCurrLvl && "level" in crew) {
-			if (es.level < crew.level) return;
+			let lvl = crew.level;
+			if (lvl >= 90) lvl = 90;
+			if (es.level < lvl) return;
+			else if (es.level === lvl && es.imageUrl) return;
 			else if (es.level === crew.level && es.imageUrl) return;
+			else if (crew.equipment.some((eq: any) => Number(eq) == es.archetype)) return;
 		}
 		if (bySymbol) {
 			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol);
