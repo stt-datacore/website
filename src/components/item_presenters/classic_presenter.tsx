@@ -227,7 +227,7 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	const { t } = globalContext.localized;
 	return (
 		<p>
-			<b>{t('base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 		</p>
 	);
 };
