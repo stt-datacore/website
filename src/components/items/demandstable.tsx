@@ -17,9 +17,8 @@ export const DemandsTable = (props: DemandsTableProps) => {
     const workerContext = React.useContext(WorkerContext);
 
     const { t } = globalContext.localized;
-    const { playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
 
-    const [triggerWorker, setTriggerWorker] = React.useState(false);
+    const { playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
     const [displayData, setDisplayData] = React.useState<(EquipmentItem | EquipmentCommon)[]>(calculatedDemands ?? []);
 
     const { cancel, runWorker, running } = workerContext;
@@ -29,33 +28,23 @@ export const DemandsTable = (props: DemandsTableProps) => {
             setDisplayData(calculatedDemands);
             return;
         }
-        if (!props.noWorker && triggerWorker) return;
-        if (!!runWorker && !props.noWorker && !!playerData) {
-            setTriggerWorker(true);
-        }
-    }, [props.noWorker, playerData]);
+        if (!playerData || !!props.noWorker) return;
+        if (running) cancel();
 
-    React.useEffect(() => {
-        if (triggerWorker) {
-            if (running) cancel();
-            setTimeout(() => {
-                if (triggerWorker && !props.noWorker) {
-                    setTriggerWorker(false);
-                    runWorker(
-                        "equipmentWorker", {
-                            playerData,
-                            items: props.items,
-                            addNeeded: true
-                        },
-                        (data: { data: { result: EquipmentWorkerResults } }) => {
-                            if (playerData) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
-                            setDisplayData(data.data.result.items);
-                        }
-                    )
+        setTimeout(() => {
+            runWorker(
+                "equipmentWorker", {
+                    playerData,
+                    items: props.items,
+                    addNeeded: true
+                },
+                (data: { data: { result: EquipmentWorkerResults } }) => {
+                    if (playerData) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
+                    setDisplayData(data.data.result.items);
                 }
-            }, 500);
-        }
-    }, [triggerWorker]);
+            )
+        }, 500);
+    }, [playerData]);
 
     const flexRow = OptionsPanelFlexRow;
 
