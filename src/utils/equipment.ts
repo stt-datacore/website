@@ -160,12 +160,9 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
 	crew.equipment_slots.forEach(es => {
-		if ("immortal" in crew && crew.immortal) return;
 		if (fromCurrLvl && "level" in crew) {
-			let lvl = crew.level;
-			if (lvl === 100 && crew.equipment.filter(f => !!f).length !== 4) lvl = 90;
-			if (es.level < lvl) return;
-			else if (es.level === lvl && crew.equipment_slots[lvl] !== undefined && crew.equipment_slots[lvl].imageUrl) return;
+			if (es.level < crew.level) return;
+			else if (es.level === crew.level && crew.equipment_slots[crew.level] !== undefined && crew.equipment_slots[crew.level].imageUrl) return;
 		}
 		if (bySymbol) {
 			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol);
