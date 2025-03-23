@@ -4,30 +4,35 @@ import { GlobalContext } from "../../context/globalcontext";
 import { createFlavor, CustomFieldDef, FlavorConfig } from "./utils";
 import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
 import { PlayerEquipmentItem } from "../../model/player";
-import { Icon, Table } from "semantic-ui-react";
+import { Checkbox, Icon, Table } from "semantic-ui-react";
 import { omniSearchFilter } from "../../utils/omnisearch";
 import { Filter } from "../../model/game-elements";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { getItemBonuses } from "../../utils/itemutils";
+import { getItemBonuses, getItemWithBonus, ItemWithBonus } from "../../utils/itemutils";
 import { renderBonuses } from "../item_presenters/item_presenter";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { ItemsFilterContext } from "./filters";
+import { skillSum } from "../../utils/crewutils";
 
 
 export interface EquipmentTableProps {
     pageId: string;
     items?: (EquipmentItem | PlayerEquipmentItem | EquipmentCommon)[];
-    hideOwnedInfo?: boolean;
+    hideOwnedColumns?: boolean;
     types?: number[];
-    buffs?: boolean;
-    flavor?: boolean;
+    buffsColumn?: boolean;
+    flavorColumn?: boolean;
     customFields?: CustomFieldDef[];
     itemTargetGroup?: string;
     navigate?: (symbol: string) => void;
     noRender?: boolean;
+    selection?: number[];
+    setSelection?: (value?: number[]) => void;
+    maxSelections?: number;
+    selectionMode?: boolean;
 }
 
 export const EquipmentTable = (props: EquipmentTableProps) => {
@@ -38,7 +43,8 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
 
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const { pageId, hideOwnedInfo, types, buffs, flavor, customFields, noRender } = props;
+    const { pageId, hideOwnedColumns: hideOwnedInfo, types, buffsColumn: buffs, flavorColumn: flavor, customFields, noRender } = props;
+    const { selection, setSelection, maxSelections, selectionMode } = props;
 
     const items = React.useMemo(() => {
         if (available) {
@@ -48,6 +54,19 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             return props.items ?? globalContext.core.items;
         }
     }, [props.items, globalContext.core.items, available, rarityFilter, itemTypeFilter, showUnownedNeeded]);
+
+    const buffCache = React.useMemo(() => {
+        if (items?.length && buffs) {
+            const output = {} as {[key: string]: ItemWithBonus };
+            for (let item of items) {
+                output[item.symbol] = getItemWithBonus(item as EquipmentItem);
+            }
+            return output;
+        }
+        else {
+            return {};
+        }
+    }, [items, buffs]);
 
     const itemTargetGroup = React.useMemo(() => {
         if (props.itemTargetGroup) return props.itemTargetGroup;
@@ -88,12 +107,18 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     }
 
     tableConfig.push(
-        { width: 1, column: 'rarity', title: t("items.columns.rarity"), reverse: true },
+        {
+            width: 1, column: 'rarity', title: t("items.columns.rarity"), reverse: true,
+            customCompare: (a: EquipmentItem, b: EquipmentItem) => a.rarity - b.rarity || buffComp(a, b) || a.name.localeCompare(b.name)
+        },
     );
 
     if (buffs) {
         tableConfig.push(
-            { width: 1, column: 'buffs', title: t("items.columns.item_buffs"), reverse: true },
+            {
+                width: 1, column: 'buffs', title: t("items.columns.item_buffs"), reverse: true,
+                customCompare: (a: EquipmentItem, b: EquipmentItem) => buffComp(a, b) || a.name.localeCompare(b.name)
+            },
         );
     }
 
@@ -112,7 +137,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     if (!!customFields?.length) {
         customFields.forEach((field) => {
             tableConfig.push(
-                { width: field.width as number ?? 1, column: field.field, title: t("items.faction_only"), reverse: field.reverse },
+                { width: field.width as number ?? 1, column: field.field, title: field.text, reverse: field.reverse, customCompare: field.customCompare },
             )
         });
     }
@@ -144,7 +169,9 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                     }
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "60px auto",
+                        gridTemplateColumns: !!setSelection && !!selectionMode
+                        ? "87px auto"
+                        : "60px auto",
                         gridTemplateAreas: `'icon stats' 'icon description'`,
                         gridGap: "1px",
                     }}
@@ -159,10 +186,29 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                             alignItems: "center",
                         }}
                     >
+                        {!!setSelection && !!selectionMode && (
+                            <Checkbox
+                                disabled={
+                                    !!selection && !!maxSelections && selection.length >= maxSelections &&
+                                    !selection.includes(Number(item.id))
+                                }
+                                checked={!!selection?.includes(Number(item.id))}
+                                onChange={(e, { checked }) => {
+                                    let sel = [ ...selection ?? []];
+                                    if (checked) {
+                                        if (!sel.includes(Number(item.id))) sel.push(Number(item.id));
+                                    }
+                                    else {
+                                        sel = sel.filter(i => i != Number(item.id));
+                                    }
+                                    setSelection(sel);
+                                }}
+                            />
+                        )}
                         <AvatarView
                             style={{
                                 opacity:
-                                    !item.quantity && !hideOwnedInfo ? "0.20" : "1",
+                                    !item.quantity && !hideOwnedInfo && ownedItems ? "0.20" : "1",
                             }}
                             mode='item'
                             partialItem={true}
@@ -234,5 +280,18 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     function renderBuffs(item: EquipmentItem | EquipmentCommon) {
         const { bonuses } = getItemBonuses(item as EquipmentItem);
         return renderBonuses(bonuses, "1em", "0.25em");
+    }
+
+    function buffComp(a: EquipmentItem, b: EquipmentItem) {
+        const abonus = buffCache[a.symbol];
+        const bbonus = buffCache[b.symbol];
+        if (abonus === bbonus) return 0;
+        else if (!abonus) return -1;
+        else if (!bbonus) return 1;
+        let r = skillSum(Object.values(abonus.bonusInfo.bonuses)) - skillSum(Object.values(bbonus.bonusInfo.bonuses))
+        if (!r) {
+            r = Object.keys(abonus.bonusInfo).join().localeCompare(Object.keys(bbonus.bonusInfo).join());
+        }
+        return r;
     }
 }

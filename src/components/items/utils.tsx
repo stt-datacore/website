@@ -13,7 +13,8 @@ export interface CustomFieldDef {
 	text: string;
 	format?: (value: any) => string;
 	width?: SemanticWIDTHS;
-	reverse?: boolean
+	reverse?: boolean,
+    customCompare?: (a: any, b: any) => number;
 }
 
 

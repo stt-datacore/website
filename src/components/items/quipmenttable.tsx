@@ -1,0 +1,74 @@
+import React from "react";
+import { GlobalContext } from "../../context/globalcontext";
+import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { WorkerContext } from "../../context/workercontext";
+import { EquipmentWorkerResults } from "../../model/worker";
+import { OptionsPanelFlexRow } from "../stats/utils";
+import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
+import { CrewMember } from "../../model/crew";
+import { QuipmentFilterContext } from "./quipmentfilters";
+import { qbitsToSlots, traitNumberToColor } from "../../utils/crewutils";
+import { getPossibleQuipment } from "../../utils/itemutils";
+import { DropdownItemProps } from "semantic-ui-react";
+
+interface QuipmentTableProps extends EquipmentTableProps {
+    ownedItems: boolean;
+    ownedCrew: boolean;
+}
+
+export const QuipmentTable = (props: QuipmentTableProps) => {
+    const globalContext = React.useContext(GlobalContext);
+    const quipmentContext = React.useContext(QuipmentFilterContext);
+
+    const { pageId, ownedItems, ownedCrew } = props;
+    const { playerData } = globalContext.player;
+    const { t } = globalContext.localized;
+    const { selectedItems: selection, setSelectedItems: setSelection, selectedCrew } = quipmentContext;
+
+    const [maxSlots, setMaxSlots] = React.useState(undefined as number | undefined);
+    const [crew, setCrew] = React.useState(undefined as CrewMember | undefined);
+
+    const flexRow = OptionsPanelFlexRow;
+
+    React.useEffect(() => {
+        let crew = undefined as CrewMember | undefined;
+        if (ownedCrew && playerData) {
+            crew = playerData.player.character.crew.find(f => f.symbol === selectedCrew);
+        }
+        else {
+            crew = globalContext.core.crew.find(f => f.symbol === selectedCrew);
+        }
+        if (crew) {
+            setMaxSlots(qbitsToSlots(crew.q_bits) || 4);
+        }
+        else {
+            setMaxSlots(undefined);
+            setSelection(undefined);
+        }
+        setCrew(crew);
+    }, [selectedCrew, playerData, ownedCrew]);
+
+    const items = React.useMemo(() => {
+        let quipment = props.items?.filter(f => f.type === 14) ?? [];
+        if (crew) {
+            quipment = getPossibleQuipment(crew, quipment as EquipmentItem[]);
+        }
+        return quipment;
+    }, [crew, props.items]);
+
+    return <EquipmentTable
+        {...{
+            ...props,
+            buffsColumn: true,
+            hideOwnedColumns: true,
+            selectionMode: !!crew,
+            selection,
+            setSelection,
+            maxSelections: maxSlots,
+            items,
+            types: [14]
+        }}
+        />
+
+
+}

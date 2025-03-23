@@ -14,6 +14,8 @@ import { EquipmentTable } from '../components/items/equipment_table';
 import { WorkerProvider } from '../context/workercontext';
 import { ItemsFilterProvider } from '../components/items/filters';
 import { DemandsTable } from '../components/items/demandstable';
+import { QuipmentFilterProvider } from '../components/items/quipmentfilters';
+import { QuipmentTable } from '../components/items/quipmenttable';
 
 export interface ItemsPageProps { }
 
@@ -69,12 +71,17 @@ const ItemsPage = (props: ItemsPageProps) => {
 		return coreItems;
 	}, [globalContext.core.items, globalContext.core.crew]);
 
+	const quipment = React.useMemo(() => {
+		return coreItems.filter(f => f.type === 14);
+	}, [coreItems]);
 	const quipCust = [] as CustomFieldDef[];
 
 	quipCust.push({
 		field: 'duration',
 		text: t('items.columns.duration'),
-		format: (value: number) => formatDuration(value, t)
+		format: (value: number) => formatDuration(value, t),
+		customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.duration ?? 0) - (b.duration ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
+		reverse: true
 	});
 
 	if (hasPlayer) {
@@ -144,9 +151,9 @@ const ItemsPage = (props: ItemsPageProps) => {
 				>
 					<EquipmentTable
 						pageId={'core'}
-						flavor={true}
+						flavorColumn={true}
 						noRender={activeTabIndex !== 0}
-						hideOwnedInfo={true}
+						hideOwnedColumns={true}
 						items={coreItems}
 					/>
 				</ItemsFilterProvider>
@@ -171,7 +178,20 @@ const ItemsPage = (props: ItemsPageProps) => {
 					pageName={"roster"}
 					noRender={activeTabIndex !== 1 || !hasPlayer} />
 				} */}
-				<ItemsTable
+
+					<QuipmentFilterProvider
+						ownedItems={false}
+						pageId={'quipment'}
+						>
+						<QuipmentTable
+							items={quipment}
+							ownedItems={false}
+							ownedCrew={hasPlayer}
+							pageId={'quipment'}
+							customFields={quipCust}
+							/>
+					</QuipmentFilterProvider>
+				{/* <ItemsTable
 					pageName={"quipment"}
 					types={[14]}
 					buffs={true}
@@ -182,7 +202,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 					hideOwnedInfo={true}
 					flavor={false}
 					customFields={quipCust}
-				/>
+				/> */}
 				<br />
 				<br />
 

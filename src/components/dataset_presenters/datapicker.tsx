@@ -23,6 +23,7 @@ type DataPickerProps = {
 	id: string;
 	data: IEssentialData[];
 	closePicker: (selectedIds: Set<number>, affirmative: boolean) => void;
+	singleSelect?: boolean;
 	title?: string | JSX.Element;
 	preFilteredIds?: Set<number>;
 	preSelectedIds?: Set<number>;
@@ -207,8 +208,10 @@ export const DataPicker = (props: DataPickerProps) => {
 	function toggleDatum(datumId: number): void {
 		if (pendingSelectedIds.has(datumId))
 			pendingSelectedIds.delete(datumId);
-		else
+		else {
+			if (props.singleSelect && pendingSelectedIds.size)  pendingSelectedIds.clear();
 			pendingSelectedIds.add(datumId);
+		}
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
 		if (pendingSelectedIds.size > 0 && props.closeOnChange)
 			props.closePicker(pendingSelectedIds, true);
