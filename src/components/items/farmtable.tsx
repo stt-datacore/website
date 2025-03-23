@@ -175,7 +175,7 @@ export const FarmTable = (props: FarmTableProps) => {
 
             <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
-        <Table striped sortable>
+        <Table striped sortable style={{overflowX: 'auto'}}>
             <Table.Header>
                 {renderRowHeaders()}
             </Table.Header>

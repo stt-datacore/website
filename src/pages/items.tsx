@@ -2,13 +2,16 @@ import React from 'react';
 import { Step } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
-import ItemsTable, { CustomFieldDef } from '../components/items/itemstable';
+import ItemsTable from '../components/items/itemstable';
 import { GlobalContext } from '../context/globalcontext';
 import { EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration, getItemWithBonus, getPossibleQuipment } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
 import { getCrewQuipment, oneCrewCopy } from '../utils/crewutils';
+import { CustomFieldDef } from '../components/items/utils';
+import { EquipmentTable } from '../components/items/equipmenttable';
+import { WorkerProvider } from '../context/workercontext';
 
 export interface ItemsPageProps {}
 
@@ -16,8 +19,9 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });
 	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
 	const { t, tfmt } = globalContext.localized;
-	const hasPlayer = !!globalContext.player.playerData;
+	const hasPlayer = !!playerData;
 	const allActive = activeTabIndex === 0 || !hasPlayer;
 
 	React.useEffect(() => {
@@ -135,9 +139,18 @@ const ItemsPage = (props: ItemsPageProps) => {
 				noWorker={true}
 				flavor={true} />
 
-			{hasPlayer && <ItemsTable
+			{hasPlayer &&
+				<WorkerProvider>
+					<EquipmentTable
+					pageId={'items_page'}
+					useWorker={true}
+					items={playerData.player.character.items}
+					noRender={activeTabIndex !== 1 || !hasPlayer}
+					/>
+				</WorkerProvider>}
+			{/* {hasPlayer && <ItemsTable
 				pageName={"roster"}
-				noRender={activeTabIndex !== 1 || !hasPlayer} />}
+				noRender={activeTabIndex !== 1 || !hasPlayer} />} */}
 
 			<ItemsTable
 				pageName={"roster"}

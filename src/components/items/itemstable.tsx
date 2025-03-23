@@ -50,17 +50,6 @@ import ItemDisplay from "../itemdisplay";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ITableConfigRow } from "../searchabletable";
 import { CrewKwipTrial, CrewType, ItemSearchOpts, ItemsTableProps, OwnedType, printRequiredTraits } from "./utils";
-import { useStateWithStorage } from "../../utils/storage";
-import { ItemsContextProvider } from "./contextprovider";
-
-export interface CustomFieldDef {
-	field: string;
-	text: string;
-	format?: (value: any) => string;
-	width?: SemanticWIDTHS;
-	reverse?: boolean
-}
-
 
 type ItemsTableState = {
 	column: any;
@@ -81,34 +70,6 @@ type ItemsTableState = {
 	ownedQuipment?: OwnedType;
 	ignoreLimit?: boolean;
 };
-
-export const NewItemsTable = (props: ItemsTableProps) => {
-	const globalContext = React.useContext(GlobalContext);
-	const { items } = globalContext.core;
-	const pageName = props.pageName ?? 'items_table'
-
-	const data = props.data ?? globalContext.player.playerData?.player.character.items ?? globalContext.core.items;
-
-	return <React.Fragment>
-		<ItemsContextProvider pageName={pageName} data={data as EquipmentItem[]}>
-			<React.Fragment>
-				<ItemsTableComponent {...props} />
-			</React.Fragment>
-		</ItemsContextProvider>
-	</React.Fragment>
-
-}
-
-const ItemsHeaderComponent = (props: ItemsTableProps) => {
-
-}
-
-const ItemsTableComponent = (props: ItemsTableProps) => {
-
-
-	return <>
-	</>
-}
 
 const pagingOptions = [
 	{ key: "0", value: 10, text: "10" },

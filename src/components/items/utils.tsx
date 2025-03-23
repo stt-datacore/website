@@ -2,11 +2,20 @@ import { Link } from 'gatsby';
 import React from 'react';
 import { EquipmentCommon, EquipmentItem } from '../../model/equipment';
 import { TranslateMethod } from '../../model/player';
-import { CustomFieldDef } from './itemstable';
 import { CrewMember } from '../../model/crew';
 import { ILocalizedData } from '../../context/localizedcontext';
 import { getItemBonuses } from '../../utils/itemutils';
 import CONFIG from '../CONFIG';
+import { SemanticWIDTHS } from 'semantic-ui-react';
+
+export interface CustomFieldDef {
+	field: string;
+	text: string;
+	format?: (value: any) => string;
+	width?: SemanticWIDTHS;
+	reverse?: boolean
+}
+
 
 export interface ItemsTableProps {
 	/** List of equipment items */
@@ -137,7 +146,7 @@ export interface FlavorConfig {
 }
 
 export function createFlavor(item: EquipmentItem | EquipmentCommon, config: FlavorConfig) {
-    const { localized, crew } = config;
+    const { localized, crew: inputCrew } = config;
     const { t, tfmt } = localized;
     let output = [] as JSX.Element[];
 
@@ -146,7 +155,7 @@ export function createFlavor(item: EquipmentItem | EquipmentCommon, config: Flav
         let crew = flavor
             .replace("Equippable by: ", "")
             .split(", ")
-            ?.map((s) => crew.find((c) => c.name === s || c.symbol === s))
+            ?.map((s) => inputCrew.find((c) => c.name === s || c.symbol === s))
             .filter((s) => !!s) as CrewMember[];
         if (crew?.length)
             output.push(
@@ -176,7 +185,7 @@ export function createFlavor(item: EquipmentItem | EquipmentCommon, config: Flav
         const bonus = getItemBonuses(item as EquipmentItem);
         const traits = localized.TRAIT_NAMES;
 
-        found = crew.filter((f) => {
+        found = inputCrew.filter((f) => {
             let mrq = item.max_rarity_requirement ?? f.max_rarity;
             let rr = mrq >= f.max_rarity;
 
