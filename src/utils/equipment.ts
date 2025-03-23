@@ -162,7 +162,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	crew.equipment_slots.forEach(es => {
 		if (fromCurrLvl && "level" in crew) {
 			if (es.level < crew.level) return;
-			else if (es.level === crew.level && crew.equipment_slots[crew.level] !== undefined && crew.equipment_slots[crew.level].imageUrl) return;
+			else if (es.level === crew.level && es.imageUrl) return;
 		}
 		if (bySymbol) {
 			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol);
@@ -170,7 +170,6 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 		else {
 			craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 		}
-
 	});
 
 	const reducer = (accumulator: number, currentValue: IDemand) => accumulator + currentValue.count;
