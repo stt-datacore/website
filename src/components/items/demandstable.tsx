@@ -5,7 +5,6 @@ import { WorkerContext } from "../../context/workercontext";
 import { EquipmentWorkerResults } from "../../model/worker";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
-import { useStateWithStorage } from "../../utils/storage";
 
 interface DemandsTableProps extends EquipmentTableProps {
     showUnownedNeeded?: boolean;

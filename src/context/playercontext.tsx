@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CompactCrew, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';

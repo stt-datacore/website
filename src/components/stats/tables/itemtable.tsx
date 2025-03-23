@@ -1,21 +1,17 @@
-import React from "react"
-import { GlobalContext } from "../../../context/globalcontext"
+import React from "react";
+import { GlobalContext } from "../../../context/globalcontext";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { EpochDiff } from "../model";
-import { Checkbox, Table } from "semantic-ui-react";
-import { approxDate, dateToEpoch, formatElapsedDays, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { Table } from "semantic-ui-react";
+import { approxDate, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
-import moment from "moment";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewMember } from "../../../model/crew";
 import { omniSearchFilter } from "../../../utils/omnisearch";
-import { useStateWithStorage } from "../../../utils/storage";
-import { crewCopy, getVariantTraits } from "../../../utils/crewutils";
-import { getIconPath } from "../../../utils/assets";
-import { calculateCrewDemands, calculateRosterDemands } from "../../../utils/equipment";
-import { EquipmentItem, ICrewDemands, IDemand } from "../../../model/equipment";
+import { crewCopy } from "../../../utils/crewutils";
+import { calculateCrewDemands } from "../../../utils/equipment";
+import { EquipmentItem, ICrewDemands } from "../../../model/equipment";
 import { ItemHoverStat } from "../../hovering/itemhoverstat";
 import CONFIG from "../../CONFIG";
 
