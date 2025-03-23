@@ -10,10 +10,12 @@ import { useStateWithStorage } from '../utils/storage';
 import { PlayerCrew } from '../model/player';
 import { getCrewQuipment, oneCrewCopy } from '../utils/crewutils';
 import { CustomFieldDef } from '../components/items/utils';
-import { EquipmentTable } from '../components/items/equipmenttable';
+import { EquipmentTable } from '../components/items/equipment_table';
 import { WorkerProvider } from '../context/workercontext';
+import { ItemsFilterProvider } from '../components/items/filters';
+import { DemandsTable } from '../components/items/demandstable';
 
-export interface ItemsPageProps {}
+export interface ItemsPageProps { }
 
 const ItemsPage = (props: ItemsPageProps) => {
 
@@ -30,46 +32,50 @@ const ItemsPage = (props: ItemsPageProps) => {
 		}
 	}, [globalContext]);
 
-	const coreItems = JSON.parse(JSON.stringify(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
 	const crew = globalContext.core.crew;
-	if (hasPlayer) {
-		coreItems.forEach((item) => {
-			item.quantity = globalContext.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
+	const coreItems = React.useMemo(() => {
+		const coreItems = JSON.parse(JSON.stringify(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
+		if (hasPlayer) {
+			coreItems.forEach((item) => {
+				item.quantity = globalContext.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;
+			});
+		}
+		coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
+		const crewLevels: { [key: string]: Set<string>; } = {};
+		crew.forEach(cr => {
+			cr.equipment_slots.forEach(es => {
+				let item = binaryLocate(es.symbol, coreItems);
+				if (item) {
+					crewLevels[es.symbol] ??= new Set();
+					crewLevels[es.symbol].add(cr.symbol);
+				}
+			});
 		});
-	}
-	coreItems.sort((a, b) => a.symbol.localeCompare(b.symbol));
-	const crewLevels: { [key: string]: Set<string>; } = {};
-	crew.forEach(cr => {
-		cr.equipment_slots.forEach(es => {
-			let item = binaryLocate(es.symbol, coreItems);
-			if (item) {
-				crewLevels[es.symbol] ??= new Set();
-				crewLevels[es.symbol].add(cr.symbol);
-			}
-		});
-	});
 
-	for (let symbol in crewLevels) {
-		if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
-			let item = binaryLocate(symbol, coreItems);
-			if (item) {
-				item.flavor ??= "";
-				if (item.flavor?.length) item.flavor += "\n";
-				if (crewLevels[symbol].size > 5) {
-					item.flavor += `Equippable by ${crewLevels[symbol].size} crew`;
-				} else {
-					item.flavor += 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
+		for (let symbol in crewLevels) {
+			if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
+				let item = binaryLocate(symbol, coreItems);
+				if (item) {
+					item.flavor ??= "";
+					if (item.flavor?.length) item.flavor += "\n";
+					if (crewLevels[symbol].size > 5) {
+						item.flavor += `Equippable by ${crewLevels[symbol].size} crew`;
+					} else {
+						item.flavor += 'Equippable by: ' + [...crewLevels[symbol]].join(', ');
+					}
 				}
 			}
 		}
-	}
+		return coreItems;
+	}, [globalContext.core.items, globalContext.core.crew]);
+
 	const quipCust = [] as CustomFieldDef[];
 
 	quipCust.push({
-			field: 'duration',
-			text: t('items.columns.duration'),
-			format: (value: number) => formatDuration(value, t)
-		});
+		field: 'duration',
+		text: t('items.columns.duration'),
+		format: (value: number) => formatDuration(value, t)
+	});
 
 	if (hasPlayer) {
 		quipCust.push({
@@ -102,67 +108,80 @@ const ItemsPage = (props: ItemsPageProps) => {
 		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
 
-			<Step.Group fluid>
-				<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
-					<Step.Content>
-						<Step.Title>{t('item_picker.all_items.title')}</Step.Title>
-						<Step.Description>{tfmt('item_picker.all_items.description')}</Step.Description>
-					</Step.Content>
-				</Step>
+				<Step.Group fluid>
+					<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
+						<Step.Content>
+							<Step.Title>{t('item_picker.all_items.title')}</Step.Title>
+							<Step.Description>{tfmt('item_picker.all_items.description')}</Step.Description>
+						</Step.Content>
+					</Step>
 
-				{hasPlayer && <Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
-					<Step.Content>
-						<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
-						<Step.Description>{tfmt('item_picker.owned_items.description')}</Step.Description>
-					</Step.Content>
+					{hasPlayer && <Step active={activeTabIndex === 1} onClick={() => setActiveTabIndex(1)}>
+						<Step.Content>
+							<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
+							<Step.Description>{tfmt('item_picker.owned_items.description')}</Step.Description>
+						</Step.Content>
 
-				</Step>}
+					</Step>}
 
-				<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
-					<Step.Content>
-						<Step.Title>{t('item_picker.quipment_browser.title')}</Step.Title>
-						<Step.Description>{tfmt('item_picker.quipment_browser.description')}</Step.Description>
-					</Step.Content>
-				</Step>
-			</Step.Group>
+					<Step active={activeTabIndex === 2} onClick={() => setActiveTabIndex(2)}>
+						<Step.Content>
+							<Step.Title>{t('item_picker.quipment_browser.title')}</Step.Title>
+							<Step.Description>{tfmt('item_picker.quipment_browser.description')}</Step.Description>
+						</Step.Content>
+					</Step>
+				</Step.Group>
 
 
-			{/* We want both of these to load, even if they are not displayed,
+				{/* We want both of these to load, even if they are not displayed,
 				because there's work that that must be done every time they are loaded.
 				Re-rendering the page for switching views would cause work to run unnecessarily. */}
-			<EquipmentTable
-				pageId={'core'}
-				useWorker={false}
-				flavor={true}
-				hideOwnedInfo={true}
-				items={globalContext.core.items}
-				noRender={activeTabIndex !== 0}
-				/>
-
-			{hasPlayer &&
-				<WorkerProvider>
+				<ItemsFilterProvider
+					noRender={activeTabIndex !== 0}
+					pool={coreItems}
+					ownedItems={false}
+					pageId={'core'}
+				>
 					<EquipmentTable
-					pageId={'roster'}
-					useWorker={true}
-					items={globalContext.core.items}
-					noRender={activeTabIndex !== 1 || !hasPlayer}
+						pageId={'core'}
+						flavor={true}
+						noRender={activeTabIndex !== 0}
+						hideOwnedInfo={true}
+						items={coreItems}
 					/>
-				</WorkerProvider>}
-			{/* {hasPlayer && <ItemsTable
-				pageName={"roster"}
-				noRender={activeTabIndex !== 1 || !hasPlayer} />} */}
+				</ItemsFilterProvider>
 
-			<ItemsTable
-				pageName={"quipment"}
-				types={[14]}
-				buffs={true}
-				crewMode={true}
-				noWorker={true}
-				noRender={activeTabIndex !== 2}
-				data={coreItems}
-				hideOwnedInfo={true}
-				flavor={false}
-				customFields={quipCust}
+				{hasPlayer &&
+					<WorkerProvider>
+						<ItemsFilterProvider
+							noRender={activeTabIndex !== 1 || !hasPlayer}
+							pool={playerData!.player.character.items as EquipmentItem[]}
+							ownedItems={true}
+							pageId={'roster'}
+						>
+							<DemandsTable
+								noRender={activeTabIndex !== 1 || !hasPlayer}
+								pageId={'roster'}
+								items={coreItems}
+							/>
+						</ItemsFilterProvider>
+					</WorkerProvider>}
+				{/* {hasPlayer &&
+					<ItemsTable
+					pageName={"roster"}
+					noRender={activeTabIndex !== 1 || !hasPlayer} />
+				} */}
+				<ItemsTable
+					pageName={"quipment"}
+					types={[14]}
+					buffs={true}
+					crewMode={true}
+					noWorker={true}
+					noRender={activeTabIndex !== 2}
+					data={coreItems}
+					hideOwnedInfo={true}
+					flavor={false}
+					customFields={quipCust}
 				/>
 				<br />
 				<br />

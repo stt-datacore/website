@@ -1,7 +1,7 @@
 import { Link } from 'gatsby';
 import React from 'react';
 import { EquipmentCommon, EquipmentItem } from '../../model/equipment';
-import { TranslateMethod } from '../../model/player';
+import { PlayerEquipmentItem, TranslateMethod } from '../../model/player';
 import { CrewMember } from '../../model/crew';
 import { ILocalizedData } from '../../context/localizedcontext';
 import { getItemBonuses } from '../../utils/itemutils';
@@ -143,40 +143,55 @@ export function printRequiredTraits(
 export interface FlavorConfig {
     crew: CrewMember[];
     localized: ILocalizedData;
+    ownedItems: boolean;
 }
 
-export function createFlavor(item: EquipmentItem | EquipmentCommon, config: FlavorConfig) {
+export function createFlavor(item: EquipmentItem | EquipmentCommon | PlayerEquipmentItem, config: FlavorConfig) {
     const { localized, crew: inputCrew } = config;
     const { t, tfmt } = localized;
     let output = [] as JSX.Element[];
 
     let flavor = item.flavor ?? "";
-    if (flavor.startsWith("Equippable by: ")) {
+    if (flavor.startsWith("Equippable by:")) {
         let crew = flavor
-            .replace("Equippable by: ", "")
-            .split(", ")
-            ?.map((s) => inputCrew.find((c) => c.name === s || c.symbol === s))
-            .filter((s) => !!s) as CrewMember[];
-        if (crew?.length)
-            output.push(
-                <div>
-                    {tfmt("items.equippable_by", {
-                        crew: crew
-                            .map((crew) => (
-                                <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
-                            ))
-                            .reduce((p, n) => (
-                                <>
-                                    {p}, {n}
-                                </>
-                            )),
-                    })}
-                </div>
-            );
+            .replace("Equippable by:", "")
+            .split(",")
+            .map((s) => inputCrew.find((c) => c.name === s.trim() || c.symbol === s.trim()))
+            .filter((c) => !!c) as CrewMember[];
+
+        if (crew?.length) {
+            if (crew.length <= 5) {
+                output.push(
+                    <div>
+                        {tfmt("items.equippable_by", {
+                            crew: crew
+                                .map((crew) => (
+                                    <Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
+                                ))
+                                .reduce((p, n) => (
+                                    <>
+                                        {p}, {n}
+                                    </>
+                                )),
+                        })}
+                    </div>
+                );
+            }
+            else {
+                output.push(
+                    <div>
+                        {tfmt("items.equippable_by_n_crew", {
+                            n: crew.length.toString()
+                        })}
+                    </div>
+                );
+            }
+        }
     }
-    if (output.length) flavor = '';
+    if (output.length || config.ownedItems) flavor = '';
 
     if (
+        "kwipment" in item &&
         item.kwipment &&
         (item.traits_requirement?.length || item.max_rarity_requirement)
     ) {

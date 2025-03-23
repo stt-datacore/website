@@ -1183,6 +1183,7 @@
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
         "equippable_by": "Équipable par : {{crew}}",
+        "equippable_by_n_crew": "Équipable par {{n}} équipiers.",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipier {{rarity}}.",
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipier {{rarity}} avec les traits suivants : {{traits}}",
         "equippable_by_traits": "Peut être équipé par les équipiers avec les traits suivantes : {{traits}}",

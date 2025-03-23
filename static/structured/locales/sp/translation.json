@@ -1181,6 +1181,7 @@
         "craft_for_chrons": "Hazlo por {{cost}} usando esta receta",
         "current_demands": "Demandas actuales",
         "equippable_by": "Equipable por: {{crew}}",
+        "equippable_by_n_crew": "Equipable por {{n}} tripulantes.",
         "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
         "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes rasgos: {{traits}}",
         "equippable_by_traits": "Equipable por tripulación con los siguientes rasgos: {{traits}}",

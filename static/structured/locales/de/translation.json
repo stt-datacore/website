@@ -1171,6 +1171,7 @@
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
         "current_demands": "Aktuelle Anforderungen",
         "equippable_by": "Ausrüstbar durch: {{crew}}",
+        "equippable_by_n_crew": "Ausrüstbar durch {{n}} Crew.",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",

@@ -12,6 +12,7 @@ import { ShuttleAdventure } from '../model/shuttle';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
+import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -32,6 +33,8 @@ export interface PlayerContextData {
 	dataSource?: string;
 	sessionStates?: ISessionStates;
 	updateSessionState?: (sessionKey: SessionStateKey, sessionValue: number) => void;
+	calculatedDemands?: (EquipmentCommon | EquipmentItem)[]
+	setCalculatedDemands: (value: (EquipmentCommon | EquipmentItem)[] | undefined) => void;
 };
 
 export interface IEphemeralData {
@@ -68,6 +71,8 @@ export const defaultPlayer = {
 	setShowPlayerGlance: () => false,
 	noGradeColors: true,
 	setNoGradeColors: () => false,
+	calculatedDemands: undefined,
+	setCalculatedDemands: () => false
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -83,9 +88,13 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
+	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentCommon)[] | undefined>('calculatedDemands', undefined, { compress: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
+
+	// This structure is only saved in indexDB
 	const [itemArchetypeCache, setItemArchetypeCache] = useStateWithStorage<ArchetypeRoot20>('itemArchetypeCache', {} as ArchetypeRoot20, { rememberForever: true, avoidSessionStorage: true });
+
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
@@ -127,6 +136,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		});
 
 		if (input.stripped !== true) {
+			setCalculatedDemands(undefined);
 
 			if (!!input.archetype_cache?.archetypes?.length) {
 				setItemArchetypeCache(input.archetype_cache);
@@ -181,6 +191,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setSessionStates(undefined);
 		setLoaded(false);
 		setItemArchetypeCache({} as ArchetypeRoot20);
+		setCalculatedDemands(undefined);
 		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
@@ -210,7 +221,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		showBuybackAlerts,
 		setShowBuybackAlerts,
 		restoreHiddenAlerts,
-		setRestoreHiddenAlerts
+		setRestoreHiddenAlerts,
+		calculatedDemands,
+		setCalculatedDemands
 	} as PlayerContextData;
 
 	return (

@@ -1,35 +1,30 @@
 import React from "react";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { createFlavor, CustomFieldDef, FlavorConfig } from "./utils";
 import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
-import { PlayerCrew, PlayerEquipmentItem } from "../../model/player";
-import { Checkbox, Icon, Table } from "semantic-ui-react";
-import { WorkerContext } from "../../context/workercontext";
-import { EquipmentWorkerResults } from "../../model/worker";
+import { PlayerEquipmentItem } from "../../model/player";
+import { Icon, Table } from "semantic-ui-react";
 import { omniSearchFilter } from "../../utils/omnisearch";
 import { Filter } from "../../model/game-elements";
 import CONFIG from "../CONFIG";
-import ItemDisplay from "../itemdisplay";
 import { navigate } from "gatsby";
 import { getItemBonuses } from "../../utils/itemutils";
 import { renderBonuses } from "../item_presenters/item_presenter";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { OptionsPanelFlexRow } from "../stats/utils";
+import { ItemsFilterContext } from "./filters";
 
 
 export interface EquipmentTableProps {
     pageId: string;
-    items: (EquipmentItem | PlayerEquipmentItem | EquipmentCommon)[];
+    items?: (EquipmentItem | PlayerEquipmentItem | EquipmentCommon)[];
     hideOwnedInfo?: boolean;
     types?: number[];
     buffs?: boolean;
     flavor?: boolean;
     customFields?: CustomFieldDef[];
-    useWorker?: boolean;
-    addNeeded?: boolean;
     itemTargetGroup?: string;
     navigate?: (symbol: string) => void;
     noRender?: boolean;
@@ -37,16 +32,22 @@ export interface EquipmentTableProps {
 
 export const EquipmentTable = (props: EquipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const workerContext = React.useContext(WorkerContext);
+    const filterContext = React.useContext(ItemsFilterContext);
+
+    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded } = filterContext;
 
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const { pageId, hideOwnedInfo, types, buffs, flavor, customFields, items, useWorker, addNeeded, noRender } = props;
+    const { pageId, hideOwnedInfo, types, buffs, flavor, customFields, noRender } = props;
 
-    const [triggerWorker, setTriggerWorker] = React.useState(false);
-    const [displayData, setDisplayData] = React.useState(items);
-
-    // const isMobile = typeof window !== "undefined" && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+    const items = React.useMemo(() => {
+        if (available) {
+            return filterItems(props.items ?? globalContext.core.items);
+        }
+        else {
+            return props.items ?? globalContext.core.items;
+        }
+    }, [props.items, globalContext.core.items, available, rarityFilter, itemTypeFilter, showUnownedNeeded]);
 
     const itemTargetGroup = React.useMemo(() => {
         if (props.itemTargetGroup) return props.itemTargetGroup;
@@ -54,50 +55,20 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     }, [props.itemTargetGroup]);
 
     const flavorConfig = React.useMemo<FlavorConfig>(() => {
-        return {
+        const config = {
             localized: globalContext.localized,
-            crew: playerData?.player?.character?.crew ?? globalContext?.core?.crew
+            crew: globalContext.core.crew,
+            ownedItems
         }
-    }, [globalContext.localized, playerData, globalContext.core.crew]);
-
-    const { cancel, runWorker, running } = React.useMemo(() => {
-        if (useWorker) {
-            return workerContext;
-        }
-        else {
-            return { cancel: () => false, runWorker: () => false, running: false };
-        }
-    }, [useWorker, workerContext]);
+        if (ownedItems && playerData) config.crew = playerData.player.character.crew.filter(f => !f.immortal && f.equipment.filter(f => !!f).length !== 4);
+        return config;
+    }, [globalContext.localized, playerData, globalContext.core.crew, ownedItems]);
 
     React.useEffect(() => {
-        if (useWorker && triggerWorker) return;
-        if (!!runWorker && !!useWorker && !!items?.length && !!playerData) {
-            setTriggerWorker(true);
-        }
-        else if (!useWorker && !!items?.length && displayData !== items) {
-            setDisplayData(items);
-        }
-    }, [runWorker, useWorker, playerData, items]);
+        if (available) {
 
-    React.useEffect(() => {
-        if (triggerWorker) {
-            setTimeout(() => {
-                if (triggerWorker && useWorker) {
-                    setTriggerWorker(false);
-                    runWorker(
-                        "equipmentWorker", {
-                            playerData,
-                            items: globalContext.core.items,
-                            addNeeded: !!addNeeded
-                        },
-                        (data: { data: { result: EquipmentWorkerResults } }) => {
-                            setDisplayData(data.data.result.items);
-                        }
-                    )
-                }
-            }, 500);
         }
-    }, [triggerWorker]);
+    }, [rarityFilter, itemTypeFilter, showUnownedNeeded]);
 
     const tableConfig = [
         { width: 3, column: "name", title: t("items.columns.item") },
@@ -145,32 +116,26 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             )
         });
     }
-    const flexRow = OptionsPanelFlexRow;
 
     if (noRender) {
         return <></>
     }
-    else if (useWorker && running) {
-        return <div style={{...flexRow, justifyContent: 'center', marginTop: '4em'}}>{globalContext.core.spin(t('spinners.demands'))}</div>;
-    }
     else return <React.Fragment>
-
         {!props.itemTargetGroup && <ItemHoverStat targetGroup={itemTargetGroup} />}
         <SearchableTable
             config={tableConfig}
-            data={displayData}
+            data={items}
             renderTableRow={renderTableRow}
             filterRow={filterRow}
         />
     </React.Fragment>
 
-    function filterRow(row: (EquipmentItem | PlayerEquipmentItem | EquipmentCommon), filters: Filter[], filterType?: string) {
+    function filterRow(row: (EquipmentItem | EquipmentCommon), filters: Filter[], filterType?: string) {
         return omniSearchFilter(row, filters, filterType, ['name', 'flavor']);
     }
 
-    function renderTableRow(item: EquipmentItem, idx: any) {
-        return <Table.Row key={`${pageId}_equipment_Table_${item.archetype_id}_${item.symbol}+${idx}`}>
-
+    function renderTableRow(item: EquipmentItem | EquipmentCommon, idx: any) {
+        return <Table.Row key={`${pageId}_equipment_TableRow_${item.archetype_id}_${item.symbol}+${idx}`}>
             <Table.Cell>
                 <div
                     title={
@@ -200,6 +165,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                                     !item.quantity && !hideOwnedInfo ? "0.20" : "1",
                             }}
                             mode='item'
+                            partialItem={true}
                             item={item}
                             size={48}
                             targetGroup={itemTargetGroup}
@@ -220,7 +186,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                         </a>
                     </div>
                     <div style={{ gridArea: "description" }}>
-                        {createFlavor(item, flavorConfig) || item.flavor}
+                        {createFlavor(item, flavorConfig)}
                     </div>
                 </div>
             </Table.Cell>
