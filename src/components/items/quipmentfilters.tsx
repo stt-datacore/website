@@ -346,7 +346,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                     closeOnChange
                     closePicker={selectCrew}
                     selection
-                    renderOptions={renderCrewPickerOptions}
+                    renderOptions={!!playerData ? renderCrewPickerOptions : undefined}
                     gridSetup={{
                         renderGridColumn: (datum, isSelected) => renderItem(datum, isSelected),
                         defaultSort: {
