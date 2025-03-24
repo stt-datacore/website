@@ -249,10 +249,10 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
     return (<div
-        onClick={(e) => !targetGroup ? navigate("/item_info?symbol=" + props.equipment?.symbol) : null}
+        onClick={(e) => !targetGroup && props.equipment?.symbol ? navigate("/item_info?symbol=" + props.equipment?.symbol) : null}
         title={equipment?.name}
         style={{
-        cursor: "pointer",
+        cursor: props.equipment?.symbol ? "pointer" : 'no-drop',
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
