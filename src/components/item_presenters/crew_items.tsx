@@ -25,6 +25,7 @@ export interface CrewItemsViewProps {
     locked?: boolean;
     vertical?: boolean;
     alwaysHideProgress?: boolean;
+    alwaysShowProgress?: boolean;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -60,11 +61,11 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const crew = props.crew as PlayerCrew;
     const quip = !!props.quipment;
 
-    const { targetGroup, locked, vertical, alwaysHideProgress } = props;
+    const { targetGroup, locked, vertical, alwaysHideProgress, alwaysShowProgress } = props;
 
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
-    const [toNext, next] = (!!alwaysHideProgress || !quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
+    const [toNext, next] = alwaysShowProgress && crew.q_bits >= 1300 ? [0, 1300] : (!!alwaysHideProgress || !quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
 6
     let maxBuffs: BuffStatTable | undefined;
 
@@ -128,7 +129,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                     return {
                         level: 100,
                         symbol: q.symbol,
-                        imageUrl: q.imageUrl
+                        imageUrl: q.imageUrl,
+                        archetype: q.id ? Number(q.id) : q.archetype_id
                     }
                 });
             }
@@ -209,7 +211,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         equipment={item} />
                 ))}
             </div>
-            {!!next &&
+            {(!!next || !!alwaysShowProgress) &&
                 <div style={{textAlign: 'center', margin: '0 0.5em', fontSize: '0.8em'}}>
                 <Progress
                     progress={false}

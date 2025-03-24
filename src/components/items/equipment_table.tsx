@@ -13,10 +13,8 @@ import { getItemBonuses, getItemWithBonus, ItemWithBonus } from "../../utils/ite
 import { renderBonuses } from "../item_presenters/item_presenter";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
-import { OptionsPanelFlexRow } from "../stats/utils";
 import { ItemsFilterContext } from "./filters";
 import { skillSum } from "../../utils/crewutils";
-
 
 export interface EquipmentTableProps {
     pageId: string;
@@ -189,12 +187,12 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                         {!!setSelection && !!selectionMode && (
                             <Checkbox
                                 disabled={
-                                    !!selection && !!maxSelections && selection.length >= maxSelections &&
+                                    !!selection && !!maxSelections && selection.filter(f => !!f).length >= maxSelections &&
                                     !selection.includes(Number(item.id))
                                 }
                                 checked={!!selection?.includes(Number(item.id))}
                                 onChange={(e, { checked }) => {
-                                    let sel = [ ...selection ?? []];
+                                    let sel = [ ...selection ?? []].filter(f => !!f);
                                     if (checked) {
                                         if (!sel.includes(Number(item.id))) sel.push(Number(item.id));
                                     }

@@ -23,7 +23,18 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
     const { pageId, ownedItems, ownedCrew } = props;
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
-    const { selectedItems: selection, setSelectedItems: setSelection, selectedCrew } = quipmentContext;
+    const {
+        ignoreLimit,
+        selectedItems: selection,
+        setSelectedItems: setSelection,
+        selectedCrew,
+        ownedOption,
+        traitOptions,
+        skillOptions,
+        rarityOptions,
+        filterItems,
+        available
+    } = quipmentContext;
 
     const [maxSlots, setMaxSlots] = React.useState(undefined as number | undefined);
     const [crew, setCrew] = React.useState(undefined as CrewMember | undefined);
@@ -39,22 +50,23 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
             crew = globalContext.core.crew.find(f => f.symbol === selectedCrew);
         }
         if (crew) {
-            setMaxSlots(qbitsToSlots(crew.q_bits) || 4);
+            setMaxSlots(ignoreLimit ? 4 : (qbitsToSlots(crew.q_bits) || 4));
         }
         else {
             setMaxSlots(undefined);
             setSelection(undefined);
         }
         setCrew(crew);
-    }, [selectedCrew, playerData, ownedCrew]);
+    }, [selectedCrew, playerData, ownedCrew, ignoreLimit]);
 
     const items = React.useMemo(() => {
         let quipment = props.items?.filter(f => f.type === 14) ?? [];
         if (crew) {
             quipment = getPossibleQuipment(crew, quipment as EquipmentItem[]);
         }
-        return quipment;
-    }, [crew, props.items]);
+        if (available) return filterItems(quipment as EquipmentItem[]);
+        else return quipment;
+    }, [crew, props.items, ownedOption, traitOptions, skillOptions, rarityOptions]);
 
     return <EquipmentTable
         {...{

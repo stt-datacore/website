@@ -180,10 +180,12 @@ const ItemsPage = (props: ItemsPageProps) => {
 				} */}
 
 					<QuipmentFilterProvider
+						noRender={activeTabIndex !== 2}
 						ownedItems={false}
 						pageId={'quipment'}
 						>
 						<QuipmentTable
+							noRender={activeTabIndex !== 2}
 							items={quipment}
 							ownedItems={false}
 							ownedCrew={hasPlayer}
