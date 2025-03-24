@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Label, Message, Item, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
+import { Header, Message, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
@@ -10,7 +10,6 @@ import 'moment/locale/de';
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
 import ShipTable from '../components/ship/shiptable';
-import ItemsTable from '../components/items/itemstable';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
@@ -24,13 +23,15 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
-import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { v4 } from 'uuid';
 import moment from 'moment';
 import { PlayerBadge } from '../components/page/playerbadge';
+import { DemandsTable } from '../components/items/demandstable';
+import { WorkerProvider } from '../context/workercontext';
+import { ItemsFilterProvider } from '../components/items/filters';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -50,7 +51,6 @@ type ProfilePageState = {
 
 export const ProfilePage = (props: ProfilePageProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
 	const isReady = !!Object.keys(globalContext.core).length;
 	const { core: coreData } = globalContext;
 
@@ -87,7 +87,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 								noGradeColors: globalContext.player.noGradeColors,
 								setNoGradeColors: globalContext.player.setNoGradeColors,
 								newCrew,
-								setNewCrew
+								setNewCrew,
+								setCalculatedDemands: () => false
 							},
 							maxBuffs: coreData.all_buffs,
 							isMobile: globalContext.isMobile,
@@ -207,6 +208,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		const { t } = this.context.localized;
 		const { playerData } = this.context.player ?? { playerData: undefined };
 		const { items, crew: allCrew } = this.context.core;
+		const profileItems = this.context.core.items.filter(f => playerData?.player.character.items.some(it => it.symbol === f.symbol));
 
 		const panes = [
 			{
@@ -223,7 +225,18 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			},
 			{
 				menuItem: t('profile.items'),
-				render: () => <ItemsTable />
+				render: () =>
+					<WorkerProvider>
+						<ItemsFilterProvider
+							pageId='profile'
+							pool={profileItems}
+							ownedItems={false}
+							>
+						<DemandsTable
+						 	pageId='profile'
+							items={profileItems} />
+						</ItemsFilterProvider>
+					</WorkerProvider>
 			},
 			{
 				menuItem: t('profile.other'),

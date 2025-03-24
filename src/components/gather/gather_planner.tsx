@@ -7,8 +7,8 @@ import { Button, Dropdown, Form, Table } from "semantic-ui-react";
 import { EquipmentItem } from "../../model/equipment";
 import { makeRecipeFromArchetypeCache } from "../../utils/equipment";
 import { useStateWithStorage } from "../../utils/storage";
-import ItemsTable from "../items/itemstable";
 import { FarmSources, FarmTable } from "../items/farmtable";
+import { EquipmentTable } from "../items/equipment_table";
 
 const hover_target = "gather_planner";
 
@@ -143,7 +143,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
     return (<>
         <GatherTable phaseIndex={phaseIndex} setReset={() => performReset()} eventSymbol={eventSymbol} adventures={adventures} items={eventItems} />
 
-        <ItemsTable noWorker={true} itemTargetGroup={hover_target} data={allDemands} />
+        <EquipmentTable pageId='gather_planner/equipment' itemTargetGroup={hover_target} items={allDemands} />
 
         <FarmTable
             pageId="gather_planner"

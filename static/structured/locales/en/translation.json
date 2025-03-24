@@ -1171,6 +1171,7 @@
         "craft_for_chrons": "Craft it for {{cost}} using this recipe",
         "current_demands": "Current demands",
         "equippable_by": "Equippable by: {{crew}}",
+        "equippable_by_n_crew": "Equippable by {{n}} crew.",
         "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
         "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
         "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
