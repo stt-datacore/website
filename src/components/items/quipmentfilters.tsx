@@ -87,8 +87,8 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
     const [rarityOptions, setRarityOptions] = useStateWithStorage<number[] | undefined>(`${pageId}/quipment_rarity_options`, undefined);
 
     const pool = React.useMemo(() => {
-        return filterItems(globalContext.core.items.filter(item => item.type === 14)) as EquipmentItem[];
-    }, [globalContext.core.items, ownedOption, traitOptions, skillOptions, rarityOptions]);
+        return globalContext.core.items.filter(item => item.type === 14) as EquipmentItem[];
+    }, [globalContext.core.items]);
 
     const contextData: IQuipmentFilterContext = {
         available: true,
