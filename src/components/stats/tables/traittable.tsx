@@ -2,7 +2,7 @@ import React from "react"
 import { GlobalContext } from "../../../context/globalcontext"
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { Checkbox, Table } from "semantic-ui-react";
-import { approxDate, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, SpecialCols } from "../utils";
+import { approxDate, computePotentialColScores, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, SpecialCols } from "../utils";
 import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
@@ -44,16 +44,9 @@ export const TraitStatsTable = () => {
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
 
-    const potential = (() => {
-        let potential = potentialCols(crew, collections, TRAIT_NAMES);
-        //potential.forEach((p) => p.count = Math.abs(p.count - 50))
-        potential.sort((a, b) => b.count - a.count);
-        let max = potential[0].count;
-        for (let p of potential) {
-            p.count = Number((((p.count / max)) * 10).toFixed(2));
-        }
-        return potential;
-    })();
+    const potential = React.useMemo(() =>
+        computePotentialColScores(crew,collections, TRAIT_NAMES),
+    [crew, collections, TRAIT_NAMES]);
 
     const calcReleaseVague = (min: number, max: number) => {
         let d = new Date(GameEpoch);

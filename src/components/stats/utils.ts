@@ -723,9 +723,13 @@ export function fillGaps(data: EpochItem[]) {
 
     data.sort((a, b) => a.epoch_day - b.epoch_day || a.skills.join().localeCompare(b.skills.join()));
 }
+export interface PotentialColsData {
+    trait: string,
+    count: number,
+    distance: number
+}
 
-
-export function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAMES: TraitNames) {
+export function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAMES: TraitNames): PotentialColsData[] {
     const rc = crew.map(c => {
         let vt = getVariantTraits(c);
         let traits1 = c.traits.filter((trait) => {
@@ -741,5 +745,41 @@ export function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAME
         tr[r] ??= 0;
         tr[r]++;
     }
-    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? { trait: key, count: value } : undefined).filter(f => f !== undefined);
+    return Object.entries(tr).map(([key, value]) => value >= 25 && value <= 200 ? { trait: key, count: value, distance: 0 } : undefined).filter(f => f !== undefined);
+}
+
+export function computePotentialColScores(crew: CrewMember[], collections: Collection[], TRAIT_NAMES: TraitNames) {
+    if (crew?.length && collections?.length && TRAIT_NAMES) {
+        let moving_number = 0;
+        let max_crew = 0;
+        collections.forEach((c, idx) => {
+            if (c.crew?.length) {
+                moving_number += (c.crew.length) * (idx + 1);
+                if (max_crew < c.crew.length) max_crew = c.crew.length;
+            }
+        });
+        moving_number /= collections.map((c, i) => i + 1).reduce((p, n) => p + n, 0);
+        let potential = potentialCols(crew, collections, TRAIT_NAMES);
+        potential.sort((a, b) => b.count - a.count);
+
+        let max_c = potential[0].count;
+        let med = moving_number;
+        for (let p of potential) {
+            p.distance = Math.abs(p.count - med);
+        }
+        potential.sort((a, b) => b.distance - a.distance);
+        let max_d = potential[0].distance;
+        for (let p of potential) {
+            p.count = Number(((1 - (p.distance / max_crew)) * 10).toFixed(2))
+        }
+        potential.sort((a, b) => b.count - a.count);
+        max_c = potential[0].count;
+        for (let p of potential) {
+            p.count = Number(((p.count / max_c) * 10).toFixed(2))
+        }
+        return potential;
+    }
+    else {
+        return [];
+    }
 }
