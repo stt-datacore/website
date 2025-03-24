@@ -414,12 +414,14 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
     </React.Fragment>
 
     function selectCrew(selection: Set<number>, ok: boolean) {
-        let sel = [...selection];
-        if (ok && sel.length && sel[0]) {
-            setSelectedCrew(crewChoices.find(f => f.id === sel[0])?.symbol)
-        }
-        else {
-            setSelectedCrew(undefined);
+        if (ok) {
+            let sel = [...selection];
+            if (sel.length && sel[0]) {
+                setSelectedCrew(crewChoices.find(f => f.id === sel[0])?.symbol)
+            }
+            else {
+                setSelectedCrew(undefined);
+            }
         }
         setSelectorOpen(false);
     }
