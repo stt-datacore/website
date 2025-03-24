@@ -394,7 +394,6 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                     storeName="items_quip"
                 />
                 <CrewItemsView
-                    targetGroup={"profile_items"}
                     itemSize={48}
                     crew={crew}
                     quipment
