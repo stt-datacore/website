@@ -146,49 +146,13 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     else return <React.Fragment>
         {!props.itemTargetGroup && <ItemHoverStat targetGroup={itemTargetGroup} />}
         <SearchableTable
+            hideExplanation
             config={tableConfig}
             data={items}
             renderTableRow={renderTableRow}
             filterRow={filterRow}
         />
-        {!hideOwnedInfo && !!items.length && (
-        <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-            <div
-                className="ui button"
-                onClick={(e) => {
-                    exportItems(items as EquipmentItem[]);
-                }}
-                style={{
-                    display: "inline",
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    cursor: "pointer",
-                }}
-            >
-                <span style={{ margin: "0 2em 0 0" }}>
-                    {t("share_profile.export.export_csv")}
-                </span>
-                <i className="download icon" />
-            </div>
-            <div
-                className="ui button"
-                onClick={(e) => {
-                    exportItems(items as EquipmentItem[], true);
-                }}
-                style={{
-                    marginRight: "2em",
-                    display: "inline",
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    cursor: "pointer",
-                }}
-            >
-                <span style={{ margin: "0 2em 0 0" }}>
-                    {t("share_profile.export.export_clipboard")}
-                </span>
-                <i className="clipboard icon" />
-            </div>
-        </div>)}
+        {!hideOwnedInfo && !!items.length && renderExportTools()}
     </React.Fragment>
 
     function filterRow(row: (EquipmentItem | EquipmentCommon), filters: Filter[], filterType?: string) {
@@ -329,6 +293,47 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             r = Object.keys(abonus.bonusInfo).join().localeCompare(Object.keys(bbonus.bonusInfo).join());
         }
         return r;
+    }
+
+    function renderExportTools() {
+        return (
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                <div
+                    className="ui button"
+                    onClick={(e) => {
+                        exportItems(items as EquipmentItem[]);
+                    }}
+                    style={{
+                        display: "inline",
+                        flexDirection: "row",
+                        justifyContent: "space-evenly",
+                        cursor: "pointer",
+                    }}
+                >
+                    <span style={{ margin: "0 2em 0 0" }}>
+                        {t("share_profile.export.export_csv")}
+                    </span>
+                    <i className="download icon" />
+                </div>
+                <div
+                    className="ui button"
+                    onClick={(e) => {
+                        exportItems(items as EquipmentItem[], true);
+                    }}
+                    style={{
+                        marginRight: "2em",
+                        display: "inline",
+                        flexDirection: "row",
+                        justifyContent: "space-evenly",
+                        cursor: "pointer",
+                    }}
+                >
+                    <span style={{ margin: "0 2em 0 0" }}>
+                        {t("share_profile.export.export_clipboard")}
+                    </span>
+                    <i className="clipboard icon" />
+                </div>
+            </div>)
     }
 
     function exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
