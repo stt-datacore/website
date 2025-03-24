@@ -1222,6 +1222,14 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | CrewMember, preferEnglish = true) {
 	switch(trait) {
 		case "dax":
+			let daxname = '';
+			if (Array.isArray(crewGroup)) {
+				daxname = (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
+			}
+			else {
+				daxname = (preferEnglish ? crewGroup.short_name_english : '') || crewGroup.short_name;
+			}
+			if (daxname === 'Ezri') return daxname;
 			return 'Dax';
 		case "tpring":
 			return "T'Pring";
