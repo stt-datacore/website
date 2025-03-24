@@ -65,7 +65,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			}
 		});
 
-		const shortNameGroup = globalContext.core.crew.filter(ac => (ac.short_name === short_name && short_name !== 'Burnham'))
+		const shortNameGroup = globalContext.core.crew.filter(ac => (ac.short_name === short_name && short_name !== 'Burnham' && short_name !== 'Q'))
 			.map(cp => JSON.parse(JSON.stringify(cp)) as CrewMember)
 			.filter(fc => !sn_var?.trait_variants.some(tv => tv.symbol === fc.symbol));
 
