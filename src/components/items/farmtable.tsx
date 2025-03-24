@@ -1,5 +1,5 @@
 import React from "react";
-import { FormInput, Button, Table, Pagination, Dropdown } from "semantic-ui-react";
+import { Table, Pagination, Dropdown } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EquipmentItemSource, EquipmentItem } from "../../model/equipment";
 import { useStateWithStorage } from "../../utils/storage";
@@ -7,7 +7,6 @@ import { GatherItemFilter } from "../gather/gather_planner";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import CONFIG from "../CONFIG";
 import { ItemDropDown } from "./itemdropdown";
 
 export interface FarmSources {

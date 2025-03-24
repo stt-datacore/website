@@ -1,15 +1,12 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
-import { WorkerContext } from "../../context/workercontext";
-import { EquipmentWorkerResults } from "../../model/worker";
+import { EquipmentItem } from "../../model/equipment";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
 import { CrewMember } from "../../model/crew";
 import { QuipmentFilterContext } from "./quipmentfilters";
-import { qbitsToSlots, traitNumberToColor } from "../../utils/crewutils";
+import { qbitsToSlots } from "../../utils/crewutils";
 import { getPossibleQuipment } from "../../utils/itemutils";
-import { DropdownItemProps } from "semantic-ui-react";
 
 interface QuipmentTableProps extends EquipmentTableProps {
     ownedItems: boolean;
@@ -20,9 +17,9 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const quipmentContext = React.useContext(QuipmentFilterContext);
 
-    const { pageId, ownedItems, ownedCrew } = props;
+    const { ownedCrew } = props;
     const { playerData } = globalContext.player;
-    const { t } = globalContext.localized;
+
     const {
         ignoreLimit,
         selectedItems: selection,
@@ -38,8 +35,6 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
 
     const [maxSlots, setMaxSlots] = React.useState(undefined as number | undefined);
     const [crew, setCrew] = React.useState(undefined as CrewMember | undefined);
-
-    const flexRow = OptionsPanelFlexRow;
 
     React.useEffect(() => {
         let crew = undefined as CrewMember | undefined;
