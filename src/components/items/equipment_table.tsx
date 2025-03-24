@@ -9,12 +9,12 @@ import { omniSearchFilter } from "../../utils/omnisearch";
 import { Filter } from "../../model/game-elements";
 import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
-import { getItemBonuses, getItemWithBonus, ItemWithBonus } from "../../utils/itemutils";
+import { exportItemsAlt, getItemBonuses, getItemWithBonus, ItemWithBonus } from "../../utils/itemutils";
 import { renderBonuses } from "../item_presenters/item_presenter";
 import { AvatarView } from "../item_presenters/avatarview";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ItemsFilterContext } from "./filters";
-import { skillSum } from "../../utils/crewutils";
+import { downloadData, skillSum } from "../../utils/crewutils";
 
 export interface EquipmentTableProps {
     pageId: string;
@@ -151,6 +151,44 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             renderTableRow={renderTableRow}
             filterRow={filterRow}
         />
+        {!hideOwnedInfo && !!items.length && (
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+            <div
+                className="ui button"
+                onClick={(e) => {
+                    exportItems(items as EquipmentItem[]);
+                }}
+                style={{
+                    display: "inline",
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    cursor: "pointer",
+                }}
+            >
+                <span style={{ margin: "0 2em 0 0" }}>
+                    {t("share_profile.export.export_csv")}
+                </span>
+                <i className="download icon" />
+            </div>
+            <div
+                className="ui button"
+                onClick={(e) => {
+                    exportItems(items as EquipmentItem[], true);
+                }}
+                style={{
+                    marginRight: "2em",
+                    display: "inline",
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    cursor: "pointer",
+                }}
+            >
+                <span style={{ margin: "0 2em 0 0" }}>
+                    {t("share_profile.export.export_clipboard")}
+                </span>
+                <i className="clipboard icon" />
+            </div>
+        </div>)}
     </React.Fragment>
 
     function filterRow(row: (EquipmentItem | EquipmentCommon), filters: Filter[], filterType?: string) {
@@ -292,4 +330,17 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
         }
         return r;
     }
+
+    function exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
+		let text = exportItemsAlt(data);
+		if (clipboard) {
+			navigator.clipboard.writeText(text);
+			return;
+		}
+		downloadData(
+			`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`,
+			"items.csv"
+		);
+	}
+
 }
