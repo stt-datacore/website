@@ -12,7 +12,7 @@ import { IDataPickerState, IEssentialData } from "../dataset_presenters/model";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
-import { applyCrewBuffs, oneCrewCopy } from "../../utils/crewutils";
+import { applyCrewBuffs, oneCrewCopy, qbitsToSlots } from "../../utils/crewutils";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { calcItemDemands, canBuildItem } from "../../utils/equipment";
 
@@ -351,7 +351,11 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                         renderGridColumn: (datum, isSelected) => renderItem(datum, isSelected),
                         defaultSort: {
                             id: 'kwipment',
-                            customSort: (a: any, b: any, direction) => b.q_bits - a.q_bits
+                            customSort: (a: any, b: any) => {
+                                let r = qbitsToSlots(b.q_bits) - qbitsToSlots(a.q_bits);
+                                if (!r) r = b.ranks.scores.quipment - a.ranks.scores.quipment;
+                                return r;
+                            }
                         }
                     }}
                 />}
