@@ -23,6 +23,8 @@ interface TraitStats {
     launch_crew?: CrewMember,
     total_crew: number,
     hidden: boolean,
+    variant: boolean,
+    short_names?: string[]
     icon?: string,
     retro?: number,
 }
@@ -127,17 +129,28 @@ export const TraitStatsTable = () => {
             stoneicons[t] = getIconPath(ks.icon);
         });
 
+        const vtsn = {} as { [key: string]: string[] };
+
         work.forEach((c) => {
             const variants = getVariantTraits(c);
+            if (showVariantTraits) {
+                c.traits_hidden.forEach(ct => {
+                    if (!variants.includes(ct)) return;
+                    if (!htraits.includes(ct) && !ntraits.includes(ct)) htraits.push(ct);
+                    vtsn[ct] ??= [];
+                    if (!vtsn[ct].includes(c.short_name)) {
+                        vtsn[ct].push(c.short_name);
+                    }
+                });
+            }
             if (showVisible) {
                 c.traits.forEach(ct => {
-                    if (!showVariantTraits && variants.includes(ct)) return;
                     if (!ntraits.includes(ct) && !htraits.includes(ct)) ntraits.push(ct);
                 });
             }
             if (showHidden) {
                 c.traits_hidden.forEach(ct => {
-                    if (!showVariantTraits && variants.includes(ct)) return;
+                    if (variants.includes(ct) && !showVariantTraits) return;
                     if (!htraits.includes(ct) && !ntraits.includes(ct)) htraits.push(ct);
                 });
             }
@@ -164,7 +177,7 @@ export const TraitStatsTable = () => {
                     }
                 }
                 let rcrew = tcrew.filter(c => c.date_added.getTime() < d.getTime() - (1000 * 24 * 60 * 60 * 10));
-                const newtrait = {
+                const newtrait: TraitStats = {
                     trait: TRAIT_NAMES[trait] || trait,
                     trait_raw: trait,
                     collection: '',
@@ -173,9 +186,11 @@ export const TraitStatsTable = () => {
                     latest_crew: tcrew[tcrew.length - 1],
                     total_crew: tcrew.length,
                     hidden,
+                    variant: !!vtsn[trait]?.length,
+                    short_names: vtsn[trait],
                     retro: release ? 0 : rcrew.length,
                     icon: stoneicons[trait]
-                } as TraitStats;
+                };
                 if (!hidden || SpecialCols[trait]) {
                     if (SpecialCols[trait]) {
                         let col = collections.find(f => f.id == SpecialCols[trait]);
@@ -295,9 +310,9 @@ export const TraitStatsTable = () => {
         },
         { width: 1, column: 'total_crew', title: t('stat_trends.trait_columns.total_crew') },
     ] as ITableConfigRow[]
-    if (!showHidden) {
-        tableConfig.splice(1, 1);
-    }
+    // if (!showHidden && !showVariantTraits) {
+    //     tableConfig.splice(1, 1);
+    // }
     return (
         <div style={{...flexCol, alignItems: 'stretch', justifyContent: 'flex-start', width: '100%', overflowX: 'auto' }}>
             <div style={flexRow}>
@@ -323,7 +338,7 @@ export const TraitStatsTable = () => {
                         onChange={(e, { checked }) => setShowHidden(!!checked) }
                     />
                     <Checkbox label={t('stat_trends.traits.show_variant_traits')}
-                        disabled={!showHidden}
+                        //disabled={!showHidden}
                         checked={showVariantTraits}
                         onChange={(e, { checked }) => setShowVariantTraits(!!checked) }
                     />
@@ -360,12 +375,16 @@ export const TraitStatsTable = () => {
                         {!!item.icon && <img src={item.icon} style={{height: '32px'}} />}
                         <span>{item.trait}</span>
                     </div>
-
+                    {!!item.short_names &&
+                        <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
+                            ({item.short_names.sort().join(", ")})
+                        </div>
+                    }
                 </Table.Cell>
-                {showHidden && <Table.Cell>
+                <Table.Cell>
                     {item.hidden && t('global.yes')}
                     {!item.hidden && t('global.no')}
-                </Table.Cell>}
+                </Table.Cell>
                 <Table.Cell>
                     <div>
                         {!!pc && tfmt('stat_trends.traits.potential_collection_score_n', {
