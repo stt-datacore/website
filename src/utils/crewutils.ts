@@ -1225,6 +1225,8 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			return 'Dax';
 		case "tpring":
 			return "T'Pring";
+		case "mbenga":
+			return "M'Benga";
 		case "gburnham":
 			return "G. Burnham";
 		case "burnham":
