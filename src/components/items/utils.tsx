@@ -189,7 +189,10 @@ export function createFlavor(item: EquipmentItem | EquipmentCommon | PlayerEquip
             }
         }
     }
-    if (output.length || config.ownedItems) flavor = '';
+    if (output.length || config.ownedItems) {
+        if (config.ownedItems && flavor.startsWith("Equippable by")) flavor = '';
+        else if (output.length) flavor = '';
+    }
 
     if (
         "kwipment" in item &&
