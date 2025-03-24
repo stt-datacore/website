@@ -47,7 +47,10 @@ export const DemandsTable = (props: DemandsTableProps) => {
 
     const flexRow = OptionsPanelFlexRow;
 
-    if (!props.noWorker && running) {
+    if (props.noRender) {
+        return <></>;
+    }
+    else if (!props.noWorker && running) {
         return <div style={{...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start'}}>{globalContext.core.spin(t('spinners.demands'))}</div>;
     }
     else {

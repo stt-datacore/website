@@ -44,10 +44,10 @@ export interface ItemsTableProps {
 	noWorker?: boolean;
 
 	/** Put flavor in its own column. */
-	flavor?: boolean;
+	flavorColumn?: boolean;
 
 	/** Put buffs in its own column. */
-	buffs?: boolean;
+	buffsColumn?: boolean;
 
 	/** Crew mode active */
 	crewMode?: boolean;

@@ -2,13 +2,10 @@ import React from 'react';
 import { Step } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
-import ItemsTable from '../components/items/itemstable';
 import { GlobalContext } from '../context/globalcontext';
 import { EquipmentItem } from '../model/equipment';
-import { binaryLocate, formatDuration, getItemWithBonus, getPossibleQuipment } from '../utils/itemutils';
+import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
-import { PlayerCrew } from '../model/player';
-import { getCrewQuipment, oneCrewCopy } from '../utils/crewutils';
 import { CustomFieldDef } from '../components/items/utils';
 import { EquipmentTable } from '../components/items/equipment_table';
 import { WorkerProvider } from '../context/workercontext';
@@ -26,7 +23,6 @@ const ItemsPage = (props: ItemsPageProps) => {
 	const { playerData } = globalContext.player;
 	const { t, tfmt } = globalContext.localized;
 	const hasPlayer = !!playerData;
-	const allActive = activeTabIndex === 0 || !hasPlayer;
 
 	React.useEffect(() => {
 		if (!hasPlayer && activeTabIndex === 1) {
@@ -139,10 +135,10 @@ const ItemsPage = (props: ItemsPageProps) => {
 					</Step>
 				</Step.Group>
 
-
 				{/* We want both of these to load, even if they are not displayed,
 				because there's work that that must be done every time they are loaded.
 				Re-rendering the page for switching views would cause work to run unnecessarily. */}
+
 				<ItemsFilterProvider
 					noRender={activeTabIndex !== 0}
 					pool={coreItems}
@@ -159,40 +155,42 @@ const ItemsPage = (props: ItemsPageProps) => {
 				</ItemsFilterProvider>
 
 				{hasPlayer &&
-					<WorkerProvider>
-						<ItemsFilterProvider
+				<WorkerProvider>
+					<ItemsFilterProvider
+						noRender={activeTabIndex !== 1 || !hasPlayer}
+						pool={playerData!.player.character.items as EquipmentItem[]}
+						ownedItems={true}
+						pageId={'roster'}
+					>
+						<DemandsTable
 							noRender={activeTabIndex !== 1 || !hasPlayer}
-							pool={playerData!.player.character.items as EquipmentItem[]}
-							ownedItems={true}
 							pageId={'roster'}
-						>
-							<DemandsTable
-								noRender={activeTabIndex !== 1 || !hasPlayer}
-								pageId={'roster'}
-								items={coreItems}
-							/>
-						</ItemsFilterProvider>
-					</WorkerProvider>}
+							items={coreItems}
+						/>
+					</ItemsFilterProvider>
+				</WorkerProvider>}
+
 				{/* {hasPlayer &&
 					<ItemsTable
 					pageName={"roster"}
 					noRender={activeTabIndex !== 1 || !hasPlayer} />
 				} */}
 
-					<QuipmentFilterProvider
+				<QuipmentFilterProvider
+					noRender={activeTabIndex !== 2}
+					ownedItems={false}
+					pageId={'quipment'}
+					>
+					<QuipmentTable
 						noRender={activeTabIndex !== 2}
+						items={quipment}
 						ownedItems={false}
+						ownedCrew={hasPlayer}
 						pageId={'quipment'}
-						>
-						<QuipmentTable
-							noRender={activeTabIndex !== 2}
-							items={quipment}
-							ownedItems={false}
-							ownedCrew={hasPlayer}
-							pageId={'quipment'}
-							customFields={quipCust}
-							/>
-					</QuipmentFilterProvider>
+						customFields={quipCust}
+						/>
+				</QuipmentFilterProvider>
+
 				{/* <ItemsTable
 					pageName={"quipment"}
 					types={[14]}
@@ -205,6 +203,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 					flavor={false}
 					customFields={quipCust}
 				/> */}
+
 				<br />
 				<br />
 

@@ -60,7 +60,7 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
     }, [selectedCrew, playerData, ownedCrew, ignoreLimit]);
 
     const items = React.useMemo(() => {
-        let quipment = props.items?.filter(f => f.type === 14) ?? [];
+        let quipment = props.items?.filter(f => f.type === 14) ?? globalContext.core.items.filter(f => f.type === 14);
         if (crew) {
             quipment = getPossibleQuipment(crew, quipment as EquipmentItem[]);
         }

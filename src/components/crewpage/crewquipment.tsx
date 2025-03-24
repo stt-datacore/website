@@ -2,22 +2,14 @@ import React from "react";
 import { CrewMember } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ItemWithBonus, getItemWithBonus, isQuipmentMatch, sortItemsWithBonus } from "../../utils/itemutils";
-import ItemDisplay from "../itemdisplay";
-import ItemsTable from "../items/itemstable";
-import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ShipSeatPicker } from "../crewtables/shipoptions";
 import { EquipmentItem } from "../../model/equipment";
 import CONFIG from "../CONFIG";
-
-
-
-
-
+import { QuipmentTable } from "../items/quipmenttable";
 
 export interface CrewQuipmentProps {
     crew: CrewMember;
 }
-
 
 export const CrewQuipment = (props: CrewQuipmentProps) => {
 
@@ -86,17 +78,12 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                         availableSeats={crew_skills}  />
                 </div>
             </div>
-            <ItemsTable
+            <QuipmentTable
+                ownedItems={!!context.player.playerData}
+                ownedCrew={false}
                 itemTargetGroup={'crew_quipment'}
-                init_rows={25}
-                types={[14]}
-                pageName={'crew_' + crew.symbol}
-                hideOwnedInfo={true}
-                crewMode={false}
-                hideSearch={true}
-                noWorker={true}
-                buffs={true}
-                data={quipment} />
+                pageId={'crew_' + crew.symbol}
+                items={quipment} />
 
         </div>
     )

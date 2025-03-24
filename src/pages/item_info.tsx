@@ -11,7 +11,6 @@ import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import ItemsTable from '../components/items/itemstable';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -21,6 +20,7 @@ import { IRosterCrew } from '../components/crewtables/model';
 import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
 import { TinyStore } from '../utils/tiny';
 import { printRequiredTraits } from '../components/items/utils';
+import { EquipmentTable } from '../components/items/equipment_table';
 
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
@@ -478,7 +478,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{!!builds && builds.length > 0 && (
 					<div>
 						<Header as="h3">{t('items.is_used_to_build')}:</Header>
-						<ItemsTable pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<EquipmentTable
+							pageId='item_info'
+							hideOwnedColumns={true}
+							items={builds}
+							navigate={(symbol) => this.changeComponent(symbol)}
+						/>
 					</div>
 				)}
 			</div>
