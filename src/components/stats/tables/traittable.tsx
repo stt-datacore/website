@@ -281,6 +281,7 @@ export const TraitStatsTable = () => {
             width: 1,
             column: 'first_crew',
             title: t('stat_trends.trait_columns.first_crew'),
+            reverse: true,
             customCompare: (a: TraitStats, b: TraitStats) => {
                 return a.first_crew.date_added.getTime() - b.first_crew.date_added.getTime() || a.first_crew.name.localeCompare(b.first_crew.name)
             }
@@ -289,6 +290,7 @@ export const TraitStatsTable = () => {
             width: 1,
             column: 'launch_crew',
             title: t('stat_trends.trait_columns.inaugural_crew'),
+            reverse: true,
             customCompare: (a: TraitStats, b: TraitStats) => {
                 if (a.launch_crew == b.launch_crew) return 0;
                 else if (!a.launch_crew) return 1;
@@ -300,6 +302,7 @@ export const TraitStatsTable = () => {
             width: 1,
             column: 'latest_crew',
             title: t('stat_trends.trait_columns.latest_crew'),
+            reverse: true,
             customCompare: (a: TraitStats, b: TraitStats) => {
                 return a.latest_crew.date_added.getTime() - b.latest_crew.date_added.getTime() || a.latest_crew.name.localeCompare(b.latest_crew.name)
             }
@@ -313,7 +316,7 @@ export const TraitStatsTable = () => {
                 return a.highest_datascore.ranks.scores.overall - b.highest_datascore.ranks.scores.overall
             }
         },
-        { width: 1, column: 'total_crew', title: t('stat_trends.trait_columns.total_crew') },
+        { width: 1, column: 'total_crew', title: t('stat_trends.trait_columns.total_crew'), reverse: true },
     ] as ITableConfigRow[]
 
     if (showDive) {
@@ -427,36 +430,38 @@ export const TraitStatsTable = () => {
                     {approxDate(item.first_appearance, t)}
                 </Table.Cell>
                 <Table.Cell>
-                    <div style={{...flexCol, textAlign: 'center', gap: '1em'}}>
+                    <div style={{...flexCol, textAlign: 'center', gap: '0.25em'}}>
                         <AvatarView
                             targetGroup="stat_trends_crew"
                             mode='crew'
                             item={fcrew}
                             size={48}
                             />
-                        <i>{fcrew.name}</i>
+                        {fcrew.name}
+                        <i>{fcrew.preview ? t('global.pending_release') : fcrew.date_added.toLocaleDateString()}</i>
                     </div>
                 </Table.Cell>
                 <Table.Cell>
-                    {!!item.launch_crew && <div style={{...flexCol, textAlign: 'center', gap: '1em'}}>
+                    {!!item.launch_crew && <div style={{...flexCol, textAlign: 'center', gap: '0.25em'}}>
                         <AvatarView
                             targetGroup="stat_trends_crew"
                             mode='crew'
                             item={item.launch_crew}
                             size={48}
                             />
-                        <i>{item.launch_crew.name}</i>
+                        <i>{item.launch_crew.preview ? t('global.pending_release') : item.launch_crew.date_added.toLocaleDateString()}</i>
                     </div>}
                 </Table.Cell>
                 <Table.Cell>
-                    <div style={{...flexCol, textAlign: 'center', gap: '1em'}}>
+                    <div style={{...flexCol, textAlign: 'center', gap: '0.25em'}}>
                         <AvatarView
                             targetGroup="stat_trends_crew"
                             mode='crew'
                             item={lcrew}
                             size={48}
                             />
-                        <i>{lcrew.name}</i>
+                        {lcrew.name}
+                        <i>{lcrew.preview ? t('global.pending_release') : lcrew.date_added.toLocaleDateString()}</i>
                     </div>
                 </Table.Cell>
                 <Table.Cell>
