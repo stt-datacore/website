@@ -38,7 +38,7 @@ export const SpecialCols = {
     crew_max_rarity_3: 16,
     crew_max_rarity_2: 15,
     crew_max_rarity_1: 14,
-    niners: 29,
+    niners: 29
 };
 
 
@@ -735,6 +735,7 @@ export function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAME
         let traits1 = c.traits.filter((trait) => {
             let col = cols.find(f => f.description?.includes(">" + (TRAIT_NAMES[trait]) + "<"))
             if (col) return false;
+            if (SpecialCols[trait]) return false;
             return true;
         });
         let traits2 = c.traits_hidden.filter((trait) => !SpecialCols[trait] && !vt.includes(trait))
@@ -768,7 +769,6 @@ export function computePotentialColScores(crew: CrewMember[], collections: Colle
             p.distance = Math.abs(p.count - med);
         }
         potential.sort((a, b) => b.distance - a.distance);
-        let max_d = potential[0].distance;
         for (let p of potential) {
             p.count = Number(((1 - (p.distance / max_crew)) * 10).toFixed(2))
         }

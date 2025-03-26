@@ -37,7 +37,7 @@ export const TraitStatsTable = () => {
     const flexCol = OptionsPanelFlexColumn;
 
     const potential = React.useMemo(() =>
-        computePotentialColScores(crew,collections, TRAIT_NAMES),
+        computePotentialColScores(crew, collections, TRAIT_NAMES),
     [crew, collections, TRAIT_NAMES]);
 
     const calcReleaseVague = (min: number, max: number) => {
@@ -171,7 +171,7 @@ export const TraitStatsTable = () => {
                 let dscrew = [...tcrew].sort((a, b) => b.ranks.scores.overall - a.ranks.scores.overall)[0];
                 let rcrew = tcrew.filter(c => c.date_added.getTime() < d.getTime() - (1000 * 24 * 60 * 60 * 10));
                 const newtrait: TraitStats = {
-                    trait: TRAIT_NAMES[trait] || trait,
+                    trait: !hidden && TRAIT_NAMES[trait] || trait,
                     trait_raw: trait,
                     collection: '',
                     first_appearance: d,
@@ -386,7 +386,7 @@ export const TraitStatsTable = () => {
     function renderTableRow(item: TraitStats, idx: any) {
         const fcrew = item.first_crew;
         const lcrew = item.latest_crew;
-        const pc = potential.find(f => f.trait === item.trait_raw);
+
         return <Table.Row key={`traitSetIdx_${idx}`}>
                 <Table.Cell>
                     <div style={{cursor: 'zoom-in'}} onClick={() => setShowDive(item)}>
