@@ -10,24 +10,12 @@ import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewMember } from "../../../model/crew";
 import { omniSearchFilter } from "../../../utils/omnisearch";
 import { useStateWithStorage } from "../../../utils/storage";
-import { getVariantTraits, gradeToColor } from "../../../utils/crewutils";
+import { getVariantTraits, gradeToColor, oneCrewCopy } from "../../../utils/crewutils";
 import { getIconPath } from "../../../utils/assets";
-
-interface TraitStats {
-    trait: string,
-    trait_raw: string,
-    collection: string,
-    first_appearance: Date
-    first_crew: CrewMember,
-    latest_crew: CrewMember,
-    launch_crew?: CrewMember,
-    total_crew: number,
-    hidden: boolean,
-    variant: boolean,
-    short_names?: string[]
-    icon?: string,
-    retro?: number,
-}
+import { TraitStats } from "../model";
+import { TraitDive } from "./traitdive";
+import { renderDataScoreColumn } from "../../crewtables/views/base";
+import CONFIG from "../../CONFIG";
 
 export const TraitStatsTable = () => {
 
@@ -37,10 +25,14 @@ export const TraitStatsTable = () => {
     const [stats, setStats] = React.useState<TraitStats[]>([]);
     const [excludeLaunch, setExcludeLaunch] = useStateWithStorage<boolean>('stat_trends/traits/exclude_launch', false, { rememberForever: true });
     const [showHidden, setShowHidden] = useStateWithStorage<boolean>('stat_trends/traits/show_hidden', false, { rememberForever: true });
+    const [showSeries, setShowSeries] = useStateWithStorage<boolean>('stat_trends/traits/show_series', false, { rememberForever: true });
     const [showVisible, setShowVisible] = useStateWithStorage<boolean>('stat_trends/traits/show_visible', true, { rememberForever: true });
     const [onlyPotential, setOnlyPotential] = useStateWithStorage<boolean>('stat_trends/traits/only_potential', false, { rememberForever: true });
     const [hideOne, setHideOne] = useStateWithStorage<boolean>('stat_trends/traits/hide_one', false, { rememberForever: true });
     const [showVariantTraits, setShowVariantTraits] = useStateWithStorage<boolean>('stat_trends/traits/show_variant_traits', true, { rememberForever: true });
+
+    const [showDive, setShowDive] = useStateWithStorage<TraitStats | undefined>('stat_trends/traits/trait_dive', undefined)
+
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
 
@@ -144,6 +136,13 @@ export const TraitStatsTable = () => {
             if (showHidden) {
                 c.traits_hidden.forEach(ct => {
                     if (variants.includes(ct) && !showVariantTraits) return;
+                    //if (CONFIG.SERIES.includes(ct) && !showSeries) return;
+                    if (!htraits.includes(ct) && !ntraits.includes(ct)) htraits.push(ct);
+                });
+            }
+            if (showSeries) {
+                c.traits_hidden.forEach(ct => {
+                    if (!CONFIG.SERIES.includes(ct)) return;
                     if (!htraits.includes(ct) && !ntraits.includes(ct)) htraits.push(ct);
                 });
             }
@@ -169,6 +168,7 @@ export const TraitStatsTable = () => {
                         d = tcrew[0].date_added;
                     }
                 }
+                let dscrew = [...tcrew].sort((a, b) => b.ranks.scores.overall - a.ranks.scores.overall)[0];
                 let rcrew = tcrew.filter(c => c.date_added.getTime() < d.getTime() - (1000 * 24 * 60 * 60 * 10));
                 const newtrait: TraitStats = {
                     trait: TRAIT_NAMES[trait] || trait,
@@ -180,9 +180,12 @@ export const TraitStatsTable = () => {
                     total_crew: tcrew.length,
                     hidden,
                     variant: !!vtsn[trait]?.length,
+                    crew: tcrew,
                     short_names: vtsn[trait],
                     retro: release ? 0 : rcrew.length,
-                    icon: stoneicons[trait]
+                    icon: stoneicons[trait],
+                    grade: potrec?.count,
+                    highest_datascore: dscrew
                 };
                 if (!hidden || SpecialCols[trait]) {
                     if (SpecialCols[trait]) {
@@ -233,7 +236,7 @@ export const TraitStatsTable = () => {
         });
 
         setStats(outstats);
-    }, [crew, showHidden, showVariantTraits, hideOne, showVisible, excludeLaunch, onlyPotential]);
+    }, [crew, showHidden, showVariantTraits, hideOne, showVisible, excludeLaunch, onlyPotential, showSeries]);
 
     const potreckey = t('stat_trends.traits.potential_collection_score_n', { n: '' });
     const tableConfig = [
@@ -301,8 +304,25 @@ export const TraitStatsTable = () => {
                 return a.latest_crew.date_added.getTime() - b.latest_crew.date_added.getTime() || a.latest_crew.name.localeCompare(b.latest_crew.name)
             }
         },
+        {
+            width: 1,
+            column: 'highest_datascore',
+            reverse: true,
+            title: t('stat_trends.trait_columns.highest_datascore'),
+            customCompare: (a: TraitStats, b: TraitStats) => {
+                return a.highest_datascore.ranks.scores.overall - b.highest_datascore.ranks.scores.overall
+            }
+        },
         { width: 1, column: 'total_crew', title: t('stat_trends.trait_columns.total_crew') },
     ] as ITableConfigRow[]
+
+    if (showDive) {
+        return <TraitDive
+            onClose={() => setShowDive(undefined)}
+            info={showDive}
+            />
+    }
+
     // if (!showHidden && !showVariantTraits) {
     //     tableConfig.splice(1, 1);
     // }
@@ -331,9 +351,12 @@ export const TraitStatsTable = () => {
                         onChange={(e, { checked }) => setShowHidden(!!checked) }
                     />
                     <Checkbox label={t('stat_trends.traits.show_variant_traits')}
-                        //disabled={!showHidden}
                         checked={showVariantTraits}
                         onChange={(e, { checked }) => setShowVariantTraits(!!checked) }
+                    />
+                    <Checkbox label={t('stat_trends.traits.show_series')}
+                        checked={showSeries}
+                        onChange={(e, { checked }) => setShowSeries(!!checked) }
                     />
                 </div>
             </div>
@@ -361,18 +384,29 @@ export const TraitStatsTable = () => {
         const fcrew = item.first_crew;
         const lcrew = item.latest_crew;
         const pc = potential.find(f => f.trait === item.trait_raw);
-
         return <Table.Row key={`traitSetIdx_${idx}`}>
                 <Table.Cell>
-                    <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
-                        {!!item.icon && <img src={item.icon} style={{height: '32px'}} />}
-                        <span>{item.trait}</span>
-                    </div>
-                    {!!item.short_names &&
-                        <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
-                            ({item.short_names.sort().join(", ")})
+                    <div style={{cursor: 'zoom-in'}} onClick={() => setShowDive(item)}>
+                        {CONFIG.SERIES.includes(item.trait_raw) &&
+                            <img
+                                style={{ height: '2em'}}
+                                src={`${process.env.GATSBY_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
+                        }
+                        <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
+                            {!!item.icon && <img src={item.icon} style={{height: '32px'}} />}
+                            <span>{item.trait}</span>
                         </div>
-                    }
+                        {!!item.short_names &&
+                            <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
+                                ({item.short_names.sort().join(", ")})
+                            </div>
+                        }
+                        {CONFIG.SERIES.includes(item.trait_raw) &&
+                        <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
+                            {t(`series.${item.trait_raw}`)}
+                        </div>
+                        }
+                    </div>
                 </Table.Cell>
                 <Table.Cell>
                     {item.hidden && t('global.yes')}
@@ -380,12 +414,12 @@ export const TraitStatsTable = () => {
                 </Table.Cell>
                 <Table.Cell>
                     <div>
-                        {!!pc && tfmt('stat_trends.traits.potential_collection_score_n', {
-                            n: <div style={{color: gradeToColor(pc.count / 10)}}>
-                                {pc.count}
+                        {!!item.grade && tfmt('stat_trends.traits.potential_collection_score_n', {
+                            n: <div style={{color: gradeToColor(item.grade / 10)}}>
+                                {item.grade}
                             </div>
                         })}
-                        {!pc && item.collection}
+                        {!item.grade && <span>{item.collection}</span>}
                     </div>
                 </Table.Cell>
                 <Table.Cell>
@@ -423,6 +457,20 @@ export const TraitStatsTable = () => {
                             size={48}
                             />
                         <i>{lcrew.name}</i>
+                    </div>
+                </Table.Cell>
+                <Table.Cell>
+                    <div style={{...flexCol, textAlign: 'center', gap: '0.25em'}}>
+                        <AvatarView
+                            targetGroup="stat_trends_crew"
+                            mode='crew'
+                            item={item.highest_datascore}
+                            size={48}
+                            />
+                        <i>{item.highest_datascore.name}</i>
+                        <div style={{maxHeight: '4em'}}>
+                            {renderDataScoreColumn(item.highest_datascore)}
+                        </div>
                     </div>
                 </Table.Cell>
                 <Table.Cell style={{textAlign: 'center'}}>

@@ -108,7 +108,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 		)
 	}
 
-	if (tableType !== 'offers') {
+	if (tableType !== 'offers' && tableType !== 'no_skills') {
 		CONFIG.SKILLS_SHORT.forEach((skill) => {
 			tableConfig.push({
 				width: 1,
@@ -117,7 +117,9 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 				reverse: true
 			});
 		});
-		tableConfig.push(
+	}
+	if (tableType !== 'offers') {
+			tableConfig.push(
 			{
 				width: 1,
 				column: 'in_portal',
@@ -128,7 +130,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 			},
 		);
 	}
-	if (['allCrew', 'offers', 'buyBack'].includes(tableType)) {
+	if (['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType)) {
 		tableConfig.push(
 			{
 				width: 1,
@@ -216,7 +218,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printFancyPortal(crew, t, true)}</b>
 			</Table.Cell>
 			</>}
-			{tableType !== 'offers' && CONFIG.SKILLS_SHORT.map(skill =>
+			{!['offers', 'no_skills'].includes(tableType) && CONFIG.SKILLS_SHORT.map(skill =>
 				crew[skill.name].core > 0 ? (
 					<Table.Cell key={skill.name} textAlign='center'>
 						<b>{crew[skill.name].core}</b>
@@ -232,8 +234,8 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printPortalStatus(crew, t, true, true)}</b>
 			</Table.Cell>}
 			<Table.Cell textAlign='center' width={2}>
-				{(['allCrew', 'offers', 'buyBack'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
-				{!['allCrew', 'offers', 'buyBack'].includes(tableType) &&
+				{(['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
+				{!['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType) &&
 					<div title={
 						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 						}>

@@ -2111,6 +2111,7 @@
             "first_appearance": "First appearance",
             "first_crew": "Oldest crew",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Highest DataScore",
             "inaugural_crew": "Inaugural crew",
             "latest_crew": "Latest crew",
             "total_crew": "Total crew",
@@ -2124,7 +2125,8 @@
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
             "show_hidden": "Show hidden traits",
             "show_variant_traits": "Show crew variant traits",
-            "show_visible": "Show visible traits"
+            "show_visible": "Show visible traits",
+            "show_series": "Show series traits"
         }
     },
     "tool_roster_picker": {
