@@ -173,12 +173,12 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                     {crew.name}
                                 </span>
 
-                                {!crew.preview && <>
                                 {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
                                 <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                                     {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                                 </div>
-                                {daydiff > 1 && <i>({t('stat_trends.released_duration_ago', {
+                                {!crew.preview && <>
+                                    {daydiff > 1 && <i>({t('stat_trends.released_duration_ago', {
                                     duration: formatElapsedDays(daydiff, t)
                                 })})</i>}
                                 {daydiff === 1 && <i>({t('stat_trends.released_duration', {

@@ -2121,6 +2121,7 @@
             "first_appearance": "Primera aparición",
             "first_crew": "Tripulante más antiguo",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "DataScore más alta",
             "inaugural_crew": "Tripulante inaugural",
             "latest_crew": "Última tripulante",
             "total_crew": "Tripulantes totales",
@@ -2134,7 +2135,8 @@
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
             "show_variant_traits": "Mostrar rasgos de variantes de la tripulación",
-            "show_visible": "Mostrar rasgos visibles"
+            "show_visible": "Mostrar rasgos visibles",
+            "show_series": "Mostrar rasgos de la serie"
         }
     },
     "tool_roster_picker": {

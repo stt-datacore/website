@@ -2123,6 +2123,7 @@
             "first_appearance": "Première apparition",
             "first_crew": "Équipier le plus âgé",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Le plus haut DataScore",
             "inaugural_crew": "Equipier inaugural",
             "latest_crew": "Dernier équipier",
             "total_crew": "Équipiers totals",
@@ -2136,7 +2137,8 @@
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
             "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
-            "show_visible": "Afficher les traits visibles"
+            "show_visible": "Afficher les traits visibles",
+            "show_series": "Afficher les caractéristiques de la série"
         }
     },
     "tool_roster_picker": {

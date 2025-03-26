@@ -2111,6 +2111,7 @@
             "first_appearance": "Erster Auftritt",
             "first_crew": "Älteste Crew",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Höchster DataScore",
             "inaugural_crew": "Eröffnungsmannschaft",
             "latest_crew": "Neueste Crew",
             "total_crew": "Gesamtcrew",
@@ -2124,7 +2125,8 @@
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
             "show_variant_traits": "Variantenmerkmale der Crew anzeigen",
-            "show_visible": "Sichtbare Merkmale anzeigen"
+            "show_visible": "Sichtbare Merkmale anzeigen",
+            "show_series": "Serienmerkmale anzeigen"
         }
     },
     "tool_roster_picker": {
