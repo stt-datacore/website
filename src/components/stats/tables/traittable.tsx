@@ -389,12 +389,7 @@ export const TraitStatsTable = () => {
 
         return <Table.Row key={`traitSetIdx_${idx}`}>
                 <Table.Cell>
-                    <div style={{cursor: 'zoom-in'}} onClick={() => setShowDive(item)}>
-                        {CONFIG.SERIES.includes(item.trait_raw) &&
-                            <img
-                                style={{ height: '2em'}}
-                                src={`${process.env.GATSBY_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
-                        }
+                    <div style={{... flexCol, gap: '0.5em', cursor: 'zoom-in', alignItems: 'flex-start'}} onClick={() => setShowDive(item)}>
                         <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
                             {!!item.icon && <img src={item.icon} style={{height: '32px'}} />}
                             <span>{item.trait}</span>
@@ -408,6 +403,11 @@ export const TraitStatsTable = () => {
                         <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
                             {t(`series.${item.trait_raw}`)}
                         </div>
+                        }
+                        {CONFIG.SERIES.includes(item.trait_raw) &&
+                            <img
+                                style={{ height: '2em'}}
+                                src={`${process.env.GATSBY_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
                         }
                     </div>
                 </Table.Cell>

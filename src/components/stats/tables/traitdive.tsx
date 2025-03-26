@@ -79,45 +79,61 @@ export const TraitDive = (props: TraitDiveProps) => {
 
     return <React.Fragment>
         <div style={{...flexCol, alignItems: 'stretch', gap: '1em'}}>
-        <Button onClick={() => onClose()}>{t('global.close')}</Button>
 
-        <span>{t('stat_trends.trait_columns.trait')}</span>
-        <span style={{fontSize: '1.5em'}}>
-            <div style={{...flexCol, gap: '0.25em', alignItems: 'flex-start'}}>
-                {CONFIG.SERIES.includes(info.trait_raw) &&
+        <div className="ui segment"
+            style={{
+                display: 'grid',
+                gridTemplateAreas: "'trait1 trait2 img' 'hidden1 hidden2 img' 'crew1 crew2 img' 'cols cols img'",
+                gridTemplateColumns: "7em auto auto"
+            }}
+        >
+            <span style={{gridArea: 'trait1'}}>{t('stat_trends.trait_columns.trait')}</span>
+            <span style={{fontSize: '1.5em', gridArea: 'trait2'}}>
+                <div style={{...flexCol, gap: '0.25em', alignItems: 'flex-start'}}>
+                    <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
+                        {!!info.icon && <img src={info.icon} style={{height: '32px'}} />}
+                        <span>{info.trait}</span>
+                    </div>
+                    {!!info.short_names &&
+                        <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
+                            ({info.short_names.sort().join(", ")})
+                        </div>
+                    }
+                    {CONFIG.SERIES.includes(info.trait_raw) &&
+                    <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
+                        {t(`series.${info.trait_raw}`)}
+                    </div>
+                    }
+                </div>
+            </span>
+            <div style={{gridArea: 'hidden1'}}>
+                {t('global.hidden')}
+            </div>
+            <div style={{gridArea: 'hidden2'}}>
+                {info.hidden ? t('global.yes') : t('global.no')}
+            </div>
+            <div style={{gridArea: 'crew1'}}>
+                {t('base.crew')}
+            </div>
+            <div style={{gridArea: 'crew2'}}>
+                {info.crew.length.toLocaleString()}
+            </div>
+            {!!info.grade && <div style={{gridArea: 'cols', marginTop: '1em'}}>
+                {tfmt('stat_trends.traits.potential_collection_score_n', {
+                    n: <span style={{color: gradeToColor(info.grade / 10)}}>
+                        {info.grade}
+                    </span>
+                })}
+            </div>}
+            {CONFIG.SERIES.includes(info.trait_raw) &&
                     <img
-                        style={{ height: '2em'}}
+                        style={{ height: '4em', margin: '0.25em', gridArea: 'img', alignSelf: 'center'}}
                         src={`${process.env.GATSBY_DATACORE_URL}/media/series/${info.trait_raw}.png`} />
                 }
-                <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
-                    {!!info.icon && <img src={info.icon} style={{height: '32px'}} />}
-                    <span>{info.trait}</span>
-                </div>
-                {!!info.short_names &&
-                    <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
-                        ({info.short_names.sort().join(", ")})
-                    </div>
-                }
-                {CONFIG.SERIES.includes(info.trait_raw) &&
-                <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
-                    {t(`series.${info.trait_raw}`)}
-                </div>
-                }
-            </div>
-        </span>
-        <div>
-            {t('global.hidden')}{t('global.colon')}{' '}{info.hidden ? t('global.yes') : t('global.no')}
+
         </div>
-        <div>
-            {t('base.crew')}{t('global.colon')}{' '}{info.crew.length.toLocaleString()}
-        </div>
-        {!!info.grade && <div>
-            {tfmt('stat_trends.traits.potential_collection_score_n', {
-                n: <div style={{color: gradeToColor(info.grade / 10)}}>
-                    {info.grade}
-                </div>
-            })}
-            </div>}
+
+        <Button onClick={() => onClose()}>{t('global.close')}</Button>
         <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
             <CrewBuffModes noneValue="none" playerAvailable={!!playerData} altTitle={t(`buffs.${workingBuffMode}_buffs`)} buffMode={buffMode} setBuffMode={setBuffMode} />
         </div>
