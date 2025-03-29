@@ -286,8 +286,9 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					</div>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{phaseType !== 'voyage' && crew.bonus > 1 ? `x${crew.bonus}` : ''}
+					{!['voyage', 'galaxy'].includes(phaseType) && crew.bonus > 1 ? `x${crew.bonus}` : ''}
 					{phaseType === 'voyage' && crew.bonus > 1 ? `${crew.bonus} AM` : ''}
+					{phaseType === 'galaxy' && crew.bonus > 1 ? t('global.n_%', { n: `${crew.bonus}` }) : ''}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<b>{scoreLabel(crew.bestSkill.score)}</b>

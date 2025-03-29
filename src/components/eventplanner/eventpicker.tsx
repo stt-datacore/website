@@ -22,6 +22,7 @@ import { AvatarView } from '../item_presenters/avatarview';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
 import { QPContext } from '../qpconfig/provider';
+import { SpecialistMissionTable } from '../specialist/specialistmissions';
 
 interface ISelectOptions {
 	key: string;
@@ -167,6 +168,7 @@ export const EventPicker = (props: EventPickerProps) => {
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
+					{eventData.content_types[phaseIndex] === 'galaxy' && (<SpecialistMissionTable crew={rosterCrew} eventData={eventData} />)}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
 					{eventData.content_types[phaseIndex] === 'gather' && eventData.seconds_to_start === 0 && eventData.seconds_to_end > 0 && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>

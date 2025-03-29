@@ -80,7 +80,6 @@ export interface SearchableTableProps {
 
 	pagingOptions?: DropdownItemProps[];
 	defaultPaginationRows?: number;
-
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
