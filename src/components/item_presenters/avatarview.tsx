@@ -311,7 +311,7 @@ export const AvatarView = (props: AvatarViewProps) => {
             }
 
             if (item && gen_item.rarity) item.rarity = gen_item.rarity;
-
+            if (item && !src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;

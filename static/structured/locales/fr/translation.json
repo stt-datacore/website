@@ -521,6 +521,7 @@
             "columns": {
                 "best": "Meilleur",
                 "bonus": "Prime",
+                "completion_cost": "Coût d'achèvement instantané",
                 "crew": "Équipage",
                 "pair": "Paire"
             },
@@ -547,6 +548,7 @@
     },
     "event_type": {
         "expedition": "Expédition",
+        "galaxy": "Spécialiste",
         "gather": "Galaxie",
         "shuttles": "Faction",
         "skirmish": "Escarmouche",
@@ -915,6 +917,7 @@
         "colon": " : ",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
+        "cost": "Coût",
         "create": "Créer",
         "date_end": "Date de fin",
         "date_start": "Date de début",
@@ -1183,6 +1186,7 @@
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
         "equippable_by": "Équipable par : {{crew}}",
+        "equippable_by_n_crew": "Équipable par {{n}} équipiers.",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipier {{rarity}}.",
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipier {{rarity}} avec les traits suivants : {{traits}}",
         "equippable_by_traits": "Peut être équipé par les équipiers avec les traits suivantes : {{traits}}",
@@ -2122,6 +2126,7 @@
             "first_appearance": "Première apparition",
             "first_crew": "Équipier le plus âgé",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Le plus haut DataScore",
             "inaugural_crew": "Equipier inaugural",
             "latest_crew": "Dernier équipier",
             "total_crew": "Équipiers totals",
@@ -2134,6 +2139,7 @@
             "potential_collection_score_n": "Score de collecte potentiel : {{n}}",
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
+            "show_series": "Afficher les caractéristiques de la série",
             "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
             "show_visible": "Afficher les traits visibles"
         }

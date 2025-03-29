@@ -14,9 +14,10 @@ import { Skill } from "../../model/crew";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
-import { printRequiredTraits } from "../items/itemstable";
 import { OptionsPanelFlexColumn } from "../stats/utils";
 import { CrewItemsView } from "./crew_items";
+import { printRequiredTraits } from "../items/utils";
+import { AvatarView } from "./avatarview";
 
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew) {
@@ -233,11 +234,14 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
-                    <ItemDisplay
-                        src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+                    <AvatarView
+                        //src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
                         size={compact ? 128 : 128}
-                        rarity={item.rarity}
-                        maxRarity={item.rarity}
+                        //rarity={item.rarity}
+                        //maxRarity={item.rarity}
+                        item={item}
+                        partialItem={true}
+                        mode='item'
                         style={{ maxWidth: "calc(100vw - 32px)", marginRight: "8px" }}
                     />
                 </div>

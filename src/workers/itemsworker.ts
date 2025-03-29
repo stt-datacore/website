@@ -3,12 +3,12 @@ import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../model/worker";
 import { calculateRosterDemands } from "../utils/equipment";
 import { binaryLocate, mergeItems } from "../utils/itemutils";
 
-const ItemsWorker = {        
+const ItemsWorker = {
 
     processItems: (config: EquipmentWorkerConfig) => {
-        
+
         return new Promise<EquipmentWorkerResults>((resolve, reject) => {
-            
+
             const { items, playerData } = config;
             const data = mergeItems(playerData?.player.character.items ?? [], items);
 
@@ -18,7 +18,7 @@ const ItemsWorker = {
 
 			if (!!playerData?.player?.character?.crew?.length && !!data?.length) {
 				let crewLevels: { [key: string]: Set<string>; } = {};
-			
+
 				playerData.player.character.crew.forEach(cr => {
 					cr.equipment_slots.forEach(es => {
 						let item = binaryLocate(es.symbol, catalog);
@@ -28,7 +28,7 @@ const ItemsWorker = {
 						}
 					});
 				});
-		
+
 				for (let symbol in crewLevels) {
 					if (crewLevels[symbol] && crewLevels[symbol].size > 0) {
 						let item = binaryLocate(symbol, catalog);
@@ -43,7 +43,7 @@ const ItemsWorker = {
 				}
 
 				const rosterDemands = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
-				
+
 				rosterDemands?.demands.sort((a, b) => a.symbol.localeCompare(b.symbol));
 
 				for (let item of data) {
@@ -70,12 +70,11 @@ const ItemsWorker = {
 									item.demandCrew.push(sym);
 								}
 							}
-							if (item.demandCrew.length > 5) {
-								item.flavor = `Equippable by ${item.demandCrew.length} crew`;
-							} else {
-								item.flavor = 'Equippable by: ' + item.demandCrew.map(c => playerData.player.character.crew.find(fc => fc.symbol === c)?.name).join(', ');
-							}
-
+							// if (item.demandCrew.length > 5) {
+							// 	item.flavor = `Equippable by ${item.demandCrew.length} crew`;
+							// } else {
+								item.flavor = 'Equippable by: ' + item.demandCrew.map(c => playerData.player.character.crew.find(fc => fc.symbol === c)?.symbol).join(', ');
+							//}
 						}
 						else {
 							item.needed = 0;
@@ -108,7 +107,7 @@ const ItemsWorker = {
             });
         });
     },
-    
+
 }
 
 export default ItemsWorker;

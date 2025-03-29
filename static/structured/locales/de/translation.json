@@ -513,6 +513,7 @@
             "columns": {
                 "best": "Am besten",
                 "bonus": "Bonus",
+                "completion_cost": "Kosten für sofortige Fertigstellung",
                 "crew": "Crew",
                 "pair": "Paar"
             },
@@ -539,6 +540,7 @@
     },
     "event_type": {
         "expedition": "Expedition",
+        "galaxy": "Spezialistin",
         "gather": "Galaxie",
         "shuttles": "Fraktion",
         "skirmish": "Scharmützel",
@@ -907,6 +909,7 @@
         "colon": " : ",
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
+        "cost": "Kosten",
         "create": "Erstellen",
         "date_end": "Enddatum",
         "date_start": "Startdatum",
@@ -1171,6 +1174,7 @@
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
         "current_demands": "Aktuelle Anforderungen",
         "equippable_by": "Ausrüstbar durch: {{crew}}",
+        "equippable_by_n_crew": "Ausrüstbar durch {{n}} Crew.",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
@@ -2110,6 +2114,7 @@
             "first_appearance": "Erster Auftritt",
             "first_crew": "Älteste Crew",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Höchster DataScore",
             "inaugural_crew": "Eröffnungsmannschaft",
             "latest_crew": "Neueste Crew",
             "total_crew": "Gesamtcrew",
@@ -2122,6 +2127,7 @@
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
+            "show_series": "Serienmerkmale anzeigen",
             "show_variant_traits": "Variantenmerkmale der Crew anzeigen",
             "show_visible": "Sichtbare Merkmale anzeigen"
         }

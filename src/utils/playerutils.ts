@@ -142,6 +142,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         let itemEntry = items.find((i) => i.symbol === item.symbol);
         if (itemEntry) {
             newItems.push({
+                type: item.type,
                 symbol: item.symbol,
                 archetype_id: item.archetype_id,
                 rarity: item.rarity,

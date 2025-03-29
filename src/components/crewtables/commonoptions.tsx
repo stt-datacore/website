@@ -210,13 +210,14 @@ export type CrewBuffModesProps = {
 	setBuffMode: (value?: PlayerBuffMode) => void;
 	playerAvailable?: boolean;
 	altTitle?: string;
+	noneValue?: string;
 }
 
 export const CrewBuffModes = (props: CrewBuffModesProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const buffModes = [] as DropdownItemProps[];
 
-	buffModes.push({ key: 'none', value: undefined, text: t('buffs.no_buffs') })
+	buffModes.push({ key: 'none', value: props.noneValue, text: t('buffs.no_buffs') })
 
 	if (props.playerAvailable) {
 		buffModes.push({ key: 'player', value: 'player', text: t('buffs.player_buffs') })

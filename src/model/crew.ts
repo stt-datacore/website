@@ -137,6 +137,7 @@ export interface CrewMember extends QuipmentScores {
 }
 
 export interface EquipmentSlot {
+    archetype: number;
     level: number;
     symbol: string;
     imageUrl?: string;

@@ -519,6 +519,7 @@
             "columns": {
                 "best": "Mejo",
                 "bonus": "Primo",
+                "completion_cost": "Costo de finalización instantánea",
                 "crew": "Tripulación",
                 "pair": "Par"
             },
@@ -545,6 +546,7 @@
     },
     "event_type": {
         "expedition": "Expedición",
+        "galaxy": "Especialista",
         "gather": "Galaxia",
         "shuttles": "Facción",
         "skirmish": "Escaramuza",
@@ -913,6 +915,7 @@
         "colon": ": ",
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
+        "cost": "Costo",
         "create": "Crear",
         "date_end": "Fecha de finalización",
         "date_start": "Fecha de inicio",
@@ -1181,6 +1184,7 @@
         "craft_for_chrons": "Hazlo por {{cost}} usando esta receta",
         "current_demands": "Demandas actuales",
         "equippable_by": "Equipable por: {{crew}}",
+        "equippable_by_n_crew": "Equipable por {{n}} tripulantes.",
         "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
         "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes rasgos: {{traits}}",
         "equippable_by_traits": "Equipable por tripulación con los siguientes rasgos: {{traits}}",
@@ -2120,6 +2124,7 @@
             "first_appearance": "Primera aparición",
             "first_crew": "Tripulante más antiguo",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "DataScore más alta",
             "inaugural_crew": "Tripulante inaugural",
             "latest_crew": "Última tripulante",
             "total_crew": "Tripulantes totales",
@@ -2132,6 +2137,7 @@
             "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
+            "show_series": "Mostrar rasgos de la serie",
             "show_variant_traits": "Mostrar rasgos de variantes de la tripulación",
             "show_visible": "Mostrar rasgos visibles"
         }
