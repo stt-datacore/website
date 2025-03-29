@@ -545,6 +545,7 @@
     },
     "event_type": {
         "expedition": "Expedición",
+        "galaxy": "Especialista",
         "gather": "Galaxia",
         "shuttles": "Facción",
         "skirmish": "Escaramuza",
