@@ -519,6 +519,7 @@
             "columns": {
                 "best": "Mejo",
                 "bonus": "Primo",
+                "completion_cost": "Costo de finalización instantánea",
                 "crew": "Tripulación",
                 "pair": "Par"
             },
@@ -914,6 +915,7 @@
         "colon": ": ",
         "completed": "Completado",
         "copy_permalink_clipboard": "Copiar enlace permanente al portapapeles",
+        "cost": "Costo",
         "create": "Crear",
         "date_end": "Fecha de finalización",
         "date_start": "Fecha de inicio",
@@ -2135,9 +2137,9 @@
             "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
             "show_hidden": "Mostrar rasgos ocultos",
+            "show_series": "Mostrar rasgos de la serie",
             "show_variant_traits": "Mostrar rasgos de variantes de la tripulación",
-            "show_visible": "Mostrar rasgos visibles",
-            "show_series": "Mostrar rasgos de la serie"
+            "show_visible": "Mostrar rasgos visibles"
         }
     },
     "tool_roster_picker": {

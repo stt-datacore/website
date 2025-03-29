@@ -513,6 +513,7 @@
             "columns": {
                 "best": "Best",
                 "bonus": "Bonus",
+                "completion_cost": "Instant completion cost",
                 "crew": "Crew",
                 "pair": "Pair"
             },
@@ -908,6 +909,7 @@
         "colon": ": ",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
+        "cost": "Cost",
         "create": "Create",
         "date_end": "End Date",
         "date_start": "Start Date",
@@ -2125,9 +2127,9 @@
             "potential_collection_score_n": "Potential Collection Score: {{n}}",
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
             "show_hidden": "Show hidden traits",
+            "show_series": "Show series traits",
             "show_variant_traits": "Show crew variant traits",
-            "show_visible": "Show visible traits",
-            "show_series": "Show series traits"
+            "show_visible": "Show visible traits"
         }
     },
     "tool_roster_picker": {

@@ -521,6 +521,7 @@
             "columns": {
                 "best": "Meilleur",
                 "bonus": "Prime",
+                "completion_cost": "Coût d'achèvement instantané",
                 "crew": "Équipage",
                 "pair": "Paire"
             },
@@ -916,6 +917,7 @@
         "colon": " : ",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
+        "cost": "Coût",
         "create": "Créer",
         "date_end": "Date de fin",
         "date_start": "Date de début",
@@ -2137,9 +2139,9 @@
             "potential_collection_score_n": "Score de collecte potentiel : {{n}}",
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
+            "show_series": "Afficher les caractéristiques de la série",
             "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
-            "show_visible": "Afficher les traits visibles",
-            "show_series": "Afficher les caractéristiques de la série"
+            "show_visible": "Afficher les traits visibles"
         }
     },
     "tool_roster_picker": {

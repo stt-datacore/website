@@ -513,6 +513,7 @@
             "columns": {
                 "best": "Am besten",
                 "bonus": "Bonus",
+                "completion_cost": "Kosten für sofortige Fertigstellung",
                 "crew": "Crew",
                 "pair": "Paar"
             },
@@ -908,6 +909,7 @@
         "colon": " : ",
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
+        "cost": "Kosten",
         "create": "Erstellen",
         "date_end": "Enddatum",
         "date_start": "Startdatum",
@@ -2125,9 +2127,9 @@
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
+            "show_series": "Serienmerkmale anzeigen",
             "show_variant_traits": "Variantenmerkmale der Crew anzeigen",
-            "show_visible": "Sichtbare Merkmale anzeigen",
-            "show_series": "Serienmerkmale anzeigen"
+            "show_visible": "Sichtbare Merkmale anzeigen"
         }
     },
     "tool_roster_picker": {

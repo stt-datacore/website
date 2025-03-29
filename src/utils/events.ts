@@ -494,6 +494,14 @@ export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData,
 	}
 }
 
+export function calcSpecialistCost(eventData: IEventData, minutes: number) {
+	if (!eventData?.activeContent?.skip_mission_cost_interval || !eventData?.activeContent?.skip_mission_cost_per_interval) return 0;
+	const interval = eventData.activeContent.skip_mission_cost_interval;
+	const cost = eventData.activeContent.skip_mission_cost_per_interval;
+
+	return (Math.ceil((minutes * 60) / interval) * cost);
+}
+
 export function computeEventBest(
 	rosterCrew: IEventScoredCrew[],
 	eventData: IEventData,

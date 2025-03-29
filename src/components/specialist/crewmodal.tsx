@@ -8,13 +8,14 @@ import { IEventData, IRosterCrew } from '../eventplanner/model';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { SpecialistMission } from '../../model/player';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
-import { calculateSpecialistTime, getSpecialistBonus } from '../../utils/events';
+import { calcSpecialistCost, calculateSpecialistTime, getSpecialistBonus } from '../../utils/events';
 import { Filter } from '../../model/game-elements';
 import { omniSearchFilter } from '../../utils/omnisearch';
 import CONFIG from '../CONFIG';
 import { AvatarView } from '../item_presenters/avatarview';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { drawSkills } from './utils';
+import { printChrons } from '../retrieval/context';
 
 export interface ISpecialistCrewConfig {
     crew: IRosterCrew;
@@ -25,7 +26,8 @@ export interface ISpecialistCrewConfig {
         hours: number;
         minutes: number;
         total_minutes: number;
-    }
+    },
+    cost: number;
 }
 
 type SpecialistPickerProps = {
@@ -62,6 +64,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             const duration_data = calculateSpecialistTime(c, eventData, mission);
 
             if (!duration_data) continue;
+            const total_minutes = duration_data.minutes + (duration_data.hours * 60);
             const newItem: ISpecialistCrewConfig = {
                 crew: c,
                 matched_skills,
@@ -69,8 +72,9 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 bonus: eventData.featured.includes(c.symbol) ? high : (eventData.bonus.includes(c.symbol) ? low : 0),
                 duration: {
                     ...duration_data,
-                    total_minutes: duration_data.minutes + (duration_data.hours * 60)
-                }
+                    total_minutes
+                },
+                cost: calcSpecialistCost(eventData, total_minutes)
             }
             newRoster.push(newItem);
         }
@@ -81,7 +85,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     }, [crew, mission]);
 
     const tableConfig = [
-        { width: 1, column: 'crew.name', title: t('base.name') },
+        { width: 1, column: 'crew.name', title: t('global.name') },
         {
             width: 1, column: 'matched_skills', title: t('base.skills'),
             reverse: true,
@@ -118,6 +122,9 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 return r;
             }
         },
+        {
+            width: 1, column: 'cost', title: t('event_planner.table.columns.completion_cost')
+        }
     ] as ITableConfigRow[];
 
     const flexRow = OptionsPanelFlexRow;
@@ -272,6 +279,9 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     {t('duration.n_m', { minutes: row.duration.minutes })}
                 </p>
 
+            </Table.Cell>
+            <Table.Cell>
+                {printChrons(row.cost)}
             </Table.Cell>
         </Table.Row>
 

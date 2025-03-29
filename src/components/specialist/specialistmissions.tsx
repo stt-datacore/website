@@ -11,11 +11,21 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import SpecialistPickerModal from "./crewmodal";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { useStateWithStorage } from "../../utils/storage";
+import { calcSpecialistCost, calculateSpecialistTime } from "../../utils/events";
+import { printChrons } from "../retrieval/context";
+import { drawSkills, drawTraits } from "./utils";
+
+type MissionCrew = {
+    mission: number;
+    crew: number;
+}
 
 export interface SpecialistMissionTableProps {
     crew: IRosterCrew[];
     eventData: IEventData;
 }
+
 export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     const globalContext = React.useContext(GlobalContext);
@@ -25,6 +35,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     const [pickerOpen, setPickerOpen] = React.useState(false);
     const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
+
+    const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>('specialist_mission_crew', []);
 
     const tableConfig = [
         { width: 1, column: 'name', title: t('global.name') },
@@ -48,7 +60,29 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
-    const missions = eventData.activeContent.missions;
+
+    const missions = React.useMemo(() => {
+        return eventData.activeContent?.missions ?? [];
+    }, [eventData]);
+
+    const locked = React.useMemo(() => {
+        return missions.filter(f => !!f.crew_id).map(m => m.id);
+    }, [missions]);
+
+    React.useEffect(() => {
+        const newdata = [...missionCrew];
+        if (missions?.length) {
+            for (let m of missions) {
+                if (m.crew_id && !newdata.some(d => d.mission === m.id)) {
+                    newdata.push({
+                        mission: m.id,
+                        crew: m.crew_id
+                    });
+                }
+            }
+        }
+        setMissionCrew(newdata);
+    }, [missions]);
 
     return <React.Fragment>
         <CrewHoverStat targetGroup="specialist_missions" />
@@ -71,15 +105,16 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     </React.Fragment>
 
     function getMissionCrew(mission: SpecialistMission) {
-        if (!mission.crew_id) return undefined;
-        return crew.find(c => c.id === mission.crew_id)
+        let mc = missionCrew.find(f => f.mission === mission.id);
+        if (!mc) return undefined;
+        return crew.find(c => c.id === mc.crew);
     }
 
     function closePicker(selection: IRosterCrew | undefined, affirmative: boolean) {
         setPickerOpen(false);
         if (currentMission && affirmative) {
-            currentMission.crew_id = selection?.id;
             setCurrentMission(undefined);
+            updateMissionCrew(currentMission, selection);
         }
     }
 
@@ -176,24 +211,59 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     function renderMissionCrew(mission: SpecialistMission) {
         const crew = getMissionCrew(mission);
+        const isLocked = locked.includes(mission.id);
         if (!crew) {
-            return (<div style={{...flexCol, cursor: 'pointer'}} onClick={() => openPicker(mission)}>
-                <Button>{t('hints.select_crew')}</Button>
+            return (<div style={{...flexCol}}
+                onClick={() => !isLocked ? openPicker(mission) : false}>
+                <Button disabled={isLocked}>{t('hints.select_crew')}</Button>
             </div>)
         }
-        return <div style={{...flexRow, gap: '0.5em', cursor: 'pointer', justifyContent: 'center'}} onClick={() => openPicker(mission)}>
+        const traits = crew.traits.filter(f => mission.bonus_traits.includes(f));
+        const skills = crew.skill_order.filter(f => mission.requirements.includes(f));
+        const time = calculateSpecialistTime(crew, eventData, mission);
+        const cost = time ? calcSpecialistCost(eventData, time.minutes + (time.hours * 60)) : 0;
+        return (
+            <div style={{...flexRow, cursor: isLocked ? undefined : 'pointer'}} onClick={() => !isLocked ? openPicker(mission) : false}>
+                <div style={{...flexCol, alignItems: 'flex-start'}}>
+                    <div style={{...flexRow, gap: '0.5em', justifyContent: 'center'}}>
+                        <AvatarView
+                            mode='crew'
+                            //targetGroup="specialist_missions"
+                            item={crew}
+                            partialItem={true}
+                            size={48}
+                            />
+                        <span>
+                            {crew.name}
+                        </span>
+                    </div>
+                    {!!time && <div style={{...flexRow}}>
+                        <span>
+                            {t('duration.n_h', { hours: time.hours })}
+                            &nbsp;
+                            {t('duration.n_m', { minutes: time.minutes })}
+                        </span>
+                        {printChrons(cost, t)}
+                    </div>}
+                </div>
+                <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start'}}>
+                    {drawSkills(skills, t, undefined, true, undefined, 16)}
+                </div>
+                <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start'}}>
+                    {drawTraits(traits, TRAIT_NAMES)}
+                </div>
+            </div>)
+    }
 
-            <AvatarView
-                mode='crew'
-                //targetGroup="specialist_missions"
-                item={crew}
-                partialItem={true}
-                size={48}
-                />
-            <span>
-                {crew.name}
-            </span>
-        </div>
+    function updateMissionCrew(mission: SpecialistMission, crew?: IRosterCrew) {
+        const newdata = missionCrew.filter(f => f.mission !== mission.id);
+        if (crew) {
+            newdata.push({
+                mission: mission.id,
+                crew: crew.id
+            });
+        }
+        setMissionCrew(newdata);
     }
 
 }
