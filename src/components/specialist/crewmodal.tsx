@@ -33,6 +33,7 @@ export interface ISpecialistCrewConfig {
 type SpecialistPickerProps = {
     eventData: IEventData;
     mission: SpecialistMission;
+    exclusions?: number[];
     crew: IRosterCrew[];
     selection?: IRosterCrew;
     onClose: (selection: IRosterCrew | undefined, affirmative: boolean) => void;
@@ -43,7 +44,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 	const globalContext = React.useContext(GlobalContext);
 
 	const { t, TRAIT_NAMES } = globalContext.localized;
-    const { mission, onClose, crew, eventData } = props;
+    const { mission, onClose, crew, eventData, exclusions } = props;
 
     const [selection, setSelection] = React.useState<IRosterCrew | undefined>(props.selection);
 
@@ -57,6 +58,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         const { low, high } = bonuses;
 
         for (let c of crew) {
+            if (exclusions?.includes(c.id)) continue;
             const matched_skills = Object.keys(c.base_skills).filter(skill => mission.requirements.includes(skill) && c.base_skills[skill].core);
             if (both && matched_skills.length !== mission.requirements.length) continue;
             else if (!matched_skills.length) continue;
@@ -82,7 +84,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             setSelection(undefined);
         }
         return newRoster;
-    }, [crew, mission]);
+    }, [crew, mission, exclusions]);
 
     const tableConfig = [
         { width: 1, column: 'crew.name', title: t('global.name') },

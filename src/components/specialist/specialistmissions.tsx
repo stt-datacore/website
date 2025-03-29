@@ -95,6 +95,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             />
         {!!pickerOpen && !!currentMission &&
             <SpecialistPickerModal
+                exclusions={missionCrew.filter(f => f.mission !== currentMission.id).map(c => c.crew)}
                 crew={crew}
                 selection={getMissionCrew(currentMission)}
                 eventData={eventData}
