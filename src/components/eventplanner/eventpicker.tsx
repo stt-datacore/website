@@ -120,6 +120,7 @@ export const EventPicker = (props: EventPickerProps) => {
 	const EVENT_TYPES = {
 		'shuttles': t('event_type.shuttles'),
 		'gather': t('event_type.gather'),
+		'galaxy': t('event_type.galaxy'),
 		'skirmish': t('event_type.skirmish'),
 		'voyage': t('event_type.voyage')
 	};

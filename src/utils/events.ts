@@ -125,6 +125,20 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 			});
 		}
 	}
+	else if (activeContent.content_type === 'galaxy') {
+		result.bonus = activeContent.featured_crews?.slice () ?? [];
+		result.featured = activeContent.featured_crews?.slice () ?? [];
+
+		// Specialist events use content.featured_traits to identify smaller bonus event crew
+		activeContent.featured_traits?.forEach(bonusTrait => {
+			allCrew.filter(crew =>
+				crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)
+			).forEach(crew => {
+				if (!result.bonus.includes(crew.symbol) && !result.featured.includes(crew.symbol))
+					result.bonus.push(crew.symbol);
+			});
+		});
+	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
 	if (result.bonus.length === 0) {

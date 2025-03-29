@@ -539,6 +539,7 @@
     },
     "event_type": {
         "expedition": "Expedition",
+        "galaxy": "Specialist",
         "gather": "Galaxy",
         "shuttles": "Faction",
         "skirmish": "Skirmish",
