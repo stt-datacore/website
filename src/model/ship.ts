@@ -95,7 +95,8 @@ export interface ReferenceShip extends ShipBonus {
   schematic_icon: Icon
   battle_stations: BattleStation[]
   passive_status: number
-  levels: ShipLevel[]
+  levels: ShipLevel[];
+  ranks: ShipScores;
 }
 /**
  * Ship

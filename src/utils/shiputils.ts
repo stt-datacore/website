@@ -234,7 +234,8 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 			ship.accuracy *= power;
 			ship.attack *= power;
 			ship.evasion *= power;
-
+			ship.hull *= power;
+			ship.shields *= power;
 			ship.id = unowned_id--;
 			ship.level ??= 0;
 		}
