@@ -509,6 +509,8 @@
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",
         "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "specialist_missions": "Specialist Missions",
+        "staff_selected": "Staff Selected",
         "table": {
             "columns": {
                 "best": "Best",
@@ -1026,6 +1028,7 @@
         "search_for_x_by_name": "Search for {{x}} by name",
         "search_items": "Search items",
         "search_items_ellipses": "Search items...",
+        "select_all": "Select All",
         "set_as_default_view": "Set as default view",
         "show": "Show",
         "show_all": "Show all",
@@ -1038,6 +1041,7 @@
         "squadron_leader": "Squadron Leader",
         "toggle_layout": "Toggle layout",
         "uncheck_all": "Uncheck all",
+        "unselect_all": "Unselect All",
         "view_options": "View Options",
         "viewing_stats_for_x": "Viewing stats for {{x}}",
         "win": "Win",

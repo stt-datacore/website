@@ -864,7 +864,7 @@ export interface SquadronRankedBracket {
 
 export interface SpecialistMission {
   id: number;
-  event_run_id:number;
+  event_run_id: number;
   desc_id: number;
   crew_id?: number;
   start_time?: Date;

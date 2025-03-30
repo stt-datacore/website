@@ -517,6 +517,8 @@
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
         "skill_matrix_heading": "Cette matrice montre vos meilleurs équipiers pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres équipiers possédant cette combinaison de compétences.",
+        "specialist_missions": "Missions spécialisées",
+        "staff_selected": "Équiper les sélectionnés",
         "table": {
             "columns": {
                 "best": "Meilleur",
@@ -1036,6 +1038,7 @@
         "search_for_x_by_name": "Rechercher {{x}} par nom",
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
+        "select_all": "Tout sélectionner",
         "set_as_default_view": "Définir comme vue par défaut",
         "show": "Montre",
         "show_all": "Tout afficher",
@@ -1048,6 +1051,7 @@
         "squadron_leader": "Chef d'escadron",
         "toggle_layout": "Basculer la mise en page",
         "uncheck_all": "Décochez tout",
+        "unselect_all": "Tout désélectionner",
         "view_options": "Voir les options",
         "viewing_stats_for_x": "Affichage des statistiques pour {{x}}",
         "win": "Gagner",

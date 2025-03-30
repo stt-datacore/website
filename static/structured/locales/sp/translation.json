@@ -515,6 +515,8 @@
         "select_phase": "Seleccione una fase",
         "skill_matrix": "Matriz de Habilidades",
         "skill_matrix_heading": "Esta matriz muestra tu mejor equipo para cada combinación de habilidades posible. Utilice esta matriz para identificar su mejor equipo para este evento. Toca una celda para ver otros miembros del equipo con esa combinación de habilidades.",
+        "specialist_missions": "Misiones especializadas",
+        "staff_selected": "Equipar a los seleccionados",
         "table": {
             "columns": {
                 "best": "Mejo",
@@ -1034,6 +1036,7 @@
         "search_for_x_by_name": "Buscar {{x}} por nombre",
         "search_items": "Buscar por artículo",
         "search_items_ellipses": "Buscar por artículo...",
+        "select_all": "Seleccionar todo",
         "set_as_default_view": "Establecer como vista predeterminada",
         "show": "Reloj",
         "show_all": "Mostrar todo",
@@ -1046,6 +1049,7 @@
         "squadron_leader": "Líder de escuadrón",
         "toggle_layout": "Cambiar diseño",
         "uncheck_all": "Desmarcar todo",
+        "unselect_all": "Deseleccionar todo",
         "view_options": "Ver las opciones",
         "viewing_stats_for_x": "Visualización de estadísticas para {{x}}",
         "win": "Ganar",

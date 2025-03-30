@@ -509,6 +509,8 @@
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",
         "skill_matrix_heading": "Diese Matrix zeigt Ihre beste Crew für jede mögliche Fähigkeitskombination. Verwenden Sie diese Matrix, um Ihre beste Crew für dieses Ereignis zu ermitteln. Tippen Sie auf eine Zelle, um andere Crew mit dieser Fähigkeitskombination anzuzeigen.",
+        "specialist_missions": "Spezialmissionen",
+        "staff_selected": "Besetzen Sie die ausgewählten",
         "table": {
             "columns": {
                 "best": "Am besten",
@@ -1026,6 +1028,7 @@
         "search_for_x_by_name": "Suche nach {{x}} nach Namen",
         "search_items": "Suche nach Artikel",
         "search_items_ellipses": "Suche nach Artikel...",
+        "select_all": "Alle auswählen",
         "set_as_default_view": "Als Standardansicht festlegen",
         "show": "Zeigen",
         "show_all": "Alle anzeigen",
@@ -1038,6 +1041,7 @@
         "squadron_leader": "Geschwaderführer",
         "toggle_layout": "Layout umschalten",
         "uncheck_all": "Deaktivieren Sie alle",
+        "unselect_all": "Auswahl aufheben",
         "view_options": "Optionen anzeigen",
         "viewing_stats_for_x": "Statistiken für {{x}} anzeigen",
         "win": "Gewinnen",

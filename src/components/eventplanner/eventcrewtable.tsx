@@ -295,9 +295,11 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
+					{!!crew.bestPair.score && <>
 					<b>{scoreLabel(crew.bestPair.score)}</b>
 					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
 					{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
+					</>}
 				</Table.Cell>
 				{eventData.activeContent?.content_type === 'voyage' &&
 				<Table.Cell textAlign='center'>
