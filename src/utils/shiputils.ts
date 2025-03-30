@@ -200,83 +200,50 @@ export function levelToLevelStats(level: ShipLevel): ShipLevelStats {
 
 export function highestLevel(ship: Ship) {
 	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
-	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
+	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a, b) => b - a);
 	let highest = levels[0];
 	return highest;
 }
 
-export function MergeShips2(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false): Ship[] {
+export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
 	ref_ships = JSON.parse(JSON.stringify(ref_ships));
-	ref_ships.forEach((refship) => {
+	ref_ships.map((refship) => {
+
 		let ship = {...refship, id: refship.archetype_id, levels: undefined } as Ship;
-		ship.levels = {} as ShipLevels;
-		for (let lvl of refship.levels) {
-			ship.levels[lvl.level] = levelToLevelStats(lvl);
-		}
+
 		let unowned_id = -1;
-		let owned = ships.find((ship) => ship.symbol == ship.symbol);
+		let owned = ships.find((ship) => refship.symbol == ship.symbol);
 
 		let traits_named = ship.traits?.map(t => SHIP_TRAIT_NAMES[t]);
 
 		if (owned) {
-			ship.id = owned.id;
-			ship.name = owned.name;
-			ship.flavor = owned.flavor;
-			ship.accuracy = owned.accuracy;
-			ship.antimatter = owned.antimatter;
-			ship.attack = owned.attack;
-			ship.attacks_per_second = owned.attacks_per_second;
-			ship.crit_bonus = owned.crit_bonus;
-			ship.crit_chance = owned.crit_chance;
-			ship.evasion = owned.evasion;
-			ship.hull = owned.hull;
-			ship.level = owned.level + 1;
-			ship.rarity = owned.rarity;
-			ship.shield_regen = owned.shield_regen;
-			ship.shields = owned.shields;
-			if (owned.battle_stations?.length) {
-				ship.battle_stations = [ ... owned.battle_stations ?? []];
-			}
+			ship = { ...ship, ... owned, level: owned.level + 1 };
 
 			if (owned.actions) {
 				ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
 			}
 			ship.immortal = owned.level >= ship.max_level! ? -1 : 0;
 			ship.owned = true;
+
 		} else {
 			ship.owned = false;
-			if (ship.levels) {
-				let h = highestLevel(ship);
-				if (ship.max_level && h === ship.max_level + 1 && ship.levels[`${h}`].hull) {
-					ship = { ... ship, ...ship.levels[`${h}`] };
-					ship.attack = ship.levels![`${h}`].attack_power * power;
-					ship.accuracy = ship.levels![`${h}`].accuracy_power * power;
-					ship.evasion = ship.levels![`${h}`].evasion_power * power;
-					ship.hull *= power;
-					ship.shields *= power;
-				}
-			}
+			delete (ship as any).level;
+
+			ship.accuracy *= power;
+			ship.attack *= power;
+			ship.evasion *= power;
+
 			ship.id = unowned_id--;
 			ship.level ??= 0;
 		}
 
-		if (!ship.max_level) ship.max_level = 1;
-		else ship.max_level += 1;
+		ship.max_level = refship.max_level + 1;
 
 		ship.traits_named = traits_named;
-		if (ship.symbol === "constellation_ship" && !ship.battle_stations) {
-			ship.battle_stations = [
-				{
-					skill: 'command_skill'
-				},
-				{
-					skill: 'diplomacy_skill'
-				}
-			];
-		}
 		newShips.push(ship);
+		return ship;
 	});
 
 	newShips.sort((a, b) => {
@@ -289,7 +256,7 @@ export function MergeShips2(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAI
 		r = b.rarity - a.rarity;
 		if (r) return r;
 		return a.name?.localeCompare(b.name ?? "") ?? 0;
-	})
+	});
 
 	return newShips;
 

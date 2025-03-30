@@ -9,7 +9,7 @@ import { navigate } from 'gatsby';
 import { RarityFilter } from '../crewtables/commonoptions';
 import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
 import { isMobile } from 'react-device-detect';
-import { getShipsInUse, mergeShips } from '../../utils/shiputils';
+import { getShipsInUse, mergeRefShips, mergeShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
 import { TinyStore } from '../../utils/tiny';
 import { formatShipScore } from './utils';
@@ -98,65 +98,69 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		const { event_ships } = this.props;
 
 		this.inited = true;
-		let schematics = [...this.context.core.ship_schematics];
+		// let schematics = [...this.context.core.ship_schematics];
 
-		const constellation = {
-			symbol: 'constellation_ship',
-			rarity: 1,
-			max_level: 5,
-			antimatter: 1250,
-			name: 'Constellation Class',
-			icon: { file: '/ship_previews_fed_constellationclass' },
-			traits: ['federation','explorer'],
-			owned: true,
-			battle_stations: [
-				{
-					skill: 'command_skill'
-				},
-				{
-					skill: 'diplomacy_skill'
-				}
-			],
-			ranks: { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: schematics.length + 1, fbb_rank: schematics.length + 1, arena_rank: schematics.length + 1, divisions: { fbb: {}, arena: {} } }
-		} as Ship;
+		// const constellation = {
+		// 	symbol: 'constellation_ship',
+		// 	rarity: 1,
+		// 	max_level: 5,
+		// 	antimatter: 1250,
+		// 	name: 'Constellation Class',
+		// 	icon: { file: '/ship_previews_fed_constellationclass' },
+		// 	traits: ['federation','explorer'],
+		// 	owned: true,
+		// 	battle_stations: [
+		// 		{
+		// 			skill: 'command_skill'
+		// 		},
+		// 		{
+		// 			skill: 'diplomacy_skill'
+		// 		}
+		// 	],
+		// 	ranks: { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: schematics.length + 1, fbb_rank: schematics.length + 1, arena_rank: schematics.length + 1, divisions: { fbb: {}, arena: {} } }
+		// } as Ship;
 
-		schematics.push({
-			ship: constellation,
-			rarity: constellation.rarity,
-			cost: 0,
-			id: 1,
-			icon: constellation.icon!
-		});
+		// schematics.push({
+		// 	ship: constellation,
+		// 	rarity: constellation.rarity,
+		// 	cost: 0,
+		// 	id: 1,
+		// 	icon: constellation.icon!
+		// });
 
-		for (let ship of schematics) {
-			ship.ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: schematics.length + 1, fbb_rank: schematics.length + 1, arena_rank: schematics.length + 1, divisions: { fbb: {}, arena: {} } }
+		// for (let ship of schematics) {
+		// 	ship.ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: schematics.length + 1, fbb_rank: schematics.length + 1, arena_rank: schematics.length + 1, divisions: { fbb: {}, arena: {} } }
+		// }
+
+		const { all_ships, ship_schematics } = this.context.core;
+		const { SHIP_TRAIT_NAMES } = this.context.localized;
+		for (let ship of all_ships) {
+			let src = ship_schematics.find(f => f.ship.symbol === ship.symbol);
+			if (src) (ship as any).ranks = src?.ship.ranks;
+			else (ship as any).ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
 		}
-
 		if (this.context.player.playerShips?.length && this.context.player.playerData) {
 			let playerships = [...this.context.player.playerData.player.character.ships];
-			let merged = mergeShips(schematics, playerships);
+			let merged = mergeRefShips(all_ships, playerships, SHIP_TRAIT_NAMES);
 			let shipsInUse = getShipsInUse(this.context.player);
 			this.setState({
 				... this.state,
-				data: merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
+				data: merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.configForEvent(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
 				shipsInUse
 			});
 		}
 		else {
-			let coreships = [...this.context.core.ships];
-			coreships.push(constellation);
+			let coreships = mergeRefShips(all_ships, [], SHIP_TRAIT_NAMES);
+			//coreships.push(constellation);
 			this.setState({
 				... this.state,
-				data: coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.transmogrify(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
+				data: coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.configForEvent(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
 			});
 		}
 
 	}
 
-	transmogrify(ship: Ship) {
-		if (ship.max_level && !this.context.player.playerData) {
-			ship = { ...ship, max_level: ship.max_level + 1 };
-		}
+	configForEvent(ship: Ship) {
 		if (!this.props.event_ships) return ship;
 		ship = JSON.parse(JSON.stringify(ship));
 		if (this.props.high_bonus?.includes(ship.symbol)) {

@@ -6,7 +6,7 @@ import { WorkerProvider } from '../context/workercontext';
 
 const ShipsPage = () => {
     const { t } = React.useContext(GlobalContext).localized;
-    return <DataPageLayout playerPromptType='recommend' pageTitle={t('pages.ships')}>
+    return <DataPageLayout demands={['all_ships']} playerPromptType='recommend' pageTitle={t('pages.ships')}>
         <ShipTable />
     </DataPageLayout>
 }
