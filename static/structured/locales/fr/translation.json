@@ -513,6 +513,7 @@
     "event_planner": {
         "heading": "Trouvez les meilleurs équipiers à utiliser lors d'un événement",
         "hide_duplicate_pairs": "Masquer les paires en double",
+        "prefer_high_bonus": "Préfère un bonus élevé",
         "prospect_description": "Ajoutez un équipier potentiel (ou un équipier partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",

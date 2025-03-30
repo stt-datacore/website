@@ -505,6 +505,7 @@
     "event_planner": {
         "heading": "Finden Sie die beste Crew für den Einsatz während einer Ereignis.",
         "hide_duplicate_pairs": "Entfernen doppelter Paare",
+        "prefer_high_bonus": "Bevorzugen Sie einen hohen Bonus",
         "prospect_description": "Fügen Sie potenzielle Crew (oder potenzielle gemeinsame Crew) hinzu, um zu sehen, wie sie in Ihren vorhandenen Kader für diese Ereignis passen.",
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",

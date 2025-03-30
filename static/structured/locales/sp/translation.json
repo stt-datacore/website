@@ -511,6 +511,7 @@
     "event_planner": {
         "heading": "Encuentra el mejor equipo para usar durante un evento.",
         "hide_duplicate_pairs": "Ocultar pares duplicados",
+        "prefer_high_bonus": "Prefiero una bonificación alta",
         "prospect_description": "Agrega un equipo potencial (o un equipo potencial compartido) para ver cómo encajan en tu lista existente para este evento.",
         "select_phase": "Seleccione una fase",
         "skill_matrix": "Matriz de Habilidades",

@@ -505,6 +505,7 @@
     "event_planner": {
         "heading": "Find the best crew to use during an event.",
         "hide_duplicate_pairs": "Remove duplicate pairs",
+        "prefer_high_bonus": "Prefer high bonus",
         "prospect_description": "Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event.",
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",

@@ -2,7 +2,7 @@ import React from "react";
 import { IEventData, IRosterCrew } from "../eventplanner/model"
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
-import { Button, Icon, Modal, Table } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Modal, Table } from "semantic-ui-react";
 import { SpecialistMission } from "../../model/player";
 import { Filter } from "../../model/game-elements";
 import { omniSearchFilter } from "../../utils/omnisearch";
@@ -36,8 +36,9 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     const [pickerOpen, setPickerOpen] = React.useState(false);
     const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
 
-    const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>('specialist_mission_crew', []);
-    const [selectedMissions, setSelectedMissions] = useStateWithStorage<number[]>('specialist_mission_selections', []);
+    const [preferBonus, setPreferBonus] = useStateWithStorage('specialist/prefer_bonus', false);
+    const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>('specialist/mission_crew', []);
+    const [selectedMissions, setSelectedMissions] = useStateWithStorage<number[]>('specialist/mission_selections', []);
     const [staffingFailures, setStaffingFailures] = React.useState<number[]>([]);
 
     const tableConfig = [
@@ -98,6 +99,9 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             <Button onClick={() => selectAll()}><Icon name='globe' /> {t('global.select_all')}</Button>
             <Button onClick={() => selectNone()}><Icon name='remove circle' /> {t('global.unselect_all')}</Button>
             <Button onClick={() => clearAll()}><Icon name='cancel' /> {t('global.clear_all')}</Button>
+        </div>
+        <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
+            <Checkbox label={t('event_planner.prefer_high_bonus')} onChange={(e, { checked }) => setPreferBonus(!!checked)} />
         </div>
         <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
             {printTotal()}
@@ -337,25 +341,33 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         !newmissions.some(m => m.crew === c.id)
                 )
                 .sort((a, b) => {
+                    let r = 0;
+                    let dur = 0;
+                    let bonus = crewSpecialistBonus(b, eventData) - crewSpecialistBonus(a, eventData);
+
                     const dura = calculateSpecialistTime(a, eventData, mission);
                     const durb = calculateSpecialistTime(b, eventData, mission);
-                    if (!dura && !durb) return 0;
-                    else if (!dura && !!durb) return 1;
-                    else if (!!dura && !durb) return -1;
-                    else {
-                        let r = dura!.total_minutes - durb!.total_minutes;
-                        if (!r) {
-                            let abonus = crewSpecialistBonus(a, eventData);
-                            let bbonus = crewSpecialistBonus(b, eventData);
-                            r = bbonus - abonus;
-                        }
-                        if (!r) {
-                            let at = a.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
-                            let bt = b.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
-                            r = bt - at;
-                        }
-                        return r;
+
+                    if (!dura && !durb) dur = 0;
+                    else if (!dura && !!durb) dur = -1;
+                    else if (!!dura && !durb) dur = 1;
+
+                    if (dur) return dur;
+                    if (dura && durb) dur = dura.total_minutes - durb.total_minutes;
+
+                    if (preferBonus) {
+                        r = bonus ? bonus : dur;
                     }
+                    else {
+                        r = dur ? dur : bonus;
+                    }
+
+                    if (!r) {
+                        let at = a.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
+                        let bt = b.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
+                        r = bt - at;
+                    }
+                    return r;
                 });
             if (missioncrew.length) {
                 newmissions.push({
