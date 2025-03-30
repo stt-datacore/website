@@ -47,7 +47,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     const { playerData } = globalContext.player;
     const { mission, onClose, crew, eventData, exclusions } = props;
 
-    const [selection, setSelection] = React.useState<IRosterCrew | undefined>(props.selection);
+    const [selection, internalSetSelection] = React.useState<IRosterCrew | undefined>(props.selection);
 
     const both = mission.requirements.length === mission.min_req_threshold;
 
@@ -251,7 +251,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             traitcontent.push(img);
         }
 
-        return <Table.Row positive={selection?.id == row.crew.id} style={{cursor: 'pointer'}} onClick={() => selection == row.crew ? setSelection(undefined) : setSelection(row.crew)}>
+        return <Table.Row positive={selection?.id == row.crew.id} style={{cursor: 'pointer', opacity: !!row.crew.active_status ? '0.2' : undefined}} onClick={() => setSelection(row)}>
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.5em'}}>
                     <AvatarView
@@ -293,6 +293,13 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         </Table.Row>
 
     }
+
+    function setSelection(row?: ISpecialistCrewConfig) {
+        if (row?.crew?.active_status) return;
+        if (selection == row?.crew) internalSetSelection(undefined);
+        else internalSetSelection(row?.crew);
+    }
+
 }
 
 export default SpecialistPickerModal;
