@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Image, Modal, Segment, Tab, Table } from 'semantic-ui-react';
+import { Button, Container, Icon, Image, Modal, Segment, Tab, Table } from 'semantic-ui-react';
 
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { GlobalContext } from '../../context/globalcontext';
@@ -250,7 +250,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
         return <Table.Row positive={selection?.id == row.crew.id} style={{cursor: 'pointer'}} onClick={() => selection == row.crew ? setSelection(undefined) : setSelection(row.crew)}>
             <Table.Cell>
-                <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
+                <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.5em'}}>
                     <AvatarView
                         crewBackground="rich"
                         mode='crew'
@@ -259,6 +259,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                         partialItem={true}
                         size={48}
                         />
+                    {row.crew.immortal && row.crew.immortal > 0 && <Icon name='snowflake' />}
                     <span>{row.crew.name}</span>
                 </div>
             </Table.Cell>

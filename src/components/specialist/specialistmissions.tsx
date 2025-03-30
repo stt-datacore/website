@@ -31,7 +31,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt, TRAIT_NAMES } = globalContext.localized
 
-    const { eventData, crew } = props;
+    const { eventData } = props;
 
     const [pickerOpen, setPickerOpen] = React.useState(false);
     const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
@@ -76,6 +76,10 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         return missions.filter(f => !!f.crew_id).map(m => m.id);
     }, [missions]);
 
+    const crew = React.useMemo(() => {
+        return props.crew; //.filter(f => f.immortal <= 0);
+    }, [props.crew]);
+
     React.useEffect(() => {
         const newdata = [...missionCrew];
         if (missions?.length) {
@@ -90,6 +94,11 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         }
         setMissionCrew(newdata);
     }, [missions]);
+
+    const exclusions = React.useMemo(() => {
+        if (!currentMission) return [];
+        return missionCrew.filter(f => f.mission !== currentMission.id).map(c => c.crew);
+    }, [currentMission, missionCrew]);
 
     return <React.Fragment>
         <h2>{t('event_planner.specialist_missions')}</h2>
@@ -116,7 +125,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             />
         {!!pickerOpen && !!currentMission &&
             <SpecialistPickerModal
-                exclusions={missionCrew.filter(f => f.mission !== currentMission.id).map(c => c.crew)}
+                exclusions={exclusions}
                 crew={crew}
                 selection={getMissionCrew(currentMission)}
                 eventData={eventData}
@@ -258,14 +267,14 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             <div style={{
                 display: 'grid',
                 gridTemplateAreas: `'area1 area2 area3' 'area4 area2 area3'`,
-                gridTemplateColumns: '14em 12em auto',
+                gridTemplateColumns: '15em 12em auto',
                 margin: '0.25em',
                 padding: 0,
                 width: '100%',
                 cursor: isLocked ? undefined : 'pointer'
 
             }} onClick={() => !isLocked ? openPicker(mission) : false}>
-                <div style={{...flexRow, gap: '0.5em', justifyContent: 'flex-start', gridArea: 'area1'}}>
+                <div style={{...flexRow, gap: '0.5em', justifyContent: 'flex-start', gridArea: 'area1', marginRight: '0.25em'}}>
                     <AvatarView
                         crewBackground="rich"
                         mode='crew'
@@ -274,7 +283,9 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         partialItem={true}
                         size={48}
                         />
+
                     <span>
+                        {crew.immortal && crew.immortal > 0 && <Icon name='snowflake' />}
                         {crew.name}
                     </span>
                 </div>
