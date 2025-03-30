@@ -217,6 +217,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 
 		<div style={{margin: '1em 0'}}>
 			<SearchableTable
+				hideExplanation={true}
 				id={'fleet_members'}
 				data={fleetData.members}
 				config={tableData}

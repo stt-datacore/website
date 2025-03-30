@@ -1040,6 +1040,7 @@
         "shown": "Shown",
         "sort_by": "Sort by",
         "squadron_leader": "Squadron Leader",
+        "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "toggle_layout": "Toggle layout",
         "uncheck_all": "Uncheck all",
         "unselect_all": "Unselect All",

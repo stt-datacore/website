@@ -1050,6 +1050,7 @@
         "shown": "Affiché",
         "sort_by": "Trier par",
         "squadron_leader": "Chef d'escadron",
+        "supply_kit_active_n": "Kit de fournitures actif ({{n}} % de réduction)",
         "toggle_layout": "Basculer la mise en page",
         "uncheck_all": "Décochez tout",
         "unselect_all": "Tout désélectionner",

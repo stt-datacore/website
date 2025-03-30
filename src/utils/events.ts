@@ -501,12 +501,15 @@ export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData,
 	}
 }
 
-export function calcSpecialistCost(eventData: IEventData, minutes: number) {
+export function calcSpecialistCost(eventData: IEventData, minutes: number, supply_kit?: number) {
 	if (!eventData?.activeContent?.skip_mission_cost_interval || !eventData?.activeContent?.skip_mission_cost_per_interval) return 0;
 	const interval = eventData.activeContent.skip_mission_cost_interval;
 	const cost = eventData.activeContent.skip_mission_cost_per_interval;
-
-	return (Math.ceil((minutes * 60) / interval) * cost);
+	let total = (Math.ceil((minutes * 60) / interval) * cost);
+	if (supply_kit) {
+		total = Math.ceil(total * ((100 - supply_kit) / 100));
+	}
+	return total;
 }
 
 export function computeEventBest(

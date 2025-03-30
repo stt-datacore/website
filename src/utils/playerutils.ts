@@ -74,7 +74,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.next_starbase_donation_reset;
     delete p.player.character.next_fleet_activity_reset;
     delete p.player.character.freestanding_quests;
-    delete p.player.character.stimpack;
+    //delete p.player.character.stimpack;
     delete p.player.character.location_channel_prefix;
     delete p.player.character.events;
 
