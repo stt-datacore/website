@@ -259,7 +259,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                         partialItem={true}
                         size={48}
                         />
-                    {row.crew.immortal && row.crew.immortal > 0 && <Icon name='snowflake' />}
+                    {!!row.crew.immortal && row.crew.immortal > 0 && <Icon name='snowflake' />}
                     <span>{row.crew.name}</span>
                 </div>
             </Table.Cell>

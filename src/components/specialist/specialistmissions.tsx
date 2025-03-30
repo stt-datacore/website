@@ -285,7 +285,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         />
 
                     <span>
-                        {crew.immortal && crew.immortal > 0 && <Icon name='snowflake' />}
+                        {!!crew.immortal && crew.immortal > 0 && <Icon name='snowflake' />}
                         {crew.name}
                     </span>
                 </div>
