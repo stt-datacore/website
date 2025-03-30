@@ -32,6 +32,22 @@ export interface ShipLevels {
   "10"?: ShipLevelStats
 }
 
+export interface ShipLevel {
+  level: number
+  shields: number
+  hull: number
+  attack: number
+  evasion: number
+  accuracy: number
+  crit_chance: number
+  crit_bonus: number
+  attacks_per_second: number
+  shield_regen: number
+  antimatter: number
+  schematic_gain_cost_next_level: number
+  schematic_gain_cost?: number
+}
+
 export interface ShipLevelStats {
   shields: number
   hull: number
@@ -40,7 +56,7 @@ export interface ShipLevelStats {
   evasion: number
   attack_power: number
   attacks_per_second: number
-  dps: any
+  dps?: number;
   accuracy_power: number
   evasion_power: number
   accuracy_evasion: any
@@ -51,6 +67,36 @@ export interface ShipLevelStats {
   next_schematics: number
 }
 
+export interface ReferenceShip extends ShipBonus {
+  archetype_id: number
+  symbol: string
+  name: string
+  rarity: number
+  icon: Icon
+  flavor: string
+  model: string
+  max_level: number
+  actions: ShipAction[]
+  shields: number
+  hull: number
+  attack: number
+  evasion: number
+  accuracy: number
+  crit_chance: number
+  crit_bonus: number
+  attacks_per_second: number
+  shield_regen: number
+  traits: string[]
+  traits_hidden: any[]
+  antimatter: number
+  level: number
+  schematic_gain_cost_next_level: number
+  schematic_id: number
+  schematic_icon: Icon
+  battle_stations: BattleStation[]
+  passive_status: number
+  levels: ShipLevel[]
+}
 /**
  * Ship
  */

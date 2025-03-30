@@ -1,7 +1,7 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
-import { Ship, Schematics, BattleStations } from '../model/ship';
+import { Ship, Schematics, BattleStations, ReferenceShip } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Collection, Constellation, KeystoneBase, Polestar, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
@@ -22,6 +22,7 @@ const DC_DEBUGGING: boolean = false;
 
 export type ValidDemands =
 	'all_buffs' |
+	'all_ships' |
 	'battle_stations' |
 	'cadet' |
 	'collections' |
@@ -79,6 +80,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
+	all_ships: [] as ReferenceShip[],
 	objective_events: [] as ObjectiveEvent[],
 	topQuipmentScores: [] as QuipmentScores[],
 } as ICoreData;
@@ -123,6 +125,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		// Fetch only if valid demand is not already satisfied
 		const valid = [
 			'all_buffs',
+			'all_ships',
 			'battle_stations',
 			'cadet',
 			'crew',
@@ -316,7 +319,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 		return scores;
 	}
-
 
 	function reset(): boolean {
 		setData({ ...defaultData });

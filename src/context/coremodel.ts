@@ -6,13 +6,14 @@ import { Collection, KeystoneBase, Polestar, Constellation } from "../model/game
 import { Gauntlet } from "../model/gauntlets";
 import { Mission } from "../model/missions";
 import { ObjectiveEvent } from "../model/player";
-import { BattleStations, Schematics, Ship } from "../model/ship";
+import { BattleStations, ReferenceShip, Schematics, Ship } from "../model/ship";
 import { StaticFaction } from "../model/shuttle";
 import { EventStats } from "../utils/event_stats";
 import { BuffStatTable } from "../utils/voyageutils";
 
 export interface ICoreData {
 	all_buffs: BuffStatTable;
+	all_ships: ReferenceShip[];
 	battle_stations: BattleStations[];
 	cadet: Mission[];
 	collections: Collection[];
