@@ -2,7 +2,7 @@ import React from "react";
 import { IEventData, IRosterCrew } from "../eventplanner/model"
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
-import { Button, Modal, Table } from "semantic-ui-react";
+import { Button, Icon, Modal, Table } from "semantic-ui-react";
 import { SpecialistMission } from "../../model/player";
 import { Filter } from "../../model/game-elements";
 import { omniSearchFilter } from "../../utils/omnisearch";
@@ -12,7 +12,7 @@ import SpecialistPickerModal from "./crewmodal";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { useStateWithStorage } from "../../utils/storage";
-import { calcSpecialistCost, calculateSpecialistTime } from "../../utils/events";
+import { calcSpecialistCost, calculateSpecialistTime, crewSpecialistBonus } from "../../utils/events";
 import { printChrons } from "../retrieval/context";
 import { drawSkills, drawTraits } from "./utils";
 
@@ -29,7 +29,7 @@ export interface SpecialistMissionTableProps {
 export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     const globalContext = React.useContext(GlobalContext);
-    const { t, TRAIT_NAMES } = globalContext.localized
+    const { t, tfmt, TRAIT_NAMES } = globalContext.localized
 
     const { eventData, crew } = props;
 
@@ -37,20 +37,26 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
 
     const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>('specialist_mission_crew', []);
+    const [selectedMissions, setSelectedMissions] = useStateWithStorage<number[]>('specialist_mission_selections', []);
+    const [staffingFailures, setStaffingFailures] = React.useState<number[]>([]);
 
     const tableConfig = [
-        { width: 1, column: 'name', title: t('global.name') },
+        { width: 1, column: 'title', title: t('global.name') },
         { width: 1, column: 'requirements', title: t('base.skills') },
         { width: 1, column: 'bonus_traits', title: t('base.traits') },
         {
-            width: 2, column: 'crew_id', title: t('event_type.galaxy'),
+            width: 1, column: 'crew_id', title: t('event_type.galaxy'),
             customCompare: (a: SpecialistMission, b: SpecialistMission) => {
                 const crewa = getMissionCrew(a);
                 const crewb = getMissionCrew(b);
                 if (!crewa && !crewb) return 0;
                 if (crewa && !crewb) return 1;
                 if (!crewa && crewb) return -1;
-                if (crewa && crewb) return crewa.name.localeCompare(crewb.name);
+                if (crewa && crewb) {
+                    let r = calculateSpecialistTime(crewa, eventData, a)!.total_minutes - calculateSpecialistTime(crewb, eventData, b)!.total_minutes;
+                    if (r) return r;
+                    return crewa.name.localeCompare(crewb.name);
+                }
                 return 0;
             }
         },
@@ -85,10 +91,21 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }, [missions]);
 
     return <React.Fragment>
+        <h2>{t('event_planner.specialist_missions')}</h2>
         <CrewHoverStat targetGroup="specialist_missions" />
+        <div style={{...flexRow, gap: '1em', margin: '1em 0'}}>
+            <Button onClick={() => staffSelected()}><Icon name='user' /> {t('event_planner.staff_selected')}</Button>
+            <Button onClick={() => selectAll()}><Icon name='globe' /> {t('global.select_all')}</Button>
+            <Button onClick={() => selectNone()}><Icon name='remove circle' /> {t('global.unselect_all')}</Button>
+            <Button onClick={() => clearAll()}><Icon name='cancel' /> {t('global.clear_all')}</Button>
+        </div>
+        <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
+            {printTotal()}
+        </div>
         <SearchableTable
             id='specialist_missions'
             data={missions}
+            hideExplanation={true}
             renderTableRow={renderTableRow}
             filterRow={filterRows}
             config={tableConfig}
@@ -190,9 +207,19 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             traitcontent.push(img);
         }
 
-        return <Table.Row>
-            <Table.Cell>
-                {row.title}
+        const selected = !!selectedMissions?.some(sel => sel === row.id);
+        const failed = !!staffingFailures?.some(sel => sel === row.id);
+
+        return <Table.Row negative={failed}>
+            <Table.Cell style={{cursor: 'pointer'}} onClick={() => toggleMission(row)}>
+                <div style={{...flexRow, alignItems: 'flex-start', gap: '0.25em'}}>
+                    <div style={{width: '24px', margin: '0 0.5em'}}>
+                        {selected && <Icon name='check' />}
+                    </div>
+                    <div>
+                        {row.title}
+                    </div>
+                </div>
             </Table.Cell>
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'space-between', width: '8em', textAlign: 'left', alignItems: 'center'}}>
@@ -200,7 +227,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                 </div>
             </Table.Cell>
             <Table.Cell>
-            <div style={{...flexCol, justifyContent: 'center', width: '12em', textAlign: 'left', alignItems: 'flex-start', gap: '0.5em'}}>
+                <div style={{...flexCol, justifyContent: 'center', width: '12em', textAlign: 'left', alignItems: 'flex-start', gap: '0.5em'}}>
                     {traitcontent}
                 </div>
             </Table.Cell>
@@ -224,33 +251,50 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const time = calculateSpecialistTime(crew, eventData, mission);
         const cost = time ? calcSpecialistCost(eventData, time.minutes + (time.hours * 60)) : 0;
         return (
-            <div style={{...flexRow, cursor: isLocked ? undefined : 'pointer'}} onClick={() => !isLocked ? openPicker(mission) : false}>
-                <div style={{...flexCol, alignItems: 'flex-start'}}>
-                    <div style={{...flexRow, gap: '0.5em', justifyContent: 'center'}}>
-                        <AvatarView
-                            mode='crew'
-                            //targetGroup="specialist_missions"
-                            item={crew}
-                            partialItem={true}
-                            size={48}
-                            />
-                        <span>
-                            {crew.name}
-                        </span>
-                    </div>
-                    {!!time && <div style={{...flexRow}}>
-                        <span>
-                            {t('duration.n_h', { hours: time.hours })}
-                            &nbsp;
-                            {t('duration.n_m', { minutes: time.minutes })}
-                        </span>
-                        {printChrons(cost, t)}
-                    </div>}
+            <div style={{
+                display: 'grid',
+                gridTemplateAreas: `'area1 area2 area3' 'area4 area2 area3'`,
+                gridTemplateColumns: '14em 12em auto',
+                margin: '0.25em',
+                padding: 0,
+                width: '100%',
+                cursor: isLocked ? undefined : 'pointer'
+
+            }} onClick={() => !isLocked ? openPicker(mission) : false}>
+                <div style={{...flexRow, gap: '0.5em', justifyContent: 'flex-start', gridArea: 'area1'}}>
+                    <AvatarView
+                        crewBackground="rich"
+                        mode='crew'
+                        //targetGroup="specialist_missions"
+                        item={crew}
+                        partialItem={true}
+                        size={48}
+                        />
+                    <span>
+                        {crew.name}
+                    </span>
                 </div>
-                <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start'}}>
+                {!!time && <div style={{
+                    display: 'grid',
+                    gridTemplateAreas: `'duration chrons bonus'`,
+                    gridTemplateColumns: '5em 5em 3em',
+                    gridArea: 'area4'}}>
+                    <span style={{gridArea: 'duration'}}>
+                        {t('duration.n_h', { hours: time.hours })}
+                        &nbsp;
+                        {t('duration.n_m', { minutes: time.minutes })}
+                    </span>
+                    <div style={{gridArea: 'chrons'}}>
+                        {printChrons(cost, t)}
+                    </div>
+                    <span>
+                        {t('global.n_%', { n: crewSpecialistBonus(crew, eventData) })}
+                    </span>
+                </div>}
+                <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start', gridArea: 'area2'}}>
                     {drawSkills(skills, t, undefined, true, undefined, 16)}
                 </div>
-                <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start'}}>
+                <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start', gridArea: 'area3'}}>
                     {drawTraits(traits, TRAIT_NAMES)}
                 </div>
             </div>)
@@ -265,6 +309,94 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             });
         }
         setMissionCrew(newdata);
+    }
+
+    function toggleMission(mission: SpecialistMission) {
+        let obj = selectedMissions.find(f => f === mission.id);
+        if (obj) {
+            setSelectedMissions(selectedMissions.filter(f => f !== mission.id));
+        }
+        else {
+            setSelectedMissions([...selectedMissions, mission.id]);
+        }
+    }
+
+    function staffSelected() {
+        const selmissions = selectedMissions.map(s => missions.find(m => m.id === s)!);
+        const outstanding = missions.filter(f => !selectedMissions.some(sel => sel === f.id) && missionCrew.some(mc => mc.mission === f.id));
+        const workCrew = crew.filter(f => !outstanding.some(mc => mc.crew_id === f.id));
+        const failures = [] as number[];
+        const newmissions = missionCrew.filter(f => !selmissions.some(m => m.id === f.mission));
+        for (const mission of selmissions) {
+            const missioncrew = workCrew
+                .filter(c =>
+                        (
+                        (mission.requirements.length === mission.min_req_threshold && mission.requirements.every(skill => c.skill_order.includes(skill))) ||
+                        (mission.requirements.length !== mission.min_req_threshold && mission.requirements.some(skill => c.skill_order.includes(skill)))
+                        ) &&
+                        !newmissions.some(m => m.crew === c.id)
+                )
+                .sort((a, b) => {
+                    const dura = calculateSpecialistTime(a, eventData, mission);
+                    const durb = calculateSpecialistTime(b, eventData, mission);
+                    if (!dura && !durb) return 0;
+                    else if (!dura && !!durb) return 1;
+                    else if (!!dura && !durb) return -1;
+                    else {
+                        let r = dura!.total_minutes - durb!.total_minutes;
+                        if (!r) {
+                            let abonus = crewSpecialistBonus(a, eventData);
+                            let bbonus = crewSpecialistBonus(b, eventData);
+                            r = bbonus - abonus;
+                        }
+                        if (!r) {
+                            let at = a.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
+                            let bt = b.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
+                            r = bt - at;
+                        }
+                        return r;
+                    }
+                });
+            if (missioncrew.length) {
+                newmissions.push({
+                    mission: mission.id,
+                    crew: missioncrew[0].id
+                });
+            }
+            else {
+                failures.push(mission.id);
+            }
+        }
+        setMissionCrew(newmissions);
+        setStaffingFailures(failures);
+        //selectNone();
+    }
+
+    function selectAll() {
+        setSelectedMissions([...missions.map(m => m.id)]);
+    }
+
+    function selectNone() {
+        setSelectedMissions([].slice());
+    }
+
+    function clearAll() {
+        setMissionCrew([].slice());
+        setSelectedMissions([].slice());
+        setStaffingFailures([].slice());
+    }
+
+    function printTotal() {
+        if (!missionCrew?.length || !crew?.length) return <></>;
+        let cost = missionCrew?.map(mc => calcSpecialistCost(eventData, calculateSpecialistTime(crew.find(f => f.id === mc.crew)!, eventData, missions.find(m => m.id == mc.mission)!)!.total_minutes)).reduce((a, b) => a + b, 0);
+        if (!cost) return <></>;
+        return tfmt('global.n_total_x', {
+            n: cost.toLocaleString(),
+            x: <div style={{...flexRow, gap: '0.25em'}}>
+                <img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} style={{height:'24px'}} />
+                {t('global.item_types.chronitons')}
+            </div>
+        });
     }
 
 }

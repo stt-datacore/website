@@ -8,7 +8,7 @@ import { IEventData, IRosterCrew } from '../eventplanner/model';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { SpecialistMission } from '../../model/player';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
-import { calcSpecialistCost, calculateSpecialistTime, getSpecialistBonus } from '../../utils/events';
+import { calcSpecialistCost, calculateSpecialistTime, crewSpecialistBonus, getSpecialistBonus } from '../../utils/events';
 import { Filter } from '../../model/game-elements';
 import { omniSearchFilter } from '../../utils/omnisearch';
 import CONFIG from '../CONFIG';
@@ -55,7 +55,6 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     const specialistCrew = React.useMemo(() => {
         const newRoster = [] as ISpecialistCrewConfig[];
         if (!eventData.activeContent || !bonuses) return [];
-        const { low, high } = bonuses;
 
         for (let c of crew) {
             if (exclusions?.includes(c.id)) continue;
@@ -71,7 +70,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 crew: c,
                 matched_skills,
                 matched_traits,
-                bonus: eventData.featured.includes(c.symbol) ? high : (eventData.bonus.includes(c.symbol) ? low : 0),
+                bonus: crewSpecialistBonus(c, eventData),
                 duration: {
                     ...duration_data,
                     total_minutes
@@ -83,7 +82,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         if (!!selection && !newRoster.some(data => data.crew.symbol === selection.symbol)) {
             setSelection(undefined);
         }
-        return newRoster;
+        return newRoster.sort((a, b) => a.duration.total_minutes - b.duration.total_minutes || b.bonus - a.bonus);
     }, [crew, mission, exclusions]);
 
     const tableConfig = [
@@ -148,7 +147,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     function renderHeader() {
         return (
             <Segment>
-                <div style={{...flexRow, justifyContent: 'space-between', margin: '0.5em'}}>
+                <div style={{...flexRow, justifyContent: 'space-between', margin: '0.5em', flexWrap: 'wrap'}}>
                     <div style={{fontSize: '1.5em', fontWeight: 'bold'}}>
                         {mission.title}
                     </div>
@@ -170,7 +169,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 }}>
                 <CrewHoverStat targetGroup='specialist_modal' modalPositioning={true}  />
                 <SearchableTable
-                    pagingOptions={[{ key: '0', value: 10, text: '10' }]}
+                    hideExplanation={true}
+                    pagingOptions={[{ key: '0', value: 5, text: '5' }, { key: '0', value: 10, text: '10' }]}
                     data={specialistCrew}
                     config={tableConfig}
                     renderTableRow={renderTableRow}
@@ -252,6 +252,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
                     <AvatarView
+                        crewBackground="rich"
                         mode='crew'
                         targetGroup='specialist_modal'
                         item={row.crew}

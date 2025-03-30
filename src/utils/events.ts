@@ -462,6 +462,12 @@ export function getSpecialistBonus(eventData: IEventData) {
 	return { high, low };
 }
 
+export function crewSpecialistBonus(crew: IRosterCrew, eventData: IEventData) {
+	let bonuses = getSpecialistBonus(eventData);
+	if (!bonuses) return 0;
+	return eventData.featured.includes(crew.symbol) ? bonuses.high : eventData.bonus.includes(crew.symbol) ? bonuses.low : 0;
+}
+
 export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData, mission: SpecialistMission | number) {
 	if (!eventData.activeContent?.missions?.length || !eventData.activeContent.completion_progress || !eventData.activeContent.passive_progress_interval) return undefined;
 
@@ -490,7 +496,8 @@ export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData,
 
 	return {
 		hours,
-		minutes
+		minutes,
+		total_minutes: minutes + (hours * 60)
 	}
 }
 
