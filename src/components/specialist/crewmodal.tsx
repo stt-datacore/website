@@ -44,6 +44,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 	const globalContext = React.useContext(GlobalContext);
 
 	const { t, TRAIT_NAMES } = globalContext.localized;
+    const { playerData } = globalContext.player;
     const { mission, onClose, crew, eventData, exclusions } = props;
 
     const [selection, setSelection] = React.useState<IRosterCrew | undefined>(props.selection);
@@ -51,6 +52,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     const both = mission.requirements.length === mission.min_req_threshold;
 
     const bonuses = getSpecialistBonus(eventData);
+
+    const supplyKit = playerData?.player.character.stimpack?.energy_discount ?? 0;
 
     const specialistCrew = React.useMemo(() => {
         const newRoster = [] as ISpecialistCrewConfig[];
@@ -75,7 +78,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     ...duration_data,
                     total_minutes
                 },
-                cost: calcSpecialistCost(eventData, total_minutes)
+                cost: calcSpecialistCost(eventData, total_minutes, supplyKit)
             }
             newRoster.push(newItem);
         }

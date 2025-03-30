@@ -10,6 +10,7 @@ import { mergeItems } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
 import { getChrons } from "../../utils/playerutils";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
+import { OptionsPanelFlexRow } from "../stats/utils";
 
 export interface PlayerResource {
     name: string;
@@ -165,6 +166,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const cite5img = `${process.env.GATSBY_ASSETS_URL}${cite?.imageUrl}`;
     const p_cites = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
 
+    const supplyKit = playerData.player.character.stimpack?.energy_discount ?? 0;
+
     resources.push({
         name: `${costMode === 'normal' ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale')}`,
         quantity: p_cites,
@@ -189,6 +192,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             }
         }
     });
+
+    const flexRow = OptionsPanelFlexRow;
 
     return <div className={'ui segment'}
         style={{
@@ -234,6 +239,10 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 <h3 style={{ margin: 0 }}>
                     {currentEvent.name}
                 </h3>
+            </div>}
+            {!!supplyKit && <div style={{...flexRow, gap: '0.5em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
+                <img src={`${process.env.GATSBY_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
+                {t('global.supply_kit_active_n', { n: supplyKit })}
             </div>}
             <div style={{
                 gridArea: 'v2',

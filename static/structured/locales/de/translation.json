@@ -1040,6 +1040,7 @@
         "shown": "Gezeigt",
         "sort_by": "Sortieren nach",
         "squadron_leader": "Geschwaderführer",
+        "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
         "toggle_layout": "Layout umschalten",
         "uncheck_all": "Deaktivieren Sie alle",
         "unselect_all": "Auswahl aufheben",
