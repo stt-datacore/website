@@ -146,7 +146,8 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     else return <React.Fragment>
         {!props.itemTargetGroup && <ItemHoverStat targetGroup={itemTargetGroup} />}
         <SearchableTable
-            hideExplanation
+            id={`${pageId}/items_table`}
+            hideExplanation={true}
             config={tableConfig}
             data={items}
             renderTableRow={renderTableRow}

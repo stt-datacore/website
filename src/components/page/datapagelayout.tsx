@@ -31,7 +31,7 @@ export interface DataPageLayoutProps {
 	pageDescriptionJSX?: JSX.Element;
 
 	/**
-	 * Default demands are crew, items, ship_schematics, all_buffs, and cadet
+	 * Default demands are crew, items, all_ships, all_buffs, and cadet
 	 */
 	demands?: ValidDemands[]
 
@@ -80,7 +80,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 
 	React.useEffect(() => {
 		const demands: ValidDemands[] = props.demands ?? [];
-		(['crew', 'collections', 'items', 'ship_schematics', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
+		(['crew', 'collections', 'items', 'all_ships', 'all_buffs', 'cadet'] as ValidDemands[]).forEach(required => {
 			if (!demands.includes(required))
 				demands.push(required);
 		});

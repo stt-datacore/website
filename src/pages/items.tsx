@@ -170,12 +170,6 @@ const ItemsPage = (props: ItemsPageProps) => {
 					</ItemsFilterProvider>
 				</WorkerProvider>}
 
-				{/* {hasPlayer &&
-					<ItemsTable
-					pageName={"roster"}
-					noRender={activeTabIndex !== 1 || !hasPlayer} />
-				} */}
-
 				<QuipmentFilterProvider
 					noRender={activeTabIndex !== 2}
 					ownedItems={false}
@@ -190,19 +184,6 @@ const ItemsPage = (props: ItemsPageProps) => {
 						customFields={quipCust}
 						/>
 				</QuipmentFilterProvider>
-
-				{/* <ItemsTable
-					pageName={"quipment"}
-					types={[14]}
-					buffs={true}
-					crewMode={true}
-					noWorker={true}
-					noRender={activeTabIndex !== 2}
-					data={coreItems}
-					hideOwnedInfo={true}
-					flavor={false}
-					customFields={quipCust}
-				/> */}
 
 				<br />
 				<br />

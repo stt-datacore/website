@@ -198,6 +198,27 @@ export function levelToLevelStats(level: ShipLevel): ShipLevelStats {
   return obj as ShipLevelStats;
 }
 
+export function allLevelsToLevelStats(levels: ShipLevel[]): ShipLevels {
+	const result = {} as ShipLevels;
+
+	for (let level of levels) {
+		let l = level.level;
+		let obj = JSON.parse(JSON.stringify(level)) as ShipLevel & ShipLevelStats;
+		obj.dps = obj.attack * obj.attacks_per_second;
+		obj.next_schematics = obj.schematic_gain_cost_next_level;
+		obj.accuracy_power = obj.accuracy;
+		obj.attack_power = obj.attack;
+		obj.evasion_power = obj.evasion;
+		delete obj.schematic_gain_cost;
+		delete (obj as any).schematic_gain_cost_next_level;
+		delete (obj as any).level;
+		result[l+1] = obj;
+	}
+
+	return result;
+  }
+
+
 export function highestLevel(ship: Ship) {
 	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
 	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a, b) => b - a);
@@ -205,7 +226,7 @@ export function highestLevel(ship: Ship) {
 	return highest;
 }
 
-export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false): Ship[] {
+export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false, player_direct = false): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
 	ref_ships = JSON.parse(JSON.stringify(ref_ships));
@@ -216,10 +237,11 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 		let unowned_id = -1;
 		let owned = ships.find((ship) => refship.symbol == ship.symbol);
 
-		let traits_named = ship.traits?.map(t => SHIP_TRAIT_NAMES[t]);
+		let traits_named = ship.traits?.map(t => SHIP_TRAIT_NAMES[t])?.filter(f => !!f);
+		if (!traits_named?.length) traits_named = undefined;
 
 		if (owned) {
-			ship = { ...ship, ... owned, level: owned.level + 1 };
+			ship = { ...ship, ... owned, level: player_direct ? owned.level : owned.level + 1 };
 
 			if (owned.actions) {
 				ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
