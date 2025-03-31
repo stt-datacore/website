@@ -7,7 +7,6 @@ import { mergeItems } from "../../utils/itemutils";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import { CrewTarget } from "../hovering/crewhoverstat";
 import { Ship } from "../../model/ship";
-import { mergeRefShips } from "../../utils/shiputils";
 import { ShipTarget } from "../hovering/shiphoverstat";
 import { navigate } from "gatsby";
 import { CrewMember } from "../../model/crew";
@@ -346,7 +345,7 @@ export const AvatarView = (props: AvatarViewProps) => {
             let cship = all_ships.find(f => f.symbol === symbol?.replace("_schematic", ""));
 
             if (pship && cship) {
-                ship = mergeRefShips([cship], [pship], globalContext.localized.SHIP_TRAIT_NAMES)[0];
+                ship = pship;
             }
             else if (cship) {
                 ship = { ...cship, levels: undefined, id: cship.archetype_id  } as Ship;

@@ -69,8 +69,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 		if (pool) return pool;
 		const { all_ships } = globalContext.core;
 		if (playerShips) {
-			let data = mergeRefShips(all_ships, playerShips, SHIP_TRAIT_NAMES);
-			return data;
+			return playerShips;
 		}
 		else {
 			let data = mergeRefShips(all_ships, [], SHIP_TRAIT_NAMES);

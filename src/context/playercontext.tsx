@@ -175,7 +175,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		if (preparedProfileData) {
 			const all_ships = JSON.parse(JSON.stringify(coreData.all_ships));
-			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames, false, true);
+			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames);
 			setPlayerShips(mergedShips);
 		}
 
