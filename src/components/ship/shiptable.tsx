@@ -41,8 +41,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	React.useEffect(() => {
 		if (playerShips?.length && playerData) {
-			const playerships = [...playerShips];
-			const merged = mergeRefShips(all_ships, playerships, SHIP_TRAIT_NAMES);
+			const merged = [...playerShips];
 			const shipsInUse = getShipsInUse(globalContext.player);
 			setShips(merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => createEventShip(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0));
 			setShipsInUse(shipsInUse);
@@ -136,6 +135,7 @@ export const ShipTable = (props: ShipTableProps) => {
 		}
 		<SearchableTable
 			id={`${pageId}/ship_table`}
+			hideExplanation={true}
 			data={filteredShips}
 			config={tableConfig}
 			renderTableRow={renderTableRow}
