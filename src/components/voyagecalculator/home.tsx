@@ -609,16 +609,16 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
 				/>
-				{/* {voyage.voyage_type === 'encounter' && (
-					<EncounterHelperAccordion
-						voyageConfig={voyage}
-					/>
-				)} */}
 				<StatsRewardsAccordion
 					voyage={voyage}
 					roster={myCrew}
 					initialExpand={recalled}
 				/>
+				{voyage.voyage_type === 'encounter' && (
+					<EncounterHelperAccordion
+						voyageConfig={voyage}
+					/>
+				)}
 			</div>
 			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />

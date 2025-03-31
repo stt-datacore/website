@@ -3,21 +3,19 @@ import {
 	Accordion,
 	Button,
 	Icon,
-	Label,
 	Segment,
 	SemanticICONS
 } from 'semantic-ui-react';
 
 import { PlayerCrew, Voyage } from '../../../../model/player';
-import { VoyageRefreshData } from '../../../../model/voyage';
-import { GlobalContext } from '../../../../context/globalcontext';
+import { VoyageRefreshData, VoyageRefreshEncounter } from '../../../../model/voyage';
 
 import { IEncounter } from '../model';
 
 import { getChampionCrewData, IChampionCrewData, IContestAssignments, IUnusedSkills, makeContestId } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
-import { EncounterImportComponent, getEncounterFromJson } from './encounterimporter';
+import { EncounterImportComponent, getEncounterDataFromJson, serializeEncounter } from './encounterimporter';
 
 type EncounterHelperProps = {
 	voyageConfig: Voyage;
@@ -47,18 +45,23 @@ export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
 export const EncounterHelper = (props: EncounterHelperProps) => {
 	const { voyageConfig } = props;
 
-	const [encounter, setEncounter] = React.useState<IEncounter | undefined>(undefined);
+	const [encounterData, setEncounterData] = React.useState<VoyageRefreshEncounter | undefined>(undefined);
 
 	const voyageCrew = React.useMemo<PlayerCrew[]>(() => {
 		return voyageConfig.crew_slots.map(cs => cs.crew);
 	}, [voyageConfig]);
 
+	const encounter = React.useMemo<IEncounter | undefined>(() => {
+		if (!encounterData) return undefined;
+		return serializeEncounter(encounterData);
+	}, [encounterData]);
+
 	return (
 		<React.Fragment>
 			<EncounterImportComponent
 				voyage={voyageConfig}
+				data={encounterData}
 				setData={handleRefreshData}
-				currentHasRemote={!!encounter}
 			/>
 			{encounter && (
 				<Segment key={encounter.id}>
@@ -73,8 +76,8 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 
 	function handleRefreshData(refreshData: VoyageRefreshData[] | undefined): void {
 		if (!refreshData) return;
-		const encounter: IEncounter | undefined = getEncounterFromJson(refreshData);
-		setEncounter(encounter);
+		const encounterData: VoyageRefreshEncounter | undefined = getEncounterDataFromJson(refreshData);
+		setEncounterData(encounterData);
 	}
 };
 
@@ -88,9 +91,11 @@ const Encounter = (props: EncounterProps) => {
 
 	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
 	const [assignments, setAssignments] = React.useState<IContestAssignments>(getDefaultAssignments());
+	const [targetSkills, setTargetSkills] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
 		setAssignments(getDefaultAssignments());
+		setTargetSkills([]);
 	}, [encounter]);
 
 	React.useEffect(() => {
@@ -99,22 +104,30 @@ const Encounter = (props: EncounterProps) => {
 		});
 	}, [voyageCrew, encounter, assignments]);
 
+	// Scroll here when targeting skills from contests table
+	const championsAnchor = React.useRef<HTMLDivElement>(null);
+
 	if (!championData) return <></>;
 
 	return (
 		<React.Fragment>
-			<EncounterCritTraits
-				encounter={encounter}
-			/>
 			<ContestsTable
 				encounter={encounter}
 				championData={championData}
 				assignments={assignments}
+				setTargetSkills={(skills: string[]) => {
+					setTargetSkills(skills);
+					if (!championsAnchor.current) return;
+					championsAnchor.current.scrollIntoView({
+						behavior: 'smooth'
+					});
+				}}
 			/>
 			<Button	/* Reset assignments */
 				content='Reset assignments'
 				onClick={() => setAssignments(getDefaultAssignments())}
 			/>
+			<div ref={championsAnchor} />
 			<ChampionsTable
 				id={`champions/${encounter.id}`}
 				voyageCrew={voyageCrew}
@@ -122,6 +135,8 @@ const Encounter = (props: EncounterProps) => {
 				championData={championData}
 				assignments={assignments}
 				setAssignments={setAssignments}
+				targetSkills={targetSkills}
+				setTargetSkills={setTargetSkills}
 			/>
 		</React.Fragment>
 	);
@@ -145,20 +160,4 @@ const Encounter = (props: EncounterProps) => {
 		});
 		return assignments;
 	}
-};
-
-type EncounterCritTraitsProps = {
-	encounter: IEncounter;
-};
-
-const EncounterCritTraits = (props: EncounterCritTraitsProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { encounter } = props;
-	return (
-		<Label.Group>
-			{encounter?.critTraits?.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map(critTrait => (
-				<Label key={critTrait} content={TRAIT_NAMES[critTrait]} />
-			))}
-		</Label.Group>
-	);
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Button,
+	Form,
 	Header,
 	Icon,
 	Label
@@ -14,6 +15,7 @@ import CONFIG from '../../../CONFIG';
 import { IDataTableColumn, IDataTableSetup, IEssentialData } from '../../../dataset_presenters/model';
 import { DataTable } from '../../../dataset_presenters/datatable';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
+import { SkillToggler } from '../../../dataset_presenters/options/skilltoggler';
 import { AvatarView } from '../../../item_presenters/avatarview';
 
 import { IContestSkill, IEncounter } from '../model';
@@ -30,10 +32,12 @@ type ChampionsTableProps = {
 	championData: IChampionCrewData[];
 	assignments: IContestAssignments;
 	setAssignments: (assignments: IContestAssignments) => void;
+	targetSkills: string[];
+	setTargetSkills: (targetSkills: string[]) => void;
 };
 
 export const ChampionsTable = (props: ChampionsTableProps) => {
-	const { voyageCrew, encounter, championData, assignments, setAssignments } = props;
+	const { voyageCrew, encounter, championData, assignments, setAssignments, targetSkills, setTargetSkills } = props;
 
 	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
 
@@ -43,7 +47,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				id: 'name',
 				title: 'Crew',
 				sortField: { id: 'name', stringValue: true },
-				renderCell: (datum: IEssentialData) => <CrewLabel crew={datum as IChampionCrewData} />
+				renderCell: (datum: IEssentialData) => renderCrewCell(datum as IChampionCrewData)
 			},
 			{	/* Starting Skills */
 				id: 'skills',
@@ -91,17 +95,41 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			columns,
 			rowsPerPage: 12
 		};
-	}, [championData]);
+	}, [championData, targetSkills]);
+
+	const filteredData = React.useMemo<IChampionCrewData[]>(() => {
+		return championData.filter(crewData =>
+			targetSkills.length === 0 || Object.keys(crewData.skills).some(skill => targetSkills.includes(skill))
+		);
+	}, [championData, targetSkills]);
 
 	return (
 		<React.Fragment>
-			<Header as='h4'>
+			<Header	/* Voyage Crew */
+				as='h4'
+			>
 				Voyage Crew
 			</Header>
 			<p>Your crew's expected odds of winning each contest are listed below. Tap the odds to simulate that contest with higher confidence. Tap <Icon name='check circle outline' fitted /> to assign the crew to that contest.</p>
+			<Form>
+				<Form.Group inline>
+					<SkillToggler
+						value={targetSkills}
+						setValue={setTargetSkills}
+						maxSkills={2}
+					/>
+					{targetSkills.length > 0 && (
+						<Button	/* Reset */
+							content='Reset'
+							onClick={() => setTargetSkills([])}
+							compact
+						/>
+					)}
+				</Form.Group>
+			</Form>
 			<DataTable
 				id={`${props.id}/datatable`}
-				data={championData}
+				data={filteredData}
 				setup={tableSetup}
 			/>
 			{simulatorTrigger && (
@@ -133,13 +161,31 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 	}
 
 	function renderContestColumnHeader(contestSkills: IContestSkill[], assignment: IContestAssignment): JSX.Element {
-		const skillIcons: JSX.Element[] = contestSkills.map(cs =>
-			<img key={cs.skill}
-				src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`}
-				style={{ height: '1.1em', verticalAlign: 'middle' }}
-				className='invertibleIcon'
-			/>
-		);
+		const renderSkillIcon = (skill: string) => {
+			return (
+				<img
+					src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+					style={{ height: '1.1em', verticalAlign: 'middle' }}
+					className='invertibleIcon'
+				/>
+			);
+		};
+		const skillIcons: JSX.Element[] = contestSkills.map(cs => {
+			if (targetSkills.includes(cs.skill)) {
+				return (
+					<Label key={cs.skill} circular color='blue'>
+						<div>
+							{renderSkillIcon(cs.skill)}
+						</div>
+					</Label>
+				);
+			}
+			return (
+				<span key={cs.skill}>
+					{renderSkillIcon(cs.skill)}
+				</span>
+			);
+		});
 		if (assignment.crew) {
 			return (
 				<span	/* CREW_NAME is assigned to this contest */
@@ -164,6 +210,23 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				<span>{skillIcons}</span>
 				<span>({viableChampions})</span>
 			</span>
+		);
+	}
+
+	function renderCrewCell(datum: IChampionCrewData): JSX.Element {
+		const assignedContest: string | undefined = getAssignedContest(assignments, datum.id);
+		return (
+			<React.Fragment>
+				<CrewLabel crew={datum} />
+				{assignedContest && (
+					<Label	/* Assigned to Contest N */
+						color='blue'
+						style={{ marginTop: '1em' }}
+					>
+						Assigned to Contest {assignments[assignedContest].index + 1}
+					</Label>
+				)}
+			</React.Fragment>
 		);
 	}
 
@@ -225,7 +288,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 	if (contest.champion_roll.min === 0)
 		return <></>;
 
-	const assignedContest: string | undefined = getAssignedContest();
+	const assignedContest: string | undefined = getAssignedContest(assignments, contest.champion.crew.id);
 
 	const crewIsAssigned: boolean = !!assignedContest;
 	const crewIsAssignedHere: boolean = assignedContest === contest.id;
@@ -290,15 +353,6 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 			)}
 		</div>
 	);
-
-	function getAssignedContest(): string | undefined {
-		let assignedContest: string | undefined;
-		Object.keys(assignments).forEach(contestId => {
-			if (assignments[contestId].crew?.id === contest.champion.crew.id)
-				assignedContest = contestId;
-		});
-		return assignedContest;
-	}
 
 	function renderEndurableSkill(endurableSkill: IEndurableSkill): JSX.Element {
 		const skill: string = endurableSkill.skill;
@@ -366,3 +420,12 @@ const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
 		/>
 	);
 };
+
+function getAssignedContest(assignments: IContestAssignments, crewId: number): string | undefined {
+	let assignedContest: string | undefined;
+	Object.keys(assignments).forEach(contestId => {
+		if (assignments[contestId].crew?.id === crewId)
+			assignedContest = contestId;
+	});
+	return assignedContest;
+}
