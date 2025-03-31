@@ -243,9 +243,9 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;
 			// Assume in phase 2 of ongoing event
-			if (eventData.content_types.length === 2 && end < 2*24*60*60) {
-				eventData.content_types = [eventData.content_types[1]];
-			}
+			// if (eventData.content_types.length === 2 && end < 2*24*60*60) {
+			// 	eventData.content_types = [eventData.content_types[1]];
+			// }
 		}
 		recentEvents.unshift(eventData);
 		index++;
@@ -653,7 +653,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 			}
 		}
 		const lastEvent = _lev;
-		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship), lastEvent))
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.all_ships.map(m => ({...m, levels: undefined })), lastEvent))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
 			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);

@@ -13,7 +13,7 @@ import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
 import { EventInstance, EventLeaderboard } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
-import { highestLevel } from '../utils/shiputils';
+import { allLevelsToLevelStats, highestLevel, levelToLevelStats } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
 import { ICoreData } from './coremodel';
 import { EventStats } from '../utils/event_stats';
@@ -206,6 +206,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'items':
 						newData.items = processItems(result.json);
 						break;
+					case 'all_ships':
+						newData.all_ships = processAllShips(result.json);
+						break;
 					default:
 						newData[result.demand] = result.json;
 						break;
@@ -325,6 +328,15 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return true;
 	}
 
+	function processAllShips(all_ships: ReferenceShip[]) {
+		for (let ship of all_ships) {
+			ship.id = ship.archetype_id;
+			ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
+		}
+		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels) }));
+		return all_ships;
+	}
+
 	function processCrew(result: CrewMember[]): CrewMember[] {
 		result.forEach((item) => {
 			if (typeof item.date_added === 'string') {
@@ -380,7 +392,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					}
 				}
 			}
-			data.ships = scsave;
+			//data.ships = scsave;
 		}
 	}
 

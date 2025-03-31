@@ -1,229 +1,101 @@
-import React, { Component } from 'react';
-import { Table, Icon, Pagination, Dropdown, Button, Input, Checkbox } from 'semantic-ui-react';
+import React from 'react';
+import { Table, Checkbox } from 'semantic-ui-react';
 
-import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../../utils/datasort';
 import { Ship, ShipInUse } from '../../model/ship';
 import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { GlobalContext } from '../../context/globalcontext';
 import { navigate } from 'gatsby';
 import { RarityFilter } from '../crewtables/commonoptions';
 import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
-import { isMobile } from 'react-device-detect';
-import { getShipsInUse, mergeRefShips, mergeShips } from '../../utils/shiputils';
+import { getShipsInUse, mergeRefShips } from '../../utils/shiputils';
 import CONFIG from '../CONFIG';
-import { TinyStore } from '../../utils/tiny';
 import { formatShipScore } from './utils';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { omniSearchFilter } from '../../utils/omnisearch';
+import { useStateWithStorage } from '../../utils/storage';
 
 type ShipTableProps = {
+	pageId: string;
 	event_ships?: string[];
 	high_bonus?: string[];
 	event_ship_traits?: string[];
 };
 
-type ShipTableState = {
-	data: Ship[];
-	originals: Ship[];
-	activeShip?: Ship | null;
-	rarityFilter?: number[];
-	grantFilter?: string[];
-	abilityFilter: string[];
-	traitFilter: string[];
-	shipsInUse?: ShipInUse[];
-	onlyUsed?: boolean;
-	ownership?: 'owned' | 'unowned'
-};
+type Ownership = 'owned' | 'unowned';
 
-const pagingOptions = [
-	{ key: '0', value: '10', text: '10' },
-	{ key: '1', value: '25', text: '25' },
-	{ key: '2', value: '50', text: '50' },
-	{ key: '3', value: '100', text: '100' }
-];
+export const ShipTable = (props: ShipTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { all_ships } = globalContext.core;
+	const { playerData, playerShips } = globalContext.player;
+	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
+	const { pageId, event_ships, high_bonus, event_ship_traits } = props;
 
-class ShipTable extends Component<ShipTableProps, ShipTableState> {
-	static contextType = GlobalContext;
-	declare context: React.ContextType<typeof GlobalContext>;
-	inited: boolean = false;
-	hasPlayer: boolean = false;
-	private readonly tiny = TinyStore.getStore('profile_ships');
-	constructor(props: ShipTableProps) {
-		super(props);
+	const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/ship_table_filter/rarity`, undefined);
+	const [grantFilter, setGrantFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/grant`, undefined);
+	const [abilityFilter, setAbilityFilter] = useStateWithStorage<string[]>(`${pageId}/ship_table_filter/ability`, []);
+	const [traitFilter, setTraitFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/trait`, undefined);
+	const [onlyUsed, setOnlyUsed] = useStateWithStorage(`${pageId}/ship_table_filter/trait`, false);
+	const [ownership, setOwnership] = useStateWithStorage<Ownership | undefined>(`${pageId}/ship_table_filter/trait`, undefined);
+	const [shipsInUse, setShipsInUse] = React.useState<ShipInUse[] | undefined>(undefined);
+	const [ships, setShips] = React.useState<Ship[]>([]);
 
-		this.state = {
-			onlyUsed: this.tiny.getValue<boolean>('only_used'),
-			data: [],
-			originals: [],
-			abilityFilter: [],
-			traitFilter: []
-		};
-	}
-
-	componentDidMount() {
-		this.initData();
-	}
-
-	componentDidUpdate(prevProps: Readonly<ShipTableProps>, prevState: Readonly<ShipTableState>, snapshot?: any): void {
-		this.initData();
-	}
-
-	printUsage(ship: Ship) {
-		const { shipsInUse } = this.state;
-		const { t } = this.context.localized;
-		let usages = shipsInUse?.filter(f => f.ship.id === ship.id);
-		let texts = [] as JSX.Element[];
-		if (usages?.length) {
-			for (let usage of usages) {
-				if (usage.battle_mode.startsWith('fbb')) {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t(`ship.fbb`)} ${usage.rarity + 1}*`}</a>);
-				}
-				else if (usage.battle_mode === 'pvp') {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer'}}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
-				}
-			}
-		}
-		if (!texts.length) return <></>
-		return texts.reduce((p, n) => p ? <>{p}<br />{n}</> : n)
-	}
-
-	initData() {
-		const hp = !!this.context.player.playerData?.player?.character?.crew?.length;
-		if (hp !== this.hasPlayer) {
-			this.inited = false;
-			this.hasPlayer = hp;
-		}
-
-		if (this.inited) return;
-		this.inited = true;
-
-		const { playerData, playerShips } = this.context.player;
-		const { event_ships } = this.props;
-		const { all_ships } = this.context.core;
-		const { SHIP_TRAIT_NAMES } = this.context.localized;
-
-		for (let ship of all_ships) {
-			ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
-		}
-
+	React.useEffect(() => {
 		if (playerShips?.length && playerData) {
 			const playerships = [...playerShips];
 			const merged = mergeRefShips(all_ships, playerships, SHIP_TRAIT_NAMES);
-			const shipsInUse = getShipsInUse(this.context.player);
-			this.setState({
-				... this.state,
-				data: merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.configForEvent(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0),
-				shipsInUse
-			});
+			const shipsInUse = getShipsInUse(globalContext.player);
+			setShips(merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => createEventShip(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0));
+			setShipsInUse(shipsInUse);
 		}
 		else {
 			const coreships = mergeRefShips(all_ships, [], SHIP_TRAIT_NAMES);
-			this.setState({
-				... this.state,
-				data: coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => this.configForEvent(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0)
-			});
+			setShips(coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => createEventShip(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0));
+			setShipsInUse(undefined);
 		}
-	}
+	}, [playerData, event_ships, SHIP_TRAIT_NAMES, all_ships]);
 
-	configForEvent(ship: Ship) {
-		if (!this.props.event_ships) return ship;
-		ship = JSON.parse(JSON.stringify(ship));
-		if (this.props.high_bonus?.includes(ship.symbol)) {
-			ship.antimatter += 500;
-		}
-		else {
-			let traits = ship.traits?.filter(f => this.props.event_ship_traits?.includes(f))?.length ?? 0;
-			ship.antimatter += (100 * traits);
-		}
-		return ship;
-	}
-
-	private readonly setRarityFilter = (filter: number[] | undefined) => {
-		window.setTimeout(() => {
-			this.setState({...this.state, rarityFilter: filter});
-		});
-	}
-
-	private readonly setGrantFilter = (filter: string[] | undefined) => {
-		window.setTimeout(() => {
-			this.setState({...this.state, grantFilter: filter});
-		})
-	}
-
-	private readonly setTraitFilter = (filter: string[]) => {
-		window.setTimeout(() => {
-			this.setState({...this.state, traitFilter: filter});
-		})
-	}
-
-	private readonly setOwnedFilter = (filter?: 'owned' | 'unowned') => {
-		window.setTimeout(() => {
-			this.setState({...this.state, ownership: filter});
-		})
-	}
-
-	private readonly setAbilityFilter = (filter: string[]) => {
-		window.setTimeout(() => {
-			this.setState({...this.state, abilityFilter: filter});
-		})
-	}
-
-	private readonly setOnlyUsed = (value?: boolean) => {
-		this.tiny.setValue('only_used', value)
-		this.setState({ ...this.state, onlyUsed: value });
-	}
-
-	render() {
-		const { localized } = this.context;
-		const { t, SHIP_TRAIT_NAMES } = localized;
-		const { ownership, grantFilter, traitFilter, abilityFilter, rarityFilter } = this.state;
-
-		const dataContext = this.context;
-		if (!dataContext || (!dataContext.core.ships && !dataContext.player.playerShips)) return <></>;
-
-		let prefiltered = this.state.data;
-
-		let data = prefiltered.filter((ship) => {
+	const filteredShips = React.useMemo(() => {
+		return ships.filter((ship) => {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
 			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
 			if (ownership === 'owned' && !ship.owned) return false;
 			if (ownership === 'unowned' && ship.owned) return false;
-			if (this.state.onlyUsed && this.state.shipsInUse?.length) {
-				return this.state.shipsInUse.some(usage => usage.ship.id === ship.id);
+			if (onlyUsed && shipsInUse?.length) {
+				return shipsInUse.some(usage => usage.ship.id === ship.id);
 			}
 			return true;
 		});
+	}, [ships, shipsInUse, rarityFilter, grantFilter, abilityFilter, traitFilter, ownership, onlyUsed]);
 
-		const tableConfig = [
-			{ width: 3, column: 'name', title: t('ship.ship') },
-			{ width: 1, column: 'ranks.overall', title: t('rank_names.ship_rank'), reverse: true },
-			{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
-			{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
-			{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
-			{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
-			{ width: 1, column: 'attack', title: t('ship.attack'), reverse: true },
-			{ width: 1, column: 'evasion', title: t('ship.evasion'), reverse: true },
-			{ width: 1, column: 'hull', title: t('ship.hull'), reverse: true },
-			{ width: 1, column: 'shields', title: t('ship.shields'), reverse: true },
-			{
-				width: 1,
-				column: 'level',
-				title: t('ship.level'),
-				reverse: true,
-				customCompare: (a, b) => {
-					let r = 0;
-					r = (a.max_level ?? 0) - (b.max_level ?? 0);
-					if (!r) r = (a.level ?? 0) - (b.level ?? 0);
-					return r;
-				}
-			},
-		] as ITableConfigRow[];
+	const tableConfig = [
+		{ width: 3, column: 'name', title: t('ship.ship') },
+		{ width: 1, column: 'ranks.overall', title: t('rank_names.ship_rank'), reverse: true },
+		{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
+		{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
+		{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
+		{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
+		{ width: 1, column: 'attack', title: t('ship.attack'), reverse: true },
+		{ width: 1, column: 'evasion', title: t('ship.evasion'), reverse: true },
+		{ width: 1, column: 'hull', title: t('ship.hull'), reverse: true },
+		{ width: 1, column: 'shields', title: t('ship.shields'), reverse: true },
+		{
+			width: 1,
+			column: 'level',
+			title: t('ship.level'),
+			reverse: true,
+			customCompare: (a, b) => {
+				let r = 0;
+				r = (a.max_level ?? 0) - (b.max_level ?? 0);
+				if (!r) r = (a.level ?? 0) - (b.level ?? 0);
+				return r;
+			}
+		},
+	] as ITableConfigRow[];
 
-		return (<div>
-			{!this.props.event_ships?.length &&
+	return (<div>
+		{!event_ships?.length &&
 
 			<div style={{
 				display: "flex",
@@ -239,41 +111,70 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 					<RarityFilter
 						altTitle={t('hints.filter_ship_rarity')}
 						rarityFilter={rarityFilter ?? []}
-						setRarityFilter={this.setRarityFilter}
+						setRarityFilter={setRarityFilter}
 					/>
-						<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => this.setGrantFilter(value as string[])} />
+					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => setGrantFilter(value as string[])} />
 
-					<ShipAbilityPicker ship={true} selectedAbilities={this.state.abilityFilter} setSelectedAbilities={(value) => this.setAbilityFilter(value as string[])} />
-					<TraitPicker ship={true} selectedTraits={this.state.traitFilter} setSelectedTraits={(value) => this.setTraitFilter(value as string[])} />
-					{!!this.hasPlayer && <ShipOwnership selectedValue={this.state.ownership} setSelectedValue={this.setOwnedFilter} />}
+					<ShipAbilityPicker ship={true} selectedAbilities={abilityFilter} setSelectedAbilities={(value) => setAbilityFilter(value as string[])} />
+					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter(value as string[])} />
+					{!!playerShips && <ShipOwnership selectedValue={ownership} setSelectedValue={setOwnership} />}
 				</div>
 			</div>}
-			{!this.props.event_ships?.length && !!this.hasPlayer &&
-			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0'}}>
-				<Checkbox label={t('ship.show.only_in_use')} checked={this.state.onlyUsed ?? false} onChange={(e, { checked }) => this.setOnlyUsed(checked as boolean)} />
+		{!event_ships?.length && !!playerShips &&
+			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0' }}>
+				<Checkbox label={t('ship.show.only_in_use')} checked={onlyUsed ?? false} onChange={(e, { checked }) => setOnlyUsed(checked as boolean)} />
 			</div>}
-			{!!this.props.event_ships?.length &&
-				<div>
-					<div style={{margin: '0.25em 0'}}>
-						<b>{t('base.featured_ships{{:}}')} </b>&nbsp;{this.props.high_bonus?.map(sym => this.state.data.find(f => f.symbol === sym)?.name || '').join(", ")}
-					</div>
-					<div style={{margin: '0.25em 0'}}>
-						<b>{t('base.featured_traits{{:}}')} </b>&nbsp;{this.props.event_ship_traits?.map(sym => SHIP_TRAIT_NAMES[sym]).join(", ")}
-					</div>
+		{!!event_ships?.length &&
+			<div>
+				<div style={{ margin: '0.25em 0' }}>
+					<b>{t('base.featured_ships{{:}}')} </b>&nbsp;{high_bonus?.map(sym => ships.find(f => f.symbol === sym)?.name || '').join(", ")}
 				</div>
+				<div style={{ margin: '0.25em 0' }}>
+					<b>{t('base.featured_traits{{:}}')} </b>&nbsp;{event_ship_traits?.map(sym => SHIP_TRAIT_NAMES[sym]).join(", ")}
+				</div>
+			</div>
+		}
+		<SearchableTable
+			id={`${pageId}/ship_table`}
+			data={filteredShips}
+			config={tableConfig}
+			renderTableRow={renderTableRow}
+			filterRow={filterRow}
+		/>
+		<ShipHoverStat targetGroup={`${pageId}/ship_hover`} />
+	</div>);
+
+	function printUsage(ship: Ship) {
+		let usages = shipsInUse?.filter(f => f.ship.id === ship.id);
+		let texts = [] as JSX.Element[];
+		if (usages?.length) {
+			for (let usage of usages) {
+				if (usage.battle_mode.startsWith('fbb')) {
+					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity + 1}*`}</a>);
+				}
+				else if (usage.battle_mode === 'pvp') {
+					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
+				}
 			}
-			<SearchableTable
-				data={data}
-				config={tableConfig}
-				renderTableRow={(row, idx) => this.renderTableRow(row, idx)}
-				filterRow={(row, filter, filterType) => this.filterRow(row, filter, filterType)}
-				/>
-			<ShipHoverStat targetGroup='ships' />
-			</div>);
+		}
+		if (!texts.length) return <></>
+		return texts.reduce((p, n) => p ? <>{p}<br />{n}</> : n)
 	}
 
-	filterRow(row: Ship, filter: any, filterType?: string) {
-		const { SHIP_TRAIT_NAMES } = this.context.localized;
+	function createEventShip(ship: Ship) {
+		if (!event_ships) return ship;
+		ship = JSON.parse(JSON.stringify(ship));
+		if (high_bonus?.includes(ship.symbol)) {
+			ship.antimatter += 500;
+		}
+		else {
+			let traits = ship.traits?.filter(f => event_ship_traits?.includes(f))?.length ?? 0;
+			ship.antimatter += (100 * traits);
+		}
+		return ship;
+	}
+
+	function filterRow(row: Ship, filter: any, filterType?: string) {
 		return omniSearchFilter(row, filter, filterType, ['name', 'flavor', {
 			field: 'traits',
 			customMatch: (value, text) => {
@@ -283,10 +184,9 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 		}]);
 	}
 
-	renderTableRow(ship: Ship, idx?: number) {
-		const { t, SHIP_TRAIT_NAMES } = this.context.localized;
+	function renderTableRow(ship: Ship, idx?: number) {
 		const navToShip = (ship: Ship) => {
-			navigate('/ship_info?ship='+ship.symbol);
+			navigate('/ship_info?ship=' + ship.symbol);
 		}
 
 		return (<Table.Row key={idx}>
@@ -300,7 +200,7 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 					}}
 				>
 					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
-						<ShipTarget inputItem={ship} targetGroup='ships'>
+						<ShipTarget inputItem={ship} targetGroup={`${pageId}/ship_hover`}>
 							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 						</ShipTarget>
 					</div>
@@ -308,21 +208,21 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 						<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}>{ship.name}</span>
 					</div>
 					<div style={{ gridArea: 'description' }}>{ship.traits?.map(trait => SHIP_TRAIT_NAMES[trait]).join(', ')}</div>
-					<div style={{ gridArea: 'usages', fontWeight: 'bold'}}>{this.printUsage(ship)}</div>
+					<div style={{ gridArea: 'usages', fontWeight: 'bold' }}>{printUsage(ship)}</div>
 				</div>
 			</Table.Cell>
 			<Table.Cell>
-				<div style={{display: 'flex'}}>
+				<div style={{ display: 'flex' }}>
 					{formatShipScore('ship', ship.ranks?.overall, t)}
 				</div>
 			</Table.Cell>
 			<Table.Cell>
-				<div style={{display: 'flex'}}>
+				<div style={{ display: 'flex' }}>
 					{formatShipScore('ship', ship.ranks?.arena, t)}
 				</div>
 			</Table.Cell>
 			<Table.Cell>
-				<div style={{display: 'flex'}}>
+				<div style={{ display: 'flex' }}>
 					{formatShipScore('ship', ship.ranks?.fbb, t)}
 				</div>
 			</Table.Cell>
@@ -334,13 +234,8 @@ class ShipTable extends Component<ShipTableProps, ShipTableState> {
 			<Table.Cell>{ship.shields} ({t('ship.regen')} {ship.shield_regen})</Table.Cell>
 			<Table.Cell>
 				{ship.level && <> {ship.level} / {ship.max_level} </>
-				|| <>{ship.max_level}</>}
-				</Table.Cell>
-		</Table.Row>
-)
+					|| <>{ship.max_level}</>}
+			</Table.Cell>
+		</Table.Row>)
 	}
 }
-
-
-
-export default ShipTable;

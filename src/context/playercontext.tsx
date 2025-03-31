@@ -5,7 +5,7 @@ import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
 import { prepareProfileData } from '../utils/crewutils';
 import { Ship } from '../model/ship';
-import { mergeShips } from '../utils/shiputils';
+import { mergeRefShips, mergeShips } from '../utils/shiputils';
 import { stripPlayerData } from '../utils/playerutils';
 import { BossBattlesRoot } from '../model/boss';
 import { ShuttleAdventure } from '../model/shuttle';
@@ -13,6 +13,7 @@ import { ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
 import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { ShipTraitNames } from '../model/traits';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -82,7 +83,7 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics } = coreData;
+	const { crew, ship_schematics, all_ships } = coreData;
 
 	const { children } = props;
 
@@ -114,7 +115,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [loaded, setLoaded] = React.useState(false);
 
 	React.useEffect(() => {
-		if (!input || !ship_schematics.length || !crew.length) return;
+		if (!input || (!all_ships.length) || !crew.length) return;
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [] as CompactCrew[];
@@ -173,8 +174,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {
-			const schematics = JSON.parse(JSON.stringify(coreData.ship_schematics));
-			const mergedShips = mergeShips(schematics, preparedProfileData.player.character.ships);
+			const all_ships = JSON.parse(JSON.stringify(coreData.all_ships));
+			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames, false, true);
 			setPlayerShips(mergedShips);
 		}
 

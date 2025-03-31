@@ -17,7 +17,7 @@ import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
-import ShipTable from '../ship/shiptable';
+import { ShipTable } from '../ship/shiptable';
 import { AvatarView } from '../item_presenters/avatarview';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
@@ -174,12 +174,14 @@ export const EventPicker = (props: EventPickerProps) => {
 				</React.Fragment>
 			)}
 
-			{playerData && eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
+			{eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
 				<div style={{ marginTop: "0.5em" }}>
 					<div style={{ margin: "0.5em 0" }}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ShipTable event_ships={eventData.bonus_ships}
+					<ShipTable
+						pageId='event_picker'
+						event_ships={eventData.bonus_ships}
 						high_bonus={eventData.featured_ships}
 						event_ship_traits={eventData.activeContent?.antimatter_bonus_ship_traits}
 					/>

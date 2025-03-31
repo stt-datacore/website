@@ -68,12 +68,14 @@ export interface ShipLevelStats {
 }
 
 export interface ReferenceShip extends ShipBonus {
+  id: number;
   archetype_id: number
   symbol: string
   name: string
   rarity: number
   icon: Icon
   flavor: string
+  traits_named?: string[];
   model: string
   max_level: number
   actions: ShipAction[]
