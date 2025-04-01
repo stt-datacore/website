@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button, Container, Icon, Image, Modal, Segment, Tab, Table } from 'semantic-ui-react';
+import { Button, Checkbox, Container, Icon, Image, Modal, Segment, Tab, Table } from 'semantic-ui-react';
 
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { GlobalContext } from '../../context/globalcontext';
 import { Leaderboard } from '../../model/events';
 import { IEventData, IRosterCrew } from '../eventplanner/model';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
-import { SpecialistMission } from '../../model/player';
+import { GalaxyCrewCooldown, SpecialistMission } from '../../model/player';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { calcSpecialistCost, calculateSpecialistTime, crewSpecialistBonus, getSpecialistBonus } from '../../utils/events';
 import { Filter } from '../../model/game-elements';
@@ -14,8 +14,9 @@ import { omniSearchFilter } from '../../utils/omnisearch';
 import CONFIG from '../CONFIG';
 import { AvatarView } from '../item_presenters/avatarview';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
-import { drawSkills } from './utils';
+import { defaultSpecialistCompare, defaultSpecialistSort, drawSkills, printOnCooldown, printOnShuttle, printOnVoyage } from './utils';
 import { printChrons } from '../retrieval/context';
+import { useStateWithStorage } from '../../utils/storage';
 
 export interface ISpecialistCrewConfig {
     crew: IRosterCrew;
@@ -31,10 +32,12 @@ export interface ISpecialistCrewConfig {
 }
 
 type SpecialistPickerProps = {
+    pageId: string;
     eventData: IEventData;
     mission: SpecialistMission;
     exclusions?: number[];
     crew: IRosterCrew[];
+    cooldowns?: GalaxyCrewCooldown[];
     selection?: IRosterCrew;
     onClose: (selection: IRosterCrew | undefined, affirmative: boolean) => void;
     //renderTrigger?: (mission: SpecialistMission, crew: IRosterCrew) => JSX.Element;
@@ -45,9 +48,10 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
 	const { t, TRAIT_NAMES } = globalContext.localized;
     const { playerData, ephemeral } = globalContext.player;
-    const { mission, onClose, crew, eventData, exclusions } = props;
+    const { mission, onClose, crew, eventData, exclusions, pageId, cooldowns } = props;
 
     const [selection, internalSetSelection] = React.useState<IRosterCrew | undefined>(props.selection);
+    const [hideActive, setHideActive] = useStateWithStorage<boolean>(`${pageId}/hide_active`, false, { rememberForever: true });
 
     const both = mission.requirements.length === mission.min_req_threshold;
 
@@ -63,11 +67,11 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
         for (let c of crew) {
             if (exclusions?.includes(c.id)) continue;
-            let gcrew = ephemeral?.galaxyCooldowns?.find(gc => gc.crew_id === c.id);
-            if (gcrew) {
-                if (typeof gcrew.disabled_until === 'string') gcrew.disabled_until = new Date(gcrew.disabled_until);
-                if (gcrew.disabled_until.getTime() > Date.now())
-                c.active_status = 5;
+            if (hideActive && c.active_status) continue;
+            const cooldown = cooldowns?.find(f => f.crew_id === c.id);
+            if (cooldown) {
+                cooldown.is_disabled = cooldown.disabled_until.getTime() > Date.now();
+                if (hideActive && cooldown.is_disabled) continue;
             }
             const matched_skills = Object.keys(c.base_skills).filter(skill => mission.requirements.includes(skill) && c.base_skills[skill].core);
             if (both && matched_skills.length !== mission.requirements.length) continue;
@@ -93,8 +97,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         if (!!selection && !newRoster.some(data => data.crew.symbol === selection.symbol)) {
             setSelection(undefined);
         }
-        return newRoster.sort((a, b) => a.duration.total_minutes - b.duration.total_minutes || b.bonus - a.bonus);
-    }, [crew, mission, exclusions, supplyKit, ephemeral]);
+        return defaultSpecialistSort(newRoster);
+    }, [crew, mission, exclusions, supplyKit, ephemeral, hideActive]);
 
     const tableConfig = [
         { width: 1, column: 'crew.name', title: t('global.name') },
@@ -122,20 +126,43 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             }
         },
         {
-            width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'),
-            reverse: true
-        },
-        {
-            width: 1, column: 'duration.total_minutes', title: t('items.columns.duration'),
+            width: 2, column: 'crew.active_status', title: t('base.status'),
+            reverse: true,
             customCompare: (a: ISpecialistCrewConfig, b: ISpecialistCrewConfig) => {
-                let r = a.duration.total_minutes - b.duration.total_minutes;
-                if (!r) r = b.bonus - a.bonus;
-                if (!r) r = b.matched_traits.length - a.matched_traits.length;
+                let r = 0;
+                if (!r && !!cooldowns?.length) {
+                    let spa = cooldowns.find(f => f.crew_id === a.crew.id);
+                    let spb = cooldowns.find(f => f.crew_id === b.crew.id);
+                    if (!spa && !spb) return 0;
+                    if (!spa) return -1;
+                    if (!spb) return 1;
+                    if (spa && spb) {
+                        let now = Date.now();
+                        let cta = spa.disabled_until.getTime() - now;
+                        let ctb = spb.disabled_until.getTime() - now;
+                        r = cta - ctb;
+                    }
+                }
+                if (!r) r = a.crew.active_status - b.crew.active_status;
+                if (!r) r = defaultSpecialistCompare(a, b);
                 return r;
             }
         },
         {
-            width: 1, column: 'cost', title: t('event_planner.table.columns.completion_cost')
+            width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'),
+            reverse: false
+        },
+        {
+            width: 1, column: 'duration.total_minutes', title: t('items.columns.duration'),
+            customCompare: (a: ISpecialistCrewConfig, b: ISpecialistCrewConfig) => {
+                return defaultSpecialistCompare(a, b);
+            }
+        },
+        {
+            width: 1, column: 'cost', title: t('event_planner.table.columns.completion_cost'),
+            customCompare: (a: ISpecialistCrewConfig, b: ISpecialistCrewConfig) => {
+                return defaultSpecialistCompare(a, b);
+            }
         }
     ] as ITableConfigRow[];
 
@@ -179,6 +206,12 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 maxHeight: isMobile ? '100vh' : '70vh'
                 }}>
                 <CrewHoverStat targetGroup='specialist_modal' modalPositioning={true}  />
+                <Checkbox
+                    style={{margin: '1em 0'}}
+                    label={t('options.crew_status.active_hide')}
+                    checked={hideActive}
+                    onChange={(e, { checked }) => setHideActive(!!checked)}
+                    />
                 <SearchableTable
                     hideExplanation={true}
                     pagingOptions={[{ key: '0', value: 5, text: '5' }, { key: '0', value: 10, text: '10' }]}
@@ -228,6 +261,11 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     }
 
     function renderTableRow(row: ISpecialistCrewConfig, idx?: number, isActive?: boolean) {
+
+        const cooldown = cooldowns?.find(f => f.crew_id === row.crew.id);
+        if (cooldown) {
+            cooldown.is_disabled = cooldown.disabled_until.getTime() > Date.now();
+        }
         const skillimg = row.matched_skills.map((skill) => {
             let skill_icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`;
             return <div title={CONFIG.SKILLS[skill]} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start', gap: '0.5em'}}>
@@ -259,10 +297,21 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             traitcontent.push(img);
         }
 
-        return <Table.Row positive={selection?.id == row.crew.id} style={{cursor: 'pointer', opacity: !!row.crew.active_status ? '0.2' : undefined}} onClick={() => setSelection(row)}>
+        const isDisabled = (!!row.crew.active_status || !!cooldown?.is_disabled);
+
+        return <Table.Row
+                    positive={selection?.id == row.crew.id}
+                    onClick={() => setSelection(row)}
+                    style={{
+                        cursor: isDisabled ? 'no-drop' : 'pointer',
+                        }}
+                    >
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.5em'}}>
                     <AvatarView
+                        style={{
+                            opacity: isDisabled ? '0.2' : undefined
+                            }}
                         crewBackground="rich"
                         mode='crew'
                         targetGroup='specialist_modal'
@@ -285,6 +334,11 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 </div>
             </Table.Cell>
             <Table.Cell>
+                {row.crew.active_status === 2 && printOnShuttle(t)}
+                {row.crew.active_status === 3 && printOnVoyage(t)}
+                {!!cooldown?.is_disabled && printOnCooldown(t, cooldown)}
+            </Table.Cell>
+            <Table.Cell>
                 {!!row.bonus && t('global.n_%', { n: row.bonus })}
             </Table.Cell>
             <Table.Cell>
@@ -293,7 +347,6 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     &nbsp;
                     {t('duration.n_m', { minutes: row.duration.minutes })}
                 </p>
-
             </Table.Cell>
             <Table.Cell>
                 {printChrons(row.cost)}
@@ -303,7 +356,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     }
 
     function setSelection(row?: ISpecialistCrewConfig) {
-        if (row?.crew?.active_status) return;
+        if (row?.crew?.active_status || cooldowns?.some(cd => cd.crew_id === row?.crew?.id && cd.is_disabled)) return;
         if (selection == row?.crew) internalSetSelection(undefined);
         else internalSetSelection(row?.crew);
     }

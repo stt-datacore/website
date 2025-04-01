@@ -1,9 +1,10 @@
 import React from "react";
-import { TranslateMethod } from "../../model/player";
+import { GalaxyCrewCooldown, TranslateMethod } from "../../model/player";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import CONFIG from "../CONFIG";
 import { TraitNames } from "../../model/traits";
-
+import { ISpecialistCrewConfig } from "./crewmodal";
+import { Icon } from "semantic-ui-react";
 
 export function drawTraits(traits: string[], TRAIT_NAMES: TraitNames, style?: React.CSSProperties, iconSize = 24) {
     const flexRow = OptionsPanelFlexRow;
@@ -63,4 +64,54 @@ export function drawSkills(skills: string[], t: TranslateMethod, combo?: 'and' |
     }
     return skillcontent
 
+}
+
+export function printOnShuttle(t: TranslateMethod, colon = false) {
+    return <React.Fragment>
+        <Icon name='space shuttle' />
+        {t('base.on_shuttle')}{!!colon && t('global.colon')}
+    </React.Fragment>
+}
+
+export function printOnVoyage(t: TranslateMethod, colon = false) {
+    return <React.Fragment>
+        <Icon name='rocket' />
+        {t('base.on_voyage')}{!!colon && t('global.colon')}
+    </React.Fragment>
+}
+
+export function printOnCooldown(t: TranslateMethod, cooldown: GalaxyCrewCooldown, colon = false) {
+
+    const seconds = (cooldown.disabled_until.getTime() - Date.now()) / 1000;
+    if (seconds < 0) return <></>;
+    let minutes = Math.round(seconds / 60);
+	let hours = Math.floor(minutes / 60);
+
+	minutes = Math.ceil(minutes - (hours * 60));
+
+    return <React.Fragment>
+        <Icon name='time' />
+        {t('ship.cooldown')}{!!colon && t('global.colon')}
+        <div style={{margin: '0.5em 0'}}>
+            {t('duration.n_h', { hours })}
+            {' '}
+            {t('duration.n_m', { minutes })}
+        </div>
+    </React.Fragment>
+}
+
+
+export function defaultSpecialistSort(crew: ISpecialistCrewConfig[]) {
+    return crew.sort((a, b) => {
+        return -1 * defaultSpecialistCompare(a, b);
+    });
+}
+
+export function defaultSpecialistCompare(a: ISpecialistCrewConfig, b: ISpecialistCrewConfig) {
+    let r = a.duration.total_minutes - b.duration.total_minutes;
+    if (!r) r = b.bonus - a.bonus;
+    if (!r) r = b.matched_skills.map(ms => b.crew[ms].core).reduce((p, n) => p > n ? p : n, 0) -
+        a.matched_skills.map(ms => a.crew[ms].core).reduce((p, n) => p > n ? p : n, 0)
+    if (!r) r = b.matched_traits.length - a.matched_traits.length;
+    return r;
 }
