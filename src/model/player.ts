@@ -137,6 +137,9 @@ export interface ReplicatorRationType {
 export interface GalaxyCrewCooldown {
     crew_id: number;
     disabled_until: Date;
+
+    /** Used internally. Not part of game data. */
+    is_disabled?: boolean;
 }
 
 export interface Character {

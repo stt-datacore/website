@@ -15,6 +15,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { calcSpecialistCost, calculateSpecialistTime, crewSpecialistBonus } from "../../utils/events";
 import { printChrons } from "../retrieval/context";
 import { drawSkills, drawTraits } from "./utils";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 type MissionCrew = {
     mission: number;
@@ -32,18 +33,39 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     const { t, tfmt, TRAIT_NAMES } = globalContext.localized
 
     const { eventData } = props;
-    const { playerData } = globalContext.player;
-    const [pickerOpen, setPickerOpen] = React.useState(false);
-    const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
+    const { playerData, ephemeral } = globalContext.player;
 
-    const [preferBonus, setPreferBonus] = useStateWithStorage('specialist/prefer_bonus', false);
-    const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>('specialist/mission_crew', []);
-    const [selectedMissions, setSelectedMissions] = useStateWithStorage<number[]>('specialist/mission_selections', []);
-    const [staffingFailures, setStaffingFailures] = React.useState<number[]>([]);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+    const pageId = React.useMemo(() => {
+        let p = '';
+        if (playerData?.player.dbid) {
+            p += `${playerData.player.dbid}/`;
+        }
+        return p + 'specialist_event_helper';
+    }, [playerData]);
 
     const supplyKit = React.useMemo(() => {
         return playerData?.player.character.stimpack?.energy_discount ?? 0;
     }, [playerData]);
+
+    const galaxyCooldowns = React.useMemo(() => {
+        if (!ephemeral?.galaxyCooldowns?.length) return [];
+        return ephemeral.galaxyCooldowns.map(gc => {
+            if (typeof gc.disabled_until === 'string') gc.disabled_until = new Date(gc.disabled_until);
+            gc.is_disabled = gc.disabled_until.getTime() > Date.now();
+            return gc;
+        });
+    }, [ephemeral]);
+
+    const [pickerOpen, setPickerOpen] = React.useState(false);
+    const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
+
+    const [considerFrozen, setConsiderFrozen] = useStateWithStorage(`${pageId}/consider_frozen`, false, { rememberForever: true });
+    const [preferBonus, setPreferBonus] = useStateWithStorage(`${pageId}/prefer_bonus`, false, { rememberForever: true });
+    const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>(`${pageId}/specialist/mission_crew`, []);
+    const [selectedMissions, setSelectedMissions] = useStateWithStorage<number[]>(`${pageId}/specialist/mission_selections`, []);
+    const [staffingFailures, setStaffingFailures] = React.useState<number[]>([]);
 
     React.useEffect(() => {
         if (eventData?.activeContent?.missions) {
@@ -98,8 +120,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }, [missions]);
 
     const crew = React.useMemo(() => {
-        return props.crew; //.filter(f => f.immortal <= 0);
-    }, [props.crew]);
+        return props.crew.filter(f => f.immortal <= 0 || considerFrozen);
+    }, [props.crew, considerFrozen]);
 
     React.useEffect(() => {
         const newdata = [...missionCrew];
@@ -131,13 +153,19 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             <Button onClick={() => clearAll()}><Icon name='cancel' /> {t('global.clear_all')}</Button>
         </div>
         <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
-            <Checkbox label={t('event_planner.prefer_high_bonus')} onChange={(e, { checked }) => setPreferBonus(!!checked)} />
+            <Checkbox checked={preferBonus} label={t('event_planner.prefer_high_bonus')} onChange={(e, { checked }) => setPreferBonus(!!checked)} />
+        </div>
+        <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
+            <Checkbox checked={considerFrozen} label={t('consider_crew.consider_frozen')} onChange={(e, { checked }) => setConsiderFrozen(!!checked)} />
+        </div>
+        <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
+            {printCrewTotals()}
         </div>
         <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
             {printTotal()}
         </div>
         <SearchableTable
-            id='specialist_missions'
+            id={`${pageId}/specialist_missions`}
             data={missions}
             hideExplanation={true}
             renderTableRow={renderTableRow}
@@ -146,7 +174,9 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             />
         {!!pickerOpen && !!currentMission &&
             <SpecialistPickerModal
+                pageId={`${pageId}/specialist_modal`}
                 exclusions={exclusions}
+                cooldowns={galaxyCooldowns}
                 crew={crew}
                 selection={getMissionCrew(currentMission)}
                 eventData={eventData}
@@ -437,6 +467,52 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         setMissionCrew([].slice());
         setSelectedMissions([].slice());
         setStaffingFailures([].slice());
+    }
+
+    function printCrewTotals() {
+        const clen = crew.length;
+        const cool = galaxyCooldowns.filter(f => f.is_disabled).length;
+        const shuttle = crew.filter(f => f.active_status === 2).length;
+        const voyage = crew.filter(f => f.active_status === 3).length;
+        const titleStyle = {...flexRow, alignItems: 'flex-start', gap: '0.5em'}
+        return (
+        <Table size='small' striped style={{width: isMobile ? 'undefined' : '18em'}}>
+            <Table.Row>
+                <Table.Cell colspan={2} style={{textAlign: 'center'}}>
+                    {t('global.n_total_x', {
+                        n: clen,
+                        x: t('base.crewmen')
+                    })}
+                </Table.Cell>
+            </Table.Row>
+                <Table.Row>
+                    <Table.Cell style={titleStyle}>
+                        <Icon name='time' />
+                        {t('ship.cooldown')}{t('global.colon')}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {cool}
+                    </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                    <Table.Cell style={titleStyle}>
+                        <Icon name='space shuttle' />
+                        {t('base.on_shuttle')}{t('global.colon')}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {shuttle}
+                    </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                    <Table.Cell style={titleStyle}>
+                        <Icon name='rocket' />
+                        {t('base.on_voyage')}{t('global.colon')}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {voyage}
+                    </Table.Cell>
+                </Table.Row>
+            </Table>)
     }
 
     function printTotal() {
