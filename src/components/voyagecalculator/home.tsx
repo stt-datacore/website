@@ -9,7 +9,7 @@ import { GameEvent, Voyage, VoyageDescription } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { ITrackedVoyage, IVoyageCrew, IVoyageEventContent, IVoyageHistory, IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTraits } from '../../utils/events';
+import { getEventData, getRecentEvents, guessEncounterTimes } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IEventData } from '../eventplanner/model';

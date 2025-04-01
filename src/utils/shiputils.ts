@@ -1,4 +1,4 @@
-import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
+import { BaseSkillFields, CrewMember } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
 import { BattleMode, BattleStation, PvpDivision, ReferenceShip, ShipAction, ShipInUse, ShipLevel, ShipLevels, ShipLevelStats } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
