@@ -27,6 +27,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 
     delete p.player.character.active_conflict;
     delete p.player.character.next_shuttle_bay_cost;
+    delete p.player.character.galaxy_crew_cooldowns;
 
     delete p.fleet_boss_battles_root;
 	delete p.captains_bridge_root;

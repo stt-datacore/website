@@ -134,6 +134,11 @@ export interface ReplicatorRationType {
   item_sources: any[]
 }
 
+export interface GalaxyCrewCooldown {
+    crew_id: number;
+    disabled_until: Date;
+}
+
 export interface Character {
   id: number
   display_name: string
@@ -212,7 +217,8 @@ export interface Character {
   all_buffs_cap_hash: AllBuffsCapHash
   all_buffs: AllBuff[]
   total_marketplace_claimables: number
-  seasons: Season[]
+  seasons: Season[];
+  galaxy_crew_cooldowns?: GalaxyCrewCooldown[];
 }
 
 export interface ClientAsset {

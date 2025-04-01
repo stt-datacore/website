@@ -44,7 +44,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 	const globalContext = React.useContext(GlobalContext);
 
 	const { t, TRAIT_NAMES } = globalContext.localized;
-    const { playerData } = globalContext.player;
+    const { playerData, ephemeral } = globalContext.player;
     const { mission, onClose, crew, eventData, exclusions } = props;
 
     const [selection, internalSetSelection] = React.useState<IRosterCrew | undefined>(props.selection);
@@ -53,7 +53,9 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
     const bonuses = getSpecialistBonus(eventData);
 
-    const supplyKit = playerData?.player.character.stimpack?.energy_discount ?? 0;
+    const supplyKit = React.useMemo(() => {
+        return playerData?.player.character.stimpack?.energy_discount ?? 0;
+    }, [playerData]);
 
     const specialistCrew = React.useMemo(() => {
         const newRoster = [] as ISpecialistCrewConfig[];
@@ -61,6 +63,12 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
         for (let c of crew) {
             if (exclusions?.includes(c.id)) continue;
+            let gcrew = ephemeral?.galaxyCooldowns?.find(gc => gc.crew_id === c.id);
+            if (gcrew) {
+                if (typeof gcrew.disabled_until === 'string') gcrew.disabled_until = new Date(gcrew.disabled_until);
+                if (gcrew.disabled_until.getTime() > Date.now())
+                c.active_status = 5;
+            }
             const matched_skills = Object.keys(c.base_skills).filter(skill => mission.requirements.includes(skill) && c.base_skills[skill].core);
             if (both && matched_skills.length !== mission.requirements.length) continue;
             else if (!matched_skills.length) continue;
@@ -86,7 +94,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             setSelection(undefined);
         }
         return newRoster.sort((a, b) => a.duration.total_minutes - b.duration.total_minutes || b.bonus - a.bonus);
-    }, [crew, mission, exclusions]);
+    }, [crew, mission, exclusions, supplyKit, ephemeral]);
 
     const tableConfig = [
         { width: 1, column: 'crew.name', title: t('global.name') },

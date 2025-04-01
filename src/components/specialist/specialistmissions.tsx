@@ -32,7 +32,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     const { t, tfmt, TRAIT_NAMES } = globalContext.localized
 
     const { eventData } = props;
-
+    const { playerData } = globalContext.player;
     const [pickerOpen, setPickerOpen] = React.useState(false);
     const [currentMission, setCurrentMission] = React.useState<SpecialistMission | undefined>(undefined);
 
@@ -40,6 +40,27 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     const [missionCrew, setMissionCrew] = useStateWithStorage<MissionCrew[]>('specialist/mission_crew', []);
     const [selectedMissions, setSelectedMissions] = useStateWithStorage<number[]>('specialist/mission_selections', []);
     const [staffingFailures, setStaffingFailures] = React.useState<number[]>([]);
+
+    const supplyKit = React.useMemo(() => {
+        return playerData?.player.character.stimpack?.energy_discount ?? 0;
+    }, [playerData]);
+
+    React.useEffect(() => {
+        if (eventData?.activeContent?.missions) {
+            const { missions } = eventData.activeContent;
+            let newmissions = selectedMissions.filter(f => missions.some(mi => mi.id === f));
+            let newcrew = missionCrew.filter(f => missions.some(mi => mi.id === f.mission));
+            setMissionCrew(newcrew);
+            setSelectedMissions(newmissions);
+            if (currentMission && !missions.some(mi => mi.id === currentMission.id)) {
+                setCurrentMission(undefined);
+            }
+        }
+        else {
+            setSelectedMissions([]);
+            setMissionCrew([]);
+        }
+    }, [eventData]);
 
     const tableConfig = [
         { width: 1, column: 'title', title: t('global.name') },
@@ -84,7 +105,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const newdata = [...missionCrew];
         if (missions?.length) {
             for (let m of missions) {
-                if (m.crew_id && !newdata.some(d => d.mission === m.id)) {
+                if (m.crew_id && !newdata.some(d => d.mission === m.id) && crew.some(c => c.id === m.crew_id)) {
                     newdata.push({
                         mission: m.id,
                         crew: m.crew_id
@@ -262,7 +283,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const traits = crew.traits.filter(f => mission.bonus_traits.includes(f));
         const skills = crew.skill_order.filter(f => mission.requirements.includes(f));
         const time = calculateSpecialistTime(crew, eventData, mission);
-        const cost = time ? calcSpecialistCost(eventData, time.minutes + (time.hours * 60)) : 0;
+        const cost = time ? calcSpecialistCost(eventData, time.total_minutes, supplyKit) : 0;
         return (
             <div style={{
                 display: 'grid',
@@ -411,7 +432,16 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     function printTotal() {
         if (!missionCrew?.length || !crew?.length) return <></>;
-        let cost = missionCrew?.map(mc => calcSpecialistCost(eventData, calculateSpecialistTime(crew.find(f => f.id === mc.crew)!, eventData, missions.find(m => m.id == mc.mission)!)!.total_minutes)).reduce((a, b) => a + b, 0);
+        let cost = 0;
+        for (let mc of missionCrew ?? []) {
+            if (!mc) continue;
+            let c = crew.find(f => f.id === mc.crew)
+            if (!c) continue;
+            let mission = missions.find(f => f.crew_id === mc.crew);
+            if (!mission) continue;
+
+            cost += calcSpecialistCost(eventData, calculateSpecialistTime(c, eventData, mission)?.total_minutes ?? 0, supplyKit);
+        }
         if (!cost) return <></>;
         return tfmt('global.n_total_x', {
             n: cost.toLocaleString(),

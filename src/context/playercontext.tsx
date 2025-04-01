@@ -1,5 +1,5 @@
 import React from 'react';
-import { CompactCrew, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
@@ -47,6 +47,7 @@ export interface IEphemeralData {
 	voyageDescriptions: VoyageDescription[],
 	archetype_cache: ArchetypeRoot20;
 	objectiveEventRoot: ObjectiveEventRoot;
+	galaxyCooldowns: GalaxyCrewCooldown[];
 };
 
 export interface ISessionStates {
@@ -143,6 +144,10 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				setItemArchetypeCache(input.archetype_cache);
 			}
 
+			input.player.character.galaxy_crew_cooldowns?.forEach((gc) => {
+				if (typeof gc.disabled_until === 'string') gc.disabled_until = new Date(gc.disabled_until);
+			});
+
 			setEphemeral({
 				activeCrew,
 				events: [...input.player.character.events ?? []],
@@ -151,7 +156,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				voyage: [...input.player.character.voyage ?? []],
 				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
 				archetype_cache: {} as ArchetypeRoot20,
-				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot
+				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot,
+				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? []
 			});
 		}
 

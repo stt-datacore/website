@@ -474,6 +474,7 @@ export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData,
 	if (typeof mission === 'number') {
 		mission = eventData.activeContent.missions[mission];
 	}
+	if (!mission) return undefined;
 
 	const goal = eventData.activeContent.completion_progress;
 	const inc = eventData.activeContent.passive_progress_interval;
