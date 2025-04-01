@@ -80,6 +80,8 @@ export interface SearchableTableProps {
 
 	pagingOptions?: DropdownItemProps[];
 	defaultPaginationRows?: number;
+
+	lockTitle?: (obj: any) => string;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -395,7 +397,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		</div>
 
 			<div>
-				{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+				{props.lockable && <LockButtons lockTitle={props.lockTitle} lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 			</div>
 
 			{filteredCount === 0 && (
@@ -450,10 +452,11 @@ type LockButtonsProps = {
 	lockable: any[];
 	activeLock: any;
 	setLock: (lock: any) => void;
+	lockTitle?: (obj: any) => string;
 };
 
 const LockButtons = (props: LockButtonsProps) => {
-	const { lockable, activeLock, setLock } = props;
+	const { lockable, activeLock, setLock, lockTitle } = props;
 
 	if (lockable?.length == 0) return (<></>);
 
@@ -462,7 +465,7 @@ const LockButtons = (props: LockButtonsProps) => {
 			<span style={{ marginRight: '.5em' }}>Lock view on:</span>
 			{lockable.map((lock, lockNum) => (
 				<Button key={lockNum} compact toggle active={JSON.stringify(lock) === JSON.stringify(activeLock)} onClick={() => handleClick(lock)}>
-					{lock.name}
+					{lockTitle ? lockTitle(lock) : lock.name}
 				</Button>
 			))}
 		</div>

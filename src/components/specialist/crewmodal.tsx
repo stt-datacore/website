@@ -100,6 +100,13 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         return defaultSpecialistSort(newRoster);
     }, [crew, mission, exclusions, supplyKit, ephemeral, hideActive]);
 
+    const activeLock = React.useMemo(() => {
+        if (!selection) return undefined;
+        let sel = specialistCrew.find(f => f.crew === selection);
+        if (sel) return [sel];
+        return undefined;
+    }, [specialistCrew, selection]);
+
     const tableConfig = [
         { width: 1, column: 'crew.name', title: t('global.name') },
         {
@@ -213,6 +220,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     onChange={(e, { checked }) => setHideActive(!!checked)}
                     />
                 <SearchableTable
+                    lockable={activeLock}
+                    lockTitle={(obj: ISpecialistCrewConfig) => obj.crew.name}
                     hideExplanation={true}
                     pagingOptions={[{ key: '0', value: 5, text: '5' }, { key: '0', value: 10, text: '10' }]}
                     data={specialistCrew}
