@@ -363,6 +363,13 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const workCrew = crew.filter(f => !outstanding.some(mc => mc.crew_id === f.id));
         const failures = [] as number[];
         const newmissions = missionCrew.filter(f => !selmissions.some(m => m.id === f.mission));
+        const galaxyCooldowns = globalContext.player.ephemeral?.galaxyCooldowns ?? [];
+        for (let gcrew of galaxyCooldowns) {
+            if (gcrew) {
+                if (typeof gcrew.disabled_until === 'string') gcrew.disabled_until = new Date(gcrew.disabled_until);
+            }
+        }
+
         for (const mission of selmissions) {
             const missioncrew = workCrew
                 .filter(c =>
@@ -370,6 +377,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         (mission.requirements.length === mission.min_req_threshold && mission.requirements.every(skill => c.skill_order.includes(skill))) ||
                         (mission.requirements.length !== mission.min_req_threshold && mission.requirements.some(skill => c.skill_order.includes(skill)))
                         ) &&
+                        !c.active_status &&
+                        !galaxyCooldowns.some(g => g.crew_id === c.id && g.disabled_until.getTime() > Date.now()) &&
                         !newmissions.some(m => m.crew === c.id)
                 )
                 .sort((a, b) => {
