@@ -36,7 +36,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     const globalContext = React.useContext(GlobalContext);
     const { isMobile } = globalContext;
-    const { playerData } = globalContext.player;
+    const { playerData, ephemeral } = globalContext.player;
 
     if (!playerData?.player) return <></>;
 
@@ -166,7 +166,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const cite5img = `${process.env.GATSBY_ASSETS_URL}${cite?.imageUrl}`;
     const p_cites = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
 
-    const supplyKit = playerData.player.character.stimpack?.energy_discount ?? 0;
+    const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
 
     resources.push({
         name: `${costMode === 'normal' ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale')}`,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { DataContext, DataProviderProperties } from './datacontext';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
@@ -48,6 +48,7 @@ export interface IEphemeralData {
 	archetype_cache: ArchetypeRoot20;
 	objectiveEventRoot: ObjectiveEventRoot;
 	galaxyCooldowns: GalaxyCrewCooldown[];
+	stimpack?: Stimpack;
 };
 
 export interface ISessionStates {
@@ -157,7 +158,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
 				archetype_cache: {} as ArchetypeRoot20,
 				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot,
-				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? []
+				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
+				stimpack: input.player.character.stimpack
 			});
 		}
 

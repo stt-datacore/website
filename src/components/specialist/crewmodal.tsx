@@ -58,8 +58,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     const bonuses = getSpecialistBonus(eventData);
 
     const supplyKit = React.useMemo(() => {
-        return playerData?.player.character.stimpack?.energy_discount ?? 0;
-    }, [playerData]);
+        return ephemeral?.stimpack?.energy_discount ?? 0;
+    }, [ephemeral]);
 
     const specialistCrew = React.useMemo(() => {
         const newRoster = [] as ISpecialistCrewConfig[];

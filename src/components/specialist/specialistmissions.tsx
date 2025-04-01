@@ -46,8 +46,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }, [playerData]);
 
     const supplyKit = React.useMemo(() => {
-        return playerData?.player.character.stimpack?.energy_discount ?? 0;
-    }, [playerData]);
+        return ephemeral?.stimpack?.energy_discount ?? 0;
+    }, [ephemeral]);
 
     const galaxyCooldowns = React.useMemo(() => {
         if (!ephemeral?.galaxyCooldowns?.length) return [];
