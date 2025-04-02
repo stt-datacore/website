@@ -52,7 +52,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
     const [selection, internalSetSelection] = React.useState<IRosterCrew | undefined>(props.selection);
     const [hideActive, setHideActive] = useStateWithStorage<boolean>(`${pageId}/hide_active`, false, { rememberForever: true });
-
+    const [coolSwitch, setCoolSwitch] = React.useState(0);
     const both = mission.requirements.length === mission.min_req_threshold;
 
     const bonuses = getSpecialistBonus(eventData);
@@ -64,15 +64,16 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     const specialistCrew = React.useMemo(() => {
         const newRoster = [] as ISpecialistCrewConfig[];
         if (!eventData.activeContent || !bonuses) return [];
-
+        let cool = false;
         for (let c of crew) {
-            if (exclusions?.includes(c.id)) continue;
-            if (hideActive && c.active_status) continue;
             const cooldown = cooldowns?.find(f => f.crew_id === c.id);
             if (cooldown) {
                 cooldown.is_disabled = cooldown.disabled_until.getTime() > Date.now();
+                if (cooldown.is_disabled) cool = true;
                 if (hideActive && cooldown.is_disabled) continue;
             }
+            if (exclusions?.includes(c.id)) continue;
+            if (hideActive && c.active_status) continue;
             const matched_skills = Object.keys(c.base_skills).filter(skill => mission.requirements.includes(skill) && c.base_skills[skill].core);
             if (both && matched_skills.length !== mission.requirements.length) continue;
             else if (!matched_skills.length) continue;
@@ -97,8 +98,33 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         if (!!selection && !newRoster.some(data => data.crew.symbol === selection.symbol)) {
             setSelection(undefined);
         }
+        if (cool) {
+            setCoolSwitch(1);
+        }
         return defaultSpecialistSort(newRoster);
     }, [crew, mission, exclusions, supplyKit, ephemeral, hideActive]);
+
+    React.useEffect(() => {
+        if (coolSwitch) {
+            let cool = false;
+            for (let c of crew) {
+                const cooldown = cooldowns?.find(f => f.crew_id === c.id);
+                if (cooldown) {
+                    cooldown.is_disabled = cooldown.disabled_until.getTime() > Date.now();
+                    if (cooldown.is_disabled) cool = true;
+                    if (hideActive && cooldown.is_disabled) continue;
+                }
+            }
+            if (cool) {
+                setTimeout(() => {
+                    setCoolSwitch(coolSwitch + 1);
+                }, 30000);
+            }
+            else {
+                setCoolSwitch(0);
+            }
+        }
+    }, [coolSwitch]);
 
     const activeLock = React.useMemo(() => {
         if (!selection) return undefined;
@@ -345,7 +371,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             <Table.Cell>
                 {row.crew.active_status === 2 && printOnShuttle(t)}
                 {row.crew.active_status === 3 && printOnVoyage(t)}
-                {!!cooldown?.is_disabled && printOnCooldown(t, cooldown)}
+                {!!cooldown?.is_disabled && !!coolSwitch && printOnCooldown(t, cooldown)}
             </Table.Cell>
             <Table.Cell>
                 {!!row.bonus && t('global.n_%', { n: row.bonus })}
