@@ -16,10 +16,12 @@ import { calcSpecialistCost, calculateSpecialistTime, crewSpecialistBonus } from
 import { printChrons } from "../retrieval/context";
 import { drawSkills, drawTraits } from "./utils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { formatDuration, formatTime } from "../../utils/itemutils";
 
 type MissionCrew = {
     mission: number;
     crew: number;
+    ending_at?: Date;
 }
 
 export interface SpecialistMissionTableProps {
@@ -70,8 +72,25 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     React.useEffect(() => {
         if (eventData?.activeContent?.missions) {
             const { missions } = eventData.activeContent;
-            let newmissions = selectedMissions.filter(f => missions.some(mi => mi.id === f));
+            let newmissions = selectedMissions.filter(f => missions.some(mi => mi.id === f && !mi.crew_id));
             let newcrew = missionCrew.filter(f => missions.some(mi => mi.id === f.mission));
+
+            for (let mission of missions) {
+                if (mission.completion_time) {
+                    if (typeof mission.completion_time === 'string') mission.completion_time = new Date(mission.completion_time);
+                }
+                if (mission.crew_id) {
+                    let newobj = newcrew.find(nc => nc.mission === mission.id);
+                    if (!newobj) {
+                        newobj = {
+                            mission: mission.id,
+                            crew: mission.crew_id
+                        } as MissionCrew;
+                        newcrew.push(newobj);
+                    }
+                    newobj.ending_at = mission.completion_time;
+                }
+            }
             setMissionCrew(newcrew);
             setSelectedMissions(newmissions);
             if (currentMission && !missions.some(mi => mi.id === currentMission.id)) {
@@ -242,7 +261,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             txt = txt.toLocaleUpperCase();
             return txt;
         })();
-
+        const isLocked = locked.includes(row.id);
         const skillimg = row.requirements.map((r) => {
             let skill_icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${r}.png`;
             return <div style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
@@ -275,7 +294,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const failed = !!staffingFailures?.some(sel => sel === row.id);
 
         return <Table.Row negative={failed}>
-            <Table.Cell style={{cursor: 'pointer'}} onClick={() => toggleMission(row)}>
+            <Table.Cell style={{cursor: isLocked ? undefined : 'pointer'}} onClick={() => !isLocked && toggleMission(row)}>
                 <div style={{...flexRow, alignItems: 'flex-start', gap: '0.25em'}}>
                     <div style={{width: '24px', margin: '0 0.5em'}}>
                         {selected && <Icon name='check' />}
@@ -302,17 +321,29 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }
 
     function renderMissionCrew(mission: SpecialistMission) {
-        const crew = getMissionCrew(mission);
+        let mc = missionCrew.find(f => f.mission === mission.id);
+        if (!mc) return <></>;
+        const misscrew = crew.find(c => c.id === mc.crew);
+        const durationText = (() => {
+            if (mc.ending_at) {
+                if (typeof mc.ending_at === 'string') mc.ending_at = new Date(mc.ending_at);
+                return formatTime(mc.ending_at.getTime() - Date.now(), t);
+            }
+            else {
+                return '';
+            }
+        })();
+
         const isLocked = locked.includes(mission.id);
-        if (!crew) {
+        if (!misscrew) {
             return (<div style={{...flexCol}}
                 onClick={() => !isLocked ? openPicker(mission) : false}>
                 <Button disabled={isLocked}>{t('hints.select_crew')}</Button>
             </div>)
         }
-        const traits = crew.traits.filter(f => mission.bonus_traits.includes(f));
-        const skills = crew.skill_order.filter(f => mission.requirements.includes(f));
-        const time = calculateSpecialistTime(crew, eventData, mission);
+        const traits = misscrew.traits.filter(f => mission.bonus_traits.includes(f));
+        const skills = misscrew.skill_order.filter(f => mission.requirements.includes(f));
+        const time = calculateSpecialistTime(misscrew, eventData, mission);
         const cost = time ? calcSpecialistCost(eventData, time.total_minutes, supplyKit) : 0;
         return (
             <div style={{
@@ -330,14 +361,14 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         crewBackground="rich"
                         mode='crew'
                         //targetGroup="specialist_missions"
-                        item={crew}
+                        item={misscrew}
                         partialItem={true}
                         size={48}
                         />
 
                     <span>
-                        {!!crew.immortal && crew.immortal > 0 && <Icon name='snowflake' />}
-                        {crew.name}
+                        {!!misscrew.immortal && misscrew.immortal > 0 && <Icon name='snowflake' />}
+                        {misscrew.name}
                     </span>
                 </div>
                 {!!time && <div style={{
@@ -345,16 +376,18 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                     gridTemplateAreas: `'duration chrons bonus'`,
                     gridTemplateColumns: '5em 5em 3em',
                     gridArea: 'area4'}}>
-                    <span style={{gridArea: 'duration'}}>
-                        {t('duration.n_h', { hours: time.hours })}
-                        &nbsp;
-                        {t('duration.n_m', { minutes: time.minutes })}
+                    <span style={{gridArea: 'duration', marginLeft: '0.25em'}}>
+                        {!!durationText && <div style={{color: 'lightgreen'}}>{durationText}</div> || <>
+                            {t('duration.n_h', { hours: time.hours })}
+                            &nbsp;
+                            {t('duration.n_m', { minutes: time.minutes })}
+                        </>}
                     </span>
                     <div style={{gridArea: 'chrons'}}>
                         {printChrons(cost, t)}
                     </div>
                     <span>
-                        {t('global.n_%', { n: crewSpecialistBonus(crew, eventData) })}
+                        {t('global.n_%', { n: crewSpecialistBonus(misscrew, eventData) })}
                     </span>
                 </div>}
                 <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start', gridArea: 'area2'}}>
@@ -456,7 +489,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }
 
     function selectAll() {
-        setSelectedMissions([...missions.map(m => m.id)]);
+        setSelectedMissions([...missions.filter(m => !m.crew_id).map(m => m.id)]);
     }
 
     function selectNone() {
@@ -464,7 +497,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }
 
     function clearAll() {
-        setMissionCrew([].slice());
+        setMissionCrew(missionCrew.filter(f => f.ending_at));
         setSelectedMissions([].slice());
         setStaffingFailures([].slice());
     }
