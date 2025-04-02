@@ -1137,6 +1137,10 @@
             "description": "Übersicht über alle Gegenstände im Spiel.",
             "title": "Alle Gegenstände"
         },
+        "farm_table": {
+            "description": "Aufschlüsselung der anbaubaren Komponenten mit Quellen.",
+            "title": "Farmtabelle"
+        },
         "owned_items": {
             "description": "Übersicht über alle Gegenstände,\ndie der Spieler besitzt (und auch benötigt).",
             "title": "Besessene Gegenstände"

@@ -3,7 +3,7 @@ import { Step } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
-import { EquipmentItem } from '../model/equipment';
+import { EquipmentCommon, EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import { CustomFieldDef } from '../components/items/utils';
@@ -13,12 +13,14 @@ import { ItemsFilterProvider } from '../components/items/filters';
 import { DemandsTable } from '../components/items/demandstable';
 import { QuipmentFilterProvider } from '../components/items/quipmentfilters';
 import { QuipmentTable } from '../components/items/quipmenttable';
+import { GlobalFarm } from '../components/items/globalfarm';
 
 export interface ItemsPageProps { }
 
 const ItemsPage = (props: ItemsPageProps) => {
 
 	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });
+	const [demandItems, setDemandItems] = React.useState<(EquipmentItem | EquipmentCommon)[]>([]);
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t, tfmt } = globalContext.localized;
@@ -111,7 +113,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
 			<React.Fragment>
 
-				<Step.Group fluid>
+				<Step.Group fluid widths={hasPlayer ? 4 : 2}>
 					<Step active={activeTabIndex === 0} onClick={() => setActiveTabIndex(0)}>
 						<Step.Content>
 							<Step.Title>{t('item_picker.all_items.title')}</Step.Title>
@@ -123,6 +125,14 @@ const ItemsPage = (props: ItemsPageProps) => {
 						<Step.Content>
 							<Step.Title>{t('item_picker.owned_items.title')}</Step.Title>
 							<Step.Description>{tfmt('item_picker.owned_items.description')}</Step.Description>
+						</Step.Content>
+
+					</Step>}
+
+					{hasPlayer && <Step active={activeTabIndex === 3} onClick={() => setActiveTabIndex(3)}>
+						<Step.Content>
+							<Step.Title>{t('item_picker.farm_table.title')}</Step.Title>
+							<Step.Description>{tfmt('item_picker.farm_table.description')}</Step.Description>
 						</Step.Content>
 
 					</Step>}
@@ -156,18 +166,24 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 				{hasPlayer &&
 				<WorkerProvider>
-					<ItemsFilterProvider
-						noRender={activeTabIndex !== 1 || !hasPlayer}
-						pool={playerData!.player.character.items as EquipmentItem[]}
-						ownedItems={true}
-						pageId={'roster'}
-					>
-						<DemandsTable
+					<React.Fragment>
+						<ItemsFilterProvider
 							noRender={activeTabIndex !== 1 || !hasPlayer}
+							pool={playerData!.player.character.items as EquipmentItem[]}
+							ownedItems={true}
 							pageId={'roster'}
-							items={coreItems}
+						>
+							<DemandsTable
+								noRender={activeTabIndex !== 1 || !hasPlayer}
+								pageId={'roster'}
+								items={coreItems}
+							/>
+						</ItemsFilterProvider>
+						<GlobalFarm
+							noRender={activeTabIndex !== 3 || !hasPlayer}
+							coreItems={coreItems}
 						/>
-					</ItemsFilterProvider>
+					</React.Fragment>
 				</WorkerProvider>}
 
 				<QuipmentFilterProvider

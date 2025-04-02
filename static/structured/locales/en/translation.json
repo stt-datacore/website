@@ -1137,6 +1137,10 @@
             "description": "Overview of all items in the game.",
             "title": "All Items"
         },
+        "farm_table": {
+            "description": "Breakdown of farmable components with sources.",
+            "title": "Farm Table"
+        },
         "owned_items": {
             "description": "Overview of all items owned\n(and also needed) by the player.",
             "title": "Owned Items"
