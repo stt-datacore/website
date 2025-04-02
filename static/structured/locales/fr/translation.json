@@ -1147,6 +1147,10 @@
             "description": "Aperçu de tous les articles du jeu.",
             "title": "Tous les articles"
         },
+        "farm_table": {
+            "description": "Répartition des composants cultivables avec sources.",
+            "title": "Tableau des objets cultivables"
+        },
         "owned_items": {
             "description": "Aperçu de tous les articles possédés\n(et également nécessaires) par le joueur.",
             "title": "Articles possédés"

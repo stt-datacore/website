@@ -1145,6 +1145,10 @@
             "description": "Descripción general de todos los artículos\ndel juego.",
             "title": "Todos los artículos"
         },
+        "farm_table": {
+            "description": "Desglose de componentes cultivables con fuentes.",
+            "title": "Tabla de artículos cultivables"
+        },
         "owned_items": {
             "description": "Descripción general de todos los artículos\nque posee (y que también necesita) el jugador.",
             "title": "Artículos de propiedad"
