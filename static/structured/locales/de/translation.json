@@ -1191,6 +1191,7 @@
         "faction_only": "Nur Fraktion",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
         "item_sources": "Artikelquellen",
+        "n_farmable": "{{n}} landwirtschaftliche",
         "n_needed": "{{n}} benötigt",
         "n_owned": "{{n}} im Besitz",
         "n_rewarded": "{{n}} belohnt",

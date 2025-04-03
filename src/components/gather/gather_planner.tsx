@@ -147,7 +147,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
 
         <FarmTable
             pageId="gather_planner"
-            hover_target={hover_target} sources={sources} />
+            hoverTarget={hover_target} sources={sources} />
     </>)
 
     function performReset() {

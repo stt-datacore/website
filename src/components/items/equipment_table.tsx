@@ -35,14 +35,14 @@ export interface EquipmentTableProps {
 
 export const EquipmentTable = (props: EquipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const filterContext = React.useContext(ItemsFilterContext);
-
-    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded } = filterContext;
 
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
     const { pageId, hideOwnedColumns: hideOwnedInfo, types, buffsColumn: buffs, flavorColumn: flavor, customFields, noRender } = props;
     const { selection, setSelection, maxSelections, selectionMode } = props;
+
+    const filterContext = React.useContext(ItemsFilterContext);
+    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded } = filterContext;
 
     const items = React.useMemo(() => {
         if (available) {

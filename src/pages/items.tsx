@@ -166,24 +166,24 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 				{hasPlayer &&
 				<WorkerProvider>
-					<React.Fragment>
-						<ItemsFilterProvider
-							noRender={activeTabIndex !== 1 || !hasPlayer}
-							pool={playerData!.player.character.items as EquipmentItem[]}
-							ownedItems={true}
-							pageId={'roster'}
-						>
+					<ItemsFilterProvider
+						noRender={![1, 3].includes(activeTabIndex) || !hasPlayer}
+						pool={playerData!.player.character.items as EquipmentItem[]}
+						ownedItems={true}
+						pageId={'roster'}
+					>
+						<React.Fragment>
 							<DemandsTable
-								noRender={activeTabIndex !== 1 || !hasPlayer}
-								pageId={'roster'}
+									noRender={activeTabIndex !== 1 || !hasPlayer}
+									pageId={'roster'}
+									items={coreItems}
+								/>
+							<GlobalFarm
+								noRender={activeTabIndex !== 3 || !hasPlayer}
 								items={coreItems}
 							/>
-						</ItemsFilterProvider>
-						<GlobalFarm
-							noRender={activeTabIndex !== 3 || !hasPlayer}
-							coreItems={coreItems}
-						/>
-					</React.Fragment>
+						</React.Fragment>
+					</ItemsFilterProvider>
 				</WorkerProvider>}
 
 				<QuipmentFilterProvider
