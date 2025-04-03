@@ -324,9 +324,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     function renderMissionCrew(mission: SpecialistMission) {
         const rec = missionCrew.find(f => f.mission === mission.id);
-        if (!rec) return <></>;
-
-        const assignment = crew.find(c => c.id === rec.crew);
+        const assignment = crew.find(c => c.id === rec?.crew);
         const isLocked = locked.includes(mission.id);
 
         if (!assignment) {
@@ -337,19 +335,19 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         }
 
         const durationText = (() => {
-            if (rec.ending_at) {
+            if (rec?.ending_at) {
                 if (typeof rec.ending_at === 'string') rec.ending_at = new Date(rec.ending_at);
-                return formatTime(rec.ending_at.getTime() - Date.now(), t);
+                let time = rec.ending_at.getTime() - Date.now();
+                if (time > 0) return formatTime(time, t);
+                else return t('global.completed')
             }
-            else {
-                return '';
-            }
+            return '';
         })();
 
         const traits = assignment.traits.filter(f => mission.bonus_traits.includes(f));
         const skills = assignment.skill_order.filter(f => mission.requirements.includes(f));
         const time = calculateSpecialistTime(assignment, eventData, mission);
-        const cost = durationText ?
+        const cost = durationText && rec ?
                 calcSpecialistCost(eventData, Math.ceil((rec.ending_at!.getTime() - Date.now()) / 60000), supplyKit) :
                 time ? calcSpecialistCost(eventData, time.total_minutes, supplyKit) : 0;
 
@@ -392,7 +390,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         </>}
                     </span>
                     <div style={{gridArea: 'chrons', color: !!durationText ? 'lightgreen' : undefined }}>
-                        {printChrons(cost, t)}
+                        {!!cost && printChrons(cost, t)}
                     </div>
                     <span>
                         {t('global.n_%', { n: crewSpecialistBonus(assignment, eventData) })}
