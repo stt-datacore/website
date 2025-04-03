@@ -1191,6 +1191,7 @@
         "faction_only": "Faction Only",
         "is_used_to_build": "Is used to build these",
         "item_sources": "Item sources",
+        "n_farmable": "{{n}} farmable",
         "n_needed": "{{n}} needed",
         "n_owned": "{{n}} owned",
         "n_rewarded": "{{n}} rewarded",

@@ -1,10 +1,12 @@
 import React from "react";
-import { GalaxyCrewCooldown, TranslateMethod } from "../../model/player";
+import { GalaxyCrewCooldown, SpecialistMission, TranslateMethod } from "../../model/player";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import CONFIG from "../CONFIG";
 import { TraitNames } from "../../model/traits";
 import { ISpecialistCrewConfig } from "./crewmodal";
 import { Icon } from "semantic-ui-react";
+import { IEventData, IRosterCrew } from "../eventplanner/model";
+import { crewSpecialistBonus, calculateSpecialistTime } from "../../utils/events";
 
 export function drawTraits(traits: string[], TRAIT_NAMES: TraitNames, style?: React.CSSProperties, iconSize = 24) {
     const flexRow = OptionsPanelFlexRow;
@@ -114,4 +116,37 @@ export function defaultSpecialistCompare(a: ISpecialistCrewConfig, b: ISpecialis
         a.matched_skills.map(ms => a.crew[ms].core).reduce((p, n) => p > n ? p : n, 0)
     if (!r) r = b.matched_traits.length - a.matched_traits.length;
     return r;
+}
+
+export function specialistRosterAutoSort(crew: IRosterCrew[], eventData: IEventData, mission: SpecialistMission, preferBonus: boolean) {
+    return crew.sort((a, b) => {
+        let r = 0;
+        let dur = 0;
+        let bonus = crewSpecialistBonus(b, eventData) - crewSpecialistBonus(a, eventData);
+
+        const dura = calculateSpecialistTime(a, eventData, mission);
+        const durb = calculateSpecialistTime(b, eventData, mission);
+
+        if (!dura && !durb) dur = 0;
+        else if (!dura && !!durb) dur = -1;
+        else if (!!dura && !durb) dur = 1;
+
+        if (dur) return dur;
+        if (dura && durb) dur = dura.total_minutes - durb.total_minutes;
+
+        if (preferBonus) {
+            r = bonus ? bonus : dur;
+        }
+        else {
+            r = dur ? dur : bonus;
+        }
+        if (!r) r = mission.requirements.map(ms => b[ms].core).reduce((p, n) => p > n ? p : n, 0) -
+            mission.requirements.map(ms => a[ms].core).reduce((p, n) => p > n ? p : n, 0)
+        if (!r) {
+            let at = a.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
+            let bt = b.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
+            r = bt - at;
+        }
+        return r;
+    });
 }

@@ -1203,6 +1203,7 @@
         "faction_only": "Factions uniquement",
         "is_used_to_build": "Est utilisé pour construire ces",
         "item_sources": "Sources d'article",
+        "n_farmable": "{{n}} cultivable",
         "n_needed": "{{n}} nécessaires",
         "n_owned": "{{n}} possédée",
         "n_rewarded": "{{n}} récompensé",

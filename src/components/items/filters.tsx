@@ -17,6 +17,7 @@ export interface IItemsFilterContext {
     itemTypeFilter?: number[];
     setItemTypeFilter: (value?: number[]) => void;
     filterItems: (items: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
+    configureFilters: (pool: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => void;
 }
 
 const DefaultContextData: IItemsFilterContext = {
@@ -26,7 +27,8 @@ const DefaultContextData: IItemsFilterContext = {
     setShowUnownedNeeded: () => false,
     setRarityFilter: () => false,
     setItemTypeFilter: () => false,
-    filterItems: () => []
+    filterItems: () => [],
+    configureFilters: () => false
 }
 
 export const ItemsFilterContext = React.createContext(DefaultContextData);
@@ -44,29 +46,31 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     const { t }  = globalContext.localized;
     const { children, pageId, pool, ownedItems, noRender } = props;
 
+    const [filterPool, setFilterPool] = React.useState(pool);
+
     const [showUnownedNeeded, setShowUnownedNeeded] = useStateWithStorage<boolean | undefined>(`${pageId}/items_show_unowned_needed`, false, { rememberForever: true });
     const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_rarity_filter`, undefined, { rememberForever: true });
     const [itemTypeFilter, setItemTypeFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_type_filter`, undefined, { rememberForever: true });
 
     const rarityOptions = React.useMemo(() => CONFIG.RARITIES
-        .filter((rarity, idx) => pool?.some((p) => p.rarity === idx) ?? true)
+        .filter((rarity, idx) => filterPool?.some((p) => p.rarity === idx) ?? true)
         .map((rarity, idx) => {
             return {
                 key: `rarity_${idx}`,
                 text: `${rarity.name}`,
                 value: idx
             }
-        }), [pool]);
+        }), [filterPool]);
 
     const itemTypeOptions = React.useMemo(() => Object.entries(CONFIG.REWARDS_ITEM_TYPE)
-        .filter(([type, name], idx) => pool?.some((p) => Number(p.type) === Number(type)) ?? true)
+        .filter(([type, name], idx) => filterPool?.some((p) => Number(p.type) === Number(type)) ?? true)
         .map(([type, name], idx) => {
             return {
                 key: `item_type_${type}`,
                 text: `${name}`,
                 value: Number(type)
             }
-        }), [pool]);
+        }), [filterPool]);
 
     const contextData: IItemsFilterContext = {
         available: true,
@@ -77,7 +81,8 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         setItemTypeFilter,
         showUnownedNeeded,
         setShowUnownedNeeded,
-        filterItems
+        filterItems,
+        configureFilters
     }
 
     const flexRow = OptionsPanelFlexRow;
@@ -127,5 +132,9 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
             if (ownedItems && !showUnownedNeeded && item.quantity === 0) return false;
             return true;
         });
+    }
+
+    function configureFilters(pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) {
+        setFilterPool(pool ?? props.pool);
     }
 }
