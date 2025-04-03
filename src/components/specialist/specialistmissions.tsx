@@ -447,7 +447,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                 (
                     (mission.requirements.length === mission.min_req_threshold && mission.requirements.every(skill => c.skill_order.includes(skill))) ||
                     (mission.requirements.length !== mission.min_req_threshold && mission.requirements.some(skill => c.skill_order.includes(skill)))
-                    )
+                    ) &&
+                    !newmissions.some(mc => mc.crew === c.id)
             );
 
             const missioncrew = positionCrew
