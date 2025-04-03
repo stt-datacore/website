@@ -2,7 +2,7 @@ import React from "react";
 import { IEventData, IRosterCrew } from "../eventplanner/model"
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
-import { Button, Checkbox, Icon, Modal, Table } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Label, Modal, Segment, Table } from "semantic-ui-react";
 import { SpecialistMission } from "../../model/player";
 import { Filter } from "../../model/game-elements";
 import { omniSearchFilter } from "../../utils/omnisearch";
@@ -14,7 +14,7 @@ import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { useStateWithStorage } from "../../utils/storage";
 import { calcSpecialistCost, calculateSpecialistTime, crewSpecialistBonus } from "../../utils/events";
 import { printChrons } from "../retrieval/context";
-import { drawSkills, drawTraits } from "./utils";
+import { specialistRosterAutoSort, defaultSpecialistSort, drawSkills, drawTraits } from "./utils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { formatDuration, formatTime } from "../../utils/itemutils";
 
@@ -22,6 +22,7 @@ type MissionCrew = {
     mission: number;
     crew: number;
     ending_at?: Date;
+    position?: number;
 }
 
 export interface SpecialistMissionTableProps {
@@ -144,8 +145,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
     React.useEffect(() => {
         const newdata = [...missionCrew];
-        if (missions?.length) {
-            for (let m of missions) {
+        for (let m of missions) {
+                if (missions?.length) {
                 if (m.crew_id && !newdata.some(d => d.mission === m.id) && crew.some(c => c.id === m.crew_id)) {
                     newdata.push({
                         mission: m.id,
@@ -211,11 +212,11 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         return crew.find(c => c.id === mc.crew);
     }
 
-    function closePicker(selection: IRosterCrew | undefined, affirmative: boolean) {
+    function closePicker(selection: IRosterCrew | undefined, affirmative: boolean, position?: number) {
         setPickerOpen(false);
         if (currentMission && affirmative) {
             setCurrentMission(undefined);
-            updateMissionCrew(currentMission, selection);
+            updateMissionCrew(currentMission, selection, position);
         }
     }
 
@@ -352,16 +353,17 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                 time ? calcSpecialistCost(eventData, time.total_minutes, supplyKit) : 0;
 
         return (
-            <div style={{
+            <Segment style={{
                 display: 'grid',
                 gridTemplateAreas: `'area1 area2 area3' 'area4 area2 area3'`,
                 gridTemplateColumns: '15em 12em auto',
-                margin: '0.25em',
-                padding: 0,
+                margin: '0em',
+                padding: '1em',
                 width: '100%',
                 cursor: isLocked ? undefined : 'pointer'
 
             }} onClick={() => !isLocked ? openPicker(mission) : false}>
+                {!!rec?.position && <Label corner='right' style={{fontSize: '1.2em', padding: '0.75em', textAlign: 'right'}} content={rec.position}></Label>}
                 <div style={{...flexRow, gap: '0.5em', justifyContent: 'flex-start', gridArea: 'area1', marginRight: '0.25em'}}>
                     <AvatarView
                         crewBackground="rich"
@@ -390,7 +392,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         </>}
                     </span>
                     <div style={{gridArea: 'chrons', color: !!durationText ? 'lightgreen' : undefined }}>
-                        {!!cost && printChrons(cost, t)}
+                        {cost > 0 && printChrons(cost, t)}
                     </div>
                     <span>
                         {t('global.n_%', { n: crewSpecialistBonus(assignment, eventData) })}
@@ -402,15 +404,16 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                 <div style={{...flexCol, gap: '0.5em', alignItems: 'flex-start', gridArea: 'area3'}}>
                     {drawTraits(traits, TRAIT_NAMES)}
                 </div>
-            </div>)
+            </Segment>)
     }
 
-    function updateMissionCrew(mission: SpecialistMission, crew?: IRosterCrew) {
+    function updateMissionCrew(mission: SpecialistMission, crew?: IRosterCrew, position?: number) {
         const newdata = missionCrew.filter(f => f.mission !== mission.id);
         if (crew) {
             newdata.push({
                 mission: mission.id,
-                crew: crew.id
+                crew: crew.id,
+                position
             });
         }
         setMissionCrew(newdata);
@@ -438,52 +441,33 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                 if (typeof gcrew.disabled_until === 'string') gcrew.disabled_until = new Date(gcrew.disabled_until);
             }
         }
-
         for (const mission of selmissions) {
-            const missioncrew = workCrew
+
+            const positionCrew = workCrew.filter(c => c.immortal <= 0 &&
+                (
+                    (mission.requirements.length === mission.min_req_threshold && mission.requirements.every(skill => c.skill_order.includes(skill))) ||
+                    (mission.requirements.length !== mission.min_req_threshold && mission.requirements.some(skill => c.skill_order.includes(skill)))
+                    )
+            );
+
+            const missioncrew = positionCrew
                 .filter(c =>
-                        (
-                        (mission.requirements.length === mission.min_req_threshold && mission.requirements.every(skill => c.skill_order.includes(skill))) ||
-                        (mission.requirements.length !== mission.min_req_threshold && mission.requirements.some(skill => c.skill_order.includes(skill)))
-                        ) &&
                         !c.active_status &&
-                        !galaxyCooldowns.some(g => g.crew_id === c.id && g.disabled_until.getTime() > Date.now()) &&
-                        !newmissions.some(m => m.crew === c.id)
+                        !galaxyCooldowns.some(g => g.crew_id === c.id && g.disabled_until.getTime() > Date.now())
                 )
-                .sort((a, b) => {
-                    let r = 0;
-                    let dur = 0;
-                    let bonus = crewSpecialistBonus(b, eventData) - crewSpecialistBonus(a, eventData);
 
-                    const dura = calculateSpecialistTime(a, eventData, mission);
-                    const durb = calculateSpecialistTime(b, eventData, mission);
-
-                    if (!dura && !durb) dur = 0;
-                    else if (!dura && !!durb) dur = -1;
-                    else if (!!dura && !durb) dur = 1;
-
-                    if (dur) return dur;
-                    if (dura && durb) dur = dura.total_minutes - durb.total_minutes;
-
-                    if (preferBonus) {
-                        r = bonus ? bonus : dur;
-                    }
-                    else {
-                        r = dur ? dur : bonus;
-                    }
-
-                    if (!r) {
-                        let at = a.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
-                        let bt = b.traits.filter(trait => mission.bonus_traits.includes(trait)).length;
-                        r = bt - at;
-                    }
-                    return r;
-                });
             if (missioncrew.length) {
-                newmissions.push({
+                specialistRosterAutoSort(missioncrew, eventData, mission, preferBonus);
+                let obj = {
                     mission: mission.id,
                     crew: missioncrew[0].id
-                });
+                } as MissionCrew;
+
+                if (missioncrew[0].immortal <= 0) {
+                    specialistRosterAutoSort(positionCrew, eventData, mission, false);
+                    obj.position = positionCrew.findIndex(c => c.id === obj.crew) + 1;
+                }
+                newmissions.push(obj);
             }
             else {
                 failures.push(mission.id);

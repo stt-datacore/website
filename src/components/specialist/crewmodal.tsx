@@ -28,6 +28,7 @@ export interface ISpecialistCrewConfig {
         minutes: number;
         total_minutes: number;
     },
+    position: number;
     cost: number;
 }
 
@@ -39,7 +40,7 @@ type SpecialistPickerProps = {
     crew: IRosterCrew[];
     cooldowns?: GalaxyCrewCooldown[];
     selection?: IRosterCrew;
-    onClose: (selection: IRosterCrew | undefined, affirmative: boolean) => void;
+    onClose: (selection: IRosterCrew | undefined, affirmative: boolean, position?: number) => void;
     //renderTrigger?: (mission: SpecialistMission, crew: IRosterCrew) => JSX.Element;
 }
 
@@ -51,6 +52,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
     const { mission, onClose, crew, eventData, exclusions, pageId, cooldowns } = props;
 
     const [selection, internalSetSelection] = React.useState<IRosterCrew | undefined>(props.selection);
+    const [position, setPosition] = React.useState<number | undefined>(undefined);
     const [hideActive, setHideActive] = useStateWithStorage<boolean>(`${pageId}/hide_active`, false, { rememberForever: true });
     const [coolSwitch, setCoolSwitch] = React.useState(0);
     const both = mission.requirements.length === mission.min_req_threshold;
@@ -91,6 +93,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     ...duration_data,
                     total_minutes
                 },
+                position: 0,
                 cost: calcSpecialistCost(eventData, total_minutes, supplyKit)
             }
             newRoster.push(newItem);
@@ -101,7 +104,9 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         if (cool) {
             setCoolSwitch(1);
         }
-        return defaultSpecialistSort(newRoster);
+        defaultSpecialistSort(newRoster);
+        newRoster.forEach((rec, idx) => rec.position = idx + 1);
+        return newRoster;
     }, [crew, mission, exclusions, supplyKit, ephemeral, hideActive]);
 
     React.useEffect(() => {
@@ -128,8 +133,12 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
     const activeLock = React.useMemo(() => {
         if (!selection) return undefined;
-        let sel = specialistCrew.find(f => f.crew === selection);
-        if (sel) return [sel];
+        let sidx = specialistCrew.findIndex(f => f.crew === selection);
+        if (sidx > -1) {
+            let sel = specialistCrew[sidx];
+            setPosition(sidx + 1);
+            if (sel) return [sel];
+        }
         return undefined;
     }, [specialistCrew, selection]);
 
@@ -207,7 +216,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         <Modal
             size={'large'}
             open={true}
-            onClose={() => onClose(undefined, false)}
+            onClose={() => onClose(undefined, false, 0)}
             header={
                 renderHeader()
             }
@@ -260,8 +269,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     <div style={{...flexRow, justifyContent: 'flex-end'}}>
                         <div style={{margin: '0.5em 1em'}}>
                             <div style={{...flexRow, justifyContent: 'flex-end', gap: '1em'}}>
-                                <Button onClick={() => onClose(selection, false)}>{selection !== props.selection ?t('global.cancel') : t('global.close')}</Button>
-                                {selection !== props.selection && <Button onClick={() => onClose(selection, true)}>{t('global.save')}</Button>}
+                                <Button onClick={() => onClose(selection, false, position)}>{selection !== props.selection ?t('global.cancel') : t('global.close')}</Button>
+                                {selection !== props.selection && <Button onClick={() => onClose(selection, true, position)}>{t('global.save')}</Button>}
                             </div>
                         </div>
                     </div>
@@ -392,8 +401,14 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
     function setSelection(row?: ISpecialistCrewConfig) {
         if (row?.crew?.active_status || cooldowns?.some(cd => cd.crew_id === row?.crew?.id && cd.is_disabled)) return;
-        if (selection == row?.crew) internalSetSelection(undefined);
-        else internalSetSelection(row?.crew);
+        if (selection == row?.crew) {
+            internalSetSelection(undefined);
+            setPosition(0);
+        }
+        else {
+            internalSetSelection(row?.crew);
+            setPosition(row?.position ?? 0);
+        }
     }
 
 }
