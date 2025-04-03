@@ -5,6 +5,7 @@ import { WorkerContext } from "../../context/workercontext";
 import { EquipmentWorkerResults } from "../../model/worker";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
+import { ItemsFilterContext } from "./filters";
 
 interface DemandsTableProps extends EquipmentTableProps {
     showUnownedNeeded?: boolean;
@@ -14,6 +15,8 @@ interface DemandsTableProps extends EquipmentTableProps {
 export const DemandsTable = (props: DemandsTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const workerContext = React.useContext(WorkerContext);
+    const filterContext = React.useContext(ItemsFilterContext);
+    const { configureFilters } = filterContext;
 
     const { t } = globalContext.localized;
 
@@ -44,6 +47,10 @@ export const DemandsTable = (props: DemandsTableProps) => {
             )
         }, 500);
     }, [playerData]);
+
+    React.useEffect(() => {
+        if (!props.noRender && displayData.length) configureFilters(undefined);
+    }, [displayData, props.noRender]);
 
     const flexRow = OptionsPanelFlexRow;
 

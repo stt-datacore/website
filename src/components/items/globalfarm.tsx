@@ -56,10 +56,10 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }, [playerData, coreItems]);
 
     React.useEffect(() => {
-        if (available) {
+        if (available && !props.noRender) {
             configureFilters(prefiteredData);
         }
-    }, [prefiteredData, available]);
+    }, [prefiteredData, available, props.noRender]);
 
     const displayData = React.useMemo(() => {
         if (available) {

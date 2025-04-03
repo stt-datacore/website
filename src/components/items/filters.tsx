@@ -17,7 +17,7 @@ export interface IItemsFilterContext {
     itemTypeFilter?: number[];
     setItemTypeFilter: (value?: number[]) => void;
     filterItems: (items: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
-    configureFilters: (pool: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => void;
+    configureFilters: (pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => void;
 }
 
 const DefaultContextData: IItemsFilterContext = {
