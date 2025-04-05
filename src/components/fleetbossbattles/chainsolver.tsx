@@ -22,10 +22,15 @@ export const ChainSolver = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
 	const { TRAIT_NAMES } = globalContext.localized;
-	const { bossCrew, spotterPrefs, userPrefs, setUserPrefs } = React.useContext(UserContext);
+	const { bossCrew: inputBossCrew, spotterPrefs, userPrefs, setUserPrefs } = React.useContext(UserContext);
 	const { bossBattle: { difficultyId, chainIndex, chain }, spotter, setSpotter } = React.useContext(SolverContext);
 
 	const [solver, setSolver] = React.useState<Solver | undefined>(undefined);
+
+	const bossCrew = React.useMemo(() => {
+		if (spotterPrefs.hideUnpublishedCrew) return inputBossCrew;
+		return inputBossCrew?.filter(c => !c.preview);
+	}, [inputBossCrew, spotterPrefs]);
 
 	React.useEffect(() => {
 		if (!chain) return;
@@ -242,7 +247,7 @@ export const ChainSolver = () => {
 			traits: solverTraits,
 			crew: validatedCrew,
 		});
-	}, [chain, spotter]);
+	}, [chain, spotter, bossCrew]);
 
 	if (!solver) return (<></>);
 

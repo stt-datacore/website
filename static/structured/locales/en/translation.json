@@ -695,6 +695,7 @@
             },
             "user_prefs": {
                 "confirm_solves": "Confirm trait solves",
+                "hide_unpublished_crew": "Hide unpublished crew",
                 "show_ship_ability": "Show ship ability",
                 "title": "User Preferences"
             },

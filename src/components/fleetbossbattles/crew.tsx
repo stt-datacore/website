@@ -199,6 +199,12 @@ const ChainCrew = (props: ChainCrewProps) => {
 								checked={spotterPrefs.confirmSolves}
 								onChange={(e, data) => setSpotterPrefs({...spotterPrefs, confirmSolves: data.checked})}
 							/>
+							<Form.Field
+								control={Checkbox}
+								label={t('fbb.settings.user_prefs.hide_unpublished_crew')}
+								checked={spotterPrefs.hideUnpublishedCrew}
+								onChange={(e, data) => setSpotterPrefs({...spotterPrefs, hideUnpublishedCrew: data.checked })}
+							/>
 						</Form.Group>
 					</div>
 				</Form>

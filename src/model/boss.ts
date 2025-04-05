@@ -176,6 +176,7 @@ export interface SpotterPreferences {
 	nonoptimal: string;
 	noncoverage: string;
 	confirmSolves: boolean;
+	hideUnpublishedCrew: boolean;
 }
 
 export interface SoloPreferences {

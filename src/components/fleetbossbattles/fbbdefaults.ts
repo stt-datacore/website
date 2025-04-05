@@ -10,7 +10,8 @@ export const spotterDefaults = {
 	onehand: 'flag',
 	nonoptimal: 'hide',
 	noncoverage: 'show',
-	confirmSolves: false
+	confirmSolves: false,
+	hideUnpublishedCrew: false
 } as SpotterPreferences;
 
 export const soloDefaults = {
