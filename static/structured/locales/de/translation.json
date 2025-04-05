@@ -695,6 +695,7 @@
             },
             "user_prefs": {
                 "confirm_solves": "Bestätigung der Lösung der Eigenschaft",
+                "hide_unpublished_crew": "Nicht veröffentlichte Crewmitglieder ausblenden",
                 "show_ship_ability": "Fähigkeit des Schiffs anzeigen",
                 "title": "Benutzereinstellungen"
             },

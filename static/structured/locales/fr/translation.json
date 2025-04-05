@@ -703,6 +703,7 @@
             },
             "user_prefs": {
                 "confirm_solves": "Confirmer la résolution des traits",
+                "hide_unpublished_crew": "Masquer les équipiers non publiés",
                 "show_ship_ability": "Afficher les capacités du vaisseau",
                 "title": "Préférences utilisateur"
             },

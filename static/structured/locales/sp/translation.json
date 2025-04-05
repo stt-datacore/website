@@ -701,6 +701,7 @@
             },
             "user_prefs": {
                 "confirm_solves": "Confirmar rasgo resuelto",
+                "hide_unpublished_crew": "Ocultar tripulantes no publicados",
                 "show_ship_ability": "Mostrar capacidad del buque",
                 "title": "Preferencias de usuario"
             },
