@@ -11,7 +11,7 @@ export const spotterDefaults = {
 	nonoptimal: 'hide',
 	noncoverage: 'show',
 	confirmSolves: false,
-	hideUnpublishedCrew: false
+	hideUnpublishedCrew: true
 } as SpotterPreferences;
 
 export const soloDefaults = {
