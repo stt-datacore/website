@@ -1847,3 +1847,6 @@ export function getSkillOrderScore(crew: CrewMember, reports: SkillRarityReport<
 	return results;
 }
 
+export function formatMissingTrait(trait: string) {
+	return trait.split("_").map(str => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`).join(" ");
+}

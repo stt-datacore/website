@@ -5,6 +5,7 @@ import { Dropdown, Rating } from "semantic-ui-react";
 import CrewStat from "../crewstat";
 import {
     crewGender,
+    formatMissingTrait,
     formatTierLabel,
     getSkills,
     gradeToColor,
@@ -1077,7 +1078,7 @@ export class CrewPresenter extends React.Component<
                             marginBottom: "4px",
                         }}
                     >
-                        {crew.traits.map(t => TRAIT_NAMES[t]).join(", ")}
+                        {crew.traits.map(t => TRAIT_NAMES[t] || formatMissingTrait(t)).join(", ")}
                     </div>
                     <div
                         style={{

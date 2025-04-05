@@ -5,7 +5,7 @@ import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
 import CrewStat from '../../components/crewstat';
-import { applyCrewBuffs, crewGender, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
+import { applyCrewBuffs, crewGender, formatMissingTrait, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';
 import { CrewRankHighlights, CrewRanks } from './crew_ranks';
@@ -462,9 +462,9 @@ const Traits = (props: { crew: CrewMember }) => {
 		<p>
 			<b>{t('hints.traits')}: </b>
 			{crew.traits_named
-				.map(trait => (
+				.map((trait, idx) => (
 					<Link key={trait} to={`/?search=trait:${trait}`}>
-						{trait}
+						{trait || formatMissingTrait(crew.traits[idx])}
 					</Link>
 				))
 				.reduce((prev, curr) => <>{prev}, {curr}</>)}
