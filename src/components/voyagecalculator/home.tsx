@@ -9,7 +9,7 @@ import { GameEvent, Voyage, VoyageDescription } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { ITrackedVoyage, IVoyageCrew, IVoyageEventContent, IVoyageHistory, IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTraits } from '../../utils/events';
+import { getEventData, getRecentEvents, guessEncounterTimes } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IEventData } from '../eventplanner/model';
@@ -101,7 +101,7 @@ const NonPlayerHome = () => {
 
 	function getEvents(): void {
 		// Guess event from autosynced events
-		getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
+		getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.all_ships.map(m => ({...m, id: m.archetype_id, levels: undefined }))).then(recentEvents => {
 			setEventData([...recentEvents]);
 		});
 	}
@@ -238,7 +238,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.all_ships.map(m => ({...m, id: m.archetype_id, levels: undefined }))).then(recentEvents => {
 				setEventData([...recentEvents]);
 			});
 		}
@@ -609,16 +609,16 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
 				/>
-				{/* {voyage.voyage_type === 'encounter' && (
-					<EncounterHelperAccordion
-						voyageConfig={voyage}
-					/>
-				)} */}
 				<StatsRewardsAccordion
 					voyage={voyage}
 					roster={myCrew}
 					initialExpand={recalled}
 				/>
+				{voyage.voyage_type === 'encounter' && (
+					<EncounterHelperAccordion
+						voyageConfig={voyage}
+					/>
+				)}
 			</div>
 			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />

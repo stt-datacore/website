@@ -1,7 +1,7 @@
 import React from 'react';
 import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
-import { Ship, Schematics, BattleStations } from '../model/ship';
+import { Ship, Schematics, BattleStations, ReferenceShip } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { Collection, Constellation, KeystoneBase, Polestar, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
@@ -13,7 +13,7 @@ import { calcQuipmentScore } from '../utils/equipment';
 import { getItemWithBonus } from '../utils/itemutils';
 import { EventInstance, EventLeaderboard } from '../model/events';
 import { StaticFaction } from '../model/shuttle';
-import { highestLevel } from '../utils/shiputils';
+import { allLevelsToLevelStats, highestLevel, levelToLevelStats } from '../utils/shiputils';
 import { ObjectiveEvent } from '../model/player';
 import { ICoreData } from './coremodel';
 import { EventStats } from '../utils/event_stats';
@@ -22,6 +22,7 @@ const DC_DEBUGGING: boolean = false;
 
 export type ValidDemands =
 	'all_buffs' |
+	'all_ships' |
 	'battle_stations' |
 	'cadet' |
 	'collections' |
@@ -79,6 +80,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
+	all_ships: [] as ReferenceShip[],
 	objective_events: [] as ObjectiveEvent[],
 	topQuipmentScores: [] as QuipmentScores[],
 } as ICoreData;
@@ -123,6 +125,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		// Fetch only if valid demand is not already satisfied
 		const valid = [
 			'all_buffs',
+			'all_ships',
 			'battle_stations',
 			'cadet',
 			'crew',
@@ -202,6 +205,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 						break;
 					case 'items':
 						newData.items = processItems(result.json);
+						break;
+					case 'all_ships':
+						newData.all_ships = processAllShips(result.json);
 						break;
 					default:
 						newData[result.demand] = result.json;
@@ -317,10 +323,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return scores;
 	}
 
-
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
+	}
+
+	function processAllShips(all_ships: ReferenceShip[]) {
+		for (let ship of all_ships) {
+			ship.id = ship.archetype_id;
+			ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
+		}
+		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels) }));
+		return all_ships;
 	}
 
 	function processCrew(result: CrewMember[]): CrewMember[] {
@@ -378,7 +392,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					}
 				}
 			}
-			data.ships = scsave;
+			//data.ships = scsave;
 		}
 	}
 

@@ -7,7 +7,7 @@ import { GlobalContext } from "../../context/globalcontext"
 import { CrewMember } from "../../model/crew"
 import { PlayerCrew } from "../../model/player"
 import { BattleStation, Ship } from "../../model/ship"
-import { findPotentialCrew, mergeShips } from "../../utils/shiputils"
+import { findPotentialCrew, mergeRefShips } from "../../utils/shiputils"
 import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn } from "../stats/utils"
 import { getShipBonus, getSkills } from "../../utils/crewutils"
@@ -49,7 +49,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
         setCrewStations
     } = props;
 	const { playerShips, playerData } = context.player;
-	const { crew: coreCrew, ship_schematics: coreShips } = context.core;
+	const { crew: coreCrew, all_ships: coreShips } = context.core;
 
     const [ships, setShips] = React.useState<Ship[]>(loadShips());
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
@@ -285,36 +285,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	function loadShips() {
 		if (!context) return [];
-		const schematics = [...context.core.ship_schematics];
-
-		const constellation = {
-			symbol: 'constellation_ship',
-			rarity: 1,
-			max_level: 5,
-			antimatter: 1250,
-			name: 'Constellation Class',
-			icon: { file: '/ship_previews_fed_constellationclass' },
-			traits: ['federation','explorer'],
-			battle_stations: [
-				{
-					skill: 'command_skill'
-				},
-				{
-					skill: 'diplomacy_skill'
-				}
-			],
-			owned: true
-		} as Ship;
-
-		schematics.push({
-			ship: constellation,
-			rarity: constellation.rarity,
-			cost: 0,
-			id: 1,
-			icon: constellation.icon!
-		});
-
-		let ships = mergeShips(schematics, context.player.playerData?.player.character.ships ?? []) ?? [];
+		const all_ships = [...context.core.all_ships];
+		let ships = mergeRefShips(all_ships, context.player.playerData?.player.character.ships ?? [], context.localized.SHIP_TRAIT_NAMES) ?? [];
 		return [...ships];
 	}
 
@@ -326,7 +298,6 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 		setCurrentStation(index);
 		setCurrentStationCrew(newCrew);
-		//setModalOpen(true);
 	}
 
 	function clearStation(index?: number) {
@@ -338,7 +309,6 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			stations = stations.map(sta => undefined);
 		}
 		setCrewStations(stations);
-		//setModalOpen(false);
 		setCurrentStationCrew([]);
 		setCurrentStation(undefined);
 	}

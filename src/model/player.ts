@@ -10,6 +10,7 @@ import { Collection, Icon } from "./game-elements";
 import { ShuttleAdventure } from "./shuttle";
 import { IVoyageEventContent } from "./voyage";
 import { ArchetypeRoot20 } from "./archetype";
+import { Cost } from "./offers";
 
 export const ISM_ID = 14152;
 
@@ -133,6 +134,14 @@ export interface ReplicatorRationType {
   item_sources: any[]
 }
 
+export interface GalaxyCrewCooldown {
+    crew_id: number;
+    disabled_until: Date;
+
+    /** Used internally. Not part of game data. */
+    is_disabled?: boolean;
+}
+
 export interface Character {
   id: number
   display_name: string
@@ -211,7 +220,8 @@ export interface Character {
   all_buffs_cap_hash: AllBuffsCapHash
   all_buffs: AllBuff[]
   total_marketplace_claimables: number
-  seasons: Season[]
+  seasons: Season[];
+  galaxy_crew_cooldowns?: GalaxyCrewCooldown[];
 }
 
 export interface ClientAsset {
@@ -861,7 +871,35 @@ export interface SquadronRankedBracket {
   quantity: number
 }
 
-  export interface Content {
+export interface SpecialistMission {
+  id: number;
+  event_run_id: number;
+  desc_id: number;
+  crew_id?: number;
+  start_time?: Date;
+  completion_time?: Date;
+  progress_speed?: number;
+  state:	"available" | "started";
+  event_instance_id: number;
+  vp_rewards_amount: number;
+  title: string;
+  description: string;
+  icon: Icon;
+  bonus_traits: string[];
+  requirements: string[];
+  min_req_threshold: number;
+}
+
+export interface SpecialistMainMission {
+  progress: number;
+  bonus_failures: number;
+  title: string;
+  description: string;
+  icon: Icon;
+  victory_points_reward: number;
+}
+
+export interface Content {
     content_type: string
     crew_bonuses?: CrewBonuses
     gather_pools?: GatherPool[]
@@ -871,6 +909,22 @@ export interface SquadronRankedBracket {
     shuttles?: Shuttle[]
     bonus_crew?: string[]
     bonus_traits?: string[]
+
+    // Specialist voyages
+    missions?: SpecialistMission[];
+    completion_progress?: number;
+    passive_progress_interval?: number;
+    featured_crew_bonus_chance?: number;
+    featured_trait_bonus_chance?: number;
+    start_mission_cost?: number;
+    galaxy_cooldown_reset_cost?: Cost;
+    reroll_cost?: Cost;
+    skip_mission_cost_interval?: number;
+    skip_mission_cost_per_interval?: number;
+    bonus_chance_inc?: number;
+    main_mission?: SpecialistMainMission;
+    featured_traits?: string[];
+
     voyage_symbol?: string;	// encounter_voyage
     primary_skill?: string;
     secondary_skill?: string;

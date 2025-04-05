@@ -1,6 +1,6 @@
 //import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
-import { CompletionState, Content, GameEvent, Shuttle } from '../model/player';
+import { CompletionState, Content, GameEvent, PlayerCrew, Shuttle, SpecialistMission } from '../model/player';
 import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
 import { EventInstance } from '../model/events';
 import CONFIG from '../components/CONFIG';
@@ -125,6 +125,20 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 			});
 		}
 	}
+	else if (activeContent.content_type === 'galaxy') {
+		result.bonus = activeContent.featured_crews?.slice () ?? [];
+		result.featured = activeContent.featured_crews?.slice () ?? [];
+
+		// Specialist events use content.featured_traits to identify smaller bonus event crew
+		activeContent.featured_traits?.forEach(bonusTrait => {
+			allCrew.filter(crew =>
+				crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)
+			).forEach(crew => {
+				if (!result.bonus.includes(crew.symbol) && !result.featured.includes(crew.symbol))
+					result.bonus.push(crew.symbol);
+			});
+		});
+	}
 
 	// Guess featured crew when not explicitly listed in event data (e.g. pre-start skirmish or hybrid w/ phase 1 skirmish)
 	if (result.bonus.length === 0) {
@@ -229,9 +243,9 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;
 			// Assume in phase 2 of ongoing event
-			if (eventData.content_types.length === 2 && end < 2*24*60*60) {
-				eventData.content_types = [eventData.content_types[1]];
-			}
+			// if (eventData.content_types.length === 2 && end < 2*24*60*60) {
+			// 	eventData.content_types = [eventData.content_types[1]];
+			// }
 		}
 		recentEvents.unshift(eventData);
 		index++;
@@ -397,7 +411,7 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 	if (detail) {
 		let amount: number = 0;
 		const activeContent: Content | undefined = eventData.activeContent;
-		if (activeContent) {
+		if (activeContent && activeContent.content_type === 'voyage') {
 			if (activeContent.featured_crews?.includes(crew.symbol)) {
 				amount = activeContent.antimatter_bonus_for_featured_crew ?? high;
 			}
@@ -432,6 +446,73 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 	}
 }
 
+export function getSpecialistBonus(eventData: IEventData) {
+	if (!eventData.activeContent?.bonus_chance_inc ||
+		!eventData.activeContent?.main_mission ||
+		!eventData.activeContent?.featured_crew_bonus_chance ||
+		!eventData.activeContent?.featured_trait_bonus_chance
+	) return undefined;
+
+	const inc = eventData.activeContent.bonus_chance_inc;
+	const failures = eventData.activeContent.main_mission.bonus_failures;
+
+	const high = eventData.activeContent.featured_crew_bonus_chance + (inc * failures);
+	const low = eventData.activeContent.featured_trait_bonus_chance + (inc * failures);
+
+	return { high, low };
+}
+
+export function crewSpecialistBonus(crew: IRosterCrew, eventData: IEventData) {
+	let bonuses = getSpecialistBonus(eventData);
+	if (!bonuses) return 0;
+	return eventData.featured.includes(crew.symbol) ? bonuses.high : eventData.bonus.includes(crew.symbol) ? bonuses.low : 0;
+}
+
+export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData, mission: SpecialistMission | number) {
+	if (!eventData.activeContent?.missions?.length || !eventData.activeContent.completion_progress || !eventData.activeContent.passive_progress_interval) return undefined;
+
+	if (typeof mission === 'number') {
+		mission = eventData.activeContent.missions[mission];
+	}
+	if (!mission) return undefined;
+
+	const goal = eventData.activeContent.completion_progress;
+	const inc = eventData.activeContent.passive_progress_interval;
+
+	let bonus_mul = 1 + (mission.bonus_traits.filter(f => crew.traits.includes(f)).length * 0.5);
+	let best = 0;
+
+	for (let skill of mission.requirements) {
+		if (mission.min_req_threshold == mission.requirements.length && !crew[skill]?.core) return undefined;
+		else if (crew[skill].core > best) best = crew[skill].core;
+	}
+
+	if (!best) return undefined;
+	best *= bonus_mul;
+
+	let minutes = Math.ceil(goal / best);
+	let hours = Math.floor(minutes / inc);
+
+	minutes = Math.ceil(minutes - (hours * inc));
+
+	return {
+		hours,
+		minutes,
+		total_minutes: minutes + (hours * 60)
+	}
+}
+
+export function calcSpecialistCost(eventData: IEventData, minutes: number, supply_kit?: number) {
+	if (!eventData?.activeContent?.skip_mission_cost_interval || !eventData?.activeContent?.skip_mission_cost_per_interval) return 0;
+	const interval = eventData.activeContent.skip_mission_cost_interval;
+	const cost = eventData.activeContent.skip_mission_cost_per_interval;
+	let total = (Math.ceil((minutes * 60) / interval) * cost);
+	if (supply_kit) {
+		total = Math.ceil(total * ((100 - supply_kit) / 100));
+	}
+	return total;
+}
+
 export function computeEventBest(
 	rosterCrew: IEventScoredCrew[],
 	eventData: IEventData,
@@ -462,6 +543,10 @@ export function computeEventBest(
 			if (secondary) return crew[primary].core+(crew[secondary].core/4);
 			return crew[primary].core;
 		}
+		else if (phaseType === 'galaxy') {
+			if (secondary) return !crew[secondary]?.core ? 0 : Math.max(crew[primary].core, crew[secondary].core);
+			return crew[primary].core;
+		}
 		else if (phaseType === 'voyage') {
 			if (secondary) return getVoyScore(crew, primary) + getVoyScore(crew, secondary);
 			return getVoyScore(crew, primary);
@@ -476,11 +561,18 @@ export function computeEventBest(
 			crew.bonus = 1;
 			if (applyBonus && (eventData.bonus.includes(crew.symbol) || eventData.featured.includes(crew.symbol))) {
 				if (phaseType === 'gather') crew.bonus = getBonus(crew, eventData, 5, 10);
+				else if (phaseType === 'galaxy') {
+					const bonuses = getSpecialistBonus(eventData);
+
+					if (bonuses?.high && bonuses?.low) {
+						crew.bonus = getBonus(crew, eventData, bonuses.low, bonuses.high);
+					}
+				}
 				else if (phaseType === 'shuttles') crew.bonus = getBonus(crew, eventData, 2, 3);
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
 				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150, true);
 			}
-			if (crew.bonus > 1 || showPotential) {
+			if ((crew.bonus > 1 || showPotential) && (phaseType !== 'galaxy')) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
 						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
@@ -562,7 +654,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 			}
 		}
 		const lastEvent = _lev;
-		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.ship_schematics.map(m => m.ship), lastEvent))
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.all_ships.map(m => ({...m, levels: undefined })), lastEvent))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
 			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);

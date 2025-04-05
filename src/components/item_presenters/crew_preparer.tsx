@@ -212,6 +212,7 @@ export class CrewPreparer {
                 buffs = quips.map(q => getItemBonuses(q));
                 item.kwipment_slots = quips.map(q => {
                     return {
+                        archetype: q.archetype_id,
                         level: 100,
                         symbol: q.symbol,
                         imageUrl: q.imageUrl

@@ -56,6 +56,7 @@ const EventsPage = () => {
 				"cadet",
 				"all_buffs",
 				"items",
+				"all_ships",
 				"ship_schematics",
 				"event_instances",
 				"event_stats",

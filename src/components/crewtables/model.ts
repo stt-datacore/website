@@ -14,7 +14,7 @@ export interface IRosterCrew extends PlayerCrew {
 	offers?: CrewOffer[];
 };
 
-export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' | 'offers';
+export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' | 'offers' | 'no_skills';
 
 export interface ICrewFilter {
 	id: string;

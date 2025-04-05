@@ -360,6 +360,49 @@ export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 	}).flat();
 }
 
+export function formatTime(milliseconds: number, t?: TranslateMethod) {
+	let seconds = Math.floor(milliseconds / 1000);
+	milliseconds -= seconds * 1000;
+	let minutes = Math.floor(seconds / 60);
+	milliseconds -= minutes * 60;
+	let hours = Math.floor(minutes / 60);
+	minutes -= hours * 60;
+	let days = Math.floor(hours / 24);
+	hours -= days * 24;
+
+	let s = '';
+
+	if (t) {
+		if (days) {
+			if (s) s += ' ';
+			s += t('duration.n_d', { days });
+		}
+		if (hours) {
+			if (s) s += ' ';
+			s += t('duration.n_h', { hours });
+		}
+		if (minutes) {
+			if (s) s += ' ';
+			s += t('duration.n_m', { minutes });
+		}
+		// if (seconds) {
+		// 	if (s) s += ' ';
+		// 	s += t('duration.n_s', { seconds: milliseconds });
+		// }
+		// if (milliseconds) {
+		// 	if (s) s += ' ';
+		// 	s += t('duration.n_ms', { seconds: milliseconds });
+		// }
+	}
+	else {
+		for (let part of [days, hours, minutes, milliseconds]) {
+			if (s) s += ':';
+			s += `${part.toString().padStart(2, '0')}`;
+		}
+	}
+	return s;
+}
+
 export function formatDuration(time: number, t?: TranslateMethod) {
 	if (t) {
 		if (time <= 48) {

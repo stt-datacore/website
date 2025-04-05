@@ -1,17 +1,15 @@
 import React from 'react';
 import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
-import { Link } from 'gatsby';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { useStateWithStorage } from '../utils/storage';
 
 import SearchString from 'search-string/src/searchString';
-import * as localForage from 'localforage';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
-import { appelate, translatePseudocolumn } from '../utils/misc';
+import { translatePseudocolumn } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
 import CONFIG from './CONFIG';
 import { TranslateMethod } from '../model/player';
@@ -64,11 +62,11 @@ export interface SearchableTableProps {
 
 	initOptions?: any;
 	explanation?: React.ReactNode;
+	hideExplanation?: boolean;
     showFilterOptions?: boolean;
 	showPermalink?: boolean;
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
-
 
 	checkCaption?: string;
 	checkableValue?: boolean;
@@ -82,6 +80,8 @@ export interface SearchableTableProps {
 
 	pagingOptions?: DropdownItemProps[];
 	defaultPaginationRows?: number;
+
+	lockTitle?: (obj: any) => string;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -334,10 +334,10 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				</span>
 			)}
 
-			<Popup wide trigger={<Icon name="help" />}
+			{!props.hideExplanation && <Popup wide trigger={<Icon name="help" />}
 				header={'Advanced search'}
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
-			/>
+			/>}
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
@@ -397,7 +397,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		</div>
 
 			<div>
-				{props.lockable && <LockButtons lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
+				{props.lockable && <LockButtons lockTitle={props.lockTitle} lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
 			</div>
 
 			{filteredCount === 0 && (
@@ -452,10 +452,11 @@ type LockButtonsProps = {
 	lockable: any[];
 	activeLock: any;
 	setLock: (lock: any) => void;
+	lockTitle?: (obj: any) => string;
 };
 
 const LockButtons = (props: LockButtonsProps) => {
-	const { lockable, activeLock, setLock } = props;
+	const { lockable, activeLock, setLock, lockTitle } = props;
 
 	if (lockable?.length == 0) return (<></>);
 
@@ -464,7 +465,7 @@ const LockButtons = (props: LockButtonsProps) => {
 			<span style={{ marginRight: '.5em' }}>Lock view on:</span>
 			{lockable.map((lock, lockNum) => (
 				<Button key={lockNum} compact toggle active={JSON.stringify(lock) === JSON.stringify(activeLock)} onClick={() => handleClick(lock)}>
-					{lock.name}
+					{lockTitle ? lockTitle(lock) : lock.name}
 				</Button>
 			))}
 		</div>
