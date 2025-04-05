@@ -28,7 +28,7 @@ export const ChainSolver = () => {
 	const [solver, setSolver] = React.useState<Solver | undefined>(undefined);
 
 	const bossCrew = React.useMemo(() => {
-		if (spotterPrefs.hideUnpublishedCrew) return inputBossCrew;
+		if (!spotterPrefs.hideUnpublishedCrew) return inputBossCrew;
 		return inputBossCrew?.filter(c => !c.preview);
 	}, [inputBossCrew, spotterPrefs]);
 
