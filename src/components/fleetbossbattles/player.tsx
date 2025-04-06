@@ -36,7 +36,7 @@ export const PlayerBossBattle = (props: PlayerBossBattleProps) => {
 
 	React.useEffect(() => {
 		// Calculate highest owned rarities
-		const bossCrew = crewCopy(globalContext.core.crew) as BossCrew[];
+		const bossCrew = crewCopy(globalContext.core.crew.filter(c => !c.preview)) as BossCrew[];
 		bossCrew.forEach(crew => {
 			const owned = playerData?.player.character.crew.filter(oc => oc.symbol === crew.symbol) ?? [];
 			crew.highest_owned_rarity = owned.length > 0 ? owned.sort((a, b) => b.rarity - a.rarity)[0].rarity : 0;
