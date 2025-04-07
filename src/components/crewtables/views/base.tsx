@@ -16,6 +16,7 @@ import { TranslateMethod } from '../../../model/player';
 import { appelate } from '../../../utils/misc';
 import CrewStat from '../../crewstat';
 import { printFancyPortal } from '../../base/utils';
+import { OfferCrew } from '../../../model/offers';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -153,7 +154,6 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 				}
 			},
 		);
-
 	}
 	else {
 		tableConfig.push(
@@ -255,6 +255,9 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		</React.Fragment>
 	);
 
+	function getExpiration(offer: OfferCrew) {
+		return ((new Date((offer.seconds_remain! * 1000) + Date.now()).toLocaleDateString()));
+	}
 	function renderOffers(crew: IRosterCrew) {
 		const labelStyle: React.CSSProperties = {
 			display: 'flex',
@@ -264,10 +267,13 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			gap: '0.5em'
 		};
 		const divStyle: React.CSSProperties = {
-			display: 'flex',
+			display: 'grid',
+			gridTemplateAreas: `'a a' 'c b'`,
+			//gridTemplateColumns: '7em 4em',
 			flexDirection: 'row',
 			alignItems: 'center',
 			width: '100%',
+			margin: '0.5em',
 			justifyContent: 'space-between',
 			gap: '0.5em'
 		};
@@ -279,30 +285,33 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			flexDirection: 'column',
 			alignItems: 'center',
 			justifyContent: 'space-between',
-			gap: '1em',
+			gap: '0em',
 			textAlign: 'left'
 		}}>
 			{crew.offers?.map((offer) => {
 			return offer.drop_info.map(di => {
 				if (di.currency === 'fiat') {
-					return (<div key={`offer_cost_${di.cost}_${di.currency}`} style={divStyle}>
-							<span>{appelate(offer.name)}</span>
-							<Label style={{...labelStyle, backgroundColor: 'darkgreen'}}>
+					return (<div key={`offer_cost_${di.cost}_${di.currency}`} className='ui segment' style={divStyle}>
+							<span style={{gridArea: 'a'}}>{appelate(offer.name)}</span>
+							<Label style={{...labelStyle, gridArea: 'b', backgroundColor: 'darkgreen'}}>
 								{di.cost}
 							</Label>
+							<div style={{gridArea: 'c'}}><span>{t('base.expiration')}{t('global.colon')}{getExpiration(offer)}</span></div>
 						</div>)
 				}
 				else {
 					return (
-					<div key={`offer_cost_${di.cost}_${di.currency}`} style={divStyle}>
-						<span>{appelate(offer.name)}</span>
+					<div key={`offer_cost_${di.cost}_${di.currency}`} className='ui segment' style={divStyle}>
+						<span style={{gridArea: 'a'}}>{appelate(offer.name)}</span>
 						<div
 							className='ui label'
-							style={labelStyle}
+							style={{...labelStyle, gridArea: 'b', padding: '0.25em 1em'}}
 						>
 						{di.cost}
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
 						</div>
+						<div style={{gridArea: 'c'}}><span>{t('base.expiration')}{t('global.colon')}{getExpiration(offer)}</span></div>
+
 					</div>
 					)
 				}

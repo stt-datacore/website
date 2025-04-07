@@ -42,6 +42,7 @@
         "date": "Datum",
         "event_crew": "Ereignis-Crew",
         "event_ships": "Ereignis Schiffe",
+        "expiration": "Verfallsdatum",
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
         "gauntlet": "Herausforderung",

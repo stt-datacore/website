@@ -42,6 +42,7 @@
         "date": "Date",
         "event_crew": "Event Crew",
         "event_ships": "Event Ships",
+        "expiration": "Expiration",
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
         "gauntlet": "Gauntlet",

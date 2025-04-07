@@ -430,7 +430,6 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 				crewman.cost_text = offerData[crewman.symbol].map(offer => offer.drop_info.map(drop => drop.cost).sort((a, b) => b - a)[0].toString()).join(" / ");
 				crewman.offers = offerData[crewman.symbol];
-
 			}
 			if (playerData) {
 				const owned = playerData.player.character.crew.filter(crew => crew.symbol === crewman.symbol);
