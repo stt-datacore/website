@@ -2350,6 +2350,7 @@
         },
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
+            "enable_remote_tracking": "Enable remote tracking",
             "menu": {
                 "crew": "Crew",
                 "manage": "Manage History",

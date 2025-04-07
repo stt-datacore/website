@@ -267,7 +267,7 @@ const AdvancedOptions = () => {
 const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
-	const button: IManageButton = {
+	const saveButton: IManageButton = {
 		key: 'voyage.tracking.export',
 		icon: 'download',
 		content: t('voyage.voyage_history.export_history'),
@@ -278,13 +278,14 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	return (
 		<Message>
 			<Message.Content>
+				<Checkbox
+					label={t('voyage.history.enable_remote_tracking')}
+					checked={props.postRemote}
+					onChange={(e, { checked }) => toggleRemoteTracking(!!checked)}
+					/>
+
 				<p>{t('voyage.voyage_history.manage_placeholder')}</p>
-				<Button key={button.key}
-					icon={button.icon}
-					content={button.content}
-					disabled={button.disabled}
-					onClick={button.onClick}
-				/>
+				<Button {...saveButton} />
 			</Message.Content>
 		</Message>
 	);
@@ -296,5 +297,9 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 			return;
 		}
 		downloadData(`data:text/json;charset=utf-8,${encodeURIComponent(text)}`, 'voyagehistory.json');
+	}
+
+	function toggleRemoteTracking(enabled: boolean) {
+		props.setPostRemote(enabled);
 	}
 }

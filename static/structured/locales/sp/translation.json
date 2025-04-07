@@ -2360,6 +2360,7 @@
         },
         "history": {
             "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
+            "enable_remote_tracking": "Habilitar el seguimiento remoto",
             "menu": {
                 "crew": "Tripulantes",
                 "manage": "Administrar historial",
