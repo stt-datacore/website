@@ -61,7 +61,8 @@ export function createTrackableVoyage(
 		estimate: flatEstimate,
 		created_at: runningVoyage ? Date.parse(runningVoyage.created_at) : currentTime,
 		checkpoint: runningCheckpoint ?? defaultCheckpoint,
-		revivals: 0
+		revivals: 0,
+		lootcrew: []
 	};
 }
 

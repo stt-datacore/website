@@ -340,6 +340,8 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		const trackedRunningVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
 		if (trackedRunningVoyage) {
 			const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(trackedRunningVoyage));
+			updatedVoyage.lootcrew = running.pending_rewards.loot.filter(f => f.type === 1).map(m => m.symbol);
+
 			return createCheckpoint(running).then(checkpoint => {
 				if (historySyncState === SyncState.RemoteReady) {
 					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {
@@ -387,6 +389,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				updatedVoyage.voyage_id = running.id;
 				updatedVoyage.created_at = Date.parse(running.created_at);
 				updatedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
+				updatedVoyage.lootcrew = running.pending_rewards.loot.filter(f => f.type === 1).map(m => m.symbol);
 				// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
 				if (historySyncState === SyncState.RemoteReady) {
 					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {

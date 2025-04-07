@@ -119,6 +119,7 @@ export interface ITrackedVoyage {
 	created_at: number;	// Date.now() | voyage.created_at
 	checkpoint: ITrackedCheckpoint;
 	revivals: number;
+    lootcrew: string[];
 };
 
 export interface ITrackedFlatEstimate {
