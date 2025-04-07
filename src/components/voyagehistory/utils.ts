@@ -202,7 +202,7 @@ export async function getTrackedData(dbid: string, trackerId?: string): Promise<
 		}
 
 		if (hist.voyages) {
-			resultvoyages = hist.voyages.map(histVoy => histVoy.voyage);
+			resultvoyages = hist.voyages.map(histVoy => ({...histVoy.voyage, tracker_id: histVoy.trackerId }));
 		}
 
 		let result: IVoyageHistory = {

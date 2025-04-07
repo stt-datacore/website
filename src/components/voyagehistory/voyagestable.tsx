@@ -3,8 +3,10 @@ import {
 	Dropdown,
 	DropdownItemProps,
 	Form,
+	Icon,
 	Message,
 	Pagination,
+	Popup,
 	Table
 } from 'semantic-ui-react';
 
@@ -175,28 +177,38 @@ export const VoyagesTable = () => {
 		const dtCreated: Date = new Date(row.created_at);
 		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
 		return (
-			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
-				<Table.Cell>
-					{dtCreated.toLocaleDateString()}
-					{isRunning && <><br/>{t('voyage.running_voyage')}</>}
+			<Table.Row key={row.tracker_id}>
+				<Table.Cell style={{
+					display: 'flex',
+					padding: '1em',
+					flexDirection: 'row',
+					alignItems: 'center',
+					justifyContent: 'flex-start',
+					gap: '1em'
+				}}>
+					<Icon name='trash' onClick={() => removeTrackedVoyage(row.tracker_id)} style={{cursor: 'pointer'}} />
+					<div onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+						{dtCreated.toLocaleDateString()}
+						{isRunning && <><br/>{t('voyage.running_voyage')}</>}
+					</div>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{CONFIG.SKILLS[row.skills.secondary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{SHIP_TRAIT_NAMES[row.ship_trait] ?? row.ship_trait}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{row.max_hp}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					<b>{formatTime(row.estimate.median, t)}</b>
 					<br />({`${formatTime(row.estimate.minimum, t)} - ${formatTime(row.estimate.moonshot, t)}`})
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{renderLastEstimate(row.checkpoint)}
 				</Table.Cell>
 			</Table.Row>

@@ -357,7 +357,7 @@ const RunningTracker = (props: RunningTrackerProps) => {
 				const trackableCrew: IFullPayloadAssignment[] = createTrackableCrew(voyage as IVoyageCalcConfig, NEW_TRACKER_ID);
 				if (syncState === SyncState.RemoteReady) {
 					postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
-						if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {
+						if ((!result.status || result.status < 300) && result.trackerId && result.inputId === NEW_TRACKER_ID) {
 							const newRemoteId: number = result.trackerId;
 							addVoyageToHistory(history, newRemoteId, trackableVoyage);
 							addCrewToHistory(history, newRemoteId, trackableCrew);

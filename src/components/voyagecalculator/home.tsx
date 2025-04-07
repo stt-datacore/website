@@ -345,7 +345,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			return createCheckpoint(running).then(checkpoint => {
 				if (historySyncState === SyncState.RemoteReady) {
 					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {
-						if (result.status < 300 && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
+						if ((!result.status || result.status < 300) && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
 							setHistory(history => {
 								updateVoyageInHistory(history, {...updatedVoyage, checkpoint});
 								return history;
