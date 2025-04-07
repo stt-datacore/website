@@ -42,6 +42,7 @@
         "date": "Date",
         "event_crew": "Équipiers d'événement",
         "event_ships": "Vaisseaux événementiels",
+        "expiration": "Expiration",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",

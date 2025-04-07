@@ -31,7 +31,8 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
         result.push({
             name: offer.primary_content[0].title,
             crew,
-            drop_info: getDropInfo(offer)
+            drop_info: getDropInfo(offer),
+            seconds_remain: offer.primary_content[0].offer.seconds_remain
         });
     });
 
