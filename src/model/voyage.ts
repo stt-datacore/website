@@ -120,6 +120,7 @@ export interface ITrackedVoyage {
 	checkpoint: ITrackedCheckpoint;
 	revivals: number;
     lootcrew: string[];
+    remote?: boolean;
 };
 
 export interface ITrackedFlatEstimate {

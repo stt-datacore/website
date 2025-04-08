@@ -2351,6 +2351,8 @@
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
             "enable_remote_tracking": "Enable remote tracking",
+            "remote_tracking": "Remote tracking",
+            "warn_delete": "Are you sure you wish to delete this voyage?",
             "loot_crew": {
                 "columns": {
                     "voyages": "{{base.voyages}}"
@@ -2492,6 +2494,7 @@
             "voyage_history": "View voyage history"
         },
         "voyage_history": {
+
             "delete_from_history": "Delete voyage from history",
             "export_history": "Save history to device",
             "import_history": "Add history from device",

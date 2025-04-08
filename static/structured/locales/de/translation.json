@@ -2351,6 +2351,8 @@
         "history": {
             "description": "Behalten Sie den Überblick über Ihre Reisen, sehen Sie, wie Ihre Laufzeiten im Vergleich zu Ihren ursprünglichen Schätzungen abschneiden, und identifizieren Sie die Crew, die Sie am häufigsten einsetzen.",
             "enable_remote_tracking": "Aktivieren Sie die Fernverfolgung",
+            "remote_tracking": "Fernverfolgung",
+            "warn_delete": "Möchten Sie diese Reise wirklich löschen?",
             "loot_crew": {
                 "columns": {
                     "voyages": "{{base.voyages}}"

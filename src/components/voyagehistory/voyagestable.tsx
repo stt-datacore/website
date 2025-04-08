@@ -17,7 +17,7 @@ import { formatTime } from '../../utils/voyageutils';
 import CONFIG from '../CONFIG';
 
 import { HistoryContext } from './context';
-import { deleteTrackedData, removeVoyageFromHistory, SyncState } from './utils';
+import { deleteTrackedData, postUnsynchronizedVoyages, removeVoyageFromHistory, SyncState } from './utils';
 import { VoyageModal } from './voyagemodal';
 
 interface ITableState {
@@ -90,7 +90,8 @@ export const VoyagesTable = () => {
 		{ /* Ship Trait */ column: '_shipTrait', title: t('voyage.voyage_history.fields.ship_trait') },
 		{ /* Antimatter */ column: 'max_hp', title: t('voyage.voyage_history.fields.antimatter'), firstSort: 'descending' },
 		{ /* Initial Estimate */ column: 'estimate.median', title: t('voyage.voyage_history.fields.initial_estimate'), firstSort: 'descending' },
-		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.fields.last_estimate'), firstSort: 'descending' }
+		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.fields.last_estimate'), firstSort: 'descending' },
+		{ /* Remotely Tracked */ column: 'remote', title: t('voyage.history.remote_tracking') }
 	];
 
 	// Filter
@@ -211,8 +212,17 @@ export const VoyagesTable = () => {
 				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{renderLastEstimate(row.checkpoint)}
 				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{row.remote ? t('global.yes') : t('global.no')}
+					{!row.remote && <Icon onClick={() => synchronizeVoyage(row)} style={{margin: '0.5em', cursor: 'pointer'}} name='upload' />}
+				</Table.Cell>
 			</Table.Row>
 		);
+	}
+
+	async function synchronizeVoyage(row: ITrackedVoyage) {
+		await postUnsynchronizedVoyages(dbid, history, row.tracker_id);
+		setHistory({...history});
 	}
 
 	function renderLastEstimate(checkpoint: ITrackedCheckpoint): JSX.Element {
@@ -235,6 +245,10 @@ export const VoyagesTable = () => {
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
+		if (typeof window !== 'undefined') {
+			let result = window.confirm(t('voyage.history.warn_delete'));
+			if (!result) return;
+		}
 		if (syncState === SyncState.RemoteReady) {
 			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
 				if (success) {

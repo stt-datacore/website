@@ -41,6 +41,48 @@ export const defaultHistory: IVoyageHistory = {
 	crew: {}
 };
 
+export function createReportDayOptions(t: TranslateMethod) {
+	const reportDayOptions: DropdownItemProps[] = [
+		{	/* Show all voyages */
+			key: 'all',
+			value: undefined,
+			text: t('voyage.show_all_voyages')
+		},
+		{	/* Show voyages from last year */
+			key: 'year',
+			value: 365,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.year') })
+		},
+		{	/* Show voyages from last 180 days */
+			key: 'half',
+			value: 180,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.half') })
+		},
+		{	/* Show voyages from last 90 days */
+			key: 'quarter',
+			value: 90,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.quarter') })
+		},
+		{	/* Show voyages from last 60 days */
+			key: 'months',
+			value: 60,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.months') })
+		},
+		{	/* Show voyages from last month */
+			key: 'month',
+			value: 30,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.month') })
+		},
+		{	/* Show voyages from last week */
+			key: 'week',
+			value: 7,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.week') })
+		}
+	];
+
+	return reportDayOptions;
+}
+
 export function createTrackableVoyage(
 	voyageConfig: IVoyageCalcConfig,
 	shipSymbol: string,
@@ -210,7 +252,7 @@ export async function getTrackedData(dbid: string, trackerId?: string): Promise<
 		}
 
 		if (hist.voyages) {
-			resultvoyages = hist.voyages.map(histVoy => ({...histVoy.voyage, tracker_id: histVoy.trackerId }));
+			resultvoyages = hist.voyages.map(histVoy => ({...histVoy.voyage, tracker_id: histVoy.trackerId, remote: true }));
 		}
 
 		let result: IVoyageHistory = {
@@ -223,48 +265,6 @@ export async function getTrackedData(dbid: string, trackerId?: string): Promise<
 	else {
 		return undefined;
 	}
-}
-
-export function createReportDayOptions(t: TranslateMethod) {
-	const reportDayOptions: DropdownItemProps[] = [
-		{	/* Show all voyages */
-			key: 'all',
-			value: undefined,
-			text: t('voyage.show_all_voyages')
-		},
-		{	/* Show voyages from last year */
-			key: 'year',
-			value: 365,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.year') })
-		},
-		{	/* Show voyages from last 180 days */
-			key: 'half',
-			value: 180,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.half') })
-		},
-		{	/* Show voyages from last 90 days */
-			key: 'quarter',
-			value: 90,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.quarter') })
-		},
-		{	/* Show voyages from last 60 days */
-			key: 'months',
-			value: 60,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.months') })
-		},
-		{	/* Show voyages from last month */
-			key: 'month',
-			value: 30,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.month') })
-		},
-		{	/* Show voyages from last week */
-			key: 'week',
-			value: 7,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.week') })
-		}
-	];
-
-	return reportDayOptions;
 }
 
 export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assignments: IFullPayloadAssignment[]): Promise<TrackerPostResult> {
@@ -280,6 +280,45 @@ export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assi
 	})
 	.then((response: Response) => response.json())
 	.catch((error) => { throw(error); });
+}
+
+export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHistory, tracker_id?: number) {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
+	let unsynced = history.voyages.filter(v => !v.remote);
+	let crewkeys = Object.keys(history.crew);
+
+	for (let voyage of unsynced) {
+		if (tracker_id !== undefined && voyage.tracker_id !== tracker_id) continue;
+		let assignments = [] as IFullPayloadAssignment[];
+		for (let key of crewkeys) {
+			let fc = history.crew[key].filter(f => f.tracker_id === voyage.tracker_id);
+			if (fc?.length) {
+				for (let sym of fc) {
+					assignments.push({
+						...sym,
+						crew: key,
+					});
+				}
+			}
+		}
+		assignments.sort((a, b) => a.slot - b.slot);
+		let res = (await fetch(route, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				dbid,
+				voyage,
+				assignments
+			})
+		})
+		.then((response: Response) => response.json())
+		.catch((error) => { throw(error); })) as TrackerPostResult;
+
+		if (res?.trackerId) {
+			voyage.tracker_id = res.trackerId;
+			voyage.remote = true;
+		}
+	}
 }
 
 export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
@@ -314,6 +353,10 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 	local.crew ??= {};
 	remote.voyages ??= [];
 	remote.crew ??= {};
+
+	let lrms = local.voyages.filter(f => f.remote);
+	let rrms = remote.voyages.filter(f => f.remote);
+
 	function cleanHistory(hist: IVoyageHistory) {
 		hist.voyages = hist.voyages.filter(f => !!f?.tracker_id);
 		Object.keys(hist.crew).forEach((symbol) => {
@@ -397,5 +440,13 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 		}
 	});
 
+	newhistory.voyages.forEach((voy) => {
+		if (lrms.some(v => v.tracker_id === voy.tracker_id && v.remote) || rrms.some(v => v.tracker_id === voy.tracker_id && v.remote)) {
+			voy.remote = true;
+		}
+		else {
+			voy.remote = false;
+		}
+	});
 	return newhistory;
 }
