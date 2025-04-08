@@ -357,7 +357,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
-					missions={continuum_missions}
+					//missions={continuum_missions}
 					questFilter={questFilter}
 					setQuestFilter={setQuestFilter}
 					immortalOnly={true}

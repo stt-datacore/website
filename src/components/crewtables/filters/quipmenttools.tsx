@@ -57,7 +57,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
             setSlots(undefined);
         }
 		setCrewFilters([...crewFilters]);
-	}, [slotFilter]);
+	}, [slotFilter, questFilter]);
 
     if (hideForm) {
         return <></>;
@@ -139,6 +139,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 			/>
 
 			{!!missions?.length && <QuestDropDown
+				continuum={true}
 				selection={mission?.symbol}
 				setSelection={(v) => setQuestFilter(v ? [v as string] : undefined)}
 				missionsfull={missions as Mission[]}
@@ -179,12 +180,17 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	function setQuestFilter(v?: string[]) {
 		if (!v) {
 			setMission(undefined);
+			props.setQuestFilter(undefined);
 			return;
 		}
 		if (typeof v === 'string') v = [v];
 		let m = missions?.filter(f => v?.includes(f.symbol));
 		if (m?.length) setMission(m[0]);
 		else setMission(undefined);
+		setTimeout(() => {
+			props.setQuestFilter(v);
+		});
+
 	}
 
 };
