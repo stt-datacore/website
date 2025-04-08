@@ -2506,6 +2506,7 @@
         "voyage_history": {
             "delete_from_history": "Supprimer le voyage de l'historique",
             "export_history": "Enregistrer l'historique sur l'appareil",
+            "import_history": "Ajouter l'historique de l'appareil",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",

@@ -2494,6 +2494,7 @@
         "voyage_history": {
             "delete_from_history": "Reise aus Verlauf löschen",
             "export_history": "Verlauf auf Gerät speichern",
+            "import_history": "Verlauf vom Gerät hinzufügen",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",

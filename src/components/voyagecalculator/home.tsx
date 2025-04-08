@@ -18,7 +18,7 @@ import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
-import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
+import { createCheckpoint, defaultHistory, getTrackedData, InitState, mergeHistories, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 
 import { ICalculatorContext, CalculatorContext } from './context';
 import { CIVASMessage } from './civas';
@@ -143,7 +143,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			onInitialize: () => setHistoryInitState(prev => prev + 1)
 		}
 	);
-	const [postRemote, setPostRemote] = useStateWithStorage<boolean>(
+	const [postRemote, internalSetPostRemote] = useStateWithStorage<boolean>(
 		dbid+'/voyage/postRemote',
 		false,
 		{
@@ -176,7 +176,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		if (historyInitState === InitState.VarsLoaded) {
 			if (postRemote) {
 				getTrackedData(dbid).then(async (remoteHistory) => {
-					if (!!remoteHistory) setHistory(remoteHistory);
+					if (!!remoteHistory) setHistory(mergeHistories(history, remoteHistory));
 					setHistorySyncState(SyncState.RemoteReady);
 					setHistoryInitState(InitState.HistoryLoaded);
 				}).catch(e => {
@@ -226,6 +226,11 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			</React.Fragment>
 		</HistoryContext.Provider>
 	);
+
+	function setPostRemote(value: boolean) {
+		internalSetPostRemote(value);
+		setHistoryInitState(InitState.VarsLoaded);
+	}
 
 	function getEvents(): void {
 		// Get event data from recently uploaded playerData

@@ -2494,6 +2494,7 @@
         "voyage_history": {
             "delete_from_history": "Delete voyage from history",
             "export_history": "Save history to device",
+            "import_history": "Add history from device",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",

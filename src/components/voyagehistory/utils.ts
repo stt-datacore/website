@@ -308,3 +308,94 @@ export async function deleteTrackedData(dbid: string, trackerId?: number): Promi
 		.then((response: Response) => !!response)
 		.catch((error) => { throw(error); });
 }
+
+export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
+	local.voyages ??= [];
+	local.crew ??= {};
+	remote.voyages ??= [];
+	remote.crew ??= {};
+	function cleanHistory(hist: IVoyageHistory) {
+		hist.voyages = hist.voyages.filter(f => !!f?.tracker_id);
+		Object.keys(hist.crew).forEach((symbol) => {
+			hist.crew[symbol] = hist.crew[symbol].filter((f, i) => !!f?.tracker_id && hist.crew[symbol].findIndex(fii => fii.tracker_id === f.tracker_id) === i);
+			if (!hist.crew[symbol].length) delete hist.crew[symbol];
+		});
+	}
+
+	cleanHistory(local);
+	cleanHistory(remote);
+
+	function changeTrackerId(hist: IVoyageHistory, oldId: number, newId: number) {
+		hist.voyages.forEach((voy) => {
+			if (voy.tracker_id === oldId) voy.tracker_id = newId;
+		});
+		Object.entries(hist.crew).forEach(([symbol, assignments]) => {
+			for (let a of assignments) {
+				if (a.tracker_id === oldId) a.tracker_id = newId;
+			}
+		});
+	}
+	function removeTrackerId(hist: IVoyageHistory, tracker_id: number) {
+		hist.voyages = hist.voyages.filter(f => f.tracker_id !== tracker_id);
+		Object.keys(hist.crew).forEach((symbol) => {
+			hist.crew[symbol] = hist.crew[symbol].filter(f => f.tracker_id !== tracker_id);
+			if (!hist.crew[symbol].length) delete hist.crew[symbol];
+		});
+	}
+
+	let localIds = local.voyages.map(m => m.tracker_id);
+	let remoteIds = remote.voyages.map(m => m.tracker_id);
+
+	localIds.sort();
+
+	let maxRemote = remoteIds.sort().reverse()[0];
+	let minLocal = maxRemote + 1;
+	let lvoyages = local.voyages.slice();
+
+	if (lvoyages.length) {
+		for (let voy of lvoyages) {
+			let rf = remote.voyages.find(f => f.voyage_id === voy.voyage_id);
+			if (rf) {
+				removeTrackerId(local, voy.tracker_id);
+			}
+			else if (remoteIds.includes(voy.tracker_id)) {
+				changeTrackerId(local, voy.tracker_id, minLocal++);
+			}
+		}
+	}
+
+	remote = JSON.parse(JSON.stringify(remote), (key, value) => {
+		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
+			try {
+				return new Date(value);
+			}
+			catch {
+				return value;
+			}
+		}
+		return value;
+	}) as IVoyageHistory;
+
+	const newhistory = JSON.parse(JSON.stringify(local), (key, value) => {
+		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
+			try {
+				return new Date(value);
+			}
+			catch {
+				return value;
+			}
+		}
+		return value;
+	}) as IVoyageHistory;
+
+	newhistory.voyages = newhistory.voyages.concat(remote.voyages);
+
+	Object.keys(remote.crew).forEach((symbol) => {
+		newhistory.crew[symbol] ??= [];
+		if (newhistory.crew[symbol]) {
+			newhistory.crew[symbol] = newhistory.crew[symbol].concat(remote.crew[symbol]);
+		}
+	});
+
+	return newhistory;
+}
