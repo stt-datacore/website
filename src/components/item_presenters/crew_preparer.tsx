@@ -6,6 +6,7 @@ import { BuffStatTable } from "../../utils/voyageutils";
 import { IDefaultGlobal } from "../../context/globalcontext";
 import { EquipmentItem } from "../../model/equipment";
 import { ItemBonusInfo, getItemBonuses } from "../../utils/itemutils";
+import { IRosterCrew } from "../retrieval/model";
 
 export const BuffNames = {
     'none': "buffs.no_buffs",
@@ -173,32 +174,37 @@ export class CrewPreparer {
         let quips = [] as EquipmentItem[];
         let buffs = undefined as ItemBonusInfo[] | undefined;
         let immoMode: PlayerImmortalMode[] | undefined = undefined;
+        let have = false;
 
         if (dataIn) {
             let item: PlayerCrew;
 
             if (hasPlayer) {
                 if (useInputQuip) {
-                    item = playerData.player.character.crew.find((xcrew) => {
+                    let imp = playerData.player.character.crew.find((xcrew) => {
                         if ("id" in dataIn) {
                             return xcrew.id === dataIn.id;
                         }
                         else {
                             return xcrew.symbol === dataIn.symbol;
                         }
-                    }) ?? dataIn as PlayerCrew;
-                    item = { ...dataIn, ...item, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };
+                    });
+                    if (!imp) imp = dataIn as PlayerCrew;
+                    else have = true;
+                    item = { ...dataIn, ...imp, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };
                 }
                 else {
-                    item = playerData.player.character.crew.find((xcrew) => {
+                    let imp = playerData.player.character.crew.find((xcrew) => {
                         if ("id" in dataIn) {
                             return xcrew.id === dataIn.id;
                         }
                         else {
                             return xcrew.symbol === dataIn.symbol;
                         }
-                    }) ?? dataIn as PlayerCrew;
-                    item = { ...dataIn, ...item };
+                    });
+                    if (!imp) imp = dataIn as PlayerCrew;
+                    else have = true;
+                    item = { ...dataIn, ...imp };
                 }
             }
             else {
@@ -289,10 +295,12 @@ export class CrewPreparer {
                     }
                     })
             }
-
+            if (have) {
+                item.have = true;
+                (item as any)['any_immortal'] = playerData?.player?.character?.crew?.some(c => c.symbol === item.symbol && c.immortal);
+            }
             return [item, immoMode];
         }
-
         return [dataIn, []];
     }
 }

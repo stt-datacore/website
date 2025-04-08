@@ -5,6 +5,7 @@ import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
 import { CrewMember } from '../../model/crew';
 import { DropdownItemProps } from 'semantic-ui-react';
+import { IRosterCrew } from '../crewtables/model';
 
 export const NEW_VOYAGE_ID = 0;
 export const NEW_TRACKER_ID = 0;
@@ -31,7 +32,7 @@ export interface TrackerPostResult {
 };
 
 export interface LootCrew {
-	crew: CrewMember;
+	crew: IRosterCrew;
 	voyages: ITrackedVoyage[]
 }
 
