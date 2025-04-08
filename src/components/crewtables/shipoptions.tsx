@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Form, Dropdown, Rating, Menu, MenuItemProps } from "semantic-ui-react";
 import { PlayerData } from "../../model/player";
-import { Ship, Schematics } from "../../model/ship";
+import { Ship } from "../../model/ship";
 import { DropDownItem } from "../../utils/misc";
 import { ShipPickerFilter, filterBy, mergeRefShips } from "../../utils/shiputils";
 import CONFIG from "../CONFIG";

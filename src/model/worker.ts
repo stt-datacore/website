@@ -1,4 +1,4 @@
-import { BossBattlesRoot, BossEffect } from "./boss";
+import { BossEffect } from "./boss";
 import { BaseSkills, CrewMember, Skill } from "./crew";
 import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";

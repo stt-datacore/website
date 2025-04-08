@@ -1,5 +1,5 @@
 import React from 'react';
-import { Step, Icon, Label, Message, Button } from 'semantic-ui-react';
+import { Step, Icon, Label, Message } from 'semantic-ui-react';
 
 import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode, CryoCollection } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
@@ -9,7 +9,7 @@ import { IRosterCrew, RosterType } from './model';
 import { CrewMember } from '../../model/crew';
 import { loadOfferCrew } from '../../utils/offers';
 import { appelate } from '../../utils/misc';
-import { Offer, OfferCrew } from '../../model/offers';
+import { OfferCrew } from '../../model/offers';
 import { useStateWithStorage } from '../../utils/storage';
 import { AlertContext } from '../alerts/alertprovider';
 import { AvatarView } from '../item_presenters/avatarview';

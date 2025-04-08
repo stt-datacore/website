@@ -1,7 +1,5 @@
-import { Skill } from '../../model/crew';
-import { EquipmentItem } from '../../model/equipment';
-import { Offer, OfferCrew as CrewOffer } from '../../model/offers';
-import { PlayerCrew, PlayerUtilityRanks } from '../../model/player';
+import { OfferCrew as CrewOffer } from '../../model/offers';
+import { PlayerCrew } from '../../model/player';
 
 export interface IRosterCrew extends PlayerCrew {
 	any_immortal?: boolean;

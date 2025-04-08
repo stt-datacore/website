@@ -1,8 +1,7 @@
 import { RewardsGridNeed } from "../model/crew";
 import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
-import { BuffBase, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward } from "../model/player";
+import { BuffBase, MilestoneBuff, PlayerCollection, PlayerCrew } from "../model/player";
 import { getCollectionRewards } from "./itemutils";
-import { EquipmentItem } from "../model/equipment";
 import { Collection } from "../model/game-elements";
 
 export const checkRewardFilter = (collection: PlayerCollection, filters: string[]) => {

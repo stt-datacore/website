@@ -1,7 +1,6 @@
 import { navigate } from "gatsby";
 import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
-import { BuffStatTable } from "./voyageutils";
 
 /**
  * Navigate to the crew page, sending over information about owned variants and fusables.

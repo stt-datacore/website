@@ -1,5 +1,4 @@
 import { CrewMember } from "../model/crew";
-import { PlayerCrew } from "../model/player";
 
 export interface SubSort {
 	[key: string]: any;

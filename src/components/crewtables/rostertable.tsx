@@ -26,10 +26,9 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getItemWithBonus, getQuipmentAsItemWithBonus } from '../../utils/itemutils';
+import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
-import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
@@ -211,7 +210,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
-	const { topQuipmentScores: top } = globalContext.core;
+	const { topQuipmentScores: top, continuum_missions } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
 	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew, buffMode, setBuffMode } = tableContext;
 
@@ -358,6 +357,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					missions={continuum_missions}
 					questFilter={questFilter}
 					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
@@ -375,7 +375,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
+			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
 			renderTableCells:
 				(crew: IRosterCrew) =>
 					<TopQuipmentScoreCells
