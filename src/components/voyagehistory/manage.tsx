@@ -281,6 +281,7 @@ const AdvancedOptions = () => {
 
 const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
+	const { history } = React.useContext(HistoryContext);
 
 	const saveButton: IManageButton = {
 		key: 'voyage.tracking.export',
