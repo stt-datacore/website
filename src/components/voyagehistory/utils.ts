@@ -1,8 +1,10 @@
-import { Voyage, VoyageCrewSlot } from '../../model/player';
+import { TranslateMethod, Voyage, VoyageCrewSlot } from '../../model/player';
 import { Estimate, IVoyageCalcConfig, IVoyageHistory, ITrackedVoyage, ITrackedCheckpoint, ITrackedAssignmentsByCrew, ITrackedDataRecord, IFullPayloadAssignment } from '../../model/voyage';
 import { UnifiedWorker } from '../../typings/worker';
 import CONFIG from '../CONFIG';
 import { flattenEstimate } from '../../utils/voyageutils';
+import { CrewMember } from '../../model/crew';
+import { DropdownItemProps } from 'semantic-ui-react';
 
 export const NEW_VOYAGE_ID = 0;
 export const NEW_TRACKER_ID = 0;
@@ -27,6 +29,11 @@ export interface TrackerPostResult {
 	inputId?: number;
 	trackerId?: number;
 };
+
+export interface LootCrew {
+	crew: CrewMember;
+	voyages: ITrackedVoyage[]
+}
 
 export const defaultHistory: IVoyageHistory = {
 	voyages: [],
@@ -215,6 +222,48 @@ export async function getTrackedData(dbid: string, trackerId?: string): Promise<
 	else {
 		return undefined;
 	}
+}
+
+export function createReportDayOptions(t: TranslateMethod) {
+	const reportDayOptions: DropdownItemProps[] = [
+		{	/* Show all voyages */
+			key: 'all',
+			value: undefined,
+			text: t('voyage.show_all_voyages')
+		},
+		{	/* Show voyages from last year */
+			key: 'year',
+			value: 365,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.year') })
+		},
+		{	/* Show voyages from last 180 days */
+			key: 'half',
+			value: 180,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.half') })
+		},
+		{	/* Show voyages from last 90 days */
+			key: 'quarter',
+			value: 90,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.quarter') })
+		},
+		{	/* Show voyages from last 60 days */
+			key: 'months',
+			value: 60,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.months') })
+		},
+		{	/* Show voyages from last month */
+			key: 'month',
+			value: 30,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.month') })
+		},
+		{	/* Show voyages from last week */
+			key: 'week',
+			value: 7,
+			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.week') })
+		}
+	];
+
+	return reportDayOptions;
 }
 
 export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assignments: IFullPayloadAssignment[]): Promise<TrackerPostResult> {

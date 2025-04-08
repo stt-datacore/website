@@ -2363,6 +2363,12 @@
         "history": {
             "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
             "enable_remote_tracking": "Activer le suivi à distance",
+            "loot_crew": {
+                "columns": {
+                    "voyages": "{{base.voyages}}"
+                },
+                "title": "Équipiers du butin"
+            },
             "menu": {
                 "crew": "Équipiers",
                 "manage": "Gérer l'historique",

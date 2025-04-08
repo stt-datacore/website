@@ -53,8 +53,8 @@
         "less_than_100_retrieval": "< 100% Retrieval",
         "level": "Level",
         "live_results": "Live results (calculation will be slower)",
-        "n_to_next": "{{n}} to next",
         "n_slots": "{{n}} slots",
+        "n_to_next": "{{n}} to next",
         "never_in_portal": "Never In Portal",
         "not_in_portal": "Not In Portal",
         "not_uniquely_retrievable": "Not Uniquely Retrievable",
@@ -2351,6 +2351,12 @@
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
             "enable_remote_tracking": "Enable remote tracking",
+            "loot_crew": {
+                "columns": {
+                    "voyages": "{{base.voyages}}"
+                },
+                "title": "Loot Crew"
+            },
             "menu": {
                 "crew": "Crew",
                 "manage": "Manage History",

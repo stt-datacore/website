@@ -2361,6 +2361,12 @@
         "history": {
             "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
             "enable_remote_tracking": "Habilitar el seguimiento remoto",
+            "loot_crew": {
+                "columns": {
+                    "voyages": "{{base.voyages}}"
+                },
+                "title": "Tripulantes del botín"
+            },
             "menu": {
                 "crew": "Tripulantes",
                 "manage": "Administrar historial",
