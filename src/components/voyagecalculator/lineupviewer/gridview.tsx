@@ -102,6 +102,7 @@ export const GridView = () => {
 								<Popup mouseEnterDelay={POPUP_DELAY} trigger={
 									<div style={{ cursor: 'help' }}>
 										<AvatarView
+											crewBackground='rich'
 											mode='crew'
 											size={48}
 											item={crew}
