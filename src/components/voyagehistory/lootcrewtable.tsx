@@ -4,16 +4,17 @@ import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewBaseCells, getBaseTableConfig } from "../crewtables/views/base";
 import { createReportDayOptions, LootCrew } from "./utils";
-import { IRosterCrew } from "../crewtables/model";
+import { ICrewFilter, IRosterCrew } from "../crewtables/model";
 import { Dropdown, Form, Rating, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
 import { useStateWithStorage } from "../../utils/storage";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
 import { Link } from "gatsby";
-import { descriptionLabel } from "../crewtables/commonoptions";
+import { descriptionLabel, RarityFilter } from "../crewtables/commonoptions";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
-import { oneCrewCopy } from "../../utils/crewutils";
 import { CrewPreparer } from "../item_presenters/crew_preparer";
+import { CrewOwnershipFilter } from "../crewtables/filters/crewownership";
+import { CompletionState } from "../../model/player";
 
 export const LootCrewTable = () => {
 
@@ -29,6 +30,9 @@ export const LootCrewTable = () => {
     }, [playerData]);
 
     const [reportDays, setReportDays] = useStateWithStorage<number | undefined>(`${dbidPrefix}loot_crew_table/report_days`, 30, { rememberForever: true });
+    const [rarityFilter, setRarityFilter] = useStateWithStorage<number[]>(`${dbidPrefix}loot_crew_table/rarity_filter`, [], { rememberForever: true });
+
+    const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([]);
 
     const tableConfig = [
         { width: 3, column: 'name', title: t('global.name') },
@@ -57,11 +61,23 @@ export const LootCrewTable = () => {
                 if (dayDiff > reportDays) continue;
             }
             for (let lc of voy.lootcrew) {
-                let c = crew.find(cc => cc.symbol === lc);
+                let c = crew.find(cc => cc.symbol === lc) as IRosterCrew;
                 if (c) {
-                    if (!tableCrew.includes(c as IRosterCrew)) tableCrew.push(c as IRosterCrew);
-                    let loot = lootCrew.find(f => f.crew?.symbol === c.symbol);
+                    let loot = lootCrew.find(f => f.crew?.symbol === c!.symbol);
                     if (!loot) {
+                        c = (() => {
+                            let lc = c;
+                            let pc = playerData?.player.character.crew.filter(f => f.symbol === lc.symbol) ?? playerData?.player.character.unOwnedCrew?.filter(f => f.symbol === lc.symbol);
+                            if (pc?.length) {
+                                pc.sort((a, b) => b.rarity - a.rarity || b.level - a.level || b.equipment.length - a.equipment.length);
+                                lc = pc[0];
+                            }
+                            lc = CrewPreparer.prepareCrewMember(lc, buffConfig ? 'player' : 'max', 'shown_full', globalContext, false)[0] as IRosterCrew;
+                            lc.immortal = CompletionState.DisplayAsImmortalStatic;
+                            return lc as IRosterCrew;
+                        })();
+                        if (!checkFilters(c as IRosterCrew)) continue;
+                        if (!tableCrew.some(cc => cc.symbol === c.symbol)) tableCrew.push(c as IRosterCrew);
                         loot = {
                             crew: c,
                             voyages: [voy]
@@ -80,7 +96,7 @@ export const LootCrewTable = () => {
             });
         });
         return [lootCrew, tableCrew];
-    }, [history, reportDays]);
+    }, [history, reportDays, rarityFilter, crewFilters]);
 
     const reportDayOptions = createReportDayOptions(t);
 
@@ -97,6 +113,15 @@ export const LootCrewTable = () => {
 						value={reportDays}
 						onChange={(e, { value }) => setReportDays(value)}
 					/>
+                    <RarityFilter
+                        rarityFilter={rarityFilter}
+                        setRarityFilter={setRarityFilter}
+                        />
+                    <CrewOwnershipFilter
+                        pageId='lootcrew'
+                        crewFilters={crewFilters}
+                        setCrewFilters={setCrewFilters}
+                        />
 				</Form.Group>
 			</Form>
 
@@ -110,23 +135,15 @@ export const LootCrewTable = () => {
         </React.Fragment>
     )
 
-    function filterTableRow(row: LootCrew, filter: Filter[], filterType?: string) {
-        return crewMatchesSearchFilter(row.crew, filter, filterType);
+    function filterTableRow(row: IRosterCrew, filter: Filter[], filterType?: string) {
+        if (crewMatchesSearchFilter(row, filter, filterType)) return true;
+        return false;
     }
 
     function renderTableRow(crew_in: IRosterCrew, idx?: number) {
-        const crew = (() => {
-            let lc = crew_in;
-            let pc = playerData?.player.character.crew.filter(f => f.symbol === lc.symbol) ?? playerData?.player.character.unOwnedCrew?.filter(f => f.symbol === lc.symbol);
-            if (pc?.length) {
-                pc.sort((a, b) => b.rarity - a.rarity || b.level - a.level || b.equipment.length - a.equipment.length);
-                lc = pc[0];
-            }
-            lc = CrewPreparer.prepareCrewMember(lc, buffConfig ? 'player' : 'max', 'shown_full', globalContext, false)[0] as IRosterCrew;
-            return lc;
-        })();
 
-        const row = getLootCrew(crew)!;
+        const row = getLootCrew(crew_in)!;
+        const crew = row.crew;
 
         return (
             <Table.Row>
@@ -172,6 +189,19 @@ export const LootCrewTable = () => {
 
     function getLootCrew(crew: IRosterCrew) {
         return lootCrew.find(f => f.crew.symbol === crew.symbol);
+    }
+
+    function checkFilters(c: IRosterCrew) {
+        if (rarityFilter.length && !rarityFilter.includes(c.max_rarity)) return false;
+        const passtest = (() => {
+            if (!crewFilters.length) return true;
+            for (const filter of crewFilters) {
+                if (filter.filterTest(c as IRosterCrew)) return true;
+            }
+            return false;
+        })();
+        if (!passtest) return false;
+        return true;
     }
 
 }
