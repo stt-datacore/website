@@ -25,9 +25,9 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 		{
 			width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'), reverse: true,
 			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
-				if (a.ranks.scores?.overall === undefined && b.ranks.scores?.overall === undefined) return 0;
-				else if (a.ranks.scores?.overall === undefined) return 1;
-				else if (b.ranks.scores?.overall === undefined) return -1;
+				if (a.ranks?.scores?.overall === undefined && b.ranks?.scores?.overall === undefined) return 0;
+				else if (a.ranks?.scores?.overall === undefined) return 1;
+				else if (b.ranks?.scores?.overall === undefined) return -1;
 				let r = a.ranks.scores.overall - b.ranks.scores.overall;
 				if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
 				return r;
