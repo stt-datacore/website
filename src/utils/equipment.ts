@@ -6,6 +6,7 @@ import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 import { makeAllCombos } from './misc';
+import { multiComp, qpComp, skoComp } from './quipment_tools';
 import { BuffStatTable } from './voyageutils';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
@@ -781,4 +782,17 @@ export function calcQLots<T extends CrewMember>(
 	}
 
 	return crew;
+}
+
+export function sortCrewByQuipment(roster: CrewMember[], pstMode: boolean | 2 | 3, index: number | string) {
+
+	if (pstMode === true && typeof index === 'number') {
+		roster.sort((a, b) => skoComp(a, b, index));
+	}
+	else if (pstMode === 2 && typeof index === 'number') {
+		roster.sort((a, b) => multiComp(a, b, index));
+	}
+	else if (typeof index === 'string') {
+		roster.sort((a, b) => qpComp(a, b, index));
+	}
 }

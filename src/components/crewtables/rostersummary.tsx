@@ -3,7 +3,7 @@ import { Modal, Button, Icon, Form, Select, Checkbox, Table, Popup, Rating } fro
 
 import CONFIG from '../../components/CONFIG';
 import { CompactCrew, CrewRoster, PlayerCrew } from '../../model/player';
-import { ComputedSkill, CrewMember, Skill, SkillsSummary } from '../../model/crew';
+import { ComputedSkill, CrewMember, SkillsSummary } from '../../model/crew';
 import { BuffStatTable } from '../../utils/voyageutils';
 import { applySkillBuff } from '../../utils/crewutils';
 import { GlobalContext } from '../../context/globalcontext';

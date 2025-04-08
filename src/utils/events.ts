@@ -4,7 +4,7 @@ import { CompletionState, Content, GameEvent, PlayerCrew, Shuttle, SpecialistMis
 import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
 import { EventInstance } from '../model/events';
 import CONFIG from '../components/CONFIG';
-import { applySkillBuff, crewCopy, getShortNameFromTrait, getVariantTraits } from './crewutils';
+import { applySkillBuff, getShortNameFromTrait, getVariantTraits } from './crewutils';
 import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';

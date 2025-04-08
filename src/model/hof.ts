@@ -1,8 +1,6 @@
 import { RankMode } from "../utils/misc";
 import { RawVoyageRecord } from "../utils/voyageutils";
-import { CrewMember } from "./crew";
 import { EquipmentItem } from "./equipment";
-import { PlayerCrew } from "./player";
 
 export interface VoyageHOFProps {};
 
