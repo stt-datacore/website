@@ -784,15 +784,15 @@ export function calcQLots<T extends CrewMember>(
 	return crew;
 }
 
-export function sortCrewByQuipment(roster: CrewMember[], pstMode: boolean | 2 | 3, index: number | string) {
-
+export function sortCrewByQuipment(roster: CrewMember[], pstMode: boolean | 2 | 3, index: number | string, reverse?: boolean, tiebreaker?: (a: CrewMember, b: CrewMember) => number) {
+	const mul = reverse ? -1 : 1;
 	if (pstMode === true && typeof index === 'number') {
-		roster.sort((a, b) => skoComp(a, b, index));
+		roster.sort((a, b) => mul * skoComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
 	}
 	else if (pstMode === 2 && typeof index === 'number') {
-		roster.sort((a, b) => multiComp(a, b, index));
+		roster.sort((a, b) => mul * multiComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
 	}
 	else if (typeof index === 'string') {
-		roster.sort((a, b) => qpComp(a, b, index));
+		roster.sort((a, b) => mul * qpComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
 	}
 }

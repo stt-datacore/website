@@ -1,4 +1,6 @@
 import { CrewMember } from "../model/crew";
+import { EquipmentItem, EquipmentItemSource } from "../model/equipment";
+import { ItemWithBonus } from "./itemutils";
 
 export function qpComp(a: CrewMember, b: CrewMember, skill: string) {
     if (!a.best_quipment!.aggregate_by_skill[skill]) return -1;
@@ -77,3 +79,25 @@ export function multiComp(a: CrewMember, b: CrewMember, combo_id: number) {
 
     return 0;
 };
+
+export function createQuipmentInventoryPool(mergedItems: EquipmentItem[], quipment: ItemWithBonus[], farmable?: boolean) {
+    const equipment = {} as {[key:string]: EquipmentItem};
+    for (let q of quipment) {
+        q.item.recipe?.list.forEach((ing) => {
+            if (!equipment[ing.symbol]) {
+                let eq = mergedItems.find(f => f.symbol === ing.symbol);
+                if (eq) {
+                    equipment[ing.symbol] = JSON.parse(JSON.stringify(eq));
+                    equipment[ing.symbol].needed = 0;
+                }
+            }
+            if (equipment[ing.symbol]) {
+                equipment[ing.symbol].needed! += ing.count;
+                equipment[ing.symbol].needed_by ??= [];
+                equipment[ing.symbol].needed_by?.push(q.item.symbol);
+            }
+        });
+    }
+    const results = Object.values(equipment);
+    return results.filter(item => !farmable || item.needed !== undefined && item.quantity !== undefined && item.needed > item.quantity);
+}
