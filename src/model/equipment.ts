@@ -66,6 +66,7 @@ export interface EquipmentItem extends EquipmentCommon {
   bonuses?: EquipmentBonuses
   quantity?: number;
   needed?: number;
+  needed_by?: string[];
   factionOnly?: boolean;
 
   item_sources: EquipmentItemSource[]

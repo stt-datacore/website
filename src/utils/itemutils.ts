@@ -202,7 +202,7 @@ export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
 	return result;
 }
 
-export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
+export function getItemBonuses(item: EquipmentItem | EquipmentCommon): ItemBonusInfo {
     let bonusText = [] as string[];
     let bonuses = {} as { [key: string]: Skill };
 
@@ -426,7 +426,7 @@ export function getQuipmentAsItemWithBonus(items: EquipmentItem[]) {
 	return items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 }
 
-export function getItemWithBonus(item: EquipmentItem) {
+export function getItemWithBonus(item: EquipmentItem | EquipmentCommon) {
 	return {
 		item,
 		bonusInfo: getItemBonuses(item)
