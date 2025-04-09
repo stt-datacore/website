@@ -10,6 +10,7 @@ import { calcItemDemands, calcQLots, canBuildItem, deductDemands, reverseDeducti
 import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, checkReward, ItemWithBonus, sortItemsWithBonus, getItemWithBonus, mergeItems } from "../utils/itemutils";
 import { createQuipmentInventoryPool } from "../utils/quipment_tools";
 import { applyCrewBuffs } from "./betatachyon";
+
 function qbitsToSlots(q_bits: number | undefined) {
     // 100/200/500/1300
     q_bits ??= 0;
@@ -91,20 +92,12 @@ const QuestSolver = {
                 let chidx = 0;
                 for (let challenge of path) {
                     pathCrew[idx].push([]);
-                    let critmult = 1;
                     if (config.ignoreChallenges?.includes(challenge.id)) {
                         chidx++;
                         continue;
                     }
-                    if (!config.alwaysCrit && quest && quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
-                        critmult = (!!(quest.mastery_levels[mastery].jackpots as Jackpot[]).find(f => f.id === challenge.id && (f.claimed && f.can_reclaim))) ? 0 : 1;
-                    }
-                    const crit = challenge.critical?.threshold ?? 150;
-                    if (challenge.critical?.threshold && challenge.critical.threshold !== 150) {
-                        console.log("here");
-                    }
-                    const solvePower = (challenge.difficulty_by_mastery[mastery] + (critmult * [crit, crit+125, crit+150][mastery]));
                     let chcrew = crew.filter(f => f.skill_order.includes(challenge.skill));
+                    const solvePower = getSolvePower(challenge, mastery);
 
                     sortCrewByQuipment(chcrew, false, challenge.skill, true);
 
@@ -151,7 +144,146 @@ const QuestSolver = {
 
             const doubleCrew = Object.keys(doubleDuty).map(dd => crew.find(c => c.id == Number(dd))!);
             sortCrewByQuipment(doubleCrew, true, 0, true);
+            const pathGroups = [] as PathGroup[];
+            idx = 0;
 
+            for (let path of paths) {
+                let skills = path.map(c => c.skill);
+                let unique_skills = [...new Set(skills)];
+                let crews = path.map((c, i) => pathCrew[idx][i]);
+                let chmap = path.map(c => 0);
+
+                let pmcrew = [] as IQuestCrew[];
+                let completeness: ThreeSolveResult = 'full';
+                let chidx = 0;
+
+                let skillmap = {} as {[key:string]: IQuestCrew};
+                for (chidx = 0; chidx < path.length; chidx++) {
+                    let i = 0;
+                    let test = crews[chidx];
+                    let c = test.length;
+
+                    while (i < c && pmcrew.includes(test[i])) {
+                        i++;
+                    }
+                    if (i >= c) {
+                        completeness = 'partial';
+                    }
+                    else {
+                        let skill = path[chidx].skill;
+                        if (skillmap[skill]) {
+                            const solvePower = getSolvePower(path[chidx], mastery);
+                            if (chidx && path[chidx-1].skill === skill) {
+                                if ((skillmap[skill].best_quipment!.aggregate_by_skill[skill] * 0.8) < solvePower) {
+                                    skillmap[skill] = test[i];
+                                    chmap[chidx] = test[i].id;
+                                }
+                            }
+                            else if (skillmap[skill].best_quipment!.aggregate_by_skill[skill] < solvePower) {
+                                skillmap[skill] = test[i];
+                                chmap[chidx] = test[i].id;
+                            }
+                        }
+                        else {
+                            skillmap[skill] = test[i];
+                            pmcrew.push(test[i]);
+                            chmap[chidx] = test[i].id;
+                        }
+                    }
+                }
+
+                let crewsyms = [... new Set(Object.values(skillmap).map(m => m.id))];
+                let touched = [] as string[];
+
+                while (crewsyms.length > 3) {
+                    let q1 = path[path.length-1].skill;
+                    let q2 = '';
+                    let lastname = path[path.length-1].name;
+                    let lastskill = path[path.length-1].skill;
+                    let crew2 = undefined as IQuestCrew | undefined;
+                    let i = 0;
+                    for (i = 0; i < path.length - 1; i++) {
+                        for (let [key, value] of Object.entries(doubleDuty)) {
+                            if (value.includes(lastname) && value.includes(path[i].name)) {
+                                let id = Number(key);
+                                let c = crew.find(f => f.id === id)!;
+                                if (i === path.length - 2) {
+                                    const solvePower = getSolvePower(path[i], mastery);
+                                    if (c.best_quipment_1_2!.aggregate_by_skill[lastskill] * 0.8 >= solvePower) {
+                                        crew2 = c;
+                                        q2 = path[i].skill;
+                                        break;
+                                    }
+                                }
+                                else {
+                                    crew2 = c;
+                                    q2 = path[i].skill;
+                                    break;
+                                }
+                            }
+                        }
+                        if (crew2) break;
+                    }
+                    if (!crew2 || !q2 || i >= path.length) {
+                        completeness = 'partial';
+                        let skimp = Object.keys(skillmap);
+                        if (skimp.length > 1 && skimp[skimp.length-1] !== skimp[skimp.length-2]) {
+                            delete skillmap[skimp[skimp.length-2]];
+                        }
+                    }
+                    else if (!touched.includes(q2)) {
+                        skillmap[q1] = crew2;
+                        skillmap[q2] = crew2;
+                        chmap[i] = crew2.id;
+                        chmap[path.length-1] = crew2.id;
+                        touched.push(q2);
+                    }
+                    else {
+                        if (skillmap[q2]) delete skillmap[q2];
+                        else delete skillmap[q1];
+                    }
+                    crewsyms = [... new Set(Object.values(skillmap).map(m => m.id))];
+                }
+                chmap.forEach((id, idx) => {
+                    let c = crew.find(f => f.id === id);
+                    if (!c) return;
+                    c.challenges ??= [];
+                    if (chmap.filter(f => f === id).length === 2) {
+                        c.challenges.push({
+                            challenge: path[idx],
+                            path: path.map(m => m.id).join("_"),
+                            skills: {},
+                            kwipment: Object.values(c.best_quipment_1_2!.skill_quipment).flat().map(q => Number(q.kwipment_id!)),
+                            kwipment_expiration: [0,0,0,0]
+                        });
+                        c.added_kwipment = c.challenges[c.challenges.length-1].kwipment;
+                    }
+                    else {
+                        c.challenges.push({
+                            challenge: path[idx],
+                            path: path.map(m => m.id).join("_"),
+                            skills: {},
+                            kwipment: Object.values(c.best_quipment!.skill_quipment[path[idx].skill]).flat().map(q => Number(q.kwipment_id!)),
+                            kwipment_expiration: [0,0,0,0]
+                        });
+                        c.added_kwipment = c.challenges[c.challenges.length-1].kwipment;
+                    }
+                });
+                pmcrew = Object.values(skillmap);
+                // pmcrew.forEach((pc) => {
+                //     pc.associated_paths ??= [];
+                //     pc.associated_paths.push()
+                // })
+                pathGroups.push({
+                    path: path.map(p => p.id).join("_"),
+                    crew: pmcrew,
+                    mastery,
+                    completeness: 'full',
+                    path_expanded: path
+                });
+
+                idx++;
+            }
             // resolve({
             //     status: true,
             //     fulfilled: !failed.length && finalpss.length >= paths.length,
@@ -162,13 +294,26 @@ const QuestSolver = {
             // });
 
             resolve({
-                status: false,
-                fulfilled: false,
-                crew: [],
+                status: true,
+                fulfilled: true,
+                crew: [...new Set(pathGroups.map(m => m.crew).flat())],
                 error: "No player crew roster",
-                paths: [],
+                paths: pathGroups,
                 pathspartial: false
             });
+
+            function getSolvePower(challenge: MissionChallenge, mastery: number) {
+                let critmult = 1;
+                if (!config.alwaysCrit && quest && quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
+                    critmult = (!!(quest.mastery_levels[mastery].jackpots as Jackpot[]).find(f => f.id === challenge.id && (f.claimed && f.can_reclaim))) ? 0 : 1;
+                }
+                const crit = challenge.critical?.threshold ?? 150;
+                // if (challenge.critical?.threshold && challenge.critical.threshold !== 150) {
+                //     console.log("here");
+                // }
+                return (challenge.difficulty_by_mastery[mastery] + (critmult * [crit, crit+125, crit+150][mastery]));
+            }
+
         });
     },
 }
