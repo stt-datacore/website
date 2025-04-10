@@ -225,6 +225,7 @@ export interface CrewChallengeInfo {
 export interface AssociatedPath {
     path: string;
     needed_kwipment?: number[];
+    needed_kwipment_expiration?: number[];
     skills: BaseSkills;
 }
 
