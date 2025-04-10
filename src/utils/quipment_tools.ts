@@ -101,3 +101,43 @@ export function createQuipmentInventoryPool(mergedItems: EquipmentItem[], quipme
     const results = Object.values(equipment);
     return results.filter(item => !farmable || item.needed !== undefined && item.quantity !== undefined && item.needed > item.quantity);
 }
+
+export function fillInQuipment(crew: CrewMember, quipment: EquipmentItem[], slots: number) {
+    let curr_quip = crew.kwipment.map(kw => typeof kw === 'number' ? kw : kw[1]) as number[];
+    let curr_exp = crew.kwipment_expiration.map(kw => typeof kw === 'number' ? kw : kw[1]) as number[];
+    let quip_list = quipment.map(q => Number(q.id));
+
+    let new_quip = quip_list; //.filter(id => !curr_quip.includes(id));
+    let j = 0;
+    let i = 0;
+    for (i = 0; i < slots; i++) {
+        if (!new_quip.includes(curr_quip[i])) {
+            curr_quip[i] = 0;
+            curr_exp[i] = 0;
+        }
+    }
+    for (i = 0; i < new_quip.length; i++) {
+        if (!curr_quip.includes(new_quip[i])) {
+            while (curr_quip[j]) j++;
+            curr_quip[j] = new_quip[i];
+        }
+    }
+    return { kwipment: curr_quip, kwipment_expiration: curr_exp };
+    // crew.kwipment = curr_quip;
+    // crew.kwipment_expiration = curr_exp;
+}
+
+export function checkIsProspect(crew: CrewMember) {
+    let curr_quip = crew.kwipment.map(kw => typeof kw === 'number' ? kw : kw[1]) as number[];
+    let curr_exp = crew.kwipment_expiration.map(kw => typeof kw === 'number' ? kw : kw[1]) as number[];
+    let i = 0;
+    let c = curr_quip.length;
+    let d = curr_exp.length;
+    if (c != d) {
+        return true;
+    }
+    for (i = 0; i < c; i++) {
+        if (curr_quip[i] && !curr_exp[i]) return true;
+    }
+    return false;
+}
