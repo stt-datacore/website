@@ -1598,6 +1598,10 @@
         "potential_maximum": "Máximo potencial",
         "standard": "Estándar"
     },
+    "ranking_tools": {
+        "current_weighting": "Ponderación actual",
+        "show_weighting_details": "Mostrar detalles de ponderación"
+    },
     "retrieval": {
         "allow_unowned": "Permitir tripulación sin propietario",
         "assume_in_game_favorites": "Agregar dinámicamente los favoritos del juego a la lista de deseos",
@@ -2361,8 +2365,6 @@
         "history": {
             "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
             "enable_remote_tracking": "Habilitar el seguimiento remoto",
-            "remote_tracking": "Seguimiento remoto",
-            "warn_delete": "¿Estás segura de que deseas eliminar este viaje?",
             "loot_crew": {
                 "columns": {
                     "voyages": "{{base.voyages}}"
@@ -2376,7 +2378,9 @@
             },
             "moved": "La herramienta Historial de viajes se ha trasladado a la {{link}}. Actualice sus marcadores según sea necesario.",
             "not_yet": "Aún no tienes ningún historial de viajes. Comienza a hacer un seguimiento de los viajes desde la calculadora de tripulación.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Seguimiento remoto",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "¿Estás segura de que deseas eliminar este viaje?"
         },
         "import": {
             "click_here": "Haz clic aquí para cargar tus datos",
@@ -2506,7 +2510,6 @@
         "voyage_history": {
             "delete_from_history": "Eliminar viaje del historial",
             "export_history": "Guardar historial en el dispositivo",
-            "import_history": "Agregar historial desde el dispositivo",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",
@@ -2516,6 +2519,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Agregar historial desde el dispositivo",
             "manage_placeholder": "La sincronización remota y otras opciones de gestión del historial están en desarrollo.",
             "options": {
                 "revival": {

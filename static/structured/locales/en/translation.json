@@ -1588,6 +1588,10 @@
         "potential_maximum": "Potential maximum",
         "standard": "Standard"
     },
+    "ranking_tools": {
+        "current_weighting": "Current Weighting",
+        "show_weighting_details": "Show weighting details"
+    },
     "retrieval": {
         "allow_unowned": "Allow unowned crew",
         "assume_in_game_favorites": "Dynamically add in-game favorites to wishlist",
@@ -2351,8 +2355,6 @@
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
             "enable_remote_tracking": "Enable remote tracking",
-            "remote_tracking": "Remote tracking",
-            "warn_delete": "Are you sure you wish to delete this voyage?",
             "loot_crew": {
                 "columns": {
                     "voyages": "{{base.voyages}}"
@@ -2366,7 +2368,9 @@
             },
             "moved": "The Voyage History tool has moved to the {{link}}. Please update your bookmarks as needed.",
             "not_yet": "You don't have any voyage history yet. Start tracking voyages from the crew calculator.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Remote tracking",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "Are you sure you wish to delete this voyage?"
         },
         "import": {
             "click_here": "Click here to upload your data",
@@ -2494,10 +2498,8 @@
             "voyage_history": "View voyage history"
         },
         "voyage_history": {
-
             "delete_from_history": "Delete voyage from history",
             "export_history": "Save history to device",
-            "import_history": "Add history from device",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",
@@ -2507,6 +2509,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Add history from device",
             "manage_placeholder": "Remote sync and other history management options are in development.",
             "options": {
                 "revival": {

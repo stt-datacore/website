@@ -33,6 +33,7 @@ import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
+import WeightingInfoPopup from './weightinginfo';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -222,6 +223,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
+	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
 	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
@@ -598,17 +600,20 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			</Form>
 			{view && view.form}
 			{viewIsReady !== false && preparedCrew &&
-				<CrewConfigTable
-					pageId={pageId}
-					rosterType={rosterType}
-					initOptions={initOptions}
-					rosterCrew={preparedCrew}
-					crewFilters={crewFilters}
-					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
-					lockableCrew={lockableCrew}
-					loading={isPreparing}
-				/>
+				<React.Fragment>
+					<CrewConfigTable
+						pageId={pageId}
+						rosterType={rosterType}
+						initOptions={initOptions}
+						rosterCrew={preparedCrew}
+						crewFilters={crewFilters}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
+						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
+						lockableCrew={lockableCrew}
+						loading={isPreparing}
+					/>
+					{tableView === 'dc_ranks' && <WeightingInfoPopup saveConfig={() => false} isOpen={weightingOpen} setIsOpen={setWeightingOpen} />}
+				</React.Fragment>
 			}
 			{viewIsReady === false && globalContext.core.spin(view?.spinText ?? 'Calculating...')}
 		</React.Fragment>

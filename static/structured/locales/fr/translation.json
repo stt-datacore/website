@@ -1600,6 +1600,10 @@
         "potential_maximum": "Potentiel maximum",
         "standard": "Standard"
     },
+    "ranking_tools": {
+        "current_weighting": "Pondération actuelle",
+        "show_weighting_details": "Afficher les détails de pondération"
+    },
     "retrieval": {
         "allow_unowned": "Autoriser l'équipage sans propriétaire",
         "assume_in_game_favorites": "Ajoutez dynamiquement les favoris du jeu à la liste de souhaits",
@@ -2363,8 +2367,6 @@
         "history": {
             "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
             "enable_remote_tracking": "Activer le suivi à distance",
-            "remote_tracking": "Suivi à distance",
-            "warn_delete": "Êtes-vous sûr de vouloir supprimer ce voyage ?",
             "loot_crew": {
                 "columns": {
                     "voyages": "{{base.voyages}}"
@@ -2378,7 +2380,9 @@
             },
             "moved": "L'outil Historique des voyages a été déplacé vers le {{link}}. Veuillez mettre à jour vos favoris si nécessaire.",
             "not_yet": "Vous n'avez pas encore d'historique de voyage. Commencez à suivre les voyages à partir du calculateur d'équipage.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Suivi à distance",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "Êtes-vous sûr de vouloir supprimer ce voyage ?"
         },
         "import": {
             "click_here": "Cliquez ici pour télécharger vos données",
@@ -2508,7 +2512,6 @@
         "voyage_history": {
             "delete_from_history": "Supprimer le voyage de l'historique",
             "export_history": "Enregistrer l'historique sur l'appareil",
-            "import_history": "Ajouter l'historique de l'appareil",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",
@@ -2518,6 +2521,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Ajouter l'historique de l'appareil",
             "manage_placeholder": "La synchronisation à distance et d'autres options de gestion de l'historique sont en cours de développement.",
             "options": {
                 "revival": {
