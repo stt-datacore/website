@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { formatTierLabel, gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
+import { gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
@@ -16,6 +16,7 @@ import { TranslateMethod } from '../../../model/player';
 import { appelate } from '../../../utils/misc';
 import CrewStat from '../../crewstat';
 import { printFancyPortal } from '../../base/utils';
+import { OfferCrew } from '../../../model/offers';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -24,9 +25,9 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 		{
 			width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'), reverse: true,
 			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
-				if (a.ranks.scores?.overall === undefined && b.ranks.scores?.overall === undefined) return 0;
-				else if (a.ranks.scores?.overall === undefined) return 1;
-				else if (b.ranks.scores?.overall === undefined) return -1;
+				if (a.ranks?.scores?.overall === undefined && b.ranks?.scores?.overall === undefined) return 0;
+				else if (a.ranks?.scores?.overall === undefined) return 1;
+				else if (b.ranks?.scores?.overall === undefined) return -1;
 				let r = a.ranks.scores.overall - b.ranks.scores.overall;
 				if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
 				return r;
@@ -108,7 +109,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 		)
 	}
 
-	if (tableType !== 'offers') {
+	if (tableType !== 'offers' && tableType !== 'no_skills') {
 		CONFIG.SKILLS_SHORT.forEach((skill) => {
 			tableConfig.push({
 				width: 1,
@@ -117,7 +118,9 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 				reverse: true
 			});
 		});
-		tableConfig.push(
+	}
+	if (tableType !== 'offers') {
+			tableConfig.push(
 			{
 				width: 1,
 				column: 'in_portal',
@@ -128,7 +131,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 			},
 		);
 	}
-	if (['allCrew', 'offers', 'buyBack'].includes(tableType)) {
+	if (['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType)) {
 		tableConfig.push(
 			{
 				width: 1,
@@ -151,7 +154,6 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 				}
 			},
 		);
-
 	}
 	else {
 		tableConfig.push(
@@ -216,7 +218,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printFancyPortal(crew, t, true)}</b>
 			</Table.Cell>
 			</>}
-			{tableType !== 'offers' && CONFIG.SKILLS_SHORT.map(skill =>
+			{!['offers', 'no_skills'].includes(tableType) && CONFIG.SKILLS_SHORT.map(skill =>
 				crew[skill.name].core > 0 ? (
 					<Table.Cell key={skill.name} textAlign='center'>
 						<b>{crew[skill.name].core}</b>
@@ -232,8 +234,8 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printPortalStatus(crew, t, true, true)}</b>
 			</Table.Cell>}
 			<Table.Cell textAlign='center' width={2}>
-				{(['allCrew', 'offers', 'buyBack'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
-				{!['allCrew', 'offers', 'buyBack'].includes(tableType) &&
+				{(['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
+				{!['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType) &&
 					<div title={
 						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 						}>
@@ -253,6 +255,9 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		</React.Fragment>
 	);
 
+	function getExpiration(offer: OfferCrew) {
+		return ((new Date((offer.seconds_remain! * 1000) + Date.now()).toLocaleDateString()));
+	}
 	function renderOffers(crew: IRosterCrew) {
 		const labelStyle: React.CSSProperties = {
 			display: 'flex',
@@ -262,10 +267,13 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			gap: '0.5em'
 		};
 		const divStyle: React.CSSProperties = {
-			display: 'flex',
+			display: 'grid',
+			gridTemplateAreas: `'a a' 'c b'`,
+			//gridTemplateColumns: '7em 4em',
 			flexDirection: 'row',
 			alignItems: 'center',
 			width: '100%',
+			margin: '0.5em',
 			justifyContent: 'space-between',
 			gap: '0.5em'
 		};
@@ -277,30 +285,33 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			flexDirection: 'column',
 			alignItems: 'center',
 			justifyContent: 'space-between',
-			gap: '1em',
+			gap: '0em',
 			textAlign: 'left'
 		}}>
 			{crew.offers?.map((offer) => {
 			return offer.drop_info.map(di => {
 				if (di.currency === 'fiat') {
-					return (<div key={`offer_cost_${di.cost}_${di.currency}`} style={divStyle}>
-							<span>{appelate(offer.name)}</span>
-							<Label style={{...labelStyle, backgroundColor: 'darkgreen'}}>
+					return (<div key={`offer_cost_${di.cost}_${di.currency}`} className='ui segment' style={divStyle}>
+							<span style={{gridArea: 'a'}}>{appelate(offer.name)}</span>
+							<Label style={{...labelStyle, gridArea: 'b', backgroundColor: 'darkgreen'}}>
 								{di.cost}
 							</Label>
+							<div style={{gridArea: 'c'}}><span>{t('base.expiration')}{t('global.colon')}{getExpiration(offer)}</span></div>
 						</div>)
 				}
 				else {
 					return (
-					<div key={`offer_cost_${di.cost}_${di.currency}`} style={divStyle}>
-						<span>{appelate(offer.name)}</span>
+					<div key={`offer_cost_${di.cost}_${di.currency}`} className='ui segment' style={divStyle}>
+						<span style={{gridArea: 'a'}}>{appelate(offer.name)}</span>
 						<div
 							className='ui label'
-							style={labelStyle}
+							style={{...labelStyle, gridArea: 'b', padding: '0.25em 1em'}}
 						>
 						{di.cost}
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
 						</div>
+						<div style={{gridArea: 'c'}}><span>{t('base.expiration')}{t('global.colon')}{getExpiration(offer)}</span></div>
+
 					</div>
 					)
 				}

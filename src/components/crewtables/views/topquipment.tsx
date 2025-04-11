@@ -3,14 +3,15 @@ import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
-import { QuippedPower, QuipmentScores, Skill, BaseSkills, QuipSkill } from "../../../model/crew";
-import { applySkillBuff, powerSum, skillSum, skillToShort } from "../../../utils/crewutils";
+import { QuippedPower, QuipmentScores, QuipSkill } from "../../../model/crew";
+import { skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
 import { ItemWithBonus } from "../../../utils/itemutils";
 import { BuffStatTable } from "../../../utils/voyageutils";
 import { TranslateMethod } from "../../../model/player";
+import { skoComp, multiComp, qpComp } from "../../../utils/quipment_tools";
 
 export interface TopQuipmentScoreProps {
     crew: IRosterCrew;
@@ -24,87 +25,9 @@ export interface TopQuipmentScoreProps {
     buffConfig?: BuffStatTable;
 }
 
-export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean, powerMode: 'all' | 'core' | 'proficiency', buffConfig?: BuffStatTable) => {
+export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean) => {
     const config = [] as ITableConfigRow[];
     if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
-
-    const qpComp = (a: IRosterCrew, b: IRosterCrew, skill: string) => {
-        if (!a.best_quipment!.aggregate_by_skill[skill]) return -1;
-        else if (!b.best_quipment!.aggregate_by_skill[skill]) return 1;
-        else return a.best_quipment!.aggregate_by_skill[skill] - b.best_quipment!.aggregate_by_skill[skill];
-    };
-
-    const skoComp = (a: IRosterCrew, b: IRosterCrew, skill_idx: number) => {
-        if (skill_idx >= a.skill_order.length) {
-            return -1;
-        }
-        else if (skill_idx >= b.skill_order.length) {
-            return 1;
-        }
-        else {
-            return a.best_quipment!.aggregate_by_skill[a.skill_order[skill_idx]] - b.best_quipment!.aggregate_by_skill[b.skill_order[skill_idx]];
-        }
-    };
-
-    const multiComp = (a: IRosterCrew, b: IRosterCrew, combo_id: number) => {
-        if (combo_id === 0) {
-            if (a.best_quipment_1_2 && b.best_quipment_1_2) {
-                return a.best_quipment_1_2.aggregate_power - b.best_quipment_1_2.aggregate_power;
-            }
-            else if (a.best_quipment_1_2) {
-                return 1;
-            }
-            else if (b.best_quipment_1_2) {
-                return -1;
-            }
-        }
-        else if (combo_id === 1) {
-            if (a.best_quipment_1_3 && b.best_quipment_1_3) {
-                return a.best_quipment_1_3.aggregate_power - b.best_quipment_1_3.aggregate_power;
-            }
-            else if (a.best_quipment_1_3) {
-                return 1;
-            }
-            else if (b.best_quipment_1_3) {
-                return -1;
-            }
-        }
-        else if (combo_id === 2) {
-            if (a.best_quipment_2_3 && b.best_quipment_2_3) {
-                return a.best_quipment_2_3.aggregate_power - b.best_quipment_2_3.aggregate_power;
-            }
-            else if (a.best_quipment_2_3) {
-                return 1;
-            }
-            else if (b.best_quipment_2_3) {
-                return -1;
-            }
-        }
-        else if (combo_id === 3) {
-            if (a.best_quipment_3 && b.best_quipment_3) {
-                return a.best_quipment_3.aggregate_power - b.best_quipment_3.aggregate_power;
-            }
-            else if (a.best_quipment_3) {
-                return 1;
-            }
-            else if (b.best_quipment_3) {
-                return -1;
-            }
-        }
-        else if (combo_id === 4) {
-            if (a.best_quipment_top && b.best_quipment_top) {
-                return a.best_quipment_top.aggregate_power - b.best_quipment_top.aggregate_power;
-            }
-            else if (a.best_quipment_top) {
-                return 1;
-            }
-            else if (b.best_quipment_top) {
-                return -1;
-            }
-        }
-
-        return 0;
-    };
 
     if (pstMode === true) {
         ['primary', 'secondary', 'tertiary'].forEach((skill, idx) => {
@@ -121,7 +44,6 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                 reverse: true,
                 customCompare: (a: IRosterCrew, b: IRosterCrew) => skoComp(a, b, idx)
             });
-
         });
     }
     else if (pstMode === 2) {
@@ -160,7 +82,6 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                 reverse: true,
                 customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, skill)
             });
-
         });
     }
 

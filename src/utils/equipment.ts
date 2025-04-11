@@ -6,6 +6,7 @@ import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 import { makeAllCombos } from './misc';
+import { multiComp, qpComp, skoComp } from './quipment_tools';
 import { BuffStatTable } from './voyageutils';
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
@@ -160,9 +161,8 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
 	crew.equipment_slots.forEach(es => {
-		if (fromCurrLvl && "level" in crew) {
-			if (es.level < crew.level) return;
-			else if (es.level === crew.level && crew.equipment_slots[crew.level] !== undefined && crew.equipment_slots[crew.level].imageUrl) return;
+		if (fromCurrLvl && "level" in crew && es.level < crew.level) {
+			return;
 		}
 		if (bySymbol) {
 			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol);
@@ -170,7 +170,6 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 		else {
 			craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 		}
-
 	});
 
 	const reducer = (accumulator: number, currentValue: IDemand) => accumulator + currentValue.count;
@@ -783,4 +782,17 @@ export function calcQLots<T extends CrewMember>(
 	}
 
 	return crew;
+}
+
+export function sortCrewByQuipment(roster: CrewMember[], pstMode: boolean | 2 | 3, index: number | string, reverse?: boolean, tiebreaker?: (a: CrewMember, b: CrewMember) => number) {
+	const mul = reverse ? -1 : 1;
+	if (pstMode === true && typeof index === 'number') {
+		roster.sort((a, b) => mul * skoComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
+	}
+	else if (pstMode === 2 && typeof index === 'number') {
+		roster.sort((a, b) => mul * multiComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
+	}
+	else if (typeof index === 'string') {
+		roster.sort((a, b) => mul * qpComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
+	}
 }

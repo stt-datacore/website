@@ -7,13 +7,13 @@ import {
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage } from '../../model/voyage';
+import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage, IVoyageHistory } from '../../model/voyage';
 import { downloadData } from '../../utils/crewutils';
 
 import { HistoryContext } from './context';
-import { getTrackedData, NEW_TRACKER_ID, postTrackedData, SyncState } from './utils';
+import { getTrackedData, mergeHistories, NEW_TRACKER_ID, postTrackedData, SyncState } from './utils';
 
-const IMPORT_ONLY = true;
+const IMPORT_ONLY = false;
 
 type ManageRemoteSyncProps = {
 	postRemote: boolean;
@@ -199,21 +199,23 @@ interface IManageButton {
 };
 
 const AdvancedOptions = () => {
-	const { history, syncState } = React.useContext(HistoryContext);
+	const { history, syncState, setHistory } = React.useContext(HistoryContext);
+	const { t } = React.useContext(GlobalContext).localized;
+
 	const buttons: IManageButton[] = [
 		{
 			key: 'voyage.tracking.export',
 			icon: 'download',
-			content: 'Save history to device',	// Save history to device
+			content: t('voyage.voyage_history.export_history'),	// Save history to device
 			show: history.voyages.length > 0,
 			onClick: () => exportHistory()
 		},
 		{
 			key: 'voyage.tracking.import',
 			icon: 'upload',
-			content: 'Import history',	// Import history
-			show: syncState === SyncState.LocalOnly,
-			disabled: true || syncState === SyncState.ReadOnly,	// Non-functional
+			content: t('voyage.voyage_history.import_history'),	// Import history
+			show: true,
+			disabled: false,	// Non-functional
 			onClick: () => importHistory()
 		},
 		{
@@ -230,16 +232,11 @@ const AdvancedOptions = () => {
 		<Message>
 			<Message.Content>
 				<Message.Header>
-					Advanced Options
+					{t('global.advanced_settings')}
 				</Message.Header>
 				<div style={{ marginTop: '1em' }}>
 					{buttons.filter(button => button.show).map(button => (
-						<Button key={button.key}
-							icon={button.icon}
-							content={button.content}
-							disabled={button.disabled}
-							onClick={button.onClick}
-						/>
+						<Button {...button} />
 					))}
 				</div>
 			</Message.Content>
@@ -256,7 +253,25 @@ const AdvancedOptions = () => {
 	}
 
 	function importHistory(): void {
-		// TODO
+		const btn = document.createElement("input") as HTMLInputElement;
+		btn.type = 'file';
+		btn.accept = 'application/json';
+		btn.addEventListener('change', async () => {
+			if (btn.files?.length) {
+				let read = await btn.files[0].text();
+				if (read?.length) {
+					try {
+						const importHistory = JSON.parse(read) as IVoyageHistory;
+						const newhistory = mergeHistories(importHistory, history);
+						setHistory(newhistory);
+					}
+					catch {
+
+					}
+				}
+			}
+		});
+		btn.click();
 	}
 
 	function deleteHistory(): void {
@@ -268,7 +283,7 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { history } = React.useContext(HistoryContext);
 
-	const button: IManageButton = {
+	const saveButton: IManageButton = {
 		key: 'voyage.tracking.export',
 		icon: 'download',
 		content: t('voyage.voyage_history.export_history'),
@@ -279,13 +294,14 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	return (
 		<Message>
 			<Message.Content>
+				<Checkbox
+					label={t('voyage.history.enable_remote_tracking')}
+					checked={props.postRemote}
+					onChange={(e, { checked }) => toggleRemoteTracking(!!checked)}
+					/>
+
 				<p>{t('voyage.voyage_history.manage_placeholder')}</p>
-				<Button key={button.key}
-					icon={button.icon}
-					content={button.content}
-					disabled={button.disabled}
-					onClick={button.onClick}
-				/>
+				<Button {...saveButton} />
 			</Message.Content>
 		</Message>
 	);
@@ -297,5 +313,9 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 			return;
 		}
 		downloadData(`data:text/json;charset=utf-8,${encodeURIComponent(text)}`, 'voyagehistory.json');
+	}
+
+	function toggleRemoteTracking(enabled: boolean) {
+		props.setPostRemote(enabled);
 	}
 }

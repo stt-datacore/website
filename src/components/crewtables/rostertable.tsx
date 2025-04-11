@@ -26,14 +26,15 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getItemWithBonus, getQuipmentAsItemWithBonus } from '../../utils/itemutils';
+import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
-import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
+import WeightingInfoPopup from './weightinginfo';
+import { ReleaseDateFilter } from './filters/crewreleasedate';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -211,7 +212,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
-	const { topQuipmentScores: top } = globalContext.core;
+	const { topQuipmentScores: top, continuum_missions } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
 	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew, buffMode, setBuffMode } = tableContext;
 
@@ -223,6 +224,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
+	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
 	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
@@ -358,6 +360,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					//missions={continuum_missions}
 					questFilter={questFilter}
 					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
@@ -375,7 +378,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
+			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
 			renderTableCells:
 				(crew: IRosterCrew) =>
 					<TopQuipmentScoreCells
@@ -450,6 +453,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			form:
 				<ObtainedFilter
 					key='filter_allcrew_obtained'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>
+		},
+		{
+			id: 'timeframe',
+			available: (['allCrew'].includes(rosterType)),
+			form:
+				<ReleaseDateFilter
+					key='filter_allcrew_releasedate'
 					pageId={pageId}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
@@ -598,17 +612,20 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			</Form>
 			{view && view.form}
 			{viewIsReady !== false && preparedCrew &&
-				<CrewConfigTable
-					pageId={pageId}
-					rosterType={rosterType}
-					initOptions={initOptions}
-					rosterCrew={preparedCrew}
-					crewFilters={crewFilters}
-					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
-					lockableCrew={lockableCrew}
-					loading={isPreparing}
-				/>
+				<React.Fragment>
+					<CrewConfigTable
+						pageId={pageId}
+						rosterType={rosterType}
+						initOptions={initOptions}
+						rosterCrew={preparedCrew}
+						crewFilters={crewFilters}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
+						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
+						lockableCrew={lockableCrew}
+						loading={isPreparing}
+					/>
+					{tableView === 'dc_ranks' && <WeightingInfoPopup saveConfig={() => false} isOpen={weightingOpen} setIsOpen={setWeightingOpen} />}
+				</React.Fragment>
 			}
 			{viewIsReady === false && globalContext.core.spin(view?.spinText ?? 'Calculating...')}
 		</React.Fragment>

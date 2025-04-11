@@ -51,7 +51,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		let phase: string = '';
 		events.forEach(gameEvent => {
 			if (gameEvent && gameEvent.seconds_to_end > 0 && gameEvent.seconds_to_start < 86400) {
-				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig.voyage_type !== 'encounter')) {
+				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig.voyage_type !== 'encounter')) {
 					activeEvent = gameEvent.symbol;
 
 					let date = (new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' })));
@@ -69,7 +69,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					if (phase === 'gather') {
 						activeBonus = 'matrix';
 					}
-					else if (phase === 'shuttles') {
+					else if (phase === 'shuttles' || phase === 'galaxy') {
 						activeBonus = 'all';
 					}
 					else if (phase === 'voyage') {
@@ -126,7 +126,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
-		if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather') || gameEvent.content_types.includes('voyage')) {
+		if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || gameEvent.content_types.includes('voyage')) {
 			if (gameEvent.bonus.length > 0) {
 				eventOptions.push({
 					key: gameEvent.symbol,

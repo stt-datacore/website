@@ -17,11 +17,12 @@ import { applySkillBuff } from '../../utils/crewutils';
 
 import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
-import ShipTable from '../ship/shiptable';
+import { ShipTable } from '../ship/shiptable';
 import { AvatarView } from '../item_presenters/avatarview';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
 import { QPContext } from '../qpconfig/provider';
+import { SpecialistMissionTable } from '../specialist/specialistmissions';
 
 interface ISelectOptions {
 	key: string;
@@ -120,6 +121,7 @@ export const EventPicker = (props: EventPickerProps) => {
 	const EVENT_TYPES = {
 		'shuttles': t('event_type.shuttles'),
 		'gather': t('event_type.gather'),
+		'galaxy': t('event_type.galaxy'),
 		'skirmish': t('event_type.skirmish'),
 		'voyage': t('event_type.voyage')
 	};
@@ -166,17 +168,20 @@ export const EventPicker = (props: EventPickerProps) => {
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
+					{eventData.content_types[phaseIndex] === 'galaxy' && (<SpecialistMissionTable crew={rosterCrew} eventData={eventData} />)}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
 					{eventData.content_types[phaseIndex] === 'gather' && eventData.seconds_to_start === 0 && eventData.seconds_to_end > 0 && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
 
-			{playerData && eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
+			{eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
 				<div style={{ marginTop: "0.5em" }}>
 					<div style={{ margin: "0.5em 0" }}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ShipTable event_ships={eventData.bonus_ships}
+					<ShipTable
+						pageId='event_picker'
+						event_ships={eventData.bonus_ships}
 						high_bonus={eventData.featured_ships}
 						event_ship_traits={eventData.activeContent?.antimatter_bonus_ship_traits}
 					/>

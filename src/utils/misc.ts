@@ -1,4 +1,3 @@
-import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { AvatarIcon } from '../model/game-elements';
 import { PlayerCrew, TranslateMethod } from '../model/player';

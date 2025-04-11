@@ -8,7 +8,7 @@ import Optimizer from './optimizer.js';
 import BetaTachyon from './betatachyon.ts';
 import CollectionOptimizer from './collectionworker.ts';
 import ItemsWorker from './itemsworker.ts';
-import QuestSolver from './questsolver.ts';
+import QuestSolver from './questsolver2.ts';
 import { calcQLots } from '../utils/equipment.ts';
 import ShipCrewWorker from './shipcrewworker.ts';
 import { calculateGauntlet } from '../utils/gauntlet.ts';

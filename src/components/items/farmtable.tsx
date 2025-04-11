@@ -1,5 +1,5 @@
 import React from "react";
-import { FormInput, Button, Table, Pagination, Dropdown } from "semantic-ui-react";
+import { Table, Pagination, Dropdown } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EquipmentItemSource, EquipmentItem } from "../../model/equipment";
 import { useStateWithStorage } from "../../utils/storage";
@@ -7,7 +7,6 @@ import { GatherItemFilter } from "../gather/gather_planner";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import CONFIG from "../CONFIG";
 import { ItemDropDown } from "./itemdropdown";
 
 export interface FarmSources {
@@ -20,14 +19,17 @@ export interface FarmSources {
 export interface FarmTableProps {
     pageId: string;
     sources: FarmSources[];
-    hover_target?: string;
+    hoverTarget?: string;
+    showOwned?: boolean;
+    showFarmable?: boolean;
+    textStyle?: React.CSSProperties;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
     // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const { sources, pageId } = props;
-    const hover_target = props.hover_target ?? 'farm_item_target';
+    const hover_target = props.hoverTarget ?? 'farm_item_target';
 
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
     allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
@@ -175,7 +177,7 @@ export const FarmTable = (props: FarmTableProps) => {
 
             <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
-        <Table striped sortable>
+        <Table striped sortable style={{overflowX: 'auto'}}>
             <Table.Header>
                 {renderRowHeaders()}
             </Table.Header>
@@ -295,10 +297,30 @@ export const FarmTable = (props: FarmTableProps) => {
                                 <span
                                     style={{
                                         fontStyle: 'italic',
+                                        ... props.textStyle,
                                         color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
                                     }}
-                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}
+                                    >
+                                        {t('items.n_needed', { n: item.needed?.toLocaleString() ?? '' })}
                                 </span>
+                                {!!props.showOwned && <span
+                                    style={{
+                                        fontStyle: 'italic',
+                                        ... props.textStyle,
+                                        color: (item.needed ?? 0) > (item.quantity ?? 0) ? undefined : 'lightgreen'
+                                    }}
+                                    >
+                                        {t('items.n_owned', { n: item.quantity?.toLocaleString() ?? '' })}
+                                </span>}
+                                {!!props.showFarmable && !!item.needed && typeof item.quantity === 'number' && item.needed > item.quantity && <span
+                                    style={{
+                                        fontStyle: 'italic',
+                                        ... props.textStyle,
+                                        color: 'lightblue'
+                                    }}
+                                    >
+                                        {t('items.n_farmable', { n: (item.needed - item.quantity)?.toLocaleString() ?? '' })}
+                                </span>}
                             </div>
                         </div>
                     })}

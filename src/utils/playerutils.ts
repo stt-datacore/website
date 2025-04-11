@@ -27,6 +27,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 
     delete p.player.character.active_conflict;
     delete p.player.character.next_shuttle_bay_cost;
+    delete p.player.character.galaxy_crew_cooldowns;
+    delete p.player.character.stimpack;
 
     delete p.fleet_boss_battles_root;
 	delete p.captains_bridge_root;
@@ -74,7 +76,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.next_starbase_donation_reset;
     delete p.player.character.next_fleet_activity_reset;
     delete p.player.character.freestanding_quests;
-    delete p.player.character.stimpack;
+    //delete p.player.character.stimpack;
     delete p.player.character.location_channel_prefix;
     delete p.player.character.events;
 
@@ -142,6 +144,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         let itemEntry = items.find((i) => i.symbol === item.symbol);
         if (itemEntry) {
             newItems.push({
+                type: item.type,
                 symbol: item.symbol,
                 archetype_id: item.archetype_id,
                 rarity: item.rarity,

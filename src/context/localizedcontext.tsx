@@ -4,13 +4,14 @@ import { Icon } from 'semantic-ui-react';
 import { Action, ItemTranslation, ShipTraitNames, TraitNames, TranslationSet } from '../model/traits';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
-import { Schematics, Ship } from '../model/ship';
+import { ReferenceShip, Schematics, Ship } from '../model/ship';
 import { Collection } from '../model/game-elements';
 import { CryoCollection, PlayerCrew, TranslateMethod } from '../model/player';
 import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
+import { allLevelsToLevelStats } from '../utils/shiputils';
 //import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
@@ -25,6 +26,7 @@ export interface TranslatedCore {
 	crew?: CrewMember[];
 	ship_schematics?: Schematics[];
 	ships?: Ship[];
+	all_ships?: ReferenceShip[];
 	collections?: Collection[];
 	items?: EquipmentItem[];
 };
@@ -305,13 +307,14 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			return {};
 
 		const newCrew: CrewMember[] | undefined = postProcessCrewTranslations(core.crew, gameStrings);
-		const [newSchematics, newShips] = postProcessShipTranslations(core.ship_schematics, core.ships, gameStrings)
+		const [newSchematics, newShips, allShips] = postProcessShipTranslations(core.ship_schematics, core.ships, core.all_ships, gameStrings);
 		const newCollections: Collection[] | undefined = postProcessCollectionTranslations(core.collections, newCrew!, gameStrings);
 		const newItems: EquipmentItem[] | undefined = postProcessItemTranslations(core.items, gameStrings);
 		return {
 			crew: newCrew,
 			ship_schematics: newSchematics,
 			ships: newShips,
+			all_ships: allShips,
 			collections: newCollections,
 			items: newItems
 		};
@@ -338,9 +341,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			localizedUnOwned = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
 		}
 
-		let localizedShips: Ship[] | undefined = undefined;
+		let localizedShips: (Ship | ReferenceShip)[] | undefined = undefined;
 		if (player.playerShips) {
-			[,localizedShips] = postProcessShipTranslations([], player.playerShips, gameStrings, true);
+			[,localizedShips,] = postProcessShipTranslations([], player.playerShips, [], gameStrings, true);
 		}
 
 		return {
@@ -357,7 +360,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					}
 				}
 			},
-			playerShips: localizedShips
+			playerShips: localizedShips as Ship[]
 		};
 	}
 
@@ -439,8 +442,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[]] | [undefined, undefined] {
-		if ((ship_schematics.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
+	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], all_ships: ReferenceShip[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[], ReferenceShip[]] | [undefined, undefined, undefined] {
+		if ((ship_schematics.length || all_ships.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
 			let result1 = ignoreSchematics ? [] : ship_schematics.map((ship) => {
 				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? JSON.parse(JSON.stringify(ship.ship.actions)) : undefined }};
 				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
@@ -469,10 +472,24 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				});
 				return ship;
 			});
-			return [result1, result2];
+			let result3 = ignoreSchematics ? [] : all_ships.map((ship) => {
+				ship = { ... ship, actions: ship.actions ? JSON.parse(JSON.stringify(ship.actions)): undefined };
+				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
+				ship.flavor = arch?.flavor ?? ship.flavor;
+				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
+				ship.name = arch?.name ?? ship.name;
+				arch?.actions?.forEach((action) => {
+					let act = ship.actions?.find(f => f.symbol === action.symbol);
+					if (act) {
+						act.name = action.name;
+					}
+				});
+				return ship;
+			});
+			return [result1, result2, result3];
 		}
 		else {
-			return [undefined, undefined];
+			return [undefined, undefined, undefined];
 		}
 	}
 

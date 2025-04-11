@@ -4,6 +4,25 @@ export type StatsDisplayMode = 'crew' | 'graphs' | 'traits' | 'items';
 
 export type GameModeUtility = 'gauntlet' | 'voyage' | 'shuttle' | 'ship';
 
+export interface TraitStats {
+    trait: string,
+    trait_raw: string,
+    collection: string,
+    first_appearance: Date
+    crew: CrewMember[],
+    first_crew: CrewMember,
+    latest_crew: CrewMember,
+    launch_crew?: CrewMember,
+    total_crew: number,
+    hidden: boolean,
+    variant: boolean,
+    short_names?: string[]
+    icon?: string,
+    retro?: number,
+    grade?: number,
+    highest_datascore: CrewMember
+}
+
 
 export interface EpochItem {
     aggregates: number[],

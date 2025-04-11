@@ -1,12 +1,12 @@
 
-import { BaseSkills, ComputedSkill, CrewMember, QuippedPower, Skill } from "../model/crew";
+import { ComputedSkill, CrewMember, QuippedPower, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, GauntletContestCrew, OwnedStatus, PairGroup } from "../model/gauntlets";
-import { CompletionState, GauntletPlayerBuffMode, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
+import { CompletionState, GauntletPlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
 import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
 
-import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillAdd, skillSum, skillToShort, updatePairScore } from "./crewutils";
+import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillSum, skillToShort, updatePairScore } from "./crewutils";
 import { calcQLots } from "./equipment";
 import { ItemBonusInfo, getItemBonuses, getQuipmentAsItemWithBonus } from "./itemutils";
 import { BuffStatTable } from "./voyageutils";

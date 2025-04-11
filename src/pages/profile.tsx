@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Label, Message, Item, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
+import { Header, Message, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
@@ -9,13 +9,12 @@ import 'moment/locale/de';
 
 import ProfileCrew from '../components/profile_crew';
 import ProfileCrewMobile from '../components/profile_crew2';
-import ShipTable from '../components/ship/shiptable';
-import ItemsTable from '../components/items/itemstable';
+import { ShipTable } from '../components/ship/shiptable';
 import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
 
 import { downloadData, download, exportCrew, exportCrewFields, prepareProfileData } from '../utils/crewutils';
-import { mergeShips, exportShips, exportShipFields } from '../utils/shiputils';
+import { exportShips, exportShipFields, mergeRefShips } from '../utils/shiputils';
 import { mergeItems, exportItems, exportItemFields } from '../utils/itemutils';
 import { IDemand } from '../model/equipment';
 import { demandsPerSlot } from '../utils/equipment';
@@ -24,13 +23,15 @@ import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
 import { EquipmentCommon } from '../model/equipment';
-import { DataContext } from '../context/datacontext';
 import { GlobalContext } from '../context/globalcontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { v4 } from 'uuid';
 import moment from 'moment';
 import { PlayerBadge } from '../components/page/playerbadge';
+import { DemandsTable } from '../components/items/demandstable';
+import { WorkerProvider } from '../context/workercontext';
+import { ItemsFilterProvider } from '../components/items/filters';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -50,7 +51,6 @@ type ProfilePageState = {
 
 export const ProfilePage = (props: ProfilePageProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
 	const isReady = !!Object.keys(globalContext.core).length;
 	const { core: coreData } = globalContext;
 
@@ -87,7 +87,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 								noGradeColors: globalContext.player.noGradeColors,
 								setNoGradeColors: globalContext.player.setNoGradeColors,
 								newCrew,
-								setNewCrew
+								setNewCrew,
+								setCalculatedDemands: () => false
 							},
 							maxBuffs: coreData.all_buffs,
 							isMobile: globalContext.isMobile,
@@ -207,6 +208,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		const { t } = this.context.localized;
 		const { playerData } = this.context.player ?? { playerData: undefined };
 		const { items, crew: allCrew } = this.context.core;
+		const profileItems = this.context.core.items.filter(f => playerData?.player.character.items.some(it => it.symbol === f.symbol));
 
 		const panes = [
 			{
@@ -219,11 +221,22 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			},
 			{
 				menuItem: t('profile.ships'),
-				render: () => playerData && <ShipTable /> || <></>
+				render: () => playerData && <ShipTable pageId='profile' /> || <></>
 			},
 			{
 				menuItem: t('profile.items'),
-				render: () => <ItemsTable />
+				render: () =>
+					<WorkerProvider>
+						<ItemsFilterProvider
+							pageId='profile'
+							pool={profileItems}
+							ownedItems={false}
+							>
+						<DemandsTable
+						 	pageId='profile'
+							items={profileItems} />
+						</ItemsFilterProvider>
+					</WorkerProvider>
 			},
 			{
 				menuItem: t('profile.other'),
@@ -235,8 +248,8 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 			}
 		];
 
-		console.log("Avatar Debug");
-		console.log(playerData?.player?.character?.crew_avatar);
+		// console.log("Avatar Debug");
+		// console.log(playerData?.player?.character?.crew_avatar);
 
 		return (
 			playerData?.player &&
@@ -264,18 +277,11 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	async _exportExcel() {
 		const { playerData } = this.context.player;
-		const { t } = this.context.localized;
-		let response = await fetch('/structured/items.json');
-		let items = await response.json();
-
-		response = await fetch('/structured/ship_schematics.json');
-		let ship_schematics = await response.json();
-
-		response = await fetch('/structured/crew.json');
-		let allcrew = await response.json() as CrewMember[];
+		const { t, SHIP_TRAIT_NAMES } = this.context.localized;
+		const { all_ships, crew: allcrew, items } = this.context.core;
 
 		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentCommon), items) : undefined;
-		let shipdata = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : undefined;
+		let shipdata = playerData ? mergeRefShips(all_ships, playerData.player.character.ships, SHIP_TRAIT_NAMES) : undefined;
 
 		let crewFields = exportCrewFields(t);
 		let shipFields = exportShipFields();
@@ -406,10 +412,12 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 		for (let elem of allDemandItems) {
 			let itElem = items.find(it => it.symbol === elem);
-			demandcolumns.push({
-				header: `${CONFIG.RARITIES[itElem.rarity].name} ${itElem.name}`,
-				key: elem
-			});
+			if (itElem) {
+				demandcolumns.push({
+					header: `${CONFIG.RARITIES[itElem.rarity].name} ${itElem.name}`,
+					key: elem
+				});
+			}
 		}
 
 		demandsheet.columns = demandcolumns;
@@ -438,26 +446,20 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 
 	_exportShips() {
 		const { playerData } = this.context.player;
+		const { all_ships } = this.context.core;
+		const { SHIP_TRAIT_NAMES } = this.context.localized;
 
-		fetch('/structured/ship_schematics.json')
-			.then(response => response.json())
-			.then(ship_schematics => {
-				let data = playerData ? mergeShips(ship_schematics, playerData.player.character.ships) : [];
-				let text = exportShips(data);
-				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'ships.csv');
-			});
+		let data = playerData ? mergeRefShips(all_ships, playerData.player.character.ships, SHIP_TRAIT_NAMES) : [];
+		let text = exportShips(data);
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'ships.csv');
 	}
 
 	_exportItems() {
 		const { playerData } = this.context.player;
-
-		fetch('/structured/items.json')
-			.then(response => response.json())
-			.then(items => {
-				let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [] as EquipmentCommon[];
-				let text = exportItems(data);
-				downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
-			});
+		const { items } = this.context.core;
+		let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [] as EquipmentCommon[];
+		let text = exportItems(data);
+		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 	}
 
 	renderMobile() {
