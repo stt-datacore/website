@@ -34,6 +34,7 @@ import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
 import WeightingInfoPopup from './weightinginfo';
+import { ReleaseDateFilter } from './filters/crewreleasedate';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -452,6 +453,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			form:
 				<ObtainedFilter
 					key='filter_allcrew_obtained'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>
+		},
+		{
+			id: 'timeframe',
+			available: (['allCrew'].includes(rosterType)),
+			form:
+				<ReleaseDateFilter
+					key='filter_allcrew_releasedate'
 					pageId={pageId}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}

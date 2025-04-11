@@ -577,7 +577,7 @@ interface TimeframeFilterProps {
 	setWeeks?: (value?: number) => void;
 }
 
-const TimeframeFilter = (props: TimeframeFilterProps) => {
+export const TimeframeFilter = (props: TimeframeFilterProps) => {
 
 	const { timeframe, setTimeframe, setWeeks } = props;
 	const { t } = React.useContext(GlobalContext).localized;
@@ -589,13 +589,16 @@ const TimeframeFilter = (props: TimeframeFilterProps) => {
 		{ key: '9_months', value: '9_months', text: t('duration.n_months', { months: `9`}) },
 		{ key: '6_months', value: '6_months', text: t('duration.n_months', { months: `6`}) },
 		{ key: '3_months', value: '3_months', text: t('duration.n_months', { months: `3`}) },
-		{ key: '4_weeks', value: '4_months', text: t('duration.n_weeks', { weeks: `4` }) }
+		{ key: '2_months', value: '2_months', text: t('duration.n_months', { months: `2`}) },
+		{ key: '4_weeks', value: '4_weeks', text: t('duration.n_weeks', { weeks: `4` }) },
+		{ key: '2_weeks', value: '2_weeks', text: t('duration.n_weeks', { weeks: `2` }) },
 	] as DropdownItemProps[];
+	options.reverse();
 
 	return <Dropdown
 			placeholder={t('hints.filter_by_timeframe')}
 			clearable
-			search
+			//search
 			selection
 			options={options}
 			value={timeframe}
@@ -646,14 +649,14 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 		/>
 }
 
-function timeframeParts(timeframe?: string): string[] | undefined {
+export function timeframeParts(timeframe?: string): string[] | undefined {
 	if (!timeframe) return undefined;
 	let sp = timeframe.split("_");
 	if (sp.length !== 2) return undefined;
 	return sp;
 }
 
-function timeframeToWeeks(timeframe?: string) {
+export function timeframeToWeeks(timeframe?: string) {
 	if (!timeframe) return undefined;
 	let sp = timeframe.split("_");
 	if (sp.length !== 2) return undefined;
