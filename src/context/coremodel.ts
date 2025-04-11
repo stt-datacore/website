@@ -1,5 +1,5 @@
 import { ContinuumMission } from "../model/continuum";
-import { CrewMember, QuipmentScores } from "../model/crew";
+import { CrewMember, CurrentWeighting, QuipmentScores } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { EventInstance, EventLeaderboard } from "../model/events";
 import { Collection, KeystoneBase, Polestar, Constellation } from "../model/game-elements";
@@ -17,7 +17,9 @@ export interface ICoreData {
 	battle_stations: BattleStations[];
 	cadet: Mission[];
 	collections: Collection[];
+	continuum_missions: ContinuumMission[];
 	crew: CrewMember[];
+	current_weighting: CurrentWeighting;
 	episodes: Mission[];
 	event_instances: EventInstance[];
 	event_leaderboards: EventLeaderboard[];
@@ -29,7 +31,6 @@ export interface ICoreData {
 	missions: Mission[];
 	missionsfull: Mission[];
 	objective_events: ObjectiveEvent[];
-	continuum_missions: ContinuumMission[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	topQuipmentScores: QuipmentScores[];

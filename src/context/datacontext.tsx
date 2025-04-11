@@ -28,6 +28,7 @@ export type ValidDemands =
 	'collections' |
 	'continuum_missions' |
 	'crew' |
+	'current_weighting' |
 	'dilemmas' |
 	'disputes' |
 	'episodes' |
@@ -63,10 +64,13 @@ interface IDemandResult {
 
 const defaultData = {
 	all_buffs: {} as BuffStatTable,
+	all_ships: [] as ReferenceShip[],
 	battle_stations: [] as BattleStations[],
 	cadet: [] as Mission[],
 	collections: [] as Collection[],
+	continuum_missions: [] as ContinuumMission[],
 	crew: [] as CrewMember[],
+	current_weighting: {},
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
@@ -77,11 +81,9 @@ const defaultData = {
 	keystones: [] as KeystoneBase[],
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
-	continuum_missions: [] as ContinuumMission[],
+	objective_events: [] as ObjectiveEvent[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
-	all_ships: [] as ReferenceShip[],
-	objective_events: [] as ObjectiveEvent[],
 	topQuipmentScores: [] as QuipmentScores[],
 } as ICoreData;
 
@@ -131,6 +133,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'crew',
 			'collections',
 			'continuum_missions',
+			'current_weighting',
 			'dilemmas',
 			'disputes',
 			'episodes',
@@ -162,7 +165,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}

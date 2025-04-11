@@ -235,6 +235,30 @@ export interface Nickname {
     creator?: string;
 }
 
+export interface ConstituentWeights {
+    voyage: number
+    voyage_plus: number
+    shuttle: number
+    shuttle_plus: number
+    gauntlet: number
+    gauntlet_plus: number
+    crit: number
+    ship: number
+    quipment: number
+    collections: number
+    trait: number
+    main_cast: number
+    variant: number
+    potential_cols: number
+    skill_positions: number
+    skill_rarity: number
+    am_seating: number
+    tertiary_rarity: number
+    velocity: number
+}
+
+export type CurrentWeighting = { [key:string]: ConstituentWeights };
+
 export interface ShipScores {
     overall: number,
     arena: number,
@@ -302,6 +326,8 @@ export interface RankScoring {
     skill_positions: number;
     variant: number;
     quipment_details: QuipmentDetails;
+    versatility_quipment_details: QuipmentDetails;
+    power_quipment_details: QuipmentDetails;
 }
 
 export interface Ranks {

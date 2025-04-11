@@ -1588,6 +1588,10 @@
         "potential_maximum": "Potenzielles Maximum",
         "standard": "Standard"
     },
+    "ranking_tools": {
+        "current_weighting": "Aktuelle Gewichtung",
+        "show_weighting_details": "Gewichtungsdetails anzeigen"
+    },
     "retrieval": {
         "allow_unowned": "Unbesessene Crew zulassen",
         "assume_in_game_favorites": "Spielfavoriten dynamisch zur Wunschliste hinzufügen",
@@ -2351,8 +2355,6 @@
         "history": {
             "description": "Behalten Sie den Überblick über Ihre Reisen, sehen Sie, wie Ihre Laufzeiten im Vergleich zu Ihren ursprünglichen Schätzungen abschneiden, und identifizieren Sie die Crew, die Sie am häufigsten einsetzen.",
             "enable_remote_tracking": "Aktivieren Sie die Fernverfolgung",
-            "remote_tracking": "Fernverfolgung",
-            "warn_delete": "Möchten Sie diese Reise wirklich löschen?",
             "loot_crew": {
                 "columns": {
                     "voyages": "{{base.voyages}}"
@@ -2366,7 +2368,9 @@
             },
             "moved": "Das Reiseverlaufstool wurde in den {{link}} verschoben. Bitte aktualisieren Sie Ihre Lesezeichen nach Bedarf.",
             "not_yet": "Sie haben noch keinen Reiseverlauf. Beginnen Sie mit der Verfolgung von Reisen über den Crew-Rechner.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Fernverfolgung",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "Möchten Sie diese Reise wirklich löschen?"
         },
         "import": {
             "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
@@ -2496,7 +2500,6 @@
         "voyage_history": {
             "delete_from_history": "Reise aus Verlauf löschen",
             "export_history": "Verlauf auf Gerät speichern",
-            "import_history": "Verlauf vom Gerät hinzufügen",
             "fields": {
                 "antimatter": "{{ship.antimatter}}",
                 "date": "{{base.date}}",
@@ -2506,6 +2509,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Verlauf vom Gerät hinzufügen",
             "manage_placeholder": "Remote-Synchronisierung und andere Optionen zur Verlaufsverwaltung sind in der Entwicklung.",
             "options": {
                 "revival": {
