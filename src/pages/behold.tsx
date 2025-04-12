@@ -154,7 +154,7 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 							permalink: <Link to={`/behold?${permalink}`}>{t('global.permalink')}</Link>
 						})}</p>
 						<Popup
-							content='Copied!'
+							content={t('clipboard.copied_exclaim')}
 							on='click'
 							position='right center'
 							size='tiny'
