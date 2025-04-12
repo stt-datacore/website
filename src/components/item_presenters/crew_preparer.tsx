@@ -1,12 +1,10 @@
-import React from "react";
-import { CrewMember } from "../../model/crew";
-import { PlayerData, PlayerCrew, CompletionState, PlayerBuffMode, PlayerImmortalMode } from "../../model/player";
-import { prepareOne, applyCrewBuffs, getSkills, PREPARE_MAX_RARITY } from "../../utils/crewutils";
-import { BuffStatTable } from "../../utils/voyageutils";
 import { IDefaultGlobal } from "../../context/globalcontext";
+import { CrewMember } from "../../model/crew";
 import { EquipmentItem } from "../../model/equipment";
-import { ItemBonusInfo, getItemBonuses } from "../../utils/itemutils";
-import { IRosterCrew } from "../retrieval/model";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerData, PlayerImmortalMode } from "../../model/player";
+import { applyCrewBuffs, getSkills, PREPARE_MAX_RARITY, prepareOne } from "../../utils/crewutils";
+import { getItemBonuses, ItemBonusInfo } from "../../utils/itemutils";
+import { BuffStatTable } from "../../utils/voyageutils";
 
 export const BuffNames = {
     'none': "buffs.no_buffs",

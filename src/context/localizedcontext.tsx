@@ -22,6 +22,8 @@ export type SupportedLanguage = 'en' | 'sp' | 'de' | 'fr';
 
 export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | JSX.Element }) => JSX.Element;
 
+export type UseTMethod = (prefix: string) => { t: TranslateMethod, tfmt: JSXTranslateMethod };
+
 export interface TranslatedCore {
 	crew?: CrewMember[];
 	ship_schematics?: Schematics[];
@@ -84,7 +86,7 @@ export interface ILocalizedData extends IGameStrings {
 	translatePlayer: () => PlayerContextData;
 	t: TranslateMethod,
 	tfmt: JSXTranslateMethod,
-	//col: (key: string | number) => string;
+	useT: UseTMethod
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -104,7 +106,8 @@ export const DefaultLocalizedData: ILocalizedData = {
 	translateCore: () => { return {}; },
 	translatePlayer: () => { return {} as PlayerContextData; },
 	t: () => '',
-	tfmt: () => <></>
+	tfmt: () => <></>,
+	useT: () => ({ t: () => '', tfmt: () => <></> })
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -196,7 +199,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		translateCore,
 		translatePlayer,
 		t,
-		tfmt
+		tfmt,
+		useT
 	};
 
 	return (
@@ -639,4 +643,24 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		return output;
 	}
 
+	function useT(prefix: string) {
+		prefix = prefix.replace(/\.\./g, '.');
+		if (prefix.endsWith(".")) prefix = prefix.slice(0, prefix.length - 1);
+		if (prefix.startsWith(".")) prefix = prefix.slice(1);
+
+		const usePrefix = prefix;
+
+		const newFunc = (key: string, options?: {[key:string]: string | number }) => {
+			return t(`${usePrefix}.${key}`, options);
+		}
+
+		const newFmtFnc = (key: string, options?: {[key:string]: string | JSX.Element | number }) => {
+			return tfmt(`${usePrefix}.${key}`, options);
+		}
+
+		return {
+			t: newFunc,
+			tfmt: newFmtFnc
+		};
+	}
 };

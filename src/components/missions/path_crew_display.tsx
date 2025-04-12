@@ -10,7 +10,7 @@ import {
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import ItemDisplay from "../itemdisplay";
 import { BaseSkills, Skill } from "../../model/crew";
-import CrewStat from "../crewstat";
+import CrewStat from "../item_presenters/crewstat";
 import { appelate } from "../../utils/misc";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import { GradeSwatch, gradeCrew } from "../explanations/powerexplanation";

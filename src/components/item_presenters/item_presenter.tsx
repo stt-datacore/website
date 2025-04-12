@@ -1,23 +1,21 @@
+import { navigate } from "gatsby";
 import React, { Component } from "react";
-import { CompletionState, PlayerCrew, TranslateMethod } from "../../model/player";
-import { Dropdown, Header, Rating } from "semantic-ui-react";
-import { isImmortal, printImmoText } from "../../utils/crewutils";
-import { TinyStore } from "../../utils/tiny";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { EquipmentItem } from "../../model/equipment";
-import ItemDisplay from "../itemdisplay";
-import ItemSources from "../itemsources";
+import { Header, Rating } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { Link, navigate } from "gatsby";
-import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
-import { appelate } from "../../utils/misc";
-import CONFIG from "../CONFIG";
+import { EquipmentItem } from "../../model/equipment";
+import { PlayerCrew, TranslateMethod } from "../../model/player";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
-import { OptionsPanelFlexColumn } from "../stats/utils";
-import { CrewItemsView } from "./crew_items";
+import { TinyStore } from "../../utils/tiny";
+import CONFIG from "../CONFIG";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import ItemDisplay from "../itemdisplay";
 import { printRequiredTraits } from "../items/utils";
+import ItemSources from "../itemsources";
+import { OptionsPanelFlexColumn } from "../stats/utils";
 import { AvatarView } from "./avatarview";
+import { CrewItemsView } from "./crew_items";
+import { PresenterProps } from "./ship_presenter";
 
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew) {

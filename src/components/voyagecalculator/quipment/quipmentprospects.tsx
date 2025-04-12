@@ -9,7 +9,7 @@ import { ITableConfigRow, SearchableTable } from '../../searchabletable';
 import { EquipmentCommon, EquipmentItem } from '../../../model/equipment';
 import { getItemWithBonus, ItemWithBonus, mergeItems } from '../../../utils/itemutils';
 import { AvatarView } from '../../item_presenters/avatarview';
-import CrewStat from '../../crewstat';
+import CrewStat from '../../item_presenters/crewstat';
 import { skillSum } from '../../../utils/crewutils';
 import { omniSearchFilter } from '../../../utils/omnisearch';
 import CONFIG from '../../CONFIG';

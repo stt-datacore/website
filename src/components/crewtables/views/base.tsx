@@ -14,7 +14,7 @@ import { ComputedSkill, CrewMember } from '../../../model/crew';
 import { GlobalContext } from '../../../context/globalcontext';
 import { TranslateMethod } from '../../../model/player';
 import { appelate } from '../../../utils/misc';
-import CrewStat from '../../crewstat';
+import CrewStat from '../../item_presenters/crewstat';
 import { printFancyPortal } from '../../base/utils';
 import { OfferCrew } from '../../../model/offers';
 

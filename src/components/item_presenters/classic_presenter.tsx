@@ -4,7 +4,7 @@ import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic
 
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
-import CrewStat from '../../components/crewstat';
+import CrewStat from './crewstat';
 import { applyCrewBuffs, crewGender, formatMissingTrait, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';

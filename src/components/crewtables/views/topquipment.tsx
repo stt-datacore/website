@@ -6,7 +6,7 @@ import { Table } from "semantic-ui-react";
 import { QuippedPower, QuipmentScores, QuipSkill } from "../../../model/crew";
 import { skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
-import CrewStat from "../../crewstat";
+import CrewStat from "../../item_presenters/crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
 import { ItemWithBonus } from "../../../utils/itemutils";
 import { BuffStatTable } from "../../../utils/voyageutils";
