@@ -13,8 +13,6 @@ Stuff
 
 ## Bug Fixes
 
-Multiple retrieval options were still present when the number of owned polestars was fewer than required.
-
 ## General
 
 Preview crew
