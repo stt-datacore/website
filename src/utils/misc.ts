@@ -438,3 +438,31 @@ export function getComboCount(itemCount: number, groupSize: number): number {
 export function getComboCountBig(itemCount: bigint, groupSize: bigint): bigint {
 	return (factorialBig(itemCount) / (factorialBig(itemCount - groupSize) * factorialBig(groupSize)));
 }
+
+export function scaleImage(image: HTMLImageElement, scaleFactor: number) {
+	const canvas = document.createElement('canvas');
+	canvas.width = image.width * scaleFactor;
+	canvas.height = image.height * scaleFactor;
+
+	const ctx = canvas.getContext('2d');
+	if (!ctx) throw new Error("Cannot create 2d canvas!");
+	ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+	//ctx.save();
+	return canvas.toDataURL('image/png');
+}
+
+export async function loadAndScaleImage(url: string, scaleFactor: number) {
+	return new Promise<string>((resolve, reject) => {
+		const img = new Image();
+		const loader = (e: Event) => {
+			resolve(scaleImage(img, scaleFactor));
+		}
+		img.crossOrigin = 'anonymous';
+		img.onload = loader;
+		img.onerror = (e: any) => {
+			console.log(e);
+			//reject(new Error(e));
+		};
+		img.src = url;
+	});
+}

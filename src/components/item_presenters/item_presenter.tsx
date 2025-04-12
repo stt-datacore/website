@@ -1,6 +1,6 @@
 import { navigate } from "gatsby";
 import React, { Component } from "react";
-import { Header, Rating } from "semantic-ui-react";
+import { Grid, Header, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Skill } from "../../model/crew";
 import { EquipmentItem } from "../../model/equipment";
@@ -18,7 +18,7 @@ import { CrewItemsView } from "./crew_items";
 import { PresenterProps } from "./ship_presenter";
 
 
-export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew) {
+export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew, for_export?: boolean) {
     if (!kwipment || kwipment.every(k => !k)) return <></>;
     let quip = items.filter(f => kwipment.some(q => !!q && q.toString() === f.kwipment_id?.toString()));
     let bonuses = [] as ItemBonusInfo[];
@@ -30,48 +30,75 @@ export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], 
         return (
             <>
                 <CrewItemsView crew={crew} quipment={true} />
-                {renderBonuses(combined, undefined, undefined, prospect, t)}
+                {renderBonuses(combined, undefined, undefined, prospect, t, for_export)}
             </>
         )
     }
     else {
-        return renderBonuses(combined, undefined, undefined, prospect, t);
+        return renderBonuses(combined, undefined, undefined, prospect, t, for_export);
     }
 
 }
 
-export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod) {
+export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod, for_export?: boolean) {
     const flexCol = OptionsPanelFlexColumn;
 
-    return (<div style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-evenly",
-        alignItems: "left"
-    }}>
-        {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
-        {Object.values(skills).map(((skill, idx) => {
-            const atext = CONFIG.SKILLS[skill.skill!];
-            return (
-                <div
-                    title={atext}
-                    key={(skill.skill ?? "") + idx}
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "flex-start",
-                        alignItems: "center",
-                        alignContent: "center"
-                    }}
-                >
-                    <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
-                        <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
-                    </div>
-                    <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
-                    <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
-                </div>)
-        }))}
-    </div>)
+    if (for_export) {
+        return (<Table>
+            {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
+            {Object.values(skills).map(((skill, idx) => {
+                const atext = CONFIG.SKILLS[skill.skill!];
+                return (
+                    <Table.Row
+                        title={atext}
+                        key={(skill.skill ?? "") + idx}>
+                        <Table.Cell>
+                        <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
+                            {CONFIG.SKILLS_SHORT.find(sk => sk.name === skill.skill)?.short}
+                        </div>
+                        </Table.Cell>
+                        <Table.Cell>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                        </Table.Cell>
+                        <Table.Cell>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
+                        </Table.Cell>
+                    </Table.Row>)
+            }))}
+        </Table>)
+    }
+    else {
+        return (<div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-evenly",
+            alignItems: "left"
+        }}>
+            {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
+            {Object.values(skills).map(((skill, idx) => {
+                const atext = CONFIG.SKILLS[skill.skill!];
+                return (
+                    <div
+                        title={atext}
+                        key={(skill.skill ?? "") + idx}
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            alignContent: "center"
+                        }}
+                    >
+                        <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
+                            <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                        </div>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
+                    </div>)
+            }))}
+        </div>)
+    }
+
 }
 
 
