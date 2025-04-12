@@ -36,27 +36,12 @@ import {
     PresenterPluginBase,
     PresenterPluginProps
 } from "./presenter_plugin";
-
-const dormantStyle: React.CSSProperties = {
-    background: "transparent",
-    color: "gray",
-    cursor: "pointer",
-};
+import { HoverSelectorConfig, BuffSelector, ImmortalSelector, CollectionDisplay, drawBuff, drawImmo } from "./presenter_utils";
 
 const activeStyle: React.CSSProperties = {
     background: "transparent",
     color: "#FFE623",
     cursor: "pointer",
-};
-
-const ownedGreenStyle: React.CSSProperties = {
-    ...activeStyle,
-    color: "lightgreen",
-};
-
-const ownedBlueStyle: React.CSSProperties = {
-    ...activeStyle,
-    color: "orange",
 };
 
 const frozenStyle: React.CSSProperties = {
@@ -80,277 +65,6 @@ const selectedStyle: React.CSSProperties = {
     color: "green",
     marginRight: "0px",
 };
-
-export interface CollectionDisplayProps {
-    crew: PlayerCrew | CrewMember;
-    style?: React.CSSProperties;
-}
-
-export const CollectionDisplay = (props: CollectionDisplayProps) => {
-    const context = React.useContext(GlobalContext);
-    const { COLLECTIONS } = context.localized;
-    const { playerData } = context.player;
-    const { crew, style } = props;
-
-    const ocols = [] as string[];
-
-    const dispClick = (e, col: string) => {
-        navigate("/collections?select=" + encodeURIComponent(col));
-    }
-
-    if (!crew.collections?.length) return <></>;
-
-    if (
-        (((("immortal" in crew)) && ((crew.immortal === 0 || crew.immortal < -1) && ![-10, -11].includes(crew.immortal))) ||
-            ("any_immortal" in crew && crew.any_immortal === false))
-        && playerData?.player.character.cryo_collections) {
-        playerData?.player.character.cryo_collections.forEach(col => {
-            if (col?.milestone?.goal) {
-                ocols.push(col.name);
-            }
-        });
-    }
-
-    return (<div style={{
-        ... (style ?? {}),
-        cursor: "pointer"
-    }}>
-        {crew.collections?.map((col, idx) => (
-            <a
-                style={{
-                    color: ocols.includes(col) ? 'lightgreen' : undefined
-                }}
-                onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
-                {col}
-            </a>))?.reduce((prev, next) => <>{prev}, {next}</>) ?? <></>}
-    </div>)
-}
-
-
-export interface HoverSelectorConfig<T> {
-    key: T;
-    value: T;
-    text?: string;
-    content?: JSX.Element;
-}
-
-export interface BuffSelectorProps {
-    buff: PlayerBuffMode;
-    setBuff: (value: PlayerBuffMode) => void;
-    style?: React.CSSProperties | undefined;
-    available: HoverSelectorConfig<PlayerBuffMode>[];
-    t: TranslateMethod
-}
-
-export interface ImmortalSelectorProps {
-    immoed?: boolean;
-    prospect?: boolean;
-    immortalMode: PlayerImmortalMode;
-    setImmortalMode: (value: PlayerImmortalMode) => void;
-    style?: React.CSSProperties | undefined;
-    available: HoverSelectorConfig<PlayerImmortalMode>[];
-    t: TranslateMethod,
-    gender?: 'm' | 'f' | '';
-}
-
-
-function drawBuff(
-    t: TranslateMethod,
-    key: string | number,
-    data: PlayerBuffMode,
-    buffClick?: (value: PlayerBuffMode) => void
-): JSX.Element {
-    const buffclick = (
-        e: React.MouseEvent<HTMLElement, MouseEvent>,
-        buff: PlayerBuffMode
-    ) => {
-        if (buffClick) {
-            e.preventDefault();
-            buffClick(buff);
-        }
-    };
-    if (data === "none") {
-        return (
-            <div key={key} style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => buffclick(e, "none")}
-                    className="arrow alternate circle down icon"
-                    title="No Boosts Applied"
-                    style={{ ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" }}
-                />
-                {t(BuffNames[data])}
-            </div>
-        );
-    } else if (data === "player") {
-        return (
-            <div key={key} style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => buffclick(e, "player")}
-                    className="arrow alternate circle up icon"
-                    title="Player Boosts Applied"
-                    style={{
-                        ...ownedGreenStyle,
-                        fontSize: "0.8em",
-                        marginRight: "0.5em",
-                    }}
-                />
-                {t(BuffNames[data])}
-            </div>
-        );
-    } else if (data === "quipment") {
-        return (
-            <div key={key} style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => buffclick(e, "player")}
-                    className="arrow alternate circle up icon"
-                    title="Quipment Boosts Applied"
-                    style={{
-                        ...ownedBlueStyle,
-                        fontSize: "0.8em",
-                        marginRight: "0.5em",
-                    }}
-                />
-                {t(BuffNames[data])}
-            </div>
-        );
-    } else if (data === "max") {
-        return (
-            <div key={key} style={{ display: "inline-flex" }}>
-                <i
-                    onClick={(e) => buffclick(e, "max")}
-                    className="arrow alternate circle up icon glow"
-                    title="Max Boosts Applied"
-                    style={{ ...activeStyle, fontSize: "0.8em", marginRight: "0.5em" }}
-                />
-                {t(BuffNames[data])}
-            </div>
-        );
-    }
-    return <></>;
-}
-
-function drawImmo(
-    t: TranslateMethod,
-    key: string | number,
-    data: PlayerImmortalMode,
-    immoClick?: (value: PlayerImmortalMode) => void,
-    immoed?: boolean,
-    prospect?: boolean,
-    gender?: "m" | "f" | ""
-): JSX.Element {
-    const immoclick = (
-        e: React.MouseEvent<HTMLElement, MouseEvent>,
-        immo: PlayerImmortalMode
-    ) => {
-        if (immoClick) {
-            e.preventDefault();
-            immoClick(immo);
-        }
-    };
-
-    let imname = '';
-    let icon = '';
-    let style = {} as React.CSSProperties;
-    let title = '';
-    if (data === 'full') {
-        if (!immoed) {
-            data = "shown_full";
-            icon = 'star icon';
-        }
-        else {
-            icon = 'check icon';
-        }
-        style = {
-            ...(immoed ? ownedGreenStyle : activeStyle),
-            fontSize: "0.8em",
-            marginRight: "0.5em",
-        };
-        title = t('crew_state.immortalized', { __gender: gender ?? '' });
-    }
-    else if (data === 'frozen') {
-        icon = 'snowflake icon';
-        style = { ...frozenStyle, fontSize: "0.8em", marginRight: "0.5em" };
-        title = t('crew_state.frozen', { __gender: gender ?? '' });
-    }
-    else {
-        icon = 'star icon'
-        style = { ...dormantStyle, fontSize: "0.8em", marginRight: "0.5em" };
-    }
-
-    if (prospect) {
-        imname = t(ProspectImmortalNames[data], { __gender: gender ?? '', stars: data.toString() });
-    }
-    else {
-        imname = t(ImmortalNames[data], { __gender: gender ?? '', stars: data.toString() });
-    }
-
-    const immoName = imname;
-    const immoIcon = icon;
-    const immoStyle = style;
-    const immoTitle = title;
-
-    return (
-        <div key={key} style={{ display: "inline-flex" }}>
-            <i
-                onClick={(e) => immoclick(e, data)}
-                className={immoIcon}
-                title={immoTitle}
-                style={immoStyle}
-            />
-            {immoName}
-        </div>
-    );
-}
-
-export class BuffSelector extends React.Component<BuffSelectorProps> {
-    render() {
-        const { t } = this.props;
-        return (
-            <div style={this.props.style}>
-                <Dropdown
-                    inline
-                    trigger={drawBuff(this.props.t, "buffTrig", this.props.buff)}
-                    placeholder={t('hints.display_buffs')}
-                    options={this.props.available}
-                    value={this.props.buff}
-                    onChange={(e, { value }) =>
-                        this.props.setBuff(value as PlayerBuffMode)
-                    }
-                    closeOnChange
-                ></Dropdown>
-            </div>
-        );
-    }
-}
-
-export class ImmortalSelector extends React.Component<ImmortalSelectorProps> {
-    render() {
-        const { t } = this.props;
-        return (
-            <div style={this.props.style}>
-                <Dropdown
-                    inline
-                    placeholder={t('hints.crew_level')}
-                    trigger={drawImmo(
-                        this.props.t,
-                        "immoTrig",
-                        this.props.immortalMode,
-                        undefined,
-                        this.props.immoed,
-                        this.props.prospect,
-                        this.props.gender
-                    )}
-                    options={this.props.available}
-                    value={this.props.immortalMode}
-                    onChange={(e, { value }) =>
-                        this.props.setImmortalMode(value as PlayerImmortalMode)
-                    }
-                    closeOnChange
-                />
-            </div>
-        );
-    }
-}
 
 export interface CrewPlugins {
     plugins?: typeof PresenterPluginBase<PlayerCrew | CrewMember | any>[];
@@ -514,7 +228,6 @@ export class CrewPresenter extends React.Component<
         }
     }
 
-
     crewToSkillData(crew: PlayerCrew) {
         const skillData = {
             base_skills: {} as BaseSkills,
@@ -654,30 +367,6 @@ export class CrewPresenter extends React.Component<
             me.immortalMode = availmodes[availmodes.length - 1];
         }
 
-        const availBuffs = availstates.map((data, idx) => {
-            let buff = {
-                key: data,
-                value: data,
-                text: BuffNames[data],
-            } as HoverSelectorConfig<PlayerBuffMode>;
-
-            buff.content = drawBuff(t, idx, data, this.clickBuff);
-            return buff;
-        });
-
-        const immoed = ("immortal" in crew && crew.immortal && crew.immortal >= -1) || false;
-
-        const availImmos = me.validImmortalModes.map((data, idx) => {
-            const immo = {
-                key: data,
-                value: data,
-                text: crew.prospect ? ProspectImmortalNames[data] : ImmortalNames[data],
-            } as HoverSelectorConfig<PlayerImmortalMode>;
-
-            immo.content = drawImmo(t, idx, data, this.clickImmo, immoed, crew.prospect, crewGender(crew));
-            return immo;
-        });
-
         const mainContainerStyle = {
             fontSize:
                 isMobile || compact ? "10pt" : "11pt",
@@ -786,72 +475,8 @@ export class CrewPresenter extends React.Component<
                             justifyContent: "space-between",
                         }}
                     >
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <h3
-                                style={{
-                                    margin: "2px 8px",
-                                    padding: "8px",
-                                    marginLeft: "0px",
-                                    paddingLeft: "0px",
-                                }}
-                            >
-                                <a
-                                    onClick={() => this.navClick(crew)}
-                                    style={{ cursor: "pointer" }}
-                                    title={"Go To Crew Page For '" + crew.name + "'"}
-                                >
-                                    {crew.name}
-                                </a>
-                            </h3>
-                            {this.renderRating(crew)}
-                        </div>
-                        {!opponent && !selected && <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-evenly",
-                                fontSize: "0.9em",
-                                fontStyle: "italic",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: isMobile ? 'flex-start' : "flex-end",
-                                }}
-                            >
-                                <BuffSelector
-                                    t={t}
-                                    available={availBuffs}
-                                    buff={me.playerBuffMode}
-                                    setBuff={(buff) => this.clickBuff(buff)}
-                                />
-                            </div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: isMobile ? 'flex-start' : "flex-end",
-                                }}
-                            >
-                                <ImmortalSelector
-                                    t={t}
-                                    immoed={immoed}
-                                    prospect={crew.prospect}
-                                    available={availImmos}
-                                    immortalMode={me.immortalMode}
-                                    setImmortalMode={(immo) => this.clickImmo(immo)}
-                                    gender={crewGender(crew)}
-                                />
-                            </div>
-                        </div>}
+                        {this.renderRating(crew)}
+                        {!opponent && !selected && this.renderViewOptions(crew, isMobile)}
                     </div>
                     {this.renderSkills(crew, hover, isMobile)}
                     {this.renderCoolStats(crew)}
@@ -895,84 +520,196 @@ export class CrewPresenter extends React.Component<
         return (
             <div
                 style={{
-                    margin: "4px",
-                    marginLeft: 0,
                     display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
                 }}
             >
-                <Rating
-                    onClick={() => this.nextImmo()}
-                    icon="star"
-                    rating={this.getStars(crew)}
-                    maxRating={crew.max_rarity}
-                    size="large"
-                    disabled
-                />
-                <h4
-                    onClick={() => this.nextImmo()}
+                <h3
                     style={{
-                        cursor: "default",
                         margin: "2px 8px",
                         padding: "8px",
+                        marginLeft: "0px",
+                        paddingLeft: "0px",
                     }}
-                    className="ui segment"
-                    title={
-                        "immortal" in crew
-                            ? printImmoText(crew.immortal, undefined, undefined, t, crewGender(crew))
-                            : t('item_state.item_is_shown_immortalized', { item: t('base.crew'), __gender: crewGender(crew) ?? '' })
-                    }
                 >
-                    {("immortal" in crew &&
-                        (crew.immortal ===
-                            CompletionState.DisplayAsImmortalUnowned ||
-                            crew.immortal ===
-                            CompletionState.DisplayAsImmortalStatic ? (
-                            <>
-                                {" "}
-                                {((crew.in_portal && !crew.prospect) && (
-                                    <div
-                                        style={{
-                                            alignSelf: "center",
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <img
+                    <a
+                        onClick={() => this.navClick(crew)}
+                        style={{ cursor: "pointer" }}
+                        title={"Go To Crew Page For '" + crew.name + "'"}
+                    >
+                        {crew.name}
+                    </a>
+                </h3>
+
+                <div
+                    style={{
+                        margin: "4px",
+                        marginLeft: 0,
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                    }}
+                >
+                    <Rating
+                        onClick={() => this.nextImmo()}
+                        icon="star"
+                        rating={this.getStars(crew)}
+                        maxRating={crew.max_rarity}
+                        size="large"
+                        disabled
+                    />
+                    <h4
+                        onClick={() => this.nextImmo()}
+                        style={{
+                            cursor: "default",
+                            margin: "2px 8px",
+                            padding: "8px",
+                        }}
+                        className="ui segment"
+                        title={
+                            "immortal" in crew
+                                ? printImmoText(crew.immortal, undefined, undefined, t, crewGender(crew))
+                                : t('item_state.item_is_shown_immortalized', { item: t('base.crew'), __gender: crewGender(crew) ?? '' })
+                        }
+                    >
+                        {("immortal" in crew &&
+                            (crew.immortal ===
+                                CompletionState.DisplayAsImmortalUnowned ||
+                                crew.immortal ===
+                                CompletionState.DisplayAsImmortalStatic ? (
+                                <>
+                                    {" "}
+                                    {((crew.in_portal && !crew.prospect) && (
+                                        <div
                                             style={{
-                                                height: "1.5em",
-                                                margin: 0,
-                                                padding: 0,
+                                                alignSelf: "center",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                justifyContent: "center",
                                             }}
-                                            title={portalText}
-                                            src={"/media/portal.png"}
-                                        />
-                                    </div>
-                                )) || (
-                                        <i
-                                            className={crew.prospect ? "add user icon" : "lock icon"}
-                                            style={frozenStyle}
-                                            title={noPortalText}
-                                        />
-                                    )}{" "}
-                            </>
-                        ) : crew.immortal === CompletionState.DisplayAsImmortalOpponent ? (
-                            <i className="chess rook icon" style={opponentStyle} />
-                        ) : crew.immortal === CompletionState.DisplayAsImmortalSelected ? (
-                            <i className="chess rook icon" style={selectedStyle} />
-                        ) : crew.immortal === 0 ||
-                            crew.rarity !== crew.max_rarity ? (
-                            <b>{crew.level}</b>
-                        ) : crew.immortal > 0 ? (
-                            <i className="snowflake icon" style={frozenStyle} />
-                        ) : (
-                            <i className="check icon" style={checkedStyle} />
-                        ))) || <i className="check icon" style={checkedStyle} />}
-                </h4>
+                                        >
+                                            <img
+                                                style={{
+                                                    height: "1.5em",
+                                                    margin: 0,
+                                                    padding: 0,
+                                                }}
+                                                title={portalText}
+                                                src={"/media/portal.png"}
+                                            />
+                                        </div>
+                                    )) || (
+                                            <i
+                                                className={crew.prospect ? "add user icon" : "lock icon"}
+                                                style={frozenStyle}
+                                                title={noPortalText}
+                                            />
+                                        )}{" "}
+                                </>
+                            ) : crew.immortal === CompletionState.DisplayAsImmortalOpponent ? (
+                                <i className="chess rook icon" style={opponentStyle} />
+                            ) : crew.immortal === CompletionState.DisplayAsImmortalSelected ? (
+                                <i className="chess rook icon" style={selectedStyle} />
+                            ) : crew.immortal === 0 ||
+                                crew.rarity !== crew.max_rarity ? (
+                                <b>{crew.level}</b>
+                            ) : crew.immortal > 0 ? (
+                                <i className="snowflake icon" style={frozenStyle} />
+                            ) : (
+                                <i className="check icon" style={checkedStyle} />
+                            ))) || <i className="check icon" style={checkedStyle} />}
+                    </h4>
+                </div>
+            </div>)
+    }
+
+    renderViewOptions(crew: PlayerCrew, isMobile: boolean) {
+        const { t } = this.context.localized;
+        const availmodes = this.validImmortalModes;
+
+        const availstates = this.props.quipmentMode ? ['quipment' as PlayerBuffMode] : getAvailableBuffStates(
+            this.context.player.playerData,
+            this.context.maxBuffs,
+            crew as PlayerCrew
+        );
+
+        if (availstates?.includes(this.playerBuffMode) !== true) {
+            this.playerBuffMode = availstates[0];
+        }
+
+        if (availmodes?.includes(this.immortalMode) !== true) {
+            this.immortalMode = availmodes[availmodes.length - 1];
+        }
+
+        const availBuffs = availstates.map((data, idx) => {
+            let buff = {
+                key: data,
+                value: data,
+                text: BuffNames[data],
+            } as HoverSelectorConfig<PlayerBuffMode>;
+
+            buff.content = drawBuff(t, idx, data, this.clickBuff);
+            return buff;
+        });
+
+        const immoed = ("immortal" in crew && crew.immortal && crew.immortal >= -1) || false;
+
+        const availImmos = this.validImmortalModes.map((data, idx) => {
+            const immo = {
+                key: data,
+                value: data,
+                text: crew.prospect ? ProspectImmortalNames[data] : ImmortalNames[data],
+            } as HoverSelectorConfig<PlayerImmortalMode>;
+
+            immo.content = drawImmo(t, idx, data, this.clickImmo, immoed, crew.prospect, crewGender(crew));
+            return immo;
+        });
+
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-evenly",
+                    fontSize: "0.9em",
+                    fontStyle: "italic",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: isMobile ? 'flex-start' : "flex-end",
+                    }}
+                >
+                    <BuffSelector
+                        t={t}
+                        available={availBuffs}
+                        buff={this.playerBuffMode}
+                        setBuff={(buff) => this.clickBuff(buff)}
+                    />
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: isMobile ? 'flex-start' : "flex-end",
+                    }}
+                >
+                    <ImmortalSelector
+                        t={t}
+                        immoed={immoed}
+                        prospect={crew.prospect}
+                        available={availImmos}
+                        immortalMode={this.immortalMode}
+                        setImmortalMode={(immo) => this.clickImmo(immo)}
+                        gender={crewGender(crew)}
+                    />
+                </div>
             </div>
         )
+
     }
 
     renderSkills(crew: PlayerCrew, hover: boolean, isMobile: boolean) {

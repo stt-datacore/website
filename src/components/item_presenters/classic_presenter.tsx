@@ -12,7 +12,7 @@ import { CrewRankHighlights, CrewRanks } from './crew_ranks';
 import { OwnedLabel } from '../crewtables/commonoptions';
 import { CrewItemsView } from './crew_items';
 import { PlayerCrew } from '../../model/player';
-import { CollectionDisplay } from './crew_presenter';
+import { CollectionDisplay } from './presenter_utils';
 
 type ValidField =
 	'collections' |
