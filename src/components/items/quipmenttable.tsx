@@ -1,12 +1,11 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { EquipmentItem } from "../../model/equipment";
-import { OptionsPanelFlexRow } from "../stats/utils";
-import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
 import { CrewMember } from "../../model/crew";
-import { QuipmentFilterContext } from "./quipmentfilters";
+import { EquipmentItem } from "../../model/equipment";
 import { qbitsToSlots } from "../../utils/crewutils";
 import { getPossibleQuipment } from "../../utils/itemutils";
+import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
+import { QuipmentFilterContext } from "./quipmentfilters";
 
 interface QuipmentTableProps extends EquipmentTableProps {
     ownedItems: boolean;

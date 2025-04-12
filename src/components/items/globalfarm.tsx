@@ -1,12 +1,11 @@
-import React from "react"
+import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
-import { FarmSources, FarmTable } from "./farmtable";
-import { mergeItems } from "../../utils/itemutils";
 import { WorkerContext } from "../../context/workercontext";
+import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
 import { EquipmentWorkerResults } from "../../model/worker";
-import { OptionsPanelFlexRow } from "../stats/utils";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
+import { OptionsPanelFlexRow } from "../stats/utils";
+import { FarmSources, FarmTable } from "./farmtable";
 import { ItemsFilterContext } from "./filters";
 
 

@@ -1,13 +1,13 @@
+import { navigate } from "gatsby";
 import React, { Component } from "react";
-import { CompletionState } from "../../model/player";
 import { Rating } from "semantic-ui-react";
-import { printImmoText } from "../../utils/crewutils";
-import { ShipSkill, ShipSkillProps } from "./shipskill";
+import { GlobalContext } from "../../context/globalcontext";
+import { CompletionState } from "../../model/player";
 import { Ship } from "../../model/ship";
+import { printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { GlobalContext } from "../../context/globalcontext";
-import { navigate } from "gatsby";
+import { ShipSkill } from "./shipskill";
 
 export interface PresenterProps {
     hover: boolean;

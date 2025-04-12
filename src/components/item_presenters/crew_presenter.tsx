@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Dropdown, Rating } from "semantic-ui-react";
+import { Rating } from "semantic-ui-react";
 import { BaseSkills, CrewMember, Skill, SkillData } from "../../model/crew";
-import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
 import {
     crewGender,
     formatMissingTrait,
@@ -36,7 +36,7 @@ import {
     PresenterPluginBase,
     PresenterPluginProps
 } from "./presenter_plugin";
-import { HoverSelectorConfig, BuffSelector, ImmortalSelector, CollectionDisplay, drawBuff, drawImmo } from "./presenter_utils";
+import { BuffSelector, CollectionDisplay, HoverSelectorConfig, ImmortalSelector, drawBuff, drawImmo } from "./presenter_utils";
 
 const activeStyle: React.CSSProperties = {
     background: "transparent",

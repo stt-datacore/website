@@ -3,10 +3,10 @@ import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember, Skill } from "../../model/crew";
 import { Gauntlet } from "../../model/gauntlets";
 import { PlayerCrew } from "../../model/player";
-import { PresenterPlugin, PresenterPluginBase, PresenterPluginProps, PresenterPluginState } from "./presenter_plugin";
 import { getPlayerPairs, getSkills } from "../../utils/crewutils";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { StatLabel } from "../statlabel";
+import { PresenterPlugin, PresenterPluginProps, PresenterPluginState } from "./presenter_plugin";
 
 export interface GauntletSkillProps extends PresenterPluginProps<PlayerCrew | CrewMember> {
     data: Gauntlet | Gauntlet[];
