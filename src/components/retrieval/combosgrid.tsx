@@ -20,7 +20,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 	const { polestarTailors, market, allKeystones } = React.useContext(RetrievalContext);
 	const { alwaysShowPrice, fuseIndex } = props;
 
-	let combos = props.combos;
+	let combos = [...props.combos];
 
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
