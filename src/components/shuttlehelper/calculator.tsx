@@ -116,7 +116,7 @@ export const Calculator = () => {
 						/>
 
 						{/* When the crew excluder is showing, this is redundant */}
-						{!shuttlersContext?.eventData && <Form.Field
+						{!!shuttlersContext?.eventData && <Form.Field
 							control={Checkbox}
 							label={t('consider_crew.exclude_quipped')}
 							checked={excludeQuipped}
