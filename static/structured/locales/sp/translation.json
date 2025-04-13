@@ -2131,6 +2131,10 @@
                 "description": "Estadísticas sobre componentes y equipos en el juego",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Explorar actualizaciones del portal",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Estadísticas sobre los rasgos de la tripulación en el juego",
                 "title": "{{hints.traits}}"

@@ -2121,6 +2121,10 @@
                 "description": "Statistiken zu Komponenten und Ausrüstung im Spiel",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Durchsuchen Sie die Zeitportal-Updates",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Statistiken zu Crew-Eigenschaften im Spiel",
                 "title": "{{hints.traits}}"

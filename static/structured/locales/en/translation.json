@@ -2121,6 +2121,10 @@
                 "description": "Stats about components and equipment in the game",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Browse portal updates",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Stats about crew traits in the game",
                 "title": "{{hints.traits}}"

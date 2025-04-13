@@ -2133,6 +2133,10 @@
                 "description": "Statistiques sur les composants et l'équipement du jeu",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Parcourir les mises à jour du portail",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",
                 "title": "{{hints.traits}}"

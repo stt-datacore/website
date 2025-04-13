@@ -473,13 +473,23 @@ export function getPortalLog(log: PortalLogEntry[], crew: CrewMember[], n_update
 	const update = [] as PortalReport[];
 	let updcnt = 0;
 
-	for (let i = c - 1; i >= 0; i--) {
+	log.sort((a, b) => a.portal_batch_id - b.portal_batch_id);
+	let ldate = new Date();
+
+	for (let i = c - 1; i >= 0; ) {
         let fbatch = log.filter(ff => ff.portal_batch_id === log[i].portal_batch_id);
         batch = batch.concat(fbatch);
-        if (fbatch.length > 2) {
+        if (fbatch.length >= 10) {
+			ldate = fbatch[0].date;
 			updcnt++;
-			if (updcnt >= n_updates) break;
+			if (n_updates && updcnt >= n_updates) break;
         }
+		else {
+			for (let rec of fbatch) {
+				rec.date = ldate;
+			}
+		}
+		i -= fbatch.length;
     }
 
     for (let cp of batch) {
@@ -493,5 +503,16 @@ export function getPortalLog(log: PortalLogEntry[], crew: CrewMember[], n_update
         }
     }
 
-    return update.sort((a, b) => b.rarity - a.rarity || a.name.localeCompare(b.name));
+    return update.sort((a, b) => {
+		let r = 0;
+		if (a.date && b.date) {
+			if (typeof a.date === 'string') a.date = new Date(a.date);
+			if (typeof b.date === 'string') b.date = new Date(b.date);
+			r = a.date.getTime() - b.date.getTime();
+		}
+		else if (a.date) return -1;
+		else if (b.date) return 1;
+		if (!r) r = b.rarity - a.rarity || a.name.localeCompare(b.name);
+		return r;
+	});
 }
