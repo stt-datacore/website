@@ -42,6 +42,7 @@
         "date": "Datum",
         "event_crew": "Ereignis-Crew",
         "event_ships": "Ereignis Schiffe",
+        "expiration": "Verfallsdatum",
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
         "gauntlet": "Herausforderung",
@@ -505,14 +506,18 @@
     "event_planner": {
         "heading": "Finden Sie die beste Crew für den Einsatz während einer Ereignis.",
         "hide_duplicate_pairs": "Entfernen doppelter Paare",
+        "prefer_high_bonus": "Bevorzugen Sie einen hohen Bonus",
         "prospect_description": "Fügen Sie potenzielle Crew (oder potenzielle gemeinsame Crew) hinzu, um zu sehen, wie sie in Ihren vorhandenen Kader für diese Ereignis passen.",
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",
         "skill_matrix_heading": "Diese Matrix zeigt Ihre beste Crew für jede mögliche Fähigkeitskombination. Verwenden Sie diese Matrix, um Ihre beste Crew für dieses Ereignis zu ermitteln. Tippen Sie auf eine Zelle, um andere Crew mit dieser Fähigkeitskombination anzuzeigen.",
+        "specialist_missions": "Spezialmissionen",
+        "staff_selected": "Besetzen Sie die ausgewählten",
         "table": {
             "columns": {
                 "best": "Am besten",
                 "bonus": "Bonus",
+                "completion_cost": "Kosten für sofortige Fertigstellung",
                 "crew": "Crew",
                 "pair": "Paar"
             },
@@ -539,6 +544,7 @@
     },
     "event_type": {
         "expedition": "Expedition",
+        "galaxy": "Spezialistin",
         "gather": "Galaxie",
         "shuttles": "Fraktion",
         "skirmish": "Scharmützel",
@@ -907,6 +913,7 @@
         "colon": " : ",
         "completed": "Abgeschlossen",
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
+        "cost": "Kosten",
         "create": "Erstellen",
         "date_end": "Enddatum",
         "date_start": "Startdatum",
@@ -1023,6 +1030,7 @@
         "search_for_x_by_name": "Suche nach {{x}} nach Namen",
         "search_items": "Suche nach Artikel",
         "search_items_ellipses": "Suche nach Artikel...",
+        "select_all": "Alle auswählen",
         "set_as_default_view": "Als Standardansicht festlegen",
         "show": "Zeigen",
         "show_all": "Alle anzeigen",
@@ -1033,8 +1041,10 @@
         "shown": "Gezeigt",
         "sort_by": "Sortieren nach",
         "squadron_leader": "Geschwaderführer",
+        "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
         "toggle_layout": "Layout umschalten",
         "uncheck_all": "Deaktivieren Sie alle",
+        "unselect_all": "Auswahl aufheben",
         "view_options": "Optionen anzeigen",
         "viewing_stats_for_x": "Statistiken für {{x}} anzeigen",
         "win": "Gewinnen",
@@ -1128,6 +1138,10 @@
             "description": "Übersicht über alle Gegenstände im Spiel.",
             "title": "Alle Gegenstände"
         },
+        "farm_table": {
+            "description": "Aufschlüsselung der anbaubaren Komponenten mit Quellen.",
+            "title": "Farmtabelle"
+        },
         "owned_items": {
             "description": "Übersicht über alle Gegenstände,\ndie der Spieler besitzt (und auch benötigt).",
             "title": "Besessene Gegenstände"
@@ -1171,12 +1185,14 @@
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
         "current_demands": "Aktuelle Anforderungen",
         "equippable_by": "Ausrüstbar durch: {{crew}}",
+        "equippable_by_n_crew": "Ausrüstbar durch {{n}} Crew.",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
         "faction_only": "Nur Fraktion",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
         "item_sources": "Artikelquellen",
+        "n_farmable": "{{n}} landwirtschaftliche",
         "n_needed": "{{n}} benötigt",
         "n_owned": "{{n}} im Besitz",
         "n_rewarded": "{{n}} belohnt",
@@ -1332,6 +1348,7 @@
         "long": {
             "Achievement": "Leistung",
             "BossBattle": "Kapitänsbrücke",
+            "Campaign": "Kampagne",
             "Collection": "Sammlungs-Meilenstein",
             "Continuum": "Kontinuum",
             "Event": "Ereignis",
@@ -1344,14 +1361,17 @@
             "Launch": "Spielstart",
             "Mega": "Wiederkehrende Mega",
             "Missions": "Hauptplatinen-Mission",
+            "Mixed Behold": "Gemischter Anblick",
             "Pack": "Paket",
             "Pack/Giveaway": "Paket/Giveaway",
+            "Six Pack": "Sixpack",
             "Voyage": "Reise Exklusiv",
             "WebStore": "Web Store"
         },
         "short": {
             "Achievement": "Leistung",
             "BossBattle": "Brücke",
+            "Campaign": "Kampagne",
             "Collection": "Sammlung",
             "Continuum": "Kontinuum",
             "Event": "Ereignis",
@@ -1364,8 +1384,10 @@
             "Launch": "Spielstart",
             "Mega": "Mega",
             "Missions": "Missionen",
+            "Mixed Behold": "Gemischter Anblick",
             "Pack": "Paket",
             "Pack/Giveaway": "Paket/Giveaway",
+            "Six Pack": "Sixpack",
             "Voyage": "Reise",
             "WebStore": "Web Store"
         }
@@ -1571,6 +1593,10 @@
         "moonshot": "Mondschuss",
         "potential_maximum": "Potenzielles Maximum",
         "standard": "Standard"
+    },
+    "ranking_tools": {
+        "current_weighting": "Aktuelle Gewichtung",
+        "show_weighting_details": "Gewichtungsdetails anzeigen"
     },
     "retrieval": {
         "allow_unowned": "Unbesessene Crew zulassen",
@@ -2110,6 +2136,7 @@
             "first_appearance": "Erster Auftritt",
             "first_crew": "Älteste Crew",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Höchster DataScore",
             "inaugural_crew": "Eröffnungsmannschaft",
             "latest_crew": "Neueste Crew",
             "total_crew": "Gesamtcrew",
@@ -2122,6 +2149,7 @@
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",
             "show_hidden": "Versteckte Merkmale anzeigen",
+            "show_series": "Serienmerkmale anzeigen",
             "show_variant_traits": "Variantenmerkmale der Crew anzeigen",
             "show_visible": "Sichtbare Merkmale anzeigen"
         }
@@ -2332,6 +2360,13 @@
         },
         "history": {
             "description": "Behalten Sie den Überblick über Ihre Reisen, sehen Sie, wie Ihre Laufzeiten im Vergleich zu Ihren ursprünglichen Schätzungen abschneiden, und identifizieren Sie die Crew, die Sie am häufigsten einsetzen.",
+            "enable_remote_tracking": "Aktivieren Sie die Fernverfolgung",
+            "loot_crew": {
+                "columns": {
+                    "voyages": "{{base.voyages}}"
+                },
+                "title": "Beute-Crew"
+            },
             "menu": {
                 "crew": "Crew",
                 "manage": "Verlauf verwalten",
@@ -2339,7 +2374,9 @@
             },
             "moved": "Das Reiseverlaufstool wurde in den {{link}} verschoben. Bitte aktualisieren Sie Ihre Lesezeichen nach Bedarf.",
             "not_yet": "Sie haben noch keinen Reiseverlauf. Beginnen Sie mit der Verfolgung von Reisen über den Crew-Rechner.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Fernverfolgung",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "Möchten Sie diese Reise wirklich löschen?"
         },
         "import": {
             "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
@@ -2478,6 +2515,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Verlauf vom Gerät hinzufügen",
             "manage_placeholder": "Remote-Synchronisierung und andere Optionen zur Verlaufsverwaltung sind in der Entwicklung.",
             "options": {
                 "revival": {

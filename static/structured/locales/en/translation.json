@@ -42,6 +42,7 @@
         "date": "Date",
         "event_crew": "Event Crew",
         "event_ships": "Event Ships",
+        "expiration": "Expiration",
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
         "gauntlet": "Gauntlet",
@@ -505,14 +506,18 @@
     "event_planner": {
         "heading": "Find the best crew to use during an event.",
         "hide_duplicate_pairs": "Remove duplicate pairs",
+        "prefer_high_bonus": "Prefer high bonus",
         "prospect_description": "Add prospective crew (or potential shared crew) to see how they fit into your existing roster for this event.",
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",
         "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "specialist_missions": "Specialist Missions",
+        "staff_selected": "Staff Selected",
         "table": {
             "columns": {
                 "best": "Best",
                 "bonus": "Bonus",
+                "completion_cost": "Instant completion cost",
                 "crew": "Crew",
                 "pair": "Pair"
             },
@@ -539,6 +544,7 @@
     },
     "event_type": {
         "expedition": "Expedition",
+        "galaxy": "Specialist",
         "gather": "Galaxy",
         "shuttles": "Faction",
         "skirmish": "Skirmish",
@@ -907,6 +913,7 @@
         "colon": ": ",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copy permalink to clipboard",
+        "cost": "Cost",
         "create": "Create",
         "date_end": "End Date",
         "date_start": "Start Date",
@@ -1023,6 +1030,7 @@
         "search_for_x_by_name": "Search for {{x}} by name",
         "search_items": "Search items",
         "search_items_ellipses": "Search items...",
+        "select_all": "Select All",
         "set_as_default_view": "Set as default view",
         "show": "Show",
         "show_all": "Show all",
@@ -1033,8 +1041,10 @@
         "shown": "Shown",
         "sort_by": "Sort by",
         "squadron_leader": "Squadron Leader",
+        "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "toggle_layout": "Toggle layout",
         "uncheck_all": "Uncheck all",
+        "unselect_all": "Unselect All",
         "view_options": "View Options",
         "viewing_stats_for_x": "Viewing stats for {{x}}",
         "win": "Win",
@@ -1128,6 +1138,10 @@
             "description": "Overview of all items in the game.",
             "title": "All Items"
         },
+        "farm_table": {
+            "description": "Breakdown of farmable components with sources.",
+            "title": "Farm Table"
+        },
         "owned_items": {
             "description": "Overview of all items owned\n(and also needed) by the player.",
             "title": "Owned Items"
@@ -1171,12 +1185,14 @@
         "craft_for_chrons": "Craft it for {{cost}} using this recipe",
         "current_demands": "Current demands",
         "equippable_by": "Equippable by: {{crew}}",
+        "equippable_by_n_crew": "Equippable by {{n}} crew.",
         "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
         "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
         "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
         "faction_only": "Faction Only",
         "is_used_to_build": "Is used to build these",
         "item_sources": "Item sources",
+        "n_farmable": "{{n}} farmable",
         "n_needed": "{{n}} needed",
         "n_owned": "{{n}} owned",
         "n_rewarded": "{{n}} rewarded",
@@ -1332,6 +1348,7 @@
         "long": {
             "Achievement": "Achievement",
             "BossBattle": "Captain's Bridge",
+            "Campaign": "Campaign",
             "Collection": "Collection Milestone",
             "Continuum": "Continuum",
             "Event": "Event",
@@ -1344,14 +1361,17 @@
             "Launch": "Game Launch",
             "Mega": "Recurring Mega",
             "Missions": "Main Board Mission",
+            "Mixed Behold": "Mixed Behold",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Giveaway",
+            "Six Pack": "Six Pack",
             "Voyage": "Voyage Exclusive",
             "WebStore": "Web Store"
         },
         "short": {
             "Achievement": "Achievement",
             "BossBattle": "Bridge",
+            "Campaign": "Campaign",
             "Collection": "Collection",
             "Continuum": "Continuum",
             "Event": "Event",
@@ -1364,8 +1384,10 @@
             "Launch": "Launch",
             "Mega": "Mega",
             "Missions": "Missions",
+            "Mixed Behold": "Mixed Behold",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Giveaway",
+            "Six Pack": "Six Pack",
             "Voyage": "Voyage",
             "WebStore": "Web Store"
         }
@@ -1571,6 +1593,10 @@
         "moonshot": "Moonshot",
         "potential_maximum": "Potential maximum",
         "standard": "Standard"
+    },
+    "ranking_tools": {
+        "current_weighting": "Current Weighting",
+        "show_weighting_details": "Show weighting details"
     },
     "retrieval": {
         "allow_unowned": "Allow unowned crew",
@@ -2110,6 +2136,7 @@
             "first_appearance": "First appearance",
             "first_crew": "Oldest crew",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Highest DataScore",
             "inaugural_crew": "Inaugural crew",
             "latest_crew": "Latest crew",
             "total_crew": "Total crew",
@@ -2122,6 +2149,7 @@
             "potential_collection_score_n": "Potential Collection Score: {{n}}",
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
             "show_hidden": "Show hidden traits",
+            "show_series": "Show series traits",
             "show_variant_traits": "Show crew variant traits",
             "show_visible": "Show visible traits"
         }
@@ -2332,6 +2360,13 @@
         },
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
+            "enable_remote_tracking": "Enable remote tracking",
+            "loot_crew": {
+                "columns": {
+                    "voyages": "{{base.voyages}}"
+                },
+                "title": "Loot Crew"
+            },
             "menu": {
                 "crew": "Crew",
                 "manage": "Manage History",
@@ -2339,7 +2374,9 @@
             },
             "moved": "The Voyage History tool has moved to the {{link}}. Please update your bookmarks as needed.",
             "not_yet": "You don't have any voyage history yet. Start tracking voyages from the crew calculator.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Remote tracking",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "Are you sure you wish to delete this voyage?"
         },
         "import": {
             "click_here": "Click here to upload your data",
@@ -2478,6 +2515,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Add history from device",
             "manage_placeholder": "Remote sync and other history management options are in development.",
             "options": {
                 "revival": {

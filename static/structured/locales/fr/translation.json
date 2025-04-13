@@ -42,6 +42,7 @@
         "date": "Date",
         "event_crew": "Équipiers d'événement",
         "event_ships": "Vaisseaux événementiels",
+        "expiration": "Expiration",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",
@@ -513,14 +514,18 @@
     "event_planner": {
         "heading": "Trouvez les meilleurs équipiers à utiliser lors d'un événement",
         "hide_duplicate_pairs": "Masquer les paires en double",
+        "prefer_high_bonus": "Préfère un bonus élevé",
         "prospect_description": "Ajoutez un équipier potentiel (ou un équipier partagé potentiel) pour voir comment ils s'intègrent dans votre liste existante pour cet événement.",
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
         "skill_matrix_heading": "Cette matrice montre vos meilleurs équipiers pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres équipiers possédant cette combinaison de compétences.",
+        "specialist_missions": "Missions spécialisées",
+        "staff_selected": "Équiper les sélectionnés",
         "table": {
             "columns": {
                 "best": "Meilleur",
                 "bonus": "Prime",
+                "completion_cost": "Coût d'achèvement instantané",
                 "crew": "Équipage",
                 "pair": "Paire"
             },
@@ -547,6 +552,7 @@
     },
     "event_type": {
         "expedition": "Expédition",
+        "galaxy": "Spécialiste",
         "gather": "Galaxie",
         "shuttles": "Faction",
         "skirmish": "Escarmouche",
@@ -915,6 +921,7 @@
         "colon": " : ",
         "completed": "Completed",
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
+        "cost": "Coût",
         "create": "Créer",
         "date_end": "Date de fin",
         "date_start": "Date de début",
@@ -1033,6 +1040,7 @@
         "search_for_x_by_name": "Rechercher {{x}} par nom",
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
+        "select_all": "Tout sélectionner",
         "set_as_default_view": "Définir comme vue par défaut",
         "show": "Montre",
         "show_all": "Tout afficher",
@@ -1043,8 +1051,10 @@
         "shown": "Affiché",
         "sort_by": "Trier par",
         "squadron_leader": "Chef d'escadron",
+        "supply_kit_active_n": "Kit de fournitures actif ({{n}} % de réduction)",
         "toggle_layout": "Basculer la mise en page",
         "uncheck_all": "Décochez tout",
+        "unselect_all": "Tout désélectionner",
         "view_options": "Voir les options",
         "viewing_stats_for_x": "Affichage des statistiques pour {{x}}",
         "win": "Gagner",
@@ -1138,6 +1148,10 @@
             "description": "Aperçu de tous les articles du jeu.",
             "title": "Tous les articles"
         },
+        "farm_table": {
+            "description": "Répartition des composants cultivables avec sources.",
+            "title": "Tableau des objets cultivables"
+        },
         "owned_items": {
             "description": "Aperçu de tous les articles possédés\n(et également nécessaires) par le joueur.",
             "title": "Articles possédés"
@@ -1183,12 +1197,14 @@
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
         "equippable_by": "Équipable par : {{crew}}",
+        "equippable_by_n_crew": "Équipable par {{n}} équipiers.",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipier {{rarity}}.",
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipier {{rarity}} avec les traits suivants : {{traits}}",
         "equippable_by_traits": "Peut être équipé par les équipiers avec les traits suivantes : {{traits}}",
         "faction_only": "Factions uniquement",
         "is_used_to_build": "Est utilisé pour construire ces",
         "item_sources": "Sources d'article",
+        "n_farmable": "{{n}} cultivable",
         "n_needed": "{{n}} nécessaires",
         "n_owned": "{{n}} possédée",
         "n_rewarded": "{{n}} récompensé",
@@ -1344,6 +1360,7 @@
         "long": {
             "Achievement": "Réalisation",
             "BossBattle": "Pont du Capitaine",
+            "Campaign": "Campagne",
             "Collection": "Étape des Collections",
             "Continuum": "Continuum",
             "Event": "Événement",
@@ -1356,14 +1373,17 @@
             "Launch": "Lancement du jeu",
             "Mega": "Méga Récurrent",
             "Missions": "Mission du Plateau Principal",
+            "Mixed Behold": "Choix mélangé",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Concours",
+            "Six Pack": "Pack de six",
             "Voyage": "Voyage Exclusif",
             "WebStore": "Magasin en ligne"
         },
         "short": {
             "Achievement": "Réalisation",
             "BossBattle": "Pont",
+            "Campaign": "Campagne",
             "Collection": "Collection",
             "Continuum": "Continuum",
             "Event": "Événement",
@@ -1376,8 +1396,10 @@
             "Launch": "Lancement",
             "Mega": "Méga",
             "Missions": "Missions",
+            "Mixed Behold": "Choix mélangé",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Concours",
+            "Six Pack": "Pack de six",
             "Voyage": "Voyage",
             "WebStore": "Magasin"
         }
@@ -1583,6 +1605,10 @@
         "moonshot": "Shot de Lune",
         "potential_maximum": "Potentiel maximum",
         "standard": "Standard"
+    },
+    "ranking_tools": {
+        "current_weighting": "Pondération actuelle",
+        "show_weighting_details": "Afficher les détails de pondération"
     },
     "retrieval": {
         "allow_unowned": "Autoriser l'équipage sans propriétaire",
@@ -2122,6 +2148,7 @@
             "first_appearance": "Première apparition",
             "first_crew": "Équipier le plus âgé",
             "hidden": "{{global.hidden}}",
+            "highest_datascore": "Le plus haut DataScore",
             "inaugural_crew": "Equipier inaugural",
             "latest_crew": "Dernier équipier",
             "total_crew": "Équipiers totals",
@@ -2134,6 +2161,7 @@
             "potential_collection_score_n": "Score de collecte potentiel : {{n}}",
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",
             "show_hidden": "Afficher les traits cachés",
+            "show_series": "Afficher les caractéristiques de la série",
             "show_variant_traits": "Afficher les caractéristiques des variantes d'équipage",
             "show_visible": "Afficher les traits visibles"
         }
@@ -2344,6 +2372,13 @@
         },
         "history": {
             "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
+            "enable_remote_tracking": "Activer le suivi à distance",
+            "loot_crew": {
+                "columns": {
+                    "voyages": "{{base.voyages}}"
+                },
+                "title": "Équipiers du butin"
+            },
             "menu": {
                 "crew": "Équipiers",
                 "manage": "Gérer l'historique",
@@ -2351,7 +2386,9 @@
             },
             "moved": "L'outil Historique des voyages a été déplacé vers le {{link}}. Veuillez mettre à jour vos favoris si nécessaire.",
             "not_yet": "Vous n'avez pas encore d'historique de voyage. Commencez à suivre les voyages à partir du calculateur d'équipage.",
-            "title": "{{menu.tools.voyage_history}}"
+            "remote_tracking": "Suivi à distance",
+            "title": "{{menu.tools.voyage_history}}",
+            "warn_delete": "Êtes-vous sûr de vouloir supprimer ce voyage ?"
         },
         "import": {
             "click_here": "Cliquez ici pour télécharger vos données",
@@ -2490,6 +2527,7 @@
                 "secondary": "{{base.secondary}}",
                 "ship_trait": "{{base.ship_trait}}"
             },
+            "import_history": "Ajouter l'historique de l'appareil",
             "manage_placeholder": "La synchronisation à distance et d'autres options de gestion de l'historique sont en cours de développement.",
             "options": {
                 "revival": {
