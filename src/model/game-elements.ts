@@ -197,3 +197,16 @@ export interface MarkdownRemark {
   }
 }
 
+export interface PortalLogEntry {
+    portal_batch_id: number,
+    symbol: string,
+    date: Date
+}
+
+export interface PortalReport {
+    name: string;
+    date?: Date;
+    rarity: number;
+}
+
+

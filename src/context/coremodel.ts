@@ -2,7 +2,7 @@ import { ContinuumMission } from "../model/continuum";
 import { CrewMember, CurrentWeighting, QuipmentScores } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { EventInstance, EventLeaderboard } from "../model/events";
-import { Collection, KeystoneBase, Polestar, Constellation } from "../model/game-elements";
+import { Collection, KeystoneBase, Polestar, Constellation, PortalLogEntry } from "../model/game-elements";
 import { Gauntlet } from "../model/gauntlets";
 import { Mission } from "../model/missions";
 import { ObjectiveEvent } from "../model/player";
@@ -31,6 +31,7 @@ export interface ICoreData {
 	missions: Mission[];
 	missionsfull: Mission[];
 	objective_events: ObjectiveEvent[];
+	portal_log: PortalLogEntry[];
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	topQuipmentScores: QuipmentScores[];

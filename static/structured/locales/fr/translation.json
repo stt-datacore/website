@@ -450,6 +450,7 @@
             "title": "Équipage potentiel"
         },
         "quipment": "Afficher les rangs des Quipements",
+        "scoring": "Afficher le classement et la notation",
         "ship": "Afficher les capacités du vaisseau",
         "view_big_book": "Voir {{crew}} sur Big Book",
         "voyage": "Afficher les rangs des voyages"
@@ -460,6 +461,7 @@
     },
     "duration": {
         "all_time": "Tout le temps",
+        "custom_date": "Date personnalisée",
         "n_d": "{{days}} j",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} jour",
@@ -1022,6 +1024,7 @@
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
+        "portal_update": "Mise à jour du portail",
         "presets": "Prédéfinies",
         "quarter_short": "T",
         "quest": "Quête",
@@ -1568,6 +1571,7 @@
             "am_seating": "Sièges antimatière",
             "collections": "Collections améliorant les statistiques",
             "crit": "Critique élevée",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
             "gauntlet_plus": "Gantelet+",
             "main_cast": "Casting principal",

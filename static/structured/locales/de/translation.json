@@ -442,6 +442,7 @@
             "title": "Potenzielle Crew"
         },
         "quipment": "Rüstzeug anzeigen",
+        "scoring": "Rangliste und Punktestand anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
@@ -452,6 +453,7 @@
     },
     "duration": {
         "all_time": "Alle Zeiten",
+        "custom_date": "Benutzerdefiniertes Datum",
         "n_d": "{{days}} T",
         "n_d_compact": "{{days}}T",
         "n_day": "{{days}} Tag",
@@ -1012,6 +1014,7 @@
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
+        "portal_update": "Zeitportal-Update",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1556,6 +1559,7 @@
             "am_seating": "Antimaterie-Sitze",
             "collections": "Stat-Boosting-Sammlungen",
             "crit": "Erhöhte Krit",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
             "gauntlet_plus": "Herausforderung+",
             "main_cast": "Hauptbesetzung",

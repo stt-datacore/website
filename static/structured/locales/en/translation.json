@@ -442,6 +442,7 @@
             "title": "Prospective Crew"
         },
         "quipment": "Show quipment scores",
+        "scoring": "Show ranking and scoring",
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
@@ -452,6 +453,7 @@
     },
     "duration": {
         "all_time": "All Time",
+        "custom_date": "Custom Date",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} day",
@@ -1012,6 +1014,7 @@
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
+        "portal_update": "Portal Update",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1556,6 +1559,7 @@
             "am_seating": "Antimatter Seats",
             "collections": "Stat-Boosting Collections",
             "crit": "Elevated Crit",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
             "main_cast": "Main Cast",

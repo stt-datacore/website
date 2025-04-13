@@ -1,5 +1,5 @@
 import { CrewMember } from '../model/crew';
-import { AvatarIcon } from '../model/game-elements';
+import { AvatarIcon, PortalLogEntry as PortalLogEntry, PortalReport } from '../model/game-elements';
 import { PlayerCrew, TranslateMethod } from '../model/player';
 import { shortToSkill, skillToShort } from './crewutils';
 
@@ -465,4 +465,33 @@ export async function loadAndScaleImage(url: string, scaleFactor: number) {
 		};
 		img.src = url;
 	});
+}
+
+export function getPortalLog(log: PortalLogEntry[], crew: CrewMember[], n_updates: number) {
+    const c = log.length;
+	let batch = [] as PortalLogEntry[];
+	const update = [] as PortalReport[];
+	let updcnt = 0;
+
+	for (let i = c - 1; i >= 0; i--) {
+        let fbatch = log.filter(ff => ff.portal_batch_id === log[i].portal_batch_id);
+        batch = batch.concat(fbatch);
+        if (fbatch.length > 2) {
+			updcnt++;
+			if (updcnt >= n_updates) break;
+        }
+    }
+
+    for (let cp of batch) {
+        let c = crew.find(cc => cc.symbol === cp.symbol);
+        if (c) {
+            update.push({
+                name: c.name,
+                rarity: c.max_rarity,
+                date: cp.date ? new Date(cp.date) : undefined
+            });
+        }
+    }
+
+    return update.sort((a, b) => b.rarity - a.rarity || a.name.localeCompare(b.name));
 }

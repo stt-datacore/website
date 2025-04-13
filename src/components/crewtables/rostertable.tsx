@@ -275,6 +275,13 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
 		},
 		{
+			id: 'dc_ranks',
+			available: true,
+			optionText: t('crew_views.scoring'),
+			tableConfig: getDataCoreRanksTableConfig(t),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
+		},
+		{
 			id: 'g_ranks',
 			available: true,
 			optionText: t('crew_views.gauntlet'),
@@ -293,26 +300,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
-		},
-		{
-			id: 'dc_ranks',
-			available: true,
-			optionText: t('rank_names.scoring'),
-			tableConfig: getDataCoreRanksTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
-		},
-		{
-			id: 'qp_score',
-			available: true,
-			optionText: t('crew_views.quipment'),
-			tableConfig: getQuipmentTableConfig(t, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
-			renderTableCells:
-				(crew: IRosterCrew) =>
-					<QuipmentScoreCells
-						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
-						excludeSkills={false}
-						top={top[crew.max_rarity - 1]}
-						crew={crew} />
 		},
 		{
 			id: 'qp_best',
@@ -409,6 +396,19 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				/>,
 			tableConfig: getCrewUtilityTableConfig(t, showBase),
 			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
+		},
+		{
+			id: 'qp_score',
+			available: true,
+			optionText: t('crew_views.quipment'),
+			tableConfig: getQuipmentTableConfig(t, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
+			renderTableCells:
+				(crew: IRosterCrew) =>
+					<QuipmentScoreCells
+						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
+						excludeSkills={false}
+						top={top[crew.max_rarity - 1]}
+						crew={crew} />
 		},
 	] as ITableView[];
 

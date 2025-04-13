@@ -3,7 +3,7 @@ import { Gauntlet } from '../model/gauntlets';
 import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { Ship, Schematics, BattleStations, ReferenceShip } from '../model/ship';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { Collection, Constellation, KeystoneBase, Polestar, POST_BIGBOOK_EPOCH } from '../model/game-elements';
+import { Collection, Constellation, KeystoneBase, Polestar, PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { Mission } from '../model/missions';
 import { Icon } from 'semantic-ui-react';
@@ -43,6 +43,7 @@ export type ValidDemands =
 	'missions' |
 	'missionsfull' |
 	'objective_events' |
+	'portal_log' |
 	'quests' |
 	'ship_schematics' |
 	'skill_bufs';
@@ -82,6 +83,7 @@ const defaultData = {
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
 	objective_events: [] as ObjectiveEvent[],
+	portal_log: [] as PortalLogEntry[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	topQuipmentScores: [] as QuipmentScores[],
@@ -148,6 +150,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'missions',
 			'missionsfull',
 			'objective_events',
+			'portal_log',
 			'quests',
 			'ship_schematics',
 			'skill_bufs',
@@ -212,6 +215,11 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'all_ships':
 						newData.all_ships = processAllShips(result.json);
 						break;
+					case 'portal_log':
+						newData.portal_log = result.json;
+						newData.portal_log?.forEach(log => log.date = new Date(log.date));
+						break;
+
 					default:
 						newData[result.demand] = result.json;
 						break;
