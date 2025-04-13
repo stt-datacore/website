@@ -13,7 +13,7 @@ import { Missions } from './missions';
 import { Assignments } from './assignments';
 import { getSkillSetId } from './utils';
 import { isQuipped } from '../../utils/crewutils';
-import { CrewExcluder } from '../voyagecalculator/crewexcluder';
+import { CrewExcluder } from '../excluder/crewexcluder';
 import { PlayerCrew } from '../../model/player';
 
 export const Calculator = () => {

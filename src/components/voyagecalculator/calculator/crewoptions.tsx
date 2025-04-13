@@ -9,7 +9,7 @@ import { calcQLots } from "../../../utils/equipment";
 import { getItemWithBonus, ItemWithBonus } from "../../../utils/itemutils";
 import { OptionsPanelFlexColumn } from "../../stats/utils";
 import { CalculatorContext } from "../context";
-import { CrewExcluder } from "../crewexcluder";
+import { CrewExcluder } from "../../excluder/crewexcluder";
 import { CrewThemes } from "../crewthemes";
 import { QuipmentProspectsOptions } from "../../qpconfig/options";
 import { UserPrefsContext } from "./userprefs";

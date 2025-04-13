@@ -2,16 +2,15 @@ import React from 'react';
 import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps } from 'semantic-ui-react';
 
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
+import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../base/optionsmodal_base';
 
-import { CalculatorContext } from './context';
-import CrewPicker from '../../components/crewpicker';
+import CrewPicker from '../crewpicker';
 import { IEventData, IEventScoredCrew } from '../eventplanner/model';
 import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
-import { QuipmentPopover } from './quipment/quipmentpopover';
+import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
 import { PlayerCrew } from '../../model/player';
 
 interface ISelectOption {
