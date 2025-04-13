@@ -114,12 +114,15 @@ export const Calculator = () => {
 							checked={considerFrozen}
 							onChange={(e, { checked }) => setConsiderFrozen(checked)}
 						/>
-						<Form.Field
+
+						{/* When the crew excluder is showing, this is redundant */}
+						{!shuttlersContext?.eventData && <Form.Field
 							control={Checkbox}
 							label={t('consider_crew.exclude_quipped')}
 							checked={excludeQuipped}
 							onChange={(e, { checked }) => setExcludeQuipped(checked)}
-						/>
+						/>}
+
 						{canBorrow && (
 							<Form.Field
 								control={Checkbox}
@@ -203,7 +206,7 @@ export const Calculator = () => {
 		if ((!canBorrow || !considerShared) && crew.shared)
 			return false;
 
-		if (excludeQuipped && isQuipped(crew))
+		if (excludeQuipped && !shuttlersContext?.eventData && isQuipped(crew))
 			return false;
 
 		return true;
