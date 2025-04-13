@@ -1,17 +1,18 @@
 import React from 'react';
 import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps } from 'semantic-ui-react';
 
-import { IVoyageCrew } from '../../model/voyage';
+import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
 
 import { CalculatorContext } from './context';
 import CrewPicker from '../../components/crewpicker';
-import { IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest } from '../../utils/events';
+import { IEventData, IEventScoredCrew } from '../eventplanner/model';
+import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
 import { GlobalContext } from '../../context/globalcontext';
 import { oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 import { QuipmentPopover } from './quipment/quipmentpopover';
+import { PlayerCrew } from '../../model/player';
 
 interface ISelectOption {
 	key: string;
@@ -20,19 +21,33 @@ interface ISelectOption {
 };
 
 type CrewExcluderProps = {
-	rosterCrew: IVoyageCrew[];
-	preExcludedCrew: IVoyageCrew[];
+	rosterCrew: PlayerCrew[];
+	preExcludedCrew: PlayerCrew[];
 	excludedCrewIds: number[];
 	considerFrozen?: boolean;
+	voyageConfig?: IVoyageInputConfig;
+	events?: IEventData[];
 	updateExclusions: (crewIds: number[]) => void;
 };
 
 type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
-	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
-	const { voyageConfig, events } = calculatorContext;
+
+	const { events: inputEvents, voyageConfig } = props;
+	const { ephemeral } = globalContext.player;
+
+	const [eventData, setEventData] = React.useState<IEventData[] | undefined>(undefined);
+
+	const events = React.useMemo(() => {
+		return inputEvents?.length ? inputEvents : (eventData ?? []);
+	}, [inputEvents, eventData]);
+
+	React.useEffect(() => {
+		if (!inputEvents?.length) getEvents();
+	}, [inputEvents]);
+
 	const { excludedCrewIds, updateExclusions, considerFrozen } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
@@ -51,7 +66,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		let phase: string = '';
 		events.forEach(gameEvent => {
 			if (gameEvent && gameEvent.seconds_to_end > 0 && gameEvent.seconds_to_start < 86400) {
-				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig.voyage_type !== 'encounter')) {
+				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig?.voyage_type !== 'encounter')) {
 					activeEvent = gameEvent.symbol;
 
 					let date = (new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' })));
@@ -74,7 +89,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					}
 					else if (phase === 'voyage') {
 						// Don't auto-exclude event crew if seeking recommendations for active voyage event
-						if (voyageConfig.voyage_type === 'encounter') {
+						if (voyageConfig?.voyage_type === 'encounter') {
 							activeEvent = '';
 							activeBonus = '';
 						}
@@ -251,6 +266,24 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		excludedCrewIds.splice(index, 1);
 		updateExclusions([...excludedCrewIds]);
 	}
+
+	function getEvents(): void {
+		// Get event data from recently uploaded playerData
+		if (ephemeral?.events) {
+			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew))
+				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
+				.filter(ev => ev.seconds_to_end > 0)
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
+			setEventData([...currentEvents]);
+		}
+		// Otherwise guess event from autosynced events
+		else {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.all_ships.map(m => ({...m, id: m.archetype_id, levels: undefined }))).then(recentEvents => {
+				setEventData([...recentEvents]);
+			});
+		}
+	}
+
 };
 
 type CrewExcluderModalProps = {

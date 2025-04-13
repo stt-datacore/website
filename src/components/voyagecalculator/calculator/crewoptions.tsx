@@ -124,6 +124,8 @@ export const CrewOptions = (props: CrewOptionsProps) => {
 				</Grid.Column>
 				<Grid.Column>
 					<CrewExcluder
+						voyageConfig={voyageConfig}
+						events={calculatorContext.events}
 						considerFrozen={considerFrozen}
 						rosterCrew={calculatorContext.crew}
 						preExcludedCrew={preExcludedCrew}
