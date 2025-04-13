@@ -1348,6 +1348,7 @@
         "long": {
             "Achievement": "Achievement",
             "BossBattle": "Captain's Bridge",
+            "Campaign": "Campaign",
             "Collection": "Collection Milestone",
             "Continuum": "Continuum",
             "Event": "Event",
@@ -1360,14 +1361,17 @@
             "Launch": "Game Launch",
             "Mega": "Recurring Mega",
             "Missions": "Main Board Mission",
+            "Mixed Behold": "Mixed Behold",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Giveaway",
+            "Six Pack": "Six Pack",
             "Voyage": "Voyage Exclusive",
             "WebStore": "Web Store"
         },
         "short": {
             "Achievement": "Achievement",
             "BossBattle": "Bridge",
+            "Campaign": "Campaign",
             "Collection": "Collection",
             "Continuum": "Continuum",
             "Event": "Event",
@@ -1380,8 +1384,10 @@
             "Launch": "Launch",
             "Mega": "Mega",
             "Missions": "Missions",
+            "Mixed Behold": "Mixed Behold",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Giveaway",
+            "Six Pack": "Six Pack",
             "Voyage": "Voyage",
             "WebStore": "Web Store"
         }

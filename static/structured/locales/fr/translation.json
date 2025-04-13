@@ -1360,6 +1360,7 @@
         "long": {
             "Achievement": "Réalisation",
             "BossBattle": "Pont du Capitaine",
+            "Campaign": "Campagne",
             "Collection": "Étape des Collections",
             "Continuum": "Continuum",
             "Event": "Événement",
@@ -1372,14 +1373,17 @@
             "Launch": "Lancement du jeu",
             "Mega": "Méga Récurrent",
             "Missions": "Mission du Plateau Principal",
+            "Mixed Behold": "Choix mélangé",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Concours",
+            "Six Pack": "Pack de six",
             "Voyage": "Voyage Exclusif",
             "WebStore": "Magasin en ligne"
         },
         "short": {
             "Achievement": "Réalisation",
             "BossBattle": "Pont",
+            "Campaign": "Campagne",
             "Collection": "Collection",
             "Continuum": "Continuum",
             "Event": "Événement",
@@ -1392,8 +1396,10 @@
             "Launch": "Lancement",
             "Mega": "Méga",
             "Missions": "Missions",
+            "Mixed Behold": "Choix mélangé",
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Concours",
+            "Six Pack": "Pack de six",
             "Voyage": "Voyage",
             "WebStore": "Magasin"
         }

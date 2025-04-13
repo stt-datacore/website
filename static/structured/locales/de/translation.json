@@ -1348,6 +1348,7 @@
         "long": {
             "Achievement": "Leistung",
             "BossBattle": "Kapitänsbrücke",
+            "Campaign": "Kampagne",
             "Collection": "Sammlungs-Meilenstein",
             "Continuum": "Kontinuum",
             "Event": "Ereignis",
@@ -1360,14 +1361,17 @@
             "Launch": "Spielstart",
             "Mega": "Wiederkehrende Mega",
             "Missions": "Hauptplatinen-Mission",
+            "Mixed Behold": "Gemischter Anblick",
             "Pack": "Paket",
             "Pack/Giveaway": "Paket/Giveaway",
+            "Six Pack": "Sixpack",
             "Voyage": "Reise Exklusiv",
             "WebStore": "Web Store"
         },
         "short": {
             "Achievement": "Leistung",
             "BossBattle": "Brücke",
+            "Campaign": "Kampagne",
             "Collection": "Sammlung",
             "Continuum": "Kontinuum",
             "Event": "Ereignis",
@@ -1380,8 +1384,10 @@
             "Launch": "Spielstart",
             "Mega": "Mega",
             "Missions": "Missionen",
+            "Mixed Behold": "Gemischter Anblick",
             "Pack": "Paket",
             "Pack/Giveaway": "Paket/Giveaway",
+            "Six Pack": "Sixpack",
             "Voyage": "Reise",
             "WebStore": "Web Store"
         }

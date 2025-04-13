@@ -1358,6 +1358,7 @@
         "long": {
             "Achievement": "Logro",
             "BossBattle": "Puente del Capitán",
+            "Campaign": "Campaña",
             "Collection": "Hito de Colecciones",
             "Continuum": "Continuo",
             "Event": "Evento",
@@ -1370,14 +1371,17 @@
             "Launch": "Lanzamiento del juego",
             "Mega": "Mega Recurrente",
             "Missions": "Misión del Tablero Principal",
+            "Mixed Behold": "Reconocimiento mixto",
             "Pack": "Paquete",
             "Pack/Giveaway": "Paquete/Sorteo",
+            "Six Pack": "Paquete de seis",
             "Voyage": "Viaje Exclusiva",
             "WebStore": "Tienda Virtual"
         },
         "short": {
             "Achievement": "Logro",
             "BossBattle": "Puente",
+            "Campaign": "Campaña",
             "Collection": "Colecciones",
             "Continuum": "Continuum",
             "Event": "Evento",
@@ -1390,8 +1394,10 @@
             "Launch": "Lanzamiento",
             "Mega": "Mega",
             "Missions": "Misión",
+            "Mixed Behold": "Reconocimiento mixto",
             "Pack": "Paquete",
             "Pack/Giveaway": "Paquete/Sorteo",
+            "Six Pack": "Paquete de seis",
             "Voyage": "Viaje",
             "WebStore": "Tienda Virtual"
         }
