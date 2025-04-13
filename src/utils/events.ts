@@ -318,7 +318,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 			}
 			// Otherwise search for matching trait
 			else {
-				const testTrait = testName.replace(/[\.\s'’]/g, '').toLowerCase();
+				const testTrait = testName.replace(/[\.\s'’]/g, '').toLowerCase().replace('physician', 'doctor');
 				const perfectTraits = allCrew.filter(crew => crew.traits.includes(testTrait) || crew.traits_hidden.includes(testTrait));
 				if (perfectTraits.length > 0) {
 					perfectTraits.forEach(crew => {
