@@ -377,7 +377,11 @@ export const CombosModal = (props: CombosModalProps) => {
 		// let x = 0;
 
 		const groupKey = (group: IPolestar[][]) => {
-			return group.map(ps => ps.map(pd => pd.symbol).sort().join(",")).sort().join(";");
+			return group.map(ps => ps.map(pd => pd.name).sort().join(",")).sort().join(";");
+		}
+
+		const comboKey = (ps: IPolestar[]) => {
+			return ps.map(pd => pd.name).sort().join(",");
 		}
 
 		const inventory = (check: IPolestar[]) => {
@@ -490,11 +494,11 @@ export const CombosModal = (props: CombosModalProps) => {
 
 		Object.keys(groupcalc).forEach(group => {
 			groupcalc[group].forEach((group) => {
-				group.sort((a, b) => a.length - b.length);
+				group.forEach((combo) => combo.sort((a, b) => a.name.localeCompare(b.name)));
+				group.sort((a, b) => a.length - b.length || comboKey(a).localeCompare(comboKey(b)));
 			});
-
 			groupcalc[group].sort((a, b) => {
-				return a.map(l => l.length).reduce((p, n) => p + n) - b.map(l => l.length).reduce((p, n) => p + n)
+				return a.map(l => l.length).reduce((p, n) => p + n) - b.map(l => l.length).reduce((p, n) => p + n) || groupKey(a).localeCompare(groupKey(b));
 			});
 			const idx_map = groupcalc[group].map(pscombos => pscombos.map(test => combos.findIndex(cbin => cbin == test)));
 			result[`x${group}`] = idx_map;
