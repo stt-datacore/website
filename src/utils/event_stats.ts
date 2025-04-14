@@ -2,6 +2,7 @@ import { Reward } from "../model/player";
 import { CrewMember } from "../model/crew";
 import { EventLeaderboard, EventInstance } from "../model/events";
 import { GameEvent } from "../model/player";
+import { getEventData } from "./events";
 
 export interface EventStats {
     instance_id: number;
@@ -10,6 +11,9 @@ export interface EventStats {
     avg: number;
     max: number;
     median: number;
+    featured_crew: string[];
+    featured_traits: string[];
+    bonus_traits: string[];
     crew: string;
     crew_name: string;
     event_type: string;
@@ -39,6 +43,8 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
             tleg = tleg.filter((f, idx) => tleg.findIndex(f2 => f === f2) === idx).sort();
         }
 
+        const parsedData = getEventData(eventData, crew);
+
         const crewReward = crew.find(f => f.symbol === rankedReward.symbol)!;
         let filtered = lb.leaderboard.filter(f => f.rank <= 1500);
         if (!filtered.length) continue;
@@ -67,6 +73,10 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
             continue;
         }
 
+        let featured_crew = parsedData?.featured ?? [];
+        let featured_traits = (parsedData?.activeContent as any)?.featured_traits ?? [];
+        let bonus_traits = parsedData?.activeContent?.bonus_traits ?? [];
+
         stats.push({
             instance_id: event.instance_id,
             event_name: event.event_name,
@@ -74,6 +84,9 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
             min,
             max,
             median,
+            featured_crew,
+            featured_traits,
+            bonus_traits,
             crew: crewReward.symbol,
             crew_name: crewReward.name,
             event_type: contentType,
