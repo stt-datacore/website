@@ -36,7 +36,7 @@ export const ChartsView = (props: ChartsViewProps) => {
         { key: 'release_graph', value: 'release_graph', text: t('stat_trends.graphs.release_graph')},
         { key: 'skill_area', value: 'skill_area', text: t('stat_trends.graphs.skill_area')},
         { key: 'circle', value: 'circle', text: t('stat_trends.graphs.circle')},
-        //{ key: 'event_distributions', value: 'event_distributions', text: t('stat_trends.graphs.event_distributions')},
+        { key: 'event_distributions', value: 'event_distributions', text: t('stat_trends.graphs.event_distributions')},
         { key: 'experimental1', value: 'experimental1', text: t('global.experimental') + " #1"},
         // { key: 'experimental2', value: 'experimental2', text: t('global.experimental') + " #2"},
         // { key: 'experimental3', value: 'experimental3', text: t('global.experimental') + " #3"},

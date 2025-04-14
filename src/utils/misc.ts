@@ -101,34 +101,7 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
  * @returns
  */
 export function appelate(text: string) {
-	text = text.toLowerCase();
-	let curr: string = "";
-	let cpos = 0;
-
-	text = text.toLowerCase();
-
-	const match = new RegExp(/[A-Za-z0-9']/);
-
-	for (let ch of text) {
-		if (ch === ch.toUpperCase() && !curr.endsWith(" ")) {
-			curr += " ";
-			cpos = 0;
-		}
-		if (match.test(ch)) {
-			if (cpos++ === 0) {
-				curr += ch.toUpperCase();
-			}
-			else {
-				curr += ch.toLowerCase();
-			}
-		}
-		else {
-			cpos = 0;
-			curr += ch == '_' ? " " : ch;
-		}
-	}
-
-	return curr;
+	return text.split(" ").map(t => t.split("_")).flat().filter(t => t).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1).toLowerCase()}`).join(" ");
 }
 
 export function translatePseudocolumn(name: string, t: TranslateMethod) {
