@@ -279,6 +279,9 @@ export const AvatarView = (props: AvatarViewProps) => {
                     gen_item.rarity ??= 0;
                     gen_item.max_rarity = gen_item.rarity;
                 }
+                else if (!!props.item) {
+                    gen_item = {...props.item};
+                }
             }
             else {
                 gen_item = { ...gen_item };
@@ -308,7 +311,6 @@ export const AvatarView = (props: AvatarViewProps) => {
             if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
                 item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
-
             if (item && gen_item.rarity) item.rarity = gen_item.rarity;
             if (item && !src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
             gen_item = item;
