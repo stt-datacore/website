@@ -194,16 +194,19 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                 'voyage',
                 {
                     "field": 'crew',
-                    customMatch: (row: PlayerCrew, text) => {
-                        text = text.toLowerCase();
-                        return row.traits_named?.some(tn => tn.toLowerCase().includes(text))
-                            || row.name.includes(text)
-                            || row.short_name.includes(text)
-                            || !!row.name_english?.includes(text)
-                            || row.flavor.includes(text)
-                            || !!row.flavor_english?.includes(text)
-                            || row.traits.some(t => t.includes(text))
-                            || row.traits_hidden.some(t => t.includes(text))
+                    customMatch: (crew: PlayerCrew[], text) => {
+                        return crew.some(row => {
+                                text = text.toLowerCase();
+                                return row.traits_named?.some(tn => tn.toLowerCase().includes(text))
+                                    || row.name.includes(text)
+                                    || row.short_name.includes(text)
+                                    || !!row.name_english?.includes(text)
+                                    || row.flavor.includes(text)
+                                    || !!row.flavor_english?.includes(text)
+                                    || row.traits.some(t => t.includes(text))
+                                    || row.traits_hidden.some(t => t.includes(text))
+
+                            });
                         }
                 }
             ])
