@@ -6,6 +6,9 @@ import CONFIG from "../CONFIG";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CiteOptContext } from "./context";
 import { PlayerCrew } from "../../model/player";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { Filter } from "../../model/game-elements";
+import { omniSearchFilter } from "../../utils/omnisearch";
 
 
 
@@ -139,79 +142,136 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
         });
     });
 
+    const tableConfig = [
+        {
+            width: 1, column: 'voyage', title: t('global.name'),
+            pseudocolumns: ['voyage', 'maxEV'],
+            translatePseudocolumn: (field) => {
+                if (field === 'voyage') return t('global.name');
+                else if (field === 'maxEV') return t('cite_opt.columns.final_ev');
+            },
+            customCompare: (a: VoyageImprovement, b: VoyageImprovement, config) => {
+                if (config.field === 'maxEV') {
+                    if (a.voyage === currentVoyage) return 1;
+                    else if (b.voyage === currentVoyage) return -1;
+                    let r = a.maxEV - b.maxEV;
+                    if (!r) r = a.remainingEV - b.remainingEV;
+                    return r;
+                }
+                return a.voyage.localeCompare(b.voyage);
+            }
+        },
+        { width: 10, column: 'crew.length', title: t('base.crew') },
+    ] as ITableConfigRow[];
+
+    const sizeChoices = [1, 2, 5].map((n) => {
+        return {
+            key: "page" + n.toString(),
+            value: n,
+            text: n.toString()
+        }
+    });
+
     return (<div style={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "stretch"
     }}>
-        <Table striped>
-            {voyages.map((voyage, idx) => {
-                let sp = voyage.skills;
-                if (citeMode?.priSkills?.length) {
-                    if (!citeMode.priSkills.includes(sp[0])) return (<></>);
-                }
-                if (citeMode?.secSkills?.length) {
-                    if (!citeMode.secSkills.includes(sp[1])) return (<></>);
-                }
-
-                return (<Table.Row key={"voy" + idx}>
-                    <Table.Cell width={6} style={{ backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined, }}>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "100%",
-                            margin: "1em",
-                            textAlign: 'center'
-                        }}>
-                            {voyage.voyage === currentVoyage && <h3 style={{ marginBottom: 0 }}><u>{t('voyage.active_voyage')}</u></h3>}
-                            <h2 style={{ marginBottom: 0 }}>{voyage.voyage}</h2>
-                            <i style={{ margin: 0 }}>({ tfmt('cite_opt.max_final_ev_n', { n: <b>+{Math.ceil(voyage.maxEV)}</b> }) })</i>
-                            <i style={{ margin: 0 }}>({ tfmt('cite_opt.min_remaining_ev_n', { n: <b>+{Math.ceil(voyage.remainingEV)}</b> }) })</i>
-                        </div>
-                    </Table.Cell>
-                    <Table.Cell>
-                        <Grid doubling columns={3} textAlign='center'>
-                            {voyage.crew.filter(c => !!c).map((crew) => (
-                                <Grid.Column>
-                                <div style={{ margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                                    <AvatarView
-                                        mode='crew'
-                                        size={64}
-                                        targetGroup='citationTarget'
-                                        item={crew}
-                                    />
-                                    <b onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: crew.name })}
-                                        style={{
-                                            cursor: "pointer",
-                                            margin: "0.5em 0 0 0",
-                                            textDecoration: "underline"
-                                        }}
-                                        title={"Click to see only this crew member"}
-                                    >
-                                        {crew.name} ({crew.pickerId})
-                                    </b>
-                                    <i style={{ margin: "0" }} >
-                                        <span
-                                            title={"Click to see only voyages involving this crew member"}
-                                            style={{ cursor: "pointer", margin: "0", textDecoration: "underline" }}
-                                            onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
-                                        >{crew.voyagesImproved?.length} {t('base.voyages')}, </span>
-                                        {Math.ceil(crew.totalEVContribution ?? 0)} {t('cite_opt.total_ev')}
-                                    </i>
-                                </div>
-                                </Grid.Column>
-                            ))}
-                        </Grid>
-                    </Table.Cell>
-                </Table.Row>)
-            }
-            )}
-
-        </Table>
+        <SearchableTable
+            pagingOptions={sizeChoices}
+            defaultPaginationRows={5}
+            config={tableConfig}
+            data={voyages}
+            renderTableRow={renderTableRow}
+            filterRow={filterTableRow}
+            />
     </div>)
 
+    function filterTableRow(row: VoyageImprovement, filter: Filter[], filterType?: string) {
 
+        omniSearchFilter(row, filter, filterType,
+            [
+                'voyage',
+                {
+                    "field": 'crew',
+                    customMatch: (row: PlayerCrew, text) => {
+                        text = text.toLowerCase();
+                        return row.traits_named?.some(tn => tn.toLowerCase().includes(text))
+                            || row.name.includes(text)
+                            || row.short_name.includes(text)
+                            || !!row.name_english?.includes(text)
+                            || row.flavor.includes(text)
+                            || !!row.flavor_english?.includes(text)
+                            || row.traits.some(t => t.includes(text))
+                            || row.traits_hidden.some(t => t.includes(text))
+                        }
+                }
+            ])
+
+        return true;
+    }
+
+    function renderTableRow(voyage: VoyageImprovement, idx?: number) {
+        let sp = voyage.skills;
+        if (citeMode?.priSkills?.length) {
+            if (!citeMode.priSkills.includes(sp[0])) return (<></>);
+        }
+        if (citeMode?.secSkills?.length) {
+            if (!citeMode.secSkills.includes(sp[1])) return (<></>);
+        }
+
+        return (<Table.Row key={"voy" + idx}>
+            <Table.Cell width={6} style={{ backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined, }}>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    margin: "1em",
+                    textAlign: 'center'
+                }}>
+                    {voyage.voyage === currentVoyage && <h3 style={{ marginBottom: 0 }}><u>{t('voyage.active_voyage')}</u></h3>}
+                    <h2 style={{ marginBottom: 0 }}>{voyage.voyage}</h2>
+                    <i style={{ margin: 0 }}>({ tfmt('cite_opt.max_final_ev_n', { n: <b>+{Math.ceil(voyage.maxEV)}</b> }) })</i>
+                    <i style={{ margin: 0 }}>({ tfmt('cite_opt.min_remaining_ev_n', { n: <b>+{Math.ceil(voyage.remainingEV)}</b> }) })</i>
+                </div>
+            </Table.Cell>
+            <Table.Cell>
+                <Grid doubling columns={3} textAlign='center'>
+                    {voyage.crew.filter(c => !!c).map((crew) => (
+                        <Grid.Column>
+                        <div style={{ margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                            <AvatarView
+                                mode='crew'
+                                size={64}
+                                targetGroup='citationTarget'
+                                item={crew}
+                            />
+                            <b onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: crew.name })}
+                                style={{
+                                    cursor: "pointer",
+                                    margin: "0.5em 0 0 0",
+                                    textDecoration: "underline"
+                                }}
+                                title={"Click to see only this crew member"}
+                            >
+                                {crew.name} ({crew.pickerId})
+                            </b>
+                            <i style={{ margin: "0" }} >
+                                <span
+                                    title={"Click to see only voyages involving this crew member"}
+                                    style={{ cursor: "pointer", margin: "0", textDecoration: "underline" }}
+                                    onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
+                                >{crew.voyagesImproved?.length} {t('base.voyages')}, </span>
+                                {Math.ceil(crew.totalEVContribution ?? 0)} {t('cite_opt.total_ev')}
+                            </i>
+                        </div>
+                        </Grid.Column>
+                    ))}
+                </Grid>
+            </Table.Cell>
+        </Table.Row>)
+    }
 
 }
