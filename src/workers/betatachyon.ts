@@ -520,13 +520,15 @@ const BetaTachyon = {
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
 
                 // more gives weight
-                let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
+                //let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
+                let totalp = multConf.power * (crew.ranks.scores.voyage / 100);
 
                 // less gives weight
                 let effort = multConf.citeEffort * (1 - ((crew.max_rarity - crew.rarity) / crew.max_rarity));
 
                 // more gives weight
-                let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
+                //let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
+                let amscore = multConf.antimatter * (crew.ranks.scores.am_seating / 100);
 
                 // not in portal gives weight
                 let pscore = (acc[crew.symbol].in_portal ? 0 : multConf.portal);
@@ -555,7 +557,8 @@ const BetaTachyon = {
 
                     // less gives weight
                     dbrare = multConf.skillRare * (db.count / 100);
-                    skrare = trrare - dbrare;
+                    //skrare = trrare - dbrare;
+                    skrare = multConf.skillRare * (crew.ranks.scores.skill_rarity / 100)
                 }
 
                 // more gives weight
