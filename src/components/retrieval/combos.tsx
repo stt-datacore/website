@@ -426,7 +426,7 @@ export const CombosModal = (props: CombosModalProps) => {
 			const combocopy = [...combos];
 			combocopy.sort((a, b) => a.length - b.length);
 
-			getPermutations(combocopy, group, 5000n, true, undefined, (iter) => {
+			getPermutations(combocopy, group, 2000n, true, undefined, (iter) => {
 				let study = iter.map(c => getMaxBuilds(c));
 				let repeaters = study.flat();
 				let trials = [iter] as IPolestar[][][];
