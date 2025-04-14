@@ -175,7 +175,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                     }
 
                     const crew = cop;
-                    const crew_quipment_score = Math.round(((row.quipment_score ?? 0) / maxQuip) * 1000) / 10;
+                    const crew_quipment_score = row.ranks.scores.quipment;
                     const crew_sparsity = Math.round(((row.groupSparsity ?? 0)) * 1000) / 10;
                     const skp = engine === 'beta_tachyon_pulse' && !!crew ? printSkillOrder(crew).replace(/_skill/g, '') : 'no_order';
                     const sko = engine === 'beta_tachyon_pulse' && !!crew ? crew.skill_order : 'no_order';

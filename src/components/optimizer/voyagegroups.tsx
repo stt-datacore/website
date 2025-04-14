@@ -36,7 +36,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     if (voyageData?.voyage?.length) {
         let v = voyageData.voyage[0];
         let sk = [v.skills.primary_skill, v.skills.secondary_skill].map((t) => t.replace("_skill", "")).reduce((prev, curr) => prev + "/" + curr);
-        if (sk) currVoy = appelate(sk);
+        if (sk) currVoy = sk.split('/').map(t => t.trim()).map(t => `${t.slice(0,1).toUpperCase()}${t.slice(1).toLowerCase()}`).join('/');
     }
 
     const currentVoyage = currVoy;
@@ -92,6 +92,8 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     });
 
     voyages.sort((a, b) => {
+        a.voyage = a.voyage.split('/').map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/");
+        b.voyage = b.voyage.split('/').map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/");
 
         let ma = Math.max(...a.crew.map(ac => ac.totalEVContribution ?? 0));
         let mb = Math.max(...b.crew.map(bc => bc.totalEVContribution ?? 0));
@@ -128,7 +130,6 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
 
         return r;
     });
-
     voyages.forEach((voyage) => {
         voyage.crew.sort((a, b) => {
             if (a.totalEVContribution !== undefined && b.totalEVContribution !== undefined) {
@@ -140,9 +141,8 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
             else {
                 return a.name.localeCompare(b.name);
             }
-
-        })
-    })
+        });
+    });
 
     return (<div style={{
         display: "flex",
@@ -151,9 +151,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     }}>
         <Table striped>
             {voyages.map((voyage, idx) => {
-
                 let sp = voyage.voyage.split("/").map(s => s.toLowerCase().trim());
-
                 voyage.voyage = sp.map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/")
 
                 if (citeMode?.priSkills?.length) {
@@ -162,8 +160,6 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                 if (citeMode?.secSkills?.length) {
                     if (!citeMode.secSkills.includes(sp[1])) return (<></>);
                 }
-
-
 
                 return (<Table.Row key={"voy" + idx}>
                     <Table.Cell width={6} style={{ backgroundColor: voyage.voyage === currentVoyage ? 'green' : undefined, }}>
@@ -183,15 +179,15 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                         </div>
                     </Table.Cell>
                     <Table.Cell>
-
                         <Grid doubling columns={3} textAlign='center'>
                             {voyage.crew.filter(c => !!c).map((crew) => (
+                                <Grid.Column>
                                 <div style={{ margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                                     <AvatarView
                                         mode='crew'
                                         size={64}
                                         targetGroup='citationTarget'
-                                        symbol={crew.symbol}
+                                        item={crew}
                                     />
                                     <b onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: crew.name })}
                                         style={{
@@ -212,6 +208,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                                         {Math.ceil(crew.totalEVContribution ?? 0)} {t('cite_opt.total_ev')}
                                     </i>
                                 </div>
+                                </Grid.Column>
                             ))}
                         </Grid>
                     </Table.Cell>
