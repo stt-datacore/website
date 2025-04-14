@@ -511,7 +511,7 @@ const BetaTachyon = {
                 let gs = multConf.groupSparsity * (crew.groupSparsity ?? 0);
 
                 // more gives weight
-                let quip = multConf.quipment * ((crew.quipment_score ?? 0) / (maxquip ? maxquip : 1));
+                let quip = multConf.quipment * ((crew.ranks.scores.quipment ?? 0) / (maxquip ? maxquip : 1));
 
                 // less gives weight
                 let retrieval = crew.in_portal ? multConf.retrieval * (1 - (max/100)) : 0;
