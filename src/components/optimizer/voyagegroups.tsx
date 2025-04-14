@@ -74,8 +74,8 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
             for (let voyage of crew.voyagesImproved ?? []) {
                 if (!!(confine?.length) && !confine.includes(voyage)) continue;
 
-                let vname = appelate(voyage);
-                let currvoy = voyages.find((v) => v.voyage === vname);
+                let vname = voyage.replace(/ /g, '').toLowerCase();
+                let currvoy = voyages.find((v) => v.voyage.replace(/ /g, '').toLowerCase() === vname);
 
                 if (!currvoy) {
                     currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
