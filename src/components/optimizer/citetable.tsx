@@ -423,7 +423,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                 if (!r) r = a.rarity - b.rarity;
             }
             else if (sort === 'quipment_score') {
-                r = Math.ceil(a.quipment_score ?? 0) - Math.ceil(b.quipment_score ?? 0);
+                r = Math.ceil(a.ranks.scores.quipment ?? 0) - Math.ceil(b.ranks.scores.quipment ?? 0);
             }
             else if (sort === 'groupSparsity') {
                 r = (a.groupSparsity ?? 0) - (b.groupSparsity ?? 0);
