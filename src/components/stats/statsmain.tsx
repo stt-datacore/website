@@ -33,6 +33,11 @@ export const StatTrendsComponent = () => {
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [crewCount, setCrewCount] = React.useState(0);
     const [refresh, setRefresh] = React.useState(false);
+    const [hideFilters, setHideFilters] = React.useState(false);
+
+    React.useEffect(() => {
+        if (displayMode !== 'graphs' && hideFilters) setHideFilters(false);
+    }, [displayMode]);
 
     React.useEffect(() => {
         const filterDiffs = filterEpochDiffs(filterConfig, outerDiffs);
@@ -181,7 +186,7 @@ export const StatTrendsComponent = () => {
                     </Step>
                 </Step.Group>
 
-                {!['traits', 'items', 'portal_update'].includes(displayMode) && <React.Fragment>
+                {!['traits', 'items', 'portal_update'].includes(displayMode) && !hideFilters && <React.Fragment>
                     <StatsPrefsPanel />
                     {renderStatsInfo()}
                 </React.Fragment>}
@@ -189,7 +194,10 @@ export const StatTrendsComponent = () => {
                 {displayMode === 'crew' && <StatTrendsTable prefilteredDiffs={epochDiffs} />}
                 {displayMode === 'traits' && <TraitStatsTable />}
                 {displayMode === 'items' && <ItemStatsTable refresh={refresh} setRefresh={setRefresh} />}
-                {displayMode === 'graphs' && <ChartsView />}
+                {displayMode === 'graphs' && <ChartsView
+                        hideFilters={hideFilters}
+                        setHideFilters={setHideFilters}
+                />}
                 {displayMode === 'portal_update' && <PortalUpdateTable />}
             </div>)
 

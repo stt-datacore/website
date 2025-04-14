@@ -2092,6 +2092,7 @@
         "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
         "graphs": {
             "circle": "Cercles de compétences",
+            "event_distributions": "Distributions des événements",
             "ignore_filters": "Ignorer les filtres actuellement actifs",
             "map_skill_order_density": "Cartographier la densité de l'ordre des compétences",
             "map_skill_order_power": "Cartographier l'ordre de puissance des compétences",

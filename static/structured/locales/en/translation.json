@@ -2080,6 +2080,7 @@
         "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
         "graphs": {
             "circle": "Skill Circles",
+            "event_distributions": "Event distributions",
             "ignore_filters": "Ignore currently active filters",
             "map_skill_order_density": "Map skill order density",
             "map_skill_order_power": "Map skill order power",

@@ -2090,6 +2090,7 @@
         "exact_skill_order_only": "Mostrar únicamente progresiones exactas del orden de habilidades (no coincidencias parciales)",
         "graphs": {
             "circle": "Círculos de habilidades",
+            "event_distributions": "Distribuciones de los eventos",
             "ignore_filters": "Ignorar los filtros actualmente activos",
             "map_skill_order_density": "Mapear la densidad del orden de habilidades",
             "map_skill_order_power": "Mapear el poder del orden de habilidades",

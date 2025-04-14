@@ -2080,6 +2080,7 @@
         "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
         "graphs": {
             "circle": "Kompetenzkreise",
+            "event_distributions": "Verteilungen der Ereignisse",
             "ignore_filters": "Derzeit aktive Filter ignorieren",
             "map_skill_order_density": "Die Fertigkeitsreihenfolgedichte abbilden",
             "map_skill_order_power": "Ordnen Sie die Fertigkeitsreihenfolgestärke zu",
