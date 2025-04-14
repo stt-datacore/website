@@ -189,29 +189,29 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
 
     function filterTableRow(row: VoyageImprovement, filter: Filter[], filterType?: string) {
 
-        omniSearchFilter(row, filter, filterType,
+        return omniSearchFilter(row, filter, filterType,
             [
                 'voyage',
                 {
-                    "field": 'crew',
+                    field: 'crew',
                     customMatch: (crew: PlayerCrew[], text) => {
+                        text = text.toLowerCase();
                         return crew.some(row => {
-                                text = text.toLowerCase();
                                 return row.traits_named?.some(tn => tn.toLowerCase().includes(text))
-                                    || row.name.includes(text)
-                                    || row.short_name.includes(text)
-                                    || !!row.name_english?.includes(text)
-                                    || row.flavor.includes(text)
-                                    || !!row.flavor_english?.includes(text)
+                                    || row.name.toLowerCase().includes(text)
+                                    || row.short_name.toLowerCase().includes(text)
+                                    || !!row.name_english?.toLowerCase().includes(text)
+                                    || row.flavor.toLowerCase().includes(text)
+                                    || !!row.flavor_english?.toLowerCase().includes(text)
                                     || row.traits.some(t => t.includes(text))
                                     || row.traits_hidden.some(t => t.includes(text))
 
                             });
                         }
                 }
-            ])
+            ]);
 
-        return true;
+        //return true;
     }
 
     function renderTableRow(voyage: VoyageImprovement, idx?: number) {
