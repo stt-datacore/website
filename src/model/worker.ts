@@ -188,6 +188,7 @@ export interface VoyageImprovement {
 	crew: PlayerCrew[];
 	maxEV: number;
 	remainingEV: number;
+    skills: string[];
 }
 
 export interface CiteData {

@@ -1,13 +1,11 @@
-import React from "react"
-import { CiteData, VoyageImprovement } from "../../model/worker"
-import { Table, Grid } from "semantic-ui-react";
-import { CiteMode } from "../../model/player";
-import { appelate } from "../../utils/misc";
-import ItemDisplay from "../itemdisplay";
+import React from "react";
+import { Grid, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { CiteOptContext } from "./context";
-import { AvatarView } from "../item_presenters/avatarview";
+import { CiteData, VoyageImprovement } from "../../model/worker";
 import CONFIG from "../CONFIG";
+import { AvatarView } from "../item_presenters/avatarview";
+import { CiteOptContext } from "./context";
+import { PlayerCrew } from "../../model/player";
 
 
 
@@ -36,7 +34,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     if (voyageData?.voyage?.length) {
         let v = voyageData.voyage[0];
         let sk = [v.skills.primary_skill, v.skills.secondary_skill].map((t) => t.replace("_skill", "")).reduce((prev, curr) => prev + "/" + curr);
-        if (sk) currVoy = sk.split('/').map(t => t.trim()).map(t => `${t.slice(0,1).toUpperCase()}${t.slice(1).toLowerCase()}`).join('/');
+        if (sk) currVoy = sk.split('/').map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/");
     }
 
     const currentVoyage = currVoy;
@@ -52,7 +50,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
             }
 
             const crew = JSON.parse(JSON.stringify(findcrew), (key, value) => {
-                if (key.includes("data")) {
+                if (key.includes("date")) {
                     try {
                         let v = new Date(value);
                         return v;
@@ -62,7 +60,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
                     }
                 }
                 return value;
-            });
+            }) as PlayerCrew;
 
             crew.voyagesImproved = voycrew.voyagesImproved;
             crew.evPerCitation = voycrew.evPerCitation;
@@ -74,11 +72,11 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
             for (let voyage of crew.voyagesImproved ?? []) {
                 if (!!(confine?.length) && !confine.includes(voyage)) continue;
 
-                let vname = voyage.replace(/ /g, '').toLowerCase();
-                let currvoy = voyages.find((v) => v.voyage.replace(/ /g, '').toLowerCase() === vname);
+                let vname = voyage.split('/').map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/")
+                let currvoy = voyages.find((v) => v.voyage === vname);
 
                 if (!currvoy) {
-                    currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0 };
+                    currvoy = { voyage: vname, crew: [], maxEV: 0, remainingEV: 0, skills: voyage.split('/').map(s => s.trim().toLowerCase() + "_skill") };
                     voyages.push(currvoy);
                 }
 
@@ -92,9 +90,6 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     });
 
     voyages.sort((a, b) => {
-        a.voyage = a.voyage.split('/').map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/");
-        b.voyage = b.voyage.split('/').map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/");
-
         let ma = Math.max(...a.crew.map(ac => ac.totalEVContribution ?? 0));
         let mb = Math.max(...b.crew.map(bc => bc.totalEVContribution ?? 0));
 
@@ -151,9 +146,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     }}>
         <Table striped>
             {voyages.map((voyage, idx) => {
-                let sp = voyage.voyage.split("/").map(s => s.toLowerCase().trim());
-                voyage.voyage = sp.map(s => CONFIG.SKILLS[s.trim().toLowerCase() + "_skill"] || s).join("/")
-
+                let sp = voyage.skills;
                 if (citeMode?.priSkills?.length) {
                     if (!citeMode.priSkills.includes(sp[0])) return (<></>);
                 }
