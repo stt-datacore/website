@@ -486,7 +486,7 @@ const BetaTachyon = {
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxsparse = resultCrew.map(c => c.groupSparsity ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
-            const maxquip = resultCrew.map(c => c.quipment_score ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxquip = resultCrew.map(c => c.ranks.scores.quipment ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxex = resultCrew.map(c => getSkillOrderScore(c, skill_reports)).reduce((a, b) => a > b ? a : b);
 
