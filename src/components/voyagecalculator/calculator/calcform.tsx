@@ -16,8 +16,8 @@ import { getShipTraitBonus } from '../utils';
 import { Helper, HelperProps } from '../helpers/Helper';
 import { CalculatorState, CALCULATORS } from '../helpers/calchelpers';
 
-import { CrewOptions } from './crewoptions';
 import { ResultsGroup } from './resultsgroup';
+import { TailoredCrewOptions } from './tailoredcrewoptions';
 import { sendCalcResultTelemetry, TelemetryOptions } from './telemetry';
 import { UserPrefsContext } from './userprefs';
 
@@ -93,15 +93,13 @@ export const CalculatorForm = () => {
 			{/* <BestShipCard voyageConfig={voyageConfig} bestShip={bestShip} /> */}
 			<ResultsGroup requests={requests} setRequests={setRequests} results={results} setResults={setResults} />
 			<div style={{ marginTop: '1em' }}>
-				{requests.length > 0 && (
-					<Header	/* Options */
-						as='h3'
-					>
-						{t('global.options')}
-					</Header>
-				)}
+				<TailoredCrewOptions updateConsideredCrew={setConsideredCrew} />
+				<Header	/* Options */
+					as='h3'
+				>
+					{t('global.options')}
+				</Header>
 				<Form>
-					<CrewOptions updateConsideredCrew={setConsideredCrew} />
 					<Form.Group inline>
 						<Form.Field
 							control={Select}
@@ -123,10 +121,10 @@ export const CalculatorForm = () => {
 							/>
 						))}
 					</Form.Group>
-					<Button fluid size='big' color='green' onClick={() => startCalculation()} disabled={!bestShip || consideredCrew.length < 12}>
-						{t('global.recommend_crew')}
-					</Button>
 				</Form>
+				<Button fluid size='big' color='green' onClick={() => startCalculation()} disabled={!bestShip || consideredCrew.length < 12}>
+					{t('global.recommend_crew')}
+				</Button>
 			</div>
 			{configSource === 'player' && (
 				<div style={{ marginTop: '2em' }}>
