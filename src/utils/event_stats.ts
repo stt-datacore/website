@@ -2,7 +2,8 @@ import { Reward } from "../model/player";
 import { CrewMember } from "../model/crew";
 import { EventLeaderboard, EventInstance } from "../model/events";
 import { GameEvent } from "../model/player";
-import { getEventData } from "./events";
+import { getEventData, guessBonusCrew } from "./events";
+import { getVariantTraits } from "./crewutils";
 
 export interface EventStats {
     instance_id: number;
@@ -42,9 +43,17 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
         if (tleg.length) {
             tleg = tleg.filter((f, idx) => tleg.findIndex(f2 => f === f2) === idx).sort();
         }
+        const variant_ref = {} as {[key: string]: number };
 
+        for (let c of crew) {
+            let vt = getVariantTraits(c);
+            for (let v of vt) {
+                variant_ref[v] ??= 0;
+                variant_ref[v]++;
+            }
+        }
         const parsedData = getEventData(eventData, crew);
-
+        const { traits } = guessBonusCrew(eventData, crew);
         const crewReward = crew.find(f => f.symbol === rankedReward.symbol)!;
         let filtered = lb.leaderboard.filter(f => f.rank <= 1500);
         if (!filtered.length) continue;
@@ -74,8 +83,15 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
         }
 
         let featured_crew = parsedData?.featured ?? [];
-        let featured_traits = (parsedData?.activeContent as any)?.featured_traits ?? [];
+        let featured_traits = ((parsedData?.activeContent as any)?.featured_traits ?? []) as string[];
+
+        featured_traits = [...new Set(featured_traits.concat(traits))].filter(ft => !variant_ref[ft]);
         let bonus_traits = parsedData?.activeContent?.bonus_traits ?? [];
+        let bonus_crew = parsedData?.bonus ?? [];
+
+        if (eventData.content?.crew_bonuses) {
+            bonus_crew = [...new Set(bonus_crew.concat(Object.keys(eventData.content?.crew_bonuses)))];
+        }
 
         stats.push({
             instance_id: event.instance_id,
