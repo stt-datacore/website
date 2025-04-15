@@ -26,9 +26,9 @@ export interface EventStats {
 }
 
 // Platform independent
-export async function getEventStats(crew: CrewMember[], leaderboards: EventLeaderboard[], events: EventInstance[], loadEventFunc: (instanceId: number) => Promise<GameEvent | undefined>): Promise<[EventStats[], { [key: string]: EventStats[] }]> {
+export async function getEventStats(crew: CrewMember[], leaderboards: EventLeaderboard[], events: EventInstance[], loadEventFunc: (instanceId: number) => Promise<GameEvent | undefined>, limit?: number): Promise<[EventStats[], { [key: string]: EventStats[] }]> {
     const stats = [] as EventStats[];
-    events.splice(0, events.length - 104);
+    if (limit && limit > 0) events.splice(0, events.length - limit);
     for (let event of events) {
         const lb = leaderboards.find(f => f.instance_id === event.instance_id);
         if (!lb) continue;
