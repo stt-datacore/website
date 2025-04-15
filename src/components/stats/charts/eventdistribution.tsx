@@ -288,22 +288,15 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         })
     }
 
-    function randomColor() {
-        const py = (n: number) => `${n.toString(16)}`.padStart(2, '0');
-        let r = py(Math.floor(Math.random() * 200) + 50);
-        let g = py(Math.floor(Math.random() * 200) + 50);
-        let b = py(Math.floor(Math.random() * 200) + 50);
-        return `#${b}${g}${r}`;
-    }
-
     function createVariantEventStats() {
-        const seriesList = seriesOptions.map(so => so.value);
         const variants = {} as StatDataType;
-
+        const vtry = event_scoring.variants.map(v => v.symbol)
         for (let evt of event_stats) {
-            if (evt.featured_crew?.length) {
-                evt.featured_crew.forEach(fc => {
-                    let rcrew = crew.find(f => f.symbol === fc);
+            let etraits = evt?.bonus_traits ?? [];
+            etraits = etraits.concat(evt?.featured_traits ?? []).filter(f => vtry.includes(f));
+            if (etraits?.length) {
+                etraits.forEach(fc => {
+                    let rcrew = crew.find(f => f.traits_hidden.includes(fc));
                     if (!rcrew) return;
                     let sfl = getVariantTraits(rcrew);
                     for (let ser of sfl) {
@@ -341,5 +334,14 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         seriesStats.sort((a, b) => b.score - a.score);
         return sortSeries(seriesStats).slice(0, 25);
     }
+
+    function randomColor() {
+        const py = (n: number) => `${n.toString(16)}`.padStart(2, '0');
+        let r = py(Math.floor(Math.random() * 200) + 50);
+        let g = py(Math.floor(Math.random() * 200) + 50);
+        let b = py(Math.floor(Math.random() * 200) + 50);
+        return `#${b}${g}${r}`;
+    }
+
 }
 

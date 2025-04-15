@@ -76,11 +76,7 @@ const defaultData = {
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
-	event_scoring: {
-		variants: [],
-		crew: [],
-		traits: []
-	},
+	event_scoring: {},
 	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
 	gauntlets: [] as Gauntlet[],
@@ -175,7 +171,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
