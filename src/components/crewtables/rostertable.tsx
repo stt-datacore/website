@@ -140,7 +140,7 @@ export const RosterTable = (props: RosterTableProps) => {
 				<React.Fragment>
 					<RosterProspects prospects={prospects} setProspects={setProspects} />
 					<Header as='h3'>{t('crew_views.advanced_analysis')}</Header>
-					<RosterSummary myCrew={props.rosterCrew} allCrew={globalContext.core.crew} buffConfig={playerBuffs} />
+					<RosterSummary myCrew={props.rosterCrew} allCrew={globalContext.core.crew.filter(c => !c.preview)} buffConfig={playerBuffs} />
 				</React.Fragment>
 			}
 		</RosterTableContext.Provider>
