@@ -296,17 +296,19 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
             etraits = etraits.concat(evt?.featured_traits ?? []).filter(f => vtry.includes(f));
             if (etraits?.length) {
                 etraits.forEach(fc => {
-                    let rcrew = crew.find(f => f.traits_hidden.includes(fc));
+                    let rcrew = crew.filter(f => f.traits.includes(fc) || f.traits_hidden.includes(fc));
                     if (!rcrew) return;
-                    let sfl = getVariantTraits(rcrew);
-                    for (let ser of sfl) {
-                        variants[ser] ??= {
-                            events: [],
-                            crew: [],
-                            key: ser
-                        };
-                        if (!variants[ser].crew.includes(fc)) variants[ser].crew.push(fc);
-                        if (!variants[ser].events.includes(evt.instance_id)) variants[ser].events.push(evt.instance_id);
+                    for (let rc of rcrew) {
+                        let sfl = getVariantTraits(rc);
+                        for (let ser of sfl) {
+                            variants[ser] ??= {
+                                events: [],
+                                crew: [],
+                                key: ser
+                            };
+                            if (!variants[ser].crew.includes(rc.symbol)) variants[ser].crew.push(rc.symbol);
+                            if (!variants[ser].events.includes(evt.instance_id)) variants[ser].events.push(evt.instance_id);
+                        }
                     }
                 });
             }
