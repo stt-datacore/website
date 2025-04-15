@@ -290,26 +290,25 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
 
     function createVariantEventStats() {
         const variants = {} as StatDataType;
-        const vtry = event_scoring.variants.map(v => v.symbol)
         for (let evt of event_stats) {
             const featured = evt.featured_crew.map(fc => crew.find(c => c.symbol === fc)!);
             let etraits = [...new Set(featured.map(fe => getVariantTraits(fe)).flat())];
 
             if (etraits?.length) {
+                if (etraits.includes('tpring')) {
+                    console.log("here");
+                }
                 etraits.forEach(fc => {
                     let rcrew = crew.filter(f => f.traits_hidden.includes(fc));
                     if (!rcrew?.length) return;
+                    variants[fc] ??= {
+                        events: [],
+                        crew: [],
+                        key: fc
+                    };
+                    if (!variants[fc].events.includes(evt.instance_id)) variants[fc].events.push(evt.instance_id);
                     for (let rc of rcrew) {
-                        let sfl = getVariantTraits(rc);
-                        for (let ser of sfl) {
-                            variants[ser] ??= {
-                                events: [],
-                                crew: [],
-                                key: ser
-                            };
-                            if (!variants[ser].crew.includes(rc.symbol)) variants[ser].crew.push(rc.symbol);
-                            if (!variants[ser].events.includes(evt.instance_id)) variants[ser].events.push(evt.instance_id);
-                        }
+                        if (!variants[fc].crew.includes(rc.symbol)) variants[fc].crew.push(rc.symbol);
                     }
                 });
             }
