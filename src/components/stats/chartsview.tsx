@@ -59,13 +59,13 @@ export const ChartsView = (props: ChartsViewProps) => {
             </div>
         </div>
 
-        <div style={{...flexRow, alignSelf: 'flex-start', margin: '1em 0' }}>
+        {currGraph !== 'event_distributions' && <div style={{...flexRow, alignSelf: 'flex-start', margin: '1em 0' }}>
             <Checkbox
                 label={t('stat_trends.graphs.ignore_filters')}
                 checked={!useFilters}
                 onChange={(e, { checked }) => setUseFilters(!checked)}
                 />
-        </div>
+        </div>}
 
         <h3>{t(`stat_trends.graphs.${currGraph}`)}</h3>
 

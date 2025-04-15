@@ -34,6 +34,7 @@ export type ValidDemands =
 	'episodes' |
 	'event_instances' |
 	'event_leaderboards' |
+	'event_scoring' |
 	'event_stats' |
 	'factions' |
 	'gauntlets' |
@@ -75,6 +76,11 @@ const defaultData = {
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
+	event_scoring: {
+		variants: [],
+		crew: [],
+		traits: []
+	},
 	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
 	gauntlets: [] as Gauntlet[],
@@ -141,6 +147,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'episodes',
 			'event_instances',
 			'event_leaderboards',
+			'event_scoring',
 			'event_stats',
 			'factions',
 			'gauntlets',

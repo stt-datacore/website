@@ -101,7 +101,9 @@
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
         "voyage": "Viaje",
-        "voyages": "Viajes"
+        "voyages": "Viajes",
+        "variant": "Variante",
+        "variants": "Variantes"
     },
     "behold_helper": {
         "columns": {

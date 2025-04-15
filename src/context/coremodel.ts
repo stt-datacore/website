@@ -1,7 +1,7 @@
 import { ContinuumMission } from "../model/continuum";
 import { CrewMember, CurrentWeighting, QuipmentScores } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
-import { EventInstance, EventLeaderboard } from "../model/events";
+import { EventInstance, EventLeaderboard, EventScoreSet } from "../model/events";
 import { Collection, KeystoneBase, Polestar, Constellation, PortalLogEntry } from "../model/game-elements";
 import { Gauntlet } from "../model/gauntlets";
 import { Mission } from "../model/missions";
@@ -23,6 +23,7 @@ export interface ICoreData {
 	episodes: Mission[];
 	event_instances: EventInstance[];
 	event_leaderboards: EventLeaderboard[];
+	event_scoring: EventScoreSet;
 	event_stats: EventStats[];
 	factions: StaticFaction[];
 	gauntlets: Gauntlet[];

@@ -101,7 +101,9 @@
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Eindeutig abrufbar",
         "voyage": "Reise",
-        "voyages": "Reisen"
+        "voyages": "Reisen",
+        "variant": "Variante",
+        "variants": "Varianten"
     },
     "behold_helper": {
         "columns": {

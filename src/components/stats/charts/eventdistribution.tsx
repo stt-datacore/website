@@ -6,25 +6,39 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { ResponsivePie } from "@nivo/pie";
 import themes from '../../nivo_themes';
 import CONFIG from "../../CONFIG";
+import { getVariantTraits } from "../../../utils/crewutils";
+import { AvatarView } from "../../item_presenters/avatarview";
 
-export type EventDistributionType = 'event' | 'mega';
+export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants';
 
 
 export interface DistributionPickerOpts {
 
 }
+type StatDataEntry = { events: number[], crew: string[], key: string };
+type StatDataType = { [key: string]: StatDataEntry };
+
+type PieSeriesType = {
+    label: string;
+    events: number;
+    proportion: number;
+    score: number;
+    data: StatDataEntry;
+}
 
 export const EventDistributionPicker = (props: DistributionPickerOpts) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
+    const { t, TRAIT_NAMES } = globalContext.localized;
 
     const [type, setType] = useStateWithStorage<EventDistributionType>('stattrends/distribution_type', 'event');
 
-    const { event_stats, crew } = globalContext.core;
+    const { event_stats, crew, event_scoring } = globalContext.core;
 
-    const choices = [
+    const eventChoices = [
         { key: 'event', value: 'event', text: t('obtained.long.Event') },
         { key: 'mega', value: 'mega', text: t('obtained.long.Mega') },
+        { key: 'traits', value: 'traits', text: t('base.traits') },
+        { key: 'variants', value: 'variants', text: t('base.variants') },
     ];
 
     const flexCol = OptionsPanelFlexColumn;
@@ -43,66 +57,19 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'vst', value: 'vst', text: t('series.vst') },
         { key: 'original', value: 'original', text: t('series.original') },
     ];
-    const seriesList = seriesOptions.map(so => so.value);
-    const series = {} as any;
-    const traits = {} as any;
 
-    for (let evt of event_stats) {
-        let etraits = evt?.bonus_traits ?? [];
-        etraits = etraits.concat(evt?.featured_traits ?? []);
-        if (etraits.length) {
-            etraits.forEach(trait => {
-                traits[trait] ??= {
-                    events: [],
-                    crew: []
-                };
-
-                let ntc = crew.filter(fc => fc.traits.includes(trait) || fc.traits_hidden.includes(trait)).map(cc => cc.symbol);
-                if (!traits[trait].events.includes(evt.instance_id)) traits[trait].events.push(evt.instance_id);
-                traits[trait].crew = [...new Set([...traits[trait].crew ?? [], ...ntc ?? []])];
-            });
-        }
-        if (evt.featured_crew?.length) {
-            evt.featured_crew.forEach(fc => {
-                let rcrew = crew.find(f => f.symbol === fc);
-                if (!rcrew) return;
-                let sfl = seriesList.filter(trait => rcrew.traits_hidden.includes(trait));
-                for (let ser of sfl) {
-                    series[ser] ??= {
-                        events: [],
-                        crew: []
-                    };
-                    if (!series[ser].crew.includes(fc)) series[ser].crew.push(fc);
-                    if (!series[ser].events.includes(evt.instance_id)) series[ser].events.push(evt.instance_id);
-                }
-            });
-        }
-    }
-
-    const seriesStats = [] as any[];
-    let totals = 0;
-
-    Object.keys(series).forEach(key => {
-        let slen = series[key].events.length;
-        totals += slen;
-        seriesStats.push({
-            label: t(`series.${key}`),
-            events: slen,
-            proportion: series[key].events.length / series[key].crew.length
-        });
-    });
-
-    seriesStats.forEach(stat => {
-        stat.score = Number(((stat.events / totals) * 100).toFixed(2));
-    });
-
-    seriesStats.sort((a, b) => b.score - a.score);
+    const chartData = React.useMemo(() => {
+        if (type === 'event') return createSeriesEventStats();
+        else if (type === 'traits') return createTraitEventStats();
+        else if (type === 'variants') return createVariantEventStats();
+        else return createSeriesMegaStats();
+    }, [type]);
 
     return (
         <div style={{ ...flexCol, alignItems: 'flex-start' }}>
             <Dropdown
                 selection
-                options={choices}
+                options={eventChoices}
                 value={type}
                 onChange={(e, { value }) => {
                     setType(value as any);
@@ -111,72 +78,268 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em' }}>
                 <div style={{ height: '50vw', width: '70vw', border: '2px solid #666', borderRadius: '12px' }}>
                     <ResponsivePie
-                        data={seriesStats}
+                        data={chartData}
                         value={'score'}
                         arcLinkLabel={(data) => data.data.label}
                         arcLabel={(data) => `${t('global.n_%', { n: data.value })}`}
                         tooltip={(data) => {
+                            let fc = crew.filter(cc => data.datum.data.data.crew.includes(cc.symbol))
+                            if (fc?.length) {
+                                if (fc.some(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')) {
+                                    fc = fc.filter(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')
+                                    fc.sort((a, b) => b.date_added.getTime() - a.date_added.getTime());
+                                }
+                                else {
+                                    fc.sort((a, b) => b.ranks.scores.overall - a.ranks.scores.overall);
+                                }
+                            }
+                            let cmm = fc?.length ? fc[0] : undefined;
 
-                            let series = `${data.datum.label}`;
+                            let label = `${data.datum.label}`;
                             let amount = `${t('global.n_%', { n: data.datum.value })}`;
                             return <div className="ui label" style={{...flexRow, justifyContent:'flex-start', gap: '1em'}}>
                                 <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
-                                {series} {amount}
+                                <p>
+                                    <span>{label}</span>
+                                    {!!cmm && <span>
+                                        <br />
+                                        {cmm.date_added.toLocaleDateString()}
+                                        </span>}
+
+                                </p>
+                                <span>
+                                    {amount}
+                                </span>
+                                <span>
+                                    {t('global.n_x', { n: data.datum.data.data.events.length, x: t('menu.game_info.events') })}
+                                </span>
+                                {!!cmm && <AvatarView
+                                        mode='crew'
+                                        item={cmm}
+                                        size={64}
+                                    />}
                                 </div>
                         }}
                         theme={themes.dark}
                         margin={{ top: 80, right: 80, bottom: 80, left: 80 }}
-                        innerRadius={0.2}
-                        padAngle={2}
-                        cornerRadius={2}
+                        innerRadius={0.4}
+                        padAngle={1}
+                        cornerRadius={12}
                         borderWidth={1}
                         colors={(data) => {
-                            let id = seriesStats.findIndex(fi => fi.score === data.value)
-                            id = 5 - id;
-                            if (id >= 0) {
-                                if (id > 5) id = 5;
+                            let id = chartData.findIndex(fi => fi.score === data.data.score && fi.label === data.data.label)
+                            if (id >= 0 && id < 5) {
+                                id++;
+                                id = 6 - id;
                                 return CONFIG.RARITIES[id].color;
                             }
-                            return `#${Math.ceil(Math.random() * 0x7fffff).toString(16)}`;
+                            return `${randomColor()}`;
                         }}
                         animate={false}
-                        //slicesLabelsTextColor='#333333'
-                        // legends={[
-                        //     {
-                        //         anchor: 'bottom',
-                        //         direction: 'column',
-                        //         translateY: 280,
-                        //         translateX: 400,
-                        //         itemWidth: 100,
-                        //         itemHeight: 18,
-                        //         itemTextColor: '#999',
-                        //         symbolSize: 18,
-                        //         symbolShape: 'circle',
-                        //         effects: [
-                        //             {
-                        //                 on: 'hover',
-                        //                 style: {
-                        //                     itemTextColor: '#000',
-                        //                 },
-                        //             },
-                        //         ],
-                        //     },
-                        // ]}
                     />
                 </div>
             </div>
         </div>
     )
 
+    function createTraitEventStats() {
+        const traits = {} as StatDataType;
+
+        for (let evt of event_stats) {
+            let etraits = evt?.bonus_traits ?? [];
+
+            etraits = etraits.concat(evt?.featured_traits ?? []);
+            if (etraits.length) {
+                etraits.forEach(trait => {
+                    traits[trait] ??= {
+                        events: [],
+                        crew: [],
+                        key: trait
+                    };
+
+                    let ntc = crew.filter(fc => fc.traits.includes(trait) || fc.traits_hidden.includes(trait)).map(cc => cc.symbol);
+                    if (!traits[trait].events.includes(evt.instance_id)) traits[trait].events.push(evt.instance_id);
+                    traits[trait].crew = [...new Set([...traits[trait].crew ?? [], ...ntc ?? []])];
+                });
+            }
+        }
+
+        const seriesStats = [] as PieSeriesType[];
+        let totals = 0;
+
+        Object.keys(traits).forEach(key => {
+            if (!TRAIT_NAMES[key]) return;
+            let slen = traits[key].events.length;
+            totals += slen;
+            seriesStats.push({
+                label: TRAIT_NAMES[key] || key,
+                events: slen,
+                proportion: traits[key].events.length / traits[key].crew.length,
+                score: 0,
+                data: traits[key]
+            });
+        });
+
+        seriesStats.forEach(stat => {
+            stat.score = Number(((stat.events / totals) * 100).toFixed(2));
+        });
+
+        seriesStats.sort((a, b) => b.score - a.score);
+        return sortSeries(seriesStats);
+    }
+
+    function createSeriesEventStats() {
+        const seriesList = seriesOptions.map(so => so.value);
+        const series = {} as StatDataType;
+
+        for (let evt of event_stats) {
+            if (evt.featured_crew?.length) {
+                evt.featured_crew.forEach(fc => {
+                    let rcrew = crew.find(f => f.symbol === fc);
+                    if (!rcrew) return;
+                    let sfl = seriesList.filter(trait => rcrew.traits_hidden.includes(trait));
+                    for (let ser of sfl) {
+                        series[ser] ??= {
+                            events: [],
+                            crew: [],
+                            key: ser
+                        };
+                        if (!series[ser].crew.includes(fc)) series[ser].crew.push(fc);
+                        if (!series[ser].events.includes(evt.instance_id)) series[ser].events.push(evt.instance_id);
+                    }
+                });
+            }
+        }
+
+        const seriesStats = [] as PieSeriesType[];
+        let totals = 0;
+
+        Object.keys(series).forEach(key => {
+            let slen = series[key].events.length;
+            totals += slen;
+            seriesStats.push({
+                label: t(`series.${key}`),
+                events: slen,
+                proportion: series[key].events.length / series[key].crew.length,
+                score: 0,
+                data: series[key]
+            });
+        });
+
+        seriesStats.forEach(stat => {
+            stat.score = Number(((stat.events / totals) * 100).toFixed(2));
+        });
+
+        seriesStats.sort((a, b) => b.score - a.score);
+        return sortSeries(seriesStats);
+    }
+
+    function createSeriesMegaStats() {
+        const seriesList = seriesOptions.map(so => so.value);
+        const series = {} as StatDataType;
+        const estats = [...event_stats];
+        estats.sort((a, b) => a.instance_id - b.instance_id);
+
+        const megacrew = crew.filter(c => c.obtained === 'Mega');
+        megacrew.forEach(c => {
+            let rcrew = crew.find(f => f.symbol === c.symbol);
+            let evt = event_stats.find(f => f.featured_crew.includes(c.symbol));
+            if (!rcrew || !evt) return;
+            let sfl = seriesList.filter(trait => rcrew.traits_hidden.includes(trait));
+            for (let ser of sfl) {
+                series[ser] ??= {
+                    events: [],
+                    crew: [],
+                    key: ser
+                };
+                if (!series[ser].crew.includes(c.symbol)) series[ser].crew.push(c.symbol);
+                if (!series[ser].events.includes(evt.instance_id)) series[ser].events.push(evt.instance_id);
+            }
+        });
+        const seriesStats = [] as PieSeriesType[];
+        let totals = 0;
+
+        Object.keys(series).forEach(key => {
+            let slen = series[key].events.length;
+            totals += slen;
+            seriesStats.push({
+                label: t(`series.${key}`),
+                events: slen,
+                proportion: series[key].events.length / series[key].crew.length,
+                score: 0,
+                data: series[key]
+            });
+        });
+
+        seriesStats.forEach(stat => {
+            stat.score = Number(((stat.events / totals) * 100).toFixed(2));
+        });
+
+        seriesStats.sort((a, b) => b.score - a.score);
+        return sortSeries(seriesStats);
+    }
+
+    function sortSeries(pieSeries: PieSeriesType[]) {
+        return pieSeries.sort((a, b) => {
+            let r = b.score - a.score;
+            if (!r) r = b.proportion - a.proportion;
+            if (!r) r = a.label.localeCompare(b.label);
+            return r;
+        })
+    }
+
+    function randomColor() {
+        const py = (n: number) => `${n.toString(16)}`.padStart(2, '0');
+        let r = py(Math.floor(Math.random() * 200) + 50);
+        let g = py(Math.floor(Math.random() * 200) + 50);
+        let b = py(Math.floor(Math.random() * 200) + 50);
+        return `#${b}${g}${r}`;
+    }
+
+    function createVariantEventStats() {
+        const seriesList = seriesOptions.map(so => so.value);
+        const variants = {} as StatDataType;
+
+        for (let evt of event_stats) {
+            if (evt.featured_crew?.length) {
+                evt.featured_crew.forEach(fc => {
+                    let rcrew = crew.find(f => f.symbol === fc);
+                    if (!rcrew) return;
+                    let sfl = getVariantTraits(rcrew);
+                    for (let ser of sfl) {
+                        variants[ser] ??= {
+                            events: [],
+                            crew: [],
+                            key: ser
+                        };
+                        if (!variants[ser].crew.includes(fc)) variants[ser].crew.push(fc);
+                        if (!variants[ser].events.includes(evt.instance_id)) variants[ser].events.push(evt.instance_id);
+                    }
+                });
+            }
+        }
+
+        const seriesStats = [] as PieSeriesType[];
+        let totals = 0;
+
+        Object.keys(variants).forEach(key => {
+            let slen = variants[key].events.length;
+            totals += slen;
+            seriesStats.push({
+                label: key,
+                events: slen,
+                proportion: variants[key].events.length / variants[key].crew.length,
+                score: 0,
+                data: variants[key]
+            });
+        });
+
+        seriesStats.forEach(stat => {
+            stat.score = Number(((stat.events / totals) * 100).toFixed(2));
+        });
+
+        seriesStats.sort((a, b) => b.score - a.score);
+        return sortSeries(seriesStats).slice(0, 25);
+    }
 }
 
-
-export const EventDistributionGrid = () => {
-
-    const globalContext = React.useContext(GlobalContext);
-
-
-
-
-
-}
