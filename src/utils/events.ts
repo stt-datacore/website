@@ -231,6 +231,7 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 
 	let index = 1;
 	let lastEvent = undefined as GameEvent | undefined;
+	const cache = [] as GameEvent[];
 
 	while (recentEvents.length < 2) {
 		const eventId = allEvents[allEvents.length-index]?.instance_id || 0;
@@ -239,6 +240,7 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 		const json = await response.json();
 		const eventData = getEventData(json, allCrew, allShips, lastEvent) as IEventData;
 		lastEvent = json;
+		cache.unshift(json);
 		if (eventId === currentEventId) {
 			eventData.seconds_to_start = start;
 			eventData.seconds_to_end = end;
@@ -249,7 +251,13 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 		}
 		recentEvents.unshift(eventData);
 		index++;
-		if (eventId === currentEventId) break;
+		if (eventId <= currentEventId - 1) break;
+	}
+
+	for (index = 0; index < recentEvents.length; index++) {
+		if (recentEvents[index].bonusGuessed && index > 0) {
+			recentEvents[index] = getEventData(cache[index], allCrew, allShips, cache[index-1])!;
+		}
 	}
 
 	return recentEvents;
@@ -450,7 +458,9 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 		return amount;
 	}
 
-	if (eventData.featured.includes(crew.symbol) || (eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))) {
+	if (eventData.featured.includes(crew.symbol)
+		// || (!crew.preview && eventData.bonus.includes(crew.symbol) && eventData.bonusGuessed && (new Date()).getTime() - (new Date(crew.date_added)).getTime() < (14 * 24 * 60 * 60 * 1000))
+		) {
 		return high;
 	}
 	else if (eventData.bonus.includes(crew.symbol)) {
@@ -664,6 +674,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 		else {
 			let lasts = globalContext.core.event_instances.filter(f => !ephemeral.events.some(e => e.instance_id === f.instance_id)).sort((a, b) => b.instance_id - a.instance_id);
 			if (lasts.length) {
+				lasts.sort((a, b) => b.instance_id - a.instance_id);
 				const lastResp = await fetch(`/structured/events/${lasts[0].instance_id}.json`);
 				_lev = await lastResp.json() as GameEvent;
 			}
