@@ -292,12 +292,13 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         const variants = {} as StatDataType;
         const vtry = event_scoring.variants.map(v => v.symbol)
         for (let evt of event_stats) {
-            let etraits = evt?.bonus_traits ?? [];
-            etraits = etraits.concat(evt?.featured_traits ?? []).filter(f => vtry.includes(f));
+            const featured = evt.featured_crew.map(fc => crew.find(c => c.symbol === fc)!);
+            let etraits = [...new Set(featured.map(fe => getVariantTraits(fe)).flat())];
+
             if (etraits?.length) {
                 etraits.forEach(fc => {
-                    let rcrew = crew.filter(f => f.traits.includes(fc) || f.traits_hidden.includes(fc));
-                    if (!rcrew) return;
+                    let rcrew = crew.filter(f => f.traits_hidden.includes(fc));
+                    if (!rcrew?.length) return;
                     for (let rc of rcrew) {
                         let sfl = getVariantTraits(rc);
                         for (let ser of sfl) {
