@@ -255,7 +255,7 @@ export async function getRecentEvents(allCrew: CrewMember[], allEvents: EventIns
 	return recentEvents;
 }
 
-function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent?: GameEvent): { bonus: string[], featured: string[] } {
+export function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent?: GameEvent): { bonus: string[], featured: string[], traits: string[] } {
 	const bonus = [] as string[];
 	const featured = [] as string[];
 	const leLegend = lastEvent?.ranked_brackets[0].rewards.find(f => f.type === 1 && f.rarity === 5);
@@ -276,7 +276,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 	// 		}
 	// 	}
 	// }
-
+	const traits = [] as string[];
 	// Guess bonus crew from bonus_text
 	//	bonus_text seems to be reliably available, but might be inconsistently written
 	if (activeEvent.bonus_text !== '') {
@@ -325,12 +325,22 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 						if (!bonus.includes(crew.symbol))
 							bonus.push(crew.symbol);
 					});
+					if (!traits.includes(testTrait)) {
+						traits.push(testTrait);
+					}
 				}
 				else {
 					// Plural of trait
 					if (testTrait.endsWith('s')) {
 						const imperfectTrait = testTrait.slice(0, testTrait.length - 1);
-						const imperfectTraits = allCrew.filter(crew => crew.traits.some(trait => trait.replace(/_/g, '') === imperfectTrait) || crew.traits_hidden.some(trait => trait.replace(/_/g, '') === imperfectTrait));
+						const imperfectTraits = allCrew.filter(crew => {
+							let tf = crew.traits.find(trait => trait.replace(/_/g, '') === imperfectTrait);
+							if (!tf) tf = crew.traits_hidden.find(trait => trait.replace(/_/g, '') === imperfectTrait);
+							if (tf && !traits.includes(tf)) {
+								traits.push(tf);
+							}
+							return !!tf;
+						});
 						imperfectTraits.forEach(crew => {
 							if (!bonus.includes(crew.symbol))
 								bonus.push(crew.symbol);
@@ -344,6 +354,11 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 							if (!bonus.includes(crew.symbol))
 								bonus.push(crew.symbol);
 						});
+						if (imperfectTraits.length) {
+							if (!traits.includes(imperfectTrait)) {
+								traits.push(imperfectTrait);
+							}
+						}
 					}
 					// Otherwise try matching last name only (e.g. J. Archer should be Archer)
 					else if (/\s/.test(testName)) {
@@ -379,7 +394,7 @@ function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], lastEvent
 		});
 	}
 
-	return { bonus: [ ... new Set(bonus)], featured: [...new Set(featured)] };
+	return { bonus: [ ... new Set(bonus)], featured: [...new Set(featured)], traits };
 }
 
 // Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
