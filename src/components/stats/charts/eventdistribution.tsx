@@ -15,7 +15,7 @@ export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants';
 export interface DistributionPickerOpts {
 
 }
-type StatDataEntry = { events: number[], crew: string[], key: string };
+type StatDataEntry = { events: number[], crew: string[], key: string, extra?: any };
 type StatDataType = { [key: string]: StatDataEntry };
 
 type PieSeriesType = {
@@ -37,7 +37,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
     const eventChoices = [
         { key: 'event', value: 'event', text: t('obtained.long.Event') },
         { key: 'mega', value: 'mega', text: t('obtained.long.Mega') },
-        { key: 'traits', value: 'traits', text: t('base.traits') },
+        { key: 'traits', value: 'traits', text: t('base.featured_traits') },
         { key: 'variants', value: 'variants', text: t('base.variants') },
     ];
 
@@ -105,13 +105,12 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                                         <br />
                                         {cmm.date_added.toLocaleDateString()}
                                         </span>}
-
                                 </p>
                                 <span>
                                     {amount}
                                 </span>
                                 <span>
-                                    {t('global.n_x', { n: data.datum.data.data.events.length, x: t('menu.game_info.events') })}
+                                    {t('global.n_x', { n: data.datum.data.events, x: t('menu.game_info.events') })}
                                 </span>
                                 {!!cmm && <AvatarView
                                         mode='crew'
@@ -145,36 +144,39 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
     function createTraitEventStats() {
         const traits = {} as StatDataType;
 
-        for (let evt of event_stats) {
-            let etraits = evt?.bonus_traits ?? [];
+        for (let traitinfo of event_scoring.traits) {
+                let trait = traitinfo.symbol;
+                traits[trait] ??= {
+                    events: [],
+                    crew: [],
+                    key: trait,
+                    extra: traitinfo.score
+                };
 
-            etraits = etraits.concat(evt?.featured_traits ?? []);
-            if (etraits.length) {
-                etraits.forEach(trait => {
-                    traits[trait] ??= {
-                        events: [],
-                        crew: [],
-                        key: trait
-                    };
-
-                    let ntc = crew.filter(fc => fc.traits.includes(trait) || fc.traits_hidden.includes(trait)).map(cc => cc.symbol);
-                    if (!traits[trait].events.includes(evt.instance_id)) traits[trait].events.push(evt.instance_id);
-                    traits[trait].crew = [...new Set([...traits[trait].crew ?? [], ...ntc ?? []])];
-                });
-            }
+                let ntc = crew.filter(fc => fc.traits.includes(trait) || fc.traits_hidden.includes(trait)).map(cc => cc.symbol);
+                traits[trait].crew = [...new Set([...traits[trait].crew ?? [], ...ntc ?? []])];
         }
 
         const seriesStats = [] as PieSeriesType[];
         let totals = 0;
 
         Object.keys(traits).forEach(key => {
-            if (!TRAIT_NAMES[key]) return;
-            let slen = traits[key].events.length;
+            let label = TRAIT_NAMES[key];
+            if (!label) {
+                let so = seriesOptions.find(s => s.value === key);
+                if (so) {
+                    label = so.text;
+                }
+                else {
+                    return;
+                }
+            }
+            let slen = traits[key].extra as number;
             totals += slen;
             seriesStats.push({
-                label: TRAIT_NAMES[key] || key,
+                label: label,
                 events: slen,
-                proportion: traits[key].events.length / traits[key].crew.length,
+                proportion: slen / traits[key].crew.length,
                 score: 0,
                 data: traits[key]
             });
@@ -334,7 +336,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         });
 
         seriesStats.sort((a, b) => b.score - a.score);
-        return sortSeries(seriesStats).slice(0, 25);
+        return sortSeries(seriesStats).filter(f => f.events >= 5)
     }
 
     function randomColor() {
