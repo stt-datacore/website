@@ -76,10 +76,10 @@ export const Slider = (props: SliderProps) => {
         let mleft = Number(buttonref.current.style.marginLeft.replace('px', '')) + 8;
         let width = mainref.current.offsetWidth;
         let steppix = (stepSize / width) * (max - min);
-        slideval = mleft / width;
+        slideval = min + ((mleft / width) * (max - min));
 
-        let mx = (max / width) * 100;
-        let mn = (min / width) * 100;
+        let mx = max;
+        let mn = min;
 
         if (e.movementX > 0) {
             if (slideval >= mx) return;
@@ -99,7 +99,7 @@ export const Slider = (props: SliderProps) => {
             if (mleft < 0) mleft = 0;
             if (mleft > width) mleft = width;
             buttonref.current.style.marginLeft = `${mleft - 8}px`;
-            slideval = mleft / width;
+            slideval = min + ((mleft / width) * (max - min));
             if (slideval > max) slideval = max;
             if (slideval < min) slideval = min;
             setSliderVal(slideval);
