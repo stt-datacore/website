@@ -8,6 +8,7 @@ import themes from '../../nivo_themes';
 import CONFIG from "../../CONFIG";
 import { getVariantTraits } from "../../../utils/crewutils";
 import { AvatarView } from "../../item_presenters/avatarview";
+import { Slider } from "../../base/slider";
 
 export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants';
 
