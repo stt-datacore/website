@@ -41,7 +41,7 @@ export const Slider = (props: SliderProps) => {
 
     return (
         <div>
-            <div style={{textAlign: 'center'}}>{(sliderVal * 100).toFixed(2)}</div>
+            <div style={{textAlign: 'center'}}>{(sliderVal).toFixed(2)}</div>
             <div ref={mainref} style={{height: slideHeight, width: slideWidth }}
                 onMouseUp={deactivate}
                 onMouseLeave={deactivate}
