@@ -22,6 +22,7 @@ export interface FarmTableProps {
     hoverTarget?: string;
     showOwned?: boolean;
     showFarmable?: boolean;
+    excludedSourceTypes?: number[];
     textStyle?: React.CSSProperties;
     renderExpanded?: (row: FarmSources) => JSX.Element;
 }
@@ -29,7 +30,7 @@ export interface FarmTableProps {
 export const FarmTable = (props: FarmTableProps) => {
     // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const { sources, pageId, renderExpanded } = props;
+    const { sources, pageId, renderExpanded, excludedSourceTypes } = props;
     const hover_target = props.hoverTarget ?? 'farm_item_target';
 
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
@@ -67,8 +68,8 @@ export const FarmTable = (props: FarmTableProps) => {
             });
 
         const newList = (JSON.parse(JSON.stringify(sources)) as FarmSources[]).filter(item => {
-            if (item.source.type === 4) return false;
-
+            //if (item.source.type === 4) return false;
+            if (excludedSourceTypes?.includes(item.source.type)) return false;
             item.items = item.items.filter(fitem => {
                 if (itemFilter === 'single_source_items') {
                     return (fitem.item_sources.length === 1);

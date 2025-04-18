@@ -146,6 +146,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
         <EquipmentTable pageId='gather_planner/equipment' itemTargetGroup={hover_target} items={allDemands} />
 
         <FarmTable
+            excludedSourceTypes={[1, 4]}
             pageId="gather_planner"
             hoverTarget={hover_target} sources={sources} />
     </>)

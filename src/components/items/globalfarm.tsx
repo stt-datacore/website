@@ -98,7 +98,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         demands.forEach((demand) => {
             if (demand.item_sources?.length) {
                 demand.item_sources.forEach((source) => {
-                    if (source.type === 1) return;
+                    //if (source.type === 1) return;
                     let csource = newsources.find(f => f.source.name === source.name && f.source.mastery === source.mastery);
                     if (csource) {
                         const fitem = csource.items.find(f => f.symbol === demand.symbol);

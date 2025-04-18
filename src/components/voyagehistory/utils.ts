@@ -368,7 +368,7 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 	cleanHistory(local);
 	cleanHistory(remote);
 
-	function changeTrackerId(hist: IVoyageHistory, oldId: number, newId: number) {
+	const changeTrackerId = (hist: IVoyageHistory, oldId: number, newId: number) => {
 		hist.voyages.forEach((voy) => {
 			if (voy.tracker_id === oldId) voy.tracker_id = newId;
 		});
@@ -378,12 +378,15 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 			}
 		});
 	}
-	function removeTrackerId(hist: IVoyageHistory, tracker_id: number) {
+
+	const removeTrackerId = (hist: IVoyageHistory, tracker_id: number) => {
 		hist.voyages = hist.voyages.filter(f => f.tracker_id !== tracker_id);
+		const delsym = [] as string[];
 		Object.keys(hist.crew).forEach((symbol) => {
 			hist.crew[symbol] = hist.crew[symbol].filter(f => f.tracker_id !== tracker_id);
-			if (!hist.crew[symbol].length) delete hist.crew[symbol];
+			if (!hist.crew[symbol].length) delsym.push(symbol);
 		});
+		delsym.forEach(symbol => delete hist.crew[symbol]);
 	}
 
 	let localIds = local.voyages.map(m => m.tracker_id);
