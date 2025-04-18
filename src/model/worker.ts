@@ -124,6 +124,7 @@ export interface EquipmentWorkerConfig {
     items: EquipmentItem[];
     playerData: PlayerData;
     addNeeded?: boolean;
+    crewFilter?: number[];
 }
 
 export interface EquipmentWorkerResults {

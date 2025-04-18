@@ -7,6 +7,9 @@ import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { FarmSources, FarmTable } from "./farmtable";
 import { ItemsFilterContext } from "./filters";
+import { CrewMultiPicker } from "../base/crewmultiselect";
+import { useStateWithStorage } from "../../utils/storage";
+import { CompletionState, PlayerCrew } from "../../model/player";
 
 
 interface GlobalFarmProps {
@@ -24,15 +27,26 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     const { playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
     const [prefiteredData, setPrefilteredData] = React.useState<(EquipmentItem | EquipmentCommon)[]>(calculatedDemands ?? []);
 
+    const [crewFilter, setCrewFilter] = useStateWithStorage<number[]>(`global_farm/crewFilter`, []);
+
     const { cancel, runWorker, running } = workerContext;
     const filterContext = React.useContext(ItemsFilterContext);
     const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters } = filterContext;
+
+    const rosterCrew = React.useMemo(() => {
+        if (playerData) {
+            return playerData.player.character.crew.filter(f => f.level !== 100 || f.equipment.length !== 4);
+        }
+        else {
+            return globalContext.core.crew.map(c => ({...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew)
+        }
+    }, [playerData]);
 
     React.useEffect(() => {
         function filterDemands(items: EquipmentItem[]) {
             return items.filter(f => f.needed && f.needed > 0 && f?.item_sources?.length)
         }
-        if (calculatedDemands) {
+        if (calculatedDemands && !crewFilter?.length) {
             setPrefilteredData(filterDemands(calculatedDemands as EquipmentItem[]));
             return;
         }
@@ -44,15 +58,16 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 "equipmentWorker", {
                     playerData,
                     items: coreItems,
-                    addNeeded: true
+                    addNeeded: true,
+                    crewFilter
                 },
                 (data: { data: { result: EquipmentWorkerResults } }) => {
-                    if (playerData) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
+                    if (playerData && !crewFilter?.length) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setPrefilteredData(filterDemands(data.data.result.items as EquipmentItem[]));
                 }
             )
         }, 500);
-    }, [playerData, coreItems]);
+    }, [playerData, coreItems, crewFilter]);
 
     React.useEffect(() => {
         if (available && !props.noRender) {
@@ -105,20 +120,40 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         return <></>;
     }
     else if (!props.noWorker && running) {
-        return <div style={{...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start'}}>{globalContext.core.spin(t('spinners.demands'))}</div>;
+        return (
+            <>
+                <CrewMultiPicker
+                    pageId='items/global_farm'
+                    selectedCrew={crewFilter}
+                    updateSelected={setCrewFilter}
+                    rosterCrew={rosterCrew}
+                    />
+
+                <div style={{...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start'}}>
+                    {globalContext.core.spin(t('spinners.demands'))}
+
+                </div>
+            </>
+        );
     }
     else {
         return <React.Fragment>
+            <CrewMultiPicker
+                pageId='items/global_farm'
+                selectedCrew={crewFilter}
+                updateSelected={setCrewFilter}
+                rosterCrew={rosterCrew}
+                />
             <ItemHoverStat targetGroup="global_farm" />
-        <FarmTable
-            showOwned={true}
-            showFarmable={true}
-            hoverTarget="global_farm"
-            pageId='global_farm'
-            sources={sources}
-            textStyle={{fontStyle: 'normal', fontSize: '1em'}}
-            />
-        </React.Fragment>
+            <FarmTable
+                showOwned={true}
+                showFarmable={true}
+                hoverTarget="global_farm"
+                pageId='global_farm'
+                sources={sources}
+                textStyle={{fontStyle: 'normal', fontSize: '1em'}}
+                />
+            </React.Fragment>
     }
 
 }

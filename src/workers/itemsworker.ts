@@ -9,7 +9,7 @@ const ItemsWorker = {
 
         return new Promise<EquipmentWorkerResults>((resolve, reject) => {
 
-            const { items, playerData } = config;
+            const { items, playerData, crewFilter } = config;
             const data = mergeItems(playerData?.player.character.items ?? [], items);
 
             const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
@@ -18,7 +18,6 @@ const ItemsWorker = {
 
 			if (!!playerData?.player?.character?.crew?.length && !!data?.length) {
 				let crewLevels: { [key: string]: Set<string>; } = {};
-
 				playerData.player.character.crew.forEach(cr => {
 					cr.equipment_slots.forEach(es => {
 						let item = binaryLocate(es.symbol, catalog);
@@ -42,7 +41,8 @@ const ItemsWorker = {
 					}
 				}
 
-				const rosterDemands = calculateRosterDemands(playerData.player.character.crew, items as EquipmentItem[], true);
+				const crew = playerData.player.character.crew.filter(c => !crewFilter?.length || crewFilter.includes(c.id));
+				const rosterDemands = calculateRosterDemands(crew, items as EquipmentItem[], true);
 
 				rosterDemands?.demands.sort((a, b) => a.symbol.localeCompare(b.symbol));
 
@@ -73,7 +73,7 @@ const ItemsWorker = {
 							// if (item.demandCrew.length > 5) {
 							// 	item.flavor = `Equippable by ${item.demandCrew.length} crew`;
 							// } else {
-								item.flavor = 'Equippable by: ' + item.demandCrew.map(c => playerData.player.character.crew.find(fc => fc.symbol === c)?.symbol).join(', ');
+								item.flavor = 'Equippable by: ' + item.demandCrew.join(', ');
 							//}
 						}
 						else {

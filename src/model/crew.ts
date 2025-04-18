@@ -75,7 +75,7 @@ export interface CapAchiever {
  * PlayerCrew derives from this and CompactCrew.
  */
 export interface CrewMember extends QuipmentScores {
-    id?: number;
+    id: number;
     symbol: string;
     name: string;
 	name_english?: string;
