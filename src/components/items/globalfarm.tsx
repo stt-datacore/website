@@ -4,12 +4,15 @@ import { WorkerContext } from "../../context/workercontext";
 import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
 import { EquipmentWorkerResults } from "../../model/worker";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
-import { OptionsPanelFlexRow } from "../stats/utils";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { FarmSources, FarmTable } from "./farmtable";
 import { ItemsFilterContext } from "./filters";
 import { CrewMultiPicker } from "../base/crewmultiselect";
 import { useStateWithStorage } from "../../utils/storage";
 import { CompletionState, PlayerCrew } from "../../model/player";
+import { Grid } from "semantic-ui-react";
+import { AvatarView } from "../item_presenters/avatarview";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
 
 
 interface GlobalFarmProps {
@@ -31,14 +34,19 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     const { cancel, runWorker, running } = workerContext;
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters } = filterContext;
+    const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters, itemSourceFilter } = filterContext;
 
     const rosterCrew = React.useMemo(() => {
         if (playerData) {
-            return playerData.player.character.crew.filter(f => f.level !== 100 || f.equipment.length !== 4);
+            return playerData.player.character.crew.filter(f => {
+                if (calculatedDemands) {
+                    return calculatedDemands.some(cd => cd.demandCrew?.includes(f.symbol));
+                }
+                return f.level !== 100 || f.equipment.length !== 4;
+            });
         }
         else {
-            return globalContext.core.crew.map(c => ({...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew)
+            return globalCrewToPlayerCrew();
         }
     }, [playerData]);
 
@@ -82,7 +90,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         else {
             return prefiteredData ?? props.items ?? globalContext.core.items;
         }
-    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded]);
+    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter]);
 
     const sources = React.useMemo(() => {
         const demands = (displayData as EquipmentItem[]); //.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
@@ -115,6 +123,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }, [displayData]);
 
     const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     if (props.noRender) {
         return <></>;
@@ -138,6 +147,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }
     else {
         return <React.Fragment>
+            <CrewHoverStat targetGroup="global_farm_crew" />
             <CrewMultiPicker
                 pageId='items/global_farm'
                 selectedCrew={crewFilter}
@@ -145,7 +155,9 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 rosterCrew={rosterCrew}
                 />
             <ItemHoverStat targetGroup="global_farm" />
+
             <FarmTable
+                renderExpanded={crewFilter?.length ? undefined : renderExpanded}
                 showOwned={true}
                 showFarmable={true}
                 hoverTarget="global_farm"
@@ -154,6 +166,44 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 textStyle={{fontStyle: 'normal', fontSize: '1em'}}
                 />
             </React.Fragment>
+    }
+
+    function renderExpanded(item: FarmSources) {
+        const crewSymbols = [... new Set(item.items.map(i => i.demandCrew ?? []).flat()) ]
+        const workCrew = rosterCrew
+            .filter(rc => crewSymbols.includes(rc.symbol))
+            .sort((a, b) => b.max_rarity - a.max_rarity || b.rarity - a.rarity || b.level - a.level || b.equipment.length - a.equipment.length || a.name.localeCompare(b.name));
+
+        return (
+            <div className="ui segment">
+                <div style={{...flexRow, flexWrap: 'wrap', overflowY: 'auto', maxHeight: '30em'}}>
+                    {workCrew.map((crew) => {
+                        return <div
+                            style={{...flexCol, width: '8em', height: '8em', cursor: 'pointer', textAlign: 'center', justifyContent: 'flex-start'}}
+                            onClick={() => {
+                                if (!crewFilter.includes(crew.id)) {
+                                    setCrewFilter([...crewFilter, crew.id]);
+                                }
+                                else {
+                                    setCrewFilter(crewFilter.filter(cf => cf != crew.id));
+                                }
+                            }}
+                        >
+                            <AvatarView
+                                mode='crew'
+                                item={crew}
+                                size={64}
+                                targetGroup="global_farm_crew"
+                                />
+                            {crew.name}
+                        </div>
+                    })}
+                </div>
+            </div>)
+    }
+
+    function globalCrewToPlayerCrew() {
+        return globalContext.core.crew.map(c => ({...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew);
     }
 
 }

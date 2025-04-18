@@ -148,7 +148,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         return (
             <React.Fragment>
                 <Image>
-                    <div style={{ opacity: isSelected ? .5 : 1 }}>
+                    <div style={{ opacity:  1 }}>
                         <img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
                     </div>
                     {isSelected && (
