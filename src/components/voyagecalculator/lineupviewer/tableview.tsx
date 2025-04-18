@@ -83,7 +83,12 @@ export const TableView = () => {
 		if (typeof navigator !== 'undefined' && typeof document !== 'undefined') {
 			const el = document.getElementById(exportKey);
 			if (el) {
-				navigator.clipboard.writeText(el.innerHTML);
+				const blob = new Blob([el.innerHTML], { type: 'text/html' });
+				navigator.clipboard.write([
+					new ClipboardItem({
+						[blob.type]: blob
+					})
+				]);
 			}
 		}
 	}
