@@ -37,7 +37,6 @@ export const LootCrewTable = () => {
     const tableConfig = [
         { width: 3, column: 'name', title: t('global.name') },
         { width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true },
-        ...getBaseTableConfig('allCrew', t),
         {
             width: 1, column: 'voyages.length', title: t('base.voyages'),
             reverse: true,
@@ -49,7 +48,8 @@ export const LootCrewTable = () => {
                 if (!r) r = ar.crew.name.localeCompare(br.crew.name);
                 return r;
             }
-        }
+        },
+        ...getBaseTableConfig('allCrew', t)
     ] as ITableConfigRow[];
 
     const [lootCrew, tableCrew] = React.useMemo(() => {
@@ -170,7 +170,6 @@ export const LootCrewTable = () => {
 				<Table.Cell>
 					<Rating icon='star' rating={crew.rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
-                <CrewBaseCells pageId='loot_crew' crew={crew as IRosterCrew} tableType="allCrew" />
                 <Table.Cell>
                     <p>
                         {row.voyages.length}
@@ -183,6 +182,7 @@ export const LootCrewTable = () => {
                         </p>
                     )})}
                 </Table.Cell>
+                <CrewBaseCells pageId='loot_crew' crew={crew as IRosterCrew} tableType="allCrew" />
             </Table.Row>
         )
     }
