@@ -1,11 +1,20 @@
 import React from "react";
 import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
 import CONFIG from "../CONFIG";
-import { Checkbox, Dropdown } from "semantic-ui-react";
+import { Checkbox, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { GlobalContext } from "../../context/globalcontext";
 import { useStateWithStorage } from "../../utils/storage";
 import { PlayerEquipmentItem } from "../../model/player";
+
+const ItemSources = [
+    "cadet_missions",
+    "faction_missions",
+    "missions",
+    "ship_battles"
+];
+
+const ItemSourceTypes = [4, 1, 0, 2];
 
 export interface IItemsFilterContext {
     available: boolean,
@@ -16,6 +25,8 @@ export interface IItemsFilterContext {
     setRarityFilter: (value?: number[]) => void;
     itemTypeFilter?: number[];
     setItemTypeFilter: (value?: number[]) => void;
+    itemSourceFilter?: number[];
+    setItemSourceFilter: (value?: number[]) => void;
     filterItems: (items: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
     configureFilters: (pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => void;
 }
@@ -27,8 +38,9 @@ const DefaultContextData: IItemsFilterContext = {
     setShowUnownedNeeded: () => false,
     setRarityFilter: () => false,
     setItemTypeFilter: () => false,
+    setItemSourceFilter: () => false,
     filterItems: () => [],
-    configureFilters: () => false
+    configureFilters: () => false,
 }
 
 export const ItemsFilterContext = React.createContext(DefaultContextData);
@@ -51,6 +63,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     const [showUnownedNeeded, setShowUnownedNeeded] = useStateWithStorage<boolean | undefined>(`${pageId}/items_show_unowned_needed`, false, { rememberForever: true });
     const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_rarity_filter`, undefined, { rememberForever: true });
     const [itemTypeFilter, setItemTypeFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_type_filter`, undefined, { rememberForever: true });
+    const [itemSourceFilter, setItemSourceFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_source_filter`, undefined, { rememberForever: true });
 
     const rarityOptions = React.useMemo(() => CONFIG.RARITIES
         .filter((rarity, idx) => filterPool?.some((p) => p.rarity === idx) ?? true)
@@ -72,6 +85,13 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
             }
         }), [filterPool]);
 
+
+    const itemSourceOptions = ItemSources.map((source, idx) => ({
+        key: source,
+        value: ItemSourceTypes[idx],
+        text: t(`item_source.${source}`)
+     } as DropdownItemProps));
+
     const contextData: IItemsFilterContext = {
         available: true,
         ownedItems,
@@ -82,7 +102,9 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         showUnownedNeeded,
         setShowUnownedNeeded,
         filterItems,
-        configureFilters
+        configureFilters,
+        itemSourceFilter,
+        setItemSourceFilter
     }
 
     const flexRow = OptionsPanelFlexRow;
@@ -107,6 +129,15 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 value={itemTypeFilter}
                 onChange={(e, { value }) => setItemTypeFilter(value as number[] ?? [])}
             />
+            <Dropdown
+                placeholder={t("items.item_sources")}
+                multiple
+                clearable
+                selection
+                options={itemSourceOptions}
+                value={itemSourceFilter}
+                onChange={(e, { value }) => setItemSourceFilter(value as number[] ?? [])}
+            />
             {!!ownedItems && !!setShowUnownedNeeded &&
             <Checkbox
                 label={t("items.show_unowned_needed")}
@@ -129,8 +160,21 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
             if (itemTypeFilter?.length && item.type !== undefined) {
                 if (!itemTypeFilter.includes(item.type)) return false;
             }
+            if (itemSourceFilter?.length && "item_sources" in item && item.item_sources) {
+                if (!item.item_sources?.some(s => itemSourceFilter.includes(s.type))) return false;
+            }
             if (ownedItems && !showUnownedNeeded && item.quantity === 0) return false;
             return true;
+        })
+        .map(item => {
+            if (itemSourceFilter?.length) {
+                item = { ... item };
+                if ("item_sources" in item && item.item_sources) {
+                    item.item_sources = item.item_sources.filter(s => itemSourceFilter.includes(s.type));
+                }
+                return item;
+            }
+            return item;
         });
     }
 

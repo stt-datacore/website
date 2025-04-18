@@ -23,12 +23,13 @@ export interface FarmTableProps {
     showOwned?: boolean;
     showFarmable?: boolean;
     textStyle?: React.CSSProperties;
+    renderExpanded?: (row: FarmSources) => JSX.Element;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
     // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const { sources, pageId } = props;
+    const { sources, pageId, renderExpanded } = props;
     const hover_target = props.hoverTarget ?? 'farm_item_target';
 
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
@@ -50,7 +51,11 @@ export const FarmTable = (props: FarmTableProps) => {
     const [distinctItems, setDistinctItems] = React.useState<EquipmentItem[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
 
+    const [expanded, setExpanded] = React.useState<FarmSources | undefined>(undefined);
+
     const searchText = selectedItems.join(',')
+
+    const expanding = !!renderExpanded;
 
     React.useEffect(() => {
         const distinctItems = [ ... new Set(sources.map(m => m.items).flat().map(m => m.symbol)) ]
@@ -228,7 +233,20 @@ export const FarmTable = (props: FarmTableProps) => {
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
 
-        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}>
+        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}
+            style={{
+                cursor: expanding ? (expanded ? 'zoom-out' : 'zoom-in') : undefined
+            }}
+            onClick={() => {
+                if (!expanding) return;
+                if (expanded == row) {
+                    setExpanded(undefined);
+                }
+                else {
+                    setExpanded(row);
+                }
+            }}
+            >
             <Table.Cell width={4}>
                 <h3>{row.source.name}</h3>
                 <div style={{ fontSize: '1em' }}>
@@ -242,7 +260,7 @@ export const FarmTable = (props: FarmTableProps) => {
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'space-between',
                     gap: '1em',
                     flexWrap: 'wrap'
@@ -325,7 +343,10 @@ export const FarmTable = (props: FarmTableProps) => {
                         </div>
                     })}
                 </div>
-
+                {expanded === row && !!renderExpanded &&
+                <div>
+                    {renderExpanded(row)}
+                </div>}
             </Table.Cell>
         </Table.Row>
 
