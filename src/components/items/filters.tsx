@@ -7,14 +7,12 @@ import { GlobalContext } from "../../context/globalcontext";
 import { useStateWithStorage } from "../../utils/storage";
 import { PlayerEquipmentItem } from "../../model/player";
 
-const ItemSources = [
-    "cadet_missions",
-    "faction_missions",
-    "missions",
-    "ship_battles"
-];
-
-const ItemSourceTypes = [4, 1, 0, 2];
+const ItemSources = {
+    "cadet_missions": 4,
+    "faction_missions": 1,
+    "missions": 0,
+    "ship_battles": 2
+};
 
 export interface IItemsFilterContext {
     available: boolean,
@@ -86,9 +84,9 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         }), [filterPool]);
 
 
-    const itemSourceOptions = ItemSources.map((source, idx) => ({
+    const itemSourceOptions = Object.entries(ItemSources).map(([source, value]) => ({
         key: source,
-        value: ItemSourceTypes[idx],
+        value,
         text: t(`item_source.${source}`)
      } as DropdownItemProps));
 
