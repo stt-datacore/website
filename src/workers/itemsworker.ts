@@ -10,7 +10,7 @@ const ItemsWorker = {
         return new Promise<EquipmentWorkerResults>((resolve, reject) => {
 
             const { items, playerData, crewFilter } = config;
-            const data = mergeItems(playerData?.player.character.items ?? [], items);
+            const data = mergeItems(playerData?.player.character.items ?? [], items).map(d => ({...d, needed: 0 })) as EquipmentItem[];
 
             const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
 
