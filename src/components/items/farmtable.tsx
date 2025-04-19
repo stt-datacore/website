@@ -8,8 +8,9 @@ import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
 import { ItemDropDown } from "./itemdropdown";
-import { printChrons } from "../retrieval/context";
+import { printChrons, printIntel } from "../retrieval/context";
 import { OptionsPanelFlexRow } from "../stats/utils";
+import { IEventData } from "../eventplanner/model";
 
 export interface FarmSources {
 
@@ -26,13 +27,14 @@ export interface FarmTableProps {
     showFarmable?: boolean;
     excludedSourceTypes?: number[];
     textStyle?: React.CSSProperties;
+    eventData?: IEventData;
     renderExpanded?: (row: FarmSources) => JSX.Element;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
     // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const { sources, pageId, renderExpanded, excludedSourceTypes } = props;
+    const { sources, pageId, renderExpanded, excludedSourceTypes, eventData } = props;
     const hover_target = props.hoverTarget ?? 'farm_item_target';
 
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
@@ -237,8 +239,12 @@ export const FarmTable = (props: FarmTableProps) => {
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
         let cost = row.source.cost ?? 0;
+        let intel = 0;
         let costColor = undefined as string | undefined;
-        if ([0, 2].indexOf(row.source.type) && ephemeral?.stimpack?.energy_discount) {
+        if (row.source.type === 2 && eventData?.activeContent?.content_type === 'skirmish') {
+            intel = cost * 10;
+        }
+        if ([0, 2].includes(row.source.type) && ephemeral?.stimpack?.energy_discount) {
             cost = Math.ceil(cost - (cost * (ephemeral.stimpack.energy_discount / 100)));
             costColor = 'lightgreen';
         }
@@ -267,8 +273,11 @@ export const FarmTable = (props: FarmTableProps) => {
                 {[0, 2].includes(row.source.type) && !!row.source.cost &&
                 <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
                     {t('global.cost{{:}}')}<span style={{color:costColor}}>{printChrons(cost)}</span>
-                </div>
-                }
+                </div>}
+                {!!intel &&
+                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
+                    <span style={{color: 'white'}}>{printIntel(intel, t, true)}</span>
+                </div>}
             </Table.Cell>
             <Table.Cell>
                 <div style={{

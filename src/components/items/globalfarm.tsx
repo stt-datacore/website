@@ -13,6 +13,7 @@ import { CompletionState, PlayerCrew } from "../../model/player";
 import { Grid } from "semantic-ui-react";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { getEventData } from "../../utils/events";
 
 
 interface GlobalFarmProps {
@@ -27,7 +28,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     const { t } = globalContext.localized;
     const { items: coreItems } = props;
-    const { playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
+    const { ephemeral, playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
     const [prefiteredData, setPrefilteredData] = React.useState<(EquipmentItem | EquipmentCommon)[]>(calculatedDemands ?? []);
 
     const [crewFilter, setCrewFilter] = useStateWithStorage<number[]>(`global_farm/crewFilter`, []);
@@ -49,6 +50,14 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
             return globalCrewToPlayerCrew();
         }
     }, [playerData]);
+
+    const eventData = React.useMemo(() => {
+        let gameEvent = ephemeral?.events?.find(e => e.seconds_to_start === 0 && e.seconds_to_end > 0)
+        if (gameEvent) {
+            return getEventData(gameEvent, globalContext.core.crew);
+        }
+        return undefined;
+    }, [ephemeral]);
 
     React.useEffect(() => {
         function filterDemands(items: EquipmentItem[]) {
@@ -159,6 +168,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
             <ItemHoverStat targetGroup="global_farm" />
 
             <FarmTable
+                eventData={eventData}
                 renderExpanded={crewFilter?.length ? undefined : renderExpanded}
                 showOwned={true}
                 showFarmable={true}

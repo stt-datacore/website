@@ -43,6 +43,17 @@ export function printCredits(quantity: number, t?: TranslateMethod, printCredits
 	</div>
 }
 
+export function printIntel(quantity: number, t?: TranslateMethod, printIntel?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/intel_icon.png`;
+
+	return <div
+		title={t ? t('global.item_types.intel') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printIntel ? t('global.item_types.intel') : ''}</span>
+	</div>
+}
+
 export function printChrons(quantity: number, t?: TranslateMethod, printChrons?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`;
 
@@ -53,7 +64,6 @@ export function printChrons(quantity: number, t?: TranslateMethod, printChrons?:
 		<span>{quantity.toLocaleString()} {t && printChrons ? t('global.item_types.chronitons') : ''}</span>
 	</div>
 }
-
 
 export function printQuantum(quantity: number, t?: TranslateMethod, printQuantum?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`;
