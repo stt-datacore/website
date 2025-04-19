@@ -184,9 +184,6 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 			for (let i = 0; i < 4; i++) {
 				let eq = ceq[i];
 				if (crew.equipment.includes(i as any)) {
-					if (lvl < 90) {
-						console.log("action");
-					}
 					notneeded.push(eq.symbol);
 				}
 			}
