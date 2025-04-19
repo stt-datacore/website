@@ -10,11 +10,9 @@ import { ItemsFilterContext } from "./filters";
 import { CrewMultiPicker } from "../base/crewmultiselect";
 import { useStateWithStorage } from "../../utils/storage";
 import { CompletionState, PlayerCrew } from "../../model/player";
-import { Grid } from "semantic-ui-react";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { getEventData } from "../../utils/events";
-
 
 interface GlobalFarmProps {
     items: EquipmentItem[];
@@ -74,6 +72,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         }
         if (!playerData || !!props.noWorker) return;
         if (running) cancel();
+        if (props.noRender) return;
         setTimeout(() => {
             runWorker(
                 "equipmentWorker", {
