@@ -9,7 +9,7 @@ const ItemsWorker = {
 
         return new Promise<EquipmentWorkerResults>((resolve, reject) => {
 
-            const { items, playerData, crewFilter } = config;
+            const { items, playerData, crewFilter, excludePrimary } = config;
             const data = mergeItems(playerData?.player.character.items ?? [], items).map(d => ({...d, needed: 0 })) as EquipmentItem[];
 
             const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
@@ -42,7 +42,7 @@ const ItemsWorker = {
 				}
 
 				const crew = playerData.player.character.crew.filter(c => !crewFilter?.length || crewFilter.includes(c.id));
-				const rosterDemands = calculateRosterDemands(crew, items as EquipmentItem[], true);
+				const rosterDemands = calculateRosterDemands(crew, items as EquipmentItem[], true, excludePrimary);
 
 				rosterDemands?.demands.sort((a, b) => a.symbol.localeCompare(b.symbol));
 

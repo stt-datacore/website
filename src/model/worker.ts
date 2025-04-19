@@ -125,6 +125,7 @@ export interface EquipmentWorkerConfig {
     playerData: PlayerData;
     addNeeded?: boolean;
     crewFilter?: number[];
+    excludePrimary?: boolean;
 }
 
 export interface EquipmentWorkerResults {

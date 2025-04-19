@@ -72,7 +72,7 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 }
 
 
-export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
+export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string, excludePrimary?: boolean): number {
 	let equipment = items.find(item => item.symbol === eqsym);
 	if (!equipment) return 0;
 
@@ -102,24 +102,26 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 		return 0;
 	}
 
+	if (!excludePrimary) {
+		const currItem = demands.find(f => f.symbol === eqsym);
 
-	const currItem = demands.find(f => f.symbol === eqsym);
-
-	if (currItem) {
-		if (!currItem.crewSymbols.includes(crewSymbol)) {
-			currItem.crewSymbols.push(crewSymbol);
-			currItem.count++;
+		if (currItem) {
+			if (!currItem.crewSymbols.includes(crewSymbol)) {
+				currItem.crewSymbols.push(crewSymbol);
+				currItem.count++;
+			}
 		}
-	}
-	else {
-		demands.push({
-			crewSymbols: [crewSymbol],
+		else {
+			demands.push({
+				crewSymbols: [crewSymbol],
 				count: 1,
 				symbol: equipment.symbol,
-				equipment: equipment,
-				factionOnly: equipment.factionOnly ?? false,
+				equipment,
+				factionOnly: false,
+				primary: true,
 				have: 0
-		})
+			});
+		}
 	}
 
 	for (let iter of equipment.recipe.list) {
@@ -156,7 +158,7 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 	return equipment.recipe.craftCost;
 }
 
-export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean, bySymbol?: boolean): ICrewDemands {
+export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean, bySymbol?: boolean, excludePrimary?: boolean): ICrewDemands {
 	let craftCost = 0;
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
@@ -165,7 +167,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 			return;
 		}
 		if (bySymbol) {
-			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol);
+			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol, excludePrimary);
 		}
 		else {
 			craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
@@ -244,12 +246,14 @@ function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 	};
 }
 
-export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[], fromCurrLvl: boolean): ICrewDemands | undefined {
+export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[], fromCurrLvl: boolean, excludePrimary?: boolean): ICrewDemands | undefined {
 	let result: ICrewDemands | undefined = undefined;
 	for (let member of crew) {
-		let demands = calculateCrewDemands(member, items, fromCurrLvl, true);
-		if (result) {
-			result = mergeDemands(result, demands);
+		let demands = calculateCrewDemands(member, items, fromCurrLvl, true, excludePrimary);
+		if (result !== undefined) {
+			if (demands?.demands?.length) {
+				result = mergeDemands(result, demands);
+			}
 		}
 		else {
 			result = demands;

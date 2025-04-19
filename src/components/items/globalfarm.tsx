@@ -52,7 +52,12 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     React.useEffect(() => {
         function filterDemands(items: EquipmentItem[]) {
-            return items.filter(f => f.needed && f.needed > 0 && f?.item_sources?.length)
+            return items
+                .map(item => {
+                    item.demands = item.demands?.filter(d => !d.primary);
+                    return item;
+                })
+                .filter(f => f.needed && f.needed > 0 && f?.item_sources?.length)
         }
         if (calculatedDemands && !crewFilter?.length) {
             setPrefilteredData(filterDemands(calculatedDemands as EquipmentItem[]));
@@ -60,7 +65,6 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         }
         if (!playerData || !!props.noWorker) return;
         if (running) cancel();
-
         setTimeout(() => {
             runWorker(
                 "equipmentWorker", {

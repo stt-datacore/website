@@ -8,6 +8,7 @@ export interface IDemand {
 	factionOnly: boolean;
 	have: number;
 	crewSymbols: string[];
+  primary?: boolean;
 }
 
 export interface ICrewDemandsMeta {
