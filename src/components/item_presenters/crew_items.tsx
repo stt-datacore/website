@@ -1,16 +1,15 @@
 import * as React from 'react';
 
 import { navigate } from 'gatsby';
+import { Label, Progress } from 'semantic-ui-react';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { EquipmentItem } from '../../model/equipment';
 import { PlayerCrew, PlayerData } from "../../model/player";
 import { qbitsToSlots, qbProgressToNext } from '../../utils/crewutils';
 import { printShortDistance } from '../../utils/misc';
-import { BuffStatTable } from '../../utils/voyageutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
-import { Label, Progress } from 'semantic-ui-react';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 export interface CrewItemsViewProps {
@@ -31,7 +30,7 @@ export interface CrewItemsViewProps {
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
     if (playerData?.calc?.lastModified) {
         let dnum = Math.floor(playerData.calc.lastModified.getTime() / 1000);
-        let result = (crew.kwipment_expiration?.map((kw: number | number[], idx: number) => {
+        let result = (crew.kwipment_expiration?.map((kw: number | number[]) => {
             if (kw === 0) return undefined;
             let n = 0;
             if (typeof kw === 'number') {
@@ -40,7 +39,6 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
             else {
                 n = (dnum+kw[1]);
             }
-            let control = new Date(dnum * 1000);
             let result = new Date(n * 1000);
             return result;
 
@@ -51,11 +49,9 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
     return undefined;
 }
 
-
 export const CrewItemsView = (props: CrewItemsViewProps) => {
 	const context = React.useContext(GlobalContext);
     const { t } = context.localized;
-	const playerContext = context.player;
 	const mobileWidth = props.mobileWidth ?? DEFAULT_MOBILE_WIDTH;
 
     const crew = props.crew as PlayerCrew;
@@ -67,14 +63,23 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     const [toNext, next] = alwaysShowProgress && crew.q_bits >= 1300 ? [0, 1300] : (!!alwaysHideProgress || !quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
 6
-    let maxBuffs: BuffStatTable | undefined;
-
-	maxBuffs = playerContext?.maxBuffs ?? context.core?.all_buffs;
     crew.equipment ??= [];
-    let startlevel = Math.floor(crew.level / 10) * 4;
-    if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
+    let startlevel = 0;
+    if (crew.local_slots?.length && crew.local_slots[0]) {
+        startlevel = Math.floor(crew.local_slots[0].level / 10) * 4;
+    }
+    else {
+        startlevel = Math.floor(crew.level / 10) * 4;
+        if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
+    }
     let equip = [] as EquipmentItem[];
+    let disabled = [] as boolean[];
     let expirations: Date[] | undefined = undefined;
+
+    [0, 1, 2, 3].forEach(i => {
+        equip.push({} as EquipmentItem);
+        disabled.push(false);
+    });
 
     if (!quip) {
         if (!crew.equipment_slots[startlevel] || !context.core.items?.length) {
@@ -83,11 +88,15 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             // since in most cases, these crew are for show, only,
             // their level will be 100. We'll look for crew around
             // the given level and see if it's there.
-            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
 
             let lvl = crew.level;
-            if (lvl % 10) lvl = lvl - (lvl % 10);
-            if (lvl === 100) lvl = 90;
+            if (crew.local_slots?.length && crew.local_slots[0]) {
+                lvl = crew.local_slots[0].level;
+            }
+            else {
+                if (lvl % 10) lvl = lvl - (lvl % 10);
+                if (lvl === 100) lvl = 90;
+            }
             let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10);
             if (ceq?.length && ceq.length >= 4) {
                 ceq = ceq.slice(ceq.length - 4);
@@ -100,9 +109,6 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 }
             }
         } else {
-
-            [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
-
             for (let i = startlevel; i < startlevel + 4; i++) {
                 let eq: EquipmentSlot;
                 eq = crew.equipment_slots[i];
@@ -111,6 +117,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                     let ef = context.core.items.find(item => item.symbol === eq.symbol);
                     if (ef) {
                         equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
+                        disabled[i - startlevel] = eq.level > crew.level;
                     }
                 }
             }
@@ -121,7 +128,6 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             expirations = expToDate(context.player.playerData, crew);
         }
 
-        [0, 1, 2, 3].forEach(i => equip.push({} as EquipmentItem));
         if (crew.kwipment?.length && !crew.kwipment_slots) {
             if ((crew.kwipment as number[])?.some((q: number) => !!q)) {
                 let quips = (crew.kwipment as number[]).map(q => context.core.items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
@@ -135,6 +141,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 });
             }
         }
+
         for (let i = 0; i < 4; i++) {
             let eq: number | undefined = undefined;
 
@@ -201,8 +208,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         context={context}
                         vertical={!!vertical}
                         targetGroup={targetGroup}
-                        style={(quip && maxqIdx < idx) ? { opacity: locked ? "0.50" : "0.25" } : undefined}
-                        locked={locked && (quip && maxqIdx < idx)}
+                        style={(quip && maxqIdx < idx) || disabled[idx] ? { opacity: locked ? "0.50" : "0.25" } : undefined}
+                        locked={getLocked(idx)}
                         itemSize={props.itemSize}
                         mobileSize={props.mobileSize}
                         mobileWidth={mobileWidth}
@@ -227,6 +234,10 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         || <></>
 
 	);
+
+    function getLocked(idx: number) {
+        return (locked && (quip && maxqIdx < idx)) || (locked && !quip && disabled[idx])
+    }
 };
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {

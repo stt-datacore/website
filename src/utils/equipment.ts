@@ -9,6 +9,14 @@ import { makeAllCombos } from './misc';
 import { multiComp, qpComp, skoComp } from './quipment_tools';
 import { BuffStatTable } from './voyageutils';
 
+const cadence = (() => {
+	let idx = [] as number[];
+	for (let i = 0; i <= 100; i += 4) {
+		idx.push(i);
+	}
+	return idx;
+})();
+
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
 	if (!equipment) return 0;
@@ -176,10 +184,14 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 			lvl = crew.level;
 			if (lvl % 10) lvl = lvl - (lvl % 10);
 			if (lvl === 100) lvl = 90;
-			else if (crew.equipment.length) lvl -= 10;
 		}
 		if (lvl >= 1) {
-			let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10).slice(0, 4);
+			let ceq = crew.equipment_slots.filter((eq, idx) => {
+				if (!cadence.includes(idx) && eq.level === lvl) {
+					return false;
+				}
+				return eq.level >= lvl && eq.level <= lvl + 10;
+			});
 			if (ceq?.length && ceq.length >= 4) {
 				for (let i = 0; i < 4; i++) {
 					let eq = ceq[i];
@@ -200,10 +212,15 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 		}
 	}
 
-	crew.equipment_slots.forEach(es => {
-		if (fromCurrLvl && "level" in crew) {
+	const base = !(lvl % 10);
+
+	crew.equipment_slots.forEach((es, idx) => {
+		if (fromCurrLvl && "level" in crew && !crew.immortal) {
 			if (notneeded.includes(es.symbol)) return;
-			if (es.level < lvl) return;
+			else if (es.level < lvl) return;
+			else if (base && es.level === lvl && !cadence.includes(idx)) {
+				return;
+			}
 		}
 		if (bySymbol) {
 			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol, excludePrimary);

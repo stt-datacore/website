@@ -32,7 +32,7 @@ export const DemandsTable = (props: DemandsTableProps) => {
         }
         if (!playerData || !!props.noWorker) return;
         if (running) cancel();
-
+        if (props.noRender) return;
         setTimeout(() => {
             runWorker(
                 "equipmentWorker", {
