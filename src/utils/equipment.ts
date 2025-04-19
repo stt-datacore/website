@@ -164,11 +164,13 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let dupeChecker = new Set<string>();
 
 	let lvl = -1;
+	let local = false;
 	const notneeded = [] as string[];
 
 	if (fromCurrLvl && "level" in crew) {
 		if (crew.local_slots?.length && crew.local_slots[0]) {
 			lvl = crew.local_slots[0].level;
+			local = true;
 		}
 		else if (lvl === -1) {
 			lvl = crew.level;
@@ -187,7 +189,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 					}
 				}
 			}
-			if (notneeded.length >= 4) lvl += 10;
+			if (notneeded.length >= 4 && !local) lvl += 10;
 			if (lvl >= 100) {
 				return {
 					craftCost: 0,
