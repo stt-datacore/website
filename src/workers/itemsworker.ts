@@ -8,7 +8,6 @@ const ItemsWorker = {
     processItems: (config: EquipmentWorkerConfig) => {
 
         return new Promise<EquipmentWorkerResults>((resolve, reject) => {
-
             const { items, playerData, crewFilter, excludePrimary } = config;
             const data = mergeItems(playerData?.player.character.items ?? [], items).map(d => ({...d, needed: 0 })) as EquipmentItem[];
 
@@ -86,7 +85,6 @@ const ItemsWorker = {
 
 				if (rosterDemands?.demands.length && config.addNeeded === true) {
 					for (let item of rosterDemands.demands) {
-
 						if (!binaryLocate(item.symbol, data) && items) {
 							item.equipment = binaryLocate(item.symbol, catalog) as EquipmentItem | undefined;
 							if (item.equipment && item.count){
@@ -96,6 +94,7 @@ const ItemsWorker = {
 								eq.quantity = 0;
 								eq.demandCrew = [ ... item.crewSymbols ];
 								data.push(eq);
+								data.sort((a, b) => a.symbol.localeCompare(b.symbol));
 							}
 						}
 					}

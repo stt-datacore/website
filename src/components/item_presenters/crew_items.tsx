@@ -62,10 +62,10 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const maxqIdx = (!quip ? 0 : (crew ? qbitsToSlots(crew.q_bits) : 0)) - 1;
 
     const [toNext, next] = alwaysShowProgress && crew.q_bits >= 1300 ? [0, 1300] : (!!alwaysHideProgress || !quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
-6
+
     crew.equipment ??= [];
     let startlevel = 0;
-    if (crew.local_slots?.length && crew.local_slots[0]) {
+    if (crew.local_slots?.length && crew.local_slots[0]?.level === crew.level) {
         startlevel = Math.floor(crew.local_slots[0].level / 10) * 4;
     }
     else {
@@ -90,7 +90,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             // the given level and see if it's there.
 
             let lvl = crew.level;
-            if (crew.local_slots?.length && crew.local_slots[0]) {
+            if (crew.local_slots?.length && crew.local_slots[0]?.level === crew.level) {
                 lvl = crew.local_slots[0].level;
             }
             else {
