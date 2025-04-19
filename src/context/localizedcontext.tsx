@@ -614,44 +614,41 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	function getParts(str: string) {
 		let output = [] as string[];
-		let c = str.length;
-		let inthing = false;
-		let csp = "";
-		if (str.includes("{{:}}")) {
-			console.log("break here");
-		}
-		for (let i = 0; i < c; i++) {
-			if (!inthing) {
+		let count = str.length;
+		let varblock = false;
+		let currstr = "";
+		for (let i = 0; i < count; i++) {
+			if (!varblock) {
 				if (str[i] === '\n') {
-					if (csp) {
-						output.push(csp);
+					if (currstr) {
+						output.push(currstr);
 						output.push('\n');
 					}
-					csp = '';
+					currstr = '';
 				}
-				else if (str[i] === '{' && i < c - 1 && str[i + 1] === '{') {
-					if (csp) output.push(csp);
-					csp = '';
-					inthing = true;
+				else if (str[i] === '{' && i < count - 1 && str[i + 1] === '{') {
+					if (currstr) output.push(currstr);
+					currstr = '';
+					varblock = true;
 					i++;
 				}
 				else {
-					csp += str[i];
+					currstr += str[i];
 				}
 			}
 			else {
-				if (str[i] === '}' && i < c - 1 && str[i + 1] === '}') {
-					if (csp) output.push(`{{${csp}}}`);
-					csp = '';
-					inthing = false;
+				if (str[i] === '}' && i < count - 1 && str[i + 1] === '}') {
+					if (currstr) output.push(`{{${currstr}}}`);
+					currstr = '';
+					varblock = false;
 					i++;
 				}
 				else {
-					csp += str[i];
+					currstr += str[i];
 				}
 			}
 		}
-		if (csp) output.push(csp);
+		if (currstr) output.push(currstr);
 		return output;
 	}
 
