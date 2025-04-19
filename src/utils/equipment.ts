@@ -181,7 +181,6 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 		if (lvl >= 1) {
 			let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10).slice(0, 4);
 			if (ceq?.length && ceq.length >= 4) {
-				ceq = ceq.slice(ceq.length - 4);
 				for (let i = 0; i < 4; i++) {
 					let eq = ceq[i];
 					if (crew.equipment.includes(i as any)) {
@@ -189,7 +188,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 					}
 				}
 			}
-			if (notneeded.length >= 4 && !local) lvl += 10;
+			if (notneeded.length >= 4) lvl += 10;
 			if (lvl >= 100) {
 				return {
 					craftCost: 0,
