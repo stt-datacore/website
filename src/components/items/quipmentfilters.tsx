@@ -241,7 +241,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
             }
         }
         Object.values(trmap)
-            .sort((a, b) => a.name.localeCompare(b.name))
+            .sort((a, b) => a?.name?.localeCompare(b?.name || ''))
             .forEach((info) => {
                 traitFilterOpts.push({
                     key: `trait_${info.symbol}`,

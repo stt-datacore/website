@@ -489,9 +489,12 @@ export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillDa
   max_equipment_rank: number
   equipment_slots: EquipmentSlot[]
 
+  /** Used internally by DataCore, not part of game data */
+  local_slots?: EquipmentSlot[];
+
   /**
    * Input equipment slots are nested arrays,
-   * they are mapped to 1-dimensional arrays during processing if the crew is frozen
+   * they are mapped to 1-dimensional arrays during processing
    */
   equipment: number[][] | number[]
 

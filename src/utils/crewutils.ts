@@ -477,6 +477,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		crew.is_new = owned.is_new;
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
+		crew.local_slots = owned.local_slots;
 		if (owned.cap_achiever) crew.cap_achiever = owned.cap_achiever;
 
 		if (workitem.immortal > 0) crew.immortal = workitem.immortal;

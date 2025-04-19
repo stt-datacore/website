@@ -162,9 +162,50 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let craftCost = 0;
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
+
+	let lvl = -1;
+	const notneeded = [] as string[];
+
+	if (fromCurrLvl && "level" in crew) {
+		lvl = crew.level;
+		if (crew.local_slots?.length && crew.local_slots[0]) {
+			lvl = crew.local_slots[0].level;
+		}
+
+		if (lvl === -1) {
+			if (lvl % 10) lvl = lvl - (lvl % 10);
+			if (lvl === 100) lvl = 90;
+			else if (crew.equipment.length) lvl -= 10;
+		}
+
+		let ceq = crew.equipment_slots.filter(eq => eq.level >= lvl && eq.level <= lvl + 10).slice(0, 4);
+		if (ceq?.length && ceq.length >= 4) {
+			ceq = ceq.slice(ceq.length - 4);
+			for (let i = 0; i < 4; i++) {
+				let eq = ceq[i];
+				if (crew.equipment.includes(i as any)) {
+					if (lvl < 90) {
+						console.log("action");
+					}
+					notneeded.push(eq.symbol);
+				}
+			}
+		}
+		if (notneeded.length >= 4) lvl += 10;
+		if (lvl >= 100) {
+			return {
+				craftCost: 0,
+				demands: [],
+				factionOnlyTotal: 0,
+				totalChronCost: 0
+			};
+		}
+	}
+
 	crew.equipment_slots.forEach(es => {
-		if (fromCurrLvl && "level" in crew && es.level < crew.level) {
-			return;
+		if (fromCurrLvl && "level" in crew) {
+			if (notneeded.includes(es.symbol)) return;
+			if (es.level < lvl) return;
 		}
 		if (bySymbol) {
 			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol, excludePrimary);
