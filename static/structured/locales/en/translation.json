@@ -100,10 +100,10 @@
         "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Uniquely Retrievable",
-        "voyage": "Voyage",
-        "voyages": "Voyages",
         "variant": "Variant",
-        "variants": "Variants"
+        "variants": "Variants",
+        "voyage": "Voyage",
+        "voyages": "Voyages"
     },
     "behold_helper": {
         "columns": {
@@ -1092,6 +1092,7 @@
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_listed_status": "Filter by listed status",
+        "filter_by_mastery": "Filter by mastery",
         "filter_by_movement": "Filter by movement",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_polestars": "Filter by polestars",
@@ -1288,6 +1289,11 @@
         "gauntlet_data": "gauntlet data",
         "player_data": "player data",
         "quest_data": "quest data"
+    },
+    "mastery": {
+        "elite": "Elite",
+        "epic": "Epic",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "About",

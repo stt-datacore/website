@@ -8,6 +8,8 @@ import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
 import { ItemDropDown } from "./itemdropdown";
+import { printChrons } from "../retrieval/context";
+import { OptionsPanelFlexRow } from "../stats/utils";
 
 export interface FarmSources {
 
@@ -36,8 +38,8 @@ export const FarmTable = (props: FarmTableProps) => {
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
     allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
     const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
-    const { t } = globalContext.localized;
+    const { playerData, ephemeral } = globalContext.player;
+    const { t, tfmt } = globalContext.localized;
 
     const [itemFilter, setItemFilter] = useStateWithStorage(`${pageId}/farm/item_filter`, '', { rememberForever: true });
 
@@ -57,6 +59,7 @@ export const FarmTable = (props: FarmTableProps) => {
     const searchText = selectedItems.join(',')
 
     const expanding = !!renderExpanded;
+    const flexRow = OptionsPanelFlexRow;
 
     React.useEffect(() => {
         const distinctItems = [ ... new Set(sources.map(m => m.items).flat().map(m => m.symbol)) ]
@@ -233,7 +236,12 @@ export const FarmTable = (props: FarmTableProps) => {
     }
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
-
+        let cost = row.source.cost ?? 0;
+        let costColor = undefined as string | undefined;
+        if ([0, 2].indexOf(row.source.type) && ephemeral?.stimpack?.energy_discount) {
+            cost = Math.ceil(cost - (cost * (ephemeral.stimpack.energy_discount / 100)));
+            costColor = 'lightgreen';
+        }
         return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}
             style={{
                 cursor: expanding ? (expanded ? 'zoom-out' : 'zoom-in') : undefined
@@ -256,6 +264,11 @@ export const FarmTable = (props: FarmTableProps) => {
                 <div>
                     <ItemSources farmFormat={true} item_sources={[row.source]} />
                 </div>
+                {[0, 2].includes(row.source.type) && !!row.source.cost &&
+                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
+                    {t('global.cost{{:}}')}<span style={{color:costColor}}>{printChrons(cost)}</span>
+                </div>
+                }
             </Table.Cell>
             <Table.Cell>
                 <div style={{

@@ -100,10 +100,10 @@
         "status": "Estado",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
-        "voyage": "Viaje",
-        "voyages": "Viajes",
         "variant": "Variante",
-        "variants": "Variantes"
+        "variants": "Variantes",
+        "voyage": "Viaje",
+        "voyages": "Viajes"
     },
     "behold_helper": {
         "columns": {
@@ -1100,6 +1100,7 @@
         "filter_by_event_type": "Filtrar por tipo de evento",
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_listed_status": "Filtrar por estado de listado",
+        "filter_by_mastery": "Filtrar por maestría",
         "filter_by_movement": "Filtrar por movimiento",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_polestars": "Filtrar por estrellas polares",
@@ -1298,6 +1299,11 @@
         "gauntlet_data": "datos del reto",
         "player_data": "datos del jugador",
         "quest_data": "datos de la misión"
+    },
+    "mastery": {
+        "elite": "Élite",
+        "epic": "Épico",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "Sobre",

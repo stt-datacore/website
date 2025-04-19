@@ -100,10 +100,10 @@
         "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Eindeutig abrufbar",
-        "voyage": "Reise",
-        "voyages": "Reisen",
         "variant": "Variante",
-        "variants": "Varianten"
+        "variants": "Varianten",
+        "voyage": "Reise",
+        "voyages": "Reisen"
     },
     "behold_helper": {
         "columns": {
@@ -1092,6 +1092,7 @@
         "filter_by_event_type": "Filtern nach Ereignistyp",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_listed_status": "Filtern nach Listenstatus",
+        "filter_by_mastery": "Filtern nach Meisterschafts",
         "filter_by_movement": "Filtern nach Bewegung",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_polestars": "Filtern nach Polarsterne",
@@ -1288,6 +1289,11 @@
         "gauntlet_data": "Herausforderungsdaten",
         "player_data": "Spielerdaten",
         "quest_data": "Quest-Daten"
+    },
+    "mastery": {
+        "elite": "Elite",
+        "epic": "Episch",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "Über uns",

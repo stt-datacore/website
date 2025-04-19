@@ -25,6 +25,8 @@ export interface IItemsFilterContext {
     setItemTypeFilter: (value?: number[]) => void;
     itemSourceFilter?: number[];
     setItemSourceFilter: (value?: number[]) => void;
+    masteryFilter?: number[];
+    setMasteryFilter: (value?: number[]) => void;
     filterItems: (items: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
     configureFilters: (pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => void;
 }
@@ -37,6 +39,7 @@ const DefaultContextData: IItemsFilterContext = {
     setRarityFilter: () => false,
     setItemTypeFilter: () => false,
     setItemSourceFilter: () => false,
+    setMasteryFilter: () => false,
     filterItems: () => [],
     configureFilters: () => false,
 }
@@ -53,7 +56,8 @@ export interface ItemsFilterProps {
 
 export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t }  = globalContext.localized;
+    const { t, useT }  = globalContext.localized;
+    const { t: hint } = useT('hints');
     const { children, pageId, pool, ownedItems, noRender } = props;
 
     const [filterPool, setFilterPool] = React.useState(pool);
@@ -62,6 +66,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_rarity_filter`, undefined, { rememberForever: true });
     const [itemTypeFilter, setItemTypeFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_type_filter`, undefined, { rememberForever: true });
     const [itemSourceFilter, setItemSourceFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_source_filter`, undefined, { rememberForever: true });
+    const [masteryFilter, setMasteryFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_mastery_filter`, undefined, { rememberForever: true });
 
     const rarityOptions = React.useMemo(() => CONFIG.RARITIES
         .filter((rarity, idx) => filterPool?.some((p) => p.rarity === idx) ?? true)
@@ -83,12 +88,17 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
             }
         }), [filterPool]);
 
-
     const itemSourceOptions = Object.entries(ItemSources).map(([source, value]) => ({
         key: source,
         value,
         text: t(`item_source.${source}`)
-     } as DropdownItemProps));
+    } as DropdownItemProps));
+
+    const masteryOptions = ['normal', 'elite', 'epic'].map((key, idx) => ({
+        key,
+        value: idx,
+        text: t(`mastery.${key}`)
+    }));
 
     const contextData: IItemsFilterContext = {
         available: true,
@@ -102,15 +112,17 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         filterItems,
         configureFilters,
         itemSourceFilter,
-        setItemSourceFilter
+        setItemSourceFilter,
+        masteryFilter,
+        setMasteryFilter
     }
 
     const flexRow = OptionsPanelFlexRow;
 
     return <React.Fragment>
-        {!noRender && <div className={'ui segment'} style={{...flexRow}}>
+        {!noRender && <div className={'ui segment'} style={{...flexRow, flexWrap: 'wrap'}}>
             <Dropdown
-                placeholder={t("hints.filter_by_rarity")}
+                placeholder={hint("filter_by_rarity")}
                 multiple
                 clearable
                 selection
@@ -119,7 +131,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 onChange={(e, { value }) => setRarityFilter(value as number[] ?? [])}
             />
             <Dropdown
-                placeholder={t("hints.filter_by_item_type")}
+                placeholder={hint("filter_by_item_type")}
                 multiple
                 clearable
                 selection
@@ -136,6 +148,15 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 value={itemSourceFilter}
                 onChange={(e, { value }) => setItemSourceFilter(value as number[] ?? [])}
             />
+            {!!itemSourceFilter?.length && itemSourceFilter.some(s => s !== ItemSources.faction_missions) && <Dropdown
+                placeholder={hint("filter_by_mastery")}
+                multiple
+                clearable
+                selection
+                options={masteryOptions}
+                value={masteryFilter}
+                onChange={(e, { value }) => setMasteryFilter(value as number[] ?? [])}
+            />}
             {!!ownedItems && !!setShowUnownedNeeded &&
             <Checkbox
                 label={t("items.show_unowned_needed")}
@@ -168,9 +189,12 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
             if (itemSourceFilter?.length) {
                 item = { ... item };
                 if ("item_sources" in item && item.item_sources) {
-                    item.item_sources = item.item_sources.filter(s => itemSourceFilter.includes(s.type));
+                    item.item_sources = item.item_sources
+                        .filter(s =>
+                            itemSourceFilter.includes(s.type) &&
+                            (!masteryFilter?.length || masteryFilter.includes(s.mastery ?? -1))
+                        );
                 }
-                return item;
             }
             return item;
         });

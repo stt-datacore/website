@@ -34,7 +34,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     const { cancel, runWorker, running } = workerContext;
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters, itemSourceFilter } = filterContext;
+    const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters, itemSourceFilter, masteryFilter } = filterContext;
 
     const rosterCrew = React.useMemo(() => {
         if (playerData) {
@@ -94,7 +94,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         else {
             return prefiteredData ?? props.items ?? globalContext.core.items;
         }
-    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter]);
+    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter]);
 
     const sources = React.useMemo(() => {
         const demands = (displayData as EquipmentItem[]); //.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();

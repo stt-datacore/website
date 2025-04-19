@@ -100,10 +100,10 @@
         "status": "Statut",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Récupérable de manière unique",
-        "voyage": "Voyage",
-        "voyages": "Voyages",
         "variant": "Variante",
-        "variants": "Variantes"
+        "variants": "Variantes",
+        "voyage": "Voyage",
+        "voyages": "Voyages"
     },
     "behold_helper": {
         "columns": {
@@ -1102,6 +1102,7 @@
         "filter_by_event_type": "Filtrer par type d'événement",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_listed_status": "Filtrer par statut répertorié",
+        "filter_by_mastery": "Filtrer par maîtrise",
         "filter_by_movement": "Filtrer par mouvement",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_polestars": "Filtrer par étoiles polaires",
@@ -1300,6 +1301,11 @@
         "gauntlet_data": "données de gantelet",
         "player_data": "données du joueur",
         "quest_data": "données de quête"
+    },
+    "mastery": {
+        "elite": "Élite",
+        "epic": "Épique",
+        "normal": "Normale"
     },
     "menu": {
         "about_title": "À propos",

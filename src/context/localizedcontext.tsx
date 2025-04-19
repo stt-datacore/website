@@ -522,30 +522,36 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				v = newkey;
 			}
 		}
+		//v = v.replace(/\{\{:\}\}/g, webStringMap['global.colon'] || fallbackMap['global.colon'] || ": ");
 		try {
-			let obj = webStringMap[v] ?? fallbackMap[v];
-			if (opts && typeof obj === 'string') {
-				let parts = getParts(obj);
-				let finals = [] as string[];
+			let inparts = getParts(v);
+			let obj = '';
+			for (let v2 of inparts) {
+				if (v2 === '{{:}}') v2 = 'global.colon';
+				let obji = webStringMap[v2] ?? fallbackMap[v2];
+				if (opts && typeof obji === 'string') {
+					let parts = getParts(obji);
+					let finals = [] as string[];
 
-				for (let part of parts) {
-					if (part.startsWith("{{") && part.endsWith("}}")) {
-						let key = part.slice(2, part.length - 2);
-						if (key in opts) {
-							finals.push(`${opts[key]}`);
+					for (let part of parts) {
+						if (part.startsWith("{{") && part.endsWith("}}")) {
+							let key = part.slice(2, part.length - 2);
+							if (key in opts) {
+								finals.push(`${opts[key]}`);
+							}
+							else if (key in webStringMap) {
+								finals.push(webStringMap[key]);
+							}
+							else if (key in fallbackMap) {
+								finals.push(fallbackMap[key]);
+							}
 						}
-						else if (key in webStringMap) {
-							finals.push(webStringMap[key]);
-						}
-						else if (key in fallbackMap) {
-							finals.push(fallbackMap[key]);
+						else {
+							finals.push(part);
 						}
 					}
-					else {
-						finals.push(part);
-					}
+					obj += finals.join("");
 				}
-				return finals.reduce((p, n) => p ? p + n : n);
 			}
 			return obj;
 		}
@@ -562,51 +568,58 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				v = newkey;
 			}
 		}
+		//v = v.replace(/\{\{:\}\}/g, webStringMap['global.colon'] || fallbackMap['global.colon'] || ": ");
 		try {
 			if (!webStringMap && !fallbackMap) return <>{v}</>;
-			let obj = webStringMap[v] ?? fallbackMap[v];
-			if (opts && typeof obj === 'string') {
-				let parts = getParts(obj);
-				let finals = [] as JSX.Element[];
-
-				for (let part of parts) {
-					if (part === '\n') {
-						finals.push(<br />);
-					}
-					else if (part.startsWith("{{") && part.endsWith("}}")) {
-						let key = part.slice(2, part.length - 2);
-						if (key in opts) {
-							finals.push(<>{opts[key]}</>);
+			let inparts = getParts(v);
+			let output = [] as JSX.Element[];
+			for (let v2 of inparts) {
+				if (v2 === '{{:}}') v2 = 'global.colon';
+				let obj = webStringMap[v2] ?? fallbackMap[v2];
+				if (opts && typeof obj === 'string') {
+					let parts = getParts(obj);
+					let finals = [] as JSX.Element[];
+					for (let part of parts) {
+						if (part === '\n') {
+							finals.push(<br />);
 						}
-						else if (key in webStringMap) {
-							finals.push(<>{webStringMap[key]}</>);
+						else if (part.startsWith("{{") && part.endsWith("}}")) {
+							let key = part.slice(2, part.length - 2);
+							if (key in opts) {
+								finals.push(<>{opts[key]}</>);
+							}
+							else if (key in webStringMap) {
+								finals.push(<>{webStringMap[key]}</>);
+							}
+							else if (key in fallbackMap) {
+								finals.push(<>{fallbackMap[key]}</>);
+							}
 						}
-						else if (key in fallbackMap) {
-							finals.push(<>{fallbackMap[key]}</>);
+						else {
+							finals.push(<>{part}</>);
 						}
 					}
-					else {
-						finals.push(<>{part}</>);
-					}
+					output.push(finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>));
 				}
-				return finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);
+				else {
+					output.push(<>{obj}</>);
+				}
 			}
-			else {
-				return <>{obj}</>
-			}
+			return output.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);
 		}
 		catch {
 			return <>{v}</>;
 		}
 	}
 
-
 	function getParts(str: string) {
 		let output = [] as string[];
 		let c = str.length;
 		let inthing = false;
 		let csp = "";
-
+		if (str.includes("{{:}}")) {
+			console.log("break here");
+		}
 		for (let i = 0; i < c; i++) {
 			if (!inthing) {
 				if (str[i] === '\n') {
@@ -628,8 +641,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			}
 			else {
 				if (str[i] === '}' && i < c - 1 && str[i + 1] === '}') {
-					if (csp === ':') output.push('{{global.colon}}')
-					else if (csp) output.push(`{{${csp}}}`);
+					if (csp) output.push(`{{${csp}}}`);
 					csp = '';
 					inthing = false;
 					i++;
