@@ -10,9 +10,9 @@ import { multiComp, qpComp, skoComp } from './quipment_tools';
 import { BuffStatTable } from './voyageutils';
 
 const cadence = (() => {
-	let idx = [] as number[];
+	let idx = {} as {[key:string]: boolean};
 	for (let i = 0; i <= 100; i += 4) {
-		idx.push(i);
+		idx[i] = true;
 	}
 	return idx;
 })();
@@ -187,7 +187,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 		}
 		if (lvl >= 1) {
 			let ceq = crew.equipment_slots.filter((eq, idx) => {
-				if (!cadence.includes(idx) && eq.level === lvl) {
+				if (!cadence[idx] && eq.level === lvl) {
 					return false;
 				}
 				return eq.level >= lvl && eq.level <= lvl + 10;
@@ -218,7 +218,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 		if (fromCurrLvl && "level" in crew && !crew.immortal) {
 			if (notneeded.includes(es.symbol)) return;
 			else if (es.level < lvl) return;
-			else if (base && es.level === lvl && !cadence.includes(idx)) {
+			else if (base && es.level === lvl && !cadence[idx]) {
 				return;
 			}
 		}
