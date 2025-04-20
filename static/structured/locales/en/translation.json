@@ -100,6 +100,8 @@
         "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Uniquely Retrievable",
+        "variant": "Variant",
+        "variants": "Variants",
         "voyage": "Voyage",
         "voyages": "Voyages"
     },
@@ -442,6 +444,7 @@
             "title": "Prospective Crew"
         },
         "quipment": "Show quipment scores",
+        "scoring": "Show ranking and scoring",
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
@@ -452,6 +455,7 @@
     },
     "duration": {
         "all_time": "All Time",
+        "custom_date": "Custom Date",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} day",
@@ -960,6 +964,7 @@
             "equipment": "Equipment",
             "honor": "Honor",
             "honorable_citation": "Honorable citation",
+            "intel": "Intel",
             "interstellar_medium": "Interstellar Medium",
             "ism": "ISM",
             "merits": "Merits",
@@ -1012,6 +1017,7 @@
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
+        "portal_update": "Portal Update",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1087,6 +1093,7 @@
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_listed_status": "Filter by listed status",
+        "filter_by_mastery": "Filter by mastery",
         "filter_by_movement": "Filter by movement",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_polestars": "Filter by polestars",
@@ -1283,6 +1290,11 @@
         "gauntlet_data": "gauntlet data",
         "player_data": "player data",
         "quest_data": "quest data"
+    },
+    "mastery": {
+        "elite": "Elite",
+        "epic": "Epic",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "About",
@@ -1556,6 +1568,7 @@
             "am_seating": "Antimatter Seats",
             "collections": "Stat-Boosting Collections",
             "crit": "Elevated Crit",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
             "main_cast": "Main Cast",
@@ -2076,6 +2089,7 @@
         "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
         "graphs": {
             "circle": "Skill Circles",
+            "event_distributions": "Event distributions",
             "ignore_filters": "Ignore currently active filters",
             "map_skill_order_density": "Map skill order density",
             "map_skill_order_power": "Map skill order power",
@@ -2116,6 +2130,10 @@
             "items": {
                 "description": "Stats about components and equipment in the game",
                 "title": "{{global.items}}"
+            },
+            "portal_update": {
+                "description": "Browse portal updates",
+                "title": "{{global.portal_update}}"
             },
             "traits": {
                 "description": "Stats about crew traits in the game",

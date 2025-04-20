@@ -100,6 +100,8 @@
         "status": "Estado",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
+        "variant": "Variante",
+        "variants": "Variantes",
         "voyage": "Viaje",
         "voyages": "Viajes"
     },
@@ -448,6 +450,7 @@
             "title": "Tripulación potencial"
         },
         "quipment": "Mostrar rangos de Quipos",
+        "scoring": "Mostrar clasificación y puntuación",
         "ship": "Mostrar habilidades del buque",
         "view_big_book": "Ver {{crew}} en Big Book",
         "voyage": "Mostrar rangos de viaje"
@@ -458,6 +461,7 @@
     },
     "duration": {
         "all_time": "Todo el tiempo",
+        "custom_date": "Fecha personalizada",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} día",
@@ -966,6 +970,7 @@
             "equipment": "Equipamiento",
             "honor": "Honor",
             "honorable_citation": "Distinción de Honor",
+            "intel": "Intel",
             "interstellar_medium": "El medio interestelar",
             "ism": "MI",
             "merits": "Méritos",
@@ -1020,6 +1025,7 @@
         "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
+        "portal_update": "Actualización del portal",
         "presets": "Preestablecidos",
         "quarter_short": "T",
         "quest": "Búsqueda",
@@ -1095,6 +1101,7 @@
         "filter_by_event_type": "Filtrar por tipo de evento",
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_listed_status": "Filtrar por estado de listado",
+        "filter_by_mastery": "Filtrar por maestría",
         "filter_by_movement": "Filtrar por movimiento",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_polestars": "Filtrar por estrellas polares",
@@ -1293,6 +1300,11 @@
         "gauntlet_data": "datos del reto",
         "player_data": "datos del jugador",
         "quest_data": "datos de la misión"
+    },
+    "mastery": {
+        "elite": "Élite",
+        "epic": "Épico",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "Sobre",
@@ -1566,6 +1578,7 @@
             "am_seating": "Asientos de antimateria",
             "collections": "Colecciones que mejoran las estadísticas",
             "crit": "Crítico elevado",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Reto",
             "gauntlet_plus": "Reto+",
             "main_cast": "Elenco principal",
@@ -2086,6 +2099,7 @@
         "exact_skill_order_only": "Mostrar únicamente progresiones exactas del orden de habilidades (no coincidencias parciales)",
         "graphs": {
             "circle": "Círculos de habilidades",
+            "event_distributions": "Distribuciones de los eventos",
             "ignore_filters": "Ignorar los filtros actualmente activos",
             "map_skill_order_density": "Mapear la densidad del orden de habilidades",
             "map_skill_order_power": "Mapear el poder del orden de habilidades",
@@ -2126,6 +2140,10 @@
             "items": {
                 "description": "Estadísticas sobre componentes y equipos en el juego",
                 "title": "{{global.items}}"
+            },
+            "portal_update": {
+                "description": "Explorar actualizaciones del portal",
+                "title": "{{global.portal_update}}"
             },
             "traits": {
                 "description": "Estadísticas sobre los rasgos de la tripulación en el juego",

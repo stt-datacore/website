@@ -1,6 +1,6 @@
-import { Ship } from "./ship"
-import { BuffBase, PotentialReward, Reward } from "./player"
-import { Icon } from "./game-elements"
+import { Ship } from "./ship";
+import { BuffBase, PotentialReward } from "./player";
+import { Icon } from "./game-elements";
 
 export interface QuestFilterConfig {
   traits?: MissionTraitBonus[];

@@ -1,6 +1,5 @@
-import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { AvatarIcon } from '../model/game-elements';
+import { AvatarIcon, PortalLogEntry as PortalLogEntry, PortalReport } from '../model/game-elements';
 import { PlayerCrew, TranslateMethod } from '../model/player';
 import { shortToSkill, skillToShort } from './crewutils';
 
@@ -102,34 +101,7 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
  * @returns
  */
 export function appelate(text: string) {
-	text = text.toLowerCase();
-	let curr: string = "";
-	let cpos = 0;
-
-	text = text.toLowerCase();
-
-	const match = new RegExp(/[A-Za-z0-9']/);
-
-	for (let ch of text) {
-		if (ch === ch.toUpperCase() && !curr.endsWith(" ")) {
-			curr += " ";
-			cpos = 0;
-		}
-		if (match.test(ch)) {
-			if (cpos++ === 0) {
-				curr += ch.toUpperCase();
-			}
-			else {
-				curr += ch.toLowerCase();
-			}
-		}
-		else {
-			cpos = 0;
-			curr += ch == '_' ? " " : ch;
-		}
-	}
-
-	return curr;
+	return text.split(" ").map(t => t.split("_")).flat().filter(t => t).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1).toLowerCase()}`).join(" ");
 }
 
 export function translatePseudocolumn(name: string, t: TranslateMethod) {
@@ -360,7 +332,7 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
  * @param check The method that performs an operation on each combination.
  * @returns If count_only is true, then nothing is returned. Otherwise the combinations are returned.
  */
-export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
+export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[], idx?: number) => U[] | false) {
     var current_iter = 0n;
     const mmin = start_idx ?? 0n;
     const mmax = (count ?? 0n) + mmin;
@@ -438,4 +410,82 @@ export function getComboCount(itemCount: number, groupSize: number): number {
  */
 export function getComboCountBig(itemCount: bigint, groupSize: bigint): bigint {
 	return (factorialBig(itemCount) / (factorialBig(itemCount - groupSize) * factorialBig(groupSize)));
+}
+
+export function scaleImage(image: HTMLImageElement, scaleFactor: number) {
+	const canvas = document.createElement('canvas');
+	canvas.width = image.width * scaleFactor;
+	canvas.height = image.height * scaleFactor;
+
+	const ctx = canvas.getContext('2d');
+	if (!ctx) throw new Error("Cannot create 2d canvas!");
+	ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+	//ctx.save();
+	return canvas.toDataURL('image/png');
+}
+
+export async function loadAndScaleImage(url: string, scaleFactor: number) {
+	return new Promise<string>((resolve, reject) => {
+		const img = new Image();
+		const loader = (e: Event) => {
+			resolve(scaleImage(img, scaleFactor));
+		}
+		img.crossOrigin = 'anonymous';
+		img.onload = loader;
+		img.onerror = (e: any) => {
+			console.log(e);
+			//reject(new Error(e));
+		};
+		img.src = url;
+	});
+}
+
+export function getPortalLog(log: PortalLogEntry[], crew: CrewMember[], n_updates: number) {
+    const c = log.length;
+	let batch = [] as PortalLogEntry[];
+	const update = [] as PortalReport[];
+	let updcnt = 0;
+
+	log.sort((a, b) => a.portal_batch_id - b.portal_batch_id);
+	let ldate = new Date();
+
+	for (let i = c - 1; i >= 0; ) {
+        let fbatch = log.filter(ff => ff.portal_batch_id === log[i].portal_batch_id);
+        batch = batch.concat(fbatch);
+        if (fbatch.length >= 10) {
+			ldate = fbatch[0].date;
+			updcnt++;
+			if (n_updates && updcnt >= n_updates) break;
+        }
+		else {
+			for (let rec of fbatch) {
+				rec.date = ldate;
+			}
+		}
+		i -= fbatch.length;
+    }
+
+    for (let cp of batch) {
+        let c = crew.find(cc => cc.symbol === cp.symbol);
+        if (c) {
+            update.push({
+                name: c.name,
+                rarity: c.max_rarity,
+                date: cp.date ? new Date(cp.date) : undefined
+            });
+        }
+    }
+
+    return update.sort((a, b) => {
+		let r = 0;
+		if (a.date && b.date) {
+			if (typeof a.date === 'string') a.date = new Date(a.date);
+			if (typeof b.date === 'string') b.date = new Date(b.date);
+			r = a.date.getTime() - b.date.getTime();
+		}
+		else if (a.date) return -1;
+		else if (b.date) return 1;
+		if (!r) r = b.rarity - a.rarity || a.name.localeCompare(b.name);
+		return r;
+	});
 }

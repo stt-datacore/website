@@ -6,7 +6,16 @@ import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 import { makeAllCombos } from './misc';
+import { multiComp, qpComp, skoComp } from './quipment_tools';
 import { BuffStatTable } from './voyageutils';
+
+const cadence = (() => {
+	let idx = {} as {[key:string]: boolean};
+	for (let i = 0; i <= 100; i += 4) {
+		idx[i] = true;
+	}
+	return idx;
+})();
 
 export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
 	let equipment = items.find(item => item.symbol === es.symbol);
@@ -71,7 +80,7 @@ export function demandsPerSlot(es: EquipmentSlot, items: EquipmentItem[], dupeCh
 }
 
 
-export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string): number {
+export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeChecker: Set<string>, demands: IDemand[], crewSymbol: string, excludePrimary?: boolean): number {
 	let equipment = items.find(item => item.symbol === eqsym);
 	if (!equipment) return 0;
 
@@ -101,24 +110,26 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 		return 0;
 	}
 
+	if (!excludePrimary) {
+		const currItem = demands.find(f => f.symbol === eqsym);
 
-	const currItem = demands.find(f => f.symbol === eqsym);
-
-	if (currItem) {
-		if (!currItem.crewSymbols.includes(crewSymbol)) {
-			currItem.crewSymbols.push(crewSymbol);
-			currItem.count++;
+		if (currItem) {
+			if (!currItem.crewSymbols.includes(crewSymbol)) {
+				currItem.crewSymbols.push(crewSymbol);
+				currItem.count++;
+			}
 		}
-	}
-	else {
-		demands.push({
-			crewSymbols: [crewSymbol],
+		else {
+			demands.push({
+				crewSymbols: [crewSymbol],
 				count: 1,
 				symbol: equipment.symbol,
-				equipment: equipment,
-				factionOnly: equipment.factionOnly ?? false,
+				equipment,
+				factionOnly: false,
+				primary: true,
 				have: 0
-		})
+			});
+		}
 	}
 
 	for (let iter of equipment.recipe.list) {
@@ -155,22 +166,68 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 	return equipment.recipe.craftCost;
 }
 
-export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean, bySymbol?: boolean): ICrewDemands {
+export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean, bySymbol?: boolean, excludePrimary?: boolean): ICrewDemands {
 	let craftCost = 0;
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
-	crew.equipment_slots.forEach(es => {
-		if (fromCurrLvl && "level" in crew) {
-			if (es.level < crew.level) return;
-			else if (es.level === crew.level && crew.equipment_slots[crew.level] !== undefined && crew.equipment_slots[crew.level].imageUrl) return;
+
+	let lvl = -1;
+	let local = false;
+	const notneeded = [] as string[];
+
+	if (fromCurrLvl && "level" in crew) {
+		if (crew.local_slots?.length && crew.local_slots[0]) {
+			lvl = crew.local_slots[0].level;
+			local = true;
+		}
+		else if (lvl === -1) {
+			lvl = crew.level;
+			if (lvl % 10) lvl = lvl - (lvl % 10);
+			if (lvl === 100) lvl = 90;
+		}
+		if (lvl >= 1) {
+			let ceq = crew.equipment_slots.filter((eq, idx) => {
+				if (!cadence[idx] && eq.level === lvl) {
+					return false;
+				}
+				return eq.level >= lvl && eq.level <= lvl + 10;
+			});
+			if (ceq?.length && ceq.length >= 4) {
+				for (let i = 0; i < 4; i++) {
+					let eq = ceq[i];
+					if (crew.equipment.includes(i as any)) {
+						notneeded.push(eq.symbol);
+					}
+				}
+			}
+			if (notneeded.length >= 4) lvl += 10;
+			if (lvl >= 100) {
+				return {
+					craftCost: 0,
+					demands: [],
+					factionOnlyTotal: 0,
+					totalChronCost: 0
+				};
+			}
+		}
+	}
+
+	const base = !(lvl % 10);
+
+	crew.equipment_slots.forEach((es, idx) => {
+		if (fromCurrLvl && "level" in crew && !crew.immortal) {
+			if (notneeded.includes(es.symbol)) return;
+			else if (es.level < lvl) return;
+			else if (base && es.level === lvl && !cadence[idx]) {
+				return;
+			}
 		}
 		if (bySymbol) {
-			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol);
+			craftCost += demandsBySymbol(es.symbol, items, dupeChecker, demands, crew.symbol, excludePrimary);
 		}
 		else {
 			craftCost += demandsPerSlot(es, items, dupeChecker, demands, crew.symbol);
 		}
-
 	});
 
 	const reducer = (accumulator: number, currentValue: IDemand) => accumulator + currentValue.count;
@@ -245,12 +302,14 @@ function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 	};
 }
 
-export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[], fromCurrLvl: boolean): ICrewDemands | undefined {
+export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items: EquipmentItem[], fromCurrLvl: boolean, excludePrimary?: boolean): ICrewDemands | undefined {
 	let result: ICrewDemands | undefined = undefined;
 	for (let member of crew) {
-		let demands = calculateCrewDemands(member, items, fromCurrLvl, true);
-		if (result) {
-			result = mergeDemands(result, demands);
+		let demands = calculateCrewDemands(member, items, fromCurrLvl, true, excludePrimary);
+		if (result !== undefined) {
+			if (demands?.demands?.length) {
+				result = mergeDemands(result, demands);
+			}
 		}
 		else {
 			result = demands;
@@ -783,4 +842,17 @@ export function calcQLots<T extends CrewMember>(
 	}
 
 	return crew;
+}
+
+export function sortCrewByQuipment(roster: CrewMember[], pstMode: boolean | 2 | 3, index: number | string, reverse?: boolean, tiebreaker?: (a: CrewMember, b: CrewMember) => number) {
+	const mul = reverse ? -1 : 1;
+	if (pstMode === true && typeof index === 'number') {
+		roster.sort((a, b) => mul * skoComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
+	}
+	else if (pstMode === 2 && typeof index === 'number') {
+		roster.sort((a, b) => mul * multiComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
+	}
+	else if (typeof index === 'string') {
+		roster.sort((a, b) => mul * qpComp(a, b, index) || (tiebreaker ? (mul * tiebreaker(a, b)) : 0));
+	}
 }

@@ -100,6 +100,8 @@
         "status": "Statut",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Récupérable de manière unique",
+        "variant": "Variante",
+        "variants": "Variantes",
         "voyage": "Voyage",
         "voyages": "Voyages"
     },
@@ -450,6 +452,7 @@
             "title": "Équipage potentiel"
         },
         "quipment": "Afficher les rangs des Quipements",
+        "scoring": "Afficher le classement et la notation",
         "ship": "Afficher les capacités du vaisseau",
         "view_big_book": "Voir {{crew}} sur Big Book",
         "voyage": "Afficher les rangs des voyages"
@@ -460,6 +463,7 @@
     },
     "duration": {
         "all_time": "Tout le temps",
+        "custom_date": "Date personnalisée",
         "n_d": "{{days}} j",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} jour",
@@ -968,6 +972,7 @@
             "equipment": "Équipment",
             "honor": "Honneur",
             "honorable_citation": "Mention honorable",
+            "intel": "Intel",
             "interstellar_medium": "Milieu Interstellaire",
             "ism": "MIS",
             "merits": "Mérites",
@@ -1022,6 +1027,7 @@
         "percentile": "Centile",
         "permalink": "lien permanent",
         "portal": "Portail",
+        "portal_update": "Mise à jour du portail",
         "presets": "Prédéfinies",
         "quarter_short": "T",
         "quest": "Quête",
@@ -1097,6 +1103,7 @@
         "filter_by_event_type": "Filtrer par type d'événement",
         "filter_by_item_type": "Filtrer par type d'article",
         "filter_by_listed_status": "Filtrer par statut répertorié",
+        "filter_by_mastery": "Filtrer par maîtrise",
         "filter_by_movement": "Filtrer par mouvement",
         "filter_by_owned_status": "Filtrer par statut de propriété",
         "filter_by_polestars": "Filtrer par étoiles polaires",
@@ -1295,6 +1302,11 @@
         "gauntlet_data": "données de gantelet",
         "player_data": "données du joueur",
         "quest_data": "données de quête"
+    },
+    "mastery": {
+        "elite": "Élite",
+        "epic": "Épique",
+        "normal": "Normale"
     },
     "menu": {
         "about_title": "À propos",
@@ -1568,6 +1580,7 @@
             "am_seating": "Sièges antimatière",
             "collections": "Collections améliorant les statistiques",
             "crit": "Critique élevée",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
             "gauntlet_plus": "Gantelet+",
             "main_cast": "Casting principal",
@@ -2088,6 +2101,7 @@
         "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
         "graphs": {
             "circle": "Cercles de compétences",
+            "event_distributions": "Distributions des événements",
             "ignore_filters": "Ignorer les filtres actuellement actifs",
             "map_skill_order_density": "Cartographier la densité de l'ordre des compétences",
             "map_skill_order_power": "Cartographier l'ordre de puissance des compétences",
@@ -2128,6 +2142,10 @@
             "items": {
                 "description": "Statistiques sur les composants et l'équipement du jeu",
                 "title": "{{global.items}}"
+            },
+            "portal_update": {
+                "description": "Parcourir les mises à jour du portail",
+                "title": "{{global.portal_update}}"
             },
             "traits": {
                 "description": "Statistiques sur les caractéristiques de l'équipage dans le jeu",

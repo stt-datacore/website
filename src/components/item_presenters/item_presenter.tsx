@@ -1,25 +1,24 @@
+import { navigate } from "gatsby";
 import React, { Component } from "react";
-import { CompletionState, PlayerCrew, TranslateMethod } from "../../model/player";
-import { Dropdown, Header, Rating } from "semantic-ui-react";
-import { isImmortal, printImmoText } from "../../utils/crewutils";
-import { TinyStore } from "../../utils/tiny";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { EquipmentItem } from "../../model/equipment";
-import ItemDisplay from "../itemdisplay";
-import ItemSources from "../itemsources";
+import { Grid, Header, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { Link, navigate } from "gatsby";
-import { PresenterProps } from "./ship_presenter";
 import { Skill } from "../../model/crew";
-import { appelate } from "../../utils/misc";
-import CONFIG from "../CONFIG";
+import { EquipmentItem } from "../../model/equipment";
+import { PlayerCrew, TranslateMethod } from "../../model/player";
 import { ItemBonusInfo, combineBonuses, formatDuration, getItemBonuses } from "../../utils/itemutils";
-import { printRequiredTraits } from "../items/itemstable";
+import { TinyStore } from "../../utils/tiny";
+import CONFIG from "../CONFIG";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import ItemDisplay from "../itemdisplay";
+import { printRequiredTraits } from "../items/utils";
+import ItemSources from "../itemsources";
 import { OptionsPanelFlexColumn } from "../stats/utils";
+import { AvatarView } from "./avatarview";
 import { CrewItemsView } from "./crew_items";
+import { PresenterProps } from "./ship_presenter";
 
 
-export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew) {
+export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew, for_export?: boolean) {
     if (!kwipment || kwipment.every(k => !k)) return <></>;
     let quip = items.filter(f => kwipment.some(q => !!q && q.toString() === f.kwipment_id?.toString()));
     let bonuses = [] as ItemBonusInfo[];
@@ -31,48 +30,75 @@ export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], 
         return (
             <>
                 <CrewItemsView crew={crew} quipment={true} />
-                {renderBonuses(combined, undefined, undefined, prospect, t)}
+                {renderBonuses(combined, undefined, undefined, prospect, t, for_export)}
             </>
         )
     }
     else {
-        return renderBonuses(combined, undefined, undefined, prospect, t);
+        return renderBonuses(combined, undefined, undefined, prospect, t, for_export);
     }
 
 }
 
-export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod) {
+export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod, for_export?: boolean) {
     const flexCol = OptionsPanelFlexColumn;
 
-    return (<div style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-evenly",
-        alignItems: "left"
-    }}>
-        {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
-        {Object.values(skills).map(((skill, idx) => {
-            const atext = CONFIG.SKILLS[skill.skill!];
-            return (
-                <div
-                    title={atext}
-                    key={(skill.skill ?? "") + idx}
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "flex-start",
-                        alignItems: "center",
-                        alignContent: "center"
-                    }}
-                >
-                    <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
-                        <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
-                    </div>
-                    <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
-                    <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
-                </div>)
-        }))}
-    </div>)
+    if (for_export) {
+        return (<Table>
+            {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
+            {Object.values(skills).map(((skill, idx) => {
+                const atext = CONFIG.SKILLS[skill.skill!];
+                return (
+                    <Table.Row
+                        title={atext}
+                        key={(skill.skill ?? "") + idx}>
+                        <Table.Cell>
+                        <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
+                            {CONFIG.SKILLS_SHORT.find(sk => sk.name === skill.skill)?.short}
+                        </div>
+                        </Table.Cell>
+                        <Table.Cell>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                        </Table.Cell>
+                        <Table.Cell>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
+                        </Table.Cell>
+                    </Table.Row>)
+            }))}
+        </Table>)
+    }
+    else {
+        return (<div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-evenly",
+            alignItems: "left"
+        }}>
+            {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
+            {Object.values(skills).map(((skill, idx) => {
+                const atext = CONFIG.SKILLS[skill.skill!];
+                return (
+                    <div
+                        title={atext}
+                        key={(skill.skill ?? "") + idx}
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            alignContent: "center"
+                        }}
+                    >
+                        <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
+                            <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                        </div>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
+                        <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
+                    </div>)
+            }))}
+        </div>)
+    }
+
 }
 
 
@@ -233,11 +259,14 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
-                    <ItemDisplay
-                        src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+                    <AvatarView
+                        //src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
                         size={compact ? 128 : 128}
-                        rarity={item.rarity}
-                        maxRarity={item.rarity}
+                        //rarity={item.rarity}
+                        //maxRarity={item.rarity}
+                        item={item}
+                        partialItem={true}
+                        mode='item'
                         style={{ maxWidth: "calc(100vw - 32px)", marginRight: "8px" }}
                     />
                 </div>

@@ -22,6 +22,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 	declare context: React.ContextType<typeof GlobalContext>;
 
 	render() {
+		const { t } = this.context.localized;
 		const { crew, items } = this.props;
 		const { playerData } = this.context.player;
 
@@ -114,7 +115,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 				</Modal.Content>
 				<Modal.Actions>
 					<Popup
-						content='Copied!'
+						content={t('clipboard.copied_exclaim')}
 						on='click'
 						position='left center'
 						size='tiny'

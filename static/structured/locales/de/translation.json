@@ -100,6 +100,8 @@
         "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Eindeutig abrufbar",
+        "variant": "Variante",
+        "variants": "Varianten",
         "voyage": "Reise",
         "voyages": "Reisen"
     },
@@ -442,6 +444,7 @@
             "title": "Potenzielle Crew"
         },
         "quipment": "Rüstzeug anzeigen",
+        "scoring": "Rangliste und Punktestand anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
@@ -452,6 +455,7 @@
     },
     "duration": {
         "all_time": "Alle Zeiten",
+        "custom_date": "Benutzerdefiniertes Datum",
         "n_d": "{{days}} T",
         "n_d_compact": "{{days}}T",
         "n_day": "{{days}} Tag",
@@ -960,6 +964,7 @@
             "equipment": "Ausrüstung",
             "honor": "Ehre",
             "honorable_citation": "ehrenvolle Erwähnung",
+            "intel": "Intel",
             "interstellar_medium": "Interstellares Medium",
             "ism": "ISM",
             "merits": "Verdienste",
@@ -1012,6 +1017,7 @@
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
+        "portal_update": "Zeitportal-Update",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1087,6 +1093,7 @@
         "filter_by_event_type": "Filtern nach Ereignistyp",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_listed_status": "Filtern nach Listenstatus",
+        "filter_by_mastery": "Filtern nach Meisterschafts",
         "filter_by_movement": "Filtern nach Bewegung",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_polestars": "Filtern nach Polarsterne",
@@ -1283,6 +1290,11 @@
         "gauntlet_data": "Herausforderungsdaten",
         "player_data": "Spielerdaten",
         "quest_data": "Quest-Daten"
+    },
+    "mastery": {
+        "elite": "Elite",
+        "epic": "Episch",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "Über uns",
@@ -1556,6 +1568,7 @@
             "am_seating": "Antimaterie-Sitze",
             "collections": "Stat-Boosting-Sammlungen",
             "crit": "Erhöhte Krit",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
             "gauntlet_plus": "Herausforderung+",
             "main_cast": "Hauptbesetzung",
@@ -2076,6 +2089,7 @@
         "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
         "graphs": {
             "circle": "Kompetenzkreise",
+            "event_distributions": "Verteilungen der Ereignisse",
             "ignore_filters": "Derzeit aktive Filter ignorieren",
             "map_skill_order_density": "Die Fertigkeitsreihenfolgedichte abbilden",
             "map_skill_order_power": "Ordnen Sie die Fertigkeitsreihenfolgestärke zu",
@@ -2116,6 +2130,10 @@
             "items": {
                 "description": "Statistiken zu Komponenten und Ausrüstung im Spiel",
                 "title": "{{global.items}}"
+            },
+            "portal_update": {
+                "description": "Durchsuchen Sie die Zeitportal-Updates",
+                "title": "{{global.portal_update}}"
             },
             "traits": {
                 "description": "Statistiken zu Crew-Eigenschaften im Spiel",

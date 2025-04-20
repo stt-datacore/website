@@ -1,4 +1,4 @@
-import { BossBattlesRoot, BossEffect } from "./boss";
+import { BossEffect } from "./boss";
 import { BaseSkills, CrewMember, Skill } from "./crew";
 import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
@@ -124,6 +124,8 @@ export interface EquipmentWorkerConfig {
     items: EquipmentItem[];
     playerData: PlayerData;
     addNeeded?: boolean;
+    crewFilter?: number[];
+    excludePrimary?: boolean;
 }
 
 export interface EquipmentWorkerResults {
@@ -188,6 +190,7 @@ export interface VoyageImprovement {
 	crew: PlayerCrew[];
 	maxEV: number;
 	remainingEV: number;
+    skills: string[];
 }
 
 export interface CiteData {
@@ -225,6 +228,7 @@ export interface CrewChallengeInfo {
 export interface AssociatedPath {
     path: string;
     needed_kwipment?: number[];
+    needed_kwipment_expiration?: number[];
     skills: BaseSkills;
 }
 

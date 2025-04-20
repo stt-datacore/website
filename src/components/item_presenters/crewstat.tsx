@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Skill } from '../model/crew';
+import { Skill } from '../../model/crew';
 
 type CrewStatProps = {
 	skill_name: string;

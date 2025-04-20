@@ -1,5 +1,5 @@
 import React from "react";
-import { FormInput, Button, Table, Pagination, Dropdown } from "semantic-ui-react";
+import { Table, Pagination, Dropdown } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EquipmentItemSource, EquipmentItem } from "../../model/equipment";
 import { useStateWithStorage } from "../../utils/storage";
@@ -7,8 +7,10 @@ import { GatherItemFilter } from "../gather/gather_planner";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import CONFIG from "../CONFIG";
 import { ItemDropDown } from "./itemdropdown";
+import { printChrons, printIntel } from "../retrieval/context";
+import { OptionsPanelFlexRow } from "../stats/utils";
+import { IEventData } from "../eventplanner/model";
 
 export interface FarmSources {
 
@@ -20,20 +22,26 @@ export interface FarmSources {
 export interface FarmTableProps {
     pageId: string;
     sources: FarmSources[];
-    hover_target?: string;
+    hoverTarget?: string;
+    showOwned?: boolean;
+    showFarmable?: boolean;
+    excludedSourceTypes?: number[];
+    textStyle?: React.CSSProperties;
+    eventData?: IEventData;
+    renderExpanded?: (row: FarmSources) => JSX.Element;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
     // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const { sources, pageId } = props;
-    const hover_target = props.hover_target ?? 'farm_item_target';
+    const { sources, pageId, renderExpanded, excludedSourceTypes, eventData } = props;
+    const hover_target = props.hoverTarget ?? 'farm_item_target';
 
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
     allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
     const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
-    const { t } = globalContext.localized;
+    const { playerData, ephemeral } = globalContext.player;
+    const { t, tfmt } = globalContext.localized;
 
     const [itemFilter, setItemFilter] = useStateWithStorage(`${pageId}/farm/item_filter`, '', { rememberForever: true });
 
@@ -48,7 +56,12 @@ export const FarmTable = (props: FarmTableProps) => {
     const [distinctItems, setDistinctItems] = React.useState<EquipmentItem[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
 
+    const [expanded, setExpanded] = React.useState<FarmSources | undefined>(undefined);
+
     const searchText = selectedItems.join(',')
+
+    const expanding = !!renderExpanded;
+    const flexRow = OptionsPanelFlexRow;
 
     React.useEffect(() => {
         const distinctItems = [ ... new Set(sources.map(m => m.items).flat().map(m => m.symbol)) ]
@@ -60,8 +73,8 @@ export const FarmTable = (props: FarmTableProps) => {
             });
 
         const newList = (JSON.parse(JSON.stringify(sources)) as FarmSources[]).filter(item => {
-            if (item.source.type === 4) return false;
-
+            //if (item.source.type === 4) return false;
+            if (excludedSourceTypes?.includes(item.source.type)) return false;
             item.items = item.items.filter(fitem => {
                 if (itemFilter === 'single_source_items') {
                     return (fitem.item_sources.length === 1);
@@ -175,7 +188,7 @@ export const FarmTable = (props: FarmTableProps) => {
 
             <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
-        <Table striped sortable>
+        <Table striped sortable style={{overflowX: 'auto'}}>
             <Table.Header>
                 {renderRowHeaders()}
             </Table.Header>
@@ -225,8 +238,30 @@ export const FarmTable = (props: FarmTableProps) => {
     }
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
-
-        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}>
+        let cost = row.source.cost ?? 0;
+        let intel = 0;
+        let costColor = undefined as string | undefined;
+        if (row.source.type === 2 && eventData?.activeContent?.content_type === 'skirmish') {
+            intel = cost * 10;
+        }
+        if ([0, 2].includes(row.source.type) && ephemeral?.stimpack?.energy_discount) {
+            cost = Math.ceil(cost - (cost * (ephemeral.stimpack.energy_discount / 100)));
+            costColor = 'lightgreen';
+        }
+        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}
+            style={{
+                cursor: expanding ? (expanded ? 'zoom-out' : 'zoom-in') : undefined
+            }}
+            onClick={() => {
+                if (!expanding) return;
+                if (expanded == row) {
+                    setExpanded(undefined);
+                }
+                else {
+                    setExpanded(row);
+                }
+            }}
+            >
             <Table.Cell width={4}>
                 <h3>{row.source.name}</h3>
                 <div style={{ fontSize: '1em' }}>
@@ -235,12 +270,20 @@ export const FarmTable = (props: FarmTableProps) => {
                 <div>
                     <ItemSources farmFormat={true} item_sources={[row.source]} />
                 </div>
+                {[0, 2].includes(row.source.type) && !!row.source.cost &&
+                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
+                    {t('global.cost{{:}}')}<span style={{color:costColor}}>{printChrons(cost)}</span>
+                </div>}
+                {!!intel &&
+                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
+                    <span style={{color: 'white'}}>{printIntel(intel, t, true)}</span>
+                </div>}
             </Table.Cell>
             <Table.Cell>
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'space-between',
                     gap: '1em',
                     flexWrap: 'wrap'
@@ -248,6 +291,8 @@ export const FarmTable = (props: FarmTableProps) => {
                     {row.items.map((item, idx) => {
                         if (!item) return <div key={`empty_${idx}_event_demand_${row.source.name}_${row.source.mastery}`}></div>
                         const itemHi = phrases.some(p => item!.name.toLowerCase().includes(p));
+                        const srcRef = item.item_sources.find(src => src.name === row.source.name);
+                        const chance = srcRef ? srcRef.chance_grade : 0;
                         return <div
                             key={item.symbol + "_event_demand_mapping" + idx.toString()}
                             style={{
@@ -292,18 +337,42 @@ export const FarmTable = (props: FarmTableProps) => {
                                         fontWeight: itemHi ? 'bold' : undefined
                                     }}
                                 >{item!.rarity}* <u>{item!.name}</u></span>
+                                 {!!chance && <span>({t('shuttle_helper.missions.columns.success_chance{{:}}')}{chance}/5)</span>}
                                 <span
                                     style={{
                                         fontStyle: 'italic',
+                                        ... props.textStyle,
                                         color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
                                     }}
-                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}
+                                    >
+                                        {t('items.n_needed', { n: item.needed?.toLocaleString() ?? '' })}
                                 </span>
+                                {!!props.showOwned && <span
+                                    style={{
+                                        fontStyle: 'italic',
+                                        ... props.textStyle,
+                                        color: (item.needed ?? 0) > (item.quantity ?? 0) ? undefined : 'lightgreen'
+                                    }}
+                                    >
+                                        {t('items.n_owned', { n: item.quantity?.toLocaleString() ?? '' })}
+                                </span>}
+                                {!!props.showFarmable && !!item.needed && typeof item.quantity === 'number' && item.needed > item.quantity && <span
+                                    style={{
+                                        fontStyle: 'italic',
+                                        ... props.textStyle,
+                                        color: 'lightblue'
+                                    }}
+                                    >
+                                        {t('items.n_farmable', { n: (item.needed - item.quantity)?.toLocaleString() ?? '' })}
+                                </span>}
                             </div>
                         </div>
                     })}
                 </div>
-
+                {expanded === row && !!renderExpanded &&
+                <div>
+                    {renderExpanded(row)}
+                </div>}
             </Table.Cell>
         </Table.Row>
 

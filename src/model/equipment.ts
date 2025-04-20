@@ -8,6 +8,7 @@ export interface IDemand {
 	factionOnly: boolean;
 	have: number;
 	crewSymbols: string[];
+  primary?: boolean;
 }
 
 export interface ICrewDemandsMeta {
@@ -66,6 +67,7 @@ export interface EquipmentItem extends EquipmentCommon {
   bonuses?: EquipmentBonuses
   quantity?: number;
   needed?: number;
+  needed_by?: string[];
   factionOnly?: boolean;
 
   item_sources: EquipmentItemSource[]

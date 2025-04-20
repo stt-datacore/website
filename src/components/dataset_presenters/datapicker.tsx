@@ -23,6 +23,7 @@ type DataPickerProps = {
 	id: string;
 	data: IEssentialData[];
 	closePicker: (selectedIds: Set<number>, affirmative: boolean) => void;
+	singleSelect?: boolean;
 	title?: string | JSX.Element;
 	preFilteredIds?: Set<number>;
 	preSelectedIds?: Set<number>;
@@ -73,6 +74,7 @@ export const DataPicker = (props: DataPickerProps) => {
 	}, []);
 
 	const dataPickerState: IDataPickerState = {
+		data,
 		pendingSelectedIds, setPendingSelectedIds,
 		searchQuery, setSearchQuery,
 		showOptions, setShowOptions,
@@ -113,7 +115,12 @@ export const DataPicker = (props: DataPickerProps) => {
 				value={searchQuery}
 				onChange={(e, { value }) => setSearchQuery(value as string)}
 			>
-				<input />
+				<input
+					onKeyUp={(e) => {
+						if (!!props.selection && data.length === 1 && e.key === 'Enter')
+							selectFromQuery();
+					}}
+				/>
 				<Icon name='search' />
 				<Button icon onClick={() => setSearchQuery('')}>
 					<Icon name='delete' />
@@ -201,8 +208,10 @@ export const DataPicker = (props: DataPickerProps) => {
 	function toggleDatum(datumId: number): void {
 		if (pendingSelectedIds.has(datumId))
 			pendingSelectedIds.delete(datumId);
-		else
+		else {
+			if (props.singleSelect && pendingSelectedIds.size)  pendingSelectedIds.clear();
 			pendingSelectedIds.add(datumId);
+		}
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
 		if (pendingSelectedIds.size > 0 && props.closeOnChange)
 			props.closePicker(pendingSelectedIds, true);
@@ -212,6 +221,15 @@ export const DataPicker = (props: DataPickerProps) => {
 		pendingSelectedIds.add(datumId);
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
 		props.closePicker(pendingSelectedIds, true);
+	}
+
+	function selectFromQuery(): void {
+		pendingSelectedIds.add(data[0].id);
+		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
+		props.closePicker(pendingSelectedIds, true);
+		// setSearchQuery('');
+		// if (pendingSelectedIds.size > 0 && props.closeOnChange)
+		// 	props.closePicker(pendingSelectedIds, true);
 	}
 };
 

@@ -25,7 +25,7 @@ export function getIconPath(icon: IconObject, relative?: boolean) {
     else {
         return `${process.env.GATSBY_ASSETS_URL}${file}`;
     }
-    
+
 }
 
 export function getRarityColor(rarity: number) {
