@@ -9,8 +9,11 @@ import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
 import { ItemDropDown } from "./itemdropdown";
 import { printChrons, printIntel } from "../retrieval/context";
-import { OptionsPanelFlexRow } from "../stats/utils";
+import { filterHighs, OptionsPanelFlexRow } from "../stats/utils";
 import { IEventData } from "../eventplanner/model";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { Filter } from "../../model/game-elements";
+import { omniSearchFilter } from "../../utils/omnisearch";
 
 export interface FarmSources {
 
@@ -58,7 +61,12 @@ export const FarmTable = (props: FarmTableProps) => {
 
     const [expanded, setExpanded] = React.useState<FarmSources | undefined>(undefined);
 
-    const searchText = selectedItems.join(',')
+    const { searchText, phrases } = React.useMemo(() => {
+        const searchText = selectedItems.join(',')
+        const phrase = searchText.toLowerCase().trim();
+        const phrases = phrase ? phrase.split(",").map(p => p.trim()) : [];
+        return { searchText, phrases };
+    }, [selectedItems]);
 
     const expanding = !!renderExpanded;
     const flexRow = OptionsPanelFlexRow;
@@ -97,77 +105,55 @@ export const FarmTable = (props: FarmTableProps) => {
 
             if (!item.items.length) return false;
 
-            let phrase = searchText.toLowerCase().trim();
-            if (!phrase || item.source.name.toLowerCase().includes(phrase)) return true;
+            if (phrases.length) {
+                for (let phrase of phrases) {
+                    let test = item.items.filter(fitem => {
+                        if (fitem.symbol?.toLowerCase().includes(phrase)) return true;
+                        if (fitem.name?.toLowerCase().includes(phrase)) return true;
+                        if (fitem.flavor?.toLowerCase().includes(phrase)) return true;
+                        if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
 
-            let phrases = phrase.split(",").map(p => p.trim());
-            for (let phrase of phrases) {
-                let test = item.items.filter(fitem => {
-                    if (fitem.symbol.toLowerCase().includes(phrase)) return true;
-                    if (fitem.name.toLowerCase().includes(phrase)) return true;
-                    if (fitem.flavor.toLowerCase().includes(phrase)) return true;
-                    if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
-
-                    return false;
-                });
-                if (!test.length) return false;
+                        return false;
+                    });
+                    if (test.length) return true;
+                }
+                return false;
             }
 
             return true;
         });
 
-        const mul = sortDirection === 'descending' ? -1 : 1;
-
-        if (sortColumn === 'demands') {
-            newList.sort((a, b) => {
-                let acount = a.items.reduce((p, n) => p + n.needed!, 0);
-                let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
-                return mul *  (acount - bcount);
-            })
-        }
-        else if (sortColumn === 'source') {
-            newList.sort((a, b) => {
-                return mul * a.source.name.localeCompare(b.source.name);
-            });
-        }
-
         setDistinctItems(distinctItems);
         setSortedSources(newList);
     }, [sources, sortColumn, sortDirection, searchText, itemFilter]);
 
-    const columnClick = (name: 'source' | 'demands') => {
-        if (name === sortColumn) {
-            setSortDirection(sortDirection === 'ascending' ? 'descending' : 'ascending');
-        }
-        else {
-            setSortColumn(name);
-        }
-    }
+    if (!playerData) return <></>
 
-    const pagingOptions = [
-        { key: "0", value: 10, text: "10" },
-        { key: "1", value: 25, text: "25" },
-        { key: "2", value: 50, text: "50" },
-        { key: "3", value: 100, text: "100" },
-    ];
-
-    const totalPages = Math.ceil(sortedSources.length / itemsPerPage);
-
-    let phrase = searchText.toLowerCase().trim();
-    let phrases = phrase ? phrase.split(",").map(p => p.trim()) : [];
-
-    if (currentPage > totalPages) {
-        if (totalPages === 0) {
-            if (currentPage !== 1) {
-                setCurrentPage(1);
+    const tableConfig = [
+        {
+            width: 2, column: 'source.name', title: t('shuttle_helper.missions.columns.mission'),
+            pseudocolumns: ['source.name', 'source.cost', 'source.type'],
+            translatePseudocolumn: (field) => {
+                field = field.replace('source.', '');
+                return t(`global.${field}`) || field;
+            },
+            customCompare: (a: FarmSources, b: FarmSources, options) => {
+                let r = 0;
+                if (options.field === 'source.name') r = a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0) || (a.source.type - b.source.type);
+                else if (options.field === 'source.cost') r = (a.source.cost ?? 0) - (b.source.cost ?? 0) || a.source.name.localeCompare(b.source.name) || (a.source.type - b.source.type);
+                else if (options.field === 'source.type') r = (a.source.type - b.source.type) || a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0);
+                return r;
+            }
+        },
+        {
+            width: 9, column: 'source.items', title: t('demands.items'),
+            customCompare: (a: FarmSources, b: FarmSources, options) => {
+                let acount = a.items.reduce((p, n) => p + n.needed!, 0);
+                let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
+                return acount - bcount;
             }
         }
-        else {
-            setCurrentPage(totalPages);
-        }
-    }
-
-    if (!playerData) return <></>
+    ] as ITableConfigRow[];
 
     return (<div style={{ marginTop: "1em"}}>
         <h2>{t('items.item_sources')}</h2>
@@ -188,53 +174,29 @@ export const FarmTable = (props: FarmTableProps) => {
 
             <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
-        <Table striped sortable style={{overflowX: 'auto'}}>
-            <Table.Header>
-                {renderRowHeaders()}
-            </Table.Header>
-            <Table.Body>
-                {sortedSources
-                    .slice((currentPage - 1) * itemsPerPage, ((currentPage - 1) * itemsPerPage) + itemsPerPage)
-                    .map((source) => renderTableRow(source, phrases))}
-            </Table.Body>
-            <Table.Footer>
-                <Table.Row>
-                    <Table.HeaderCell colSpan="8">
-                        <Pagination
-                            totalPages={totalPages}
-                            activePage={currentPage}
-                            onPageChange={(event, { activePage }) =>
-                                setCurrentPage(activePage as number)
-                            }
-                        />
-                        <span style={{ paddingLeft: "2em" }}>
-                            {t("global.rows_per_page")}:{" "}
-                            <Dropdown
-                                inline
-                                options={pagingOptions}
-                                value={itemsPerPage}
-                                onChange={(event, { value }) =>
-                                    setItemsPerPage(value as number)
-                                }
-                            />
-                        </span>
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Footer>
-
-        </Table>
+        <SearchableTable
+            tableStyle={{width: '100%'}}
+            id={`${pageId}/farm_table`}
+            data={sortedSources}
+            config={tableConfig}
+            renderTableRow={(row, idx, isActive) => renderTableRow(row, phrases)}
+            filterRow={filterTableRow}
+            />
     </div>)
 
-    function renderRowHeaders() {
-
-        return <Table.Row>
-            <Table.HeaderCell sorted={sortColumn === 'source' ? sortDirection : undefined} onClick={() => columnClick('source')}>
-                {t('shuttle_helper.missions.columns.mission')}
-            </Table.HeaderCell>
-            <Table.HeaderCell sorted={sortColumn === 'demands' ? sortDirection : undefined} onClick={() => columnClick('demands')}>
-                {t('demands.items')}
-            </Table.HeaderCell>
-        </Table.Row>
+    function filterTableRow(row: FarmSources, filter: Filter[], search?: string) {
+        return omniSearchFilter(row, filter, search, [
+            'source.name',
+            {
+                field: 'items',
+                customMatch: (value: EquipmentItem[], text) => {
+                    text = text.toLowerCase();
+                    return value.some(eq => {
+                        return eq.name.toLowerCase().includes(text) || eq.name_english?.toLowerCase().includes(text)
+                    });
+                }
+            }
+        ]);
     }
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
