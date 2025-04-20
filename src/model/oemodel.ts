@@ -1,5 +1,7 @@
 import { Icon } from "semantic-ui-react";
-import { AtlasIcon, Reward } from "./player";
+import { AtlasIcon, PlayerCrew, Reward } from "./player";
+import { CrewMember } from "./crew";
+import { ReferenceShip, Ship } from "./ship";
 
 export interface ObjectiveEvent {
   id: number;
@@ -56,6 +58,7 @@ export interface ObjectiveArchetype {
   type: string;
   area: string;
   milestones: ObjectiveMilestone[];
+  target?: CrewMember | PlayerCrew | ReferenceShip | Ship;
 }
 
 export interface ObjectiveMilestone {

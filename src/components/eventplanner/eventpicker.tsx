@@ -1,28 +1,27 @@
 import React from 'react';
-import { Form, Dropdown, Image, Header } from 'semantic-ui-react';
+import { Dropdown, Form, Header, Image } from 'semantic-ui-react';
 
-import { LockedProspect } from '../../model/game-elements';
 import { ComputedSkill, CrewMember } from '../../model/crew';
+import { LockedProspect } from '../../model/game-elements';
 import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
 
-import ProspectPicker from '../../components/prospectpicker';
 import { EventCrewTable } from '../../components/eventplanner/eventcrewtable';
-import { ShuttleHelper, EventShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
+import ProspectPicker from '../../components/prospectpicker';
+import { EventShuttleHelper, ShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
 
 import CONFIG from '../../components/CONFIG';
-import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff } from '../../utils/crewutils';
+import { useStateWithStorage } from '../../utils/storage';
 
-import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
-import { ShipTable } from '../ship/shiptable';
-import { AvatarView } from '../item_presenters/avatarview';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
-import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { AvatarView } from '../item_presenters/avatarview';
 import { QPContext } from '../qpconfig/provider';
+import { ShipTable } from '../ship/shiptable';
 import { SpecialistMissionTable } from '../specialist/specialistmissions';
+import { IEventData, IRosterCrew } from './model';
 
 interface ISelectOptions {
 	key: string;

@@ -109,6 +109,7 @@ export const Navigation = (props: NavigationProps) => {
 		{ optionKey: 'retrieval', src: '/media/retrieval.png', title: t('menu.tools.crew_retrieval'), link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
 		{ optionKey: 'fbb', src: '/media/fbb.png', title: t('menu.tools.fleet_boss_battles'), link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
 		{ optionKey: 'continuum', src: '/media/continuum.png', title: t('menu.tools.continuum_helper'), link: "/continuum", sidebarRole: 'item' },	// Continuum missions added v10
+		{ optionKey: 'objective', src: '/media/objective_event_icon.png', title: t('menu.tools.objective_event_helper'), link: "/oehelper", sidebarRole: 'item' },	// Continuum missions added v10
 	];
 
 

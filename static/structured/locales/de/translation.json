@@ -1340,7 +1340,8 @@
             "factions": "Fraktionen",
             "fleet_boss_battles": "Flottenbosskämpfe",
             "gauntlet": "Herausforderung",
-            "shuttle_helper": "Shuttle Helfer",
+            "objective_event_helper": "Objektive-Ereignisse-Helfer",
+            "shuttle_helper": "Shuttle-Helfer",
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf"
         },

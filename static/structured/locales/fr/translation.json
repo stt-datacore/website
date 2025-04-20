@@ -1352,6 +1352,7 @@
             "factions": "Factions",
             "fleet_boss_battles": "Combats de boss de flotte",
             "gauntlet": "Gantelet",
+            "objective_event_helper": "Aide aux événements objectifs",
             "shuttle_helper": "Aide aux Navettes",
             "voyage_calculator": "Calculateur de voyage",
             "voyage_history": "Histoire des voyages"
