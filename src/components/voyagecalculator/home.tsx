@@ -32,6 +32,7 @@ import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
 import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { SkillCheckAccordion } from './skillcheck/accordion';
 import { VoyageStatsAccordion } from './stats/stats_accordion';
+import { refShips } from '../../utils/shiputils';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -47,6 +48,7 @@ export const VoyageHome = () => {
 
 const NonPlayerHome = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { all_ships } = globalContext.core;
 	const { t } = globalContext.localized;
 
 	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
@@ -101,7 +103,7 @@ const NonPlayerHome = () => {
 
 	function getEvents(): void {
 		// Guess event from autosynced events
-		getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.all_ships.map(m => ({...m, id: m.archetype_id, levels: undefined }))).then(recentEvents => {
+		getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, refShips(all_ships)).then(recentEvents => {
 			setEventData([...recentEvents]);
 		});
 	}
@@ -129,8 +131,9 @@ type PlayerHomeProps = {
 
 const PlayerHome = (props: PlayerHomeProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData, ephemeral } = globalContext.player;
+	const { playerData, ephemeral, playerShips } = globalContext.player;
 	const { t } = globalContext.localized;
+	const { all_ships } = globalContext.core;
 	const { TRAIT_NAMES } = globalContext.localized.english;
 	const { dbid } = props;
 
@@ -235,7 +238,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	function getEvents(): void {
 		// Get event data from recently uploaded playerData
 		if (ephemeral?.events) {
-			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew))
+			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew, playerShips))
 				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 				.filter(ev => ev.seconds_to_end > 0)
 				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
@@ -243,7 +246,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.all_ships.map(m => ({...m, id: m.archetype_id, levels: undefined }))).then(recentEvents => {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, refShips(all_ships)).then(recentEvents => {
 				setEventData([...recentEvents]);
 			});
 		}

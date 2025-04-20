@@ -632,3 +632,11 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 		return r;
 	}
 }
+
+// export function refShip(input: ReferenceShip): Ship {
+// 	return {...input, levels: undefined };
+// }
+
+export function refShips(input: ReferenceShip[]): Ship[] {
+	return input.map(input => ({...input, levels: undefined }));
+}

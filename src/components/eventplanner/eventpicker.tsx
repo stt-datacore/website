@@ -256,7 +256,7 @@ const EventFeaturedShips = (props: FeaturedShipsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerShips } = globalContext.player;
-	const { ships } = globalContext.core;
+	const { all_ships } = globalContext.core;
 	const { event } = props;
 
 	return (<>
@@ -270,7 +270,7 @@ const EventFeaturedShips = (props: FeaturedShipsProps) => {
 	}}>
 		<ShipHoverStat targetGroup='event_featured_ships' />
 		{event.featured_ships.map((symbol) => {
-			const ship = (playerShips ?? ships).find(f => f.symbol === symbol);
+			const ship = (playerShips ?? all_ships).find(f => f.symbol === symbol);
 			if (!ship) return <></>;
 			else {
 				return (

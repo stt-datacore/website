@@ -11,6 +11,7 @@ import { ShuttleAdventure } from "./shuttle";
 import { IVoyageEventContent } from "./voyage";
 import { ArchetypeRoot20 } from "./archetype";
 import { Cost } from "./offers";
+import { ObjectiveEvent } from "./oemodel";
 
 export const ISM_ID = 14152;
 
@@ -1839,50 +1840,4 @@ export interface CraftingRegeneration {
 export interface ObjectiveEventRoot {
   id: number;
   statuses: ObjectiveEvent[];
-}
-
-export interface ObjectiveEvent {
-  id: number
-  symbol: string
-  name: string
-  description: string
-  image: AtlasIcon
-  rewards: Reward[]
-  participation_rewards: Reward[]
-  objective_archetype_ids: number[]
-  level_gate: number
-  prerequisites: any[]
-  announce_at: number
-  start_at: number
-  end_at: number
-  opened: boolean
-  objective_archetypes?: ObjectiveArchetype[]
-  concluded?: boolean
-  completion_rewards_claimed?: boolean
-  participation_rewards_claimed?: boolean
-  eligible_for_completion_rewards?: boolean
-  eligible_for_participation_rewards?: boolean
-  objectives?: Objectives[]
-}
-
-export interface ObjectiveArchetype {
-  id: number
-  symbol: string
-  type: string
-  area: string
-  milestones: ObjectiveMilestone[]
-}
-
-export interface ObjectiveMilestone {
-  rewards: Reward[]
-  requirement: string
-  target_value: number
-}
-
-export interface Objectives {
-  id: number
-  archetype_id: number
-  status: number
-  current_value: number
-  target_value: number
 }

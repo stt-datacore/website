@@ -9,6 +9,7 @@ import { BuffStatTable } from './voyageutils';
 import { IDefaultGlobal } from '../context/globalcontext';
 import { Ship } from '../model/ship';
 import { TraitNames } from '../model/traits';
+import { refShips } from './shiputils';
 
 export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allShips?: Ship[], lastEvent?: GameEvent): IEventData | undefined {
 
@@ -95,7 +96,7 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		}
 
 		if (activeContent.event_ships && allShips) {
-			result.featured_ships = activeContent.event_ships.map(sId => allShips.find(ship => ship.archetype_id === sId)!.symbol);
+			result.featured_ships = activeContent.event_ships.map(sId => allShips.find(ship => ship.archetype_id === sId)?.symbol).filter(f => f !== undefined);
 		}
 	}
 	else if (activeContent.content_type === 'voyage') {
@@ -680,7 +681,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 			}
 		}
 		const lastEvent = _lev;
-		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, globalContext.core.all_ships.map(m => ({...m, levels: undefined })), lastEvent))
+		const currentEvents = ephemeral.events.map((ev) => getEventData(ev, globalContext.core.crew, refShips(globalContext.core.all_ships), lastEvent))
 			.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 			.filter(ev => ev.seconds_to_end > 0)
 			.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
@@ -688,7 +689,7 @@ export async function getEvents(globalContext: IDefaultGlobal): Promise<IEventDa
 	}
 	// Otherwise guess event from autosynced events
 	else {
-		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ships);
+		return await getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, refShips(globalContext.core.all_ships));
 	}
 }
 
