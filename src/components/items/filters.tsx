@@ -192,7 +192,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                     item.item_sources = item.item_sources
                         .filter(s =>
                             itemSourceFilter.includes(s.type) &&
-                            (!masteryFilter?.length || masteryFilter.includes(s.mastery ?? -1))
+                            (s.type === 1 || !masteryFilter?.length || masteryFilter.includes(s.mastery ?? -1))
                         );
                 }
             }

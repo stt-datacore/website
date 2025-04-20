@@ -291,6 +291,8 @@ export const FarmTable = (props: FarmTableProps) => {
                     {row.items.map((item, idx) => {
                         if (!item) return <div key={`empty_${idx}_event_demand_${row.source.name}_${row.source.mastery}`}></div>
                         const itemHi = phrases.some(p => item!.name.toLowerCase().includes(p));
+                        const srcRef = item.item_sources.find(src => src.name === row.source.name);
+                        const chance = srcRef ? srcRef.chance_grade : 0;
                         return <div
                             key={item.symbol + "_event_demand_mapping" + idx.toString()}
                             style={{
@@ -335,6 +337,7 @@ export const FarmTable = (props: FarmTableProps) => {
                                         fontWeight: itemHi ? 'bold' : undefined
                                     }}
                                 >{item!.rarity}* <u>{item!.name}</u></span>
+                                 {!!chance && <span>({t('shuttle_helper.missions.columns.success_chance{{:}}')}{chance}/5)</span>}
                                 <span
                                     style={{
                                         fontStyle: 'italic',
