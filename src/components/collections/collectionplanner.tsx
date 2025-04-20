@@ -189,50 +189,53 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 		const costs = [0, 0, 500, 4500, 18000, costMode === 'sale' ? 40000 : 50000];
 
-		let tscore = 0;
-		let tscoren = 0;
-		let tstars = [1,1,1,1,1,1];
+		let hiscore = 0;
+		let hiscore_n = 0;
+		let histars = [1,1,1,1,1,1];
 
 		colcrew.forEach((crew) => {
 			crew.collectionScore = 0;
 			crew.collectionScoreN = 0;
 
 			if (!showThisCrew(crew, [], 'Exact')) return;
-			let colids = crew.collection_ids.filter(c => cols.some(col => col.id.toString() === c));
-			let crare = crew.rarity;
+
+			let colIds = crew.collection_ids.filter(c => cols.some(col => col.id.toString() === c));
+			let curr_rarity = crew.rarity;
 			let max_rare = crew.max_rarity;
-			if (crare === undefined) {
-				crare = 1;
+			if (curr_rarity === undefined) {
+				curr_rarity = 1;
 			}
 
-			let pfilter = cols.filter((col) => colids.some(nid => nid === col.id.toString()) && !!col.needed);
-			if (!pfilter.length) {
+			let prefilter = cols.filter((col) => colIds.some(nid => nid === col.id.toString()) && !!col.needed);
+			if (!prefilter.length) {
 				return;
 			}
-			let ascores = [] as number[];
-			pfilter.forEach((col) => {
+
+			let ind_scores = [] as number[];
+			prefilter.forEach((col) => {
 				if (col.milestone.goal === 'n/a') return;
 				if (!col.needed) return;
 
-				ascores.push(1 / col.needed);
+				ind_scores.push(1 / col.needed);
 			})
 
-			let cscore = ascores.reduce((p, n) => p + n, 0);
-			crew.collectionScore = Math.round(cscore * 10000);
+			let acc_score = ind_scores.reduce((p, n) => p + n, 0);
+			crew.collectionScore = Math.round(acc_score * 10000);
 
-			if (crew.collectionScore > tscore) {
-				tscore = crew.collectionScore;
+			if (crew.collectionScore > hiscore) {
+				hiscore = crew.collectionScore;
 			}
 
-			if (max_rare !== crare) {
+			if (max_rare !== curr_rarity) {
 
-				if (tstars[max_rare] < crare) {
-					tstars[max_rare] = crare;
+				if (histars[max_rare] < curr_rarity) {
+					histars[max_rare] = curr_rarity;
 				}
 
-				crew.collectionScoreN = Math.round(cscore / ((costs[max_rare] * (max_rare - crare))) * 1000000000);
-				if (crew.collectionScoreN > tscoren) {
-					tscoren = crew.collectionScoreN;
+				crew.collectionScoreN = Math.round(acc_score / ((costs[max_rare] * (max_rare - curr_rarity))) * 1000000000);
+
+				if (crew.collectionScoreN > hiscore_n) {
+					hiscore_n = crew.collectionScoreN;
 				}
 			}
 			else {
@@ -241,7 +244,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 		});
 
-		return [tscore, tscoren];
+		return [hiscore, hiscore_n];
 	}
 
 	function checkAnchor(crewAnchor: React.RefObject<HTMLDivElement>) {
