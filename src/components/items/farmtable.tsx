@@ -162,6 +162,7 @@ export const FarmTable = (props: FarmTableProps) => {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 margin: '0.25em',
+                marginBottom: '1em',
                 gap: '0.5em'
             }}>
 
