@@ -20,6 +20,8 @@ import { ProgressTable } from './views/progresstable';
 import { WorkerContext } from '../../context/workercontext';
 import { CollectionPrefs } from './collectionprefs';
 import { CollectionTableView } from './views/tableview';
+import { TinyStore } from '../../utils/tiny';
+import { Collection } from '../../model/game-elements';
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
@@ -47,7 +49,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections, collectionCrew } = props;
-	const { favorited, byCost, showIncomplete, matchMode, costMode, short, mapFilter, setMapFilter, ownedFilter, rarityFilter, searchFilter, fuseFilter, setCollectionSettings } = colContext;
+	const { favorited, byCost, showIncomplete, matchMode, costMode, short, mapFilter, setModalInstance, setMapFilter, ownedFilter, rarityFilter, searchFilter, fuseFilter, setCollectionSettings } = colContext;
 
 	const [initialized, setInitialized] = React.useState(false);
 	const [requestRun, setRequestRun] = React.useState(false);
@@ -72,8 +74,10 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				else if (!sel && window.location.hash) {
 					sel = decodeURIComponent(window.location.hash.slice(1));
 				}
-				let findcol: PlayerCollection | undefined = undefined;
-				findcol = playerCollections?.find(f => f.name === sel);
+
+				let findcol: Collection | PlayerCollection | undefined = undefined;
+				findcol = playerCollections?.find(f => f.name === sel && f.milestone.goal !== 0);
+
 				if (findcol) {
 					const msel = selnum = findcol.id;
 					if (!mapFilter?.collectionsFilter?.includes(msel)) {
@@ -84,10 +88,23 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 						});
 					}
 				}
+				else {
+					findcol = globalContext.core.collections?.find(f => f.name === sel);
+					if (findcol) {
+						setModalInstance({
+							collection: findcol as PlayerCollection,
+							activeTab: 0
+						});
+						window.setTimeout(() => {
+							window.history.replaceState({}, document.title, "/collections");
+							setTabIndex(0);
+						});
+					}
+				}
 			}
 		}
 		setOffPageSelect(selnum);
-	}, []);
+	}, [colContext]);
 
 	React.useEffect(() => {
 		if (typeof window !== 'undefined') {
