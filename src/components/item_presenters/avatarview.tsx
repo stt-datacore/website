@@ -10,6 +10,7 @@ import { Ship } from "../../model/ship";
 import { ShipTarget } from "../hovering/shiphoverstat";
 import { navigate } from "gatsby";
 import { CrewMember } from "../../model/crew";
+import { getIconPath } from "../../utils/assets";
 
 export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
@@ -306,7 +307,15 @@ export const AvatarView = (props: AvatarViewProps) => {
             }
             if (item && citem) {
                 item.demandCrew = citem.demandCrew;
-                if (!src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
+                if (!src) {
+                    if (item.imageUrl) {
+                        src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
+                    }
+                    else if (item.icon) {
+                        src = `${process.env.GATSBY_ASSETS_URL}${getIconPath(item.icon, true)}`;
+                    }
+
+                }
             }
             if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
                 item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };

@@ -12,7 +12,7 @@ const ObjectiveEventHelperPage = () => {
 
     return <DataPageLayout
             pageTitle={t('menu.tools.objective_event_helper')}
-            demands={['objective_events']}>
+            demands={['objective_events', 'factions']}>
         <OEPicker />
     </DataPageLayout>
 

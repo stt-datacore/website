@@ -1348,6 +1348,10 @@
         },
         "tools_title": "Werkzeuge"
     },
+    "objective_events": {
+        "stages": "Etappen",
+        "x_is_locked_by_y": "{{x}} ist von {{y}} gesperrt"
+    },
     "mission_type": {
         "type_0": "Konfliktquest",
         "type_2": "Schiffsschlacht",
