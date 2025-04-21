@@ -82,7 +82,7 @@ export const FleetImportComponent = (props: FleetImporterProps) => {
                             Click here to update your data if you wish to refresh your round.
                         </p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>Live Fleet Data</a></b>
+                            <b><a onClick={() => setCollapsed(false)}>Live Fleet Data</a></b>
                         </p>
                         <p style={{textAlign: "right"}}>
                             <b style={{fontSize:"0.8em"}}>(To clear all live fleet data, <a title={'Clear All Fleet Data'} onClick={() => clearFleet()}>Click Here</a>)</b>
