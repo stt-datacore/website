@@ -261,7 +261,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 
 		// Look for voyage events
-		const voyageEvents: GameEvent[] = ephemeral?.events?.filter(ev => ev.content.content_type === 'voyage') ?? [];
+		const voyageEvents: GameEvent[] = ephemeral?.events?.filter(ev => ev.content?.content_type === 'voyage') ?? [];
 		voyageEvents.forEach(voyageEvent => {
 			const voyageEventContent: IVoyageEventContent = voyageEvent.content as IVoyageEventContent;
 			// Use voyage_symbol to match voyage and event, in case voyage events expand in the future
