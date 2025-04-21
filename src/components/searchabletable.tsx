@@ -61,6 +61,7 @@ export interface SearchableTableProps {
 	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
 
 	initOptions?: any;
+	tableStyle?: React.CSSProperties;
 	explanation?: React.ReactNode;
 	hideExplanation?: boolean;
     showFilterOptions?: boolean;
@@ -408,7 +409,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			{filteredCount > 0 && (
 				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
-				<Table sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table'>
+				<Table sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table' style={props.tableStyle}>
 					<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 					<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
 					<Table.Footer>

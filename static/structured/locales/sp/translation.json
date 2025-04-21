@@ -1057,6 +1057,7 @@
         "squadron_leader": "Líder de escuadrón",
         "supply_kit_active_n": "Kit de suministros activo ({{n}}% de descuento)",
         "toggle_layout": "Cambiar diseño",
+        "type": "Tipo",
         "uncheck_all": "Desmarcar todo",
         "unselect_all": "Deseleccionar todo",
         "view_options": "Ver las opciones",
