@@ -1,3 +1,4 @@
+import { ObjectiveArchetype } from "../../model/oemodel";
 
 export const KnownStages = [
     'complete_faction_([a-z0-9_]+)_mission_objective',
@@ -21,7 +22,6 @@ export const KSRegExp = (() => {
     return obj;
 })();
 
-
 export const FactionAbbrMap = {
     'fed': 12,
     'ke': 1,
@@ -41,4 +41,8 @@ export const FactionAbbrMap = {
     'dom': 6,
     'borg': 20,
     'brg': 20
+}
+
+export function getArchetypeTitle(oearch: ObjectiveArchetype) {
+    return oearch.milestones[oearch.milestones.length - 1].requirement;
 }

@@ -1319,6 +1319,7 @@
             "episodes": "Épisodes",
             "events": "Événements",
             "misc_game_stats": "Statistiques diverses du jeu",
+            "objective_events": "Événements objectifs",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Temple de la renommée des voyages"
         },

@@ -1307,6 +1307,7 @@
             "episodes": "Episodes",
             "events": "Events",
             "misc_game_stats": "Misc Game Stats",
+            "objective_events": "Objective Events",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Voyage Hall of Fame"
         },

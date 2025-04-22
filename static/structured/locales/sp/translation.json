@@ -1317,6 +1317,7 @@
             "episodes": "Episodios",
             "events": "Eventos",
             "misc_game_stats": "Estadísticas varias del juego",
+            "objective_events": "Eventos objetivos",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Salón de la fama del viaje"
         },

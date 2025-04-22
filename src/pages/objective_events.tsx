@@ -11,7 +11,7 @@ const ObjectiveEventHelperPage = () => {
     const { t } = globalContext.localized;
 
     return <DataPageLayout
-            pageTitle={t('menu.tools.objective_event_helper')}
+            pageTitle={t('menu.game_info.objective_events')}
             demands={['objective_events', 'factions']}>
         <OEPicker />
     </DataPageLayout>

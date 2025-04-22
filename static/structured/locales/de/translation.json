@@ -1307,6 +1307,7 @@
             "episodes": "Folgen",
             "events": "Ereignisen",
             "misc_game_stats": "Verschiedene Spielstatistiken",
+            "objective_events": "Objektive-Ereignisse",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Ruhmeshalle der Reise"
         },
