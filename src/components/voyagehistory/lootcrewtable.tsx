@@ -43,8 +43,9 @@ export const LootCrewTable = () => {
             customCompare: (a: IRosterCrew, b: IRosterCrew) => {
                 let ar = getLootCrew(a)!;
                 let br = getLootCrew(b)!;
-                let r = ar.voyages[0].created_at - br.voyages[0].created_at;
+                let r = 0;
                 if (!r) r = ar.voyages.length - br.voyages.length;
+                if (!r) r = ar.voyages[0].created_at - br.voyages[0].created_at;
                 if (!r) r = ar.crew.name.localeCompare(br.crew.name);
                 return r;
             }

@@ -1319,6 +1319,7 @@
             "episodes": "Épisodes",
             "events": "Événements",
             "misc_game_stats": "Statistiques diverses du jeu",
+            "objective_events": "Événements objectifs",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Temple de la renommée des voyages"
         },
@@ -1353,11 +1354,16 @@
             "factions": "Factions",
             "fleet_boss_battles": "Combats de boss de flotte",
             "gauntlet": "Gantelet",
+            "objective_event_helper": "Aide aux événements objectifs",
             "shuttle_helper": "Aide aux Navettes",
             "voyage_calculator": "Calculateur de voyage",
             "voyage_history": "Histoire des voyages"
         },
         "tools_title": "Outils"
+    },
+    "objective_events": {
+        "stages": "Étapes",
+        "x_is_locked_by_y": "{{x}} est bloqué par {{y}}"
     },
     "mission_type": {
         "type_0": "Quête de conflit",

@@ -1307,6 +1307,7 @@
             "episodes": "Episodes",
             "events": "Events",
             "misc_game_stats": "Misc Game Stats",
+            "objective_events": "Objective Events",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Voyage Hall of Fame"
         },
@@ -1341,11 +1342,16 @@
             "factions": "Factions",
             "fleet_boss_battles": "Fleet Boss Battles",
             "gauntlet": "Gauntlet",
+            "objective_event_helper": "Objective Event Helper",
             "shuttle_helper": "Shuttle Helper",
             "voyage_calculator": "Voyage Calculator",
             "voyage_history": "Voyage History"
         },
         "tools_title": "Tools"
+    },
+    "objective_events": {
+        "stages": "Stages",
+        "x_is_locked_by_y": "{{x}} is locked by {{y}}"
     },
     "mission_type": {
         "type_0": "Conflict Quest",

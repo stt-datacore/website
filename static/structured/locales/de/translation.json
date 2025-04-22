@@ -1307,6 +1307,7 @@
             "episodes": "Folgen",
             "events": "Ereignisen",
             "misc_game_stats": "Verschiedene Spielstatistiken",
+            "objective_events": "Objektive-Ereignisse",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Ruhmeshalle der Reise"
         },
@@ -1341,11 +1342,16 @@
             "factions": "Fraktionen",
             "fleet_boss_battles": "Flottenbosskämpfe",
             "gauntlet": "Herausforderung",
-            "shuttle_helper": "Shuttle Helfer",
+            "objective_event_helper": "Objektive-Ereignisse-Helfer",
+            "shuttle_helper": "Shuttle-Helfer",
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf"
         },
         "tools_title": "Werkzeuge"
+    },
+    "objective_events": {
+        "stages": "Etappen",
+        "x_is_locked_by_y": "{{x}} ist von {{y}} gesperrt"
     },
     "mission_type": {
         "type_0": "Konfliktquest",
