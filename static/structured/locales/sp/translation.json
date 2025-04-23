@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Activa durante {{time}}",
+        "online_since_time": "En línea desde el {{time}}"
+    },
     "alerts": {
         "add": "Agregar",
         "always_alert_legendary": "Siempre alerta cuando se descubren nuevas tripulaciones legendarias en el pozo de recompra.",

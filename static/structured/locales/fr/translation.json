@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Actif depuis {{time}}",
+        "online_since_time": "En ligne depuis le {{time}}"
+    },
     "alerts": {
         "add": "Ajouter",
         "always_alert_legendary": "Soyez toujours attentif lorsque de nouveaux membres d'équipage légendaires sont découverts dans le pool de rachat.",

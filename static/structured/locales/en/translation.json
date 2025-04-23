@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Active for {{time}}",
+        "online_since_time": "Online since {{time}}"
+    },
     "alerts": {
         "add": "Add",
         "always_alert_legendary": "Always alert when new legendary crew are discovered in the buy-back well.",

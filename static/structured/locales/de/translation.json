@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Aktiv seit {{time}}",
+        "online_since_time": "Online seit {{time}}"
+    },
     "alerts": {
         "add": "Hinzufügen",
         "always_alert_legendary": "Seien Sie immer wachsam, wenn im Rückkaufpool neue legendäre Crewmitglieder entdeckt werden.",
