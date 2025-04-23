@@ -18,7 +18,7 @@ import CrewStat from '../../item_presenters/crewstat';
 import { printFancyPortal } from '../../base/utils';
 import { OfferCrew } from '../../../model/offers';
 
-export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) => {
+export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
@@ -49,7 +49,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
 	}
-	else {
+	if (tableType === 'offers' || alternativeLayout) {
 		tableConfig.push(
 			{
 				width: 1,
@@ -61,55 +61,57 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod) =>
 				}
 			}
 		)
-		tableConfig.push({
-			width: 4,
-			pseudocolumns: ['offer', 'cost'],
-			column: 'offer',
-			title: t('base.offers'),
-			translatePseudocolumn: (field) => {
-				if (field === 'offer') return t('global.name');
-				if (field === 'cost') return t('retrieval.price.price');
-				return field;
-			},
-			customCompare: (a: IRosterCrew, b: IRosterCrew, config) => {
-				if (!a.offers && !b.offers) return 0;
-				else if (!a.offers) return 1;
-				else if (!b.offers) return -1;
-				else {
-					if (config.field === 'offer') {
-						return a.offers[0].name.localeCompare(b.offers[0].name);
-					}
-					else if (config.field === 'cost') {
-						let afiat = (a.offers.some(offer => offer.drop_info.some(di => di.currency === 'fiat')));
-						let bfiat = (b.offers.some(offer => offer.drop_info.some(di => di.currency === 'fiat')));
-						if (afiat === bfiat) {
-							return a.offers[0].drop_info[0].cost - b.offers[0].drop_info[0].cost;
+		if (tableType === 'offers') {
+			tableConfig.push({
+				width: 4,
+				pseudocolumns: ['offer', 'cost'],
+				column: 'offer',
+				title: t('base.offers'),
+				translatePseudocolumn: (field) => {
+					if (field === 'offer') return t('global.name');
+					if (field === 'cost') return t('retrieval.price.price');
+					return field;
+				},
+				customCompare: (a: IRosterCrew, b: IRosterCrew, config) => {
+					if (!a.offers && !b.offers) return 0;
+					else if (!a.offers) return 1;
+					else if (!b.offers) return -1;
+					else {
+						if (config.field === 'offer') {
+							return a.offers[0].name.localeCompare(b.offers[0].name);
 						}
-						else if (afiat) {
-							return 1;
-						}
-						else if (bfiat) {
-							return -1;
-						}
+						else if (config.field === 'cost') {
+							let afiat = (a.offers.some(offer => offer.drop_info.some(di => di.currency === 'fiat')));
+							let bfiat = (b.offers.some(offer => offer.drop_info.some(di => di.currency === 'fiat')));
+							if (afiat === bfiat) {
+								return a.offers[0].drop_info[0].cost - b.offers[0].drop_info[0].cost;
+							}
+							else if (afiat) {
+								return 1;
+							}
+							else if (bfiat) {
+								return -1;
+							}
 
+						}
+						return 0;
 					}
-					return 0;
 				}
-			}
-		});
-		tableConfig.push(
-			{
-				width: 1,
-				column: 'in_portal',
-				title: t('base.in_portal'),
-				customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {
-					return printPortalStatus(a, t, true, true, false, true).localeCompare(printPortalStatus(b, t, true, true, false, true));
+			});
+			tableConfig.push(
+				{
+					width: 1,
+					column: 'in_portal',
+					title: t('base.in_portal'),
+					customCompare: (a: PlayerCrew | CrewMember, b: PlayerCrew | CrewMember) => {
+						return printPortalStatus(a, t, true, true, false, true).localeCompare(printPortalStatus(b, t, true, true, false, true));
+					}
 				}
-			}
-		)
+			)
+		}
 	}
 
-	if (tableType !== 'offers' && tableType !== 'no_skills') {
+	if (tableType !== 'offers' && tableType !== 'no_skills' && !alternativeLayout) {
 		CONFIG.SKILLS_SHORT.forEach((skill) => {
 			tableConfig.push({
 				width: 1,
@@ -167,10 +169,11 @@ type CrewCellProps = {
 	pageId: string;
 	crew: IRosterCrew;
 	tableType: RosterType
+	alternativeLayout?: boolean
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew, tableType } = props;
+	const { crew, tableType, alternativeLayout } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const tiny = TinyStore.getStore("index");
 
@@ -202,15 +205,16 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
 				</div>
 			</Table.Cell>}
-			{tableType === 'offers' && <>
-			<Table.Cell textAlign='center' width={1}>
-				{crew.skill_order.map(skill => {
-
-					return <div key={`crew_${crew.symbol}_sko_${skill}`}>
-						<CrewStat data={crew[skill] as any} skill_name={skill} scale={0.8} />
-					</div>
-				})}
-			</Table.Cell>
+			{(tableType === 'offers' || alternativeLayout) && <>
+				<Table.Cell textAlign='center' width={1}>
+					{crew.skill_order.map(skill => {
+						return <div key={`crew_${crew.symbol}_sko_${skill}`}>
+							<CrewStat data={crew[skill] as any} skill_name={skill} scale={0.8} />
+						</div>
+					})}
+				</Table.Cell>
+			</>}
+			{(tableType === 'offers') && <>
 			<Table.Cell textAlign='center' width={1}>
 				{renderOffers(crew)}
 			</Table.Cell>
@@ -218,7 +222,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printFancyPortal(crew, t, true)}</b>
 			</Table.Cell>
 			</>}
-			{!['offers', 'no_skills'].includes(tableType) && CONFIG.SKILLS_SHORT.map(skill =>
+			{!['offers', 'no_skills'].includes(tableType) && !alternativeLayout && CONFIG.SKILLS_SHORT.map(skill =>
 				crew[skill.name].core > 0 ? (
 					<Table.Cell key={skill.name} textAlign='center'>
 						<b>{crew[skill.name].core}</b>

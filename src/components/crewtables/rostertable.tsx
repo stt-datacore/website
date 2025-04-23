@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Form, Dropdown, Header, Loader } from 'semantic-ui-react';
+import { Form, Dropdown, Header, Loader, Checkbox } from 'semantic-ui-react';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { CompletionState, PlayerBuffMode } from '../../model/player';
@@ -35,6 +35,8 @@ import { ObtainedFilter } from './filters/crewobtained';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
 import WeightingInfoPopup from './weightinginfo';
 import { ReleaseDateFilter } from './filters/crewreleasedate';
+import { OptionsPanelFlexRow } from '../stats/utils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -65,6 +67,8 @@ export const RosterTable = (props: RosterTableProps) => {
 	const { initHighlight, buffMode, setBuffMode } = props;
 
 	const [prospects, setProspects] = React.useState<LockedProspect[]>([] as LockedProspect[]);
+
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	const rosterPlusProspects = props.rosterCrew.slice();
 	const lockableCrew = React.useMemo(() => {
@@ -193,6 +197,7 @@ interface ITableView {
 	renderTableCells: (crew: IRosterCrew) => JSX.Element;
 	spinText?: string;
 	worker?: (crew: IRosterCrew[]) => Promise<IRosterCrew[]>;
+	extraSearchContent?: JSX.Element;
 };
 
 interface ITableViewOption {
@@ -210,6 +215,8 @@ interface IDataPrepared {
 
 const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
 	const { topQuipmentScores: top, continuum_missions } = globalContext.core;
@@ -231,6 +238,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
+
+	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
 
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
@@ -619,8 +628,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						initOptions={initOptions}
 						rosterCrew={preparedCrew}
 						crewFilters={crewFilters}
-						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
-						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
+						extraSearchContent={view ? view?.extraSearchContent : renderExtraSearchContent()}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers')}
+						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells alternativeLayout={altBaseLayout && rosterType !== 'offers'} tableType={props.tableType} crew={crew} pageId={pageId} />}
 						lockableCrew={lockableCrew}
 						loading={isPreparing}
 					/>
@@ -630,6 +640,22 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			{viewIsReady === false && globalContext.core.spin(view?.spinText ?? 'Calculating...')}
 		</React.Fragment>
 	);
+
+	function renderExtraSearchContent() {
+		if (rosterType === 'offers') return <></>;
+		return (
+			<div style={{flexGrow: '1', flexWrap: 'wrap'}}>
+				<div style={{...OptionsPanelFlexRow, justifyContent: isMobile ? 'flex-start' : 'flex-end', margin: '0.5em 0'}}>
+					<Checkbox
+						checked={altBaseLayout}
+						onChange={(e, { checked }) => setAltBaseLayout(!!checked)}
+						label={t('global.alternative_layout')}
+					 />
+					{/* <Button>{t('global.advanced_settings')}</Button> */}
+				</div>
+			</div>
+		)
+	}
 
 	function getDefaultTable(): TableView {
 		let defaultTable: TableView = '';
