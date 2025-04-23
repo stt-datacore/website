@@ -79,6 +79,8 @@ export interface SearchableTableProps {
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
 
+	extraSearchContent?: JSX.Element;
+
 	pagingOptions?: DropdownItemProps[];
 	defaultPaginationRows?: number;
 
@@ -309,7 +311,8 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				display: "flex",
 				flexDirection: "row",
 				alignItems: "center",
-				justifyContent: "flex-start"
+				justifyContent: "flex-start",
+				flexWrap: 'wrap'
 				}}>
 
 			<Input
@@ -339,14 +342,13 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				header={'Advanced search'}
 				content={props.explanation ? props.explanation : renderDefaultExplanation()}
 			/>}
+			{!!props.extraSearchContent && <>{props.extraSearchContent}</>}
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
 				justifyContent: "flex-end",
 				alignItems: "center"
 			}}>
-
-
 				{caption && props.dropDownChoices?.length && (
 					<div style={{
 						margin: "0.5em",
