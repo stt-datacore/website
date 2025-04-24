@@ -365,7 +365,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	}
 
 	function noteExclusions() {
-		setNotedExclusions([...excludedCrewIds]);
+		setNotedExclusions([...new Set(excludedCrewIds.concat(notedExclusions))]);
 	}
 
 	function deNoteExclusions() {
