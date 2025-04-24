@@ -338,10 +338,13 @@
         "excluder": {
             "all_event_crew": "Toute les équipiers de l'événement",
             "by_event": "Exclure les équipiers de l'événement",
+            "denote_current": "Effacez les notes actuelles",
             "do_not_exclude_event_crew": "N'excluez pas les équipiers d'événements",
             "event_skill_matrix_crew": "Équipiers dans la matrice de compétences de l'événement",
             "featured_event_crew": "Équipiers de l'événement en vedette",
+            "note_current": "Notez les exclusions actuelles",
             "phase_type": "Type de phase",
+            "restore_notes": "Rappelez les exclusions notées",
             "search": "Rechercher des équipiers à exclure",
             "select_event": "Sélectionnez un événement",
             "title": "Équipiers à exclure"
@@ -947,6 +950,7 @@
         "date_start": "Date de début",
         "default": "Défaut",
         "delete": "Masquer",
+        "delete_confirm": "Êtes-vous sûr de vouloir supprimer ces données ?",
         "delete_selected": "Masquer la sélection",
         "disable": "Désactiver",
         "disabled": "Désactivé",

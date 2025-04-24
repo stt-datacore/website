@@ -338,10 +338,13 @@
         "excluder": {
             "all_event_crew": "Alle Event-Crews",
             "by_event": "Das Ereignis, von dem die Besatzung ausgeschlossen werden soll",
+            "denote_current": "Aktuelle Notizen löschen",
             "do_not_exclude_event_crew": "Crew des Ereignisses nicht ausschließen",
             "event_skill_matrix_crew": "Crew innerhalb der Ereignisfertigkeitsmatrix",
             "featured_event_crew": "Vorgestellte Event-Crew",
+            "note_current": "Aktuelle Ausschlüsse notieren",
             "phase_type": "Phasentyp",
+            "restore_notes": "Notierte Ausschlüsse abrufen",
             "search": "Suche nach auszuschließender Crew",
             "select_event": "Wählen Sie ein Ereignis aus",
             "title": "Auszuschließende Crew"
@@ -939,6 +942,7 @@
         "date_start": "Startdatum",
         "default": "Standard",
         "delete": "Löschen",
+        "delete_confirm": "Möchten Sie diese Daten wirklich löschen?",
         "delete_selected": "Ausgewählte löschen",
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",

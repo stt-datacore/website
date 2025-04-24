@@ -5,7 +5,7 @@ import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext
 import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore } from './localizedcontext';
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import { Button, Input, Modal, Segment } from 'semantic-ui-react';
+import { Button, Container, Input, Label, Message, Modal, Segment } from 'semantic-ui-react';
 
 const DEBUG_MODE = false;
 
@@ -206,22 +206,22 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 
 		const editor = promptModal as PromptConfig;
 
-		return <React.Fragment>
-			<Segment attached="top">
-				<h3>{promptModal?.title}</h3>
-			</Segment>
-			<div>
-				{promptModal.message}
-				{editor.mode === 'edit' &&
-				<Input value={editor.currentValue} onChange={(e, { value }) => setModalValue(value)} />
-				}
+		return <Container style={{height: '100%'}}>
+			<Message>
+				<h3>
+					{promptModal?.title}
+				</h3>
+				<Message.Content>
+					{promptModal.message}
+					{editor.mode === 'edit' &&
+						<Input value={editor.currentValue} onChange={(e, { value }) => setModalValue(value)} />
+					}
+				</Message.Content>
+			</Message>
+			<div  style={{gap: '1em', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start', margin: '1em'}}>
+				<Button onClick={modalNegative}>{promptModal?.negative}</Button>
+				<Button onClick={modalAffirmative}>{promptModal?.affirmative}</Button>
 			</div>
-			<Segment attached="bottom">
-				<div style={{float: 'right', gap: '1em', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-					<Button onClick={modalNegative}>{promptModal?.negative}</Button>
-					<Button onClick={modalAffirmative}>{promptModal?.affirmative}</Button>
-				</div>
-			</Segment>
-		</React.Fragment>
+		</Container>
 	}
 };

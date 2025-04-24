@@ -338,10 +338,13 @@
         "excluder": {
             "all_event_crew": "All event crew",
             "by_event": "Exclude crew from the event",
+            "denote_current": "Clear current notes",
             "do_not_exclude_event_crew": "Do not exclude event crew",
             "event_skill_matrix_crew": "Event skill matrix crew",
             "featured_event_crew": "Featured event crew",
+            "note_current": "Note current exclusions",
             "phase_type": "Phase type",
+            "restore_notes": "Recall noted exclusions",
             "search": "Search for crew to exclude",
             "select_event": "Select event",
             "title": "Crew to Exclude"
@@ -939,6 +942,7 @@
         "date_start": "Start Date",
         "default": "Default",
         "delete": "Delete",
+        "delete_confirm": "Are you sure you wish to delete this data?",
         "delete_selected": "Delete Selected",
         "disable": "Disable",
         "disabled": "Disabled",

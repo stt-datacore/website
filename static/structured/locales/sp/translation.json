@@ -338,10 +338,13 @@
         "excluder": {
             "all_event_crew": "Todo del tripulantes del evento",
             "by_event": "Excluir tripulantes del evento",
+            "denote_current": "Borrar notas actuales",
             "do_not_exclude_event_crew": "No excluya a los tripulantes del evento",
             "event_skill_matrix_crew": "Tripulantes de la matriz de habilidades del evento",
             "featured_event_crew": "Tripulantes destacados del evento",
+            "note_current": "Anotar exclusiones actuales",
             "phase_type": "Tipo de fase",
+            "restore_notes": "Recuperar exclusiones anotadas",
             "search": "Búsqueda des tripulantes para excluir",
             "select_event": "Seleccione un evento",
             "title": "Tripulantes a excluir"
@@ -945,6 +948,7 @@
         "date_start": "Fecha de inicio",
         "default": "Predeterminada",
         "delete": "Ocultar",
+        "delete_confirm": "¿Estás seguro de que deseas eliminar estos datos?",
         "delete_selected": "Ocultar seleccionado",
         "disable": "Desactivar",
         "disabled": "Desactivado",

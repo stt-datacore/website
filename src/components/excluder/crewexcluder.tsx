@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps } from 'semantic-ui-react';
+import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps, Popup } from 'semantic-ui-react';
 
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
 import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../base/optionsmodal_base';
@@ -8,10 +8,13 @@ import CrewPicker from '../crewpicker';
 import { IEventData, IEventScoredCrew } from '../eventplanner/model';
 import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
-import { oneCrewCopy } from '../../utils/crewutils';
+import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
 import { PlayerCrew } from '../../model/player';
+import { useStateWithStorage } from '../../utils/storage';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { AvatarView } from '../item_presenters/avatarview';
 
 interface ISelectOption {
 	key: string;
@@ -20,6 +23,7 @@ interface ISelectOption {
 };
 
 type CrewExcluderProps = {
+	pageId?: string
 	rosterCrew: PlayerCrew[];
 	preExcludedCrew: PlayerCrew[];
 	excludedCrewIds: number[];
@@ -33,13 +37,16 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { confirm } = globalContext;
 	const { t, tfmt, useT } = globalContext.localized;
 	const { t: excluder } = useT('consider_crew.excluder');
 
-	const { events: inputEvents, voyageConfig } = props;
+	const { events: inputEvents, voyageConfig, pageId } = props;
 	const { ephemeral } = globalContext.player;
 
 	const [eventData, setEventData] = React.useState<IEventData[] | undefined>(undefined);
+
+	const [notedExclusions, setNotedExclusions] = useStateWithStorage<number[]>(`${pageId || 'excluder'}/noted_exclusions`, [], { rememberForever: true });
 
 	const events = React.useMemo(() => {
 		return inputEvents?.length ? inputEvents : (eventData ?? []);
@@ -55,11 +62,6 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const [phase, setPhase] = React.useState<string>('');
 	const [selectedBonus, setSelectedBonus] = React.useState<SelectedBonusType>('all');
 	const [bestCombos, setBestCombos] = React.useState([] as number[]);
-
-	const excludeQuipped = () => {
-		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
-		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
-	}
 
 	React.useEffect(() => {
 		let activeEvent: string = '';
@@ -221,7 +223,42 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 						)}
 						<Form.Field>
 							<Button color='blue' onClick={(e) => excludeQuipped()}>{t('consider_crew.exclude_quipped')}</Button>
+							<Popup
+								content={excluder('denote_current')}
+								trigger={
+									<Button
+										disabled={notedExclusions.length === 0}
+										onClick={deNoteExclusions}
+										icon='trash'
+										style={{float: 'right'}}
+										/>
+									}
+								/>
+							<Popup
+								content={renderNotedCrew()}
+								trigger={
+									<Button
+										disabled={notedExclusions.length === 0}
+										color={notedExclusions?.length ? 'green' : undefined}
+										onClick={restoreNotedExclusions}
+										icon='external'
+										style={{float: 'right'}}
+										/>
+									}
+								/>
+							<Popup
+								content={excluder('note_current')}
+								trigger={
+									<Button
+										disabled={excludedCrewIds.length === 0}
+										onClick={noteExclusions}
+										icon='bookmark'
+										style={{float: 'right'}}
+										/>
+									}
+								/>
 						</Form.Field>
+
 					</Form.Group>
 				</Message.Content>
 			</Message>
@@ -249,6 +286,49 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		);
 	}
 
+	function renderNotedCrew() {
+		const flexCol = OptionsPanelFlexColumn;
+		const flexRow = OptionsPanelFlexRow;
+
+		let work = notedExclusions.map(id => props.preExcludedCrew.find(c => c.id === id)).filter(f => {
+			if (f) delete f.pickerId;
+			return f !== undefined;
+		});
+
+		let overflow = notedExclusions.length - work.length;
+		work.sort((a, b) => {
+			a.pickerId ??= a.kwipment.filter(q => typeof q === 'number' ? !!q : !!q[1]).length;
+			b.pickerId ??= b.kwipment.filter(q => typeof q === 'number' ? !!q : !!q[1]).length;
+			let aq = a.pickerId;
+			let bq = b.pickerId;
+			let r = bq - aq;
+			if (!r) r = a.name.localeCompare(b.name);
+			return r;
+		});
+		work = work.slice(0, 6);
+
+		return (
+			<div style={{...flexCol, alignItems: 'flex-start', gap: '0.5em'}}>
+				{excluder('restore_notes{{:}}')}
+				{work?.map((c, idx) => {
+					return (
+						<div key={`popup_noted_${c.id}_${c.symbol}_${idx}`}
+							style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
+							<AvatarView
+								mode='crew'
+								size={32}
+								item={c}
+								/>
+							{!!c.pickerId && <QuipmentPopover crew={c} />}
+							{c.name}
+						</div>
+					)
+				})}
+				{!!overflow && t('global.and_n_more_ellipses', { n: overflow })}
+			</div>
+		)
+	}
+
 	function renderCrewLabel(crew: IVoyageCrew): JSX.Element {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
@@ -266,6 +346,39 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		const index = excludedCrewIds.indexOf(crewId);
 		excludedCrewIds.splice(index, 1);
 		updateExclusions([...excludedCrewIds]);
+	}
+
+	function excludeQuipped() {
+		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
+		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
+	}
+
+	function restoreNotedExclusions() {
+		if (notedExclusions?.length) {
+			const current = [...new Set(excludedCrewIds)].sort();
+			const noted = [...new Set(notedExclusions)].sort();
+			const diff = noted.filter(id => !current.includes(id));
+			if (diff.length) {
+				updateExclusions([...current, ...diff]);
+			}
+		}
+	}
+
+	function noteExclusions() {
+		setNotedExclusions([...excludedCrewIds]);
+	}
+
+	function deNoteExclusions() {
+		confirm({
+			title: t('global.delete'),
+			message: t('global.delete_confirm'),
+			onClose: (result) => {
+				if (result) {
+					setNotedExclusions([]);
+				}
+			}
+		})
+
 	}
 
 	function getEvents(): void {
