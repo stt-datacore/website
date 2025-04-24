@@ -303,7 +303,6 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			return f !== undefined;
 		});
 
-		let overflow = notedExclusions.length - work.length;
 		work.sort((a, b) => {
 			a.pickerId ??= a.kwipment.filter(q => typeof q === 'number' ? !!q : !!q[1]).length;
 			b.pickerId ??= b.kwipment.filter(q => typeof q === 'number' ? !!q : !!q[1]).length;
@@ -313,7 +312,9 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			if (!r) r = a.name.localeCompare(b.name);
 			return r;
 		});
-		work = work.slice(0, 6);
+
+		work = work.slice(0, 10);
+		let overflow = notedExclusions.length - work.length;
 
 		return (
 			<div style={{...flexCol, alignItems: 'flex-start', gap: '0.5em'}}>
