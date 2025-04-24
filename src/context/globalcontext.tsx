@@ -5,8 +5,30 @@ import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext
 import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore } from './localizedcontext';
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
+import { Button, Input, Modal, Segment } from 'semantic-ui-react';
 
 const DEBUG_MODE = false;
+
+export type ModalConfirmProps = { message: string, title: string, affirmative?: string, negative?: string, onClose: (result: boolean) => void };
+export type ModalPromptProps = { message: string, title: string, affirmative?: string, negative?: string, onClose: (result: string | null) => void, currentValue?: string };
+
+export interface GlobalDialogConfig {
+	mode: 'edit' | 'confirm';
+	title: string;
+	message: string;
+	affirmative: string;
+	negative: string;
+	onClose: (result: any) => void;
+}
+
+export interface PromptConfig extends GlobalDialogConfig {
+	currentValue: string;
+	onClose: (result: string | null) => void;
+}
+
+export interface ConfirmConfig extends GlobalDialogConfig {
+	onClose: (result: boolean) => void;
+}
 
 interface GlobalProviderProperties {
 	children: JSX.Element;
@@ -25,6 +47,8 @@ export interface IDefaultGlobal {
 	data?: any;
 	isMobile: boolean;
 	readyLocalizedCore: (demands: ValidDemands[], onReady: () => void) => void;
+	confirm: (props: ModalConfirmProps) => void;
+	prompt: (props: ModalPromptProps) => void;
 };
 
 const defaultGlobal: IDefaultGlobal = {
@@ -33,7 +57,9 @@ const defaultGlobal: IDefaultGlobal = {
 	localized: DefaultLocalizedData,
     maxBuffs: undefined,
 	isMobile: false,
-	readyLocalizedCore: () => {}
+	readyLocalizedCore: () => {},
+	confirm: () => false,
+	prompt: () => false
 };
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal);
@@ -48,6 +74,9 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	const [localizedPlayer, setLocalizedPlayer] = React.useState<PlayerContextData>(player);
 	const [localizationTrigger, setLocalizationTrigger] = React.useState<ILocalizationTrigger | undefined>(undefined);
 	const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
+
+	const [promptModal, setPromptModal] = React.useState<GlobalDialogConfig | undefined>(undefined);
+	const [modalValue, setModalValue] = React.useState('');
 
 	React.useEffect(() => {
 		if (!localizationTrigger) return;
@@ -86,13 +115,26 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		localized,
         maxBuffs,
 		isMobile,
-		readyLocalizedCore
+		readyLocalizedCore,
+		confirm,
+		prompt
 	};
 
 	return (
-		<GlobalContext.Provider value={providerValue}>
-			{children}
-		</GlobalContext.Provider>
+		<React.Fragment>
+			<GlobalContext.Provider value={providerValue}>
+				{children}
+			</GlobalContext.Provider>
+			{!!promptModal &&
+				<Modal
+					open={!!promptModal}
+					size="mini"
+					content={<>
+						{drawModalBody()}
+					</>}
+					/>
+			}
+		</React.Fragment>
 	);
 
 	function readyLocalizedCore(demands: ValidDemands[], onReady: () => void): void {
@@ -105,5 +147,81 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 				onReady
 			});
 		});
+	}
+
+	function confirm(props: ModalConfirmProps) {
+		const { t } = localized;
+		const newProps = {
+			mode: 'confirm',
+			affirmative: t('global.yes'),
+			negative: t('global.no'),
+			...props,
+		} as ConfirmConfig;
+		setPromptModal(newProps);
+	}
+
+	function prompt(props: ModalPromptProps) {
+		const { t } = localized;
+		const newProps = {
+			mode: 'edit',
+			affirmative: t('global.yes'),
+			negative: t('global.no'),
+			currentValue: '',
+			...props,
+		} as PromptConfig;
+		setPromptModal(newProps);
+	}
+
+	function modalAffirmative() {
+		if (promptModal)  {
+			if (promptModal.mode === 'confirm') {
+				promptModal.onClose(true);
+			}
+			else {
+				promptModal.onClose(modalValue);
+			}
+		}
+		modalReset();
+	}
+
+	function modalNegative() {
+		if (promptModal)  {
+			if (promptModal.mode === 'confirm') {
+				promptModal.onClose(false);
+			}
+			else {
+				promptModal.onClose(null);
+			}
+		}
+		modalReset();
+	}
+
+	function modalReset() {
+		setPromptModal(undefined);
+		setModalValue('');
+	}
+
+	function drawModalBody() {
+		if (!promptModal) return <></>;
+
+		const editor = promptModal as PromptConfig;
+
+		return <React.Fragment>
+			<Segment attached="top">
+				<h3>{promptModal?.title}</h3>
+			</Segment>
+			<div>
+				{promptModal.message}
+				{editor.mode === 'edit' &&
+				<Input value={editor.currentValue} onChange={(e, { value }) => setModalValue(value)} />
+				}
+			</div>
+			<Segment attached="bottom">
+				<div style={{float: 'right', gap: '1em', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
+					<Button onClick={modalNegative}>{promptModal?.negative}</Button>
+					<Button onClick={modalAffirmative}>{promptModal?.affirmative}</Button>
+				</div>
+			</Segment>
+		</React.Fragment>
 	}
 };
