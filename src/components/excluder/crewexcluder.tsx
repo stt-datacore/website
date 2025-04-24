@@ -7,7 +7,7 @@ import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption 
 import CrewPicker from '../crewpicker';
 import { IEventData, IEventScoredCrew } from '../eventplanner/model';
 import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
-import { GlobalContext } from '../../context/globalcontext';
+import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
@@ -33,6 +33,8 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt, useT } = globalContext.localized;
+	const { t: excluder } = useT('consider_crew.excluder');
 
 	const { events: inputEvents, voyageConfig } = props;
 	const { ephemeral } = globalContext.player;
@@ -150,25 +152,25 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			}
 		}
 	});
-	if (eventOptions.length > 0) eventOptions.push({ key: 'none', value: '', text: 'Do not exclude event crew' });
+	if (eventOptions.length > 0) eventOptions.push({ key: 'none', value: '', text: excluder('do_not_exclude_event_crew') });
 
 	const bonusOptions: ISelectOption[] = [
-		{ key: 'all', value: 'all', text: 'All event crew' },
-		{ key: 'featured', value: 'featured', text: 'Featured event crew' },
+		{ key: 'all', value: 'all', text: excluder('all_event_crew') },
+		{ key: 'featured', value: 'featured', text: excluder('featured_event_crew') },
 
 		// { key: 'best', value: 'best', text: 'My best crew for event' }
 	];
 
 	const phaseOptions = [
-		{ key: 'gather', value: 'gather', text: 'Galaxy' },
-		{ key: 'shuttles', value: 'shuttles', text: 'Faction' },
-		{ key: 'voyage', value: 'voyage', text: 'Voyage' },
+		{ key: 'gather', value: 'gather', text: t('event_type.gather')},
+		{ key: 'shuttles', value: 'shuttles', text: t('event_type.shuttles') },
+		{ key: 'voyage', value: 'voyage', text: t('event_type.voyage') },
 	] as DropdownItemProps[];
 
 	if (selectedEvent) {
 		const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 		if (activeEvent?.content_types?.includes('gather')) {
-			bonusOptions.push({ key: 'matrix', value: 'matrix', text: 'Event skill matrix crew' });
+			bonusOptions.push({ key: 'matrix', value: 'matrix', text: excluder('event_skill_matrix_crew') });
 		}
 	}
 
@@ -177,14 +179,14 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			<Message attached onDismiss={excludedCrewIds.length > 0 ? () => { updateExclusions([]); setSelectedEvent(''); } : undefined}>
 				<Message.Content>
 					<Message.Header>
-						Crew to Exclude
+						{excluder('title')}
 					</Message.Header>
 					<Form.Group grouped>
 						{eventOptions.length > 0 && (
 							<Form.Group inline>
 								<Form.Field
-									label='Exclude crew from the event'
-									placeholder='Select event'
+									label={excluder('by_event')}
+									placeholder={excluder('select_event')}
 									control={Dropdown}
 									fluid
 									clearable
@@ -195,7 +197,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								/>
 								{selectedEvent !== '' && (
 									<Form.Field
-										label='Filter by bonus'
+										label={t('hints.filter_by_bonus')}
 										control={Dropdown}
 										fluid
 										selection
@@ -206,7 +208,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								)}
 								{selectedEvent !== '' && selectedBonus === 'matrix' && (
 									<Form.Field
-										label='Phase type'
+										label={excluder('phase_type')}
 										control={Dropdown}
 										fluid
 										selection
@@ -218,7 +220,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 							</Form.Group>
 						)}
 						<Form.Field>
-							<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>
+							<Button color='blue' onClick={(e) => excludeQuipped()}>{t('consider_crew.exclude_quipped')}</Button>
 						</Form.Field>
 					</Form.Group>
 				</Message.Content>
@@ -292,8 +294,9 @@ type CrewExcluderModalProps = {
 };
 
 const CrewExcluderModal = (props: CrewExcluderModalProps) => {
+	const globalContext = React.useContext(GlobalContext);
 	const { excludedCrewIds } = props;
-
+	const { t } = globalContext.localized;
 	const [options, setOptions] = React.useState<IExcluderModalOptions>(DEFAULT_EXCLUDER_OPTIONS);
 
 	const pickerCrewList = props.rosterCrew.sort((a, b) => a.name.localeCompare(b.name));
@@ -311,7 +314,7 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 		return (
 			<Button color='blue'>
 				<Icon name='zoom-in' />
-				Search for crew to exclude
+				{t('consider_crew.excluder.search')}
 			</Button>
 		);
 	}
@@ -343,17 +346,27 @@ const DEFAULT_EXCLUDER_OPTIONS = {
 } as IExcluderModalOptions;
 
 class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
+	static contextType = GlobalContext;
+	declare context: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
 	declare props: any;
 
 	protected getOptionGroups(): OptionGroup[] {
+		const { t } = this.context.localized;
 		return [
 			{
-				title: 'Filter by rarity:',
+				title: t('hints.filter_by_rarity{{:}}'),
 				key: 'rarities',
 				multi: true,
 				options: ExcluderOptionsModal.rarityOptions,
-				initialValue: [] as number[]
+				initialValue: [] as number[],
+				containerStyle: {
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-start',
+					justifyContent: 'flex-start',
+					gap:'0.5em'
+				}
 			}]
 	}
 	protected getDefaultOptions(): IExcluderModalOptions {

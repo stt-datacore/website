@@ -335,6 +335,17 @@
         "consider_shared": "Envisagez l'équipier partagé",
         "consider_unowned": "Considérez les équipiers sans propriétaire",
         "exclude_quipped": "Exclure les équipiers quipés",
+        "excluder": {
+            "all_event_crew": "Toute les équipiers de l'événement",
+            "by_event": "Exclure les équipiers de l'événement",
+            "do_not_exclude_event_crew": "N'excluez pas les équipiers d'événements",
+            "event_skill_matrix_crew": "Équipiers dans la matrice de compétences de l'événement",
+            "featured_event_crew": "Équipiers de l'événement en vedette",
+            "phase_type": "Type de phase",
+            "search": "Rechercher des équipiers à exclure",
+            "select_event": "Sélectionnez un événement",
+            "title": "Équipiers à exclure"
+        },
         "only_immortal": "Seul l'équipage immortel",
         "shared_crew_popup": "Les nombres de compétences de l'équipier partagé sont basés sur les buffs de vos joueurs et peuvent ne pas correspondre au score réel"
     },
@@ -1366,10 +1377,6 @@
         },
         "tools_title": "Outils"
     },
-    "objective_events": {
-        "stages": "Étapes",
-        "x_is_locked_by_y": "{{x}} est bloqué par {{y}}"
-    },
     "mission_type": {
         "type_0": "Quête de conflit",
         "type_2": "Bataille de navires",
@@ -1379,6 +1386,10 @@
         "continuum_mission_map": "Carte de mission du continuum",
         "current_continuum_mission_date": "Mission actuelle du continuum: {{date}}",
         "mission_map": "Carte de mission"
+    },
+    "objective_events": {
+        "stages": "Étapes",
+        "x_is_locked_by_y": "{{x}} est bloqué par {{y}}"
     },
     "obtained": {
         "long": {

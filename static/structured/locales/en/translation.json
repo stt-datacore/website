@@ -335,6 +335,17 @@
         "consider_shared": "Consider shared crew",
         "consider_unowned": "Consider unowned crew",
         "exclude_quipped": "Exclude quipped crew",
+        "excluder": {
+            "all_event_crew": "All event crew",
+            "by_event": "Exclude crew from the event",
+            "do_not_exclude_event_crew": "Do not exclude event crew",
+            "event_skill_matrix_crew": "Event skill matrix crew",
+            "featured_event_crew": "Featured event crew",
+            "phase_type": "Phase type",
+            "search": "Search for crew to exclude",
+            "select_event": "Select event",
+            "title": "Crew to Exclude"
+        },
         "only_immortal": "Only immortal crew",
         "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
     },
@@ -1354,10 +1365,6 @@
         },
         "tools_title": "Tools"
     },
-    "objective_events": {
-        "stages": "Stages",
-        "x_is_locked_by_y": "{{x}} is locked by {{y}}"
-    },
     "mission_type": {
         "type_0": "Conflict Quest",
         "type_2": "Ship Battle",
@@ -1367,6 +1374,10 @@
         "continuum_mission_map": "Continuum Mission Map",
         "current_continuum_mission_date": "Current continuum mission: {{date}}",
         "mission_map": "Mission Map"
+    },
+    "objective_events": {
+        "stages": "Stages",
+        "x_is_locked_by_y": "{{x}} is locked by {{y}}"
     },
     "obtained": {
         "long": {

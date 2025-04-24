@@ -335,6 +335,17 @@
         "consider_shared": "Gemeinsame Crew berücksichtigen",
         "consider_unowned": "Unbesessene Crew berücksichtigen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
+        "excluder": {
+            "all_event_crew": "Alle Event-Crews",
+            "by_event": "Das Ereignis, von dem die Besatzung ausgeschlossen werden soll",
+            "do_not_exclude_event_crew": "Crew des Ereignisses nicht ausschließen",
+            "event_skill_matrix_crew": "Crew innerhalb der Ereignisfertigkeitsmatrix",
+            "featured_event_crew": "Vorgestellte Event-Crew",
+            "phase_type": "Phasentyp",
+            "search": "Suche nach auszuschließender Crew",
+            "select_event": "Wählen Sie ein Ereignis aus",
+            "title": "Auszuschließende Crew"
+        },
         "only_immortal": "Nur unsterbliche Crew",
         "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
     },
@@ -1354,10 +1365,6 @@
         },
         "tools_title": "Werkzeuge"
     },
-    "objective_events": {
-        "stages": "Etappen",
-        "x_is_locked_by_y": "{{x}} ist von {{y}} gesperrt"
-    },
     "mission_type": {
         "type_0": "Konfliktquest",
         "type_2": "Schiffsschlacht",
@@ -1367,6 +1374,10 @@
         "continuum_mission_map": "Kontinuumsmissionskarte",
         "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}",
         "mission_map": "Missionskarte"
+    },
+    "objective_events": {
+        "stages": "Etappen",
+        "x_is_locked_by_y": "{{x}} ist von {{y}} gesperrt"
     },
     "obtained": {
         "long": {

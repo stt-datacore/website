@@ -335,6 +335,17 @@
         "consider_shared": "Considerar los tripulantes compartidas",
         "consider_unowned": "Considere los tripulantes sin propietario",
         "exclude_quipped": "Excluir los tripulantes con quipo activo",
+        "excluder": {
+            "all_event_crew": "Todo del tripulantes del evento",
+            "by_event": "Excluir tripulantes del evento",
+            "do_not_exclude_event_crew": "No excluya a los tripulantes del evento",
+            "event_skill_matrix_crew": "Tripulantes de la matriz de habilidades del evento",
+            "featured_event_crew": "Tripulantes destacados del evento",
+            "phase_type": "Tipo de fase",
+            "search": "Búsqueda des tripulantes para excluir",
+            "select_event": "Seleccione un evento",
+            "title": "Tripulantes a excluir"
+        },
         "only_immortal": "Sólo tripulación inmortal",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
@@ -1364,10 +1375,6 @@
         },
         "tools_title": "Herramientas"
     },
-    "objective_events": {
-        "stages": "Etapas",
-        "x_is_locked_by_y": "{{x}} está bloqueado por {{y}}"
-    },
     "mission_type": {
         "type_0": "Misión de conflicto",
         "type_2": "Batalla de buque",
@@ -1377,6 +1384,10 @@
         "continuum_mission_map": "Mapa de misión continuo",
         "current_continuum_mission_date": "Misión continuo actual: {{date}}",
         "mission_map": "Mapa de la misión"
+    },
+    "objective_events": {
+        "stages": "Etapas",
+        "x_is_locked_by_y": "{{x}} está bloqueado por {{y}}"
     },
     "obtained": {
         "long": {
