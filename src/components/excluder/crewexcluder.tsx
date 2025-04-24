@@ -42,11 +42,19 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const { t: excluder } = useT('consider_crew.excluder');
 
 	const { events: inputEvents, voyageConfig, pageId } = props;
-	const { ephemeral } = globalContext.player;
+	const { ephemeral, playerData } = globalContext.player;
 
 	const [eventData, setEventData] = React.useState<IEventData[] | undefined>(undefined);
 
-	const [notedExclusions, setNotedExclusions] = useStateWithStorage<number[]>(`${pageId || 'excluder'}/noted_exclusions`, [], { rememberForever: true });
+	const dataPrefix = React.useMemo(() => {
+		const pg = pageId ?? 'excluder';
+		if (playerData) {
+			return `${playerData.player.dbid}/${pg}`;
+		}
+		return pg;
+	}, [playerData, pageId]);
+
+	const [notedExclusions, setNotedExclusions] = useStateWithStorage<number[]>(`${dataPrefix}/noted_exclusions`, [], { rememberForever: true });
 
 	const events = React.useMemo(() => {
 		return inputEvents?.length ? inputEvents : (eventData ?? []);
