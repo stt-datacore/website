@@ -9,8 +9,9 @@ import CONFIG from "../../CONFIG";
 import { getVariantTraits } from "../../../utils/crewutils";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { Slider } from "../../base/slider";
+import { EventStats, makeTypeBuckets } from "../../../utils/event_stats";
 
-export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants';
+export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants' | 'type';
 
 
 export interface DistributionPickerOpts {
@@ -40,6 +41,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'mega', value: 'mega', text: t('obtained.long.Mega') },
         { key: 'traits', value: 'traits', text: t('base.featured_traits') },
         { key: 'variants', value: 'variants', text: t('base.variants') },
+        { key: 'type', value: 'type', text: t('event_stats.event_type') },
     ];
 
     const flexCol = OptionsPanelFlexColumn;
@@ -63,6 +65,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         if (type === 'event') return createSeriesEventStats();
         else if (type === 'traits') return createTraitEventStats();
         else if (type === 'variants') return createVariantEventStats();
+        else if (type === 'type') return createEventTypeStats();
         else return createSeriesMegaStats();
     }, [type]);
 
@@ -84,6 +87,12 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                         arcLinkLabel={(data) => data.data.label}
                         arcLabel={(data) => `${t('global.n_%', { n: data.value })}`}
                         tooltip={(data) => {
+                            let stats: EventStats | undefined = undefined;
+                            let img: string | undefined = undefined;
+                            if (data.datum.data.data.extra?.is_event) {
+                                stats = data.datum.data.data.extra.bucket[0];
+                                img = data.datum.data.data.extra?.image;
+                            }
                             let fc = crew.filter(cc => data.datum.data.data.crew.includes(cc.symbol))
                             if (fc?.length) {
                                 if (fc.some(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')) {
@@ -102,10 +111,18 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                                 <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
                                 <p>
                                     <span>{label}</span>
-                                    {!!cmm && <span>
+                                    {!!cmm && !stats && <span>
                                         <br />
                                         {cmm.date_added.toLocaleDateString()}
                                         </span>}
+
+                                    {!!img && !!stats && (
+                                        <div>
+                                            <img src={`${process.env.GATSBY_ASSETS_URL}${img}`} style={{padding: 0,margin:0, height: '64px', border: '1px solid gray', borderRadius: '12px'}} />
+                                            <br/>{stats?.event_name}
+                                            <br/>{stats?.discovered?.toLocaleDateString()}
+                                        </div>
+                                    )}
                                 </p>
                                 <span>
                                     {amount}
@@ -113,11 +130,11 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                                 <span>
                                     {t('global.n_x', { n: data.datum.data.events, x: t('menu.game_info.events') })}
                                 </span>
-                                {!!cmm && <AvatarView
+                                {!!cmm && <div style={{textAlign:'center'}}>{t('base.rewards')} <AvatarView
                                         mode='crew'
                                         item={cmm}
                                         size={64}
-                                    />}
+                                    /></div>}
                                 </div>
                         }}
                         theme={themes.dark}
@@ -338,6 +355,88 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
 
         seriesStats.sort((a, b) => b.score - a.score);
         return sortSeries(seriesStats).filter(f => f.events >= 5)
+    }
+
+    function createEventTypeStats() {
+        if (!event_stats?.length) return [];
+        const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
+        const buckets = makeTypeBuckets(newStats);
+        let top = {} as { [key: string]: number };
+        Object.entries(buckets).forEach(([type, bucket]) => {
+            if (!bucket.length) return;
+            bucket.sort((a, b) => {
+                return b.min - a.min;
+            });
+
+            top[type] ??= 0;
+            if (bucket[0] && bucket[0].min > top[type]) top[type] = bucket[0].min;
+        });
+
+        Object.entries(buckets).forEach(([type, bucket]) => {
+            const max = top[type];
+            bucket.forEach((stat) => {
+                stat.event_type = stat.event_type.split("/").map(type => t(`event_type.${type}`)).join(" / ");
+                stat.sorted_event_type = stat.sorted_event_type?.split("/").map(type => t(`event_type.${type}`)).join(" / ");
+                stat.percentile = Number(((stat.min / max) * 100).toFixed(1));
+            });
+            bucket.sort((a, b) => b.percentile! - a.percentile!);
+            bucket.forEach((stat, idx) => stat.rank = idx+1);
+        });
+
+        newStats.sort((a, b) => a.instance_id - b.instance_id);
+
+        let lastDiscovered = new Date();
+        let maxidx = newStats.length - 1;
+
+        if (newStats.length && newStats[newStats.length - 1].discovered) {
+            lastDiscovered = new Date(newStats[newStats.length - 1].discovered!);
+            lastDiscovered.setDate(lastDiscovered.getDate() + 7);
+        }
+
+        newStats.forEach((stat, idx) => {
+            if (!stat.discovered) {
+                let w = maxidx - idx;
+                stat.discovered = new Date(lastDiscovered);
+                let dow = stat.discovered.getDay();
+                dow = 3 - dow;
+                stat.discovered.setDate(stat.discovered.getDate() + dow);
+                stat.discovered.setDate(stat.discovered.getDate() - (w * 7));
+                stat.guessed = true;
+            }
+            else {
+                stat.discovered = new Date(lastDiscovered);
+            }
+        });
+        const seriesStats = [] as PieSeriesType[];
+        let totals = newStats.length;
+
+        Object.entries(buckets).forEach(([key, bucket]) => {
+            bucket.sort((a, b) => b.discovered!.getTime() - a.discovered!.getTime());
+            let ev = globalContext.core.event_instances.find(f => f.instance_id === bucket[0].instance_id);
+            seriesStats.push({
+                label: key.split("/").map(p => t(`event_type.${p}`)).join("/"),
+                events: bucket.length,
+                proportion: bucket.length / newStats.length,
+                score: 0,
+                data: {
+                    events: bucket.map(m => m.instance_id),
+                    crew: bucket.map(b => b.crew),
+                    key: bucket[0].event_name,
+                    extra: {
+                        is_event: true,
+                        bucket,
+                        image: ev?.image
+                    }
+                }
+            });
+        });
+
+        seriesStats.forEach(stat => {
+            stat.score = Number(((stat.events / totals) * 100).toFixed(2));
+        });
+
+        seriesStats.sort((a, b) => b.score - a.score);
+        return sortSeries(seriesStats);
     }
 
     function randomColor() {
