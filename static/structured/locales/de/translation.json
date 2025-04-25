@@ -1173,6 +1173,7 @@
             "duration": "Durchschnittliche Dauer",
             "maxdur": "Maximale Dauer",
             "norm": "Normalisierter Durchschnitt von Dauer und Anzahl",
+            "norm_max": "Normalisierter Durchschnitt der maximalen Dauer und Anzahl",
             "rank_by_colon": "Rangfolge nach:",
             "voyages": "Anzahl der Reisen",
             "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",

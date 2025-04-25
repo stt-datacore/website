@@ -1181,6 +1181,7 @@
             "duration": "Duración promedio",
             "maxdur": "Duración máxima",
             "norm": "Promedio normalizado de duración y recuento",
+            "norm_max": "Promedio normalizado de duración máxima y recuento",
             "rank_by_colon": "Clasificar por:",
             "voyages": "Número de viajes",
             "voydur": "Número de viajes * Duración media",
