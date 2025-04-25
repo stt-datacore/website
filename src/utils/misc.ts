@@ -3,7 +3,7 @@ import { AvatarIcon, PortalLogEntry as PortalLogEntry, PortalReport } from '../m
 import { PlayerCrew, TranslateMethod } from '../model/player';
 import { shortToSkill, skillToShort } from './crewutils';
 
-export type RankMode = "voyages" | "duration" | "voydur" | "maxdur" | "voymaxdur" | "norm";
+export type RankMode = "voyages" | "duration" | "voydur" | "maxdur" | "voymaxdur" | "norm" | "norm_max";
 
 export interface DropDownItem {
 	key: string;

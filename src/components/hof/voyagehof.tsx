@@ -335,14 +335,19 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                                 text: hof('rank_by.duration'),
                             },
                             {
+                                key: "maxdur",
+                                value: "maxdur",
+                                text: hof('rank_by.maxdur'),
+                            },
+                            {
                                 key: "norm",
                                 value: "norm",
                                 text: hof('rank_by.norm'),
                             },
                             {
-                                key: "maxdur",
-                                value: "maxdur",
-                                text: hof('rank_by.maxdur'),
+                                key: "norm_max",
+                                value: "norm_max",
+                                text: hof('rank_by.norm_max'),
                             },
                             {
                                 key: "voydur",

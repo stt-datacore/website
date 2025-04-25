@@ -21,6 +21,7 @@ export interface VoyageStatsProps {
 type NormStats = {
     crew: string;
     duration: number;
+    max: number;
     norm: number;
     count: number;
 }
@@ -75,6 +76,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                     crew: stat.crewSymbol,
                     count: stat.crewCount,
                     duration: stat.averageDuration!,
+                    max: stat.maxDuration!,
                     norm: 0
                 });
                 return {
@@ -88,18 +90,27 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
             })
             .filter((s) => s !== undefined) as VoyageStatCrew[];
 
-        if (newRank === 'norm') {
+        if (newRank === 'norm' || newRank === 'norm_max') {
             normStats.sort((a, b) => b.count - a.count);
             let cmax = normStats[0].count;
             normStats.sort((a, b) => b.duration - a.duration);
             let dmax = normStats[0].duration;
+            normStats.sort((a, b) => b.max - a.max);
+            let mmax = normStats[0].max;
 
             normStats.forEach(stat => {
                 stat.count = (stat.count / cmax) * 100;
                 stat.duration = (stat.duration / dmax) * 100;
-                stat.norm = (stat.count + stat.duration) * 0.5;
+                stat.max = (stat.max / mmax) * 100;
+                if (newRank === 'norm') {
+                    stat.norm = (stat.count + stat.duration);
+                }
+                else {
+                    stat.norm = (stat.count + stat.max);
+                }
             });
-            newCrew = normStats.sort((a, b) => b.norm - a.norm)
+            normStats.sort((a, b) => b.norm - a.norm);
+            newCrew = normStats
                 .slice(0, 100)
                 .map(norm => newCrew?.find(fc => fc.symbol === norm.crew))
                 .filter(f => f !== undefined);
