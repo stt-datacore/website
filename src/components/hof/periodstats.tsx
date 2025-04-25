@@ -2,14 +2,13 @@ import React from "react";
 import { Header, Pagination, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
-import { CrewQuipStats, VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod } from "../../model/hof";
+import { CrewQuipStats, VoyageHOFPeriod, VoyageStatEntry, getNiceNames } from "../../model/hof";
 import { PlayerCrew } from "../../model/player";
 import { RankMode } from "../../utils/misc";
 import { OwnedLabel } from "../crewtables/commonoptions";
 import { IRosterCrew } from "../crewtables/model";
 import ItemDisplay from "../itemdisplay";
 import { formatNumber } from "./hofdetails";
-import { EquipmentItem } from "../../model/equipment";
 
 export interface VoyageStatsProps {
     period: VoyageHOFPeriod;
@@ -23,6 +22,8 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
 
     const pageSize = 10;
     const context = React.useContext(GlobalContext);
+    const { t, useT, tfmt } = context.localized;
+    const { t: hof } = useT('hof');
     const quipment = context.core.items.filter(i => i.type === 14);
     const myCrew = context.player.playerData?.player.character.crew ?? [];
 
@@ -144,10 +145,14 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
         rc.seats.sort((a, b) => b.crewCount - a.crewCount);
     })
 
+    const niceNames = getNiceNames(t);
+
     return (
         <>
             <Header textAlign="center">
-                Voyage stats for {niceNamesForPeriod[period]}
+                {t('hof.voyage_stats_for_timeframe', {
+                    timeframe: niceNames[period]
+                })}
             </Header>
             {activePage >= 0 &&
                 <Table striped>
@@ -158,9 +163,9 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                             </Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                            <Table.HeaderCell>Rank</Table.HeaderCell>
-                            <Table.HeaderCell textAlign="left">Crew</Table.HeaderCell>
-                            <Table.HeaderCell textAlign="left">Quipment</Table.HeaderCell>
+                            <Table.HeaderCell>{t('rank_names.rank')}</Table.HeaderCell>
+                            <Table.HeaderCell textAlign="left">{t('base.crew')}</Table.HeaderCell>
+                            <Table.HeaderCell textAlign="left">{t('base.quipment')}</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -211,19 +216,23 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                                     {crew?.name}
                                                 </span>
                                                 <Header as="h4" style={{ marginTop: "10px" }}>
-                                                    Voyage Count:{" "}
+                                                    {hof('voyage_count{{:}}')}{" "}
                                                     {formatNumber(crew.crewCount, maxVoy, 1)}
                                                 </Header>
                                                 {crew?.averageDuration && (
                                                     <Header as="h4" style={{ marginTop: "10px" }}>
-                                                        Average Duration:{" "}
-                                                        {formatNumber(crew.averageDuration, maxDuration, 1 / 3600, "h")}
+                                                        {hof('average_duration{{:}}')}{" "}
+                                                        {tfmt('duration.n_h', {
+                                                            hours: formatNumber(crew.averageDuration, maxDuration, 1 / 3600)
+                                                        })}
                                                     </Header>
                                                 )}
                                                 {crew?.maxDuration && (
                                                     <Header as="h4" style={{ marginTop: "10px" }}>
-                                                        Max Duration:{" "}
-                                                        {formatNumber(crew.maxDuration, maxDuration, 1 / 3600, "h")}
+                                                        {hof('max_duration{{:}}')}{" "}
+                                                        {tfmt('duration.n_h', {
+                                                            hours: formatNumber(crew.maxDuration, maxDuration, 1 / 3600)
+                                                        })}
                                                     </Header>
                                                 )}
                                                 {crew?.have && <OwnedLabel statsPopup crew={crew as IRosterCrew} />}
@@ -287,7 +296,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                 </Table>}
             {activePage === -1 && <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '4em' }}>
 
-                {context.core.spin('Computing Stats ...')}
+                {context.core.spin(t('spinners.calculating'))}
             </div>}
         </>
     );

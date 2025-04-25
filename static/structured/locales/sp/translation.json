@@ -1160,6 +1160,13 @@
         "traits": "Rasgos"
     },
     "hof": {
+        "average_duration": "Duración promedio",
+        "crew_selection_placeholder": "Selecciona un tripulante para ver estadísticas detalladas...",
+        "details_timeframe": "Plazo de los detalles",
+        "max_duration": "Duración máxima",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Duración promedio",
             "maxdur": "Duración máxima",
@@ -1167,7 +1174,27 @@
             "voyages": "Número de viajes",
             "voydur": "Número de viajes * Duración media",
             "voymaxdur": "Número de viajes * Duración máxima"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "Ver estadísticas de los tripulantes seleccionados",
+                "title": "Detalles del viaje de los tripulantes"
+            },
+            "rankings": {
+                "description": "Mostrar clasificaciones para varios períodos de tiempo",
+                "title": "Clasificación del Salón de la Fama"
+            }
+        },
+        "timeframe_placeholder": "Seleccione un período de tiempo para ver...",
+        "timeframes": {
+            "lastNinetyDays": "los últimos 90 días",
+            "lastSevenDays": "los últimos 7 días",
+            "lastSixMonths": "los últimos 6 meses",
+            "lastThirtyDays": "los últimos 30 días",
+            "oneYear": "el año pasado"
+        },
+        "voyage_count": "Número de viajes",
+        "voyage_stats_for_timeframe": "Estadísticas del viaje para {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -2110,6 +2137,7 @@
         "cite_opt": "Cargando Distinción de Honor Optimizador...",
         "default": "Cargando datos...",
         "demands": "Cálculo de las demandas de la tripulante...",
+        "hof": "Cargando Salón de la Fama...",
         "please_wait": "Espere por favor...",
         "quipment": "Quipo de cálculo..."
     },

@@ -1162,6 +1162,13 @@
         "traits": "Traits"
     },
     "hof": {
+        "average_duration": "Durée moyenne",
+        "crew_selection_placeholder": "Sélectionnez un équipier pour voir les statistiques détaillées...",
+        "details_timeframe": "Calendrier des détails",
+        "max_duration": "Durée maximale",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Durée moyenne",
             "maxdur": "Durée maximale",
@@ -1169,7 +1176,27 @@
             "voyages": "Nombre de voyages",
             "voydur": "Nombre de voyages * Durée moyenne",
             "voymaxdur": "Nombre de voyages * Durée maximale"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "Afficher les statistiques des équipiers sélectionnés",
+                "title": "Détails du voyage pour les équipiers"
+            },
+            "rankings": {
+                "description": "Afficher les classements pour différentes périodes",
+                "title": "Classement du Temple de la renommée"
+            }
+        },
+        "timeframe_placeholder": "Sélectionnez une période à afficher...",
+        "timeframes": {
+            "lastNinetyDays": "les 90 derniers jours",
+            "lastSevenDays": "les 7 derniers jours",
+            "lastSixMonths": "les 6 derniers mois",
+            "lastThirtyDays": "les 30 derniers jours",
+            "oneYear": "l'année écoulée"
+        },
+        "voyage_count": "Nombre de voyages",
+        "voyage_stats_for_timeframe": "Statistiques de voyage pour {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -2112,6 +2139,7 @@
         "cite_opt": "Chargement l'Optimiseur des mentions honorable...",
         "default": "Chargement des données...",
         "demands": "Calcul des demandes de l'équipage...",
+        "hof": "Chargement du Temple de la renommée...",
         "please_wait": "S'il vous plaît, attendez...",
         "quipment": "Calcul de l'équipement..."
     },

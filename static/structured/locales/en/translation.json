@@ -1152,6 +1152,13 @@
         "traits": "Traits"
     },
     "hof": {
+        "average_duration": "Average duration",
+        "crew_selection_placeholder": "Select crew to see detailed stats...",
+        "details_timeframe": "Details Timeframe",
+        "max_duration": "Max duration",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Average Duration",
             "maxdur": "Maximum Duration",
@@ -1159,7 +1166,27 @@
             "voyages": "Number of Voyages",
             "voydur": "Number of Voyages * Average Duration",
             "voymaxdur": "Number of Voyages * Maximum Duration"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "View statistics for selected crew",
+                "title": "Voyage Crew Details"
+            },
+            "rankings": {
+                "description": "Show rankings for various time-periods",
+                "title": "Hall Of Fame Rankings"
+            }
+        },
+        "timeframe_placeholder": "Select a timeframe to view...",
+        "timeframes": {
+            "lastNinetyDays": "the last 90 days",
+            "lastSevenDays": "the last 7 days",
+            "lastSixMonths": "the last 6 months",
+            "lastThirtyDays": "the last 30 days",
+            "oneYear": "the last year"
+        },
+        "voyage_count": "Voyage count",
+        "voyage_stats_for_timeframe": "Voyage stats for {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -2100,6 +2127,7 @@
         "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
+        "hof": "Loading Hall of Fame...",
         "please_wait": "Please wait...",
         "quipment": "Calculating quipment..."
     },

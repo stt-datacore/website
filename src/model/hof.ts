@@ -1,6 +1,7 @@
 import { RankMode } from "../utils/misc";
 import { RawVoyageRecord } from "../utils/voyageutils";
 import { EquipmentItem } from "./equipment";
+import { TranslateMethod } from "./player";
 
 export interface VoyageHOFProps {};
 
@@ -8,6 +9,7 @@ export type HOFViewModes = 'rankings' | 'details';
 
 export interface VoyageHOFState {
     voyageStats?: {
+        timestamp?: Date;
         lastSevenDays: VoyageStatEntry[];
         lastThirtyDays: VoyageStatEntry[];
         lastNinetyDays: VoyageStatEntry[];
@@ -52,11 +54,16 @@ export interface VoyageStatEntry {
 
 export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastNinetyDays" | "oneYear";
 
-export const niceNamesForPeriod = {
-    lastSevenDays: "Last 7 days",
-    lastThirtyDays: "Last 30 days",
-    lastNinetyDays: "Last 90 days",
-    lastSixMonths: "Last 6 Months",
-    oneYear: "Last Year",
-//    allTime: "All Time",
-};
+export const NiceNamesForPeriod = [
+    "lastSevenDays",
+    "lastThirtyDays",
+    "lastNinetyDays",
+    "lastSixMonths",
+    "oneYear",
+];
+
+export function getNiceNames(t: TranslateMethod) {
+    const result = {} as any;
+    NiceNamesForPeriod.map(key => result[key] = t(`hof.timeframes.${key}`));
+    return result;
+}

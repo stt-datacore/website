@@ -1152,6 +1152,13 @@
         "traits": "Merkmalen"
     },
     "hof": {
+        "average_duration": "Durchschnittliche Dauer",
+        "crew_selection_placeholder": "Wählen Sie ein Besatzungsmitglied aus, um detaillierte Statistiken anzuzeigen ...",
+        "details_timeframe": "Zeitrahmen der Details",
+        "max_duration": "Maximale Dauer",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Durchschnittliche Dauer",
             "maxdur": "Maximale Dauer",
@@ -1159,7 +1166,27 @@
             "voyages": "Anzahl der Reisen",
             "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
             "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "Statistiken für ausgewählte Crew anzeigen",
+                "title": "Reisedetails für die Crewmitglieder"
+            },
+            "rankings": {
+                "description": "Zeigen Sie Ranglisten für verschiedene Zeiträume an",
+                "title": "Ruhmeshalle Ranglisten"
+            }
+        },
+        "timeframe_placeholder": "Wählen Sie einen Zeitraum zur Anzeige aus...",
+        "timeframes": {
+            "lastNinetyDays": "die letzten 90 Tage",
+            "lastSevenDays": "die letzten 7 Tage",
+            "lastSixMonths": "die letzten 6 Monate",
+            "lastThirtyDays": "die letzten 30 Tage",
+            "oneYear": "das letzte Jahr"
+        },
+        "voyage_count": "Anzahl der Reisen",
+        "voyage_stats_for_timeframe": "Reisestatistiken für {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -2100,6 +2127,7 @@
         "cite_opt": "Laden Ehrenvolle Erwähnung Optimierer...",
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
+        "hof": "Ruhmeshalle wird geladen...",
         "please_wait": "Bitte warten...",
         "quipment": "Berechnungsausrüstung..."
     },

@@ -1,22 +1,22 @@
+import { navigate } from "gatsby";
 import React, { Component } from "react";
 import {
-    Table, Dropdown, Header, Grid, Button, DropdownItemProps,
+    Button,
+    Dropdown,
+    DropdownItemProps,
+    Grid,
+    Header,
     Step
 } from "semantic-ui-react";
-import { RankMode } from "../../utils/misc";
-import { CrewMember } from "../../model/crew";
-import { PlayerCrew } from "../../model/player";
-import { TinyStore } from "../../utils/tiny";
 import { GlobalContext } from "../../context/globalcontext";
-import { OwnedLabel } from "../crewtables/commonoptions";
-import { IRosterCrew } from "../crewtables/model";
-import ItemDisplay from "../itemdisplay";
+import { HOFViewModes, NiceNamesForPeriod, VoyageHOFPeriod, VoyageHOFProps, VoyageHOFState, VoyageStatEntry } from "../../model/hof";
+import { PlayerCrew } from "../../model/player";
+import { RankMode } from "../../utils/misc";
+import { TinyStore } from "../../utils/tiny";
 import { RawVoyageRecord } from "../../utils/voyageutils";
-import { navigate } from "gatsby";
-import { VoyageHOFPeriod, VoyageStatEntry, niceNamesForPeriod, VoyageHOFProps, VoyageHOFState, HOFViewModes } from "../../model/hof";
-import { HofDetails, formatNumber } from "./hofdetails";
 import { CrewDropDown } from "../base/crewdropdown";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { HofDetails } from "./hofdetails";
 import { VoyageStatsForPeriod } from "./periodstats";
 
 
@@ -105,7 +105,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
 
         if (!allCrew || !voyageStats) return [];
 
-        let pcn = [ ... new Set(Object.values(voyageStats).map(v => v.map(q => q.crewSymbol)).flat()) ];
+        let pcn = [ ... new Set(Object.values(voyageStats).map(v => (v instanceof Date || typeof v === 'string') ? undefined : v.map(q => q.crewSymbol)).flat().filter(f => !!f)) ];
         return allCrew
                     .filter(f => pcn.includes(f.symbol))
                     .sort((a, b) => {
@@ -153,7 +153,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             .then((voyageStats) => {
                 const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
                 let rows = [] as { stats: VoyageStatEntry[], key: VoyageHOFPeriod }[][];
-                let stats = Object.keys(niceNamesForPeriod)?.filter(p => !!p?.length);
+                let stats = [...NiceNamesForPeriod];
 
                 while (stats.length) {
                     rows.push(stats.splice(0, isMobile ? 1 : 2).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
@@ -181,12 +181,13 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     render() {
         const { crewSymbol, rawVoyages, rankBy, voyageStats, glanceDays, viewMode, rows } = this.state;
         const { crew: allCrew } = this.context.core;
-        const { t } = this.context.localized;
+        const { t, useT } = this.context.localized;
+        const { t: hof } = useT('hof');
 
         if (!this.state.voyageStats || !allCrew) {
             return (
                 <div className="ui medium centered text active inline loader">
-                    Loading hall of fame...
+                    {t('spinners.hof')}
                 </div>
             );
         }
@@ -194,6 +195,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             if (!c.id) c.id = c.archetype_id;
         })
 
+        const lastUpdated = voyageStats?.timestamp;
         const filteredCrew = this.getFilteredCrew();
         const selection = filteredCrew?.filter(s => crewSymbol?.includes(s.symbol)).map(m => m?.id ?? 0);
         const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -249,22 +251,22 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         return (
             <div style={{display:'flex',flexDirection:'column',alignItems:'center', justifyContent: 'center'}}>
                 <Header as="h1" textAlign="center">
-                    Voyage Hall of Fame
+                    {hof('page.title')}
                 </Header>
-
+                {!!lastUpdated && <>{t('global.last_updated_colon')}&nbsp;{(new Date(lastUpdated)).toLocaleDateString()}</>}
 
                 <Step.Group fluid>
                     <Step active={viewMode === 'rankings'} onClick={() => this.setViewMode('rankings')}>
                         <Step.Content>
-                            <Step.Title>Hall Of Fame Rankings</Step.Title>
-                            <Step.Description>Show rankings for various time-periods</Step.Description>
+                            <Step.Title>{hof('tabs.rankings.title')}</Step.Title>
+                            <Step.Description>{hof('tabs.rankings.description')}</Step.Description>
                         </Step.Content>
                     </Step>
 
                     <Step active={viewMode === 'details'} onClick={() => this.setViewMode('details')}>
                         <Step.Content>
-                            <Step.Title>Voyage Crew Details</Step.Title>
-                            <Step.Description>View statistics for selected crew</Step.Description>
+                            <Step.Title>{hof('tabs.details.title')}</Step.Title>
+                            <Step.Description>{hof('tabs.details.description')}</Step.Description>
                         </Step.Content>
                     </Step>
     			</Step.Group>
@@ -278,7 +280,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         margin: "0.5em"
                     }}>
                         <CrewDropDown
-                            placeholder={"Select crew to see detailed stats..."}
+                            placeholder={hof("crew_selection_placeholder")}
                             plain
                             fluid
                             multiple={true}
@@ -287,9 +289,9 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                             setSelection={this.setSelection}
                             />
                         <div style={{margin: "0.5em"}}>
-                            <h4>Details Time Frame:</h4>
+                            <h4>{hof('details_timeframe{{:}}')}</h4>
                             <Dropdown
-                                placeholder={"Select a timeframe to view..."}
+                                placeholder={hof("timeframe_placeholder")}
                                 fluid
                                 options={glanceDaysChoices}
                                 value={glanceDays}
@@ -319,33 +321,33 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                         gap: "0.5em"
                     }}
                 >
-                    <span>{t('hof.rank_by.rank_by_colon')}&nbsp;</span>
+                    <span>{hof('rank_by.rank_by_colon')}&nbsp;</span>
                     <Dropdown
                         options={[
                             {
                                 key: "voyages",
                                 value: "voyages",
-                                text: t('hof.rank_by.voyages'),
+                                text: hof('rank_by.voyages'),
                             },
                             {
                                 key: "duration",
                                 value: "duration",
-                                text: t('hof.rank_by.duration'),
+                                text: hof('rank_by.duration'),
                             },
                             {
                                 key: "maxdur",
                                 value: "maxdur",
-                                text: t('hof.rank_by.maxdur'),
+                                text: hof('rank_by.maxdur'),
                             },
                             {
                                 key: "voydur",
                                 value: "voydur",
-                                text: t('hof.rank_by.voydur'),
+                                text: hof('rank_by.voydur'),
                             },
                             {
                                 key: "voymaxdur",
                                 value: "voymaxdur",
-                                text: t('hof.rank_by.voymaxdur'),
+                                text: hof('rank_by.voymaxdur'),
                             },
                         ]}
                         value={rankBy}
@@ -360,7 +362,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
 
                                 {row.map((stats, colidx) => {
 
-                                    if (!niceNamesForPeriod[stats.key]) return <React.Fragment key={`stats_col_${rowidx}_${colidx}`}></React.Fragment>
+                                    if (!NiceNamesForPeriod.includes(stats.key)) return <React.Fragment key={`stats_col_${rowidx}_${colidx}`}></React.Fragment>
                                     return (
                                         <Grid.Column key={`stats_col_${rowidx}_${colidx}`}>
                                         <VoyageStatsForPeriod
