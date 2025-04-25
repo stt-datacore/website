@@ -204,32 +204,32 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             {
                 key: 'day1',
                 value: 1,
-                text: "1 Day"
+                text: t('duration.n_days', { days: 1 })
             },
             {
                 key: 'day2',
                 value: 2,
-                text: "2 Days"
+                text: t('duration.n_days', { days: 2 })
             },
             {
                 key: 'week1',
                 value: 7,
-                text: "1 Week"
+                text: t('duration.n_weeks', { weeks: 1 })
             },
             {
                 key: 'week2',
                 value: 14,
-                text: "2 Weeks"
+                text: t('duration.n_weeks', { weeks: 2 })
             },
             {
                 key: 'week3',
                 value: 21,
-                text: "3 Weeks"
+                text: t('duration.n_weeks', { weeks: 3 })
             },
             {
                 key: 'week4',
                 value: 28,
-                text: "4 Weeks"
+                text: t('duration.n_weeks', { weeks: 4 })
             },
             // {
             //     key: 'days30',
@@ -305,7 +305,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     <HofDetails crewClick={this.clickCrew} hofState={this.state} />
 
                     {!!crewSymbol?.length && !!rawVoyages &&
-                    <Button style={{margin: "0.5em"}} onClick={(e) => this.setGlance()}>{"Clear Details View"}</Button>
+                    <Button style={{margin: "0.5em"}} onClick={(e) => this.setGlance()}>{t('hof.details.clear')}</Button>
                     }
 
                 </div>}
@@ -333,6 +333,11 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                                 key: "duration",
                                 value: "duration",
                                 text: hof('rank_by.duration'),
+                            },
+                            {
+                                key: "norm",
+                                value: "norm",
+                                text: hof('rank_by.norm'),
                             },
                             {
                                 key: "maxdur",

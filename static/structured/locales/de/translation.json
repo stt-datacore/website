@@ -1154,6 +1154,16 @@
     "hof": {
         "average_duration": "Durchschnittliche Dauer",
         "crew_selection_placeholder": "Wählen Sie ein Besatzungsmitglied aus, um detaillierte Statistiken anzuzeigen ...",
+        "details": {
+            "clear": "Detailansicht löschen",
+            "most_frequent_covoyagers": "Häufigste Mitreisende",
+            "most_frequent_voyages": "Häufigste Reisen",
+            "most_frequent_voyages_together": "Häufigste gemeinsame Reisen",
+            "other_voyages": "Andere Reisen",
+            "seating_frequency": "Sitzplatzhäufigkeit",
+            "shared_voyages": "Gemeinsame Reisen",
+            "timeframe_details": "{{timeframe}} Details"
+        },
         "details_timeframe": "Zeitrahmen der Details",
         "max_duration": "Maximale Dauer",
         "page": {
@@ -1162,6 +1172,7 @@
         "rank_by": {
             "duration": "Durchschnittliche Dauer",
             "maxdur": "Maximale Dauer",
+            "norm": "Normalisierter Durchschnitt von Dauer und Anzahl",
             "rank_by_colon": "Rangfolge nach:",
             "voyages": "Anzahl der Reisen",
             "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",

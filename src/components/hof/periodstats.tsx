@@ -18,6 +18,15 @@ export interface VoyageStatsProps {
     clickCrew: (value: string) => void;
 }
 
+type NormStats = {
+    crew: string;
+    duration: number;
+    norm: number;
+    count: number;
+}
+
+type VoyageStatCrew = (PlayerCrew & VoyageStatEntry);
+
 export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew: setGlance }: VoyageStatsProps) => {
 
     const pageSize = 10;
@@ -36,16 +45,17 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
     React.useEffect(() => {
         if (innerRankBy === '' || !stats?.length) return;
 
+        const normStats = [] as NormStats[];
         const newRank = innerRankBy;
-        const newCrew = stats
-            ?.map((s) => {
-                const crew = allCrew.find((c) => c.symbol === s.crewSymbol);
+        let newCrew: VoyageStatCrew[] | undefined = stats
+            ?.map((stat) => {
+                const crew = allCrew.find((c) => c.symbol === stat.crewSymbol);
                 if (!crew) {
                     return undefined;
                 }
                 let newQuip = [] as CrewQuipStats[];
-                if (s.quipmentCounts) {
-                    Object.entries(s.quipmentCounts).forEach(([key, value]) => {
+                if (stat.quipmentCounts) {
+                    Object.entries(stat.quipmentCounts).forEach(([key, value]) => {
                         let cquip = newQuip.find(f => f.kwipment_id === key);
                         if (!cquip) {
                             newQuip.push({
@@ -61,58 +71,62 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                 }
 
                 newQuip.sort((a, b) => b.count - a.count);
-
+                normStats.push({
+                    crew: stat.crewSymbol,
+                    count: stat.crewCount,
+                    duration: stat.averageDuration!,
+                    norm: 0
+                });
                 return {
-                    ...s,
+                    averageDuration: 1,
+                    maxDuration: 1,
+                    ...stat,
                     ...crew,
                     ...(myCrew.find(fc => fc.symbol === crew.symbol) ?? {}),
                     quipStats: newQuip
-                };
+                } as VoyageStatCrew;
             })
-            .filter((s) => s)
-            .sort((a, b) => {
-                if (!a || !b) {
-                    if (!a) {
-                        return 1;
-                    }
-                    else if (!b) {
-                        return -1;
-                    }
-                    else {
-                        return 0;
-                    }
-                }
+            .filter((s) => s !== undefined) as VoyageStatCrew[];
 
-                a.averageDuration ??= 1;
-                b.averageDuration ??= 1;
+        if (newRank === 'norm') {
+            normStats.sort((a, b) => b.count - a.count);
+            let cmax = normStats[0].count;
+            normStats.sort((a, b) => b.duration - a.duration);
+            let dmax = normStats[0].duration;
 
-                a.maxDuration ??= 1;
-                b.maxDuration ??= 1;
-
-                a.crewCount ??= 0;
-                b.crewCount ??= 0;
-
+            normStats.forEach(stat => {
+                stat.count = (stat.count / cmax) * 100;
+                stat.duration = (stat.duration / dmax) * 100;
+                stat.norm = (stat.count + stat.duration) * 0.5;
+            });
+            newCrew = normStats.sort((a, b) => b.norm - a.norm)
+                .slice(0, 100)
+                .map(norm => newCrew?.find(fc => fc.symbol === norm.crew))
+                .filter(f => f !== undefined);
+        }
+        else {
+            newCrew = newCrew.sort((a, b) => {
                 if (newRank === 'voyages') {
                     return b.crewCount - a.crewCount;
                 }
                 else if (newRank === 'duration') {
-                    return b.averageDuration - a.averageDuration;
+                    return b.averageDuration! - a.averageDuration!;
                 }
                 else if (newRank === 'maxdur') {
-                    return b.maxDuration - a.maxDuration;
+                    return b.maxDuration! - a.maxDuration!;
                 }
                 else if (newRank === 'voymaxdur') {
-                    let ac = a.crewCount * a.maxDuration;
-                    let bc = b.crewCount * b.maxDuration;
+                    let ac = a.crewCount * a.maxDuration!;
+                    let bc = b.crewCount * b.maxDuration!;
                     return bc - ac;
                 }
                 else {
-                    let ac = a.crewCount * a.averageDuration;
-                    let bc = b.crewCount * b.averageDuration;
+                    let ac = a.crewCount * a.averageDuration!;
+                    let bc = b.crewCount * b.averageDuration!;
                     return bc - ac;
                 }
-            })
-            .slice(0, 100) as (PlayerCrew & VoyageStatEntry)[];
+            }).slice(0, 100) as VoyageStatCrew[];
+        }
 
         setRankedCrew(newCrew);
         let pages = Math.ceil(newCrew.length / pageSize);

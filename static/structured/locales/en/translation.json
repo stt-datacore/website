@@ -1154,6 +1154,16 @@
     "hof": {
         "average_duration": "Average duration",
         "crew_selection_placeholder": "Select crew to see detailed stats...",
+        "details": {
+            "clear": "Clear Details View",
+            "most_frequent_covoyagers": "Most frequent co-voyagers",
+            "most_frequent_voyages": "Most frequent voyages",
+            "most_frequent_voyages_together": "Most frequent voyages together",
+            "other_voyages": "Other voyages",
+            "seating_frequency": "Seating frequency",
+            "shared_voyages": "Shared Voyages",
+            "timeframe_details": "{{timeframe}} details"
+        },
         "details_timeframe": "Details Timeframe",
         "max_duration": "Max duration",
         "page": {
@@ -1162,6 +1172,7 @@
         "rank_by": {
             "duration": "Average Duration",
             "maxdur": "Maximum Duration",
+            "norm": "Normalized average of duration and count",
             "rank_by_colon": "Rank By:",
             "voyages": "Number of Voyages",
             "voydur": "Number of Voyages * Average Duration",

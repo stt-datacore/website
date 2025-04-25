@@ -1162,6 +1162,16 @@
     "hof": {
         "average_duration": "Duración promedio",
         "crew_selection_placeholder": "Selecciona un tripulante para ver estadísticas detalladas...",
+        "details": {
+            "clear": "Borrar vista de detalles",
+            "most_frequent_covoyagers": "Copilotos más frecuentes",
+            "most_frequent_voyages": "Viajes más frecuentes",
+            "most_frequent_voyages_together": "Viajes más frecuentes juntos",
+            "other_voyages": "Otros viajes",
+            "seating_frequency": "Frecuencia de asientos",
+            "shared_voyages": "Viajes en común",
+            "timeframe_details": "Detalles de {{timeframe}}"
+        },
         "details_timeframe": "Plazo de los detalles",
         "max_duration": "Duración máxima",
         "page": {
@@ -1170,6 +1180,7 @@
         "rank_by": {
             "duration": "Duración promedio",
             "maxdur": "Duración máxima",
+            "norm": "Promedio normalizado de duración y recuento",
             "rank_by_colon": "Clasificar por:",
             "voyages": "Número de viajes",
             "voydur": "Número de viajes * Duración media",

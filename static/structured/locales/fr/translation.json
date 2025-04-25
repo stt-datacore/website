@@ -1164,6 +1164,16 @@
     "hof": {
         "average_duration": "Durée moyenne",
         "crew_selection_placeholder": "Sélectionnez un équipier pour voir les statistiques détaillées...",
+        "details": {
+            "clear": "Effacer les détails",
+            "most_frequent_covoyagers": "Covoyageurs les plus fréquents",
+            "most_frequent_voyages": "Voyages les plus fréquents",
+            "most_frequent_voyages_together": "Voyages ensemble les plus fréquents",
+            "other_voyages": "Autres voyages",
+            "seating_frequency": "Fréquence des sièges",
+            "shared_voyages": "Voyages en commun",
+            "timeframe_details": "Détails de {{timeframe}}"
+        },
         "details_timeframe": "Calendrier des détails",
         "max_duration": "Durée maximale",
         "page": {
@@ -1172,6 +1182,7 @@
         "rank_by": {
             "duration": "Durée moyenne",
             "maxdur": "Durée maximale",
+            "norm": "Moyenne normalisée de la durée et du nombre",
             "rank_by_colon": "Classer par :",
             "voyages": "Nombre de voyages",
             "voydur": "Nombre de voyages * Durée moyenne",
