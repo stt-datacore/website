@@ -11,7 +11,7 @@ import { AvatarView } from "../../item_presenters/avatarview";
 import { Slider } from "../../base/slider";
 import { EventStats, makeTypeBuckets } from "../../../utils/event_stats";
 
-export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants' | 'type';
+export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants' | 'type' | 'type_series';
 
 
 export interface DistributionPickerOpts {
@@ -42,6 +42,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'traits', value: 'traits', text: t('base.featured_traits') },
         { key: 'variants', value: 'variants', text: t('base.variants') },
         { key: 'type', value: 'type', text: t('event_stats.event_type') },
+        { key: 'type_series', value: 'type_series', text: t('event_stats.event_type') + " + " + t('base.series') },
     ];
 
     const flexCol = OptionsPanelFlexColumn;
@@ -66,6 +67,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         else if (type === 'traits') return createTraitEventStats();
         else if (type === 'variants') return createVariantEventStats();
         else if (type === 'type') return createEventTypeStats();
+        else if (type === 'type_series') return createEventTypeStats(true);
         else return createSeriesMegaStats();
     }, [type]);
 
@@ -357,10 +359,10 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         return sortSeries(seriesStats).filter(f => f.events >= 5)
     }
 
-    function createEventTypeStats() {
+    function createEventTypeStats(by_series?: boolean) {
         if (!event_stats?.length) return [];
         const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
-        const buckets = makeTypeBuckets(newStats);
+        let buckets = makeTypeBuckets(newStats);
         let top = {} as { [key: string]: number };
         Object.entries(buckets).forEach(([type, bucket]) => {
             if (!bucket.length) return;
@@ -371,18 +373,27 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
             top[type] ??= 0;
             if (bucket[0] && bucket[0].min > top[type]) top[type] = bucket[0].min;
         });
-
+        const newbucket ={} as {[key: string]: EventStats[]};
         Object.entries(buckets).forEach(([type, bucket]) => {
             const max = top[type];
             bucket.forEach((stat) => {
-                stat.event_type = stat.event_type.split("/").map(type => t(`event_type.${type}`)).join(" / ");
+                let screw = crew.find(f => f.symbol === stat.featured_crew[0]);
+                if (by_series && screw) {
+                    newbucket[stat.event_type + "/" + screw.series!] ??= [];
+                    newbucket[stat.event_type + "/" + screw.series!].push(stat);
+                    stat.event_type = stat.event_type.split("/").map(type => t(`event_type.${type}`)).join(" / ") + " / " + t(`series.${screw.series!}`);
+                }
+                else {
+                    stat.event_type = stat.event_type.split("/").map(type => t(`event_type.${type}`)).join(" / ");
+                }
                 stat.sorted_event_type = stat.sorted_event_type?.split("/").map(type => t(`event_type.${type}`)).join(" / ");
+                if (screw && by_series) stat.sorted_event_type += " / " + t(`series.${screw.series!}`);
                 stat.percentile = Number(((stat.min / max) * 100).toFixed(1));
             });
             bucket.sort((a, b) => b.percentile! - a.percentile!);
             bucket.forEach((stat, idx) => stat.rank = idx+1);
         });
-
+        if (by_series) buckets = newbucket;
         newStats.sort((a, b) => a.instance_id - b.instance_id);
 
         let lastDiscovered = new Date();
@@ -414,7 +425,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
             bucket.sort((a, b) => b.discovered!.getTime() - a.discovered!.getTime());
             let ev = globalContext.core.event_instances.find(f => f.instance_id === bucket[0].instance_id);
             seriesStats.push({
-                label: key.split("/").map(p => t(`event_type.${p}`)).join("/"),
+                label: key.split("/").map(p => t(`event_type.${p}`) || t(`series.${p}`)).join("/"),
                 events: bucket.length,
                 proportion: bucket.length / newStats.length,
                 score: 0,
