@@ -2,15 +2,20 @@ import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { CollectionsContext } from "../context";
 import { Popup, Icon, Rating, Table } from "semantic-ui-react";
-import { PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
+import { BuffBase, PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { compareRewards } from "../../../utils/collectionutils";
+import { compareRewards, rewardsFilterGetRewards } from "../../../utils/collectionutils";
 import { Link } from "gatsby";
 import { numberToGrade, gradeToColor } from "../../../utils/crewutils";
 import { descriptionLabel } from "../../crewtables/commonoptions";
 import { RewardsGrid } from "../../crewtables/rewards";
 import { CrewTarget } from "../../hovering/crewhoverstat";
 import { WorkerContext } from "../../../context/workercontext";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
+import { AvatarView } from "../../item_presenters/avatarview";
+import { getMilestoneRewards } from "../../../utils/itemutils";
+import { EquipmentItem } from "../../../model/equipment";
+import { getIconPath } from "../../../utils/assets";
 
 
 export interface CollectionTableProps {
@@ -96,7 +101,19 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			return (
 				<tr key={collection.id} style={{cursor: 'pointer'}} onClick={() => setModalInstance({ collection, pageId: 'collections/crew', activeTab: 1 })}>
 					<td style={{ whiteSpace: 'nowrap', fontSize: '.95em' }}>{collection.name}</td>
-					<td style={{ textAlign: 'right', fontSize: '.95em' }}>{collection.progress} / {collection.milestone.goal}</td>
+					<td style={{ textAlign: 'right', fontSize: '.95em' }}>
+							<Popup
+							trigger={
+								<div>
+									{collection.progress} / {collection.milestone.goal}
+								</div>
+							}
+							content={
+								renderRewardHover(collection)
+							}
+						/>
+
+					</td>
 				</tr>
 			);
 		});
@@ -198,12 +215,54 @@ export const CollectionTableView = (props: CollectionTableProps) => {
     }
 
 	function renderRewardHover(col: PlayerCollection) {
+		let reward = [] as BuffBase[];
+		const migroups = {} as {[key:string]: BuffBase[]}
 		if (mapFilter?.rewardFilter?.some(r => !!r)) {
-
+			reward = rewardsFilterGetRewards(mapFilter, [col], short, true);
+			for (let r of reward) {
+				if (r.data?.goal) {
+					migroups[r.data.goal] ??= [];
+					migroups[r.data.goal].push(r);
+				}
+			}
 		}
 		else {
-
+			reward = getMilestoneRewards([col.milestone]);
+			migroups[col.milestone.goal] = reward;
 		}
+
+		const mirender = [] as JSX.Element[];
+		const flexRow = OptionsPanelFlexRow;
+		const flexCol = OptionsPanelFlexColumn;
+
+		Object.entries(migroups).forEach(([goal, rewards]) => {
+			const b = <div key={`${goal}_${rewards?.length}_${col.type_id}`} style={{margin: '0.5em 0'}}>
+				<div style={{padding: '0.5em 0.25em', borderBottom: '1px solid', margin: '0.5em'}}>
+				<h4>{t('global.n_x', {
+					n: goal,
+					x: t('base.crewmen')
+				})}</h4>
+				</div>
+				<div style={{...flexRow, justifyContent: 'flex-start', gap: '0.5em', alignItems: 'flex-start', flexWrap: 'wrap'}}>
+					{rewards.map((reward) => {
+						let item = reward as EquipmentItem;
+						item.imageUrl = getIconPath(item.icon!, true);
+						return <div style={{...flexCol, gap: '0.5em', textAlign: 'center', width: '8em'}}>
+							<AvatarView
+								mode={'item'}
+								item={item}
+								partialItem={true}
+								size={32}
+								/>
+							{reward.name}
+						</div>
+					})}
+				</div>
+			</div>
+			mirender.push(b);
+		});
+
+		return <>{mirender}</>
 	}
 
 }
