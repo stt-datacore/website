@@ -3,7 +3,7 @@ import { CrewMember, Skill } from '../model/crew';
 import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { AtlasIcon, BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
+import { AtlasIcon, BuffBase, Milestone, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
 
@@ -354,11 +354,18 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 }
 
 
+export function getMilestoneRewards(milestones: Milestone[]) {
+	return milestones.map((milestone) => {
+		return (milestone.buffs?.map(b => b as BuffBase) ?? [] as Reward[]).concat(milestone.rewards ?? [] as Reward[]) as Reward[];
+	}).flat();
+}
+
 export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 	return playerCollections.map((col) => {
 		return (col?.milestone.buffs?.map(b => b as BuffBase) ?? [] as Reward[]).concat(col?.milestone.rewards ?? [] as Reward[]) as Reward[];
 	}).flat();
 }
+
 
 export function formatTime(milliseconds: number, t?: TranslateMethod) {
 	let seconds = Math.floor(milliseconds / 1000);

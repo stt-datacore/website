@@ -135,15 +135,27 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 	if (checkAnchor(crewAnchor)) return <></>;
 
-	const playerCollections = tempcol.filter((col) => {
-		if (hardFilter && mapFilter?.rewardFilter) {
-			return rewardsFilterPassFail(mapFilter, [col], short);
-		}
-		else {
-			return true;
-		}
-	});
+	const playerCollections = React.useMemo(() => {
+		return tempcol.filter((col) => {
+			if (hardFilter && mapFilter?.rewardFilter) {
+				return rewardsFilterPassFail(mapFilter, [col], short);
+			}
+			else {
+				return true;
+			}
+		});
+	}, [hardFilter, mapFilter]);
 
+	const extendedCollections = React.useMemo(() => {
+		return tempcol.filter((col) => {
+			if (hardFilter && mapFilter?.rewardFilter) {
+				return rewardsFilterPassFail(mapFilter, [col], short, true);
+			}
+			else {
+				return true;
+			}
+		});
+	}, [hardFilter, mapFilter]);
 
 	if (mapFilter.collectionsFilter?.length === 1) {
 		let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
@@ -171,6 +183,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 					filterCrewByCollection={filterCrewByCollection}
 					allCrew={allCrew}
 					playerCollections={playerCollections}
+					extendedCollections={extendedCollections}
 					collectionCrew={displayCrew} />
 			</WorkerProvider>
 		</React.Fragment>

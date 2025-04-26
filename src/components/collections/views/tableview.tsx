@@ -196,4 +196,14 @@ export const CollectionTableView = (props: CollectionTableProps) => {
             );
         }
     }
+
+	function renderRewardHover(col: PlayerCollection) {
+		if (mapFilter?.rewardFilter?.some(r => !!r)) {
+
+		}
+		else {
+
+		}
+	}
+
 }

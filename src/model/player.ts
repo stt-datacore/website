@@ -1271,6 +1271,9 @@ export interface BuffBase {
   flavor?: string
   quantity?: number;
   rarity?: number;
+
+  /** Used internally by DataCore. Not part of game data */
+  data?: any;
 }
 
 export interface ImmortalReward extends BuffBase {

@@ -26,6 +26,7 @@ import { Collection } from '../../model/game-elements';
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
 	playerCollections: PlayerCollection[];
+	extendedCollections: PlayerCollection[];
 	collectionCrew: PlayerCrew[];
 	filterCrewByCollection: (collectionId: number) => void;
 	topCrewScore: number;
@@ -48,7 +49,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [colCombos, setColOptimized] = React.useState<CollectionCombo[]>([]);
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
-	const { playerCollections, collectionCrew } = props;
+	const { playerCollections, collectionCrew, extendedCollections } = props;
 	const { favorited, byCost, showIncomplete, matchMode, costMode, short, mapFilter, setModalInstance, setMapFilter, ownedFilter, rarityFilter, searchFilter, fuseFilter, setCollectionSettings } = colContext;
 
 	const [initialized, setInitialized] = React.useState(false);
@@ -214,7 +215,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			mode: 'crew',
 			render: () =>
 				<CollectionTableView
-					playerCollections={playerCollections}
+					playerCollections={extendedCollections}
 					collectionCrew={collectionCrew}
 					topCrewScore={topCrewScore}
 					topStarScore={topStarScore}
