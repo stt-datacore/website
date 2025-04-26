@@ -2,7 +2,7 @@ import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { CollectionsContext } from "../context";
 import { Popup, Icon, Rating, Table } from "semantic-ui-react";
-import { BuffBase, PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
+import { ItemArchetypeBase, PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { compareRewards, rewardsFilterGetRewards } from "../../../utils/collectionutils";
 import { Link } from "gatsby";
@@ -216,8 +216,8 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 	}
 
 	function renderRewardHover(col: PlayerCollection) {
-		let reward = [] as BuffBase[];
-		const migroups = {} as { [key: string]: BuffBase[] }
+		let reward = [] as ItemArchetypeBase[];
+		const migroups = {} as { [key: string]: ItemArchetypeBase[] }
 		if (mapFilter?.rewardFilter?.some(r => !!r)) {
 			reward = rewardsFilterGetRewards(mapFilter, [col], short, true);
 			for (let r of reward) {

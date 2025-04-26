@@ -2,7 +2,7 @@ import CONFIG from '../components/CONFIG';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BaseSkills, CrewMember, EquipmentSlot, QuippedPower, Skill } from '../model/crew';
 import { EquipmentIngredient, EquipmentItem, ICrewDemands, IDemand } from '../model/equipment';
-import { BuffBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
+import { ItemArchetypeBase, PlayerCrew, PlayerEquipmentItem } from '../model/player';
 import { applySkillBuff, qbitsToSlots, skillSum } from './crewutils';
 import { ItemWithBonus, isQuipmentMatch } from './itemutils';
 import { makeAllCombos } from './misc';
@@ -318,7 +318,7 @@ export function calculateRosterDemands(crew: (CrewMember | PlayerCrew)[], items:
 	return result;
 }
 
-export function haveCount<T extends BuffBase>(symbol: string, playerItems: T[]) {
+export function haveCount<T extends ItemArchetypeBase>(symbol: string, playerItems: T[]) {
 	return playerItems.find(f => f.symbol === symbol)?.quantity ?? 0;
 }
 
@@ -374,7 +374,7 @@ export function canBuildItem(item: EquipmentItem, ignoreNonQuipment?: boolean) {
 }
 
 /** Returns true if demands were deducted, or false if the item, itself, was deducted */
-export function deductDemands<T extends BuffBase>(item: EquipmentItem, items: T[]) {
+export function deductDemands<T extends ItemArchetypeBase>(item: EquipmentItem, items: T[]) {
 	let f = items.find(f => f.symbol === item.symbol);
 	if (f && f.quantity) {
 		f.quantity--;
@@ -393,7 +393,7 @@ export function deductDemands<T extends BuffBase>(item: EquipmentItem, items: T[
 	return true;
 }
 
-export function reverseDeduction<T extends BuffBase>(item: EquipmentItem, items: T[]) {
+export function reverseDeduction<T extends ItemArchetypeBase>(item: EquipmentItem, items: T[]) {
 	if (!item.demands?.length) return false;
 
 	item.demands.forEach((d) => {

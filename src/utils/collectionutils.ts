@@ -1,13 +1,13 @@
 import { RewardsGridNeed } from "../model/crew";
 import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
-import { BuffBase, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from "../model/player";
+import { ItemArchetypeBase, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from "../model/player";
 import { getCollectionRewards, getMilestoneRewards } from "./itemutils";
 import { Collection } from "../model/game-elements";
 
 
 
 export function getFilteredMilestoneRewards(milestone: Milestone, filters: string[]) {
-    let result = [] as BuffBase[];
+    let result = [] as ItemArchetypeBase[];
     for (let rewardFilter of filters) {
         let q = true;
         if (rewardFilter && rewardFilter != '*any') {
@@ -131,9 +131,9 @@ export function rewardsFilterPassFail(mapFilter: CollectionFilterOptions, colGro
     return !!r;
 }
 
-export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colGroup: PlayerCollection[], short?: boolean, milestones?: boolean): BuffBase[] {
+export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colGroup: PlayerCollection[], short?: boolean, milestones?: boolean): ItemArchetypeBase[] {
     if (!mapFilter?.rewardFilter?.length) return [];
-    let result = [] as BuffBase[];
+    let result = [] as ItemArchetypeBase[];
 
     if (milestones) {
         if (short) {
@@ -227,7 +227,7 @@ export const makeCiteNeeds = (item: CollectionInfo | CollectionCombo | PlayerCre
     return gridneed;
 }
 
-export const getOwnedCites = (items: BuffBase[], sale?: boolean) => {
+export const getOwnedCites = (items: ItemArchetypeBase[], sale?: boolean) => {
     const ownedCites = [
         { quantity: 0, cost: 0, rarity: 0 },
         { quantity: 0, cost: 0, rarity: 1 },

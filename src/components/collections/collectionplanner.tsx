@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { BuffBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
+import { ItemArchetypeBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
 import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import { TinyStore } from '../../utils/tiny';
 import { CollectionsOverview } from './views/overview';
@@ -96,7 +96,7 @@ export const CollectionPlanner = () => {
 		</CollectionFilterProvider>
 	);
 
-	function mergeRewards(current: ImmortalReward[], rewards: BuffBase[] | null | undefined): void {
+	function mergeRewards(current: ImmortalReward[], rewards: ItemArchetypeBase[] | null | undefined): void {
 		if (!rewards || rewards.length == 0) return;
 		rewards.forEach(reward => {
 			const existing = current.find(c => c.symbol === reward.symbol);

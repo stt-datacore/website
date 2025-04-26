@@ -689,7 +689,7 @@ export interface NodeMatches {
 }
 
 
-export interface PlayerEquipmentItem extends BuffBase {
+export interface PlayerEquipmentItem extends ItemArchetypeBase {
   id?: number
   type?: number
   symbol: string
@@ -1264,7 +1264,7 @@ export interface PlayerCollection extends CryoCollection {
   owned: number;
 }
 
-export interface BuffBase {
+export interface ItemArchetypeBase {
   symbol?: string
   name?: string
   icon?: Icon | AtlasIcon;
@@ -1276,12 +1276,12 @@ export interface BuffBase {
   data?: any;
 }
 
-export interface ImmortalReward extends BuffBase {
+export interface ImmortalReward extends ItemArchetypeBase {
   quantity: number;
   icon?: AtlasIcon;
 }
 
-export interface Reward extends BuffBase {
+export interface Reward extends ItemArchetypeBase {
   type: number
   id: number
   full_name: string
@@ -1300,14 +1300,14 @@ export interface Reward extends BuffBase {
   owned?: number
 }
 
-export interface MilestoneBuff extends BuffBase {
+export interface MilestoneBuff extends ItemArchetypeBase {
   id: number
   type: number
   rarity: number
   item_sources: any[]
 }
 
-export interface AdvancementBuff extends BuffBase {
+export interface AdvancementBuff extends ItemArchetypeBase {
   short_name?: string
   operator: string
   value: number
