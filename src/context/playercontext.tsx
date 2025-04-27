@@ -12,7 +12,7 @@ import { ShuttleAdventure } from '../model/shuttle';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { getItemWithBonus } from '../utils/itemutils';
 import { TinyStore } from '../utils/tiny';
-import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { ShipTraitNames } from '../model/traits';
 
 export interface PlayerContextData {
@@ -34,8 +34,8 @@ export interface PlayerContextData {
 	dataSource?: string;
 	sessionStates?: ISessionStates;
 	updateSessionState?: (sessionKey: SessionStateKey, sessionValue: number) => void;
-	calculatedDemands?: (EquipmentCommon | EquipmentItem)[]
-	setCalculatedDemands: (value: (EquipmentCommon | EquipmentItem)[] | undefined) => void;
+	calculatedDemands?: (EquipmentItem | EquipmentItem)[]
+	setCalculatedDemands: (value: (EquipmentItem | EquipmentItem)[] | undefined) => void;
 };
 
 export interface IEphemeralData {
@@ -91,7 +91,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
-	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentCommon)[] | undefined>('calculatedDemands', undefined, { compress: true });
+	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentItem)[] | undefined>('calculatedDemands', undefined, { compress: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 

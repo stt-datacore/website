@@ -1,6 +1,6 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, Skill } from '../model/crew';
-import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
 import { AtlasIcon, ItemArchetypeBase, Milestone, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
@@ -19,7 +19,7 @@ export interface ItemWithBonus {
 }
 
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[], include_missing = false) {
-	let data = [] as EquipmentCommon[];
+	let data = [] as EquipmentItem[];
 	player_items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
 		if (itemEntry) {
@@ -44,7 +44,8 @@ export function mergeItems(player_items: PlayerEquipmentItem[], items: Equipment
 				bonuses: undefined,
 				imageUrl: item.imageUrl ?? "",
 				symbol: item.symbol,
-				quantity: item.quantity
+				quantity: item.quantity,
+				item_sources: []
 			});
 		}
 	});
@@ -97,7 +98,7 @@ export function exportItemFields(): ExportField[] {
 	];
 }
 
-export function exportItems(items: EquipmentCommon[]): string {
+export function exportItems(items: EquipmentItem[]): string {
 	return simplejson2csv(items, exportItemFields());
 }
 
@@ -133,7 +134,7 @@ export function exportItemFieldsAlt(): ExportField[] {
 	];
 }
 
-export function exportItemsAlt(items: EquipmentCommon[]): string {
+export function exportItemsAlt(items: EquipmentItem[]): string {
 	return simplejson2csv(items, exportItemFieldsAlt());
 }
 
@@ -202,7 +203,7 @@ export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
 	return result;
 }
 
-export function getItemBonuses(item: EquipmentItem | EquipmentCommon): ItemBonusInfo {
+export function getItemBonuses(item: EquipmentItem | EquipmentItem): ItemBonusInfo {
     let bonusText = [] as string[];
     let bonuses = {} as { [key: string]: Skill };
 
@@ -329,7 +330,7 @@ export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T 
 	return undefined;
 }
 
-export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
+export function checkReward(items: (EquipmentItem | EquipmentItem)[], reward: Reward, needed?: boolean) {
  	let foundItem = items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity);
 	if (!foundItem) {
 		let template_item = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
@@ -433,7 +434,7 @@ export function getQuipmentAsItemWithBonus(items: EquipmentItem[]) {
 	return items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 }
 
-export function getItemWithBonus(item: EquipmentItem | EquipmentCommon) {
+export function getItemWithBonus(item: EquipmentItem | EquipmentItem) {
 	return {
 		item,
 		bonusInfo: getItemBonuses(item)

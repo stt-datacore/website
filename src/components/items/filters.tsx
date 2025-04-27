@@ -1,5 +1,5 @@
 import React from "react";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import CONFIG from "../CONFIG";
 import { Checkbox, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import { OptionsPanelFlexRow } from "../stats/utils";
@@ -27,8 +27,8 @@ export interface IItemsFilterContext {
     setItemSourceFilter: (value?: number[]) => void;
     masteryFilter?: number[];
     setMasteryFilter: (value?: number[]) => void;
-    filterItems: (items: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
-    configureFilters: (pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) => void;
+    filterItems: (items: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[];
+    configureFilters: (pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) => void;
 }
 
 const DefaultContextData: IItemsFilterContext = {
@@ -48,7 +48,7 @@ export const ItemsFilterContext = React.createContext(DefaultContextData);
 
 export interface ItemsFilterProps {
     pageId: string;
-    pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
+    pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[];
     ownedItems: boolean;
     children: JSX.Element;
     noRender?: boolean;
@@ -171,7 +171,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         </ItemsFilterContext.Provider>
     </React.Fragment>
 
-    function filterItems(value: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) {
+    function filterItems(value: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) {
         return value.filter(item => {
             if (rarityFilter?.length) {
                 if (!rarityFilter.includes(item.rarity)) return false;
@@ -200,7 +200,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         });
     }
 
-    function configureFilters(pool?: (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[]) {
+    function configureFilters(pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) {
         setFilterPool(pool ?? props.pool);
     }
 }

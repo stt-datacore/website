@@ -3,7 +3,7 @@ import { BaseSkills, CrewMember, Skill } from "./crew";
 import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
-import { EquipmentCommon, EquipmentItem } from "./equipment";
+import { EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
 import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
@@ -129,7 +129,7 @@ export interface EquipmentWorkerConfig {
 }
 
 export interface EquipmentWorkerResults {
-    items: (EquipmentCommon | EquipmentItem)[];
+    items: (EquipmentItem | EquipmentItem)[];
 }
 
 export interface BetaTachyonSettings {

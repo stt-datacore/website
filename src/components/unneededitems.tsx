@@ -1,7 +1,7 @@
 import React from 'react';
 import { Checkbox, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 
-import { EquipmentCommon } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { Ship } from '../model/ship';
 import { GlobalContext } from '../context/globalcontext';
@@ -17,10 +17,10 @@ export const UnneededItems = () => {
 	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
-	const [playerItems, setPlayeritem] = React.useState<EquipmentCommon[]>([]);
+	const [playerItems, setPlayeritem] = React.useState<EquipmentItem[]>([]);
 
 	React.useEffect(() => {
-		const playerItems: EquipmentCommon[] = mergeItems(playerData?.player.character.items ?? [], globalContext.core.items)
+		const playerItems: EquipmentItem[] = mergeItems(playerData?.player.character.items ?? [], globalContext.core.items)
 			.filter(item => item.type !== 14 && item.type !== 15);
 		console.log(playerItems.filter(item => (item.quantity ?? 0)  > 32000));
 		setPlayeritem([...playerItems]);
@@ -55,7 +55,7 @@ export const UnneededItems = () => {
 };
 
 type SchematicFuelProps = {
-	playerSchematics: EquipmentCommon[];
+	playerSchematics: EquipmentItem[];
 };
 
 const SchematicFuel = (props: SchematicFuelProps) => {
@@ -74,7 +74,7 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 	const maxedShips: Ship[] = allPlayerShips.filter(
 		ship => ship.level === ship.max_level
 	);
-	const fuelList: EquipmentCommon[] = props.playerSchematics.filter(item =>
+	const fuelList: EquipmentItem[] = props.playerSchematics.filter(item =>
 		maxedShips.some(ship => {
 			if (item.symbol === `${ship.symbol}_schematic`) {
 				item.rarity = ship.rarity;	// Use ship rarity instead of schematic item rarity
@@ -106,7 +106,7 @@ interface IFodder {
 };
 
 type EquipmentFuelProps = {
-	playerEquipment: EquipmentCommon[];
+	playerEquipment: EquipmentItem[];
 };
 
 const EquipmentFuel = (props: EquipmentFuelProps) => {
@@ -115,7 +115,7 @@ const EquipmentFuel = (props: EquipmentFuelProps) => {
 	const { playerData } = globalContext.player;
 
 	const [fodder, setFodder] = React.useState<IFodder[]>([]);
-	const [fuelList, setFuelList] = React.useState<EquipmentCommon[]>([]);
+	const [fuelList, setFuelList] = React.useState<EquipmentItem[]>([]);
 
 	const [hideEfficient, setHideEfficient] = React.useState<boolean>(true);
 	const [hideGeneric, setHideGeneric] = React.useState<boolean>(true);
@@ -191,7 +191,7 @@ const EquipmentFuel = (props: EquipmentFuelProps) => {
 
 	// Filter fodder
 	React.useEffect(() => {
-		const fuelList: EquipmentCommon[] = props.playerEquipment.filter(item => {
+		const fuelList: EquipmentItem[] = props.playerEquipment.filter(item => {
 			return (!!fodder.find(f =>
 				f.itemSymbol === item.symbol
 					&& (!hideEfficient || ((item.quantity ?? 0) < 5))
@@ -275,7 +275,7 @@ const EquipmentFuelClassic = (props: EquipmentFuelProps) => {
 	});
 
 	// Calculate all replicator fodder
-	const fuelList: EquipmentCommon[] = props.playerEquipment.filter(item =>
+	const fuelList: EquipmentItem[] = props.playerEquipment.filter(item =>
 		equipmentUsed.has(item.symbol)
 			&& !equipmentNeeded.has(item.symbol)
 	).sort((a, b) => {
@@ -305,13 +305,13 @@ const EquipmentFuelClassic = (props: EquipmentFuelProps) => {
 	};
 
 	// Filter crew-specific items
-	const specificList: EquipmentCommon[] = fuelList.filter(item =>
+	const specificList: EquipmentItem[] = fuelList.filter(item =>
 		isSpecificItem(item.name)
 			&& !needsHigherQuality(item.symbol, item.rarity)
 	);
 
 	// Filter generic items
-	const genericList: EquipmentCommon[] = fuelList.filter(item =>
+	const genericList: EquipmentItem[] = fuelList.filter(item =>
 		item.quantity === 1
 			&& item.rarity > 1
 			&& !isSpecificItem(item.name)
@@ -342,8 +342,8 @@ const EquipmentFuelClassic = (props: EquipmentFuelProps) => {
 };
 
 type FuelGridProps = {
-	fuelList: EquipmentCommon[];
-	items: EquipmentCommon[];
+	fuelList: EquipmentItem[];
+	items: EquipmentItem[];
 	linkToWiki?: boolean;
 };
 

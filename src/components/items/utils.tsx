@@ -1,6 +1,6 @@
 import { Link } from 'gatsby';
 import React from 'react';
-import { EquipmentCommon, EquipmentItem } from '../../model/equipment';
+import { EquipmentItem } from '../../model/equipment';
 import { PlayerEquipmentItem, TranslateMethod } from '../../model/player';
 import { CrewMember } from '../../model/crew';
 import { ILocalizedData } from '../../context/localizedcontext';
@@ -20,7 +20,7 @@ export interface CustomFieldDef {
 
 export interface ItemsTableProps {
 	/** List of equipment items */
-	data?: EquipmentCommon[] | EquipmentItem[];
+	data?: EquipmentItem[] | EquipmentItem[];
 
 	/** Optional alternative navigation method */
 	navigate?: (symbol: string) => void;
@@ -86,7 +86,7 @@ export type OwnedType = "all" | "owned" | "buildable" | "both";
 
 
 export function printRequiredTraits(
-    item: EquipmentCommon,
+    item: EquipmentItem,
     trait_names: { [key: string]: string },
     t?: TranslateMethod
 ): JSX.Element {
@@ -147,7 +147,7 @@ export interface FlavorConfig {
     ownedItems: boolean;
 }
 
-export function createFlavor(item: EquipmentItem | EquipmentCommon | PlayerEquipmentItem, config: FlavorConfig) {
+export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipmentItem, config: FlavorConfig) {
     const { localized, crew: inputCrew } = config;
     const { t, tfmt } = localized;
     let output = [] as JSX.Element[];

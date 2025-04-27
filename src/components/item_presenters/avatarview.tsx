@@ -2,7 +2,7 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { CompletionState, PlayerCrew, PlayerEquipmentItem } from "../../model/player";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import { mergeItems } from "../../utils/itemutils";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import { CrewTarget } from "../hovering/crewhoverstat";
@@ -16,7 +16,7 @@ export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
 
 export interface AvatarViewProps {
-    altItems?: (EquipmentItem | EquipmentCommon)[];
+    altItems?: (EquipmentItem | EquipmentItem)[];
     altCrew?: (CrewMember | PlayerCrew)[];
     altShips?: Ship[];
     /** Item type number or 'crew', 'item', or 'ship' */

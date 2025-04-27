@@ -1,5 +1,5 @@
 import React from "react";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import CONFIG from "../CONFIG";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Item, Rating } from "semantic-ui-react";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
@@ -37,7 +37,7 @@ export interface IQuipmentFilterContext {
     setTraitOptions: (value?: string[]) => void;
     setSkillOptions: (value?: string[]) => void;
     setRarityOptions: (value?: number[]) => void;
-    filterItems: (items: EquipmentItem[]) => (EquipmentItem | EquipmentCommon | PlayerEquipmentItem)[];
+    filterItems: (items: EquipmentItem[]) => (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[];
 }
 
 const DefaultContextData: IQuipmentFilterContext = {

@@ -22,7 +22,7 @@ import { demandsPerSlot } from '../utils/equipment';
 import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew, PlayerData } from '../model/player';
-import { EquipmentCommon } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
 import { calculateBuffConfig } from '../utils/voyageutils';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -88,12 +88,14 @@ export const ProfilePage = (props: ProfilePageProps) => {
 								setNoGradeColors: globalContext.player.setNoGradeColors,
 								newCrew,
 								setNewCrew,
-								setCalculatedDemands: () => false
+								setCalculatedDemands: () => false,
 							},
 							maxBuffs: coreData.all_buffs,
 							isMobile: globalContext.isMobile,
 							localized: globalContext.localized,
-							readyLocalizedCore: globalContext.readyLocalizedCore
+							readyLocalizedCore: globalContext.readyLocalizedCore,
+							confirm: globalContext.confirm,
+							prompt: globalContext.prompt
 						}}>
 							<ProfilePageComponent props={{ ...props, setLastModified: setLastModified, setPlayerData: setStrippedPlayerData }} />
 						</GlobalContext.Provider>
@@ -280,7 +282,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 		const { t, SHIP_TRAIT_NAMES } = this.context.localized;
 		const { all_ships, crew: allcrew, items } = this.context.core;
 
-		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentCommon), items) : undefined;
+		let itemdata = playerData?.player?.character?.items ? mergeItems(playerData.player.character.items.map(item => item as EquipmentItem), items) : undefined;
 		let shipdata = playerData ? mergeRefShips(all_ships, playerData.player.character.ships, SHIP_TRAIT_NAMES) : undefined;
 
 		let crewFields = exportCrewFields(t);
@@ -457,7 +459,7 @@ class ProfilePageComponent extends Component<ProfilePageComponentProps, ProfileP
 	_exportItems() {
 		const { playerData } = this.context.player;
 		const { items } = this.context.core;
-		let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentCommon), items) : [] as EquipmentCommon[];
+		let data = playerData ? mergeItems(playerData?.player?.character?.items?.map(item => item as EquipmentItem), items) : [] as EquipmentItem[];
 		let text = exportItems(data);
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'items.csv');
 	}

@@ -2,7 +2,7 @@ import React from "react";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
 import { createFlavor, CustomFieldDef, FlavorConfig } from "./utils";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import { PlayerEquipmentItem } from "../../model/player";
 import { Checkbox, Icon, Table } from "semantic-ui-react";
 import { omniSearchFilter } from "../../utils/omnisearch";
@@ -18,7 +18,7 @@ import { downloadData, skillSum } from "../../utils/crewutils";
 
 export interface EquipmentTableProps {
     pageId: string;
-    items?: (EquipmentItem | PlayerEquipmentItem | EquipmentCommon)[];
+    items?: (EquipmentItem | PlayerEquipmentItem | EquipmentItem)[];
     hideOwnedColumns?: boolean;
     types?: number[];
     buffsColumn?: boolean;
@@ -156,11 +156,11 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
         {!hideOwnedInfo && !!items.length && renderExportTools()}
     </React.Fragment>
 
-    function filterRow(row: (EquipmentItem | EquipmentCommon), filters: Filter[], filterType?: string) {
+    function filterRow(row: (EquipmentItem | EquipmentItem), filters: Filter[], filterType?: string) {
         return omniSearchFilter(row, filters, filterType, ['name', 'flavor']);
     }
 
-    function renderTableRow(item: EquipmentItem | EquipmentCommon, idx: any) {
+    function renderTableRow(item: EquipmentItem | EquipmentItem, idx: any) {
         return <Table.Row key={`${pageId}_equipment_TableRow_${item.archetype_id}_${item.symbol}+${idx}`}>
             <Table.Cell>
                 <div
@@ -278,7 +278,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             navigate("/item_info?symbol=" + symbol);
         }
     }
-    function renderBuffs(item: EquipmentItem | EquipmentCommon) {
+    function renderBuffs(item: EquipmentItem | EquipmentItem) {
         const { bonuses } = getItemBonuses(item as EquipmentItem);
         return renderBonuses(bonuses, "1em", "0.25em");
     }
@@ -337,7 +337,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             </div>)
     }
 
-    function exportItems(data: (EquipmentCommon | EquipmentItem)[], clipboard?: boolean) {
+    function exportItems(data: (EquipmentItem | EquipmentItem)[], clipboard?: boolean) {
 		let text = exportItemsAlt(data);
 		if (clipboard) {
 			navigator.clipboard.writeText(text);

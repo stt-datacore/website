@@ -1,7 +1,7 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import { EquipmentWorkerResults } from "../../model/worker";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
@@ -27,7 +27,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     const { t } = globalContext.localized;
     const { items: coreItems } = props;
     const { ephemeral, playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
-    const [prefiteredData, setPrefilteredData] = React.useState<(EquipmentItem | EquipmentCommon)[]>(calculatedDemands ?? []);
+    const [prefiteredData, setPrefilteredData] = React.useState<(EquipmentItem | EquipmentItem)[]>(calculatedDemands ?? []);
 
     const [crewFilter, setCrewFilter] = useStateWithStorage<number[]>(`global_farm/crewFilter`, []);
 

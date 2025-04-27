@@ -180,7 +180,7 @@ export class CrewPreparer {
             if (hasPlayer) {
                 if (useInputQuip) {
                     let imp = playerData.player.character.crew.find((xcrew) => {
-                        if ("id" in dataIn) {
+                        if ("id" in dataIn && dataIn.id) {
                             return xcrew.id === dataIn.id;
                         }
                         else {
@@ -193,7 +193,7 @@ export class CrewPreparer {
                 }
                 else {
                     let imp = playerData.player.character.crew.find((xcrew) => {
-                        if ("id" in dataIn) {
+                        if ("id" in dataIn && dataIn.id) {
                             return xcrew.id === dataIn.id;
                         }
                         else {

@@ -3,7 +3,7 @@ import { Step } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
-import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import { CustomFieldDef } from '../components/items/utils';
@@ -20,7 +20,7 @@ export interface ItemsPageProps { }
 const ItemsPage = (props: ItemsPageProps) => {
 
 	const [activeTabIndex, setActiveTabIndex] = useStateWithStorage<number>('items/mode', 0, { rememberForever: true });
-	const [demandItems, setDemandItems] = React.useState<(EquipmentItem | EquipmentCommon)[]>([]);
+	const [demandItems, setDemandItems] = React.useState<(EquipmentItem | EquipmentItem)[]>([]);
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t, tfmt } = globalContext.localized;

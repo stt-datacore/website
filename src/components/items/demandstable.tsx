@@ -1,6 +1,6 @@
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import { WorkerContext } from "../../context/workercontext";
 import { EquipmentWorkerResults } from "../../model/worker";
 import { OptionsPanelFlexRow } from "../stats/utils";
@@ -21,7 +21,7 @@ export const DemandsTable = (props: DemandsTableProps) => {
     const { t } = globalContext.localized;
 
     const { playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
-    const [displayData, setDisplayData] = React.useState<(EquipmentItem | EquipmentCommon)[]>(calculatedDemands ?? []);
+    const [displayData, setDisplayData] = React.useState<(EquipmentItem | EquipmentItem)[]>(calculatedDemands ?? []);
 
     const { cancel, runWorker, running } = workerContext;
 
