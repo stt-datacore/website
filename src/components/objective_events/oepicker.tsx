@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Label, Segment } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { ObjectiveEvent } from "../../model/oemodel";
+import { ObjectiveEvent } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { OEModal } from "./oemodal";

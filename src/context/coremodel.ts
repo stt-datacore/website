@@ -5,7 +5,7 @@ import { EventInstance, EventLeaderboard, EventScoreSet } from "../model/events"
 import { Collection, KeystoneBase, Polestar, Constellation, PortalLogEntry } from "../model/game-elements";
 import { Gauntlet } from "../model/gauntlets";
 import { Mission } from "../model/missions";
-import { ObjectiveEvent } from "../model/oemodel";
+import { ObjectiveEvent } from "../model/player";
 import { BattleStations, ReferenceShip, Schematics, Ship } from "../model/ship";
 import { StaticFaction } from "../model/shuttle";
 import { EventStats } from "../utils/event_stats";
