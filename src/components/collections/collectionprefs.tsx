@@ -46,9 +46,9 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
         });
 
         if (mapFilter.collectionsFilter?.length &&
-            mapFilter.collectionsFilter.some(col => !collectionsOptions.some(opt => opt.key == col))
+            mapFilter.collectionsFilter.some(col => !results.some(opt => opt.key == col))
         ) {
-            setMapFilter({...mapFilter, collectionsFilter: mapFilter.collectionsFilter.filter(col => collectionsOptions.some(opt => opt.key == col))})
+            setMapFilter({...mapFilter, collectionsFilter: mapFilter.collectionsFilter.filter(col => results.some(opt => opt.key == col))})
         }
         return results;
     }, [mode, playerCollections, extendedCollections]);
