@@ -1,15 +1,15 @@
-import { Icon } from "semantic-ui-react";
-import { AtlasIcon, PlayerCrew, Reward } from "./player";
+import { PlayerCrew, Reward } from "./player";
 import { CrewMember } from "./crew";
 import { ReferenceShip, Ship } from "./ship";
 import { StaticFaction } from "./shuttle";
+import { Icon } from "./game-elements";
 
 export interface ObjectiveEvent {
   id: number;
   symbol: string;
   name: string;
   description: string;
-  image: AtlasIcon;
+  image: Icon;
   rewards: Reward[];
   participation_rewards: ParticipationReward[];
   objective_archetype_ids: number[];

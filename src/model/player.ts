@@ -23,10 +23,6 @@ export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'm
 
 export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
 
-export interface AtlasIcon extends Icon {
-  atlas_info: string
-}
-
 export type CiteEngine = 'original' | 'beta_tachyon_pulse';
 
 export interface CiteMode {
@@ -753,7 +749,7 @@ export interface DailyActivity {
   id?: number
   name: string
   description: string
-  icon?: AtlasIcon
+  icon?: Icon
   area?: string
   weight?: number
   category?: any
@@ -771,7 +767,7 @@ export interface FleetActivity {
   id: number
   name: string
   description: string
-  icon: AtlasIcon
+  icon: Icon
   area: string
   sort_priority: number
   category: string
@@ -1036,7 +1032,7 @@ export interface PotentialRewardDetails {
   name: string
   full_name: string
   flavor: string
-  icon: AtlasIcon
+  icon: Icon
   quantity: number
   rarity: number
   portrait?: Icon
@@ -1212,7 +1208,7 @@ export interface Loot {
   name: string
   full_name: string
   flavor: string
-  icon: AtlasIcon
+  icon: Icon
   quantity: number
   rarity: number
   portrait?: Icon
@@ -1267,7 +1263,7 @@ export interface PlayerCollection extends CryoCollection {
 export interface ItemArchetypeBase {
   symbol?: string
   name?: string
-  icon?: Icon | AtlasIcon;
+  icon?: Icon | Icon;
   flavor?: string
   quantity?: number;
   rarity?: number;
@@ -1278,7 +1274,7 @@ export interface ItemArchetypeBase {
 
 export interface ImmortalReward extends ItemArchetypeBase {
   quantity: number;
-  icon?: AtlasIcon;
+  icon?: Icon;
 }
 
 export interface Reward extends ItemArchetypeBase {
@@ -1293,7 +1289,7 @@ export interface Reward extends ItemArchetypeBase {
   traits?: string[]
   action?: ShipAction
   ship?: Ship
-  icon?: AtlasIcon;
+  icon?: Icon;
   item_type?: number
   bonuses?: Bonuses
   faction_id?: number
@@ -1452,7 +1448,7 @@ export interface Season {
 export interface ExclusiveCrew {
   name: string
   max_rarity: number
-  full_body: AtlasIcon
+  full_body: Icon
   archetype_id: number
 }
 

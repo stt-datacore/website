@@ -68,6 +68,7 @@ export interface Polestar extends KeystoneBase {
 
 export interface Icon {
   file: string;
+  atlas_info?: string
 }
 
 export interface PolestarFilter {

@@ -1,9 +1,9 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, Skill } from '../model/crew';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { ISymbol } from '../model/game-elements';
+import { Icon, ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { AtlasIcon, ItemArchetypeBase, Milestone, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
+import { ItemArchetypeBase, Milestone, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
 import { getIconPath } from './assets';
 import { simplejson2csv, ExportField } from './misc';
 
@@ -343,7 +343,7 @@ export function checkReward(items: (EquipmentItem | EquipmentItem)[], reward: Re
 			bonuses: {},
 			quantity: !!needed ? 0 : reward.quantity,
 			needed: !needed ? 0 : reward.quantity,
-			imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
+			imageUrl: getIconPath(reward.icon ?? {} as Icon, true),
 			item_sources: [],
 			archetype_id: reward.id,
 			isReward: !needed
