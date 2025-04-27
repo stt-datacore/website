@@ -34,7 +34,7 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
     const tierOpts = [] as DropdownItemProps[];
 
     const collectionsOptions = React.useMemo(() => {
-        return (mode === 'crew' ? extendedCollections : playerCollections)
+        const results = (mode === 'crew' ? extendedCollections : playerCollections)
         .filter(collection => collection.milestone.goal != 'n/a' && collection.milestone.goal > 0)
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(collection => {
@@ -44,6 +44,13 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
                 text: collection.name + ' (' + collection.progress + ' / ' + collection.milestone.goal + ')'
             };
         });
+
+        if (mapFilter.collectionsFilter?.length &&
+            mapFilter.collectionsFilter.some(col => !collectionsOptions.some(opt => opt.key == col))
+        ) {
+            setMapFilter({...mapFilter, collectionsFilter: mapFilter.collectionsFilter.filter(col => collectionsOptions.some(opt => opt.key == col))})
+        }
+        return results;
     }, [mode, playerCollections, extendedCollections]);
 
 
