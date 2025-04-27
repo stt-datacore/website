@@ -1,5 +1,5 @@
 import React from "react";
-import { ObjectiveArchetype, ObjectiveEvent } from "../../model/oemodel";
+import { ObjectiveArchetype, ObjectiveEvent } from "../../model/player";
 import { GlobalContext } from "../../context/globalcontext";
 import { getIconPath } from "../../utils/assets";
 import { AvatarView } from "../item_presenters/avatarview";

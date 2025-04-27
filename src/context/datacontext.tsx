@@ -8,7 +8,7 @@ import { EventInstance, EventLeaderboard } from '../model/events';
 import { Collection, KeystoneBase, PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { Gauntlet } from '../model/gauntlets';
 import { Mission } from '../model/missions';
-import { ObjectiveEvent } from '../model/oemodel';
+import { ObjectiveEvent } from '../model/player';
 import { BattleStations, ReferenceShip, Schematics, Ship } from '../model/ship';
 import { StaticFaction } from '../model/shuttle';
 import { calcQuipmentScore } from '../utils/equipment';

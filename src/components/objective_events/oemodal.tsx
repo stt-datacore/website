@@ -1,5 +1,5 @@
 import React from "react";
-import { ObjectiveEvent, OERefType } from "../../model/oemodel";
+import { ObjectiveEvent, OERefType } from "../../model/player";
 import { Container, Modal, Tab, Image, Header, Menu, Segment, Label } from "semantic-ui-react";
 import { OEInfo } from "./oeinfo";
 import { FactionAbbrMap, getArchetypeTitle, KnownStages, KSRegExp } from "./utils";

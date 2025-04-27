@@ -1,4 +1,4 @@
-import { ObjectiveArchetype } from "../../model/oemodel";
+import { ObjectiveArchetype } from "../../model/player";
 
 export const KnownStages = [
     'complete_faction_([a-z0-9_]+)_mission_objective',

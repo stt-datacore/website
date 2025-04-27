@@ -1,17 +1,16 @@
 
 
-import { Ship } from "./ship";
+import { ReferenceShip, Ship } from "./ship";
 import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, ComputedSkill, CapAchiever, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements";
-import { ShuttleAdventure } from "./shuttle";
+import { ShuttleAdventure, StaticFaction } from "./shuttle";
 import { IVoyageEventContent } from "./voyage";
 import { ArchetypeRoot20 } from "./archetype";
 import { Cost } from "./offers";
-import { ObjectiveEvent } from "./oemodel";
 
 export const ISM_ID = 14152;
 
@@ -1839,4 +1838,71 @@ export interface CraftingRegeneration {
 export interface ObjectiveEventRoot {
   id: number;
   statuses: ObjectiveEvent[];
+}
+
+
+export interface ObjectiveEvent {
+  id: number;
+  symbol: string;
+  name: string;
+  description: string;
+  image: Icon;
+  rewards: Reward[];
+  participation_rewards: ParticipationReward[];
+  objective_archetype_ids: number[];
+  level_gate: number;
+  prerequisites: Prerequisite[];
+  announce_at: number;
+  start_at: number;
+  end_at: number;
+  opened: boolean;
+  concluded?: boolean;
+  completion_rewards_claimed?: boolean;
+  participation_rewards_claimed?: boolean;
+  eligible_for_completion_rewards?: boolean;
+  eligible_for_participation_rewards?: boolean;
+  objectives?: Objective[];
+  objective_archetypes: ObjectiveArchetype[];
+}
+
+export interface ParticipationReward {
+  type: number;
+  id: number;
+  symbol: string;
+  name: string;
+  full_name: string;
+  flavor: string;
+  icon: Icon;
+  quantity: number;
+  rarity: number;
+}
+
+export interface Prerequisite {
+  dependent: string;
+  dependencies: string[];
+}
+
+export interface Objective {
+  id: number;
+  archetype_id: number;
+  status: number;
+  current_value: number;
+  target_value: number;
+}
+
+export type OERefType = CrewMember | PlayerCrew | ReferenceShip | Ship | StaticFaction | { id: number, name: string, symbol: string };
+
+export interface ObjectiveArchetype {
+  id: number;
+  symbol: string;
+  type: string;
+  area: string;
+  milestones: ObjectiveMilestone[];
+  target?: OERefType;
+}
+
+export interface ObjectiveMilestone {
+  rewards: Reward[];
+  requirement: string;
+  target_value: number;
 }
