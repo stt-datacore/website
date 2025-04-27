@@ -279,6 +279,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					<CollectionPrefs
 						mode={tabPanes[tabIndex ?? 0].mode as any}
 						playerCollections={playerCollections}
+						extendedCollections={extendedCollections}
 						colCombos={colCombos}
 						workerRunning={workerRunning}
 						/>
