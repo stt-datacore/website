@@ -87,6 +87,7 @@ export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  Ship
     protected onItem(msg: any): boolean {
         if (this.lastResult) {
             if (compareShipResults(msg.data.result.result, this.lastResult, this.options.fbb_mode) > 0) return false;
+            else this.allResults.push(msg.data.result.result);
         }
 
         return true;
