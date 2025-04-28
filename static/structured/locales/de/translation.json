@@ -142,6 +142,7 @@
     },
     "buffs": {
         "max_buffs": "Maximale Buffs",
+        "max_quipment_buffs_best": "Maximale Rüstzeug Buffs (Beste Rüstzeug)",
         "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
         "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)",
         "no_buffs": "Keine Buffs",

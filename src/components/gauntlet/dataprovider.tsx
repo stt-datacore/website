@@ -38,7 +38,8 @@ const DefaultUserPrefs: GauntletUserPrefs = {
     },
 	textFilter: '',
 	hideOpponents: false,
-	onlyActiveRound: true
+	onlyActiveRound: true,
+    natural: true
 }
 
 const DefaultGauntletContext: IGauntletContext = {
@@ -145,6 +146,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         setTops,
         setViewMode,
         config: {
+            ...DefaultUserPrefs,
             ...config,
             settings
         }

@@ -36,7 +36,7 @@ export const GauntletView = (props: GauntletViewProps) => {
     const [requestRun, setRequestRun] = React.useState(false);
     const { runWorker: internalRunWorker, running, cancel } = workerContext;
     const { config, pane, viewMode, tops, setConfig, setFeaturedGauntlet, pairGroups, setPairGroups } = gauntletContext;
-    const { textFilter, filter, buffMode, range_max, settings } = config;
+    const { textFilter, filter, buffMode, range_max, settings, natural } = config;
     const { playerData } = globalContext.player;
     const { t } = globalContext.localized;
     const { gauntlet: outerGauntlet, opponentCache } = props;
@@ -75,7 +75,7 @@ export const GauntletView = (props: GauntletViewProps) => {
 				setRequestRun(true);
 			}
 		}
-    }, [settings, outerGauntlet, filter, buffMode, range_max, playerData]);
+    }, [settings, natural, outerGauntlet, filter, buffMode, range_max, playerData]);
 
 	setTimeout(() => {
 		if (requestRun) {

@@ -18,7 +18,7 @@ export type TranslateMethod = (key: string, options?: { [key: string]: string | 
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
 
-export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment_2' | 'max_quipment_3';
+export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment_2' | 'max_quipment_3' | 'max_quipment_best';
 
 export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
 

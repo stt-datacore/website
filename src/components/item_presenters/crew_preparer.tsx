@@ -13,6 +13,7 @@ export const BuffNames = {
     'quipment': "buffs.quipment_buffs",
     'max_quipment_2': "buffs.max_quipment_buffs_double",
     'max_quipment_3': "buffs.max_quipment_buffs_triple",
+    'max_quipment_best': "buffs.max_quipment_buffs_best",
 }
 
 export const ImmortalNames = {

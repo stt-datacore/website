@@ -142,6 +142,7 @@
     },
     "buffs": {
         "max_buffs": "Effets maximum",
+        "max_quipment_buffs_best": "Effets maximum de quipement (Meilleur quipement)",
         "max_quipment_buffs_double": "Effets maximum de quipement (deux compétences)",
         "max_quipment_buffs_triple": "Effets maximum de quipement (trois compétences)",
         "no_buffs": "Aucun effets",
