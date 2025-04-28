@@ -565,6 +565,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 		if (buffMode.startsWith('max_quipment')) {
 			crew = calcQLots(crew, allQuipment, buffs, true, 4, "proficiency");
 			let bestQuip = undefined as QuippedPower | undefined;
+			let one = false;
 			if (buffMode === 'max_quipment_2' && crew.best_quipment_1_2) {
 				bestQuip = crew.best_quipment_1_2
 			}
@@ -575,7 +576,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				bestQuip = crew.best_quipment_1_2;
 			}
 			else if (crew.best_quipment) {
-				bestQuip = crew.best_quipment
+				bestQuip = crew.best_quipment;
+				one = true;
 			}
 
 			if (bestQuip) {
@@ -588,7 +590,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				});
 				while (crew.kwipment.length < 4) crew.kwipment.push(0 as any);
 				crew.kwipment_prospects = true;
-				Object.keys(bestQuip.skills_hash).forEach((skill) => {
+				Object.keys(bestQuip.skills_hash).forEach((skill, idx) => {
+					if (one && idx) return;
 					crew[skill].base = bestQuip.skills_hash[skill].base;
 					crew[skill].min = bestQuip.skills_hash[skill].range_min;
 					crew[skill].max = bestQuip.skills_hash[skill].range_max;
