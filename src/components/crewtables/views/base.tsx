@@ -170,10 +170,11 @@ type CrewCellProps = {
 	crew: IRosterCrew;
 	tableType: RosterType
 	alternativeLayout?: boolean
+	absRank?: boolean
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew, tableType, alternativeLayout } = props;
+	const { crew, tableType, absRank, alternativeLayout } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const tiny = TinyStore.getStore("index");
 
@@ -190,7 +191,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
 			</Table.Cell> */}
 			<Table.Cell textAlign='center'>
-				{renderDataScoreColumn(crew)}
+				{renderDataScoreColumn(crew, absRank)}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{renderCabColumn(crew)}
@@ -326,10 +327,12 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	}
 };
 
-export function renderDataScoreColumn(crew: CrewMember) {
+export function renderDataScoreColumn(crew: CrewMember, absRank?: boolean) {
 	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
 	const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
+
+	const rank = absRank ? crew.ranks.scores.overall_rank : crew.ranks.scores.rarity_overall_rank;
 
 	return (
 		<React.Fragment>
@@ -339,7 +342,7 @@ export function renderDataScoreColumn(crew: CrewMember) {
 						{rarityLabels[crew.max_rarity]}
 					</span>
 					<br />
-					{crew.ranks.scores?.overall_rank ? "#" + crew.ranks.scores.overall_rank : "?" }
+					{!!rank ? "#" + rank : "?" }
 				</small>
 				<small style={{color: dcGradeColor}}>
 					&nbsp;&nbsp;&nbsp;&nbsp;
