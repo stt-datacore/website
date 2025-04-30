@@ -68,6 +68,24 @@ export interface CapAchiever {
     date: number
 }
 
+
+export interface Achiever {
+	player_guid: string,
+	player_name: string,
+	date: Date,
+	crew_archetype_id: number,
+	published?: boolean;
+	crew_symbol?: string;
+	crew_name?: string;
+	crew_url?: string;
+	crew_rarity?: number;
+}
+
+export type CapAchievers = {
+	action: string,
+	achievers: Achiever[]
+}
+
 /**
  * The is the crew roster model from crew.json
  *

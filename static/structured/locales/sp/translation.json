@@ -778,6 +778,15 @@
         "only_officers": "Ocultar no oficiales",
         "squadrons": "Escuadrones"
     },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Jugador",
+            "total": "Número total de tripulantes"
+        },
+        "description": "Ver detalles sobre los jugadores que fueron los primeros en maximizar un tripulante"
+    },
     "gather": {
         "item_filter": {
             "all_items": "Mostrar todos los artículos",
@@ -960,6 +969,7 @@
         "enable": "Habilitar",
         "enabled": "Habilitado",
         "episode": "Episodio",
+        "error": "Error",
         "exclusive": "Exclusivo",
         "experimental": "Experimental",
         "filters": "Filtros",
@@ -1377,6 +1387,7 @@
             "bridge_crew_tool": "Herramienta de tripulación de puente",
             "episodes": "Episodios",
             "events": "Eventos",
+            "ftm_hof": "Salón de la fama del PLM",
             "misc_game_stats": "Estadísticas varias del juego",
             "objective_events": "Eventos objetivos",
             "stat_trends": "{{stat_trends.title}}",

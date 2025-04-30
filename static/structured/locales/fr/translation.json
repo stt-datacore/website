@@ -780,6 +780,15 @@
         "only_officers": "Masquer les non-officiers",
         "squadrons": "Escadrons"
     },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Joueur",
+            "total": "Nombre total des équiipers"
+        },
+        "description": "Voir les détails sur les joueurs qui ont été les premiers à maximiser un équipier"
+    },
     "gather": {
         "item_filter": {
             "all_items": "Afficher tous les articles",
@@ -962,6 +971,7 @@
         "enable": "Activer",
         "enabled": "Activé",
         "episode": "Épisode",
+        "error": "Erreur",
         "exclusive": "Exclusif",
         "experimental": "Expérimental",
         "filters": "Filtres",
@@ -1379,6 +1389,7 @@
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
             "episodes": "Épisodes",
             "events": "Événements",
+            "ftm_hof": "Temple de la renommée des FAMs",
             "misc_game_stats": "Statistiques diverses du jeu",
             "objective_events": "Événements objectifs",
             "stat_trends": "{{stat_trends.title}}",

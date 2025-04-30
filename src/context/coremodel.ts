@@ -1,5 +1,5 @@
 import { ContinuumMission } from "../model/continuum";
-import { CrewMember, CurrentWeighting, QuipmentScores } from "../model/crew";
+import { Achiever, CapAchievers, CrewMember, CurrentWeighting, QuipmentScores } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { EventInstance, EventLeaderboard, EventScoreSet } from "../model/events";
 import { Collection, KeystoneBase, Polestar, Constellation, PortalLogEntry } from "../model/game-elements";
@@ -26,6 +26,7 @@ export interface ICoreData {
 	event_scoring: EventScoreSet;
 	event_stats: EventStats[];
 	factions: StaticFaction[];
+	ftm_log: Achiever[];
 	gauntlets: Gauntlet[];
 	items: EquipmentItem[];
 	keystones: (KeystoneBase | Polestar | Constellation)[];
