@@ -2,7 +2,7 @@ import { navigate } from 'gatsby';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { ContinuumMission } from '../model/continuum';
-import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
+import { Achiever, CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
 import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { EventInstance, EventLeaderboard } from '../model/events';
 import { Collection, KeystoneBase, PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
@@ -37,6 +37,7 @@ export type ValidDemands =
 	'event_scoring' |
 	'event_stats' |
 	'factions' |
+	'ftm_log' |
 	'gauntlets' |
 	'items' |
 	'keystones' |
@@ -79,6 +80,7 @@ const defaultData = {
 	event_scoring: {},
 	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
+	ftm_log: [] as Achiever[],
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
@@ -146,6 +148,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'event_scoring',
 			'event_stats',
 			'factions',
+			'ftm_log',
 			'gauntlets',
 			'items',
 			'keystones',

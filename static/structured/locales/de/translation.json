@@ -772,6 +772,15 @@
         "only_officers": "Nicht-Offiziere ausblenden",
         "squadrons": "Staffeln"
     },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Spieler",
+            "total": "Gesamtzahl der Crew"
+        },
+        "description": "Sehen Sie sich Details zu den Spielern an, die als erste ein Crewmitglied auf das Maximum gebracht haben"
+    },
     "gather": {
         "item_filter": {
             "all_items": "Alle Artikel anzeigen",
@@ -954,6 +963,7 @@
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
         "episode": "Episode",
+        "error": "Fehler",
         "exclusive": "Exklusive",
         "experimental": "Experimentell",
         "filters": "Filter",
@@ -1367,6 +1377,7 @@
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
             "episodes": "Folgen",
             "events": "Ereignisen",
+            "ftm_hof": "ZZM Ruhmeshalle",
             "misc_game_stats": "Verschiedene Spielstatistiken",
             "objective_events": "Objektive-Ereignisse",
             "stat_trends": "{{stat_trends.title}}",

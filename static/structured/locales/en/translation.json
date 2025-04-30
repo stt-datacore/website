@@ -772,6 +772,15 @@
         "only_officers": "Hide non-officers",
         "squadrons": "Squadons"
     },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Player",
+            "total": "Total crew count"
+        },
+        "description": "View details about players who were the first to max crew"
+    },
     "gather": {
         "item_filter": {
             "all_items": "Show all items",
@@ -954,6 +963,7 @@
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
+        "error": "Error",
         "exclusive": "Exclusive",
         "experimental": "Experimental",
         "filters": "Filters",
@@ -1367,6 +1377,7 @@
             "bridge_crew_tool": "Bridge Crew Tool",
             "episodes": "Episodes",
             "events": "Events",
+            "ftm_hof": "FTM Hall of Fame",
             "misc_game_stats": "Misc Game Stats",
             "objective_events": "Objective Events",
             "stat_trends": "{{stat_trends.title}}",
