@@ -222,15 +222,10 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         justifyContent: "center",
                         alignItems: "center"
                     }}>
-                    <ItemDisplay
-                        targetGroup={this.props.crewTargetGroup}
-                        playerData={playerData}
-                        allCrew={this.context.core.crew}
-                        itemSymbol={sym}
-                        rarity={crew.rarity}
-                        maxRarity={crew.max_rarity}
+                    <AvatarView
+                        mode='crew'
+                        item={crew}
                         size={64}
-                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
                     />
                     <i>{crew?.name}</i>
                 </div> || <></>}
@@ -298,8 +293,8 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     <div style={{ margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center" }}>
                         <Rating
                             icon='star'
-                            rating={item.rarity}
-                            maxRating={item.rarity}
+                            rating={item.rarity || 0}
+                            maxRating={item.rarity || 0}
                             size='large'
                             disabled />
                     </div>
@@ -315,7 +310,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                         <i>{item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '')}</i>
                     </div>
 
-                    {!!bonusText.length && renderBonuses(bonuses, "1em", "0.25em")}
+                    {!!bonusText?.length && renderBonuses(bonuses, "1em", "0.25em")}
                 </div>
                 {!!item.duration &&
                     <div

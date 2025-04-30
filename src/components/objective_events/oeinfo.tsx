@@ -8,6 +8,7 @@ import { ShipHoverStat } from "../hovering/shiphoverstat";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { Table } from "semantic-ui-react";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
+import { quantityLabel } from "../crewtables/rewards";
 
 
 
@@ -101,6 +102,7 @@ export const OEInfo = (props: OEInfoProps) => {
                                                     if (reward.type === 1) type = 'crew';
                                                     else if (reward.type === 8) type = 'ship';
                                                     else type = 'item';
+                                                    (reward as any).isReward = true;
                                                     let src = `${process.env.GATSBY_ASSETS_URL}${getIconPath(reward.icon!, true)}`
                                                     if (!(reward as any).imageUrl) {
                                                         (reward as any).imageUrl = getIconPath(reward.icon!, true);
@@ -125,7 +127,7 @@ export const OEInfo = (props: OEInfoProps) => {
                                                                 targetGroup={`oe_hover_${type}`}
                                                             />
                                                             <span>
-                                                                {reward.name}
+                                                                {(!!reward.quantity && reward.quantity > 1) ? `${quantityLabel(reward.quantity)} ` : ``}{reward.name}
                                                             </span>
                                                         </div>
                                                     )
