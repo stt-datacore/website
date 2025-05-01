@@ -38,7 +38,6 @@ export const FTMHof = () => {
     const { crew, ftm_log } = globalContext.core;
     const input = ftm_log as AchieverDetails[];
 
-    const [refreshCounter, setRefreshCounter] = React.useState(0);
     const [data, setData] = React.useState([] as AchieverDetails[]);
     const [error, setError] = React.useState('');
     const [groupBy, setGroupBy] = useStateWithStorage<string>(`ftm_hof/group_by`, '', { rememberForever: true });
@@ -190,7 +189,7 @@ export const FTMHof = () => {
         <CrewHoverStat targetGroup="ftm_hof" />
     </React.Fragment>)
 
-    function filterRow(row: AchieverDetails, filter: Filter[], filterType?: string) {
+    function filterRow(row: AchieverDetails | AchieverStat, filter: Filter[], filterType?: string) {
         if (!groupBy) {
             return omniSearchFilter(row, filter, filterType,
                 [
@@ -212,7 +211,7 @@ export const FTMHof = () => {
                 [
                     'player_name',
                     {
-                        field: 'crew',
+                        field: 'ftms',
                         customMatch: (data: CrewMember[], text) => {
                             text = text.toLowerCase();
                             return data.some(c => crewMatches(c, text));
@@ -291,20 +290,6 @@ export const FTMHof = () => {
                     {row.total?.toLocaleString()}
                 </Table.Cell>
             </Table.Row>)
-        }
-    }
-
-    function refresh() {
-        setError('');
-        setRefreshCounter(refreshCounter + 1);
-    }
-
-    function avatarPortrait(symbol: string) {
-        if (symbol.includes("avatar")) {
-            return `crew_icons_cm_${symbol.replace("avatar_", "").replace("_crew", "")}_avatar_icon.png`;
-        }
-        else {
-            return `crew_icons_cm_${symbol.replace("_crew", "")}_icon.png`;
         }
     }
 
