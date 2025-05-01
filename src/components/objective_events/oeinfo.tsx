@@ -6,7 +6,7 @@ import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { ShipHoverStat } from "../hovering/shiphoverstat";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { Table } from "semantic-ui-react";
+import { Icon, Table } from "semantic-ui-react";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { quantityLabel } from "../crewtables/rewards";
 
@@ -24,6 +24,7 @@ export const OEInfo = (props: OEInfoProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { data, objective_archetype: oearch, showTitle } = props;
+
     const flexCol = OptionsPanelFlexColumn;
     const flexRow = OptionsPanelFlexRow;
 
@@ -35,6 +36,8 @@ export const OEInfo = (props: OEInfoProps) => {
         {[oearch].map(oearch => {
             const type = typeof oearch.target === 'object' && 'symbol' in oearch.target ? (oearch.target.symbol.includes("_crew") ? 'crew' : (oearch.target.symbol.includes("_ship") ? "ship" : "")) : "";
             const targetGroup = `oe_hover_${type}`;
+            const archStatus = data?.objectives?.find(oe => oe.archetype_id === oearch.id);
+            const claimed = archStatus?.current_value ?? -1;
 
             let img = '';
             if (oearch.target && !type) {
@@ -88,7 +91,8 @@ export const OEInfo = (props: OEInfoProps) => {
                                 return (
                                     <Table.Row key={`mi_req_${oearch.id}_${mi.target_value}`}>
                                         <Table.Cell>
-                                            <div style={{...flexRow, minHeight: '3em', fontWeight: 'bold'}}>
+                                            <div style={{...flexRow, minHeight: '3em', fontWeight: 'bold', gap: '1em'}}>
+                                                {claimed >= mi.target_value && <Icon name='check' color='green' />}
                                                 {mi.requirement}
                                             </div>
                                         </Table.Cell>

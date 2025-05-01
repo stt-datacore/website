@@ -787,7 +787,8 @@
             "player": "Joueur",
             "total": "Nombre total des équiipers"
         },
-        "description": "Voir les détails sur les joueurs qui ont été les premiers à maximiser un équipier"
+        "description": "Voir les détails sur les joueurs qui ont été les premiers à maximiser un équipier",
+        "group_by_player": "Regrouper par joueur"
     },
     "gather": {
         "item_filter": {

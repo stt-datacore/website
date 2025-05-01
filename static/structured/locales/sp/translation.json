@@ -785,7 +785,8 @@
             "player": "Jugador",
             "total": "Número total de tripulantes"
         },
-        "description": "Ver detalles sobre los jugadores que fueron los primeros en maximizar un tripulante"
+        "description": "Ver detalles sobre los jugadores que fueron los primeros en maximizar un tripulante",
+        "group_by_player": "Grupo por jugador"
     },
     "gather": {
         "item_filter": {

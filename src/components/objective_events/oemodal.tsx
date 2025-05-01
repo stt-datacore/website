@@ -1,6 +1,6 @@
 import React from "react";
 import { ObjectiveEvent, OERefType } from "../../model/player";
-import { Container, Modal, Tab, Image, Header, Menu, Segment, Label } from "semantic-ui-react";
+import { Container, Modal, Tab, Image, Header, Menu, Segment, Label, Icon } from "semantic-ui-react";
 import { OEInfo } from "./oeinfo";
 import { FactionAbbrMap, getArchetypeTitle, KnownStages, KSRegExp } from "./utils";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
@@ -26,7 +26,7 @@ export const OEModal = (props: OEModalProps) => {
     const { factions } = globalContext.core;
     const { t } = globalContext.localized;
     const { isOpen, setIsOpen, data } = props;
-
+    const { ephemeral } = globalContext.player;
     const [activePane, setActivePane] = React.useState(0);
     const flexRow = OptionsPanelFlexRow;
 
@@ -34,10 +34,17 @@ export const OEModal = (props: OEModalProps) => {
         let info = data;
         if (!info) return;
         info = JSON.parse(JSON.stringify(info)) as ObjectiveEvent;
-        info.objective_archetypes.forEach((oearch) => {
+        let curr = ephemeral?.objectiveEventRoot?.statuses?.find(f => f.id === info.id);
+        if (curr) {
+            info.objectives = curr.objectives;
+        }
+        info.objective_archetypes = info.objective_archetypes.map((oearch) => {
             let sym = oearch.symbol;
             let x = sym.indexOf("_");
             sym = sym.slice(x + 1);
+            if (curr) {
+                oearch.objective = curr.objectives?.find(ob => ob.archetype_id === oearch.id);
+            }
             for (let kt of KnownStages) {
                 let re = KSRegExp[kt];
                 let results = re.exec(sym);
@@ -66,6 +73,7 @@ export const OEModal = (props: OEModalProps) => {
                     oearch.target = obj;
                 }
             }
+            return oearch;
         });
         return info;
     }, [data]);
@@ -76,6 +84,7 @@ export const OEModal = (props: OEModalProps) => {
 
     const panes = activeEventInfo?.objective_archetypes.map(oearch => ({
         menuTitle: getArchetypeTitle(oearch),
+        data: oearch,
         render: () => <Tab.Pane attached={false}>
             <OEInfo data={activeEventInfo} objective_archetype={oearch} />
         </Tab.Pane>
@@ -112,7 +121,11 @@ export const OEModal = (props: OEModalProps) => {
                             <Menu.Item
                                 active={activePane === idx}
                                 key={`tab_upper_${pane.menuTitle}`} onClick={() => setActivePane(idx)}>
-                                {pane.menuTitle}
+                                <div style={{...flexRow, gap: '1em'}}>
+                                    {!!pane.data.objective && pane.data.objective.current_value >= pane.data.objective.target_value &&
+                                        <Icon name='check' color='green' />}
+                                    {pane.menuTitle}
+                                </div>
                             </Menu.Item>
                         ))}
                     </Menu>

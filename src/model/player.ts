@@ -1888,6 +1888,7 @@ export interface Objective {
   status: number;
   current_value: number;
   target_value: number;
+  milestone_claimed?: number;
 }
 
 export type OERefType = CrewMember | PlayerCrew | ReferenceShip | Ship | StaticFaction | { id: number, name: string, symbol: string };
@@ -1899,6 +1900,7 @@ export interface ObjectiveArchetype {
   area: string;
   milestones: ObjectiveMilestone[];
   target?: OERefType;
+  objective?: Objective;
 }
 
 export interface ObjectiveMilestone {
