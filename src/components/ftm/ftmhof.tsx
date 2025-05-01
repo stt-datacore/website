@@ -80,6 +80,14 @@ export const FTMHof = () => {
                                 ftm.avatar = getIconPath(p.metadata.crew_avatar.icon, true);
                             }
                         }
+                        else if (p.metadata.crew_avatar?.full_body) {
+                            if (typeof p.metadata.crew_avatar.full_body === 'string') {
+                                ftm.avatar = p.metadata.crew_avatar.full_body;
+                            }
+                            else {
+                                ftm.avatar = getIconPath(p.metadata.crew_avatar.full_body, true);
+                            }
+                        }
                         else if (p.metadata.crew_avatar?.portrait) {
                             if (typeof p.metadata.crew_avatar.portrait === 'string') {
                                 ftm.avatar = p.metadata.crew_avatar.portrait;
@@ -96,6 +104,7 @@ export const FTMHof = () => {
                 for (let ftm of newftms) {
                     ftm.total = counts[ftm.player_name];
                 }
+                newftms.sort((a, b) => b.date.getTime() - a.date.getTime());
                 setData(newftms);
             })
             .catch((e: any) => {
