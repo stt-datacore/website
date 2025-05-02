@@ -1,7 +1,7 @@
 import React from "react"
 import { GlobalContext } from "../../context/globalcontext";
 import { Achiever, CapAchiever, CapAchievers, CrewMember } from "../../model/crew";
-import { Checkbox, Message, Table } from "semantic-ui-react";
+import { Button, Checkbox, Message, Table } from "semantic-ui-react";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { ProfileData } from "../../model/fleet";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
@@ -36,26 +36,33 @@ export const FTMHof = () => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { crew, ftm_log } = globalContext.core;
-    const input = ftm_log as AchieverDetails[];
+    const cached_log = ftm_log as AchieverDetails[];
 
+    const [refreshInc, setRefreshInc] = React.useState(0);
     const [data, setData] = React.useState([] as AchieverDetails[]);
     const [error, setError] = React.useState('');
     const [groupBy, setGroupBy] = useStateWithStorage<string>(`ftm_hof/group_by`, '', { rememberForever: true });
 
     React.useEffect(() => {
-        if (!input) return;
-        const players = [...new Set(input.map(d => d.player_name))];
-        fetch(`${process.env.GATSBY_DATACORE_URL}api/players-by-name`, {
-            method: 'POST',
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({ players })
-        })
+        let ach_res: AchieverDetails[] | null = null;
+        fetch(`${process.env.GATSBY_DATACORE_URL}api/cap-achievers`)
+            .then(response => response.json())
+            .then((input: Achiever[] | null) => {
+                if (!input?.length) input = cached_log;
+                const players = [...new Set(input.map(d => d.player_name))];
+                ach_res = input;
+                return fetch(`${process.env.GATSBY_DATACORE_URL}api/players-by-name`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({ players })
+                });
+            })
             .then((result) => result.json())
             .then((players: ProfileData[]) => {
                 const counts = {} as any;
-                const newftms = input.map((ftm) => {
+                const newftms = !ach_res ? [] : ach_res.map((ftm) => {
                     let c = crew.find(f => f.archetype_id === ftm.crew_archetype_id);
                     if (c) {
                         ftm = {
@@ -109,7 +116,7 @@ export const FTMHof = () => {
             .catch((e: any) => {
                 setError((e?.toString()))
             });
-    }, [input]);
+    }, [cached_log, refreshInc]);
 
     if (error) {
         return (
@@ -172,7 +179,8 @@ export const FTMHof = () => {
             filterRow={filterRow}
             renderTableRow={renderTableRow}
             extraSearchContent={
-                <div style={{ ...flexRow, flexGrow: 1, justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
+                <div style={{ ...flexRow, flexGrow: 1, justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: '0.5em' }}>
+                    <Button icon='refresh' onClick={refreshFTM} />
                     <Checkbox label={t('ftm.group_by_player')}
                         checked={groupBy === 'player'}
                         onChange={(e, { checked }) => {
@@ -314,6 +322,10 @@ export const FTMHof = () => {
             ftm.ftms.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
             return ftm;
         });
+    }
+
+    function refreshFTM() {
+        setRefreshInc(refreshInc + 1);
     }
 
     function crewMatches(c: CrewMember, text: string) {
