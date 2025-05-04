@@ -14,7 +14,7 @@ import { getVariantTraits, gradeToColor, oneCrewCopy } from "../../../utils/crew
 import { getIconPath } from "../../../utils/assets";
 import { TraitStats } from "../model";
 import { TraitDive } from "./traitdive";
-import { renderDataScoreColumn } from "../../crewtables/views/base";
+import { renderMainDataScore } from "../../crewtables/views/base";
 import CONFIG from "../../CONFIG";
 
 export const TraitStatsTable = () => {
@@ -474,7 +474,7 @@ export const TraitStatsTable = () => {
                             />
                         <i>{item.highest_datascore.name}</i>
                         <div style={{maxHeight: '4em'}}>
-                            {renderDataScoreColumn(item.highest_datascore)}
+                            {renderMainDataScore(item.highest_datascore)}
                         </div>
                     </div>
                 </Table.Cell>

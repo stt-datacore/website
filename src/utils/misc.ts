@@ -29,8 +29,8 @@ export function translateSkills(string: string, separator: string = '/'): string
 	return output.join(separator);
 }
 
-export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9): string {
-	let stats = [] as string[];
+export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9, dThreshold = 20): string {
+	let stats = [] as { rank: number, stat: string, priority: number }[];
 
 	const rankType = rank => {
 		return rank.startsWith('V_') ? t('base.voyage') : rank.startsWith('G_') ? t('base.gauntlet') : t('global.base');
@@ -40,30 +40,56 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 		if (simple) {
 			if (rank.startsWith('B_')) {
 				if (crew.ranks[rank] && crew.ranks[rank] <= bThreshold) {
-					stats.push(`${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`);
+					stats.push({ stat: `${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`, rank: crew.ranks[rank], priority: 0 });
 				}
 			}
 		} else {
 			if (rank.startsWith('V_') || rank.startsWith('G_') || rank.startsWith('B_')) {
 				if (crew.ranks[rank] && crew.ranks[rank] <= gThreshold) {
-					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`);
+					stats.push({ stat: `${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`, rank: crew.ranks[rank], priority: 0 });
 				}
 			}
 			if (rank === 'voyTriplet') {
 				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= vThreshold)
-					stats.push(`${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
+					stats.push({stat: `${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`, rank: crew.ranks.voyTriplet?.rank ?? 0, priority: 1 });
 			}
 		}
 	}
 
+	Object.keys(crew.ranks.scores).forEach((score) => {
+		if (score.endsWith("_rank")) return;
+		const rankKey = `${score}_rank`;
+		if (crew.ranks[rankKey] && typeof crew.ranks[rankKey] === 'number' && crew.ranks[rankKey] <= dThreshold) {
+			if (score === 'ship') {
+				if (crew.ranks.scores.ship.kind === 'offense') {
+					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.o')})`, rank: crew.ranks[rankKey], priority: 1 });
+				}
+				else {
+					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.d')})`, rank: crew.ranks[rankKey], priority: 1 });
+				}
+			}
+			else {
+				stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
+			}
+		}
+	});
+
+	const sortStats = () => {
+		stats.sort((a, b) => {
+			return a.rank - b.rank || a.priority - b.priority || a.stat.localeCompare(b.stat);
+		});
+	};
+
 	if (simple) {
-		stats.push(`${t('base.voyages')} #${crew.ranks.voyRank}`);
-		return stats.join(' | ');
+		stats.push({ stat: `${t('base.voyages')} #${crew.ranks.voyRank}`, rank: crew.ranks.voyRank, priority: 0 });
+		sortStats();
+		return stats.map(s => s.stat).join(' | ');
 	} else {
 		if (stats.length === 0) {
 			return showMore ? t('cool_stats.show_detailed_ellipses') : '';
 		} else {
-			return stats.join(', ') + (showMore ? `, ${t('cool_stats.more_stats_ellipses')}` : '');
+			sortStats();
+			return stats.map(s => s.stat).join(', ') + (showMore ? `, ${t('cool_stats.more_stats_ellipses')}` : '');
 		}
 	}
 }

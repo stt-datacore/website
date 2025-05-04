@@ -6,17 +6,18 @@ import CONFIG from '../../../components/CONFIG';
 import { IRosterCrew, RosterType } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import CABExplanation from '../../explanations/cabexplanation';
-import { gradeToColor, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
+import { gradeToColor, numberToGrade, printPortalStatus, qbitsToSlots, qbProgressToNext, skillSum, skillToShort } from '../../../utils/crewutils';
 import { TinyStore } from '../../../utils/tiny';
 import VoyageExplanation from '../../explanations/voyexplanation';
 import { PlayerCrew } from '../../../model/player';
-import { ComputedSkill, CrewMember } from '../../../model/crew';
+import { ComputedSkill, CrewMember, Ranks, RankScoring } from '../../../model/crew';
 import { GlobalContext } from '../../../context/globalcontext';
 import { TranslateMethod } from '../../../model/player';
 import { appelate } from '../../../utils/misc';
 import CrewStat from '../../item_presenters/crewstat';
 import { printFancyPortal } from '../../base/utils';
 import { OfferCrew } from '../../../model/offers';
+import { formatShipScore } from '../../ship/utils';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean) => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -191,7 +192,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
 			</Table.Cell> */}
 			<Table.Cell textAlign='center'>
-				{renderDataScoreColumn(crew, absRank)}
+				{renderMainDataScore(crew, absRank)}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{renderCabColumn(crew)}
@@ -327,7 +328,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	}
 };
 
-export function renderDataScoreColumn(crew: CrewMember, absRank?: boolean) {
+export function renderMainDataScore(crew: CrewMember, absRank?: boolean) {
 	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
 	const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
@@ -347,6 +348,52 @@ export function renderDataScoreColumn(crew: CrewMember, absRank?: boolean) {
 				<small style={{color: dcGradeColor}}>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					{crew.ranks.scores?.overall_grade ? crew.ranks.scores?.overall_grade : "?" }
+				</small>
+		</React.Fragment>
+	)
+}
+
+export function renderAnyDataScore(crew: CrewMember, key: keyof (RankScoring & Ranks), t: TranslateMethod, with_rarity = false) {
+
+	if (key === 'ship' || key === 'ship_rank') {
+		return formatShipScore(crew.ranks.scores.ship.kind, crew.ranks.scores.ship.overall, t)
+	}
+
+	const { score, rank } = (() => {
+		let score = crew.ranks.scores[key] || crew.ranks[key];
+		let rank_key = `${key}_rank`;
+		if (key === 'voyage') rank_key = 'voyRank';
+		else if (key === 'gauntlet') rank_key = 'gauntletRank';
+		else if (key === 'shuttle') rank_key = 'shuttleRank';
+		if (rank_key in crew.ranks.scores) {
+			return { score, rank: crew.ranks.scores[rank_key] };
+		}
+		else if (rank_key in crew.ranks) {
+			return { score, rank: crew.ranks[rank_key] };
+		}
+		return { score: null, rank: null };
+	})();
+
+	const rarityLabels = CONFIG.RARITIES.map(m => m.name);
+	const datacoreColor = rank ? gradeToColor(score / 100) ?? undefined : undefined;
+	const dcGradeColor = score ? gradeToColor(score / 100) ?? undefined : undefined;
+
+	return (
+		<React.Fragment>
+			<b style={{color: datacoreColor}}>{score}</b><br />
+				<small>
+					{with_rarity &&
+					<>
+						<span style={{color: CONFIG.RARITIES[crew.max_rarity].color}}>
+							{rarityLabels[crew.max_rarity]}
+						</span>
+						<br />
+					</>}
+					{!!rank ? "#" + rank : "?" }
+				</small>
+				<small style={{color: dcGradeColor}}>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					{score ? numberToGrade(score / 100) : "?" }
 				</small>
 		</React.Fragment>
 	)

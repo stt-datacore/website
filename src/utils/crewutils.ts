@@ -1139,7 +1139,7 @@ export function numberToGrade(value: number, noneText?: string) {
 
 
 export function gradeToColor(grade: string | number, dryzero?: boolean): string | undefined {
-	if (!grade) return undefined;
+	if (!grade && dryzero) return undefined;
 	if (gradeColorsDisabled || (!grade && dryzero)) return undefined;
 
 	if (typeof grade === 'number' && grade < 1 && grade >= 0) {

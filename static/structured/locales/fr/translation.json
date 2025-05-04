@@ -1652,6 +1652,7 @@
         "datacore_grade": "Catégorie DataCore",
         "datacore_rating": "Cote DataCore",
         "datascore": "DataScore",
+        "datascore_ranks": "Classements DataScore",
         "fbb_rank": "Boss",
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",

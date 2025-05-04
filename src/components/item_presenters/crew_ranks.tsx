@@ -9,6 +9,7 @@ import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import { gradeToColor, numberToGrade, prettyObtained, printPortalStatus } from '../../utils/crewutils';
 import { getCoolStats, translateSkills } from '../../utils/misc';
+import { SHIP_DEFENSE_COLOR, SHIP_OFFENSE_COLOR } from '../ship/utils';
 
 type CrewRankHighlightsProps = {
 	crew: CrewMember;
@@ -179,6 +180,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		let v = [] as JSX.Element[];
 		let g = [] as JSX.Element[];
 		let b = [] as JSX.Element[];
+		let o = [] as JSX.Element[];
 
 		const skillName = (shortName: string) => {
 			let ns = CONFIG?.SKILLS_SHORT_ENGLISH?.find(c => c.short === shortName)?.name;
@@ -195,6 +197,21 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				c.ranks[rank].name == crew.ranks[rank].name &&
 				crew.ranks[rank].rank > c.ranks[rank].rank).length + 1
 			: crew.ranks[rank].rank;
+
+		const formatLabel = (label: string) => {
+			let output: string | JSX.Element = '';
+			if (label.length > 15) {
+				output = label.split(' ').reduce((p, n) => p ? <>{p} {n}</> : <>{n}</>, <></>)
+			}
+			else {
+				output = label;
+			}
+			return (
+				<div style={{textWrap: 'wrap', width: '12em', textAlign: 'center', margin: 'auto'}}>
+					{output}
+				</div>
+			);
+		}
 
 		// Need to filter by skills first before sorting by voyage triplet
 		const tripletFilter = crew.ranks.voyTriplet
@@ -225,6 +242,45 @@ export const CrewRanks = (props: CrewRanksProps) => {
 						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.slice(2))?.name ?? "", 'descending')}</Statistic.Value>
 					</Statistic>
 				);
+			} else if (rank.endsWith("_rank")) {
+				if (rank === 'ship_rank') {
+					let label = formatLabel(t(`rank_names.scores.${rank.replace('_rank', '')}`));
+					let color = gradeToColor((crew.ranks.scores.ship.overall / 100), false);
+					let adv = crew.ranks.scores.ship.kind.slice(0, 1);
+					let advjsx = <span style={{color: adv === 'o' ? SHIP_OFFENSE_COLOR : SHIP_DEFENSE_COLOR}}>{t(`rank_names.advantage.${adv}`)}</span>
+					o.push(
+						<Statistic key={rank}>
+							<Statistic.Label>{label}</Statistic.Label>
+							<Statistic.Value style={{ color }}>{advjsx}&mdash;{crew.ranks[rank]}</Statistic.Value>
+						</Statistic>
+					)
+				}
+				else {
+					let label = formatLabel(t(`rank_names.scores.${rank.replace('_rank', '')}`));
+					let color = gradeToColor((crew.ranks.scores[rank.replace("_rank", "")] ?? 0) / 100, false);
+					o.push(
+						<Statistic key={rank}>
+							<Statistic.Label>{label}</Statistic.Label>
+							<Statistic.Value style={{ color }}>{crew.ranks[rank]}</Statistic.Value>
+						</Statistic>
+					)
+				}
+			}
+		}
+
+		for (let rank in crew.ranks.scores) {
+			if (rank.endsWith('_rank')) {
+				let label = formatLabel(t(`rank_names.scores.${rank.replace('_rank', '')}`));
+				let color = gradeToColor((crew.ranks.scores[rank.replace("_rank", "")] ?? 0) / 100, false);
+				if (rank.includes('ship')) {
+					color = gradeToColor(crew.ranks.scores.ship.overall / 100, false);
+				}
+				o.push(
+					<Statistic key={rank}>
+						<Statistic.Label>{label}</Statistic.Label>
+						<Statistic.Value style={{ color }}>{crew.ranks.scores[rank]}</Statistic.Value>
+					</Statistic>
+				)
 			}
 		}
 
@@ -257,6 +313,12 @@ export const CrewRanks = (props: CrewRanksProps) => {
 					<Header as="h5">{t('cool_stats.gauntlet_pair_ranks')}</Header>
 					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{g}
+					</Statistic.Group>
+				</Segment>
+				<Segment>
+					<Header as="h5">{t('rank_names.datascore_ranks')}</Header>
+					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
+						{o}
 					</Statistic.Group>
 				</Segment>
 			</React.Fragment>

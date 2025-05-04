@@ -17,7 +17,7 @@ import { CombosModal } from './combos';
 import CONFIG from '../CONFIG';
 import { PlayerCrew } from '../../model/player';
 import { RetrievalContext } from './context';
-import { renderCabColumn, renderDataScoreColumn } from '../crewtables/views/base';
+import { renderAnyDataScore, renderCabColumn, renderMainDataScore } from '../crewtables/views/base';
 
 type RetrievalCrewTableProps = {
  	filteredCrew: IRosterCrew[];
@@ -31,7 +31,7 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const { buffConfig } = globalContext.player;
 	const { filteredCrew } = props;
 
-	const topQuipmentScore = globalContext.core.crew.reduce((prev, curr) => Math.max(curr.quipment_score ?? 0, prev), 0);
+	const topQuipmentScore = globalContext.core.crew.reduce((prev, curr) => Math.max(curr.ranks.scores.quipment ?? 0, prev), 0);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: ['name', 'date_added'] },
@@ -40,7 +40,7 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 		{ width: 1, column: 'cab_ov', title: t('base.cab_power'), reverse: true, tiebreakers: ['cab_ov_rank'] },
 		{ width: 1, column: 'ranks.voyRank', title: t('base.voyage') },
 		{ width: 1, column: 'ranks.gauntletRank', title: t('base.gauntlet') },
-		{ width: 1, column: 'quipment_score', title: t('base.quipment'), reverse: true },
+		{ width: 1, column: 'ranks.scores.quipment', title: t('base.quipment'), reverse: true },
 		{ width: 1, column: 'progressable_collections.length', title: t('base.collections'), reverse: true },
 		{
 			width: 1,
@@ -136,7 +136,7 @@ const CrewRow = (props: CrewRowProps) => {
 		return (
 			<React.Fragment>
 				<Table.Cell textAlign='center'>
-					{renderDataScoreColumn(crew)}
+					{renderMainDataScore(crew)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					{renderCabColumn(crew)}
@@ -163,18 +163,7 @@ const CrewRow = (props: CrewRowProps) => {
 	}
 
 	function renderQuipment(crew: IRosterCrew): JSX.Element {
-		const quipment_score = crew.quipment_score ?? 0;
-		const q_grade = quipment_score / topQuipmentScore;
-		return (
-			<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: "0.5em"}}>
-				<div style={{color: gradeToColor(q_grade, true) ?? undefined }}>
-					{numberToGrade(q_grade, "None")}
-				</div>
-				<sub>
-					{quipment_score.toLocaleString() ?? "0"}
-				</sub>
-			</div>
-		);
+		return renderAnyDataScore(crew, 'quipment', t);
 	}
 
 	function renderRetrieval(crew: IRosterCrew): JSX.Element {

@@ -1649,6 +1649,7 @@
         "cab_rating": "Clasificación de CAB",
         "datacore_grade": "Grado DataCore",
         "datacore_rating": "Clasificación de DataCore",
+        "datascore_ranks": "Clasificaciones de DataScore",
         "datascore": "DataScore",
         "fbb_rank": "Jefe",
         "gauntlet_rank": "Rango de Reto",
