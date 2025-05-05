@@ -43,6 +43,53 @@ export const FTMHof = () => {
     const [error, setError] = React.useState('');
     const [groupBy, setGroupBy] = useStateWithStorage<string>(`ftm_hof/group_by`, '', { rememberForever: true });
 
+    const [initSearch, setInitSearch] = React.useState<string | undefined>(undefined);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && !!data?.length && !!document.location.search) {
+            let parms = new URLSearchParams(document.location.search);
+            let player = parms.get('player');
+            let crew = parms.get('crew');
+            if (player) {
+                if (Number.isNaN(Number(player))) {
+                    player = decodeURIComponent(player);
+                    setInitSearch(player);
+                    setGroupBy('');
+                }
+                else {
+                    let info = data.find(f => f.dbid == player);
+                    if (info?.player_name) {
+                        setInitSearch(info.player_name);
+                        setGroupBy('');
+                    }
+                    else {
+                        player = null;
+                    }
+                }
+            }
+            else if (crew) {
+                if (Number.isNaN(Number(crew))) {
+                    crew = decodeURIComponent(crew);
+                    setInitSearch(crew);
+                    setGroupBy('');
+                }
+                else {
+                    let info = data.find(f => f.crew_archetype_id == Number(crew));
+                    if (info?.player_name) {
+                        setInitSearch(info.player_name);
+                        setGroupBy('');
+                    }
+                    else {
+                        crew = null;
+                    }
+                }
+            }
+            if (player || crew) {
+                window.history.replaceState({}, document.title, "/ftmhof");
+            }
+        }
+    }, [data]);
+
     React.useEffect(() => {
         let ach_res: AchieverDetails[] | null = null;
         fetch(`${process.env.GATSBY_DATACORE_URL}api/cap-achievers`)
@@ -178,6 +225,9 @@ export const FTMHof = () => {
             config={tableConfig}
             filterRow={filterRow}
             renderTableRow={renderTableRow}
+            initOptions={{
+                search: initSearch
+            }}
             extraSearchContent={
                 <div style={{ ...flexRow, flexGrow: 1, justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: '0.5em' }}>
                     <Button icon='refresh' onClick={refreshFTM} />
