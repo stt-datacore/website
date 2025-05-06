@@ -1,5 +1,5 @@
 import { ObjectiveArchetype, PlayerData } from "../../../model/player";
-import { FuseHelperMiniTool, ImmortalHelperMiniTool } from "./mortal_helpers";
+import { FuseHelperMiniTool, ImmortalHelperMiniTool, LevelHelperMiniTool } from "./mortal_helpers";
 import { SlotHelperMiniTool } from "./slots_helper";
 
 
@@ -27,6 +27,12 @@ export const RegisteredTools: RegisteredOEMiniTool[] = [
         key: 'immortal_helper_mini_tool',
         component: ImmortalHelperMiniTool,
         archetypes: [/.*immortalize_crew_objective.*/],
+        player_required: true
+    },
+    {
+        key: 'level_helper_mini_tool',
+        component: LevelHelperMiniTool,
+        archetypes: [/.*level_crew_objective.*/],
         player_required: true
     }
 ]

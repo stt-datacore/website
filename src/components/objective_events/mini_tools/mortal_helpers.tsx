@@ -15,17 +15,22 @@ import { OptionsPanelFlexRow } from "../../stats/utils"
 interface FuseHelperProps {
     data: ObjectiveArchetype,
     allow_ff?: boolean;
+    no_max?: boolean;
 }
 
 export const ImmortalHelperMiniTool = (props: { data: ObjectiveArchetype }) => {
     return <FuseHelperMiniTool allow_ff={true} data={props.data} />
 }
 
+export const LevelHelperMiniTool = (props: { data: ObjectiveArchetype }) => {
+    return <FuseHelperMiniTool allow_ff={true} no_max={true} data={props.data} />
+}
+
 export const FuseHelperMiniTool = (props: FuseHelperProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { ephemeral, playerData } = globalContext.player;
-    const { data, allow_ff } = props;
+    const { data, allow_ff, no_max } = props;
     const [filters, setFilters] = useStateWithStorage(`oe_mini/fuse_helper/filters`, [] as number[], { rememberForever: true });
     const [rarities, setRarities] = useStateWithStorage(`oe_mini/fuse_helper/rarities`, [] as number[], { rememberForever: true });
 
@@ -40,6 +45,14 @@ export const FuseHelperMiniTool = (props: FuseHelperProps) => {
                 return a.max_rarity - b.max_rarity || a.rarity - b.rarity || acount - bcount || a.level - b.level || a.ranks.scores.overall - b.ranks.scores.overall;
             }
         },
+        {
+            width: 1, column: 'level', title: t('base.level'),
+            customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+                let acount = (playerData?.player?.character?.crew.filter(f => f.symbol === a.symbol))?.length ?? 0;
+                let bcount = (playerData?.player?.character?.crew.filter(f => f.symbol === a.symbol))?.length ?? 0;
+                return a.level - b.level || a.max_rarity - b.max_rarity || a.rarity - b.rarity || acount - bcount || a.ranks.scores.overall - b.ranks.scores.overall;
+            }
+        },
         { width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'), reverse: true },
     ] as ITableConfigRow[];
 
@@ -48,6 +61,7 @@ export const FuseHelperMiniTool = (props: FuseHelperProps) => {
         return playerData?.player?.character?.crew.filter(c => {
                 if (c.immortal) return false;
                 if (c.rarity === c.max_rarity && !allow_ff) return false;
+                if (no_max && c.level === 100) return false;
                 if (filters.length) {
                     let v = (filters.includes(0) && c.ranks.voyRank <= 50);
                     let g = (filters.includes(1) && c.ranks.gauntletRank <= 50);
@@ -160,6 +174,9 @@ export const FuseHelperMiniTool = (props: FuseHelperProps) => {
                 </Table.Cell>
                 <Table.Cell>
                     <Rating icon='star' maxRating={row.max_rarity} rating={row.rarity} />
+                </Table.Cell>
+                <Table.Cell>
+                    {row.level}
                 </Table.Cell>
                 <Table.Cell>
                     {renderMainDataScore(row, true)}
