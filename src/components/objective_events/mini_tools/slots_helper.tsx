@@ -4,13 +4,14 @@ import { GlobalContext } from "../../../context/globalcontext"
 import { Filter } from "../../../model/game-elements"
 import { ObjectiveArchetype, PlayerCrew } from "../../../model/player"
 import { crewMatchesSearchFilter } from "../../../utils/crewsearch"
-import { qbitsToSlots, qbProgressToNext } from "../../../utils/crewutils"
+import { qbitsToSlots, qbProgressToNext, skillSum } from "../../../utils/crewutils"
 import { RarityFilter } from "../../crewtables/commonoptions"
 import { renderMainDataScore } from "../../crewtables/views/base"
 import { AvatarView } from "../../item_presenters/avatarview"
 import { ITableConfigRow, SearchableTable } from "../../searchabletable"
 import { OptionsPanelFlexRow } from "../../stats/utils"
 import { useStateWithStorage } from "../../../utils/storage"
+import { SkillPicker } from "../../base/skillpicker"
 
 interface SlotHelperProps {
     data: ObjectiveArchetype
@@ -23,8 +24,15 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
     const { data } = props;
     const [filters, setFilters] = useStateWithStorage(`oe_mini/slot_helper/filters`, [] as number[], { rememberForever: true });
     const [rarities, setRarities] = useStateWithStorage(`oe_mini/slot_helper/rarities`, [] as number[], { rememberForever: true });
+    const [skills, setSkills] = useStateWithStorage(`oe_mini/slot_helper/skills`, undefined as string[] | undefined, { rememberForever: true });
 
     const tableConfig = [
+        {
+            width: 1, column: 'skill_order', title: t('base.skills'), reverse: true,
+            customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+                return a.skill_order[0].localeCompare(b.skill_order[0]) || Math.ceil(skillSum(a[a.skill_order[0]])) - Math.ceil(skillSum(b[b.skill_order[0]]));
+            }
+        },
         { width: 3, column: 'name', title: t('base.crew') },
         { width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'), reverse: true },
         {
@@ -48,6 +56,9 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                 let b = (filters.includes(2) && c.ranks.shuttleRank <= 50);
                 if (!(v || g || b)) return false;
             }
+            if (skills?.length) {
+                if (!skills.includes(c.skill_order[0])) return false;
+            }
             if (ephemeral && ephemeral.activeCrew.some(ac => ac.id === c.id)) return false;
             if (rarities.length && !rarities.includes(c.max_rarity)) return false;
             return true;
@@ -57,7 +68,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                 let [bprog, bgoal] = qbProgressToNext(b.q_bits);
                 return aprog - bprog || agoal - bgoal || b.ranks.scores.overall - a.ranks.scores.overall;
             });
-    }, [playerData, ephemeral, data, filters, rarities]);
+    }, [playerData, ephemeral, data, filters, rarities, skills]);
 
 
     if (!workData) {
@@ -84,8 +95,9 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                     renderTableRow={renderTableRow}
                 />
             </div>
-            <div style={{ ...flexRow, margin: 0, padding: 0, justifyContent: 'center' }}>
-                <RarityFilter selection={false} rarityFilter={rarities} setRarityFilter={setRarities} />
+            <div style={{ ...flexRow, margin: 0, padding: 0, justifyContent: 'center', backgroundColor: '#3A3F44', zIndex: '100' }}>
+                <RarityFilter selection={false} multiple={false} rarityFilter={rarities} setRarityFilter={setRarities} />
+                <SkillPicker multiple={false} search={false} selection={false} value={skills} setValue={setSkills} />
                 <Button
                     active={filters.includes(0)}
                     style={{ width: '32px', padding: 4 }}
@@ -124,9 +136,18 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
         return (
             <Table.Row key={`${row.id}_${row.symbol}_slots_mini_helper`}>
                 <Table.Cell>
+                    <div style={{...flexRow, gap: '0.5em'}}>
+                    <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${row.skill_order[0]}.png`} style={{width: '18px'}} />
+                    <span style={{fontSize: '0.8em'}}>
+                        {Math.ceil(skillSum(row[row.skill_order[0]]))}
+                    </span>
+                    </div>
+                </Table.Cell>
+                <Table.Cell>
                     <div style={{ ...flexRow, gap: '1em', alignItems: 'center' }}>
                         <AvatarView
                             mode='crew'
+                            targetGroup="event_info"
                             item={row}
                             size={32}
                         />
