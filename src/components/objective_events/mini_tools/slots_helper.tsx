@@ -1,27 +1,28 @@
 import React from "react"
-import { ObjectiveArchetype, PlayerCrew } from "../../../model/player"
-import { GlobalContext } from "../../../context/globalcontext"
-import { ITableConfigRow, SearchableTable } from "../../searchabletable"
-import { Filter } from "../../../model/game-elements"
-import { crewMatchesSearchFilter } from "../../../utils/crewsearch"
 import { Button, Table } from "semantic-ui-react"
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils"
-import { AvatarView } from "../../item_presenters/avatarview"
-import { renderMainDataScore } from "../../crewtables/views/base"
+import { GlobalContext } from "../../../context/globalcontext"
+import { Filter } from "../../../model/game-elements"
+import { ObjectiveArchetype, PlayerCrew } from "../../../model/player"
+import { crewMatchesSearchFilter } from "../../../utils/crewsearch"
 import { qbitsToSlots, qbProgressToNext } from "../../../utils/crewutils"
-
+import { RarityFilter } from "../../crewtables/commonoptions"
+import { renderMainDataScore } from "../../crewtables/views/base"
+import { AvatarView } from "../../item_presenters/avatarview"
+import { ITableConfigRow, SearchableTable } from "../../searchabletable"
+import { OptionsPanelFlexRow } from "../../stats/utils"
+import { useStateWithStorage } from "../../../utils/storage"
 
 interface SlotHelperProps {
     data: ObjectiveArchetype
 }
-
 
 export const SlotHelperMiniTool = (props: SlotHelperProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { ephemeral, playerData } = globalContext.player;
     const { data } = props;
-    const [filters, setFilters] = React.useState([] as number[]);
+    const [filters, setFilters] = useStateWithStorage(`oe_mini/slot_helper/filters`, [] as number[], { rememberForever: true });
+    const [rarities, setRarities] = useStateWithStorage(`oe_mini/slot_helper/rarities`, [] as number[], { rememberForever: true });
 
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew') },
@@ -46,14 +47,16 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                 if (filters.includes(1) && c.ranks.gauntletRank > 50) return false;
                 if (filters.includes(2) && c.ranks.shuttleRank > 50) return false;
             }
+            if (ephemeral && ephemeral.activeCrew.some(ac => ac.id === c.id)) return false;
+            if (rarities.length && !rarities.includes(c.max_rarity)) return false;
             return true;
         })
-        .sort((a, b) => {
-            let [aprog, agoal] = qbProgressToNext(a.q_bits);
-            let [bprog, bgoal] = qbProgressToNext(b.q_bits);
-            return agoal - bgoal || aprog - bprog || b.ranks.scores.overall - a.ranks.scores.overall;
-        });
-    }, [playerData, ephemeral, data, filters]);
+            .sort((a, b) => {
+                let [aprog, agoal] = qbProgressToNext(a.q_bits);
+                let [bprog, bgoal] = qbProgressToNext(b.q_bits);
+                return agoal - bgoal || aprog - bprog || b.ranks.scores.overall - a.ranks.scores.overall;
+            });
+    }, [playerData, ephemeral, data, filters, rarities]);
 
 
     if (!workData?.length) {
@@ -61,33 +64,35 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
     }
 
     const flexRow = OptionsPanelFlexRow;
-    const flexCol = OptionsPanelFlexColumn;
 
     return (
-        <div style={{marginTop: '-8px'}}>
-            <SearchableTable
-                id="slot_helper_mini_table"
-                pagingOptions={[{ key: '0', value: 4, text: '4' }]}
-                initOptions={{
-                    rows: 4,
-                    column: 'q_bits',
-                    direction: 'ascending'
-                }}
-                noSearch
-                data={workData}
-                config={tableConfig}
-                filterRow={filterRow}
-                renderTableRow={renderTableRow}
+        <div style={{ marginTop: '-8px' }}>
+            <div style={{ height: 'calc(300px + 1.5em)' }}>
+                <SearchableTable
+                    id="slot_helper_mini_table"
+                    pagingOptions={[{ key: '0', value: 4, text: '4' }]}
+                    initOptions={{
+                        rows: 4,
+                        column: 'q_bits',
+                        direction: 'ascending'
+                    }}
+                    noSearch
+                    data={workData}
+                    config={tableConfig}
+                    filterRow={filterRow}
+                    renderTableRow={renderTableRow}
                 />
-            <div style={{...flexRow, margin: 0, padding: 0, justifyContent: 'center'}}>
-                <Button active={filters.includes(0)} style={{width: '32px', padding: 4}} onClick={() => toggleFilter(0)}>
-                    <img src={`/media/voyage.png`} style={{height: '24px', alignSelf: 'flex-end'}} />
+            </div>
+            <div style={{ ...flexRow, margin: 0, padding: 0, justifyContent: 'center' }}>
+                <RarityFilter selection={false} rarityFilter={rarities} setRarityFilter={setRarities} />
+                <Button active={filters.includes(0)} style={{ width: '32px', padding: 4 }} onClick={() => toggleFilter(0)}>
+                    <img src={`/media/voyage.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
-                <Button active={filters.includes(1)} style={{width: '32px', padding: 4}} onClick={() => toggleFilter(1)}>
-                    <img src={`/media/gauntlet.png`} style={{height: '24px', alignSelf: 'flex-end'}} />
+                <Button active={filters.includes(1)} style={{ width: '32px', padding: 4 }} onClick={() => toggleFilter(1)}>
+                    <img src={`/media/gauntlet.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
-                <Button active={filters.includes(2)} style={{width: '32px', padding: 4}} onClick={() => toggleFilter(2)}>
-                    <img src={`/media/faction.png`} style={{height: '24px', alignSelf: 'flex-end'}} />
+                <Button active={filters.includes(2)} style={{ width: '32px', padding: 4 }} onClick={() => toggleFilter(2)}>
+                    <img src={`/media/faction.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
             </div>
 
@@ -103,18 +108,18 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
         return (
             <Table.Row key={`${row.id}_${row.symbol}_slots_mini_helper`}>
                 <Table.Cell>
-                    <div style={{...flexRow, gap: '1em', alignItems: 'center'}}>
+                    <div style={{ ...flexRow, gap: '1em', alignItems: 'center' }}>
                         <AvatarView
                             mode='crew'
                             item={row}
                             size={32}
-                            />
-                        <div style={{flexGrow: 1}}>
+                        />
+                        <div style={{ flexGrow: 1 }}>
                             {row.name}
                         </div>
-                        {row.ranks.voyRank <= 50 && <img src={`/media/voyage.png`} style={{height: '24px', alignSelf: 'flex-end'}} />}
-                        {row.ranks.gauntletRank <= 50 && <img src={`/media/gauntlet.png`} style={{height: '24px', alignSelf: 'flex-end'}} />}
-                        {row.ranks.shuttleRank <= 50 && <img src={`/media/faction.png`} style={{height: '24px', alignSelf: 'flex-end'}} />}
+                        {row.ranks.voyRank <= 50 && <img src={`/media/voyage.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />}
+                        {row.ranks.gauntletRank <= 50 && <img src={`/media/gauntlet.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />}
+                        {row.ranks.shuttleRank <= 50 && <img src={`/media/faction.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />}
                     </div>
                 </Table.Cell>
                 <Table.Cell>
@@ -132,13 +137,13 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
         return (
             <React.Fragment>
                 {crew.immortal === -1 &&
-                <div style={{fontSize:"0.8em", minWidth: '4em'}}>
-                    ({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
-                </div>}
+                    <div style={{ fontSize: "0.8em", minWidth: '4em' }}>
+                        ({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
+                    </div>}
                 {crew.immortal === -1 && qbslots < 4 &&
-                <div style={{fontSize:"0.8em", minWidth: '6em'}}>
-                    ({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })})
-                </div>}
+                    <div style={{ fontSize: "0.8em", minWidth: '6em' }}>
+                        ({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })})
+                    </div>}
             </React.Fragment>
         )
     }

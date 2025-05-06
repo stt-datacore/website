@@ -1,25 +1,24 @@
 import React from "react";
+import { Container, Header, Icon, Label, Menu, Modal, Popup, Segment, Tab } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
 import { ObjectiveEvent, OERefType } from "../../model/player";
-import { Container, Modal, Tab, Image, Header, Menu, Segment, Label, Icon, Popup } from "semantic-ui-react";
-import { OEInfo } from "./oeinfo";
-import { FactionAbbrMap, getArchetypeTitle, KnownStages, KSRegExp } from "./utils";
-import { CrewHoverStat } from "../hovering/crewhoverstat";
-import { ItemHoverStat } from "../hovering/itemhoverstat";
-import { ShipHoverStat } from "../hovering/shiphoverstat";
 import { getIconPath } from "../../utils/assets";
 import CONFIG from "../CONFIG";
-import factions from "../factions";
-import { GlobalContext } from "../../context/globalcontext";
+import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { ItemHoverStat } from "../hovering/itemhoverstat";
+import { ShipHoverStat } from "../hovering/shiphoverstat";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { RegisteredOEMiniTool, RegisteredTools } from "./mini_tools/registered_tools";
-
+import { RegisteredTools } from "./mini_tools/registered_tools";
+import { OEInfo } from "./oeinfo";
+import { FactionAbbrMap, getArchetypeTitle, KnownStages, KSRegExp } from "./utils";
+import { useStateWithStorage } from "../../utils/storage";
 
 export interface OEModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
     data?: ObjectiveEvent;
 }
-
 
 export const OEModal = (props: OEModalProps) => {
 
@@ -29,9 +28,11 @@ export const OEModal = (props: OEModalProps) => {
     const { isOpen, setIsOpen, data } = props;
     const { ephemeral } = globalContext.player;
     const [activePane, setActivePane] = React.useState(0);
-    const [toolActive, setToolActive] = React.useState(false);
+    const [toolActive, setToolActive] = useStateWithStorage(`oe_modal/tool_active`, true, { rememberForever: true });
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     const activeEventInfo = React.useMemo(() => {
         return parseOE(data);
@@ -90,7 +91,7 @@ export const OEModal = (props: OEModalProps) => {
         if (!activeEventInfo) return <></>;
         return (
             <Container style={{ padding: '1em' }}>
-                <div style={{ ...flexRow, marginBottom: 0 }}>
+                <div style={{ ...(isMobile ? flexCol : flexRow), marginBottom: 0 }}>
                     <Menu vertical tabular secondary pointing>
                         {panes.map((pane, idx) => (
                             <Menu.Item
@@ -111,7 +112,7 @@ export const OEModal = (props: OEModalProps) => {
                             </Menu.Item>
                         ))}
                     </Menu>
-                    <div className="ui segment" style={{ margin: 'auto', padding: (toolActive && Tool) ? '0.5em 1em' : undefined }}>
+                    <div className="ui segment" style={{ margin: 'auto', padding: (toolActive && Tool) ? '0.5em 1em 1em 1em' : undefined }}>
                         {(!toolActive || !Tool) && <img
                             style={{ height: '300px', width: '500px', margin: 'auto' }}
                             src={`${process.env.GATSBY_ASSETS_URL}${getIconPath(activeEventInfo.image, true)}`}
