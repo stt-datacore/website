@@ -21,6 +21,9 @@ import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
 import { TinyStore } from '../utils/tiny';
 import { printRequiredTraits } from '../components/items/utils';
 import { EquipmentTable } from '../components/items/equipment_table';
+import CrewStat from '../components/item_presenters/crewstat';
+import { skillSum } from '../utils/crewutils';
+import { ITableConfigRow } from '../components/searchabletable';
 
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
@@ -198,11 +201,15 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			if (crew) {
 				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 				if (this.state.item_data?.item?.kwipment) {
+					const wb = getItemBonuses(this.state.item_data.item);
+					let bonuses = Object.keys(wb.bonuses).filter(f => crew.skill_order.includes(f)).map(m => wb.bonuses[m]);
 					crew.data = t('items.post_immortalization_advancement');
+					crew.bonus = skillSum(bonuses);
 				}
 				else {
 					crew.data = crews[symbol].join(", ");
 				}
+
 			}
 			if (crew && !this.context.player.playerData) crew.rarity = crew.max_rarity;
 			return crew;
@@ -217,9 +224,26 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 
 	renderTableCells = (row: IRosterCrew): JSX.Element => {
-		return <Table.Cell>
-			{row.data}
-		</Table.Cell>
+		if (this.state.item_data?.item?.kwipment) {
+			const item = this.state.item_data?.item;
+			const wb = getItemBonuses(item);
+			let bonuses = Object.keys(wb.bonuses).filter(f => row.skill_order.includes(f)).map(m => wb.bonuses[m]);
+			return (<React.Fragment>
+				<Table.Cell>
+					{bonuses.map(skill =>
+						<CrewStat gridStyle={{gap:'0.5em'}} scale={0.75} data={skill} skill_name={skill.skill} />
+					)}
+				</Table.Cell>
+				<Table.Cell>
+					{row.data}
+				</Table.Cell>
+			</React.Fragment>)
+		}
+		else {
+			return (<Table.Cell>
+				{row.data}
+			</Table.Cell>)
+		}
 	}
 
 	render() {
@@ -227,10 +251,25 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		const { errorMessage, item_data } = this.state;
 		const { playerData } = this.context.player;
 		const { items } = this.context.core;
+		const isQp = !!this.state.item_data?.item?.kwipment;
 
 		const crewTableCells = [
 			{ width: 2, column: 'data', title: t('items.columns.item_demand_levels') }
-		]
+		] as ITableConfigRow[];
+
+		if (isQp) {
+			crewTableCells.unshift(
+				{
+					width: 2, column: 'bonus', title: t('global.bonus'),
+					customCompare: (a, b) => {
+						let r = a.bonus - b.bonus;
+						if (!r) r = a.max_rarity - b.max_rarity;
+						if (!r) r = a.name.localeCompare(b.name);
+						return r;
+					}
+				}
+			);
+		}
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
