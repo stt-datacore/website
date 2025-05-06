@@ -3,16 +3,16 @@ import { Container, Header, Icon, Label, Menu, Modal, Popup, Segment, Tab } from
 import { GlobalContext } from "../../context/globalcontext";
 import { ObjectiveEvent, OERefType } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
+import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ShipHoverStat } from "../hovering/shiphoverstat";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { RegisteredTools } from "./mini_tools/registered_tools";
+import { findRegisteredTool } from "./mini_tools/registered_tools";
 import { OEInfo } from "./oeinfo";
 import { FactionAbbrMap, getArchetypeTitle, KnownStages, KSRegExp } from "./utils";
-import { useStateWithStorage } from "../../utils/storage";
 
 export interface OEModalProps {
     isOpen: boolean;
@@ -26,7 +26,7 @@ export const OEModal = (props: OEModalProps) => {
     const { factions } = globalContext.core;
     const { t } = globalContext.localized;
     const { isOpen, setIsOpen, data } = props;
-    const { ephemeral } = globalContext.player;
+    const { ephemeral, playerData } = globalContext.player;
     const [activePane, setActivePane] = React.useState(0);
     const [toolActive, setToolActive] = useStateWithStorage(`oe_modal/tool_active`, true, { rememberForever: true });
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -53,9 +53,8 @@ export const OEModal = (props: OEModalProps) => {
     const Tool = React.useMemo(() => {
         if (activePane < 0 || activePane >= panes.length) return undefined;
         const symbol = panes[activePane].data.symbol;
-        const registered = RegisteredTools.find(f => f.archetypes.includes(symbol));
+        const registered = findRegisteredTool(symbol, playerData);
         if (registered) {
-            if (registered.player_required && !globalContext.player.playerData) return undefined;
             return registered.component;
         }
         return undefined;
@@ -100,11 +99,11 @@ export const OEModal = (props: OEModalProps) => {
                                 <div style={{ ...flexRow, gap: '1em' }}>
                                     {!!pane.data.objective && pane.data.objective.current_value >= pane.data.objective.target_value &&
                                         <Icon name='check' color='green' /> ||
-                                        (!!RegisteredTools.find(f => f.archetypes.includes(pane.data.symbol)) &&
+                                        (!!findRegisteredTool(pane.data.symbol, playerData) &&
                                             <Popup
                                                 content={t('objective_events.mini_helper_available')}
                                                 trigger={
-                                                    <Icon name='arrows alternate horizontal' color='blue' />
+                                                    <Icon name='table' color='blue' />
                                                 } />)
                                     }
                                     {pane.menuTitle}
