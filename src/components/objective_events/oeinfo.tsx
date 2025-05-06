@@ -97,7 +97,8 @@ export const OEInfo = (props: OEInfoProps) => {
                                             </div>
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {mi.target_value}
+                                            {claimed < mi.target_value && <>{claimed} / {mi.target_value}</>}
+                                            {claimed >= mi.target_value && <>{mi.target_value}</>}
                                         </Table.Cell>
                                         <Table.Cell>
                                             <div style={{ ...flexRow, flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em' }}>

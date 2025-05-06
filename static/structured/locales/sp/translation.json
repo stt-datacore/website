@@ -1443,7 +1443,9 @@
         "mission_map": "Mapa de la misión"
     },
     "objective_events": {
+        "mini_helper_available": "¡Mini-ayudante disponible!",
         "stages": "Etapas",
+        "toggle_mini_helper": "Activar/desactivar mini-ayuda",
         "x_is_locked_by_y": "{{x}} está bloqueado por {{y}}"
     },
     "obtained": {
@@ -1649,8 +1651,8 @@
         "cab_rating": "Clasificación de CAB",
         "datacore_grade": "Grado DataCore",
         "datacore_rating": "Clasificación de DataCore",
-        "datascore_ranks": "Clasificaciones de DataScore",
         "datascore": "DataScore",
+        "datascore_ranks": "Clasificaciones de DataScore",
         "fbb_rank": "Jefe",
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",

@@ -1433,7 +1433,9 @@
         "mission_map": "Mission Map"
     },
     "objective_events": {
+        "mini_helper_available": "Mini-helper available!",
         "stages": "Stages",
+        "toggle_mini_helper": "Toggle Mini-helper",
         "x_is_locked_by_y": "{{x}} is locked by {{y}}"
     },
     "obtained": {

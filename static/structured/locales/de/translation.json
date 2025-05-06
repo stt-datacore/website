@@ -1433,7 +1433,9 @@
         "mission_map": "Missionskarte"
     },
     "objective_events": {
+        "mini_helper_available": "Mini-Helfer vorhanden!",
         "stages": "Etappen",
+        "toggle_mini_helper": "Mini-Helfer umschalten",
         "x_is_locked_by_y": "{{x}} ist von {{y}} gesperrt"
     },
     "obtained": {

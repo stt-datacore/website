@@ -1445,7 +1445,9 @@
         "mission_map": "Carte de mission"
     },
     "objective_events": {
+        "mini_helper_available": "Mini-assistant disponible !",
         "stages": "Étapes",
+        "toggle_mini_helper": "Basculer le mini-assistant",
         "x_is_locked_by_y": "{{x}} est bloqué par {{y}}"
     },
     "obtained": {
