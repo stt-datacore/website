@@ -32,7 +32,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             customCompare: (a: PlayerCrew, b: PlayerCrew) => {
                 let [aprog, agoal] = qbProgressToNext(a.q_bits);
                 let [bprog, bgoal] = qbProgressToNext(b.q_bits);
-                return agoal - bgoal || aprog - bprog || b.ranks.scores.overall - a.ranks.scores.overall;
+                return aprog - bprog || agoal - bgoal || b.ranks.scores.overall - a.ranks.scores.overall;
             }
         },
     ] as ITableConfigRow[];
@@ -54,7 +54,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             .sort((a, b) => {
                 let [aprog, agoal] = qbProgressToNext(a.q_bits);
                 let [bprog, bgoal] = qbProgressToNext(b.q_bits);
-                return agoal - bgoal || aprog - bprog || b.ranks.scores.overall - a.ranks.scores.overall;
+                return aprog - bprog || agoal - bgoal || b.ranks.scores.overall - a.ranks.scores.overall;
             });
     }, [playerData, ephemeral, data, filters, rarities]);
 
