@@ -24,6 +24,7 @@ import { EquipmentTable } from '../components/items/equipment_table';
 import CrewStat from '../components/item_presenters/crewstat';
 import { skillSum } from '../utils/crewutils';
 import { ITableConfigRow } from '../components/searchabletable';
+import { renderAnyDataScore, renderMainDataScore } from '../components/crewtables/views/base';
 
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
@@ -230,6 +231,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			let bonuses = Object.keys(wb.bonuses).filter(f => row.skill_order.includes(f)).map(m => wb.bonuses[m]);
 			return (<React.Fragment>
 				<Table.Cell>
+					{renderMainDataScore(row, false)}
+				</Table.Cell>
+				<Table.Cell>
+					{renderAnyDataScore(row, 'quipment', this.context.localized.t, false)}
+				</Table.Cell>
+				<Table.Cell>
 					{bonuses.map(skill =>
 						<CrewStat gridStyle={{gap:'0.5em'}} scale={0.75} data={skill} skill_name={skill.skill} />
 					)}
@@ -240,9 +247,15 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			</React.Fragment>)
 		}
 		else {
-			return (<Table.Cell>
-				{row.data}
-			</Table.Cell>)
+			return (
+			<React.Fragment>
+				<Table.Cell>
+					{renderMainDataScore(row, false)}
+				</Table.Cell>
+				<Table.Cell>
+					{row.data}
+				</Table.Cell>
+			</React.Fragment>)
 		}
 	}
 
@@ -259,17 +272,31 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 
 		if (isQp) {
 			crewTableCells.unshift(
+				{ width: 1, column: 'ranks.scores.quipment', title: t('rank_names.scores.quipment'), reverse: true },
 				{
+					reverse: true,
 					width: 2, column: 'bonus', title: t('global.bonus'),
 					customCompare: (a, b) => {
 						let r = a.bonus - b.bonus;
 						if (!r) r = a.max_rarity - b.max_rarity;
+						if (!r) r = a.ranks.scores.overall - b.ranks.scores.overall;
 						if (!r) r = a.name.localeCompare(b.name);
 						return r;
 					}
 				}
 			);
 		}
+
+		crewTableCells.unshift(
+			{
+				width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'),
+				reverse: true,
+				customCompare: (a, b) => {
+					let r = a.ranks.scores.overall - b.ranks.scores.overall;
+					return r;
+				}
+			}
+		);
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
