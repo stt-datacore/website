@@ -43,9 +43,10 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             if (!c.immortal || c.immortal > 0) return false;
             if (c.q_bits >= 1300) return false;
             if (filters.length) {
-                if (filters.includes(0) && c.ranks.voyRank > 50) return false;
-                if (filters.includes(1) && c.ranks.gauntletRank > 50) return false;
-                if (filters.includes(2) && c.ranks.shuttleRank > 50) return false;
+                let v = (filters.includes(0) && c.ranks.voyRank <= 50);
+                let g = (filters.includes(1) && c.ranks.gauntletRank <= 50);
+                let b = (filters.includes(2) && c.ranks.shuttleRank <= 50);
+                if (!(v || g || b)) return false;
             }
             if (ephemeral && ephemeral.activeCrew.some(ac => ac.id === c.id)) return false;
             if (rarities.length && !rarities.includes(c.max_rarity)) return false;
@@ -59,7 +60,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
     }, [playerData, ephemeral, data, filters, rarities]);
 
 
-    if (!workData?.length) {
+    if (!workData) {
         return globalContext.core.spin(t('spinners.default'));
     }
 
@@ -85,13 +86,28 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             </div>
             <div style={{ ...flexRow, margin: 0, padding: 0, justifyContent: 'center' }}>
                 <RarityFilter selection={false} rarityFilter={rarities} setRarityFilter={setRarities} />
-                <Button active={filters.includes(0)} style={{ width: '32px', padding: 4 }} onClick={() => toggleFilter(0)}>
+                <Button
+                    active={filters.includes(0)}
+                    style={{ width: '32px', padding: 4 }}
+                    onClick={() => toggleFilter(0)}
+                    color={filters.includes(0) ? 'blue' : undefined}
+                    >
                     <img src={`/media/voyage.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
-                <Button active={filters.includes(1)} style={{ width: '32px', padding: 4 }} onClick={() => toggleFilter(1)}>
+                <Button
+                    active={filters.includes(1)}
+                    style={{ width: '32px', padding: 4 }}
+                    onClick={() => toggleFilter(1)}
+                    color={filters.includes(1) ? 'blue' : undefined}
+                    >
                     <img src={`/media/gauntlet.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
-                <Button active={filters.includes(2)} style={{ width: '32px', padding: 4 }} onClick={() => toggleFilter(2)}>
+                <Button
+                    active={filters.includes(2)}
+                    style={{ width: '32px', padding: 4 }}
+                    onClick={() => toggleFilter(2)}
+                    color={filters.includes(2) ? 'blue' : undefined}
+                    >
                     <img src={`/media/faction.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
             </div>
