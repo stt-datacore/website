@@ -1374,6 +1374,12 @@
         "player_data": "datos del jugador",
         "quest_data": "datos de la misión"
     },
+    "logic": {
+        "AND": "AND",
+        "NOR": "NOR",
+        "OR": "OR",
+        "XOR": "XOR"
+    },
     "mastery": {
         "elite": "Élite",
         "epic": "Épico",

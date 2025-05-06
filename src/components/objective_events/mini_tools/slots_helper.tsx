@@ -17,11 +17,17 @@ interface SlotHelperProps {
     data: ObjectiveArchetype
 }
 
+type Logic = 'AND' | 'OR' | 'NOR' | 'XOR';
+const Logics = ['OR', 'AND', 'XOR', 'NOR'] as Logic[];
+
 export const SlotHelperMiniTool = (props: SlotHelperProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { ephemeral, playerData } = globalContext.player;
     const { data } = props;
+
+
+    const [logic, setLogic] = useStateWithStorage<Logic>(`oe_mini/slot_helper/logic`, 'OR', { rememberForever: true });
     const [filters, setFilters] = useStateWithStorage(`oe_mini/slot_helper/filters`, [] as number[], { rememberForever: true });
     const [rarities, setRarities] = useStateWithStorage(`oe_mini/slot_helper/rarities`, [] as number[], { rememberForever: true });
     const [skills, setSkills] = useStateWithStorage(`oe_mini/slot_helper/skills`, undefined as string[] | undefined, { rememberForever: true });
@@ -54,7 +60,21 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                 let v = (filters.includes(0) && c.ranks.voyRank <= 50);
                 let g = (filters.includes(1) && c.ranks.gauntletRank <= 50);
                 let b = (filters.includes(2) && c.ranks.shuttleRank <= 50);
-                if (!(v || g || b)) return false;
+                if (logic === 'OR') {
+                    if (!(v || g || b)) return false;
+                }
+                else if (logic === 'AND') {
+                    v = !filters.includes(0) || (filters.includes(0) && c.ranks.voyRank <= 50);
+                    g = !filters.includes(1) || (filters.includes(1) && c.ranks.gauntletRank <= 50);
+                    b = !filters.includes(2) || (filters.includes(2) && c.ranks.shuttleRank <= 50);
+                    if (!(v && g && b)) return false;
+                }
+                else if (logic === 'XOR') {
+                    if ([v, g, b].filter(f => f).length !== 1) return false;
+                }
+                else if (logic === 'NOR') {
+                    if (v || g || b) return false;
+                }
             }
             if (skills?.length) {
                 if (!skills.includes(c.skill_order[0])) return false;
@@ -68,7 +88,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                 let [bprog, bgoal] = qbProgressToNext(b.q_bits);
                 return aprog - bprog || agoal - bgoal || b.ranks.scores.overall - a.ranks.scores.overall;
             });
-    }, [playerData, ephemeral, data, filters, rarities, skills]);
+    }, [playerData, ephemeral, data, filters, rarities, skills, logic]);
 
 
     if (!workData) {
@@ -121,6 +141,17 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                     color={filters.includes(2) ? 'blue' : undefined}
                     >
                     <img src={`/media/faction.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
+                </Button>
+                <Button
+                    style={{ width: '32px', padding: 4 }}
+                    onClick={() => nextLogic()}
+                    >
+                    <div style={{...flexRow, gap: 0, margin: 0, justifyContent: 'center', height: '28px',
+                            fontSize: '0.9em', fontWeight: 'bold', textAlign: 'center'}}>
+                        <span>
+                            {t(`logic.${logic}`)}
+                        </span>
+                    </div>
                 </Button>
             </div>
 
@@ -186,11 +217,28 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
     }
 
     function toggleFilter(filter: number) {
-        if (filters.includes(filter)) {
-            setFilters(filters.filter(f => f !== filter));
+        if (logic !== 'XOR') {
+            if (filters.includes(filter)) {
+                setFilters(filters.filter(f => f !== filter));
+            }
+            else {
+                setFilters([...filters, filter]);
+            }
         }
         else {
-            setFilters([...filters, filter]);
+            if (filters.includes(filter)) {
+                setFilters(filters.filter(f => f !== filter));
+            }
+            else {
+                setFilters([filter]);
+            }
         }
+    }
+
+    function nextLogic() {
+        let i = Logics.indexOf(logic);
+        if (i === Logics.length - 1) i = 0;
+        else i++;
+        setLogic(Logics[i]);
     }
 }

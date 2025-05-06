@@ -1364,6 +1364,12 @@
         "player_data": "player data",
         "quest_data": "quest data"
     },
+    "logic": {
+        "AND": "AND",
+        "NOR": "NOR",
+        "OR": "OR",
+        "XOR": "XOR"
+    },
     "mastery": {
         "elite": "Elite",
         "epic": "Epic",
