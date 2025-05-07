@@ -1,7 +1,7 @@
 import React from "react"
 import { GlobalContext } from "../../context/globalcontext";
 import { Achiever, CapAchiever, CapAchievers, CrewMember } from "../../model/crew";
-import { Button, Checkbox, Message, Table } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Message, Popup, Table } from "semantic-ui-react";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { ProfileData } from "../../model/fleet";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
@@ -230,6 +230,16 @@ export const FTMHof = () => {
             }}
             extraSearchContent={
                 <div style={{ ...flexRow, flexGrow: 1, justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: '0.5em' }}>
+                    <Popup
+                        openOnTriggerClick={true}
+                        openOnTriggerFocus={false}
+                        openOnTriggerMouseEnter={false}
+                        trigger={
+                            <Button icon='clipboard' onClick={() => copyFTMCells(data)} />
+                        }
+                        content={t('clipboard.copied_exclaim')}
+                    />
+
                     <Button icon='refresh' onClick={refreshFTM} />
                     <Checkbox label={t('ftm.group_by_player')}
                         checked={groupBy === 'player'}
@@ -291,26 +301,40 @@ export const FTMHof = () => {
                     </div>
                 </Table.Cell>
                 <Table.Cell>
-                    <div style={{ maxHeight: '7em', overflowY: 'auto' }}>
-                        <Table striped compact>
-                            {row.ftms.map(ftm => {
-                                return (
-                                    <Table.Row key={`${row.player_name}_${ftm.symbol}`}>
-                                        <Table.Cell width={1}>
-                                            <AvatarView
-                                                targetGroup="ftm_hof"
-                                                mode='crew'
-                                                item={ftm}
-                                                size={32}
-                                            />
-                                        </Table.Cell>
-                                        <Table.Cell style={{textAlign: 'left'}}>
-                                            {ftm.name}
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )
-                            })}
-                        </Table>
+                    <div style={{ ...flexRow, gap: '0.5em' }}>
+                        <div>
+                            <Popup
+                                openOnTriggerClick={true}
+                                openOnTriggerFocus={false}
+                                openOnTriggerMouseEnter={false}
+                                trigger={
+                                    <Button style={{ padding: '1em' }} onClick={() => copyPlayerCells(row)}><Icon name='clipboard' style={{ margin: 0 }} /></Button>
+                                }
+                                content={t('clipboard.copied_exclaim')}
+                            />
+                        </div>
+                        <div style={{ maxHeight: '7em', overflowY: 'auto', flexGrow: 1 }}>
+                            <Table striped compact>
+                                {row.ftms.map(ftm => {
+                                    return (
+                                        <Table.Row key={`${row.player_name}_${ftm.symbol}`}>
+                                            <Table.Cell width={1}>
+                                                <AvatarView
+                                                    targetGroup="ftm_hof"
+                                                    mode='crew'
+                                                    item={ftm}
+                                                    size={32}
+                                                />
+                                            </Table.Cell>
+                                            <Table.Cell style={{ textAlign: 'left' }}>
+                                                {ftm.name}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                    )
+                                })}
+                            </Table>
+                        </div>
+
                     </div>
                 </Table.Cell>
                 <Table.Cell>
@@ -364,6 +388,10 @@ export const FTMHof = () => {
                 date: d.date
             }
             statidx[d.player_name].ftms.push(d.crew);
+            d.crew.cap_achiever = {
+                name: d.player_name,
+                date: Math.ceil(d.date.getTime() / 1000)
+            }
             if (d.date.getTime() > statidx[d.player_name].date.getTime()) {
                 statidx[d.player_name].date = d.date;
             }
@@ -372,6 +400,81 @@ export const FTMHof = () => {
             ftm.ftms.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
             return ftm;
         });
+    }
+
+    function generatePlayerAchievements(data: AchieverStat) {
+        let d = [] as string[];
+        d.push('<table>');
+        d.push('<thead><tr><td>Image</td><td>Name</td><td>FTM Date</td></thead>');
+        d.push('<tbody>');
+
+        data.ftms.forEach((crew) => {
+            d.push(`<tr>
+                <td>
+                <img src="${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}" height=48 style="height: 48px">
+                </td>
+                <td>
+                ${crew.name}
+                </td>
+                <td>
+                ${(new Date(crew.cap_achiever!.date * 1000)).toLocaleString()}
+                </td>
+                </tr>`)
+        })
+        d.push('</tbody></table>');
+        return d.join("");
+    }
+
+    function generateFTMTable(data: AchieverDetails[]) {
+        let d = [] as string[];
+        d.push('<table>');
+        d.push('<thead><tr><td>Player Avatar</td><td>Player</td><td>Image</td><td>Name</td><td>FTM Date</td></thead>');
+        d.push('<tbody>')
+
+        data.forEach(row => {
+            let atext = '';
+            if (row.avatar) {
+                atext = `<img style="height: 48px" height=48 src="${process.env.GATSBY_ASSETS_URL}${row.avatar}" />`;
+            }
+            if (!row.crew) {
+                row.crew = globalContext.core.crew.find(f => f.archetype_id === row.crew_archetype_id);
+                if (!row.crew) return;
+            }
+            d.push(`<tr>
+                    <td>${atext}</td>
+                    <td>${row.player_name}</td>
+                    <td>
+                        <img style="height: 48px" height=48 src="${process.env.GATSBY_ASSETS_URL}${row.crew!.imageUrlPortrait}" />
+                    </td>
+                    <td>${row.crew!.name}</td>
+                    <td>${row.date.toLocaleString()}</td>
+                </tr>`);
+        });
+        d.push('</tbody></table>');
+        return d.join("");
+    }
+
+    function copyPlayerCells(data: AchieverStat) {
+        if (typeof navigator !== 'undefined' && typeof document !== 'undefined') {
+            const blob = new Blob([generatePlayerAchievements(data)], { type: 'text/html' });
+            navigator.clipboard.write([
+                new ClipboardItem({
+                    [blob.type]: blob
+                })
+            ]);
+        }
+    }
+
+
+    function copyFTMCells(data: AchieverDetails[]) {
+        if (typeof navigator !== 'undefined' && typeof document !== 'undefined') {
+            const blob = new Blob([generateFTMTable(data)], { type: 'text/html' });
+            navigator.clipboard.write([
+                new ClipboardItem({
+                    [blob.type]: blob
+                })
+            ]);
+        }
     }
 
     function refreshFTM() {
