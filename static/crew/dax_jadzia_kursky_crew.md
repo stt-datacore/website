@@ -1,7 +1,7 @@
 ---
-name: Daystrom Android M-5-10
-rarity: 5
-series: pic
+name: Darlene Kursky
+rarity: 2
+series: ds9
 memory_alpha:
 bigbook_tier: -1
 in_portal:

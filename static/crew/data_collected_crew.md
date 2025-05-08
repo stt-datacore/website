@@ -1,7 +1,7 @@
 ---
-name: Daystrom Android M-5-10
+name: Collected Data
 rarity: 5
-series: pic
+series: tng
 memory_alpha:
 bigbook_tier: -1
 in_portal:
