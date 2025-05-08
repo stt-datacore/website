@@ -29,7 +29,7 @@ export function translateSkills(string: string, separator: string = '/'): string
 	return output.join(separator);
 }
 
-export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9, dThreshold = 20): string {
+export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9, dThreshold = 50): string {
 	let stats = [] as { rank: number, stat: string, priority: number }[];
 
 	const rankType = rank => {

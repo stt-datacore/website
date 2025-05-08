@@ -40,6 +40,16 @@ and capabilities have been added to DataCore:
 
 - More cleanup of the offers page.
 
+## Individual Crew Pages
+
+- Narrow formatting has been replaced in favor of full-width formatting.
+
+- DataScore ranks have been added to the ranks accordion.
+
+## Crew Stats Blurb
+
+- The stats blurb on the individual crew pages and the crew hover now display all DataScore ranks for top 50.
+
 ## Items View
 
 - New crew selector.
