@@ -1,7 +1,7 @@
 ---
-name: Daystrom Android M-5-10
-rarity: 5
-series: pic
+name: Laughing Data
+rarity: 4
+series: tng
 memory_alpha:
 bigbook_tier: -1
 in_portal:
