@@ -26,7 +26,7 @@ export const DemandsTable = (props: DemandsTableProps) => {
     const { cancel, runWorker, running } = workerContext;
 
     React.useEffect(() => {
-        if (calculatedDemands) {
+        if (calculatedDemands?.length) {
             setDisplayData(calculatedDemands);
             return;
         }
@@ -46,7 +46,7 @@ export const DemandsTable = (props: DemandsTableProps) => {
                 }
             )
         }, 500);
-    }, [playerData]);
+    }, [playerData, props.noRender]);
 
     React.useEffect(() => {
         if (!props.noRender && displayData.length) configureFilters(undefined);

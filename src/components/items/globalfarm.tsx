@@ -66,7 +66,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 })
                 .filter(f => f.needed && f.needed > 0 && f?.item_sources?.length)
         }
-        if (calculatedDemands && !crewFilter?.length) {
+        if (calculatedDemands?.length && !crewFilter?.length) {
             setPrefilteredData(filterDemands(calculatedDemands as EquipmentItem[]));
             return;
         }
@@ -87,7 +87,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 }
             )
         }, 500);
-    }, [playerData, coreItems, crewFilter]);
+    }, [playerData, coreItems, crewFilter, props.noRender]);
 
     React.useEffect(() => {
         if (available && !props.noRender) {
