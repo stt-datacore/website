@@ -2237,7 +2237,7 @@
             "mean_time_between_releases": "Mean time between releases",
             "mean_velocity": "Mean Velocity"
         },
-        "title": "Stats Trends",
+        "title": "Deep-Dive Game Stats",
         "total_power_difference": "Total power difference",
         "trait_columns": {
             "collection": "{{base.collection}}",

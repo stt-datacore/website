@@ -2247,7 +2247,7 @@
             "mean_time_between_releases": "Tiempo medio entre lanzamientos",
             "mean_velocity": "Velocidad media"
         },
-        "title": "Tendencias de estadísticas",
+        "title": "Análisis profundo de las estadísticas del juego",
         "total_power_difference": "Diferencia de potencia total",
         "trait_columns": {
             "collection": "{{base.collection}}",
