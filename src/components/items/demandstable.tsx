@@ -31,7 +31,7 @@ export const DemandsTable = (props: DemandsTableProps) => {
             return;
         }
         if (!playerData || !!props.noWorker) return;
-        if (running) cancel();
+        //if (running) cancel();
         if (props.noRender) return;
         setTimeout(() => {
             runWorker(
@@ -43,7 +43,8 @@ export const DemandsTable = (props: DemandsTableProps) => {
                 (data: { data: { result: EquipmentWorkerResults } }) => {
                     if (playerData) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setDisplayData(data.data.result.items);
-                }
+                },
+                true
             )
         }, 500);
     }, [playerData, props.noRender]);

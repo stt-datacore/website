@@ -72,7 +72,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
             return;
         }
         if (!playerData || !!props.noWorker) return;
-        if (running) cancel();
+        //if (running) cancel();
         if (props.noRender) return;
         setTimeout(() => {
             runWorker(
@@ -85,7 +85,8 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 (data: { data: { result: EquipmentWorkerResults } }) => {
                     if (playerData && !crewFilter?.length) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setPrefilteredData(filterDemands(data.data.result.items as EquipmentItem[]));
-                }
+                },
+                true
             )
         }, 500);
     }, [playerData, coreItems, crewFilter, props.noRender]);
