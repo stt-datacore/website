@@ -56,7 +56,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                                 <b><ColorName text={playerData.player.fleet.slabel} /></b>
                             {/* </Link>{' '} */}
                             <br/>
-                            ({t(`global.${playerData.player.fleet.rank.toLowerCase()}`)?.toUpperCase()})<br/> {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
+                            ({t(`global.${playerData.player.fleet.rank.toLowerCase().replace('leader', 'admiral')}`)?.toUpperCase()})<br/> {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
                         </p>
                     )}
                 </Item.Description>

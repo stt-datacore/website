@@ -15,6 +15,7 @@ import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { getEventData } from "../../utils/events";
 
 interface GlobalFarmProps {
+    pageId?: string;
     items: EquipmentItem[];
     noRender?: boolean;
     noWorker?: boolean;
@@ -25,7 +26,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     const workerContext = React.useContext(WorkerContext);
 
     const { t } = globalContext.localized;
-    const { items: coreItems } = props;
+    const { items: coreItems, pageId } = props;
     const { ephemeral, playerData, calculatedDemands, setCalculatedDemands } = globalContext.player;
     const [prefiteredData, setPrefilteredData] = React.useState<(EquipmentItem | EquipmentItem)[]>(calculatedDemands ?? []);
 
@@ -142,7 +143,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         return (
             <>
                 <CrewMultiPicker
-                    pageId='items/global_farm'
+                    pageId={pageId || 'items/global_farm'}
                     selectedCrew={crewFilter}
                     updateSelected={setCrewFilter}
                     rosterCrew={rosterCrew}
