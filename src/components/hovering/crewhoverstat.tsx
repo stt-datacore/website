@@ -1,14 +1,14 @@
+import { navigate } from "gatsby";
 import * as React from "react";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
 import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../../model/player";
-import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 import { navToCrewPage } from "../../utils/nav";
-import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import CONFIG from "../CONFIG";
-import { navigate } from "gatsby";
-import { GlobalContext } from "../../context/globalcontext";
 import { CrewPreparer } from "../item_presenters/crew_preparer";
+import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import { toDataURL } from "../item_presenters/shipskill";
+import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 
 const isWindow = typeof window !== 'undefined';
 

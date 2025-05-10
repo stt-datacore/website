@@ -5,6 +5,15 @@ export interface RampUpEntry {
     passive: number;
 }
 
+export interface VPDetails {
+    seconds: number;
+    total_drops: number;
+    total_vp: number;
+    total_opponents: number;
+    total_encounters: number;
+    vp_per_min: number;
+}
+
 const RampUpMap: RampUpEntry[] = [
     { start: 1, challenges: 3, passive: 2 },
     { start: 5, challenges: 3, passive: 3 },
@@ -21,14 +30,6 @@ const RampUpMap: RampUpEntry[] = [
     { start: 720, challenges: 6, passive: 74 },
    ];
 
-export interface VPDetails {
-    seconds: number;
-    total_drops: number;
-    total_vp: number;
-    total_opponents: number;
-    total_encounters: number;
-    vp_per_min: number;
-}
 
 export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
     const passiveMul = Math.ceil(bonuses.reduce((p, n) => (p) + (n * 100), 0) + 100) / 100;

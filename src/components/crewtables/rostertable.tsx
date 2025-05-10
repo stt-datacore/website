@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Form, Dropdown, Header, Loader } from 'semantic-ui-react';
+import { Form, Dropdown, Header, Loader, Checkbox } from 'semantic-ui-react';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { CompletionState, PlayerBuffMode } from '../../model/player';
@@ -26,14 +26,17 @@ import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './
 
 import RosterSummary from './rostersummary';
 import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getItemWithBonus, getQuipmentAsItemWithBonus } from '../../utils/itemutils';
+import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
-import { calcQLots } from '../../utils/equipment';
 import { CrewBuffModes } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
+import WeightingInfoPopup from './weightinginfo';
+import { ReleaseDateFilter } from './filters/crewreleasedate';
+import { OptionsPanelFlexRow } from '../stats/utils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -64,6 +67,8 @@ export const RosterTable = (props: RosterTableProps) => {
 	const { initHighlight, buffMode, setBuffMode } = props;
 
 	const [prospects, setProspects] = React.useState<LockedProspect[]>([] as LockedProspect[]);
+
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	const rosterPlusProspects = props.rosterCrew.slice();
 	const lockableCrew = React.useMemo(() => {
@@ -139,7 +144,7 @@ export const RosterTable = (props: RosterTableProps) => {
 				<React.Fragment>
 					<RosterProspects prospects={prospects} setProspects={setProspects} />
 					<Header as='h3'>{t('crew_views.advanced_analysis')}</Header>
-					<RosterSummary myCrew={props.rosterCrew} allCrew={globalContext.core.crew} buffConfig={playerBuffs} />
+					<RosterSummary myCrew={props.rosterCrew} allCrew={globalContext.core.crew.filter(c => !c.preview)} buffConfig={playerBuffs} />
 				</React.Fragment>
 			}
 		</RosterTableContext.Provider>
@@ -192,6 +197,7 @@ interface ITableView {
 	renderTableCells: (crew: IRosterCrew) => JSX.Element;
 	spinText?: string;
 	worker?: (crew: IRosterCrew[]) => Promise<IRosterCrew[]>;
+	extraSearchContent?: JSX.Element;
 };
 
 interface ITableViewOption {
@@ -209,9 +215,11 @@ interface IDataPrepared {
 
 const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
-	const { topQuipmentScores: top } = globalContext.core;
+	const { topQuipmentScores: top, continuum_missions } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
 	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew, buffMode, setBuffMode } = tableContext;
 
@@ -223,12 +231,15 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
+	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
 	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
+
+	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
 
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 
@@ -273,6 +284,13 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
 		},
 		{
+			id: 'dc_ranks',
+			available: true,
+			optionText: t('crew_views.scoring'),
+			tableConfig: getDataCoreRanksTableConfig(t),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
+		},
+		{
 			id: 'g_ranks',
 			available: true,
 			optionText: t('crew_views.gauntlet'),
@@ -291,26 +309,6 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			})}</p>,
 			tableConfig: getRanksTableConfig('voyage'),
 			renderTableCells: (crew: IRosterCrew) => <CrewRankCells crew={crew} prefix='V_' />
-		},
-		{
-			id: 'dc_ranks',
-			available: true,
-			optionText: t('rank_names.scoring'),
-			tableConfig: getDataCoreRanksTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
-		},
-		{
-			id: 'qp_score',
-			available: true,
-			optionText: t('crew_views.quipment'),
-			tableConfig: getQuipmentTableConfig(t, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
-			renderTableCells:
-				(crew: IRosterCrew) =>
-					<QuipmentScoreCells
-						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
-						excludeSkills={false}
-						top={top[crew.max_rarity - 1]}
-						crew={crew} />
 		},
 		{
 			id: 'qp_best',
@@ -358,6 +356,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				});
 			},
 			form: <QuipmentToolsFilter
+					//missions={continuum_missions}
 					questFilter={questFilter}
 					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
@@ -375,7 +374,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 				/>,
 			//form: <p>Rankings determined by precalculation. For specific advice on crew to use, consult the <Link to='/voyage'>Voyage Calculator</Link>.</p>,
-			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType), powerMode, getActiveBuffs()),
+			tableConfig: getTopQuipmentTableConfig(t, pstMode, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
 			renderTableCells:
 				(crew: IRosterCrew) =>
 					<TopQuipmentScoreCells
@@ -406,6 +405,19 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				/>,
 			tableConfig: getCrewUtilityTableConfig(t, showBase),
 			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
+		},
+		{
+			id: 'qp_score',
+			available: true,
+			optionText: t('crew_views.quipment'),
+			tableConfig: getQuipmentTableConfig(t, ['allCrew', 'offers', 'buyBack'].includes(rosterType)),
+			renderTableCells:
+				(crew: IRosterCrew) =>
+					<QuipmentScoreCells
+						excludeQBits={['allCrew', 'offers', 'buyBack'].includes(rosterType)}
+						excludeSkills={false}
+						top={top[crew.max_rarity - 1]}
+						crew={crew} />
 		},
 	] as ITableView[];
 
@@ -450,6 +462,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			form:
 				<ObtainedFilter
 					key='filter_allcrew_obtained'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+				/>
+		},
+		{
+			id: 'timeframe',
+			available: (['allCrew'].includes(rosterType)),
+			form:
+				<ReleaseDateFilter
+					key='filter_allcrew_releasedate'
 					pageId={pageId}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
@@ -598,21 +621,41 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			</Form>
 			{view && view.form}
 			{viewIsReady !== false && preparedCrew &&
-				<CrewConfigTable
-					pageId={pageId}
-					rosterType={rosterType}
-					initOptions={initOptions}
-					rosterCrew={preparedCrew}
-					crewFilters={crewFilters}
-					tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t)}
-					renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells tableType={props.tableType} crew={crew} pageId={pageId} />}
-					lockableCrew={lockableCrew}
-					loading={isPreparing}
-				/>
+				<React.Fragment>
+					<CrewConfigTable
+						pageId={pageId}
+						rosterType={rosterType}
+						initOptions={initOptions}
+						rosterCrew={preparedCrew}
+						crewFilters={crewFilters}
+						extraSearchContent={view ? view?.extraSearchContent : renderExtraSearchContent()}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers')}
+						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells alternativeLayout={altBaseLayout && rosterType !== 'offers'} tableType={props.tableType} crew={crew} pageId={pageId} />}
+						lockableCrew={lockableCrew}
+						loading={isPreparing}
+					/>
+					{tableView === 'dc_ranks' && <WeightingInfoPopup saveConfig={() => false} isOpen={weightingOpen} setIsOpen={setWeightingOpen} />}
+				</React.Fragment>
 			}
 			{viewIsReady === false && globalContext.core.spin(view?.spinText ?? 'Calculating...')}
 		</React.Fragment>
 	);
+
+	function renderExtraSearchContent() {
+		if (rosterType === 'offers') return <></>;
+		return (
+			<div style={{flexGrow: '1', flexWrap: 'wrap'}}>
+				<div style={{...OptionsPanelFlexRow, justifyContent: isMobile ? 'flex-start' : 'flex-end', margin: '0.5em 0'}}>
+					<Checkbox
+						checked={altBaseLayout}
+						onChange={(e, { checked }) => setAltBaseLayout(!!checked)}
+						label={t('global.alternative_layout')}
+					 />
+					{/* <Button>{t('global.advanced_settings')}</Button> */}
+				</div>
+			</div>
+		)
+	}
 
 	function getDefaultTable(): TableView {
 		let defaultTable: TableView = '';

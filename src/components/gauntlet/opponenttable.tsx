@@ -5,7 +5,7 @@ import { Gauntlet, Opponent } from "../../model/gauntlets"
 import { CompletionState, PlayerCrew } from "../../model/player";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { AvatarView } from "../item_presenters/avatarview";
-import CrewStat from "../crewstat";
+import CrewStat from "../item_presenters/crewstat";
 import { PlayerSkill, Skill } from "../../model/crew";
 import { useStateWithStorage } from "../../utils/storage";
 import { getCrewCrit } from "../../utils/gauntlet";

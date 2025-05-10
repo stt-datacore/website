@@ -13,15 +13,14 @@ import ErrorBoundary from './errorboundary';
 import themes from './nivo_themes';
 import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
 import { demandsPerSlot } from '../utils/equipment';
-import { DemandCounts, EquipmentCommon, IDemand } from '../model/equipment';
+import { DemandCounts, EquipmentItem, IDemand } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { GlobalContext } from '../context/globalcontext';
-import { EquipmentItem } from '../model/equipment';
 import { AvatarView } from './item_presenters/avatarview';
 import { CrewMember } from '../model/crew';
 
 type ProfileChartsProps = {
-	items: (EquipmentItem | EquipmentCommon)[];
+	items: (EquipmentItem | EquipmentItem)[];
 	allCrew: CrewMember[];
 };
 

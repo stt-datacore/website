@@ -1,12 +1,11 @@
-import React from "react";
-import { CompletionState } from "../../model/player";
-import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
-import { BuffStatTable } from "../../utils/voyageutils";
-import { Ship } from "../../model/ship";
-import { ShipPresenter } from "../item_presenters/ship_presenter";
-import CONFIG from "../CONFIG";
 import { navigate } from "gatsby";
+import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
+import { CompletionState } from "../../model/player";
+import { Ship } from "../../model/ship";
+import CONFIG from "../CONFIG";
+import { ShipPresenter } from "../item_presenters/ship_presenter";
+import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
 
 const isWindow = typeof window !== 'undefined';
 

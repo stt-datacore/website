@@ -3,6 +3,7 @@ import { PlayerData, TranslateMethod } from "../../model/player";
 import { Link } from "gatsby";
 import { Item, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
+import { ColorName } from "../fleet/colorname";
 
 
 
@@ -51,11 +52,11 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                 <Item.Description>
                     {!!playerData.player.fleet?.id && (
                         <p>
-                            {t('global.fleet')}{' '}
-                            <Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}>
-                                <b>{playerData.player.fleet.slabel}</b>
-                            </Link>{' '}<br/>
-                            ({t(`global.${playerData.player.fleet.rank.toLowerCase()}`)?.toUpperCase()})<br/> {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
+                            {/* <Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}> */}
+                                <b><ColorName text={playerData.player.fleet.slabel} /></b>
+                            {/* </Link>{' '} */}
+                            <br/>
+                            ({t(`global.${playerData.player.fleet.rank.toLowerCase().replace('leader', 'admiral')}`)?.toUpperCase()})<br/> {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
                         </p>
                     )}
                 </Item.Description>

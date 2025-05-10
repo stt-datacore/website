@@ -20,6 +20,8 @@ type CrewRarityFilterProps = {
 	setRarityFilter: (rarityFilter: number[]) => void;
 	altTitle?: string;
 	multiple?: boolean;
+	selection?: boolean;
+	clearable?: boolean;
 };
 
 export const RarityFilter = (props: CrewRarityFilterProps) => {
@@ -37,9 +39,9 @@ export const RarityFilter = (props: CrewRarityFilterProps) => {
 		<Form.Field>
 			<Dropdown
 				placeholder={props.altTitle ?? t('hints.filter_by_rarity')}
-				clearable
+				clearable={props.clearable ?? true}
 				multiple={props.multiple ?? true}
-				selection
+				selection={props.selection ?? true}
 				options={rarityFilterOptions}
 				value={ props.multiple === false ? (props.rarityFilter?.length ? props.rarityFilter[0] : '') : props.rarityFilter}
 				onChange={(e, { value }) => props.setRarityFilter(props.multiple === false ? (value === '' ? [] : [ value as number ]) : value as number[])}
@@ -125,7 +127,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 };
 
 
-export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew,  showOwned?: boolean): JSX.Element {
+export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwned?: boolean): JSX.Element {
 
 	const counts = [
 		{ name: crew.collections.length !== 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
@@ -210,13 +212,14 @@ export type CrewBuffModesProps = {
 	setBuffMode: (value?: PlayerBuffMode) => void;
 	playerAvailable?: boolean;
 	altTitle?: string;
+	noneValue?: string;
 }
 
 export const CrewBuffModes = (props: CrewBuffModesProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const buffModes = [] as DropdownItemProps[];
 
-	buffModes.push({ key: 'none', value: undefined, text: t('buffs.no_buffs') })
+	buffModes.push({ key: 'none', value: props.noneValue, text: t('buffs.no_buffs') })
 
 	if (props.playerAvailable) {
 		buffModes.push({ key: 'player', value: 'player', text: t('buffs.player_buffs') })

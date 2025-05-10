@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 
 import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
-import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, gradeToColor, mapToRankings } from '../../../utils/crewutils';
+import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, mapToRankings } from '../../../utils/crewutils';
 import { Ship } from '../../../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 import { AbilityUses, AdvantagePicker, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
@@ -17,7 +17,6 @@ import { ITableConfigRow } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import { CrewMember } from '../../../model/crew';
-import { OptionsPanelFlexRow } from '../../stats/utils';
 import { formatShipScore } from '../../ship/utils';
 
 const isWindow = typeof window !== 'undefined';

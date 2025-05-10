@@ -14,6 +14,7 @@ import { ChartsView } from "./chartsview";
 import { EpochDiff } from "./model";
 import { TraitStatsTable } from "./tables/traittable";
 import { ItemStatsTable } from "./tables/itemtable";
+import { PortalUpdateTable } from "./tables/portal_update";
 
 export const StatTrendsComponent = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -32,6 +33,11 @@ export const StatTrendsComponent = () => {
     const [epochDiffs, setEpochDiffs] = React.useState<EpochDiff[]>([]);
     const [crewCount, setCrewCount] = React.useState(0);
     const [refresh, setRefresh] = React.useState(false);
+    const [hideFilters, setHideFilters] = React.useState(false);
+
+    React.useEffect(() => {
+        if (displayMode !== 'graphs' && hideFilters) setHideFilters(false);
+    }, [displayMode]);
 
     React.useEffect(() => {
         const filterDiffs = filterEpochDiffs(filterConfig, outerDiffs);
@@ -146,24 +152,24 @@ export const StatTrendsComponent = () => {
                 </Message>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
 
-                {!['traits', 'items'].includes(displayMode) && <React.Fragment>
-                    <StatsPrefsPanel />
-                    {renderStatsInfo()}
-                </React.Fragment>}
-
                 <Step.Group fluid>
                     <Step active={displayMode === 'crew'} onClick={() => setDisplayMode('crew')}
-                        style={{width: isMobile ? undefined : '25%'}}>
+                        style={{width: isMobile ? undefined : '20%'}}>
                         <Step.Title>{t('stat_trends.sections.crew.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.crew.description')}</Step.Description>
                     </Step>
                     <Step active={displayMode === 'traits'} onClick={() => setDisplayMode('traits')}
-                        style={{width: isMobile ? undefined : '25%'}}>
+                        style={{width: isMobile ? undefined : '20%'}}>
                         <Step.Title>{t('stat_trends.sections.traits.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.traits.description')}</Step.Description>
                     </Step>
+                    <Step active={displayMode === 'portal_update'} onClick={() => setDisplayMode('portal_update')}
+                        style={{width: isMobile ? undefined : '20%'}}>
+                        <Step.Title>{t('stat_trends.sections.portal_update.title')}</Step.Title>
+                        <Step.Description>{t('stat_trends.sections.portal_update.description')}</Step.Description>
+                    </Step>
                     <Step active={displayMode === 'items'} onClick={() => setDisplayMode('items')}
-                        style={{width: isMobile ? undefined : '25%'}}>
+                        style={{width: isMobile ? undefined : '20%'}}>
 
                         <Step.Title>
                             {t('stat_trends.sections.items.title')}
@@ -174,15 +180,25 @@ export const StatTrendsComponent = () => {
                         <Step.Description>{t('stat_trends.sections.items.description')}</Step.Description>
                     </Step>
                     <Step active={displayMode === 'graphs'} onClick={() => setDisplayMode('graphs')}
-                        style={{width: isMobile ? undefined : '25%'}}>
+                        style={{width: isMobile ? undefined : '20%'}}>
                         <Step.Title>{t('stat_trends.sections.graphs.title')}</Step.Title>
                         <Step.Description>{t('stat_trends.sections.graphs.description')}</Step.Description>
                     </Step>
                 </Step.Group>
+
+                {!['traits', 'items', 'portal_update'].includes(displayMode) && !hideFilters && <React.Fragment>
+                    <StatsPrefsPanel />
+                    {renderStatsInfo()}
+                </React.Fragment>}
+
                 {displayMode === 'crew' && <StatTrendsTable prefilteredDiffs={epochDiffs} />}
                 {displayMode === 'traits' && <TraitStatsTable />}
                 {displayMode === 'items' && <ItemStatsTable refresh={refresh} setRefresh={setRefresh} />}
-                {displayMode === 'graphs' && <ChartsView />}
+                {displayMode === 'graphs' && <ChartsView
+                        hideFilters={hideFilters}
+                        setHideFilters={setHideFilters}
+                />}
+                {displayMode === 'portal_update' && <PortalUpdateTable />}
             </div>)
 
     function renderStatsInfo() {

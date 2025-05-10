@@ -10,6 +10,8 @@ export interface SkillPickerProps {
     placeholder?: string;
     short?: boolean;
     value?: string | string[];
+    selection?: boolean;
+    search?: boolean;
     setValue: ((value?: string) => void) | ((value?: string[]) => void);
 }
 
@@ -42,12 +44,12 @@ export const SkillPicker = (props: SkillPickerProps) => {
 
     return <Dropdown
         style={style}
-        search
-        selection
+        selection={props.selection === undefined ? true : props.selection}
+        search={props.search === undefined ? true : props.search}
         clearable
         fluid={fluid}
         multiple={multiple}
-        placeholder={placeholder ?? t('global.search')}
+        placeholder={placeholder ?? t('hints.filter_by_skill')}
         labeled
         options={options}
         value={value}

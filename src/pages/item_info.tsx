@@ -11,7 +11,6 @@ import { EquipmentItem } from '../model/equipment';
 import { GlobalContext } from '../context/globalcontext';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import ItemsTable, { printRequiredTraits } from '../components/items/itemstable';
 import { ShipHoverStat, ShipTarget } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -20,6 +19,12 @@ import { renderBonuses } from '../components/item_presenters/item_presenter';
 import { IRosterCrew } from '../components/crewtables/model';
 import { CrewConfigTable } from '../components/crewtables/crewconfigtable';
 import { TinyStore } from '../utils/tiny';
+import { printRequiredTraits } from '../components/items/utils';
+import { EquipmentTable } from '../components/items/equipment_table';
+import CrewStat from '../components/item_presenters/crewstat';
+import { skillSum } from '../utils/crewutils';
+import { ITableConfigRow } from '../components/searchabletable';
+import { renderAnyDataScore, renderMainDataScore } from '../components/crewtables/views/base';
 
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
@@ -197,11 +202,15 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			if (crew) {
 				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 				if (this.state.item_data?.item?.kwipment) {
+					const wb = getItemBonuses(this.state.item_data.item);
+					let bonuses = Object.keys(wb.bonuses).filter(f => crew.skill_order.includes(f)).map(m => wb.bonuses[m]);
 					crew.data = t('items.post_immortalization_advancement');
+					crew.bonus = skillSum(bonuses);
 				}
 				else {
 					crew.data = crews[symbol].join(", ");
 				}
+
 			}
 			if (crew && !this.context.player.playerData) crew.rarity = crew.max_rarity;
 			return crew;
@@ -216,9 +225,38 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 	}
 
 	renderTableCells = (row: IRosterCrew): JSX.Element => {
-		return <Table.Cell>
-			{row.data}
-		</Table.Cell>
+		if (this.state.item_data?.item?.kwipment) {
+			const item = this.state.item_data?.item;
+			const wb = getItemBonuses(item);
+			let bonuses = Object.keys(wb.bonuses).filter(f => row.skill_order.includes(f)).map(m => wb.bonuses[m]);
+			return (<React.Fragment>
+				<Table.Cell>
+					{renderMainDataScore(row, false)}
+				</Table.Cell>
+				<Table.Cell>
+					{renderAnyDataScore(row, 'quipment', this.context.localized.t, false)}
+				</Table.Cell>
+				<Table.Cell>
+					{bonuses.map(skill =>
+						<CrewStat gridStyle={{gap:'0.5em'}} scale={0.75} data={skill} skill_name={skill.skill} />
+					)}
+				</Table.Cell>
+				<Table.Cell>
+					{row.data}
+				</Table.Cell>
+			</React.Fragment>)
+		}
+		else {
+			return (
+			<React.Fragment>
+				<Table.Cell>
+					{renderMainDataScore(row, false)}
+				</Table.Cell>
+				<Table.Cell>
+					{row.data}
+				</Table.Cell>
+			</React.Fragment>)
+		}
 	}
 
 	render() {
@@ -226,10 +264,39 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		const { errorMessage, item_data } = this.state;
 		const { playerData } = this.context.player;
 		const { items } = this.context.core;
+		const isQp = !!this.state.item_data?.item?.kwipment;
 
 		const crewTableCells = [
 			{ width: 2, column: 'data', title: t('items.columns.item_demand_levels') }
-		]
+		] as ITableConfigRow[];
+
+		if (isQp) {
+			crewTableCells.unshift(
+				{ width: 1, column: 'ranks.scores.quipment', title: t('rank_names.scores.quipment'), reverse: true },
+				{
+					reverse: true,
+					width: 2, column: 'bonus', title: t('global.bonus'),
+					customCompare: (a, b) => {
+						let r = a.bonus - b.bonus;
+						if (!r) r = a.max_rarity - b.max_rarity;
+						if (!r) r = a.ranks.scores.overall - b.ranks.scores.overall;
+						if (!r) r = a.name.localeCompare(b.name);
+						return r;
+					}
+				}
+			);
+		}
+
+		crewTableCells.unshift(
+			{
+				width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'),
+				reverse: true,
+				customCompare: (a, b) => {
+					let r = a.ranks.scores.overall - b.ranks.scores.overall;
+					return r;
+				}
+			}
+		);
 
 		if (item_data === undefined || errorMessage !== undefined) {
 			return (
@@ -477,7 +544,12 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 				{!!builds && builds.length > 0 && (
 					<div>
 						<Header as="h3">{t('items.is_used_to_build')}:</Header>
-						<ItemsTable pageName='item_info' noWorker={true} hideOwnedInfo={true} data={builds} navigate={(symbol) => this.changeComponent(symbol)} />
+						<EquipmentTable
+							pageId='item_info'
+							hideOwnedColumns={true}
+							items={builds}
+							navigate={(symbol) => this.changeComponent(symbol)}
+						/>
 					</div>
 				)}
 			</div>

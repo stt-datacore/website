@@ -1,5 +1,5 @@
 import { Icon } from "./game-elements"
-import { Bonuses, PotentialReward, Reward } from "./player"
+import { Reward } from "./player"
 
 export interface ShuttleAdventure {
     id: number

@@ -10,7 +10,7 @@ import CONFIG from '../../components/CONFIG';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { formatTierLabel } from '../../utils/crewutils';
 import { GlobalContext } from '../../context/globalcontext';
-import { renderDataScoreColumn } from '../crewtables/views/base';
+import { renderMainDataScore } from '../crewtables/views/base';
 
 type TableViewProps = {
 	selectedCrew: string[];
@@ -111,7 +111,7 @@ export const TableView = (props: TableViewProps) => {
 					<Rating icon='star' rating={crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled />
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{renderDataScoreColumn(crew)}
+					{renderMainDataScore(crew)}
 				</Table.Cell>
 				{/* <Table.Cell textAlign='center'>
 					<b>{formatTierLabel(crew)}</b>

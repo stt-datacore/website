@@ -49,7 +49,6 @@ const ShipCrewWorker = {
             let start_index = (options.start_index ?? 0n);
             let i = 0n;
             let progress = -1n;
-            const results = [] as ShipWorkerTransportItem[];
 
             const processBattleRun = (attacks: AttackInstant[], crew_set: CrewMember[]) => {
                 let result_crew = [] as CrewMember[];
@@ -157,7 +156,7 @@ const ShipCrewWorker = {
                 return (xseen.every(x => x) && yseen.every(y => y));
             });
 
-            results.length = 0;
+            let resultcount = 0;
 
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
@@ -171,7 +170,7 @@ const ShipCrewWorker = {
                             percent: Number(p.toString()),
                             progress: i,
                             count,
-                            accepted: BigInt(results.length)
+                            accepted: BigInt(resultcount)
                         });
                     }
                 }
@@ -191,56 +190,36 @@ const ShipCrewWorker = {
                         battle_data.length = 0;
                     }
 
-                    let accepted = false;
                     if (last_high === null) {
                         last_high = attack;
-                        accepted = true;
                     }
                     else {
                         let d = compareShipResults(attack, last_high, fbb_mode);
                         if (d < 0 || (attack.win && !fbb_mode)) {
-                            accepted = true;
                             last_high = attack;
                         }
                     }
 
-                    if (accepted) {
-                        results.push(attack);
-                        reportProgress({ result: attack });
-                        accepted = false;
-                    }
-
+                    reportProgress({ result: attack });
+                    resultcount++;
                     return battle_data;
                 });
 
                 return res;
             });
 
-            results.sort((a, b) => compareShipResults(a, b, fbb_mode));
-            results.splice(max_results);
-            results.forEach((result) => {
-                if (fbb_mode) {
-                    let max = results[0].fbb_metric;
-                    result.percentile = (result.fbb_metric / max) * 100;
-                }
-                else {
-                    let max = results[0].arena_metric;
-                    result.percentile = (result.arena_metric / max) * 100;
-                }
-            });
-
             reportProgress({
                 percent: 100,
                 progress: count,
                 count,
-                accepted: BigInt(results.length),
+                accepted: BigInt(resultcount),
             });
 
             const endtime = new Date();
             const run_time = Math.round((endtime.getTime() - starttime.getTime()) / 1000);
 
             resolve({
-                items: results,
+                items: [],
                 total_iterations: i,
                 run_time
             });

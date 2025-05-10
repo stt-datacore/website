@@ -449,7 +449,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
                 f.epoch_day <= time + seglen
                 && f.epoch_day <= endDay
             );
-            let ed = epochToDate(time);
+            let ed = epochToDate(Math.min(time + (seglen - 1), endDay));
 
             let newgroup = '';
 

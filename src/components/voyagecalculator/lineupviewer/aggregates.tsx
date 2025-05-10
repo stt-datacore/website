@@ -10,7 +10,8 @@ import CONFIG from '../../CONFIG';
 import { POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
-export const Aggregates = () => {
+export const Aggregates = (props: { for_export?: boolean }) => {
+	const { for_export } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, ship, shipData } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
@@ -58,7 +59,7 @@ export const Aggregates = () => {
 				<Table.Cell>{t('ship.antimatter')}</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-					{ship && (
+					{!for_export && ship && (
 						<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
 							<Popup.Content>
 								{ship.antimatter} ({t('voyage.lineup.level_n_ship', { n: ship.level.toString() })})
@@ -67,11 +68,16 @@ export const Aggregates = () => {
 							</Popup.Content>
 						</Popup>
 					)}
+					{!!for_export && ship && <>
+						{ship.antimatter} ({t('voyage.lineup.level_n_ship', { n: ship.level.toString() })})
+						<br />+{shipData.shipBonus} ({t('voyage.lineup.ship_trait_bonus')})
+						<br />+{shipData.crewBonus} ({t('voyage.lineup.crew_trait_bonuses')})
+					</>}
 					{!ship && <span>{voyageConfig.max_hp}</span>}
 				</Table.Cell>
-				<Table.Cell className='iconic' textAlign='center'>
+				{!for_export && <Table.Cell className='iconic' textAlign='center'>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
-				</Table.Cell>
+				</Table.Cell>}
 			</Table.Row>
 		);
 	}
@@ -91,9 +97,9 @@ export const Aggregates = () => {
 									<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 										<b>{Math.round(agg)}</b>
 									</Table.Cell>
-									<Table.Cell className='iconic' textAlign='center'>
+									{!for_export && <Table.Cell className='iconic' textAlign='center'>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
-									</Table.Cell>
+									</Table.Cell>}
 								</Table.Row>
 							);
 						// Calculated voyage (i.e. IVoyageCalcConfig)
@@ -111,9 +117,9 @@ export const Aggregates = () => {
 											{score}
 										</span>
 									</Table.Cell>
-									<Table.Cell className='iconic' textAlign='center'>
+									{!for_export && <Table.Cell className='iconic' textAlign='center'>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
-									</Table.Cell>
+									</Table.Cell>}
 								</Table.Row>
 							);
 						}

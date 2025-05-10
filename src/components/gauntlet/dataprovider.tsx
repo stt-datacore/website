@@ -9,23 +9,23 @@ import { skillToShort } from "../../utils/crewutils";
 import { UnifiedWorker } from "../../typings/worker";
 
 export interface IGauntletContext {
-    initialized: boolean;
-    viewMode: GauntletViewMode;
-    pane: GauntletPane;
-    gauntlets: Gauntlet[];
-    uniqueGauntlets: Gauntlet[];
-    setViewMode: (viewMode: GauntletViewMode) => void;
-    setPane: (pane: GauntletPane) => void;
-    refreshApiGauntlet: () => void;
     config: GauntletUserPrefs;
-    setConfig: (config: GauntletUserPrefs) => void;
-    setTops: (value: number) => void;
-    tops: number;
-    setSettings: (settings: GauntletSettings) => void;
-    setFeaturedGauntlet: (value?: Gauntlet) => void;
     featuredGauntlet?: Gauntlet;
+    gauntlets: Gauntlet[];
+    initialized: boolean;
     pairGroups?: PairGroup[];
+    pane: GauntletPane;
+    tops: number;
+    uniqueGauntlets: Gauntlet[];
+    viewMode: GauntletViewMode;
+    refreshApiGauntlet: () => void;
+    setConfig: (config: GauntletUserPrefs) => void;
+    setFeaturedGauntlet: (value?: Gauntlet) => void;
     setPairGroups: (value?: PairGroup[]) => void;
+    setPane: (pane: GauntletPane) => void;
+    setSettings: (settings: GauntletSettings) => void;
+    setTops: (value: number) => void;
+    setViewMode: (viewMode: GauntletViewMode) => void;
 }
 
 const DefaultUserPrefs: GauntletUserPrefs = {
@@ -38,7 +38,8 @@ const DefaultUserPrefs: GauntletUserPrefs = {
     },
 	textFilter: '',
 	hideOpponents: false,
-	onlyActiveRound: true
+	onlyActiveRound: true,
+    natural: true
 }
 
 const DefaultGauntletContext: IGauntletContext = {
@@ -127,27 +128,29 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         }
     }, [gauntlets]);
 
-    const context = {
-        tops,
-        setTops,
-        pane,
-        setPane,
-        viewMode,
-        gauntlets,
-        uniqueGauntlets,
-        refreshApiGauntlet,
-        setViewMode,
-        setConfig,
-        setSettings,
-        setFeaturedGauntlet,
+    const context: IGauntletContext = {
+        initialized: true,
         featuredGauntlet,
+        gauntlets,
         pairGroups,
+        pane,
+        tops,
+        uniqueGauntlets,
+        viewMode,
+        refreshApiGauntlet,
+        setConfig,
+        setFeaturedGauntlet,
         setPairGroups,
+        setPane,
+        setSettings,
+        setTops,
+        setViewMode,
         config: {
+            ...DefaultUserPrefs,
             ...config,
             settings
         }
-    } as IGauntletContext;
+    };
 
     return <React.Fragment>
         <GauntletContext.Provider value={context}>

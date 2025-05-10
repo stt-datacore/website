@@ -255,7 +255,7 @@ export enum SolveStatus {
 export interface Solve {
 	node: number;
 	traits: string[];
-	crew: BossCrew[];	// Crew who can confirm this solve; empty array if already confirmed
+	crew: string[];	// Symbols of crew who can confirm this solve; empty array if already confirmed
 }
 
 export interface Solver {

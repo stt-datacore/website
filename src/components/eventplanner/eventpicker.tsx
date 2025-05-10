@@ -1,27 +1,27 @@
 import React from 'react';
-import { Form, Dropdown, Image, Header } from 'semantic-ui-react';
+import { Dropdown, Form, Header, Image } from 'semantic-ui-react';
 
-import { LockedProspect } from '../../model/game-elements';
 import { ComputedSkill, CrewMember } from '../../model/crew';
+import { LockedProspect } from '../../model/game-elements';
 import { CompletionState } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
 
-import ProspectPicker from '../../components/prospectpicker';
 import { EventCrewTable } from '../../components/eventplanner/eventcrewtable';
-import { ShuttleHelper, EventShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
+import ProspectPicker from '../../components/prospectpicker';
+import { EventShuttleHelper, ShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
 
 import CONFIG from '../../components/CONFIG';
-import { useStateWithStorage } from '../../utils/storage';
 import { applySkillBuff } from '../../utils/crewutils';
+import { useStateWithStorage } from '../../utils/storage';
 
-import { IEventData, IRosterCrew } from './model';
 import { GatherPlanner } from '../gather/gather_planner';
-import ShipTable from '../ship/shiptable';
-import { AvatarView } from '../item_presenters/avatarview';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
-import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { AvatarView } from '../item_presenters/avatarview';
 import { QPContext } from '../qpconfig/provider';
+import { ShipTable } from '../ship/shiptable';
+import { SpecialistMissionTable } from '../specialist/specialistmissions';
+import { IEventData, IRosterCrew } from './model';
 
 interface ISelectOptions {
 	key: string;
@@ -120,6 +120,7 @@ export const EventPicker = (props: EventPickerProps) => {
 	const EVENT_TYPES = {
 		'shuttles': t('event_type.shuttles'),
 		'gather': t('event_type.gather'),
+		'galaxy': t('event_type.galaxy'),
 		'skirmish': t('event_type.skirmish'),
 		'voyage': t('event_type.voyage')
 	};
@@ -166,17 +167,20 @@ export const EventPicker = (props: EventPickerProps) => {
 			{playerData && (
 				<React.Fragment>
 					{rosterType === 'myCrew' && <EventProspects pool={bonusCrew} prospects={prospects} setProspects={setProspects} />}
+					{eventData.content_types[phaseIndex] === 'galaxy' && (<SpecialistMissionTable crew={rosterCrew} eventData={eventData} />)}
 					{eventData.content_types[phaseIndex] === 'shuttles' && (<EventShuttles crew={rosterCrew} eventData={eventData} />)}
 					{eventData.content_types[phaseIndex] === 'gather' && eventData.seconds_to_start === 0 && eventData.seconds_to_end > 0 && <GatherPlanner eventSymbol={eventData.symbol} />}
 				</React.Fragment>
 			)}
 
-			{playerData && eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
+			{eventData.content_types[phaseIndex] === 'voyage' && eventData.activeContent?.content_type === 'voyage' &&
 				<div style={{ marginTop: "0.5em" }}>
 					<div style={{ margin: "0.5em 0" }}>
 						<h4>{t('base.event_ships')}</h4>
 					</div>
-					<ShipTable event_ships={eventData.bonus_ships}
+					<ShipTable
+						pageId='event_picker'
+						event_ships={eventData.bonus_ships}
 						high_bonus={eventData.featured_ships}
 						event_ship_traits={eventData.activeContent?.antimatter_bonus_ship_traits}
 					/>
@@ -251,7 +255,7 @@ const EventFeaturedShips = (props: FeaturedShipsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerShips } = globalContext.player;
-	const { ships } = globalContext.core;
+	const { all_ships } = globalContext.core;
 	const { event } = props;
 
 	return (<>
@@ -265,7 +269,7 @@ const EventFeaturedShips = (props: FeaturedShipsProps) => {
 	}}>
 		<ShipHoverStat targetGroup='event_featured_ships' />
 		{event.featured_ships.map((symbol) => {
-			const ship = (playerShips ?? ships).find(f => f.symbol === symbol);
+			const ship = (playerShips ?? all_ships).find(f => f.symbol === symbol);
 			if (!ship) return <></>;
 			else {
 				return (

@@ -3,7 +3,7 @@ import { Collection } from "../../../model/game-elements"
 import { GlobalContext } from "../../../context/globalcontext";
 import { Icon, Tab, Table } from "semantic-ui-react";
 import { PlayerCollection, Reward } from "../../../model/player";
-import { BuffBase } from "../../../model/player";
+import { ItemArchetypeBase } from "../../../model/player";
 import { RewardsGrid } from "../../crewtables/rewards";
 import { DEFAULT_MOBILE_WIDTH } from "../../hovering/hoverstat";
 
@@ -50,7 +50,7 @@ export const CollectionTiers = (props: { collection: Collection }) => {
             <Table.Body>
                 {collection.milestones?.map((milestone, idx) => {
                     const rewards = (milestone.buffs
-                        ?.map((b) => b as BuffBase)
+                        ?.map((b) => b as ItemArchetypeBase)
                         .concat(milestone.rewards ?? []) as Reward[])
 
                     return <React.Fragment key={`col_milestone_${idx}_${collection.name}`}>
