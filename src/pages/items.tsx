@@ -1,19 +1,19 @@
 import React from 'react';
 import { Step } from 'semantic-ui-react';
 
+import { DemandsTable } from '../components/items/demandstable';
+import { EquipmentTable } from '../components/items/equipment_table';
+import { ItemsFilterProvider } from '../components/items/filters';
+import { GlobalFarm } from '../components/items/globalfarm';
+import { QuipmentFilterProvider } from '../components/items/quipmentfilters';
+import { QuipmentTable } from '../components/items/quipmenttable';
+import { CustomFieldDef } from '../components/items/utils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
+import { WorkerProvider } from '../context/workercontext';
 import { EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
-import { CustomFieldDef } from '../components/items/utils';
-import { EquipmentTable } from '../components/items/equipment_table';
-import { WorkerProvider } from '../context/workercontext';
-import { ItemsFilterProvider } from '../components/items/filters';
-import { DemandsTable } from '../components/items/demandstable';
-import { QuipmentFilterProvider } from '../components/items/quipmentfilters';
-import { QuipmentTable } from '../components/items/quipmenttable';
-import { GlobalFarm } from '../components/items/globalfarm';
 
 export interface ItemsPageProps { }
 

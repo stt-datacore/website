@@ -1,57 +1,46 @@
-import React, { Component } from 'react';
-import { Header, Message, Tab, Icon, Dropdown, Menu } from 'semantic-ui-react';
-import { Link } from 'gatsby';
-import { isMobile } from 'react-device-detect';
 import { Workbook } from 'exceljs';
+import 'moment/locale/de';
 import 'moment/locale/es';
 import 'moment/locale/fr';
-import 'moment/locale/de';
+import React from 'react';
+import { Dropdown, Icon, Menu, Message, Tab } from 'semantic-ui-react';
 
-import ProfileCrew from '../components/profile_crew';
-import ProfileCrewMobile from '../components/profile_crew2';
-import { ShipTable } from '../components/ship/shiptable';
-import ProfileOther from '../components/profile_other';
 import ProfileCharts from '../components/profile_charts';
+import ProfileCrew from '../components/profile_crew';
+import ProfileOther from '../components/profile_other';
+import { ShipTable } from '../components/ship/shiptable';
 
-import { downloadData, download, exportCrew, exportCrewFields, prepareProfileData } from '../utils/crewutils';
-import { exportShips, exportShipFields, mergeRefShips, mergeShips } from '../utils/shiputils';
-import { mergeItems, exportItems, exportItemFields } from '../utils/itemutils';
 import { IDemand } from '../model/equipment';
+import { download, downloadData, exportCrew, exportCrewFields, prepareProfileData } from '../utils/crewutils';
 import { demandsPerSlot } from '../utils/equipment';
+import { exportItemFields, exportItems, mergeItems } from '../utils/itemutils';
+import { exportShipFields, exportShips, mergeRefShips } from '../utils/shiputils';
 
-import CONFIG from '../components/CONFIG';
-import { CrewMember } from '../model/crew';
-import { PlayerCrew, PlayerData } from '../model/player';
-import { EquipmentItem } from '../model/equipment';
-import { GlobalContext } from '../context/globalcontext';
-import { calculateBuffConfig } from '../utils/voyageutils';
-import DataPageLayout from '../components/page/datapagelayout';
-import { v4 } from 'uuid';
 import moment from 'moment';
-import { PlayerBadge } from '../components/page/playerbadge';
+import { v4 } from 'uuid';
+import CONFIG from '../components/CONFIG';
+import RosterSummary from '../components/crewtables/rostersummary';
 import { DemandsTable } from '../components/items/demandstable';
-import { WorkerProvider } from '../context/workercontext';
 import { ItemsFilterProvider } from '../components/items/filters';
 import { GlobalFarm } from '../components/items/globalfarm';
-import RosterSummary from '../components/crewtables/rostersummary';
+import DataPageLayout from '../components/page/datapagelayout';
+import { PlayerBadge } from '../components/page/playerbadge';
+import { GlobalContext } from '../context/globalcontext';
+import { WorkerProvider } from '../context/workercontext';
+import { EquipmentItem } from '../model/equipment';
+import { PlayerCrew, PlayerData } from '../model/player';
+import { useStateWithStorage } from '../utils/storage';
+import { calculateBuffConfig } from '../utils/voyageutils';
 
-const isWindow = typeof window !== 'undefined';
+export const ProfilePage = () => {
+	return (
+		<DataPageLayout demands={['cadet', 'episodes', 'items', 'all_buffs']}>
+			<ProfilePageLoader />
+		</DataPageLayout>
+	);
+}
 
-type ProfilePageProps = {
-	setPlayerData?: (value?: PlayerData) => void;
-	setLastModified?: (value?: Date) => void;
-};
-
-type ProfilePageState = {
-	dbid?: string;
-	dbidHash?: string;
-	errorMessage?: string;
-	lastModified?: Date;
-	mobile: boolean;
-};
-
-
-export const ProfilePage = (props: ProfilePageProps) => {
+const ProfilePageLoader = () => {
 	const globalContext = React.useContext(GlobalContext);
 
 	const { core: globalCore } = globalContext;
@@ -63,6 +52,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	const [newCrew, setNewCrew] = React.useState<PlayerCrew[] | undefined>(undefined);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
+	const [calculatedDemands, setCalculatedDemands] = React.useState<EquipmentItem[] | undefined>(undefined);
 
 	React.useEffect(() => {
 		if (coreCrew?.length) {
@@ -93,33 +83,30 @@ export const ProfilePage = (props: ProfilePageProps) => {
 		)
 	}
 	else return (
-		<DataPageLayout>
-			<React.Fragment>
-				{!profData && <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>}
-				{!!profData && <React.Fragment>
-					<GlobalContext.Provider value={{
-						...globalContext,
-						player: {
-							...globalContext.player,
-							loaded: true,
-							playerData: profData,
-							buffConfig: buffConfig,
-							maxBuffs: globalContext.core.all_buffs,
-							playerShips,
-							showPlayerGlance: false,
-							setShowPlayerGlance: (value) => false,
-							noGradeColors: globalContext.player.noGradeColors,
-							setNoGradeColors: globalContext.player.setNoGradeColors,
-							newCrew,
-							setNewCrew,
-							setCalculatedDemands: () => false,
-						}
-					}}>
-						<ProfilePageComponent refresh={refresh} />
-					</GlobalContext.Provider>
-				</React.Fragment>}
-			</React.Fragment>
-		</DataPageLayout>
+		<React.Fragment>
+			{!profData && <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>}
+			{!!profData && <React.Fragment>
+				<GlobalContext.Provider value={{
+					...globalContext,
+					player: {
+						...globalContext.player,
+						loaded: true,
+						playerData: profData,
+						buffConfig: buffConfig,
+						maxBuffs: globalContext.core.all_buffs,
+						playerShips,
+						showPlayerGlance: false,
+						setShowPlayerGlance: (value) => false,
+						newCrew,
+						setNewCrew,
+						calculatedDemands,
+						setCalculatedDemands,
+					}
+				}}>
+					<ProfilePageComponent refresh={refresh} />
+				</GlobalContext.Provider>
+			</React.Fragment>}
+		</React.Fragment>
 	);
 
 	function configureProfile() {
@@ -127,6 +114,8 @@ export const ProfilePage = (props: ProfilePageProps) => {
 		// if (isMobile || (urlParams.has('mobile') && urlParams.get('mobile'))) {
 		// 	setIsMobile(true);
 		// }
+		setCalculatedDemands(undefined);
+
 		let dbid = '';
 		let dbidHash = '';
 		if (urlParams.has('dbid')) {
@@ -194,12 +183,13 @@ export const ProfilePage = (props: ProfilePageProps) => {
 }
 
 const ProfilePageComponent = (props: { refresh?: () => void }) => {
-
 	const globalContext = React.useContext(GlobalContext);
 
 	const { t } = globalContext.localized;
 	const { playerData, buffConfig } = globalContext.player ?? { playerData: undefined };
 	const { items, crew: allCrew } = globalContext.core;
+
+	const [selPane, setSelPane] = useStateWithStorage<number>('profile/sel_pane', 0);
 
 	const profileItems = React.useMemo(() => {
 		return globalContext.core.items.filter(f => playerData?.player.character.items.some(it => it.symbol === f.symbol));
@@ -299,7 +289,10 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 			</Menu>
 			<br/>
 			<div style={{margin: '0.5em 1em', fontStyle: 'italic'}}>({t('profile.switch_to_english')})</div>
-			<Tab menu={{ secondary: true, pointing: true }} panes={panes} />
+			<Tab
+				activeIndex={selPane}
+				onTabChange={(e, data) => setSelPane(data.activeIndex as number ?? 0)}
+				menu={{ secondary: true, pointing: true }} panes={panes} />
 		</>
 	)) || <></>;
 
@@ -494,6 +487,14 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 
 
 }
+
+// type ProfilePageState = {
+// 	dbid?: string;
+// 	dbidHash?: string;
+// 	errorMessage?: string;
+// 	lastModified?: Date;
+// 	mobile: boolean;
+// };
 
 // interface ProfilePageComponentProps {
 // 	props: ProfilePageProps;

@@ -5,7 +5,7 @@ import { Icon, ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
 import { ItemArchetypeBase, Milestone, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
 import { getIconPath } from './assets';
-import { simplejson2csv, ExportField } from './misc';
+import { ExportField, simplejson2csv } from './misc';
 
 
 export interface ItemBonusInfo {

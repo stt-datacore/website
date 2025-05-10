@@ -1,19 +1,19 @@
 import React from 'react';
-import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
-import { useStateWithStorage } from '../utils/storage';
-import { DataContext, DataProviderProperties } from './datacontext';
-import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
-import { prepareProfileData } from '../utils/crewutils';
-import { Ship } from '../model/ship';
-import { mergeRefShips, mergeShips } from '../utils/shiputils';
-import { stripPlayerData } from '../utils/playerutils';
-import { BossBattlesRoot } from '../model/boss';
-import { ShuttleAdventure } from '../model/shuttle';
 import { ArchetypeRoot20 } from '../model/archetype';
-import { getItemWithBonus } from '../utils/itemutils';
-import { TinyStore } from '../utils/tiny';
+import { BossBattlesRoot } from '../model/boss';
 import { EquipmentItem } from '../model/equipment';
+import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { Ship } from '../model/ship';
+import { ShuttleAdventure } from '../model/shuttle';
 import { ShipTraitNames } from '../model/traits';
+import { prepareProfileData } from '../utils/crewutils';
+import { getItemWithBonus } from '../utils/itemutils';
+import { stripPlayerData } from '../utils/playerutils';
+import { mergeRefShips } from '../utils/shiputils';
+import { useStateWithStorage } from '../utils/storage';
+import { TinyStore } from '../utils/tiny';
+import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
+import { DataContext, DataProviderProperties } from './datacontext';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -34,8 +34,8 @@ export interface PlayerContextData {
 	dataSource?: string;
 	sessionStates?: ISessionStates;
 	updateSessionState?: (sessionKey: SessionStateKey, sessionValue: number) => void;
-	calculatedDemands?: (EquipmentItem | EquipmentItem)[]
-	setCalculatedDemands: (value: (EquipmentItem | EquipmentItem)[] | undefined) => void;
+	calculatedDemands?: EquipmentItem[]
+	setCalculatedDemands: (value: EquipmentItem[] | undefined) => void;
 };
 
 export interface IEphemeralData {

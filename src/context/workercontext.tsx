@@ -52,7 +52,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     private readonly clearState = () => {
         this.setState({
             ... this.state,
-            extraCallbacks: [],
+            extraCallbacks: [].slice(),
             workerName: null,
             config: null,
             callback: null,
