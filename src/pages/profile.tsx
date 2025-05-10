@@ -33,6 +33,7 @@ import { DemandsTable } from '../components/items/demandstable';
 import { WorkerProvider } from '../context/workercontext';
 import { ItemsFilterProvider } from '../components/items/filters';
 import { GlobalFarm } from '../components/items/globalfarm';
+import RosterSummary from '../components/crewtables/rostersummary';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -64,7 +65,9 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 
 	React.useEffect(() => {
-		configureProfile();
+		if (coreCrew?.length) {
+			configureProfile();
+		}
 	}, [coreCrew]);
 
 	const profData: PlayerData | undefined = React.useMemo(() => {
@@ -112,7 +115,7 @@ export const ProfilePage = (props: ProfilePageProps) => {
 							setCalculatedDemands: () => false,
 						}
 					}}>
-						<ProfilePageComponent />
+						<ProfilePageComponent refresh={refresh} />
 					</GlobalContext.Provider>
 				</React.Fragment>}
 			</React.Fragment>
@@ -153,6 +156,13 @@ export const ProfilePage = (props: ProfilePageProps) => {
 		fetchProfile(dbid, dbidHash);
 	}
 
+	function refresh() {
+		setStrippedPlayerData(undefined);
+		setTimeout(() => {
+			configureProfile();
+		});
+	}
+
 	function fetchProfile(dbid?: string, dbidHash?: string) {
 		if (!dbid && !dbidHash) return;
 		let lastModified: Date | undefined = undefined;
@@ -183,12 +193,12 @@ export const ProfilePage = (props: ProfilePageProps) => {
 	}
 }
 
-const ProfilePageComponent = () => {
+const ProfilePageComponent = (props: { refresh?: () => void }) => {
 
 	const globalContext = React.useContext(GlobalContext);
 
 	const { t } = globalContext.localized;
-	const { playerData } = globalContext.player ?? { playerData: undefined };
+	const { playerData, buffConfig } = globalContext.player ?? { playerData: undefined };
 	const { items, crew: allCrew } = globalContext.core;
 
 	const profileItems = React.useMemo(() => {
@@ -199,7 +209,16 @@ const ProfilePageComponent = () => {
 		{
 			key: 'view_profile_crew',
 			menuItem: t('profile.crew'),
-			render: () => playerData && <ProfileCrew pageId={"profile_crewTool_" + playerData.player.dbid} /> || <></>
+			render: () => playerData &&
+				<React.Fragment>
+					<ProfileCrew pageId={"profile_crewTool_" + playerData.player.dbid} />
+					{!!buffConfig && <RosterSummary
+						allCrew={allCrew}
+						myCrew={playerData.player.character.crew}
+						buffConfig={buffConfig}
+						/>}
+				</React.Fragment>
+				|| <></>
 		},
 		{
 			key: 'view_profile_all',
@@ -274,6 +293,9 @@ const ProfilePageComponent = () => {
 						<Dropdown.Item onClick={() => _exportItems()}>{t('profile.download.item_table')} (CSV)</Dropdown.Item>
 					</Dropdown.Menu>
 				</Dropdown>
+				{!!props.refresh && <Menu.Item>
+					<Icon name='refresh' style={{margin:0}} onClick={() => props.refresh!()} />
+				</Menu.Item>}
 			</Menu>
 			<br/>
 			<div style={{margin: '0.5em 1em', fontStyle: 'italic'}}>({t('profile.switch_to_english')})</div>
