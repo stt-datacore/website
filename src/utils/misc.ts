@@ -332,13 +332,17 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
 		days = Math.floor(hours / 24);
 		hours -= (days * 24);
 	}
+	let neg = (hours < 0 || minutes < 0 || seconds < 0) ? '-' : '';
+	if (hours < 0) hours *= -1;
+	if (minutes < 0) minutes *= -1;
+	if (seconds < 0) seconds *= -1;
 	if (!days) {
 		if (!hours) {
-			return `${two(minutes)}:${two(seconds)}`
+			return `${neg}${two(minutes)}:${two(seconds)}`
 		}
-		return `${two(hours)}:${two(minutes)}:${two(seconds)}`
+		return `${neg}${two(hours)}:${two(minutes)}:${two(seconds)}`
 	}
-	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
+	return `${neg}${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
 }
 
 /**
