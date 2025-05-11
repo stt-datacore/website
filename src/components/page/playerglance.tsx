@@ -13,7 +13,7 @@ import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { getIconPath } from "../../utils/assets";
 import { IEphemeralData } from "../../context/playercontext";
-import { formatRunTime } from "../../utils/misc";
+import { formatRunTime, printShortDistance } from "../../utils/misc";
 
 type AllEnergy = {
     money: number,
@@ -98,7 +98,9 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     }, [playerData, ephemeral]);
 
     React.useEffect(() => {
-        setTimeout(shuttleTick, 1000);
+        if (shuttleSeconds) {
+            setTimeout(shuttleTick, 60000);
+        }
     }, [shuttleSeconds]);
 
     const { supplyKit } = energy;
@@ -150,8 +152,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     {currentEvent.name}
                 </h3>
                 {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
-                {shuttleSeconds > 0 && formatRunTime(shuttleSeconds, t)}
-                {shuttleSeconds < 0 && <div style={{color: 'red', fontWeight: 'bold'}}>{formatRunTime(shuttleSeconds, t)}</div>}
+                {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
+                {shuttleSeconds < 0 && <div style={{color: 'red', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
             </div>}
             {!!supplyKit && <div style={{...flexRow, gap: '0.5em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
                 <img src={`${process.env.GATSBY_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
@@ -392,7 +394,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             setShuttleSeconds(0);
             return;
         }
-        let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 1000);
+        let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 60000) * 60;
         if (diff !== shuttleSeconds) {
             setShuttleSeconds(diff);
         }
