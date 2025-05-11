@@ -362,7 +362,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         if (!ephemeral?.shuttleAdventures?.length || currentEvent?.content.content_type !== 'shuttles') {
             setShuttleData(undefined);
             setShuttleSeconds(0);
-            glanceTicker = undefined;
             return;
         }
         ephemeral.shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
