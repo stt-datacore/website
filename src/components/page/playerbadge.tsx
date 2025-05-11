@@ -1,11 +1,7 @@
 import React from "react";
-import { PlayerData, TranslateMethod } from "../../model/player";
-import { Link } from "gatsby";
 import { Item, Label } from "semantic-ui-react";
-import { GlobalContext } from "../../context/globalcontext";
+import { PlayerData, TranslateMethod } from "../../model/player";
 import { ColorName } from "../fleet/colorname";
-
-
 
 export interface PlayerBadgeProps {
     playerData: PlayerData;

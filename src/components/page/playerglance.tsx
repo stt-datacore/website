@@ -13,6 +13,7 @@ import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { getIconPath } from "../../utils/assets";
 import { IEphemeralData } from "../../context/playercontext";
+import { formatRunTime } from "../../utils/misc";
 
 type AllEnergy = {
     money: number,
@@ -47,6 +48,11 @@ export interface PlayerGlanceProps {
     t: TranslateMethod
 }
 
+type ShuttleData = {
+    shuttles: number;
+    return: Date;
+}
+
 export const PlayerGlance = (props: PlayerGlanceProps) => {
     const flexRow = OptionsPanelFlexRow;
 
@@ -57,6 +63,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { playerData, ephemeral } = globalContext.player;
 
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal', { rememberForever: true })
+    const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
+    const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            initShuttleTime();
+        })
+    }, [ephemeral]);
 
     const currentEvent = React.useMemo(() => {
         return ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
@@ -131,6 +145,9 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 <h3 style={{ margin: 0 }}>
                     {currentEvent.name}
                 </h3>
+                {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
+                {shuttleSeconds > 0 && formatRunTime(shuttleSeconds, t)}
+                {shuttleSeconds < 0 && <div style={{color: 'red', fontWeight: 'bold'}}>{formatRunTime(shuttleSeconds, t)}</div>}
             </div>}
             {!!supplyKit && <div style={{...flexRow, gap: '0.5em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
                 <img src={`${process.env.GATSBY_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
@@ -339,4 +356,44 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
         return resources;
     }
+
+    function initShuttleTime() {
+        const { ephemeral } = globalContext.player;
+        if (!ephemeral?.shuttleAdventures?.length || currentEvent?.content.content_type !== 'shuttles') {
+            setShuttleData(undefined);
+            setShuttleSeconds(0);
+            glanceTicker = undefined;
+            return;
+        }
+        ephemeral.shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
+
+        let adv = [...ephemeral.shuttleAdventures].filter(f => !!f.shuttles.length);
+        adv.sort((a, b) => {
+            let ad = (a.shuttles[0].expires_in * 1000) + a.reference_timestamp;
+            let bd = (b.shuttles[0].expires_in * 1000) + b.reference_timestamp;
+            return ad - bd;
+        });
+
+        let a = adv[0];
+        let ad = new Date((a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
+
+        setShuttleData({
+            shuttles: adv.length,
+            return: ad
+        });
+        shuttleTick();
+    }
+
+    function shuttleTick() {
+        if (!shuttleData) {
+            setShuttleSeconds(0);
+            return;
+        }
+        let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 1000);
+        if (diff !== shuttleSeconds) {
+            setShuttleSeconds(diff);
+            setTimeout(shuttleTick, 1000);
+        }
+    }
 }
+

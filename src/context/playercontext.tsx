@@ -149,6 +149,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				if (typeof gc.disabled_until === 'string') gc.disabled_until = new Date(gc.disabled_until);
 			});
 
+			input.player.character.shuttle_adventures?.forEach((a) => a.reference_timestamp = Date.now());
+
 			setEphemeral({
 				activeCrew,
 				events: [...input.player.character.events ?? []],

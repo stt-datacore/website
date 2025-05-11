@@ -10,6 +10,7 @@ export interface ShuttleAdventure {
     challenge_rating: number
     shuttles: Shuttle[]
     completes_in_seconds: number
+    reference_timestamp: number;
     x: number
     y: number
   }
@@ -31,7 +32,7 @@ export interface ShuttleAdventure {
     required_trait: any
     skills: string[]
     trait_bonuses: TraitBonuses
-    crew_symbol?: string;
+    crew_id?: string;
   }
 
   export interface TraitBonuses {
