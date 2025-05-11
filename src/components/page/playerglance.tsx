@@ -97,6 +97,10 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     }, [playerData, ephemeral]);
 
+    React.useEffect(() => {
+        setTimeout(shuttleTick, 1000);
+    }, [shuttleSeconds]);
+
     const { supplyKit } = energy;
 
     if (!playerData?.player) return <></>;
@@ -391,7 +395,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 1000);
         if (diff !== shuttleSeconds) {
             setShuttleSeconds(diff);
-            setTimeout(shuttleTick, 1000);
         }
     }
 }
