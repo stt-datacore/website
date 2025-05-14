@@ -292,6 +292,7 @@ export interface RankScoring {
     shuttle_plus_rank: number;
     skill_rarity: number;
     tertiary_rarity: number;
+    primary_rarity: number;
     trait: number;
     velocity: number;
     crit: number;
@@ -313,6 +314,7 @@ export interface Ranks {
     ship_rank: number;
     skill_rarity_rank: number;
     tertiary_rarity_rank: number;
+    primary_rarity_rank: number;
     crit_rank: number;
     velocity_rank: number;
     potential_cols_rank: number;

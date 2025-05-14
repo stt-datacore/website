@@ -32,6 +32,7 @@ const ScoreFields = [
     "skill_positions",
     "skill_rarity",
     "am_seating",
+    "primary_rarity",
     "tertiary_rarity",
     "velocity",
 ]
@@ -57,6 +58,7 @@ const RankFields = [
     "skill_positions_rank",
     "skill_rarity_rank",
     "am_seating_rank",
+    "primary_rarity_rank",
     "tertiary_rarity_rank",
     "velocity_rank",
 ]
