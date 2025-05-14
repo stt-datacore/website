@@ -4,7 +4,7 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuippedPower, QuipmentScores, QuipSkill } from "../../../model/crew";
-import { skillToShort } from "../../../utils/crewutils";
+import { qbProgressToNext, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
 import CrewStat from "../../item_presenters/crewstat";
 import { QuipmentScoreCells } from "./quipmentscores";
@@ -27,7 +27,18 @@ export interface TopQuipmentScoreProps {
 
 export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean) => {
     const config = [] as ITableConfigRow[];
-    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
+
+    if (!excludeQBits) {
+        config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
+        config.push({
+            width: 1, column: 'to_next', title: t('collections.panes.progress.title'), reverse: false,
+            customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+                let an = qbProgressToNext(a.q_bits)[0];
+                let bn = qbProgressToNext(b.q_bits)[0];
+                return an - bn;
+            }
+        });
+    }
 
     if (pstMode === true) {
         ['primary', 'secondary', 'tertiary'].forEach((skill, idx) => {
