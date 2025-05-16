@@ -114,12 +114,12 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
         })}
         {!excludeQBits && <Table.Cell style={{textAlign: 'center'}}>
            {qbslots !== undefined && <div title={
-                crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+                !crew.immortal || crew.immortal < -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
                 }>
                 <div>
-                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits.toLocaleString()}
+                    {!!crew.immortal && crew.immortal >= -1 ? crew.q_bits.toLocaleString() : 'N/A'}
                 </div>
-                {crew.immortal === -1 &&
+                {!!crew.immortal && crew.immortal >= -1 &&
                 <div style={{fontSize:"0.8em"}}>
                     ({t('base.n_slots', { n: `${qbslots}`})})
                 </div>}
@@ -127,7 +127,7 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
         </Table.Cell>}
         {!excludeQBits && <Table.Cell style={{textAlign: 'center'}}>
            {qbslots !== undefined && <div>
-                {!!to_next && crew.immortal === -1 &&
+                {!!to_next && !!crew.immortal && crew.immortal >= -1 &&
                 <div style={{fontSize:"0.8em"}}>
                     ({t('crew_views.n_missions_to_next', { n: to_next })})
                 </div>
