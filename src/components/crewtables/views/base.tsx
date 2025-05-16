@@ -246,13 +246,13 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 						}>
 						<div>
-							{crew.immortal !== -1 ? 'N/A' : crew.q_bits}
+							{!!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
 						</div>
-						{crew.immortal === -1 &&
+						{!!crew.immortal && crew.immortal >= -1 &&
 						<div style={{fontSize:"0.8em", minWidth: '4em'}}>
 							({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
 						</div>}
-						{crew.immortal === -1 && qbslots < 4 &&
+						{!!crew.immortal && crew.immortal >= -1 && qbslots < 4 &&
 						<div style={{fontSize:"0.8em", minWidth: '6em'}}>
 							({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })})
 						</div>}

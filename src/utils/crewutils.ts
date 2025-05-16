@@ -428,7 +428,6 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	let crew = templateCrew;
 
 	if (playerData?.player?.character) {
-
 		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew = JSON.parse(JSON.stringify(templateCrew));
 			crew.immortal = CompletionState.Frozen;
@@ -438,6 +437,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			if (immortal) {
 				crew = JSON.parse(JSON.stringify(templateCrew));
 				crew.immortal = immortal.quantity;
+				crew.q_bits = immortal.qbits;
 			}
 			else {
 				crew.immortal = CompletionState.NotComplete;
@@ -451,7 +451,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (crew.immortal > 0) {
 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
 			crew.highest_owned_level = crew.max_level ?? 100;
-			crew.q_bits = 0;
+			crew.q_bits ??= 0;
 			crew.kwipment = [0, 0, 0, 0];
 			crew.kwipment_expiration = [0, 0, 0, 0];
 			inroster.push(crew);
