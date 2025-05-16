@@ -16,6 +16,8 @@ and capabilities have been added to DataCore:
 
 - Pre-release crew are now available in DataCore.
 
+- Support for client API 27 and quipment slots for frozen crew.
+
 ## DataScore
 
 - Score rebalancing (already live).

@@ -226,7 +226,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         .map((im) => im.id);
 
     p.player.character.stored_immortals =
-        p.player.character.stored_immortals.filter((im) => im.quantity !== 1);
+        p.player.character.stored_immortals.filter((im) => im.quantity !== 1 || !!im.qbits);
     p.player.character.c_stored_immortals = c_stored_immortals;
 
     p.stripped = true;
