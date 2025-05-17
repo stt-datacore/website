@@ -222,11 +222,11 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         } as PlayerCrew));
 
     let c_stored_immortals = p.player.character.stored_immortals
-        .filter((im) => im.quantity === 1)
+        .filter((im) => im.quantity === 1 && im.qbits === 0)
         .map((im) => im.id);
 
     p.player.character.stored_immortals =
-        p.player.character.stored_immortals.filter((im) => im.quantity !== 1 || !!im.qbits);
+        p.player.character.stored_immortals.filter((im) => im.quantity !== 1 || im.qbits !== 0);
     p.player.character.c_stored_immortals = c_stored_immortals;
 
     p.stripped = true;
