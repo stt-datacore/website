@@ -1,13 +1,11 @@
 import React from 'react';
-import { Table, Image, Label } from 'semantic-ui-react';
+import { Label, Table } from 'semantic-ui-react';
 
-import { getIconPath, getRarityColor } from '../../utils/assets';
-import { AtlasIcon, GameEvent } from '../../model/player';
-import ItemDisplay from '../itemdisplay';
 import { GlobalContext } from '../../context/globalcontext';
-import { getImageName } from '../../utils/misc';
+import { GameEvent } from '../../model/player';
+import { getIconPath } from '../../utils/assets';
 import { checkReward } from '../../utils/itemutils';
-import { AvatarView, AvatarViewMode, BasicItem } from '../item_presenters/avatarview';
+import { AvatarView } from '../item_presenters/avatarview';
 
 function ThresholdRewardsTab(props: {eventData: GameEvent}) {
 	const { threshold_rewards } = props.eventData;

@@ -44,6 +44,8 @@ interface Seats {
 
 export const HofDetails = (props: HofDetailsProps) => {
     const context = React.useContext(GlobalContext);
+    const { t, tfmt, useT } = context.localized;
+    const { t: details } = useT('hof.details');
 
     const { voyageStats, glanceDays, rawVoyages } = props.hofState;
     const crewSymbol = props.hofState.crewSymbol?.filter(
@@ -199,14 +201,19 @@ export const HofDetails = (props: HofDetailsProps) => {
                             textAlign: "center",
                         }}
                     >
-                        {featuredList.length > 1 && <h3>Shared Voyages</h3>}
+                        {featuredList.length > 1 && <h3>{details('shared_voyages')}</h3>}
 
                         <p>
-                            {glanceDays} Day Details: {rawVoyages.length.toLocaleString()}{" "}
-                            Voyages
+                            {details('timeframe_details{{:}}', {
+                                timeframe: t('duration.n_day', { days: glanceDays })
+                            })}
+                            {t('global.n_x', {
+                                n: rawVoyages.length.toLocaleString(),
+                                x: t('base.voyages')
+                            })}
                         </p>
                         <p>
-                            Average Duration:{" "}
+                            {t('hof.average_duration{{:}}')}{" "}
                             {formatNumber(
                                 rawVoyages
                                     .map((r) => r.estimatedDuration ?? 0)
@@ -266,7 +273,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column" }}>
                                             <h3 style={{ textAlign: "center", margin: "1.5em 0em" }}>
-                                                <b>Seating Frequency</b>
+                                                <b>{details('seating_frequency')}</b>
                                             </h3>
                                             <div
                                                 style={{
@@ -358,8 +365,9 @@ export const HofDetails = (props: HofDetailsProps) => {
                         </div>
                         <h3 style={{ textAlign: "center", margin: "1.5em 0em" }}>
                             <b>
-                                Most Frequent Voyages
-                                {featuredList.length > 1 && <>&nbsp;Together</>}
+
+                                {featuredList.length <= 1 && <>{details('most_frequent_voyages')}</>}
+                                {featuredList.length > 1 && <>{details('most_frequent_voyages_together')}</>}
                             </b>
                         </h3>
                         <div
@@ -421,7 +429,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                                 </div>
 
                                 <h3 style={{ textAlign: "center", margin: "1.5em 0em" }}>
-                                    <b>Other Voyages</b>
+                                    <b>{details('other_voyages')}</b>
                                 </h3>
 
                                 <div
@@ -493,7 +501,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                     </div>
                     <div>
                         <h3 style={{ textAlign: "center", margin: "1.5em 0em" }}>
-                            <b>Most Frequent Co-Voyagers</b>
+                            <b>{details('most_frequent_covoyagers')}</b>
                         </h3>
                         <div
                             style={{

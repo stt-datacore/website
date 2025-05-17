@@ -1,10 +1,9 @@
-import CONFIG from '../components/CONFIG';
 import { CrewMember } from '../model/crew';
-import { AvatarIcon } from '../model/game-elements';
+import { AvatarIcon, PortalLogEntry as PortalLogEntry, PortalReport } from '../model/game-elements';
 import { PlayerCrew, TranslateMethod } from '../model/player';
 import { shortToSkill, skillToShort } from './crewutils';
 
-export type RankMode = "voyages" | "duration" | "voydur" | "maxdur" | "voymaxdur";
+export type RankMode = "voyages" | "duration" | "voydur" | "maxdur" | "voymaxdur" | "norm" | "norm_max";
 
 export interface DropDownItem {
 	key: string;
@@ -30,8 +29,8 @@ export function translateSkills(string: string, separator: string = '/'): string
 	return output.join(separator);
 }
 
-export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9): string {
-	let stats = [] as string[];
+export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, simple: boolean, showMore: boolean = true, bThreshold = 40, gThreshold = 9, vThreshold = 9, dThreshold = 50): string {
+	let stats = [] as { rank: number, stat: string, priority: number }[];
 
 	const rankType = rank => {
 		return rank.startsWith('V_') ? t('base.voyage') : rank.startsWith('G_') ? t('base.gauntlet') : t('global.base');
@@ -41,30 +40,56 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 		if (simple) {
 			if (rank.startsWith('B_')) {
 				if (crew.ranks[rank] && crew.ranks[rank] <= bThreshold) {
-					stats.push(`${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`);
+					stats.push({ stat: `${translateSkills(rank.slice(2))} #${crew.ranks[rank]}`, rank: crew.ranks[rank], priority: 0 });
 				}
 			}
 		} else {
 			if (rank.startsWith('V_') || rank.startsWith('G_') || rank.startsWith('B_')) {
 				if (crew.ranks[rank] && crew.ranks[rank] <= gThreshold) {
-					stats.push(`${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`);
+					stats.push({ stat: `${rankType(rank)} #${crew.ranks[rank]} ${translateSkills(rank.slice(2).replace('_', ' / '), " / ")}`, rank: crew.ranks[rank], priority: 0 });
 				}
 			}
 			if (rank === 'voyTriplet') {
 				if (crew.ranks[rank] && (crew.ranks.voyTriplet?.rank ?? 0) <= vThreshold)
-					stats.push(`${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`);
+					stats.push({stat: `${t('base.voyage')} #${crew.ranks.voyTriplet?.rank} ${crew.ranks.voyTriplet?.name ? translateSkills(crew.ranks.voyTriplet?.name, ' / ') : ''}`, rank: crew.ranks.voyTriplet?.rank ?? 0, priority: 1 });
 			}
 		}
 	}
 
+	Object.keys(crew.ranks.scores).forEach((score) => {
+		if (score.endsWith("_rank")) return;
+		const rankKey = `${score}_rank`;
+		if (crew.ranks[rankKey] && typeof crew.ranks[rankKey] === 'number' && crew.ranks[rankKey] <= dThreshold) {
+			if (score === 'ship') {
+				if (crew.ranks.scores.ship.kind === 'offense') {
+					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.o')})`, rank: crew.ranks[rankKey], priority: 1 });
+				}
+				else {
+					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.d')})`, rank: crew.ranks[rankKey], priority: 1 });
+				}
+			}
+			else {
+				stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
+			}
+		}
+	});
+
+	const sortStats = () => {
+		stats.sort((a, b) => {
+			return a.rank - b.rank || a.priority - b.priority || a.stat.localeCompare(b.stat);
+		});
+	};
+
 	if (simple) {
-		stats.push(`${t('base.voyages')} #${crew.ranks.voyRank}`);
-		return stats.join(' | ');
+		stats.push({ stat: `${t('base.voyages')} #${crew.ranks.voyRank}`, rank: crew.ranks.voyRank, priority: 0 });
+		sortStats();
+		return stats.map(s => s.stat).join(' | ');
 	} else {
 		if (stats.length === 0) {
 			return showMore ? t('cool_stats.show_detailed_ellipses') : '';
 		} else {
-			return stats.join(', ') + (showMore ? `, ${t('cool_stats.more_stats_ellipses')}` : '');
+			sortStats();
+			return stats.map(s => s.stat).join(', ') + (showMore ? `, ${t('cool_stats.more_stats_ellipses')}` : '');
 		}
 	}
 }
@@ -102,34 +127,7 @@ export function simplejson2csv<T>(data: T[], fields: ExportField[], delimeter = 
  * @returns
  */
 export function appelate(text: string) {
-	text = text.toLowerCase();
-	let curr: string = "";
-	let cpos = 0;
-
-	text = text.toLowerCase();
-
-	const match = new RegExp(/[A-Za-z0-9']/);
-
-	for (let ch of text) {
-		if (ch === ch.toUpperCase() && !curr.endsWith(" ")) {
-			curr += " ";
-			cpos = 0;
-		}
-		if (match.test(ch)) {
-			if (cpos++ === 0) {
-				curr += ch.toUpperCase();
-			}
-			else {
-				curr += ch.toLowerCase();
-			}
-		}
-		else {
-			cpos = 0;
-			curr += ch == '_' ? " " : ch;
-		}
-	}
-
-	return curr;
+	return text.split(" ").map(t => t.split("_")).flat().filter(t => t).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1).toLowerCase()}`).join(" ");
 }
 
 export function translatePseudocolumn(name: string, t: TranslateMethod) {
@@ -334,13 +332,17 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
 		days = Math.floor(hours / 24);
 		hours -= (days * 24);
 	}
+	let neg = (hours < 0 || minutes < 0 || seconds < 0) ? '-' : '';
+	if (hours < 0) hours *= -1;
+	if (minutes < 0) minutes *= -1;
+	if (seconds < 0) seconds *= -1;
 	if (!days) {
 		if (!hours) {
-			return `${two(minutes)}:${two(seconds)}`
+			return `${neg}${two(minutes)}:${two(seconds)}`
 		}
-		return `${two(hours)}:${two(minutes)}:${two(seconds)}`
+		return `${neg}${two(hours)}:${two(minutes)}:${two(seconds)}`
 	}
-	return `${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
+	return `${neg}${two(days)}:${two(hours)}:${two(minutes)}:${two(seconds)}`
 }
 
 /**
@@ -360,7 +362,7 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
  * @param check The method that performs an operation on each combination.
  * @returns If count_only is true, then nothing is returned. Otherwise the combinations are returned.
  */
-export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[]) => U[] | false) {
+export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[], idx?: number) => U[] | false) {
     var current_iter = 0n;
     const mmin = start_idx ?? 0n;
     const mmax = (count ?? 0n) + mmin;
@@ -438,4 +440,82 @@ export function getComboCount(itemCount: number, groupSize: number): number {
  */
 export function getComboCountBig(itemCount: bigint, groupSize: bigint): bigint {
 	return (factorialBig(itemCount) / (factorialBig(itemCount - groupSize) * factorialBig(groupSize)));
+}
+
+export function scaleImage(image: HTMLImageElement, scaleFactor: number) {
+	const canvas = document.createElement('canvas');
+	canvas.width = image.width * scaleFactor;
+	canvas.height = image.height * scaleFactor;
+
+	const ctx = canvas.getContext('2d');
+	if (!ctx) throw new Error("Cannot create 2d canvas!");
+	ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+	//ctx.save();
+	return canvas.toDataURL('image/png');
+}
+
+export async function loadAndScaleImage(url: string, scaleFactor: number) {
+	return new Promise<string>((resolve, reject) => {
+		const img = new Image();
+		const loader = (e: Event) => {
+			resolve(scaleImage(img, scaleFactor));
+		}
+		img.crossOrigin = 'anonymous';
+		img.onload = loader;
+		img.onerror = (e: any) => {
+			console.log(e);
+			//reject(new Error(e));
+		};
+		img.src = url;
+	});
+}
+
+export function getPortalLog(log: PortalLogEntry[], crew: CrewMember[], n_updates: number) {
+    const c = log.length;
+	let batch = [] as PortalLogEntry[];
+	const update = [] as PortalReport[];
+	let updcnt = 0;
+
+	log.sort((a, b) => a.portal_batch_id - b.portal_batch_id);
+	let ldate = new Date();
+
+	for (let i = c - 1; i >= 0; ) {
+        let fbatch = log.filter(ff => ff.portal_batch_id === log[i].portal_batch_id);
+        batch = batch.concat(fbatch);
+        if (fbatch.length >= 10) {
+			ldate = fbatch[0].date;
+			updcnt++;
+			if (n_updates && updcnt >= n_updates) break;
+        }
+		else {
+			for (let rec of fbatch) {
+				rec.date = ldate;
+			}
+		}
+		i -= fbatch.length;
+    }
+
+    for (let cp of batch) {
+        let c = crew.find(cc => cc.symbol === cp.symbol);
+        if (c) {
+            update.push({
+                name: c.name,
+                rarity: c.max_rarity,
+                date: cp.date ? new Date(cp.date) : undefined
+            });
+        }
+    }
+
+    return update.sort((a, b) => {
+		let r = 0;
+		if (a.date && b.date) {
+			if (typeof a.date === 'string') a.date = new Date(a.date);
+			if (typeof b.date === 'string') b.date = new Date(b.date);
+			r = a.date.getTime() - b.date.getTime();
+		}
+		else if (a.date) return -1;
+		else if (b.date) return 1;
+		if (!r) r = b.rarity - a.rarity || a.name.localeCompare(b.name);
+		return r;
+	});
 }

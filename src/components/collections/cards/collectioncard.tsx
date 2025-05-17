@@ -3,7 +3,7 @@ import { CollectionCombo, CollectionInfo, CollectionFilterOptions } from "../../
 import { GlobalContext } from "../../../context/globalcontext";
 import { Progress, Icon, Image } from "semantic-ui-react";
 
-import { BuffBase, PlayerCollection, Reward } from "../../../model/player";
+import { ItemArchetypeBase, PlayerCollection, Reward } from "../../../model/player";
 import { CiteInventory, makeCiteNeeds } from "../../../utils/collectionutils";
 import { CollectionsContext, formatColString } from "../context";
 import { RewardsGrid } from "../../crewtables/rewards";
@@ -49,7 +49,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
     const rewards =
         playerCol.totalRewards > 0
             ? (playerCol.milestone.buffs
-                ?.map((b) => b as BuffBase)
+                ?.map((b) => b as ItemArchetypeBase)
                 .concat(playerCol.milestone.rewards ?? []) as Reward[])
             : [];
 

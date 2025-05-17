@@ -154,7 +154,7 @@ type CrewVoyageSkillsProps = {
 	showProficiency: boolean;
 };
 
-const CrewVoyageSkills = (props: CrewVoyageSkillsProps) => {
+export const CrewVoyageSkills = (props: CrewVoyageSkillsProps) => {
 	const { crew, showProficiency } = props;
 	if (!('skills' in crew)) return <></>;
 	return (

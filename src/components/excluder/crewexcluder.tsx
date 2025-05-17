@@ -1,17 +1,20 @@
 import React from 'react';
-import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps } from 'semantic-ui-react';
+import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps, Popup } from 'semantic-ui-react';
 
-import { IVoyageCrew } from '../../model/voyage';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
+import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
+import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../base/optionsmodal_base';
 
-import { CalculatorContext } from './context';
-import CrewPicker from '../../components/crewpicker';
-import { IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest } from '../../utils/events';
-import { GlobalContext } from '../../context/globalcontext';
-import { oneCrewCopy } from '../../utils/crewutils';
+import CrewPicker from '../crewpicker';
+import { IEventData, IEventScoredCrew } from '../eventplanner/model';
+import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
+import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
+import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
-import { QuipmentPopover } from './quipment/quipmentpopover';
+import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
+import { PlayerCrew } from '../../model/player';
+import { useStateWithStorage } from '../../utils/storage';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { AvatarView } from '../item_presenters/avatarview';
 
 interface ISelectOption {
 	key: string;
@@ -20,19 +23,47 @@ interface ISelectOption {
 };
 
 type CrewExcluderProps = {
-	rosterCrew: IVoyageCrew[];
-	preExcludedCrew: IVoyageCrew[];
+	pageId?: string
+	rosterCrew: PlayerCrew[];
+	preExcludedCrew: PlayerCrew[];
 	excludedCrewIds: number[];
 	considerFrozen?: boolean;
+	voyageConfig?: IVoyageInputConfig;
+	events?: IEventData[];
 	updateExclusions: (crewIds: number[]) => void;
 };
 
 type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
-	const calculatorContext = React.useContext(CalculatorContext);
 	const globalContext = React.useContext(GlobalContext);
-	const { voyageConfig, events } = calculatorContext;
+	const { confirm } = globalContext;
+	const { t, tfmt, useT } = globalContext.localized;
+	const { t: excluder } = useT('consider_crew.excluder');
+
+	const { events: inputEvents, voyageConfig, pageId } = props;
+	const { ephemeral, playerData } = globalContext.player;
+
+	const [eventData, setEventData] = React.useState<IEventData[] | undefined>(undefined);
+
+	const dataPrefix = React.useMemo(() => {
+		const pg = pageId ?? 'excluder';
+		if (playerData) {
+			return `${playerData.player.dbid}/${pg}`;
+		}
+		return pg;
+	}, [playerData, pageId]);
+
+	const [notedExclusions, setNotedExclusions] = useStateWithStorage<number[]>(`${dataPrefix}/noted_exclusions`, [], { rememberForever: true });
+
+	const events = React.useMemo(() => {
+		return inputEvents?.length ? inputEvents : (eventData ?? []);
+	}, [inputEvents, eventData]);
+
+	React.useEffect(() => {
+		if (!inputEvents?.length) getEvents();
+	}, [inputEvents]);
+
 	const { excludedCrewIds, updateExclusions, considerFrozen } = props;
 
 	const [selectedEvent, setSelectedEvent] = React.useState<string>('');
@@ -40,18 +71,13 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const [selectedBonus, setSelectedBonus] = React.useState<SelectedBonusType>('all');
 	const [bestCombos, setBestCombos] = React.useState([] as number[]);
 
-	const excludeQuipped = () => {
-		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
-		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
-	}
-
 	React.useEffect(() => {
 		let activeEvent: string = '';
 		let activeBonus: SelectedBonusType = 'all';
 		let phase: string = '';
 		events.forEach(gameEvent => {
 			if (gameEvent && gameEvent.seconds_to_end > 0 && gameEvent.seconds_to_start < 86400) {
-				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig.voyage_type !== 'encounter')) {
+				if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || (gameEvent.content_types.includes('voyage') && voyageConfig?.voyage_type !== 'encounter')) {
 					activeEvent = gameEvent.symbol;
 
 					let date = (new Date((new Date()).toLocaleString('en-US', { timeZone: 'America/New_York' })));
@@ -69,12 +95,12 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					if (phase === 'gather') {
 						activeBonus = 'matrix';
 					}
-					else if (phase === 'shuttles') {
+					else if (phase === 'shuttles' || phase === 'galaxy') {
 						activeBonus = 'all';
 					}
 					else if (phase === 'voyage') {
 						// Don't auto-exclude event crew if seeking recommendations for active voyage event
-						if (voyageConfig.voyage_type === 'encounter') {
+						if (voyageConfig?.voyage_type === 'encounter') {
 							activeEvent = '';
 							activeBonus = '';
 						}
@@ -126,7 +152,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
-		if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('gather') || gameEvent.content_types.includes('voyage')) {
+		if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || gameEvent.content_types.includes('voyage')) {
 			if (gameEvent.bonus.length > 0) {
 				eventOptions.push({
 					key: gameEvent.symbol,
@@ -136,25 +162,25 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			}
 		}
 	});
-	if (eventOptions.length > 0) eventOptions.push({ key: 'none', value: '', text: 'Do not exclude event crew' });
+	if (eventOptions.length > 0) eventOptions.push({ key: 'none', value: '', text: excluder('do_not_exclude_event_crew') });
 
 	const bonusOptions: ISelectOption[] = [
-		{ key: 'all', value: 'all', text: 'All event crew' },
-		{ key: 'featured', value: 'featured', text: 'Featured event crew' },
+		{ key: 'all', value: 'all', text: excluder('all_event_crew') },
+		{ key: 'featured', value: 'featured', text: excluder('featured_event_crew') },
 
 		// { key: 'best', value: 'best', text: 'My best crew for event' }
 	];
 
 	const phaseOptions = [
-		{ key: 'gather', value: 'gather', text: 'Galaxy' },
-		{ key: 'shuttles', value: 'shuttles', text: 'Faction' },
-		{ key: 'voyage', value: 'voyage', text: 'Voyage' },
+		{ key: 'gather', value: 'gather', text: t('event_type.gather')},
+		{ key: 'shuttles', value: 'shuttles', text: t('event_type.shuttles') },
+		{ key: 'voyage', value: 'voyage', text: t('event_type.voyage') },
 	] as DropdownItemProps[];
 
 	if (selectedEvent) {
 		const activeEvent = events.find(gameEvent => gameEvent.symbol === selectedEvent);
 		if (activeEvent?.content_types?.includes('gather')) {
-			bonusOptions.push({ key: 'matrix', value: 'matrix', text: 'Event skill matrix crew' });
+			bonusOptions.push({ key: 'matrix', value: 'matrix', text: excluder('event_skill_matrix_crew') });
 		}
 	}
 
@@ -163,14 +189,14 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			<Message attached onDismiss={excludedCrewIds.length > 0 ? () => { updateExclusions([]); setSelectedEvent(''); } : undefined}>
 				<Message.Content>
 					<Message.Header>
-						Crew to Exclude
+						{excluder('title')}
 					</Message.Header>
 					<Form.Group grouped>
 						{eventOptions.length > 0 && (
 							<Form.Group inline>
 								<Form.Field
-									label='Exclude crew from the event'
-									placeholder='Select event'
+									label={excluder('by_event')}
+									placeholder={excluder('select_event')}
 									control={Dropdown}
 									fluid
 									clearable
@@ -181,7 +207,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								/>
 								{selectedEvent !== '' && (
 									<Form.Field
-										label='Filter by bonus'
+										label={t('hints.filter_by_bonus')}
 										control={Dropdown}
 										fluid
 										selection
@@ -192,7 +218,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								)}
 								{selectedEvent !== '' && selectedBonus === 'matrix' && (
 									<Form.Field
-										label='Phase type'
+										label={excluder('phase_type')}
 										control={Dropdown}
 										fluid
 										selection
@@ -204,8 +230,43 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 							</Form.Group>
 						)}
 						<Form.Field>
-							<Button color='blue' onClick={(e) => excludeQuipped()}>Exclude Quipped Crew</Button>
+							<Button color='blue' onClick={(e) => excludeQuipped()}>{t('consider_crew.exclude_quipped')}</Button>
+							<Popup
+								content={excluder('denote_current')}
+								trigger={
+									<Button
+										disabled={notedExclusions.length === 0}
+										onClick={deNoteExclusions}
+										icon='trash'
+										style={{float: 'right'}}
+										/>
+									}
+								/>
+							<Popup
+								content={renderNotedCrew()}
+								trigger={
+									<Button
+										disabled={notedExclusions.length === 0}
+										color={notedExclusions?.length ? 'green' : undefined}
+										onClick={restoreNotedExclusions}
+										icon='external'
+										style={{float: 'right'}}
+										/>
+									}
+								/>
+							<Popup
+								content={excluder('note_current')}
+								trigger={
+									<Button
+										disabled={excludedCrewIds.length === 0}
+										onClick={noteExclusions}
+										icon='bookmark'
+										style={{float: 'right'}}
+										/>
+									}
+								/>
 						</Form.Field>
+
 					</Form.Group>
 				</Message.Content>
 			</Message>
@@ -233,6 +294,50 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		);
 	}
 
+	function renderNotedCrew() {
+		const flexCol = OptionsPanelFlexColumn;
+		const flexRow = OptionsPanelFlexRow;
+
+		let work = notedExclusions.map(id => props.preExcludedCrew.find(c => c.id === id)).filter(f => {
+			if (f) delete f.pickerId;
+			return f !== undefined;
+		});
+
+		work.sort((a, b) => {
+			a.pickerId ??= a.kwipment.filter(q => typeof q === 'number' ? !!q : !!q[1]).length;
+			b.pickerId ??= b.kwipment.filter(q => typeof q === 'number' ? !!q : !!q[1]).length;
+			let aq = a.pickerId;
+			let bq = b.pickerId;
+			let r = bq - aq;
+			if (!r) r = a.name.localeCompare(b.name);
+			return r;
+		});
+
+		work = work.slice(0, 10);
+		let overflow = notedExclusions.length - work.length;
+
+		return (
+			<div style={{...flexCol, alignItems: 'flex-start', gap: '0.5em'}}>
+				{excluder('restore_notes{{:}}')}
+				{work?.map((c, idx) => {
+					return (
+						<div key={`popup_noted_${c.id}_${c.symbol}_${idx}`}
+							style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
+							<AvatarView
+								mode='crew'
+								size={32}
+								item={c}
+								/>
+							{!!c.pickerId && <QuipmentPopover crew={c} />}
+							{c.name}
+						</div>
+					)
+				})}
+				{!!overflow && t('global.and_n_more_ellipses', { n: overflow })}
+			</div>
+		)
+	}
+
 	function renderCrewLabel(crew: IVoyageCrew): JSX.Element {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
@@ -251,6 +356,57 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		excludedCrewIds.splice(index, 1);
 		updateExclusions([...excludedCrewIds]);
 	}
+
+	function excludeQuipped() {
+		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
+		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
+	}
+
+	function restoreNotedExclusions() {
+		if (notedExclusions?.length) {
+			const current = [...new Set(excludedCrewIds)].sort();
+			const noted = [...new Set(notedExclusions)].sort();
+			const diff = noted.filter(id => !current.includes(id));
+			if (diff.length) {
+				updateExclusions([...current, ...diff]);
+			}
+		}
+	}
+
+	function noteExclusions() {
+		setNotedExclusions([...new Set(excludedCrewIds.concat(notedExclusions))]);
+	}
+
+	function deNoteExclusions() {
+		confirm({
+			title: t('global.delete'),
+			message: t('global.delete_confirm'),
+			onClose: (result) => {
+				if (result) {
+					setNotedExclusions([]);
+				}
+			}
+		})
+
+	}
+
+	function getEvents(): void {
+		// Get event data from recently uploaded playerData
+		if (ephemeral?.events) {
+			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew))
+				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
+				.filter(ev => ev.seconds_to_end > 0)
+				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
+			setEventData([...currentEvents]);
+		}
+		// Otherwise guess event from autosynced events
+		else {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.all_ships.map(m => ({...m, id: m.archetype_id, levels: undefined }))).then(recentEvents => {
+				setEventData([...recentEvents]);
+			});
+		}
+	}
+
 };
 
 type CrewExcluderModalProps = {
@@ -260,8 +416,9 @@ type CrewExcluderModalProps = {
 };
 
 const CrewExcluderModal = (props: CrewExcluderModalProps) => {
+	const globalContext = React.useContext(GlobalContext);
 	const { excludedCrewIds } = props;
-
+	const { t } = globalContext.localized;
 	const [options, setOptions] = React.useState<IExcluderModalOptions>(DEFAULT_EXCLUDER_OPTIONS);
 
 	const pickerCrewList = props.rosterCrew.sort((a, b) => a.name.localeCompare(b.name));
@@ -279,7 +436,7 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 		return (
 			<Button color='blue'>
 				<Icon name='zoom-in' />
-				Search for crew to exclude
+				{t('consider_crew.excluder.search')}
 			</Button>
 		);
 	}
@@ -311,17 +468,27 @@ const DEFAULT_EXCLUDER_OPTIONS = {
 } as IExcluderModalOptions;
 
 class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
+	static contextType = GlobalContext;
+	declare context: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
 	declare props: any;
 
 	protected getOptionGroups(): OptionGroup[] {
+		const { t } = this.context.localized;
 		return [
 			{
-				title: 'Filter by rarity:',
+				title: t('hints.filter_by_rarity{{:}}'),
 				key: 'rarities',
 				multi: true,
 				options: ExcluderOptionsModal.rarityOptions,
-				initialValue: [] as number[]
+				initialValue: [] as number[],
+				containerStyle: {
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-start',
+					justifyContent: 'flex-start',
+					gap:'0.5em'
+				}
 			}]
 	}
 	protected getDefaultOptions(): IExcluderModalOptions {

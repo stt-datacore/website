@@ -1,12 +1,11 @@
 import React from "react";
-import CONFIG from "../CONFIG";
-import { getActionFromItem, getShipBonus, getShipChargePhases } from "../../utils/crewutils";
-import { ShipAction, Ship, ShipBonus } from "../../model/ship";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { PresenterPluginProps, PresenterPlugin, PresenterPluginState } from "./presenter_plugin";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
-import { GlobalContext } from "../../context/globalcontext";
+import { Ship, ShipAction } from "../../model/ship";
+import { getActionFromItem, getShipBonus, getShipChargePhases } from "../../utils/crewutils";
+import CONFIG from "../CONFIG";
+import { PresenterPlugin, PresenterPluginProps, PresenterPluginState } from "./presenter_plugin";
 
 const imageMap = new Map<string, string>();
 

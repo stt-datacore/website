@@ -68,6 +68,7 @@ export interface Polestar extends KeystoneBase {
 
 export interface Icon {
   file: string;
+  atlas_info?: string
 }
 
 export interface PolestarFilter {
@@ -183,17 +184,30 @@ export interface SymbolName extends ISymbol {
 
 export interface MarkdownRemark {
   frontmatter: {
-      name?: string;
-      rarity?: number;
-      series?: string;
-      memory_alpha?: string;
-      bigbook_tier?: number;
-      events?: number;
-      in_portal?: boolean;
-      date?: Date;
-      obtained?: string;
-      mega?: boolean;
-      published?: boolean;
+    name?: string;
+    rarity?: number;
+    series?: string;
+    memory_alpha?: string;
+    bigbook_tier?: number;
+    events?: number;
+    in_portal?: boolean;
+    date?: Date;
+    obtained?: string;
+    mega?: boolean;
+    published?: boolean;
   }
 }
+
+export interface PortalLogEntry {
+  portal_batch_id: number,
+  symbol: string,
+  date: Date
+}
+
+export interface PortalReport {
+  name: string;
+  date?: Date;
+  rarity: number;
+}
+
 

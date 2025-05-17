@@ -11,6 +11,7 @@ import { LineupViewer } from '../voyagecalculator/lineupviewer/lineup_accordion'
 
 import { HistoryContext } from './context';
 import { postVoyage, SyncState, updateVoyageInHistory } from './utils';
+import { isImmortal, oneCrewCopy } from '../../utils/crewutils';
 
 type VoyageModalProps = {
 	voyage: ITrackedVoyage;
@@ -107,7 +108,10 @@ export const VoyageModal = (props: VoyageModalProps) => {
 				voyageCrewSlot.trait = assigned.trait;
 				// Use coreCrew instead of playerCrew, as current playerCrew may not reflect crew at voyage time
 				const coreCrew = globalContext.core.crew.find(ac => ac.symbol === crewSymbol);
-				if (coreCrew) voyageCrewSlot.crew = coreCrew as PlayerCrew;
+				if (coreCrew) voyageCrewSlot.crew = oneCrewCopy(coreCrew as PlayerCrew);
+				if (assigned.kwipment) {
+					voyageCrewSlot.crew.kwipment = assigned.kwipment;
+				}
 				voyageCrewSlots.push(voyageCrewSlot);
 			}
 		});

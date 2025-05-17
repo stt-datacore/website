@@ -27,6 +27,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 
 	const [paginationPage, setPaginationPage] = React.useState<number>(1);
 
+	combos.forEach(combo => combo.sort((a, b) => a.name.localeCompare(b.name)));
 	if (!combos.every(cb => cb.some(ps => !ps.owned)) || !market) {
 		combos.sort(sortCombos);
 	}
@@ -40,8 +41,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 		});
 		combos = psyms.map(m => m.map(b => provided.find(f => f.symbol === b)!));
 	}
-
-	const data: IPolestar[][] = combos.slice()
+	const data: IPolestar[][] = combos.slice();
 
 	// Pagination
 	const itemsPerPage = 10, itemsToShow = itemsPerPage*paginationPage;
@@ -77,6 +77,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 
 	// Sort by combo length, then least polestars needed, then most polestars owned, then polestar type/name
 	function sortCombos(a: IPolestar[], b: IPolestar[]): number {
+		const nameres = a.map(c => c.name).join().localeCompare(b.map(c => c.name).join());
 		const missing = (polestars: IPolestar[]) => polestars.reduce((prev, curr) => prev + (curr.owned === 0 ? 1 : 0), 0);
 		const owned = (polestars: IPolestar[]) => polestars.reduce((prev, curr) => prev + curr.owned, 0);
 		if (a.length === b.length) {
@@ -89,13 +90,13 @@ export const CombosGrid = (props: CombosGridProps) => {
 						sortResult = sortPolestars(a[i], b[i]);
 						if (sortResult !== 0) break;
 					}
-					return sortResult;
+					return sortResult || nameres;
 				}
-				return bOwned - aOwned;
+				return bOwned - aOwned || nameres;
 			}
-			return aMissing - bMissing;
+			return aMissing - bMissing || nameres;
 		}
-		return a.length - b.length;
+		return a.length - b.length || nameres;
 	}
 
 	// Match in-game sort: traits first (alpha), then rarity, then skills (alpha)

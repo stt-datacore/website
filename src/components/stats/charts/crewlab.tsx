@@ -7,7 +7,7 @@ import { dateToEpoch, epochToDate, fillGaps, OptionsPanelFlexColumn, OptionsPane
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewDropDown } from "../../base/crewdropdown";
 import { GraphPropsCommon } from "../model";
-import CrewStat from "../../crewstat";
+import CrewStat from "../../item_presenters/crewstat";
 import { applyCrewBuffs, crewCopy, skillSum, skillToShort } from "../../../utils/crewutils";
 import { useStateWithStorage } from "../../../utils/storage";
 import { PlayerBuffMode } from "../../../model/player";

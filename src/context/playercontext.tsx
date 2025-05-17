@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { CompactCrew, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Voyage, VoyageDescription } from '../model/player';
-import { useStateWithStorage } from '../utils/storage';
-import { DataContext, DataProviderProperties } from './datacontext';
-import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
-import { prepareProfileData } from '../utils/crewutils';
-import { Ship } from '../model/ship';
-import { mergeShips } from '../utils/shiputils';
-import { stripPlayerData } from '../utils/playerutils';
-import { BossBattlesRoot } from '../model/boss';
-import { ShuttleAdventure } from '../model/shuttle';
+import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
+import { BossBattlesRoot } from '../model/boss';
+import { EquipmentItem } from '../model/equipment';
+import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { Ship } from '../model/ship';
+import { ShuttleAdventure } from '../model/shuttle';
+import { ShipTraitNames } from '../model/traits';
+import { prepareProfileData } from '../utils/crewutils';
 import { getItemWithBonus } from '../utils/itemutils';
+import { stripPlayerData } from '../utils/playerutils';
+import { mergeRefShips } from '../utils/shiputils';
+import { useStateWithStorage } from '../utils/storage';
 import { TinyStore } from '../utils/tiny';
+import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
+import { DataContext, DataProviderProperties } from './datacontext';
 
 export interface PlayerContextData {
 	loaded: boolean;
@@ -32,6 +34,8 @@ export interface PlayerContextData {
 	dataSource?: string;
 	sessionStates?: ISessionStates;
 	updateSessionState?: (sessionKey: SessionStateKey, sessionValue: number) => void;
+	calculatedDemands?: EquipmentItem[]
+	setCalculatedDemands: (value: EquipmentItem[] | undefined) => void;
 };
 
 export interface IEphemeralData {
@@ -43,6 +47,8 @@ export interface IEphemeralData {
 	voyageDescriptions: VoyageDescription[],
 	archetype_cache: ArchetypeRoot20;
 	objectiveEventRoot: ObjectiveEventRoot;
+	galaxyCooldowns: GalaxyCrewCooldown[];
+	stimpack?: Stimpack;
 };
 
 export interface ISessionStates {
@@ -68,6 +74,8 @@ export const defaultPlayer = {
 	setShowPlayerGlance: () => false,
 	noGradeColors: true,
 	setNoGradeColors: () => false,
+	calculatedDemands: undefined,
+	setCalculatedDemands: () => false
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -77,15 +85,19 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics } = coreData;
+	const { crew, ship_schematics, all_ships } = coreData;
 
 	const { children } = props;
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
+	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentItem)[] | undefined>('calculatedDemands', undefined, { compress: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
+
+	// This structure is only saved in indexDB
 	const [itemArchetypeCache, setItemArchetypeCache] = useStateWithStorage<ArchetypeRoot20>('itemArchetypeCache', {} as ArchetypeRoot20, { rememberForever: true, avoidSessionStorage: true });
+
 	const [profile, setProfile] = React.useState<PlayerData | undefined>(undefined);
 	const [playerShips, setPlayerShips] = React.useState<Ship[] | undefined>(undefined);
 	const buffConfig = stripped ? calculateBuffConfig(stripped.player) : undefined;
@@ -105,7 +117,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const [loaded, setLoaded] = React.useState(false);
 
 	React.useEffect(() => {
-		if (!input || !ship_schematics.length || !crew.length) return;
+		if (!input || (!all_ships.length) || !crew.length) return;
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
 		const activeCrew = [] as CompactCrew[];
@@ -127,10 +139,17 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		});
 
 		if (input.stripped !== true) {
+			setCalculatedDemands(undefined);
 
 			if (!!input.archetype_cache?.archetypes?.length) {
 				setItemArchetypeCache(input.archetype_cache);
 			}
+
+			input.player.character.galaxy_crew_cooldowns?.forEach((gc) => {
+				if (typeof gc.disabled_until === 'string') gc.disabled_until = new Date(gc.disabled_until);
+			});
+
+			input.player.character.shuttle_adventures?.forEach((a) => a.reference_timestamp = Date.now());
 
 			setEphemeral({
 				activeCrew,
@@ -140,7 +159,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				voyage: [...input.player.character.voyage ?? []],
 				voyageDescriptions: [...input.player.character.voyage_descriptions ?? []],
 				archetype_cache: {} as ArchetypeRoot20,
-				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot
+				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot,
+				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
+				stimpack: input.player.character.stimpack
 			});
 		}
 
@@ -163,8 +184,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {
-			const schematics = JSON.parse(JSON.stringify(coreData.ship_schematics));
-			const mergedShips = mergeShips(schematics, preparedProfileData.player.character.ships);
+			const all_ships = JSON.parse(JSON.stringify(coreData.all_ships));
+			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames);
 			setPlayerShips(mergedShips);
 		}
 
@@ -181,6 +202,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setSessionStates(undefined);
 		setLoaded(false);
 		setItemArchetypeCache({} as ArchetypeRoot20);
+		setCalculatedDemands(undefined);
 		// setGameLanguage('en');
 		sessionStorage.clear();
 	};
@@ -210,7 +232,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		showBuybackAlerts,
 		setShowBuybackAlerts,
 		restoreHiddenAlerts,
-		setRestoreHiddenAlerts
+		setRestoreHiddenAlerts,
+		calculatedDemands,
+		setCalculatedDemands
 	} as PlayerContextData;
 
 	return (

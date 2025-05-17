@@ -1,5 +1,5 @@
 import { Icon } from "./game-elements"
-import { Mission, ProtoMission, Quest } from "./missions"
+import { ProtoMission, Quest } from "./missions"
 import { PotentialReward } from "./player"
 
 export interface ContinuumRoot {

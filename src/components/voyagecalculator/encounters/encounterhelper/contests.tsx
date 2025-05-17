@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Header,
+	Label,
 	Table
 } from 'semantic-ui-react';
 
@@ -14,6 +15,7 @@ type ContestsTableProps = {
 	encounter: IEncounter;
 	championData: IChampionCrewData[];
 	assignments: IContestAssignments;
+	setTargetSkills: (skills: string[]) => void;
 };
 
 export const ContestsTable = (props: ContestsTableProps) => {
@@ -28,6 +30,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 			>
 				Contest Assignments
 			</Header>
+			<p>Use this tool to plan your encounter contests. Tap a contest to see crew with viable skills for that contest.</p>
 			<Table celled selectable striped padded='very'>
 				<Table.Header>
 					<Table.Row>
@@ -78,9 +81,17 @@ export const ContestsTable = (props: ContestsTableProps) => {
 							crew.id === assignments[contestId].crew?.id
 						)?.contests[contestId];
 						return (
-							<Table.Row key={contestId}>
+							<Table.Row key={contestId}
+								onClick={() => props.setTargetSkills(contest.skills.map(cs => cs.skill))}
+								style={{ cursor: 'pointer' }}
+							>
 								<Table.Cell textAlign='center'>
 									{contestIndex+1}/{encounter.contests.length}
+									{contest.critChance > 0 && (
+										<div>
+											<Label color='pink'>Boss</Label>
+										</div>
+									)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{renderSkills(contest.skills)}
@@ -89,14 +100,14 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{contest.critChance}%
 								</Table.Cell>
 								<Table.Cell>
-									{assignedContest && (<CrewLabel crew={assignedContest.champion.crew} />)}
+									{assignedContest && <CrewLabel crew={assignedContest.champion.crew} />}
 									{!assignedContest && <>(Unassigned)</>}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest && renderChampionSkills(assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{assignedContest && (<>{assignedContest.champion.critChance}%</>)}
+									{assignedContest && <>{assignedContest.champion.critChance}%</>}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{renderContest(contestIndex, assignedContest)}

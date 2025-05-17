@@ -58,7 +58,7 @@ type StaticCrewPageProps = {
 const StaticCrewPage = (props: StaticCrewPageProps) => {
 
 	return (
-		<DataPageLayout pageTitle={''} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'keystones']} narrowLayout={true}>
+		<DataPageLayout pageTitle={''} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'keystones']} narrowLayout={false}>
 			<StaticCrewComponent props={props} />
 		</DataPageLayout>
 	);
@@ -202,7 +202,10 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 						id='static_avatar'
 						style={{
 							display: "flex",
-							maxWidth: "700px",
+							//maxWidth: "700px",
+							width: '100%',
+							gap: '1em',
+							justifyContent: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "space-evenly",
 							flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "column" : "row",
 							alignItems: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? "center" : "flex-start"
 						}}>
@@ -242,6 +245,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 						</div>
 						<div style={{
 							display: "flex",
+							maxWidth: window.innerWidth < DEFAULT_MOBILE_WIDTH || this.state.itemBig ? '700px' : '500px',
 							flexGrow: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : 1,
 							flexDirection: "column",
 						}}>

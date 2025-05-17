@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Table, Rating } from 'semantic-ui-react';
+import { Table, Rating, Checkbox, Button } from 'semantic-ui-react';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
@@ -12,6 +12,7 @@ import { IRosterCrew, RosterType, ICrewFilter } from './model';
 import { descriptionLabel } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -23,6 +24,7 @@ type CrewConfigTableProps = {
 	renderTableCells?: (crew: IRosterCrew) => JSX.Element;
 	lockableCrew?: LockedProspect[];
 	loading?: boolean;
+	extraSearchContent?: JSX.Element;
 };
 
 export const CrewConfigTable = (props: CrewConfigTableProps) => {
@@ -30,7 +32,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const { t, tfmt } = globalContext.localized;
 	const { CREW_ARCHETYPES } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew } = props;
+	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew, extraSearchContent } = props;
 
 	const [focusedCrew, setFocusedCrew] = React.useState<IRosterCrew | undefined | null>(undefined);
 
@@ -59,6 +61,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	return (
 		<React.Fragment>
 			<SearchableTable
+				extraSearchContent={extraSearchContent}
 				defaultPaginationRows={props.initOptions?.rows}
 				id={`${pageId}/table_`}
 				data={rosterCrew}

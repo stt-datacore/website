@@ -1,13 +1,11 @@
 import React from 'react';
-import { Table, Image, Label } from 'semantic-ui-react';
+import { Label, Table } from 'semantic-ui-react';
 
-import { getIconPath, getRarityColor } from '../../utils/assets';
-import { AtlasIcon, GameEvent } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
-import ItemDisplay from '../itemdisplay';
-import { getImageName } from '../../utils/misc';
+import { GameEvent } from '../../model/player';
+import { getIconPath } from '../../utils/assets';
 import { checkReward } from '../../utils/itemutils';
-import { AvatarView, AvatarViewMode, BasicItem } from '../item_presenters/avatarview';
+import { AvatarView } from '../item_presenters/avatarview';
 
 function getBracketLabel(bracket) {
 	if (bracket.first === bracket.last) { // top brackets aren't really a range

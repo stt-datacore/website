@@ -6,6 +6,7 @@ import { PlayerBuffMode } from '../model/player';
 
 type ProfileCrewProps = {
 	pageId?: string;
+	allCrew?: boolean;
 };
 
 const ProfileCrew = (props: ProfileCrewProps) => {
@@ -16,12 +17,13 @@ const ProfileCrew = (props: ProfileCrewProps) => {
 
 	return (
 		<React.Fragment>
-			<RosterTable 
+			<RosterTable
                 buffMode={buffMode}
                 setBuffMode={setBuffMode}
                 key={'profileView' + props.pageId}
 				pageId='profile'
-				rosterCrew={playerData.player.character.crew} rosterType='profileCrew'
+				rosterCrew={playerData.player.character.crew.concat(props.allCrew ? playerData.player.character.unOwnedCrew ?? [] : [])}
+				rosterType={props.allCrew ? 'allCrew' : 'profileCrew'}
 			/>
 		</React.Fragment>
 	)

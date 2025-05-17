@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { Form, Dropdown, Rating, Menu, MenuItemProps } from "semantic-ui-react";
 import { PlayerData } from "../../model/player";
-import { Ship, Schematics } from "../../model/ship";
+import { Ship } from "../../model/ship";
 import { DropDownItem } from "../../utils/misc";
-import { ShipPickerFilter, mergeShips, filterBy } from "../../utils/shiputils";
+import { ShipPickerFilter, filterBy, mergeRefShips } from "../../utils/shiputils";
 import CONFIG from "../CONFIG";
 import { getIconByKey } from "../item_presenters/shipskill";
 import { ShipSkillRanking } from "../../utils/crewutils";
@@ -58,23 +58,24 @@ export type ShipPickerProps = {
 };
 
 export const ShipPicker = (props: ShipPickerProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const globalContext = React.useContext(GlobalContext);
+	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
+	const { pool } = props;
 	const { clearable, selectedShip, setSelectedShip, filter } = props;
-
-    const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
+	const { playerShips } = globalContext.player;
     const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
 
-	if (!availableShips || availableShips.length === 0) {
-        if (!props.playerData) return <></>;
-        let pd = props.playerData;
-
-        fetch('/structured/ship_schematics.json')
-            .then(response => response.json())
-            .then((ship_schematics: Schematics[]) => {
-                let data = mergeShips(ship_schematics, pd.player.character.ships);
-                setAvailableShips(data);
-            });
-    }
+	const availableShips = React.useMemo(() => {
+		if (pool) return pool;
+		const { all_ships } = globalContext.core;
+		if (playerShips) {
+			return playerShips;
+		}
+		else {
+			let data = mergeRefShips(all_ships, [], SHIP_TRAIT_NAMES);
+			return data;
+		}
+	}, [pool, playerShips]);
 
 	const placeholder = t('hints.select_ship');
 

@@ -3,7 +3,7 @@ import { CrewChallengeInfo, IQuestCrew, QuestSolverResult } from "../../model/wo
 import { Table } from 'semantic-ui-react';
 import { Skill } from '../../model/crew';
 import { appelate, arrayIntersect } from '../../utils/misc';
-import CrewStat from '../crewstat';
+import CrewStat from '../item_presenters/crewstat';
 import { IRosterCrew } from '../crewtables/model';
 import { CrewItemsView } from '../item_presenters/crew_items';
 import PowerExplanation, { GradeSwatch, gradeCrew } from '../explanations/powerexplanation';
