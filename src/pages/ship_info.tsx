@@ -127,7 +127,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 		if (ship) {
 			return (getShipDivision(ship.rarity) + 2) as 3 | 4 | 5;
 		}
-		return 5 as 3 | 4 | 5;
+		return undefined;
 	}, [ship]);
 
 	return (<>
@@ -193,7 +193,6 @@ const ShipViewer = (props: ShipViewerProps) => {
 				division={division}
 				ship={ship}
 				setShip={(ship) => ship ? setShipKey(ship.symbol) : null}
-				showLineupManager={false}
 				/>}
 
 			{activeTabIndex === 1 &&
@@ -209,7 +208,6 @@ const ShipViewer = (props: ShipViewerProps) => {
 				division={division}
 				ship={opponentShip}
 				setShip={(ship) => setOpponentShip(ship)}
-				showLineupManager={true}
 				/>}
 		</div>
 	</>)

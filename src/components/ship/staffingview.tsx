@@ -7,7 +7,7 @@ import { GlobalContext } from "../../context/globalcontext"
 import { CrewMember } from "../../model/crew"
 import { PlayerCrew } from "../../model/player"
 import { BattleStation, Ship } from "../../model/ship"
-import { findPotentialCrew, getShipDivision, mergeRefShips } from "../../utils/shiputils"
+import { findPotentialCrew, getShipDivision, mergeRefShips, setupShip } from "../../utils/shiputils"
 import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn } from "../stats/utils"
 import { getShipBonus, getSkills } from "../../utils/crewutils"
@@ -32,7 +32,6 @@ export interface ShipStaffingProps {
     isOpponent?: boolean;
     crewStations: (PlayerCrew | CrewMember | undefined)[];
     setCrewStations: (value: (PlayerCrew | CrewMember | undefined)[]) => void;
-    showLineupManager?: boolean;
     pageId?: string;
     boss?: Ship;
 }
@@ -333,6 +332,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		let fships = opponents.map(o => ships.find(s => s.symbol === o.symbol)).filter(f => f !== undefined).map(ship => JSON.parse(JSON.stringify(ship)) as Ship);
 		if (fships.length !== opponents.length) return ships;
 		const c = fships.length;
+		let bcrew = [] as CrewMember[];
 		for (let i = 0; i < c; i++) {
 			let oppo = opponents[i];
 			let ship = fships[i];
@@ -355,7 +355,9 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			for (let i = acount; i < bcount; i++) {
 				let c = coreCrew.find(f => f.action.symbol === oppo.actions[i].symbol);
 				if (c) {
+					bcrew.push(c);
 					ship.battle_stations![i - acount].crew = c;
+					ship.actions!.push(c.action);
 				}
 			}
 			ship.id = oppo.id;
