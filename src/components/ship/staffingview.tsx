@@ -361,6 +361,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				}
 			}
 			ship.id = oppo.id;
+			ship.predefined = true;
 			fships[i] = ship;
 		}
 		return fships;

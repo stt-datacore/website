@@ -139,6 +139,7 @@ export interface Ship extends ShipBonus {
   score?: number;
   levels?: ShipLevels;
   ranks?: ShipScores;
+  predefined?: boolean;
 }
 
 

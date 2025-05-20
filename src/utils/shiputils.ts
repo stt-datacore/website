@@ -509,6 +509,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 }
 
 export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | undefined {
+	if (ship.predefined) return ship;
 	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
 	}
