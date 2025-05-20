@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { mergeRefShips, setupShip } from '../utils/shiputils';
+import { getShipDivision, mergeRefShips, setupShip } from '../utils/shiputils';
 import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
@@ -123,6 +123,13 @@ const ShipViewer = (props: ShipViewerProps) => {
 		}
 	}, [ships, shipKey]);
 
+	const division = React.useMemo(() => {
+		if (ship) {
+			return (getShipDivision(ship.rarity) + 2) as 3 | 4 | 5;
+		}
+		return 5 as 3 | 4 | 5;
+	}, [ship]);
+
 	return (<>
 		<div style={{
 			display: "flex",
@@ -183,6 +190,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				onlyImmortal={onlyImmortal}
 				pageId={'shipInfo'}
 				setCrewStations={setCrewStations}
+				division={division}
 				ship={ship}
 				setShip={(ship) => ship ? setShipKey(ship.symbol) : null}
 				showLineupManager={false}
@@ -198,6 +206,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				onlyImmortal={onlyImmortal}
 				pageId={'opponentInfo'}
 				setCrewStations={setOpponentStations}
+				division={division}
 				ship={opponentShip}
 				setShip={(ship) => setOpponentShip(ship)}
 				showLineupManager={true}

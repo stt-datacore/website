@@ -762,6 +762,7 @@
         "import": {
             "click_here": "Cliquez ici pour télécharger vos données",
             "heading": "Vous pouvez accéder aux données de votre flotte de la même manière que vous accédez actuellement aux données de vos joueurs.",
+            "live": "Données de flotte en direct",
             "title": "Données de la flotte"
         },
         "member_columns": {
@@ -1336,6 +1337,12 @@
             "paste_here_placeholder": "Collez vos {{data}} ici",
             "title": "Copier et Coller"
         },
+        "existing": {
+            "clear": "Cliquez ici pour effacer vos données",
+            "click_here": "Cliquez ici pour mettre à jour vos données",
+            "header": "Les {{data}} en direct sont déjà présentes.",
+            "live_data": "{{data}} en direct"
+        },
         "or": "OU",
         "upload_file": {
             "browse_ellipses": "Recherchez le fichier {{data}} à télécharger...",
@@ -1374,6 +1381,9 @@
         "fleet_data": "données de la flotte",
         "gauntlet_data": "données de gantelet",
         "player_data": "données du joueur",
+        "pvp_3": "données de la division commandant",
+        "pvp_4": "données de la division capitaine",
+        "pvp_5": "données de la division amirale",
         "quest_data": "données de quête"
     },
     "logic": {
@@ -1610,6 +1620,12 @@
     "prospect_picker": {
         "add_crew": "Ajouter Équipage",
         "select_crew": "Sélectionnez l'Équipage"
+    },
+    "pvp": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Vous pouvez accéder à vos données JCJ de la même manière que vous accédez actuellement à vos données de joueur."
+        }
     },
     "quipment_dropdowns": {
         "calc_mode": {

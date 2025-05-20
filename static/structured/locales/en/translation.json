@@ -754,6 +754,7 @@
         "import": {
             "click_here": "Click here to upload your data",
             "heading": "You can access your fleet data in a similar way to how you access your player data, currently.",
+            "live": "Live Fleet Data",
             "title": "Fleet Data"
         },
         "member_columns": {
@@ -1324,6 +1325,12 @@
             "paste_here_placeholder": "Paste your {{data}} here",
             "title": "Copy and Paste"
         },
+        "existing": {
+            "clear": "Click here to clear your data",
+            "click_here": "Click here to update your data",
+            "header": "Live {{data}} is already present.",
+            "live_data": "Live {{data}}"
+        },
         "or": "OR",
         "upload_file": {
             "browse_ellipses": "Browse for {{data}} file to upload...",
@@ -1362,6 +1369,9 @@
         "fleet_data": "fleet data",
         "gauntlet_data": "gauntlet data",
         "player_data": "player data",
+        "pvp_3": "commander division data",
+        "pvp_4": "captain division data",
+        "pvp_5": "admiral division data",
         "quest_data": "quest data"
     },
     "logic": {
@@ -1598,6 +1608,12 @@
     "prospect_picker": {
         "add_crew": "Add Crew",
         "select_crew": "Select Crew"
+    },
+    "pvp": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "You can access your PVP data in a similar way to how you access your player data, currently."
+        }
     },
     "quipment_dropdowns": {
         "calc_mode": {

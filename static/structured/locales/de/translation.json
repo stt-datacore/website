@@ -754,6 +754,7 @@
         "import": {
             "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
             "heading": "Sie können auf Ihre Flottendaten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen.",
+            "live": "Live-Flottendaten",
             "title": "Flottendaten"
         },
         "member_columns": {
@@ -1324,6 +1325,12 @@
             "paste_here_placeholder": "Fügen Sie hier Ihre {{data}} ein",
             "title": "Kopieren und Einfügen"
         },
+        "existing": {
+            "clear": "Klicken Sie hier, um Ihre Daten zu löschen",
+            "click_here": "Klicken Sie hier, um Ihre Daten zu aktualisieren",
+            "header": "Live {{data}} ist bereits vorhanden.",
+            "live_data": "Live {{data}}"
+        },
         "or": "ODER",
         "upload_file": {
             "browse_ellipses": "Suchen Sie nach der hochzuladenden {{data}}-Datei...",
@@ -1362,6 +1369,9 @@
         "fleet_data": "Flottendaten",
         "gauntlet_data": "Herausforderungsdaten",
         "player_data": "Spielerdaten",
+        "pvp_3": "Daten zur Commander-Liga",
+        "pvp_4": "Daten zur Kapitän-Liga",
+        "pvp_5": "Daten der Admiral-Liga",
         "quest_data": "Quest-Daten"
     },
     "logic": {
@@ -1598,6 +1608,12 @@
     "prospect_picker": {
         "add_crew": "Crew Hinzufügen",
         "select_crew": "Crew Auswählen"
+    },
+    "pvp": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Sie können auf Ihre SGS-Daten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen."
+        }
     },
     "quipment_dropdowns": {
         "calc_mode": {

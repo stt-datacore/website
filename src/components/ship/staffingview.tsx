@@ -7,7 +7,7 @@ import { GlobalContext } from "../../context/globalcontext"
 import { CrewMember } from "../../model/crew"
 import { PlayerCrew } from "../../model/player"
 import { BattleStation, Ship } from "../../model/ship"
-import { findPotentialCrew, mergeRefShips } from "../../utils/shiputils"
+import { findPotentialCrew, getShipDivision, mergeRefShips } from "../../utils/shiputils"
 import { useStateWithStorage } from "../../utils/storage"
 import { OptionsPanelFlexColumn } from "../stats/utils"
 import { getShipBonus, getSkills } from "../../utils/crewutils"
@@ -16,9 +16,14 @@ import { getActionColor, getShipBonusIcon } from "../item_presenters/shipskill"
 import { ShipPicker } from "../crewtables/shipoptions"
 import { navigate } from "gatsby"
 import { DEFAULT_SHIP_OPTIONS, ShipCrewOptionsModal } from "./shipcrewmodal"
+import { CrewPreparer } from "../item_presenters/crew_preparer"
+import { OpponentImportComponent } from "./opponent_importer"
+import { PvpOpponent, PvpRoot } from "../../model/pvp"
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat"
 
 export interface ShipStaffingProps {
     ship?: Ship;
+	division: 3 | 4 | 5 | undefined;
     setShip: (value?: Ship) => void;
     considerFrozen: boolean;
     considerUnowned: boolean;
@@ -46,8 +51,11 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
         onlyImmortal,
         ignoreSkills,
         crewStations,
-        setCrewStations
+        setCrewStations,
+		division
     } = props;
+	const [pvpData, setPvpData] = useStateWithStorage(`ship_info/opponents/pvp_${division}`, undefined as PvpRoot | undefined);
+
 	const { playerShips, playerData } = context.player;
 	const { crew: coreCrew, all_ships: coreShips } = context.core;
 
@@ -57,19 +65,25 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const [currentStation, setCurrentStation] = React.useState<number | undefined>(undefined);
 	const [currentStationCrew, setCurrentStationCrew] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalOptions, setModalOptions] = useStateWithStorage('ship_info/modalOptions', DEFAULT_SHIP_OPTIONS);
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	React.useEffect(() => {
 		setShips(loadShips());
-	}, [playerShips, coreShips]);
+	}, [playerShips, coreShips, pvpData]);
 
 	React.useEffect(() => {
 		setCrew(getCrew());
-	}, [playerData, coreCrew, considerFrozen, considerUnowned])
+	}, [playerData, coreCrew, considerFrozen, considerUnowned, isOpponent])
 
 	React.useEffect(() => {
 		if (ship?.battle_stations) {
 			crewStations.length = ship.battle_stations.length;
-			setCrewStations([...crewStations]);
+			if (isOpponent && pvpData && ship.battle_stations.every(bs => !!bs.crew)) {
+				setCrewStations(ship.battle_stations.map(bs => bs.crew!));
+			}
+			else {
+				setCrewStations([...crewStations]);
+			}
 		}
 		else {
 			setCrewStations([]);
@@ -93,8 +107,17 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-            <div style={{width: '70%'}}>
-            {!!ships?.length && <ShipPicker clearable={isOpponent} pool={ships} selectedShip={ship} setSelectedShip={navigateToShip} />}
+			<div style={{width: isMobile ? '100%' : '70%', marginBottom: '1em'}}>
+			{isOpponent && !!division && <OpponentImportComponent
+				currentHasRemote={!!pvpData}
+				division={division}
+				pvpData={pvpData}
+				setPvpData={setPvpData}
+				clearPvpData={() => setPvpData(undefined)}
+				/>}
+			</div>
+            <div style={{width: isMobile ? '100%' : '70%'}}>
+            {!!ships?.length && <ShipPicker showStaff={!!pvpData} clearable={isOpponent} pool={ships} selectedShip={ship} setSelectedShip={navigateToShip} />}
             </div>
 			<h3>{t('ship.battle_stations')}</h3>
 
@@ -109,6 +132,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				{!!ship && ship.battle_stations?.map((bs, idx) => (
 					<div key={`${isOpponent ? 'opponent_' : ''}ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
 						<CrewPicker
+							locked={!!pvpData}
 							renderCrewCaption={renderCrewCaption}
 							// isOpen={modalOpen}
 							// setIsOpen={setModalOpen}
@@ -125,7 +149,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 						/>
 						<div>
 							<Button
-								disabled={!crewStations[idx]}
+								disabled={!crewStations[idx] || !!pvpData}
 								onClick={(e) => clearStation(idx)}>
 								{t('ship.clear_station')}
 							</Button>
@@ -224,7 +248,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		const query = (input: string) => input.toLowerCase().replace(/[^a-z0-9]/g, '').indexOf(myFilter.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 
 		let filteredcrew = crew.filter(crew => {
-			return (!crewStations?.some((c) => {
+			return ((isOpponent || !crewStations?.some((c) => {
 				if (!c) return false;
 				if (c?.id) {
 					return c?.id === crew?.id;
@@ -232,34 +256,36 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				else {
 					return c?.symbol === crew?.symbol
 				}
-			}))
+			})))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
 				&& (!modalOptions?.rarities?.length || modalOptions?.rarities?.some((r) => crew.max_rarity === r))
 				&& (!modalOptions?.abilities?.length || modalOptions?.abilities?.some((a) => crew.action.ability?.type.toString() === a));
 		});
 
-		filteredcrew.sort((a, b) => {
-			let r = b.action.bonus_amount - a.action.bonus_amount;
+		// filteredcrew.sort((a, b) => {
+		// 	let r = b.action.bonus_amount - a.action.bonus_amount;
 
-			if (!r) {
-				if (b.action.ability !== undefined && a.action.ability === undefined) return 1;
-				else if (a.action.ability !== undefined && b.action.ability === undefined) return -1;
+		// 	if (!r) {
+		// 		if (b.action.ability !== undefined && a.action.ability === undefined) return 1;
+		// 		else if (a.action.ability !== undefined && b.action.ability === undefined) return -1;
 
-				if (a.action.ability?.amount && b.action.ability?.amount) {
-					r = b.action.ability.amount - a.action.ability.amount;
-				}
-				if (r) return r;
+		// 		if (a.action.ability?.amount && b.action.ability?.amount) {
+		// 			r = b.action.ability.amount - a.action.ability.amount;
+		// 		}
+		// 		if (r) return r;
 
-				r = b.action.initial_cooldown - a.action.initial_cooldown;
-				if (r) return r;
+		// 		r = b.action.initial_cooldown - a.action.initial_cooldown;
+		// 		if (r) return r;
 
-				if (!a.action.limit && b.action.limit) return -1;
-				else if (!b.action.limit && a.action.limit) return 1;
-			}
+		// 		if (!a.action.limit && b.action.limit) return -1;
+		// 		else if (!b.action.limit && a.action.limit) return 1;
+		// 	}
 
-			return r;
-		})
-		return filteredcrew;
+		// 	return r;
+		// })
+		return filteredcrew.sort((a, b) => {
+			return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
+		});
 	}
 
 	function onCrewPick(crew: PlayerCrew | CrewMember): void {
@@ -272,22 +298,70 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	function getCrew() {
 		if (!context) return [];
-		let frozen = considerFrozen;
-		let results = context.player.playerData?.player.character.crew.filter(crew => frozen || crew.immortal <= 0) ?? context.core.crew;
-		if (considerUnowned && context?.player?.playerData) {
-			results = results.concat(context.player.playerData.player.character.unOwnedCrew ?? []);
+		let results = [] as CrewMember[];
+		if (isOpponent) {
+			results = context.core.crew.slice();
 		}
-		if (onlyImmortal) {
-			results = results.filter(f => !("immortal" in f) || !!f.immortal);
+		else {
+			let frozen = considerFrozen;
+			results = context.player.playerData?.player.character.crew.filter(crew => frozen || crew.immortal <= 0) ?? context.core.crew.slice();
+			if (considerUnowned && context?.player?.playerData) {
+				results = results.concat(context.player.playerData.player.character.unOwnedCrew ?? []);
+			}
+			if (onlyImmortal) {
+				results = results.filter(f => !("immortal" in f) || !!f.immortal);
+			}
 		}
-		return [...results];
+		return results.sort((a, b) => {
+			return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
+		});
 	}
 
 	function loadShips() {
 		if (!context) return [];
-		const all_ships = [...context.core.all_ships];
-		let ships = mergeRefShips(all_ships, context.player.playerData?.player.character.ships ?? [], context.localized.SHIP_TRAIT_NAMES) ?? [];
+
+		const all_ships = context.core.all_ships.slice();
+		let ships = mergeRefShips(all_ships, isOpponent ? [] : context.player.playerData?.player.character.ships ?? [], context.localized.SHIP_TRAIT_NAMES) ?? [];
+		if (isOpponent && division) ships = ships.filter(ship => getShipDivision(ship.rarity) === division - 2);
+		if (isOpponent && pvpData?.length && pvpData[0].pvp_opponents) {
+			ships = makeOpponentsFromPvpData(pvpData[0].pvp_opponents, ships);
+		}
 		return [...ships];
+	}
+
+	function makeOpponentsFromPvpData(opponents: PvpOpponent[], ships: Ship[]) {
+		let fships = opponents.map(o => ships.find(s => s.symbol === o.symbol)).filter(f => f !== undefined).map(ship => JSON.parse(JSON.stringify(ship)) as Ship);
+		if (fships.length !== opponents.length) return ships;
+		const c = fships.length;
+		for (let i = 0; i < c; i++) {
+			let oppo = opponents[i];
+			let ship = fships[i];
+			ship = {
+				...ship,
+				level: oppo.ship_level,
+				rarity: oppo.rarity,
+				shields: oppo.shields,
+				hull: oppo.hull,
+				accuracy: oppo.accuracy,
+				evasion: oppo.evasion,
+				attack: oppo.attack,
+				crit_chance: oppo.crit_chance,
+				crit_bonus: oppo.crit_bonus,
+				attacks_per_second: oppo.attacks_per_second,
+				shield_regen: oppo.shield_regen,
+ 		 	};
+			let acount = ship.actions?.length ?? 0;
+			let bcount = oppo.actions.length;
+			for (let i = acount; i < bcount; i++) {
+				let c = coreCrew.find(f => f.action.symbol === oppo.actions[i].symbol);
+				if (c) {
+					ship.battle_stations![i - acount].crew = c;
+				}
+			}
+			ship.id = oppo.id;
+			fships[i] = ship;
+		}
+		return fships;
 	}
 
 	function clickStation(index: number, skill: string) {
