@@ -82,11 +82,15 @@ and capabilities have been added to DataCore:
 
 ## Ships
 
+- Import PVP Division Opponents
+
 - Filter by owned status
 
 - New full ship stats available for all ships
 
 - Preview ships
+
+- Several important bug fixes
 
 ## Gauntlet
 
@@ -119,3 +123,11 @@ and capabilities have been added to DataCore:
 - Remote tracking
 
 - Track crew awarded as loot on tracked voyages
+
+# Deep-Dive Game Stats
+
+- Previously called "Stats Trends"
+
+- In the main menu, under "Game Info"
+
+- Lots of interesting statistics (with many graphs) about crew, items, collections, events, etc.
