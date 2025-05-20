@@ -237,7 +237,7 @@ const CapAchiever = (props: { crew: CrewMember }) => {
 	const { crew } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	if (!crew.cap_achiever) return <></>
+	if (!crew.cap_achiever || crew.preview) return <></>
 	return (
 		<p>
 			<b>{t('base.cap_achiever')}: </b>{crew.cap_achiever.name} ({new Date(crew.cap_achiever.date * 1000).toLocaleDateString()})
