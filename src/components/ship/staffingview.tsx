@@ -159,7 +159,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			</div>
 
 			{!!ship && <div>
-				<Button disabled={crewStations.every(cs => !cs)} onClick={(e) => clearStation()}>{t('global.clear_all')}</Button>
+				<Button disabled={crewStations.every(cs => !cs) || !!pvpData} onClick={(e) => clearStation()}>{t('global.clear_all')}</Button>
 			</div>}
 
 			{!!ship && <ShipPresenter hover={false} ship={ship} showIcon={true} storeName='shipProfile' />}
