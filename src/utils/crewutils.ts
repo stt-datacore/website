@@ -381,14 +381,13 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	let crew = templateCrew;
 
 	if (playerData?.player?.character) {
-
-		if (playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
+		if (!crew.preview && playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew = JSON.parse(JSON.stringify(templateCrew));
 			crew.immortal = CompletionState.Frozen;
 		}
 		else {
 			let immortal = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id);
-			if (immortal) {
+			if (!crew.preview && immortal) {
 				crew = JSON.parse(JSON.stringify(templateCrew));
 				crew.immortal = immortal.quantity;
 			}
@@ -404,7 +403,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (crew.immortal > 0) {
 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
 			crew.highest_owned_level = crew.max_level ?? 100;
-			crew.q_bits = 0;
+			crew.q_bits ??= 0;
 			crew.kwipment = [0, 0, 0, 0];
 			crew.kwipment_expiration = [0, 0, 0, 0];
 			inroster.push(crew);
@@ -412,7 +411,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		}
 	}
 
-	inroster = inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
+	inroster = crew.preview ? [] : inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
 
 	const maxxed = {
 		maxowned: crew.highest_owned_rarity as number | undefined,
