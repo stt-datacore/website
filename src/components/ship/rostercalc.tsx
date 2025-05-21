@@ -1094,7 +1094,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     let n = Number(battleMode.slice(4)) + 1;
                     if (!getBosses(ship, crew).some(boss => boss.id === n)) pass = false;
                 }
-                else {
+                else if (battleMode === 'pvp') {
                     if (!getCrewDivisions(crew.max_rarity).includes(shipDiv)) pass = false;
                 }
                 if (pass) {
