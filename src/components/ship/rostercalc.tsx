@@ -8,7 +8,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GameEvent, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
 import { BossShip } from "../../model/boss";
-import { compareShipResults, getShipsInUse } from "../../utils/shiputils";
+import { compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
 import { formatRunTime } from "../../utils/misc";
 import { getEventData } from "../../utils/events";
@@ -1059,6 +1059,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
         max_rarity ??= ship.rarity ?? 5;
         const min_rarity = minRarity ?? 1;
+        const shipDiv = getShipDivision(ship.rarity);
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
         const maxabilityvalues = [0, 0, 0, 0, 0].map(o => Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9).map(m => 0));
         const power_depth = powerDepth ?? 2;
@@ -1088,7 +1089,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             // }
 
             if (crew.action.ability) {
-                let pass = crew.max_rarity <= max_rarity && crew.max_rarity >= min_rarity;
+                let pass = true;
+                if (battleMode.startsWith("fbb_")) {
+                    let n = Number(battleMode.slice(4)) + 1;
+                    if (!getBosses(ship, crew).some(boss => boss.id === n)) pass = false;
+                }
+                else if (battleMode === 'pvp') {
+                    if (!getCrewDivisions(crew.max_rarity).includes(shipDiv)) pass = false;
+                }
                 if (pass) {
                     if (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] < crew.action.bonus_amount) {
                         maxvalues[crew.max_rarity - 1][crew.action.bonus_type] = crew.action.bonus_amount;
