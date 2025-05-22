@@ -207,35 +207,19 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 		}
 
 		if (pairGroups[px].crew.length) {
-			pairGroups[px].crew.sort((a, b) => {
+			if (pairGroups[px].crew.length === 1) {
+				let a = pairGroups[px].crew[0];
 				let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
-				let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
-
-				if (atrait >= 3) atrait = settings.crit65;
-				else if (atrait >= 2) atrait = settings.crit45;
-				else if (atrait >= 1) atrait = settings.crit25;
-				else atrait = settings.crit5;
-
-				if (btrait >= 3) btrait = settings.crit65;
-				else if (btrait >= 2) btrait = settings.crit45;
-				else if (btrait >= 1) btrait = settings.crit25;
-				else btrait = settings.crit5;
-
-				let r = 0;
-
 				let apairs = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
-				let bpairs = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
+				let amatch = [] as Skill[];
 
-				if (apairs && bpairs) {
-					let amatch = [] as Skill[];
-					let bmatch = [] as Skill[];
-
-					[apairs, bpairs].forEach((pset, idx) => {
+				const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
+				if (apairs) {
+					[apairs].forEach((pset, idx) => {
 						for (let wpair of pset) {
 							let djoin = wpair.map(s => s.skill).sort().join();
 							if (djoin === pjoin) {
 								if (idx === 0) amatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
-								else bmatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
 								return;
 							}
 						}
@@ -253,24 +237,80 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 									}
 									]
 									if (idx === 0) amatch = glitch.sort((a, b) => a.skill.localeCompare(b.skill) || 0);
-									else bmatch = glitch.sort((a, b) => a.skill.localeCompare(b.skill) || 0);
 									return;
 								}
 							}
 						}
 					});
-
-					const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
-					const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch, settings) : getBernardsNumber(b, gauntlet, bpairs, settings);
-
 					updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
-					updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
-
-					r = Math.round(bscore) - Math.round(ascore);
-					if (!r) r = a.name.localeCompare(b.name);
 				}
-				return r ? r : a.ranks[rank] - b.ranks[rank];
-			});
+			}
+			else {
+				pairGroups[px].crew.sort((a, b) => {
+					let atrait = gauntlet.prettyTraits?.filter(t => a.traits_named.includes(t)).length ?? 0;
+					let btrait = gauntlet.prettyTraits?.filter(t => b.traits_named.includes(t)).length ?? 0;
+
+					if (atrait >= 3) atrait = settings.crit65;
+					else if (atrait >= 2) atrait = settings.crit45;
+					else if (atrait >= 1) atrait = settings.crit25;
+					else atrait = settings.crit5;
+
+					if (btrait >= 3) btrait = settings.crit65;
+					else if (btrait >= 2) btrait = settings.crit45;
+					else if (btrait >= 1) btrait = settings.crit25;
+					else btrait = settings.crit5;
+
+					let r = 0;
+
+					let apairs = getPlayerPairs(a, atrait, settings.minWeight, settings.maxWeight);
+					let bpairs = getPlayerPairs(b, btrait, settings.minWeight, settings.maxWeight);
+
+					if (apairs && bpairs) {
+						let amatch = [] as Skill[];
+						let bmatch = [] as Skill[];
+
+						[apairs, bpairs].forEach((pset, idx) => {
+							for (let wpair of pset) {
+								let djoin = wpair.map(s => s.skill).sort().join();
+								if (djoin === pjoin) {
+									if (idx === 0) amatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+									else bmatch = wpair.sort((a, b) => a.skill?.localeCompare(b.skill ?? '') ?? 0);
+									return;
+								}
+							}
+							pset = pset?.filter(ap => ap.some(p2 => p2.skill && srank.includes(p2.skill)));
+
+							if (pset?.length) {
+								for (let p of pset[0]) {
+									if (p.skill && srank.includes(p.skill)) {
+										let glitch = [{
+											...p
+										},
+										{
+											...JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
+											skill: srank.find(sr => sr !== p.skill) || ''
+										}
+										]
+										if (idx === 0) amatch = glitch.sort((a, b) => a.skill.localeCompare(b.skill) || 0);
+										else bmatch = glitch.sort((a, b) => a.skill.localeCompare(b.skill) || 0);
+										return;
+									}
+								}
+							}
+						});
+
+						const ascore = amatch?.length ? getBernardsNumber(a, gauntlet, amatch, settings) : getBernardsNumber(a, gauntlet, apairs, settings);
+						const bscore = bmatch?.length ? getBernardsNumber(b, gauntlet, bmatch, settings) : getBernardsNumber(b, gauntlet, bpairs, settings);
+
+						updatePairScore(a, { score: ascore, pair: amatch ?? apairs[0] });
+						updatePairScore(b, { score: bscore, pair: bmatch ?? bpairs[0] });
+
+						r = Math.round(bscore) - Math.round(ascore);
+						if (!r) r = a.name.localeCompare(b.name);
+					}
+					return r ? r : a.ranks[rank] - b.ranks[rank];
+				});
+			}
 
 			if (singleEntry) {
 				pairGroups[px].crew.splice(0, 1);
@@ -323,34 +363,39 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 		});
 	}
 	const blank = { core: 0, max: 0, min: 0 };
-	pairGroups.sort((a, b) => {
-		const apairs = a.pair.map(z => shortToSkill(z, true)).sort().map(s => s as string);
-		const bpairs = b.pair.map(z => shortToSkill(z, true)).sort().map(s => s as string);
+	if (pairGroups.length > 1) {
+		pairGroups.sort((a, b) => {
+			const apairs = a.pair.map(z => shortToSkill(z, true)).sort().map(s => s as string);
+			const bpairs = b.pair.map(z => shortToSkill(z, true)).sort().map(s => s as string);
 
-		const apair = apairs.join();
-		const bpair = bpairs.join();
+			const apair = apairs.join();
+			const bpair = bpairs.join();
 
-		if (apair !== bpair) {
-			if (apair === currSkills) return -1;
-			else if (bpair === currSkills) return 1;
-		}
+			if (!a.crew.length) return 1;
+			if (!b.crew.length) return -1;
 
-		if (a.pair.includes(featRank) === b.pair.includes(featRank)) {
-			let r = 0;
-			let asum = skillSum([a.crew[0][apairs[0]] || blank, a.crew[0][apairs[1]] || blank], 'proficiency')
-			let bsum = skillSum([b.crew[0][bpairs[0]] || blank, b.crew[0][bpairs[1]] || blank], 'proficiency')
-			r = bsum - asum;
-			if (!r) r = a.pair[0].localeCompare(b.pair[0]);
-			if (!r) r = a.pair[1].localeCompare(b.pair[1]);
-			return r;
-		}
-		else if (a.pair.includes(featRank)) {
-			return -1;
-		}
-		else {
-			return 1;
-		}
-	});
+			if (apair !== bpair) {
+				if (apair === currSkills) return -1;
+				else if (bpair === currSkills) return 1;
+			}
+
+			if (a.pair.includes(featRank) === b.pair.includes(featRank)) {
+				let r = 0;
+				let asum = skillSum([a.crew[0][apairs[0]] || blank, a.crew[0][apairs[1]] || blank], 'proficiency')
+				let bsum = skillSum([b.crew[0][bpairs[0]] || blank, b.crew[0][bpairs[1]] || blank], 'proficiency')
+				r = bsum - asum;
+				if (!r) r = a.pair[0].localeCompare(b.pair[0]);
+				if (!r) r = a.pair[1].localeCompare(b.pair[1]);
+				return r;
+			}
+			else if (a.pair.includes(featRank)) {
+				return -1;
+			}
+			else {
+				return 1;
+			}
+		});
+	}
 
 	return pairGroups;
 }
@@ -822,7 +867,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	if (gauntlet.prettyTraits?.length) {
 		const maxpg = 10;
-		let pgs = getPairGroups(matchedCrew1, gauntlet, settings, false, onlyActiveRound, undefined, 100, maxpg);
+		let pgs = getPairGroups(matchedCrew1, gauntlet, settings, false, onlyActiveRound, undefined, undefined, maxpg);
 
 		const incidence = {} as { [key: string]: number };
 		const avgidx = {} as { [key: string]: number };
