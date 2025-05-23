@@ -72,20 +72,20 @@ export const FleetImportComponent = (props: FleetImporterProps) => {
 
                 {currentHasRemote && <Notification
                     color={'blue'}
-                    header="Live Fleet Data"
+                    header={t('fleet.import.live')}
                     content={
                         <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
                         <p>
-                            Live fleet data is already present.
+                            {t('json.existing.header', { data: t(`json_types.fleet_data`)})}
                         </p>
                         <p>
-                            Click here to update your data if you wish to refresh your round.
+                            {t('json.existing.click_here')}
                         </p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)}>Live Fleet Data</a></b>
+                            <b><a onClick={() => setCollapsed(false)}>{t('json.existing.live_data', { data: t(`json_types.fleet_data`)})}</a></b>
                         </p>
                         <p style={{textAlign: "right"}}>
-                            <b style={{fontSize:"0.8em"}}>(To clear all live fleet data, <a title={'Clear All Fleet Data'} onClick={() => clearFleet()}>Click Here</a>)</b>
+                            <b style={{fontSize:"0.8em"}}>(<a title={t('json.existing.clear')} onClick={() => clearFleet()}>{t('json.existing.clear')}</a>)</b>
                         </p>
                         </div>
                     }
@@ -108,7 +108,7 @@ export const FleetImportComponent = (props: FleetImporterProps) => {
                         androidFileHint: 'status.json',
                         iOSFileHint: 'status?id'
                     }}
-                    title={`Fleet Input Form`}
+                    title={t('fleet.import.live')}
                     validateInput={validateFleet}
                     setValidInput={(fleet) => {
                         if (fleet) setCollapsed(true);

@@ -5,7 +5,7 @@ import { printISM, RetrievalContext } from "./context";
 import { CelestialMarketListing } from "../../model/celestial";
 import { Checkbox, Dropdown, DropdownItemProps, Icon, Label, Message, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
-import { IKeystone } from "./model";
+import { IConstellation, IKeystone } from "./model";
 import { getIconPath } from "../../utils/assets";
 import { CrewMember } from "../../model/crew";
 import { ItemHoverStat, ItemTarget } from "../hovering/itemhoverstat";
@@ -25,7 +25,7 @@ export const CelestialMarket = (props: { dbid?: string }) => {
     const globalContext = React.useContext(GlobalContext);
     const retrievalContext = React.useContext(RetrievalContext);
     const { market, allKeystones, polestarTailors, wishlist, autoWishes } = retrievalContext;
-    const { t, ITEM_ARCHETYPES } = globalContext.localized;
+    const { t, ITEM_ARCHETYPES, TRAIT_NAMES } = globalContext.localized;
     const { playerData } = globalContext.player;
     const [filteredListings, setFilteredListings] = React.useState<CelestialMarketListing[]>([]);
     const [allListings, setAllListings] = React.useState<CelestialMarketListing[]>([]);
@@ -254,7 +254,11 @@ export const CelestialMarket = (props: { dbid?: string }) => {
         keystone.imageUrl = getIconPath(keystone.icon, true);
         const isadded = polestarTailors?.added?.filter(f => f === keystone.symbol)?.length;
         const isremoved = polestarTailors?.disabled?.some(f => f === keystone.id) || false;
-
+        let subitems = [] as IKeystone[];
+        if (keystone.type === 'crew_keystone_crate') {
+            let ks = keystone as IConstellation;
+            subitems = ks.keystones.map(ks => allKeystones.find(f => f.id === ks)!);
+        }
         return <Table.Row key={`celest_${data.name}_${idx}`}>
             <Table.Cell>
                 <div style={{
@@ -272,6 +276,17 @@ export const CelestialMarket = (props: { dbid?: string }) => {
                         {autoWishlistPolestars.includes(keystone.symbol) && !wishlistPolestars.includes(keystone.symbol) && <Icon name='heart' />}
                         {!!isremoved && <Icon name='remove circle' color='orange' />}
                         {data.name}
+                        {!!subitems.length &&
+                            <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
+                                <br />
+                                <b style={{textDecoration: 'underline'}}>{t('retrieval.polestars')}</b>
+                                <i>
+                                {subitems.map(item => <span key={`${item.name}+subitem+${keystone.name}`}>{printKeystone(item)}</span>)
+                                    .reduce((p, n, i) => p ? <>{p}{i ? ', ' : ''}{n}</> : n, <></>)
+                                }
+                                </i>
+                            </div>
+                        }
                     </span>
                 </div>
             </Table.Cell>
@@ -307,13 +322,18 @@ export const CelestialMarket = (props: { dbid?: string }) => {
             input.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
 
         let meetsAnyCondition = false;
-
+        let subitems = listing?.data?.keystones?.map(ks => allKeystones.find(f => f.id === ks)!) as IKeystone[] | undefined;
         for (let filter of filters) {
             let meetsAllConditions = true;
             if (filter.conditionArray?.length === 0) {
                 // text search only
                 for (let segment of filter.textSegments ?? []) {
                     let segmentResult = matchesFilter(listing.name!, segment.text);
+                    if (!segmentResult && subitems) {
+                        segmentResult = subitems.some(si => {
+                            return matchesFilter(printKeystone(si), segment.text);
+                        });
+                    }
                     meetsAllConditions = meetsAllConditions && (segment.negated ? !segmentResult : segmentResult);
                 }
             }
@@ -333,6 +353,20 @@ export const CelestialMarket = (props: { dbid?: string }) => {
         let compiled = traits.concat(rarities).concat(skills);
         let needed = allKeystones.filter(f => compiled.includes(f.symbol) && (!f.owned || ignore_owned)).map(m => m.symbol);
         return [...new Set(needed)];
+    }
+
+
+    function printKeystone(keystone: IKeystone) {
+        if (keystone.filter?.type === 'rarity') {
+            return CONFIG.RARITIES[Number(keystone.filter!.rarity!)]?.name ?? '';
+        }
+        else if (keystone.filter?.type === 'skill') {
+            return CONFIG.SKILLS[keystone!.filter!.skill!] ?? '';
+        }
+        else if (keystone.filter?.type === 'trait')  {
+            return TRAIT_NAMES[keystone!.filter!.trait!] ?? '';
+        }
+        return keystone.name;
     }
 
 }

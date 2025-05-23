@@ -1,4 +1,5 @@
 import { BuffStatTable } from "../utils/voyageutils"
+import { Icon } from "./game-elements"
 import { CrewAvatar } from "./player"
 
 export interface FleetResponse {
@@ -81,6 +82,13 @@ export interface FleetResponse {
 
   export interface ProfileMetadata {
     open_collection_ids: number[]
+    crew_avatar?: {
+      name: string,
+      symbol: string,
+      icon?: string | Icon,
+      portrait?: string | Icon,
+      full_body?: string | Icon
+    }
   }
 
   export interface ShortCrewList {

@@ -4,7 +4,7 @@ import { Table } from 'semantic-ui-react';
 import CONFIG from '../../../components/CONFIG';
 
 import { IRosterCrew } from '../../../components/crewtables/model';
-import { ITableConfigRow, prettyCrewColumnTitle } from '../../../components/searchabletable';
+import { ITableConfigRow } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
 import { gradeToColor } from '../../../utils/crewutils';
 import { formatShipScore } from '../../ship/utils';

@@ -5,11 +5,11 @@ import { NumericOptions } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { IPolestar, IRosterCrew, ActionableState } from './model';
-import { RetrievalContext, sortCombosByCost } from './context';
+import { getComboCost, RetrievalContext, sortCombosByCost } from './context';
 import { CombosPlanner } from './combosplanner';
 import { CombosGrid } from './combosgrid';
 import { filterTraits } from './utils';
-import { factorial } from '../../utils/misc';
+import { factorial, getPermutations } from '../../utils/misc';
 import { useStateWithStorage } from '../../utils/storage';
 
 interface IFuseGroups {
@@ -372,109 +372,226 @@ export const CombosModal = (props: CombosModalProps) => {
 
 	// WORK IN PROGRESS, DO NOT DELETE COMMENTED CODE!
 	function groupByFusesShort(combos: IPolestar[][], unused: number, unused2: number[]) {
-		let groupTotals: { groupId: number, total: number }[] = [];
-		let x = 0;
+		const result: IFuseGroups = {};
+		// let groupTotals: { groupId: number, total: number }[] = [];
+		// let x = 0;
 
-		for (let combo of combos) {
-			let map = combo.map(cb => quantify(cb));
-			map.sort((a, b) => a - b);
-			let total = map[0];
-			groupTotals.push({ groupId: x++, total: total });
+		const groupKey = (group: IPolestar[][]) => {
+			return group.map(ps => ps.map(pd => pd.name).sort().join(",")).sort().join(";");
 		}
 
-		let duplications: number[] = []
-		let seen: boolean[] = [];
-
-		for (let total of groupTotals) {
-			for (let i = 0; i < total.total; i++) {
-				duplications.push(total.groupId);
-			}
+		const inventory = (check: IPolestar[]) => {
+			return check.map(c => c.owned).reduce((p, n) => p + n, 0);
 		}
 
-		let comboout: number[][][] = [[], [], [], [], [], []];
-
-		let fn = combos.length < 5 ? combos.length : 5;
-		for (let f = 1; f <= fn; f++) {
-			seen = duplications.map(d => false);
-			let option = 0;
-
-			for (let n = 0; n < duplications.length; n++) {
-				comboout[f].push([duplications[n]]);
-				// let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
-
-				let cc = 1;
-				seen[n] = true;
-
-				for (let y = 0; y < duplications.length; y++) {
-					if (seen[y]) continue;
-					// let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
-					//if (!dingCT(ps, xs)) break;
-
-					comboout[f][option].push(duplications[y]);
-					seen[y] = true;
-
-					cc++;
-					if (cc >= f) break;
-				}
-
-				option++;
-			}
+		const groupInventory = (check: IPolestar[][]) => {
+			return check.flat().map(c => c.owned).reduce((p, n) => p + n, 0);
 		}
 
-		let result: IFuseGroups = {};
-
-		for (let f = 1; f <= 5; f++) {
-			let key = "x" + f;
-			result[key] = [] as number[][];
-
-			for (let res of comboout[f]) {
-				if (res.length === f) {
-					result[key].push(res);
-				}
-			}
-
-			for (let res of result[key]) {
-				res.sort((a, b) => a - b);
-			}
-		}
-
-		for (let f = 1; f <= 5; f++) {
-			let key = "x" + f;
-			let strres = result[key].map(m => JSON.stringify(m));
-			strres = strres.filter((s, i) => strres.indexOf(s) === i);
-
-			let numres = strres.map(s => JSON.parse(s) as number[]);
-			numres.sort((a, b) => {
-				let r = countCombos(a, combos) - countCombos(b, combos);
-				if (r === 0) {
-					for (let i = 0; i < a.length; i++) {
-						r = a[i] - b[i];
-						if (r) return r;
+		const getMaxBuilds = (combo: IPolestar[]) => {
+			const counts = {} as any;
+			let fail = false;
+			let builds = 0;
+			while (true) {
+				for (let i of combo) {
+					counts[i.symbol] ??= 0;
+					counts[i.symbol]++;
+					if (counts[i.symbol] > i.owned) {
+						fail = true;
+						break;
 					}
 				}
-				return r;
-			})
-			result[key] = numres;
+				if (fail) break;
+				else builds++;
+			}
+			const result = [] as IPolestar[][];
+			for (let i = 0; i < builds; i++) {
+				result.push(combo);
+			}
+			return result;
 		}
-		Object.keys(result).forEach((key) => {
-			if (key === 'x1') return;
-			result[key] = result[key].filter((group => {
-				let counts = {} as any;
-				let no = false;
-				group.forEach((cidx) => {
-					let combo = combos[cidx];
-					for (let i of combo) {
-						counts[i.symbol] ??= 0;
-						counts[i.symbol]++;
-						if (counts[i.symbol] > i.owned) {
-							no = true;
+
+		// for (let combo of combos) {
+		// 	let map = combo.map(cb => quantify(cb));
+		// 	map.sort((a, b) => a - b);
+		// 	let total = map[0];
+		// 	groupTotals.push({ groupId: x++, total: total });
+		// }
+
+		const groupcalc = {} as { [key:string]: IPolestar[][][] };
+
+		for (const group of [1, 2, 3, 4, 5]) {
+			const seen = {} as { [key:string]: boolean };
+
+			const combocopy = [...combos];
+			combocopy.sort((a, b) => a.length - b.length);
+
+			getPermutations(combocopy, group, 2000n, true, undefined, (iter) => {
+				let study = iter.map(c => getMaxBuilds(c));
+				let repeaters = study.flat();
+				let trials = [iter] as IPolestar[][][];
+				let parts = [] as IPolestar[][];
+				let norepeaters = iter.filter(f => !repeaters.some(r => r === f));
+
+				for (let s of study) {
+					if (s.length > group) {
+						parts = parts.concat(s.splice(group));
+					}
+				}
+
+				parts.sort((a, b) => inventory(b) - inventory(a));
+
+				for (let s of study) {
+					if (s.length < group) {
+						let p = 0;
+						let c = parts.length
+						while (s.length < group && p < c) {
+							s.push(parts[p++]);
 						}
 					}
-				});
-				return !no;
-			}));
+				}
+
+				trials = trials.concat(study.filter(s => s.length === group));
+				repeaters = repeaters.concat(norepeaters);
+				repeaters.sort((a, b) => inventory(b) - inventory(a) || a.length - b.length);
+
+				while (repeaters.length) {
+					trials.push(repeaters.splice(0, group));
+				}
+
+				trials = trials.filter(g => g.length === group);
+				trials.forEach(trial => trial.sort((a, b) => a.length - b.length || inventory(b) - inventory(a)));
+				trials.sort((a, b) => a.length - b.length || groupInventory(b) - groupInventory(a));
+
+				for (let combo of trials) {
+					const counts = {} as any;
+					let fail = false;
+					combo.forEach((cidx) => {
+						let combo = cidx;
+						for (let i of combo) {
+							counts[i.symbol] ??= 0;
+							counts[i.symbol]++;
+							if (counts[i.symbol] > i.owned) {
+								fail = true;
+							}
+						}
+					});
+					if (!fail) {
+						let key = groupKey(combo);
+						if (seen[key]) continue;
+						seen[key] = true;
+						groupcalc[group] ??= [];
+						groupcalc[group].push(combo);
+					}
+				}
+				return iter;
+			});
+		}
+
+		Object.keys(groupcalc).forEach(group => {
+			groupcalc[group].forEach((group) => {
+				group.sort((a, b) => a.length - b.length);
+			});
+			groupcalc[group].sort((a, b) => {
+				return a.map(l => l.length).reduce((p, n) => p + n) - b.map(l => l.length).reduce((p, n) => p + n);
+			});
+			const idx_map = groupcalc[group].map(pscombos => pscombos.map(test => combos.findIndex(cbin => cbin == test)));
+			result[`x${group}`] = idx_map;
 		});
+
 		return result;
+
+		// let duplications: number[] = [];
+		// let seen: boolean[] = [];
+
+		// for (let total of groupTotals) {
+		// 	for (let i = 0; i < total.total; i++) {
+		// 		duplications.push(total.groupId);
+		// 	}
+		// }
+
+		// let comboout: number[][][] = [[], [], [], [], [], []];
+
+		// let fn = combos.length < 5 ? combos.length : 5;
+		// for (let f = 1; f <= fn; f++) {
+		// 	seen = duplications.map(d => false);
+		// 	let option = 0;
+
+		// 	for (let n = 0; n < duplications.length; n++) {
+		// 		comboout[f].push([duplications[n]]);
+		// 		// let ps = combos[duplications[n]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
+
+		// 		let cc = 1;
+		// 		seen[n] = true;
+
+		// 		for (let y = 0; y < duplications.length; y++) {
+		// 			if (seen[y]) continue;
+		// 			// let xs = combos[duplications[y]].map(z => { return { id: z?.id, quantity: quantify(z), used: 1 } as ComboTrack });
+		// 			//if (!dingCT(ps, xs)) break;
+
+		// 			comboout[f][option].push(duplications[y]);
+		// 			seen[y] = true;
+
+		// 			cc++;
+		// 			if (cc >= f) break;
+		// 		}
+
+		// 		option++;
+		// 	}
+		// }
+
+		// for (let f = 1; f <= 5; f++) {
+		// 	let key = "x" + f;
+		// 	result[key] = [] as number[][];
+
+		// 	for (let res of comboout[f]) {
+		// 		if (res.length === f) {
+		// 			result[key].push(res);
+		// 		}
+		// 	}
+
+		// 	for (let res of result[key]) {
+		// 		res.sort((a, b) => a - b);
+		// 	}
+		// }
+
+		// for (let f = 1; f <= 5; f++) {
+		// 	let key = "x" + f;
+		// 	let strres = result[key].map(m => JSON.stringify(m));
+		// 	strres = strres.filter((s, i) => strres.indexOf(s) === i);
+
+		// 	let numres = strres.map(s => JSON.parse(s) as number[]);
+		// 	numres.sort((a, b) => {
+		// 		let r = countCombos(a, combos) - countCombos(b, combos);
+		// 		if (r === 0) {
+		// 			for (let i = 0; i < a.length; i++) {
+		// 				r = a[i] - b[i];
+		// 				if (r) return r;
+		// 			}
+		// 		}
+		// 		return r;
+		// 	})
+		// 	result[key] = numres;
+		// }
+		// Object.keys(result).forEach((key) => {
+		// 	if (key === 'x1') return;
+		// 	result[key] = result[key].filter((group => {
+		// 		let counts = {} as any;
+		// 		let no = false;
+		// 		group.forEach((cidx) => {
+		// 			let combo = combos[cidx];
+		// 			for (let i of combo) {
+		// 				counts[i.symbol] ??= 0;
+		// 				counts[i.symbol]++;
+		// 				if (counts[i.symbol] > i.owned) {
+		// 					no = true;
+		// 				}
+		// 			}
+		// 		});
+		// 		return !no;
+		// 	}));
+		// });
+		// return result;
 	}
 
 	function countCombos(keys: number[], combos: IPolestar[][]) {

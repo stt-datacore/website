@@ -10,6 +10,7 @@ import { CrewTable } from './crewtable';
 import { DataManagement } from './manage';
 import { SyncState } from './utils';
 import { VoyagesTable } from './voyagestable';
+import { LootCrewTable } from './lootcrewtable';
 
 type HistoryHomeProps = {
 	postRemote: boolean;
@@ -55,6 +56,11 @@ export const HistoryHome = (props: HistoryHomeProps) => {
 					active={activeItem === 'manage'}
 					onClick={() => setActiveItem('manage')}
 				/>
+				<Menu.Item	/* Manage History */
+					content={t('voyage.history.loot_crew.title')}
+					active={activeItem === 'lootcrew'}
+					onClick={() => setActiveItem('lootcrew')}
+				/>
 			</Menu>
 			{activeItem === 'voyages' && <VoyagesTable />}
 			{activeItem === 'crew' && <CrewTable />}
@@ -65,6 +71,7 @@ export const HistoryHome = (props: HistoryHomeProps) => {
 					setSyncState={props.setSyncState}
 				/>
 			)}
+			{activeItem === 'lootcrew' && <LootCrewTable />}
 		</React.Fragment>
 	);
 }

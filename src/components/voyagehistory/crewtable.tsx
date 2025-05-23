@@ -24,6 +24,7 @@ import { CrewPreparer } from '../item_presenters/crew_preparer';
 
 import { HistoryContext } from './context';
 import { VoyageModal } from './voyagemodal';
+import { createReportDayOptions } from './utils';
 
 export const CrewTable = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -103,43 +104,7 @@ export const CrewTable = () => {
 
 	if (history.voyages.length === 0) return <></>;
 
-	const reportDayOptions: DropdownItemProps[] = [
-		{	/* Show all voyages */
-			key: 'all',
-			value: undefined,
-			text: t('voyage.show_all_voyages')
-		},
-		{	/* Show voyages from last year */
-			key: 'year',
-			value: 365,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.year') })
-		},
-		{	/* Show voyages from last 180 days */
-			key: 'half',
-			value: 180,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.half') })
-		},
-		{	/* Show voyages from last 90 days */
-			key: 'quarter',
-			value: 90,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.quarter') })
-		},
-		{	/* Show voyages from last 60 days */
-			key: 'months',
-			value: 60,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.months') })
-		},
-		{	/* Show voyages from last month */
-			key: 'month',
-			value: 30,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.month') })
-		},
-		{	/* Show voyages from last week */
-			key: 'week',
-			value: 7,
-			text: t('voyage.crew_history.options.report', { period: t('voyage.crew_history.options.report_period.week') })
-		}
-	];
+	const reportDayOptions = createReportDayOptions(t);
 
 	const tableConfig: ITableConfigRow[] = [
 		{ /* Crew */ width: 3, column: 'name', title: t('voyage.crew_history.fields.crew'), pseudocolumns: ['name', 'date_added'] },

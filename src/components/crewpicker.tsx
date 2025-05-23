@@ -24,10 +24,12 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	hoverBoundingClient?: boolean;
 	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => JSX.Element | string;
 	contextData?: any;
+
+	locked?: boolean;
 };
 
 const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
-	const { handleSelect, isOpen, contextData, setIsOpen, beforeOpen } = props;
+	const { locked, handleSelect, isOpen, contextData, setIsOpen, beforeOpen } = props;
 
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
@@ -74,6 +76,10 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 			open={modalIsOpen}
 			onClose={closeModal}
 			onOpen={() => {
+				if (locked) {
+					setModalIsOpen(false);
+					return;
+				}
 				if (beforeOpen) {
 					beforeOpen(contextData, options);
 				}

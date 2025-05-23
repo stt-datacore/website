@@ -2,23 +2,23 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import CONFIG from "../CONFIG";
 import { CompletionState, PlayerCrew, PlayerEquipmentItem } from "../../model/player";
-import { EquipmentCommon, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem } from "../../model/equipment";
 import { mergeItems } from "../../utils/itemutils";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import { CrewTarget } from "../hovering/crewhoverstat";
-import { Schematics, Ship } from "../../model/ship";
-import { mergeShips } from "../../utils/shiputils";
+import { Ship } from "../../model/ship";
 import { ShipTarget } from "../hovering/shiphoverstat";
 import { navigate } from "gatsby";
 import { CrewMember } from "../../model/crew";
+import { getIconPath } from "../../utils/assets";
 
 export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
 
 export interface AvatarViewProps {
-    altItems?: (EquipmentItem | EquipmentCommon)[];
+    altItems?: (EquipmentItem | EquipmentItem)[];
     altCrew?: (CrewMember | PlayerCrew)[];
-    altShips?: Schematics[];
+    altShips?: Ship[];
     /** Item type number or 'crew', 'item', or 'ship' */
     mode: AvatarViewMode | number;
     /** The symbol of the item to display */
@@ -93,7 +93,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     const { playerData } = globalContext.player;
     const items = props.altItems ?? globalContext.core.items;
     const crew = props.altCrew ?? globalContext.core.crew;
-    const ship_schematics = props.altShips ?? globalContext.core.ship_schematics;
+    const all_ships = globalContext.core.all_ships;
     const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, id, size, ignorePlayer, hideRarity, targetGroup } = props;
     const symbol = props.symbol || props.item?.symbol;
     const crewBackground = props.crewBackground ?? 'normal';
@@ -280,6 +280,9 @@ export const AvatarView = (props: AvatarViewProps) => {
                     gen_item.rarity ??= 0;
                     gen_item.max_rarity = gen_item.rarity;
                 }
+                else if (!!props.item) {
+                    gen_item = {...props.item};
+                }
             }
             else {
                 gen_item = { ...gen_item };
@@ -304,14 +307,21 @@ export const AvatarView = (props: AvatarViewProps) => {
             }
             if (item && citem) {
                 item.demandCrew = citem.demandCrew;
-                if (!src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
+                if (!src) {
+                    if (item.imageUrl) {
+                        src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
+                    }
+                    else if (item.icon) {
+                        src = `${process.env.GATSBY_ASSETS_URL}${getIconPath(item.icon, true)}`;
+                    }
+
+                }
             }
             if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
                 item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
-
             if (item && gen_item.rarity) item.rarity = gen_item.rarity;
-
+            if (item && !src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;
@@ -329,7 +339,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 gen_item = playerData.player.character.ships.find(f => f.symbol === symbol?.replace("_schematic", "") || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
             }
             if (!gen_item) {
-                gen_item = ship_schematics.find(f => f.ship.symbol === symbol?.replace("_schematic", "") || (id !== undefined && f.ship.archetype_id?.toString() === id?.toString()))?.ship as BasicItem | undefined;
+                gen_item = all_ships.find(f => f.symbol === symbol?.replace("_schematic", "") || (id !== undefined && f.archetype_id?.toString() === id?.toString())) as BasicItem | undefined;
                 if (gen_item) {
                     gen_item = { ...gen_item };
                     gen_item.max_rarity = gen_item.rarity;
@@ -343,13 +353,13 @@ export const AvatarView = (props: AvatarViewProps) => {
         if (gen_item) {
             HoverTarget = ShipTarget;
             let pship = playerData ? gen_item as any as Ship : undefined;
-            let cship = ship_schematics.find(f => f.ship.symbol === symbol?.replace("_schematic", ""));
+            let cship = all_ships.find(f => f.symbol === symbol?.replace("_schematic", ""));
 
             if (pship && cship) {
-                ship = mergeShips([cship], [pship])[0];
+                ship = pship;
             }
             else if (cship) {
-                ship = cship.ship;
+                ship = { ...cship, levels: undefined, id: cship.archetype_id  } as Ship;
             }
             else if (pship) {
                 ship = pship;

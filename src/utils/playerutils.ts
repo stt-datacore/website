@@ -27,6 +27,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 
     delete p.player.character.active_conflict;
     delete p.player.character.next_shuttle_bay_cost;
+    delete p.player.character.galaxy_crew_cooldowns;
+    delete p.player.character.stimpack;
 
     delete p.fleet_boss_battles_root;
 	delete p.captains_bridge_root;
@@ -74,7 +76,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.player.character.next_starbase_donation_reset;
     delete p.player.character.next_fleet_activity_reset;
     delete p.player.character.freestanding_quests;
-    delete p.player.character.stimpack;
+    //delete p.player.character.stimpack;
     delete p.player.character.location_channel_prefix;
     delete p.player.character.events;
 
@@ -142,6 +144,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         let itemEntry = items.find((i) => i.symbol === item.symbol);
         if (itemEntry) {
             newItems.push({
+                type: item.type,
                 symbol: item.symbol,
                 archetype_id: item.archetype_id,
                 rarity: item.rarity,
@@ -203,6 +206,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             max_level: crew.max_level,
             rarity: crew.rarity,
             equipment: crew?.equipment?.map((eq) => eq ? eq[0] : 0),
+            local_slots: crew?.equipment_slots ? [...crew.equipment_slots] : undefined,
             kwipment: crew.kwipment,
             kwipment_expiration: crew.kwipment_expiration,
             q_bits: crew.q_bits,
@@ -218,11 +222,11 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         } as PlayerCrew));
 
     let c_stored_immortals = p.player.character.stored_immortals
-        .filter((im) => im.quantity === 1)
+        .filter((im) => im.quantity === 1 && im.qbits === 0)
         .map((im) => im.id);
 
     p.player.character.stored_immortals =
-        p.player.character.stored_immortals.filter((im) => im.quantity !== 1);
+        p.player.character.stored_immortals.filter((im) => im.quantity !== 1 || im.qbits !== 0);
     p.player.character.c_stored_immortals = c_stored_immortals;
 
     p.stripped = true;

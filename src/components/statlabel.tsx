@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Label } from 'semantic-ui-react';
 
 import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
+import { GlobalContext } from '../context/globalcontext';
 
 const isWindow = typeof window !== 'undefined';
 
@@ -85,4 +86,48 @@ export class StatLabel extends Component<StatLabelProps> {
 			</Label>
 		);
 	}
+}
+
+export class ThinStatLabel extends React.Component<StatLabelProps> {
+    static contextType = GlobalContext;
+    declare context: React.ContextType<typeof GlobalContext>;
+
+    render() {
+        const { title, value } = this.props;
+
+        let sizeDefault = '12.75em';
+        let sizeMobile = '12.5em';
+        if (this.context.localized.language === 'de') {
+            sizeDefault = '16em';
+            sizeMobile = '16em';
+        }
+        else if (this.context.localized.language === 'sp') {
+            sizeDefault = '14em';
+            sizeMobile = '14em';
+        }
+
+        const style = {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "0.5em",
+            flexWrap: 'wrap',
+            marginLeft: 0,
+            width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? sizeMobile : sizeDefault,
+        } as React.CSSProperties;
+
+        return (<>
+            {!!title &&
+                <Label
+                    size={window.innerWidth < DEFAULT_MOBILE_WIDTH ? "small" : "medium"}
+                    style={style}
+                >
+                    {title}
+                    <Label.Detail>{value}</Label.Detail>
+                </Label>}
+            {!title &&
+                <div className='ui label' style={{ ...style, justifyContent: 'center' }}>{value}</div>}
+        </>);
+    }
 }

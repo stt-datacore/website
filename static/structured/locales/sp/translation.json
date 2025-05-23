@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Activa durante {{time}}",
+        "online_since_time": "En línea desde el {{time}}"
+    },
     "alerts": {
         "add": "Agregar",
         "always_alert_legendary": "Siempre alerta cuando se descubren nuevas tripulaciones legendarias en el pozo de recompra.",
@@ -91,6 +95,7 @@
         "rewards": "Recompensas",
         "score": "Puntaje",
         "secondary": "Secundario",
+        "series": "Series",
         "ship_taits": "Rasgos del buque",
         "ship_trait": "Rasgos del buque",
         "short_name": "Nombre corto",
@@ -100,6 +105,8 @@
         "status": "Estado",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
+        "variant": "Variante",
+        "variants": "Variantes",
         "voyage": "Viaje",
         "voyages": "Viajes"
     },
@@ -135,6 +142,7 @@
     },
     "buffs": {
         "max_buffs": "Efectos máximas",
+        "max_quipment_buffs_best": "Efectos máximas de quipo (mejor quipo)",
         "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
         "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)",
         "no_buffs": "Sin efectos",
@@ -329,6 +337,20 @@
         "consider_shared": "Considerar los tripulantes compartidas",
         "consider_unowned": "Considere los tripulantes sin propietario",
         "exclude_quipped": "Excluir los tripulantes con quipo activo",
+        "excluder": {
+            "all_event_crew": "Todo del tripulantes del evento",
+            "by_event": "Excluir tripulantes del evento",
+            "denote_current": "Borrar notas actuales",
+            "do_not_exclude_event_crew": "No excluya a los tripulantes del evento",
+            "event_skill_matrix_crew": "Tripulantes de la matriz de habilidades del evento",
+            "featured_event_crew": "Tripulantes destacados del evento",
+            "note_current": "Anotar exclusiones actuales",
+            "phase_type": "Tipo de fase",
+            "restore_notes": "Recuperar exclusiones anotadas",
+            "search": "Búsqueda des tripulantes para excluir",
+            "select_event": "Seleccione un evento",
+            "title": "Tripulantes a excluir"
+        },
         "only_immortal": "Sólo tripulación inmortal",
         "shared_crew_popup": "Los números de habilidades del equipo compartido se basan en las ventajas de tu jugador y pueden no coincidir con la puntuación real"
     },
@@ -448,6 +470,7 @@
             "title": "Tripulación potencial"
         },
         "quipment": "Mostrar rangos de Quipos",
+        "scoring": "Mostrar clasificación y puntuación",
         "ship": "Mostrar habilidades del buque",
         "view_big_book": "Ver {{crew}} en Big Book",
         "voyage": "Mostrar rangos de viaje"
@@ -458,6 +481,7 @@
     },
     "duration": {
         "all_time": "Todo el tiempo",
+        "custom_date": "Fecha personalizada",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} día",
@@ -736,6 +760,7 @@
         "import": {
             "click_here": "Haz clic aquí para cargar tus datos",
             "heading": "Puedes acceder a los datos de tu flota de forma similar a como accedes a los datos de tus jugadores actualmente.",
+            "live": "Datos de la flota en vivo",
             "title": "Datos de la flota"
         },
         "member_columns": {
@@ -753,6 +778,16 @@
         "only_event": "Mostrar solo participantes del evento",
         "only_officers": "Ocultar no oficiales",
         "squadrons": "Escuadrones"
+    },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Jugador",
+            "total": "Número total de tripulantes"
+        },
+        "description": "Ver detalles sobre los jugadores que fueron los primeros en maximizar un tripulante",
+        "group_by_player": "Grupo por jugador"
     },
     "gather": {
         "item_filter": {
@@ -898,6 +933,7 @@
         "admiral": "Almirante",
         "advanced_settings": "Ajustes Avanzados",
         "adventure": "Aventura",
+        "alternative_layout": "Diseño alternativo",
         "and": "y",
         "and_n_more_ellipses": "y {{n}} más ...",
         "any": "Cualquier",
@@ -925,6 +961,7 @@
         "date_start": "Fecha de inicio",
         "default": "Predeterminada",
         "delete": "Ocultar",
+        "delete_confirm": "¿Estás seguro de que deseas eliminar estos datos?",
         "delete_selected": "Ocultar seleccionado",
         "disable": "Desactivar",
         "disabled": "Desactivado",
@@ -934,6 +971,7 @@
         "enable": "Habilitar",
         "enabled": "Habilitado",
         "episode": "Episodio",
+        "error": "Error",
         "exclusive": "Exclusivo",
         "experimental": "Experimental",
         "filters": "Filtros",
@@ -966,6 +1004,7 @@
             "equipment": "Equipamiento",
             "honor": "Honor",
             "honorable_citation": "Distinción de Honor",
+            "intel": "Intel",
             "interstellar_medium": "El medio interestelar",
             "ism": "MI",
             "merits": "Méritos",
@@ -1020,6 +1059,7 @@
         "percentile": "Percentil",
         "permalink": "enlace permanente",
         "portal": "Portal",
+        "portal_update": "Actualización del portal",
         "presets": "Preestablecidos",
         "quarter_short": "T",
         "quest": "Búsqueda",
@@ -1051,6 +1091,7 @@
         "squadron_leader": "Líder de escuadrón",
         "supply_kit_active_n": "Kit de suministros activo ({{n}}% de descuento)",
         "toggle_layout": "Cambiar diseño",
+        "type": "Tipo",
         "uncheck_all": "Desmarcar todo",
         "unselect_all": "Deseleccionar todo",
         "view_options": "Ver las opciones",
@@ -1095,6 +1136,7 @@
         "filter_by_event_type": "Filtrar por tipo de evento",
         "filter_by_item_type": "Filtrar por tipo de artículo",
         "filter_by_listed_status": "Filtrar por estado de listado",
+        "filter_by_mastery": "Filtrar por maestría",
         "filter_by_movement": "Filtrar por movimiento",
         "filter_by_owned_status": "Filtrar por estado de propiedad",
         "filter_by_polestars": "Filtrar por estrellas polares",
@@ -1132,14 +1174,53 @@
         "traits": "Rasgos"
     },
     "hof": {
+        "average_duration": "Duración promedio",
+        "crew_selection_placeholder": "Selecciona un tripulante para ver estadísticas detalladas...",
+        "details": {
+            "clear": "Borrar vista de detalles",
+            "most_frequent_covoyagers": "Copilotos más frecuentes",
+            "most_frequent_voyages": "Viajes más frecuentes",
+            "most_frequent_voyages_together": "Viajes más frecuentes juntos",
+            "other_voyages": "Otros viajes",
+            "seating_frequency": "Frecuencia de asientos",
+            "shared_voyages": "Viajes en común",
+            "timeframe_details": "Detalles de {{timeframe}}"
+        },
+        "details_timeframe": "Plazo de los detalles",
+        "max_duration": "Duración máxima",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Duración promedio",
             "maxdur": "Duración máxima",
+            "norm": "Promedio normalizado de duración y recuento",
+            "norm_max": "Promedio normalizado de duración máxima y recuento",
             "rank_by_colon": "Clasificar por:",
             "voyages": "Número de viajes",
             "voydur": "Número de viajes * Duración media",
             "voymaxdur": "Número de viajes * Duración máxima"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "Ver estadísticas de los tripulantes seleccionados",
+                "title": "Detalles del viaje de los tripulantes"
+            },
+            "rankings": {
+                "description": "Mostrar clasificaciones para varios períodos de tiempo",
+                "title": "Clasificación del Salón de la Fama"
+            }
+        },
+        "timeframe_placeholder": "Seleccione un período de tiempo para ver...",
+        "timeframes": {
+            "lastNinetyDays": "los últimos 90 días",
+            "lastSevenDays": "los últimos 7 días",
+            "lastSixMonths": "los últimos 6 meses",
+            "lastThirtyDays": "los últimos 30 días",
+            "oneYear": "el año pasado"
+        },
+        "voyage_count": "Número de viajes",
+        "voyage_stats_for_timeframe": "Estadísticas del viaje para {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -1254,6 +1335,12 @@
             "paste_here_placeholder": "Pegue sus {{data}} aquí",
             "title": "Copiar y Pegar"
         },
+        "existing": {
+            "clear": "Haga clic aquí para borrar sus datos",
+            "click_here": "Haga clic aquí para actualizar sus datos",
+            "header": "Los datos en vivo {{data}} ya están presentes.",
+            "live_data": "{{data}} en vivo"
+        },
         "or": "O",
         "upload_file": {
             "browse_ellipses": "Busque el archivo {{data}} para cargar...",
@@ -1292,7 +1379,21 @@
         "fleet_data": "datos de la flota",
         "gauntlet_data": "datos del reto",
         "player_data": "datos del jugador",
+        "pvp_3": "datos de la división del comandante",
+        "pvp_4": "datos de la división del capitán",
+        "pvp_5": "datos de la división del almirante",
         "quest_data": "datos de la misión"
+    },
+    "logic": {
+        "AND": "AND",
+        "NOR": "NOR",
+        "OR": "OR",
+        "XOR": "XOR"
+    },
+    "mastery": {
+        "elite": "Élite",
+        "epic": "Épico",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "Sobre",
@@ -1303,7 +1404,9 @@
             "bridge_crew_tool": "Herramienta de tripulación de puente",
             "episodes": "Episodios",
             "events": "Eventos",
+            "ftm_hof": "Salón de la fama del PLM",
             "misc_game_stats": "Estadísticas varias del juego",
+            "objective_events": "Eventos objetivos",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Salón de la fama del viaje"
         },
@@ -1338,6 +1441,7 @@
             "factions": "Facciones",
             "fleet_boss_battles": "Combates de jefe de flota",
             "gauntlet": "Reto",
+            "objective_event_helper": "Asistente de eventos objetivos",
             "shuttle_helper": "Ayudante de Lanzaderas",
             "voyage_calculator": "Calculadora de viaje",
             "voyage_history": "Historia del viaje"
@@ -1353,6 +1457,12 @@
         "continuum_mission_map": "Mapa de misión continuo",
         "current_continuum_mission_date": "Misión continuo actual: {{date}}",
         "mission_map": "Mapa de la misión"
+    },
+    "objective_events": {
+        "mini_helper_available": "¡Mini-ayudante disponible!",
+        "stages": "Etapas",
+        "toggle_mini_helper": "Activar/desactivar mini-ayuda",
+        "x_is_locked_by_y": "{{x}} está bloqueado por {{y}}"
     },
     "obtained": {
         "long": {
@@ -1509,6 +1619,12 @@
         "add_crew": "Agregar tripulante",
         "select_crew": "Seleccionar tripulante"
     },
+    "pvp": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Puedes acceder a tus datos de JCJ de una forma similar a como accedes a tus datos de jugador actualmente."
+        }
+    },
     "quipment_dropdowns": {
         "calc_mode": {
             "core": "Habilidades Básicas",
@@ -1558,6 +1674,7 @@
         "datacore_grade": "Grado DataCore",
         "datacore_rating": "Clasificación de DataCore",
         "datascore": "DataScore",
+        "datascore_ranks": "Clasificaciones de DataScore",
         "fbb_rank": "Jefe",
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
@@ -1566,6 +1683,7 @@
             "am_seating": "Asientos de antimateria",
             "collections": "Colecciones que mejoran las estadísticas",
             "crit": "Crítico elevado",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Reto",
             "gauntlet_plus": "Reto+",
             "main_cast": "Elenco principal",
@@ -2071,6 +2189,7 @@
         "cite_opt": "Cargando Distinción de Honor Optimizador...",
         "default": "Cargando datos...",
         "demands": "Cálculo de las demandas de la tripulante...",
+        "hof": "Cargando Salón de la Fama...",
         "please_wait": "Espere por favor...",
         "quipment": "Quipo de cálculo..."
     },
@@ -2087,6 +2206,7 @@
         "exact_skill_order_only": "Mostrar únicamente progresiones exactas del orden de habilidades (no coincidencias parciales)",
         "graphs": {
             "circle": "Círculos de habilidades",
+            "event_distributions": "Distribuciones de los eventos",
             "ignore_filters": "Ignorar los filtros actualmente activos",
             "map_skill_order_density": "Mapear la densidad del orden de habilidades",
             "map_skill_order_power": "Mapear el poder del orden de habilidades",
@@ -2128,6 +2248,10 @@
                 "description": "Estadísticas sobre componentes y equipos en el juego",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Explorar actualizaciones del portal",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Estadísticas sobre los rasgos de la tripulación en el juego",
                 "title": "{{hints.traits}}"
@@ -2140,7 +2264,7 @@
             "mean_time_between_releases": "Tiempo medio entre lanzamientos",
             "mean_velocity": "Velocidad media"
         },
-        "title": "Tendencias de estadísticas",
+        "title": "Análisis profundo de las estadísticas del juego",
         "total_power_difference": "Diferencia de potencia total",
         "trait_columns": {
             "collection": "{{base.collection}}",

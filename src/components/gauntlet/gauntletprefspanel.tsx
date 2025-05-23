@@ -99,7 +99,11 @@ export const GauntletPrefsPanel = () => {
             value: 'max_quipment_3',
             text: t(BuffNames['max_quipment_3'])
         });
-
+        availBuffs.push({
+            key: 'max_quipment_best',
+            value: 'max_quipment_best',
+            text: t(BuffNames['max_quipment_best'])
+        });
     }
 
     return <React.Fragment>
@@ -161,6 +165,11 @@ export const GauntletPrefsPanel = () => {
                         value={getBuffState()}
                         onChange={(e, { value }) => setBuffState(value as PlayerBuffMode)}
                     />
+                    <Checkbox
+                        checked={getNatural()}
+                        onChange={(e, { checked }) => setNatural(!!checked)}
+                        disabled={!getBuffState().startsWith('max_quipment')}
+                        label={t('quipment_dropdowns.slots.natural')} style={{margin: '1em 0'}} />
                 </div>
 
 
@@ -279,6 +288,15 @@ export const GauntletPrefsPanel = () => {
     function setBuffState(buffMode: PlayerBuffMode) {
         setConfig({ ...config, buffMode })
     }
+
+    function getNatural() {
+        return config.natural;
+    }
+
+    function setNatural(natural: boolean) {
+        setConfig({ ...config, natural })
+    }
+
 
     function getSkillPairs() {
         return config.filter?.skillPairs ?? [];

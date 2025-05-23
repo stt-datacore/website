@@ -4,7 +4,7 @@ import CONFIG from './CONFIG';
 import { CompletionState, PlayerCrew, PlayerData, PlayerEquipmentItem } from '../model/player';
 import { CrewTarget } from './hovering/crewhoverstat';
 import { CrewMember } from '../model/crew';
-import { EquipmentCommon, EquipmentItem } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { ItemTarget } from './hovering/itemhoverstat';
 import { mergeItems } from '../utils/itemutils';
 
@@ -19,7 +19,7 @@ type ItemDisplayProps = {
 	targetGroup?: string;
 	playerData?: PlayerData;
 	allCrew?: CrewMember[];
-	allItems?: EquipmentCommon[];		
+	allItems?: EquipmentItem[];
 	quantity?: number;
 	crewBackground?: 'normal' | 'rich';
 	substitute_kwipment?: number[] | number[][];
@@ -49,8 +49,8 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			}
 		}
 
-		const divStyle = { 
-			... (this.props.style ?? {}), 
+		const divStyle = {
+			... (this.props.style ?? {}),
 			position: 'relative',
 			display: 'flex',
 			flexDirection: "column",
@@ -75,7 +75,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			bottom: bottomStar + 'px',
 			left: '50%',
 			transform: 'translate(-50%, 0)',
-			textAlign: 'center'									
+			textAlign: 'center'
 		} as React.CSSProperties;
 
 		let crew: PlayerCrew | undefined = undefined;
@@ -96,16 +96,16 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 					imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
 				}
 				imgStyle.backgroundSize = (this.props.size) + "px";
-				imgStyle.backgroundRepeat = "no-repeat";					
+				imgStyle.backgroundRepeat = "no-repeat";
 				imgStyle.backgroundClip = 'border-box';
 			}
 		}
 
 		if (allItems && itemSymbol && targetGroup) {
 			let pitem = playerData?.player?.character?.items?.find(item => item.symbol === itemSymbol) as PlayerEquipmentItem | undefined;
-			
-			let citem = allItems.find(item => item.symbol === itemSymbol && item.quantity === quantity && (item as EquipmentItem).isReward) as EquipmentItem | undefined;				
-			if (!citem) citem = allItems.find(item => item.symbol === itemSymbol) as EquipmentItem | undefined;				
+
+			let citem = allItems.find(item => item.symbol === itemSymbol && item.quantity === quantity && (item as EquipmentItem).isReward) as EquipmentItem | undefined;
+			if (!citem) citem = allItems.find(item => item.symbol === itemSymbol) as EquipmentItem | undefined;
 
 			if (pitem && citem && !citem.isReward) {
 				item = mergeItems([pitem], [citem])[0] as EquipmentItem;
@@ -122,11 +122,11 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		}
 
 		if (crew && itemSymbol && allCrew && targetGroup) {
-			return (						
+			return (
 					<div style={divStyle}>
-						<CrewTarget 
-							inputItem={crew} 
-							targetGroup={targetGroup} 
+						<CrewTarget
+							inputItem={crew}
+							targetGroup={targetGroup}
 							>
 							<img
 								src={this.props.src}
@@ -143,11 +143,11 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			);
 		}
 		else if (item && itemSymbol && allItems && targetGroup) {
-			return (						
+			return (
 					<div style={divStyle}>
-						<ItemTarget														
-							inputItem={item} 
-							targetGroup={targetGroup} 
+						<ItemTarget
+							inputItem={item}
+							targetGroup={targetGroup}
 							>
 							<img
 								src={this.props.src}
@@ -162,7 +162,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 						)}
 					</div>
 			);
-		}		
+		}
 		else {
 			return (
 				<div style={divStyle}>

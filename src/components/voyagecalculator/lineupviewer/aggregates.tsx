@@ -10,12 +10,16 @@ import CONFIG from '../../CONFIG';
 import { POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
-export const Aggregates = () => {
+export const Aggregates = (props: { for_export?: boolean, export_id?: string }) => {
+	const { for_export, export_id } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, ship, shipData } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
+	if (for_export) {
+		return renderAggregateTable(['command_skill', 'diplomacy_skill', 'engineering_skill', 'security_skill', 'medicine_skill', 'science_skill']);
+	}
 	return (
 		<React.Fragment>
 			{!landscape &&
@@ -54,11 +58,11 @@ export const Aggregates = () => {
 
 	function renderAntimatterRow(): JSX.Element {
 		return (
-			<Table.Row>
+			<Table.Row key={`aggregate_antimatter_row`}>
 				<Table.Cell>{t('ship.antimatter')}</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
-					{ship && (
+					{!for_export && ship && (
 						<Popup mouseEnterDelay={POPUP_DELAY} trigger={<span style={{ cursor: 'help', fontWeight: 'bolder' }}>{voyageConfig.max_hp}</span>}>
 							<Popup.Content>
 								{ship.antimatter} ({t('voyage.lineup.level_n_ship', { n: ship.level.toString() })})
@@ -67,18 +71,23 @@ export const Aggregates = () => {
 							</Popup.Content>
 						</Popup>
 					)}
+					{!!for_export && ship && <>
+						{ship.antimatter} ({t('voyage.lineup.level_n_ship', { n: ship.level.toString() })})
+						<br />+{shipData.shipBonus} ({t('voyage.lineup.ship_trait_bonus')})
+						<br />+{shipData.crewBonus} ({t('voyage.lineup.crew_trait_bonuses')})
+					</>}
 					{!ship && <span>{voyageConfig.max_hp}</span>}
 				</Table.Cell>
-				<Table.Cell className='iconic' textAlign='center'>
+				{!for_export && <Table.Cell className='iconic' textAlign='center'>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
-				</Table.Cell>
+				</Table.Cell>}
 			</Table.Row>
 		);
 	}
 
 	function renderAggregateTable(skills: string[]): JSX.Element {
 		return (
-			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
+			<Table id={export_id} collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
 					{skills.map((entry, idx) => {
 						const agg = voyageConfig.skill_aggregates[entry];
@@ -91,9 +100,9 @@ export const Aggregates = () => {
 									<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
 										<b>{Math.round(agg)}</b>
 									</Table.Cell>
-									<Table.Cell className='iconic' textAlign='center'>
+									{!for_export && <Table.Cell className='iconic' textAlign='center'>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
-									</Table.Cell>
+									</Table.Cell>}
 								</Table.Row>
 							);
 						// Calculated voyage (i.e. IVoyageCalcConfig)
@@ -111,13 +120,14 @@ export const Aggregates = () => {
 											{score}
 										</span>
 									</Table.Cell>
-									<Table.Cell className='iconic' textAlign='center'>
+									{!for_export && <Table.Cell className='iconic' textAlign='center'>
 										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
-									</Table.Cell>
+									</Table.Cell>}
 								</Table.Row>
 							);
 						}
 					})}
+					{!!for_export && renderAntimatterRow()}
 				</Table.Body>
 			</Table>
 		);

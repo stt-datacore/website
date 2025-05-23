@@ -5,7 +5,7 @@ import FactionInfo from '../components/factions';
 
 const FactionsPage = () => {
 
-    return <DataPageLayout pageTitle='Factions'>
+    return <DataPageLayout pageTitle='Factions' playerPromptType='require'>
         <FactionInfo />
     </DataPageLayout>
 }

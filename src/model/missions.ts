@@ -1,6 +1,6 @@
-import { Ship } from "./ship"
-import { BuffBase, PotentialReward, Reward } from "./player"
-import { Icon } from "./game-elements"
+import { Ship } from "./ship";
+import { ItemArchetypeBase, PotentialReward } from "./player";
+import { Icon } from "./game-elements";
 
 export interface QuestFilterConfig {
   traits?: MissionTraitBonus[];
@@ -115,7 +115,7 @@ export interface MasteryLevel {
   jackpots?: Jackpot[]
 }
 
-export interface MissionReward extends BuffBase {
+export interface MissionReward extends ItemArchetypeBase {
   type: number
   icon: Icon
   rarity?: number

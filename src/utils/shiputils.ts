@@ -1,6 +1,6 @@
-import { BaseSkillFields, BaseSkills, CrewMember, Skill } from "../model/crew";
+import { BaseSkillFields, CrewMember } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
-import { BattleMode, BattleStation, PvpDivision, ShipAction, ShipInUse } from "../model/ship";
+import { BattleMode, BattleStation, PvpDivision, ReferenceShip, ShipAction, ShipInUse, ShipLevel, ShipLevels, ShipLevelStats } from "../model/ship";
 import { Schematics, Ship } from "../model/ship";
 import { simplejson2csv, ExportField } from './misc';
 import { StatsSorter } from "./statssorter";
@@ -8,6 +8,7 @@ import { shipStatSortConfig  } from "../utils/crewutils";
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
+import { ShipTraitNames } from "../model/traits";
 
 export const OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
 export const DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
@@ -184,11 +185,104 @@ export function exportShips(ships: Ship[]): string {
 	return simplejson2csv(ships, exportShipFields());
 }
 
+export function levelToLevelStats(level: ShipLevel): ShipLevelStats {
+  let obj = JSON.parse(JSON.stringify(level)) as ShipLevel & ShipLevelStats;
+  obj.dps = obj.attack * obj.attacks_per_second;
+  obj.next_schematics = obj.schematic_gain_cost_next_level;
+  obj.accuracy_power = obj.accuracy;
+  obj.attack_power = obj.attack;
+  obj.evasion_power = obj.evasion;
+  delete obj.schematic_gain_cost;
+  delete (obj as any).schematic_gain_cost_next_level;
+  delete (obj as any).level;
+  return obj as ShipLevelStats;
+}
+
+export function allLevelsToLevelStats(levels: ShipLevel[]): ShipLevels {
+	const result = {} as ShipLevels;
+
+	for (let level of levels) {
+		let l = level.level;
+		let obj = JSON.parse(JSON.stringify(level)) as ShipLevel & ShipLevelStats;
+		obj.dps = obj.attack * obj.attacks_per_second;
+		obj.next_schematics = obj.schematic_gain_cost_next_level;
+		obj.accuracy_power = obj.accuracy;
+		obj.attack_power = obj.attack;
+		obj.evasion_power = obj.evasion;
+		delete obj.schematic_gain_cost;
+		delete (obj as any).schematic_gain_cost_next_level;
+		delete (obj as any).level;
+		result[l+1] = obj;
+	}
+
+	return result;
+  }
+
+
 export function highestLevel(ship: Ship) {
 	if (!ship.levels || !Object.keys(ship.levels).length) return 0;
-	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a ,b) => b - a);
+	let levels = Object.keys(ship.levels).map(m => Number(m)).sort((a, b) => b - a);
 	let highest = levels[0];
 	return highest;
+}
+
+export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false, player_direct = false): Ship[] {
+	let newShips: Ship[] = [];
+	let power = 1 + (max_buffs ? 0.16 : 0);
+	ref_ships = JSON.parse(JSON.stringify(ref_ships));
+	ref_ships.map((refship) => {
+
+		let ship = {...refship, id: refship.archetype_id, levels: undefined } as Ship;
+
+		let unowned_id = -1;
+		let owned = ships.find((ship) => refship.symbol == ship.symbol);
+
+		let traits_named = ship.traits?.map(t => SHIP_TRAIT_NAMES[t])?.filter(f => !!f);
+		if (!traits_named?.length) traits_named = undefined;
+
+		if (owned) {
+			ship = { ...ship, ... owned, level: player_direct ? owned.level : owned.level + 1 };
+
+			if (owned.actions) {
+				ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
+			}
+			ship.immortal = owned.level >= ship.max_level! ? -1 : 0;
+			ship.owned = true;
+
+		} else {
+			ship.owned = false;
+			delete (ship as any).level;
+
+			ship.accuracy *= power;
+			ship.attack *= power;
+			ship.evasion *= power;
+			ship.hull *= power;
+			ship.shields *= power;
+			ship.id = unowned_id--;
+			ship.level ??= 0;
+		}
+
+		ship.max_level = refship.max_level + 1;
+
+		ship.traits_named = traits_named;
+		newShips.push(ship);
+		return ship;
+	});
+
+	newShips.sort((a, b) => {
+		if (a.owned && !b.owned) return -1;
+		else if (!a.owned && b.owned) return 1;
+		let r = b.level - a.level;
+
+		if (r) return r;
+
+		r = b.rarity - a.rarity;
+		if (r) return r;
+		return a.name?.localeCompare(b.name ?? "") ?? 0;
+	});
+
+	return newShips;
+
 }
 
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buffs = false): Ship[] {
@@ -415,6 +509,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 }
 
 export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | undefined {
+	if (ship.predefined) return ship;
 	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
 	}
@@ -537,4 +632,12 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 		r = ba - aa;
 		return r;
 	}
+}
+
+// export function refShip(input: ReferenceShip): Ship {
+// 	return {...input, levels: undefined };
+// }
+
+export function refShips(input: ReferenceShip[]): Ship[] {
+	return input.map(input => ({...input, levels: undefined }));
 }

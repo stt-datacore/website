@@ -4,7 +4,7 @@ import { Collection, PolestarCombo } from "../model/game-elements";
 import { PlayerCrew } from "../model/player";
 import { AntimatterSeatMap } from "../model/voyage";
 import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";
-import { getSkillOrderStats, getSkillOrderScore } from "../utils/crewutils";
+import { getSkillOrderStats, getSkillOrderScore, skillSum, crewCopy } from "../utils/crewutils";
 import { calcItemDemands } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
@@ -62,9 +62,82 @@ const BetaTachyon = {
 
         let { playerData } = config;
 
+        function getVoyageImprovements(roster: PlayerCrew[], depth: number) {
+            let skills = Object.keys(CONFIG.SKILLS);
+            let melba = Math.ceil(depth * 1);
+            depth *= 2;
+            const vims = {} as { [key: string]: string[] };
+            let cbs = [] as string[][];
+            roster = roster.filter(c => !c.immortal);
+            for (let sk1 of skills) {
+                for (let sk2 of skills) {
+                    if (sk1 !== sk2) cbs.push([sk1, sk2]);
+                }
+            }
+            for (let voyage of cbs) {
+                const voykey = voyage.map(s => s.replace("_skill", "")).join("/");
+                let filtered = roster.filter(r => {
+                    if (r.skill_order.length < 3) {
+                        return r.skill_order[0] === voyage[0];
+                    }
+                    else {
+                        return r.skill_order.slice(0, 2).some(sko => voyage.includes(sko));
+                    }
+                });
+                const tertbucks = {} as {[key:string]: PlayerCrew[]};
+                for (let c of filtered) {
+                    if (c.skill_order.length < 3) {
+                        if (c.skill_order.length === 2) {
+                            let tert = c.skill_order[1];
+                            tertbucks[tert] ??= [];
+                            tertbucks[tert].push(c)
+                        }
+                    }
+                    else {
+                        let tert = c.skill_order[2];
+                        tertbucks[tert] ??= [];
+                        tertbucks[tert].push(c);
+                    }
+                }
+                let max = 0;
+                Object.keys(tertbucks).forEach(skill => {
+                    if (tertbucks[skill].length > max) {
+                        max = tertbucks[skill].length;
+                    }
+                });
+
+                Object.keys(tertbucks).forEach(skill => {
+                    tertbucks[skill].sort((a, b) => skillSum(Object.values(a.base_skills).slice(0, 2)) - skillSum(Object.values(a.base_skills).slice(0, 2)));
+                    if (tertbucks[skill].length / max < 0.5) {
+                        for (let c of tertbucks[skill]) {
+                            vims[c.symbol] ??= [];
+                            if (!vims[c.symbol].includes(voykey)) {
+                                vims[c.symbol].push(voykey);
+                            }
+                        }
+                        return;
+                    }
+                    let n = 0;
+                    let m = 0;
+                    for (let c of tertbucks[skill]) {
+                        if (c.immortal) {
+                            m++;
+                            if (m >= melba) break;
+                            else continue;
+                        }
+                        else if (n >= depth) break;
+                        vims[c.symbol] ??= [];
+                        if (!vims[c.symbol].includes(voykey)) {
+                            vims[c.symbol].push(voykey);
+                        }
+                        n++;
+                    }
+                });
+            }
+            return vims;
+        }
+
         return new Promise<CiteData>((resolve, reject) => {
-
-
             function isNever(crew: PlayerCrew | CrewMember) {
                 let ob = crew?.obtained?.toLowerCase() ?? "Unknown";
                 return (ob.includes("bossbattle") || ob.includes("honor") || ob.includes("gauntlet") || ob.includes("voyage") || ob.includes("collection"));
@@ -282,9 +355,11 @@ const BetaTachyon = {
             const besttrips = {} as { [key: string]: PlayerCrew[] };
             const skillout = {} as { [key: string]: PlayerCrew[] };
 
-            let immo1 = playerData?.player?.character?.crew?.filter(c => c && isImmortal(c)) ?? [];
+            let immo1 = playerData.player.character.crew.filter(c => c && isImmortal(c)) ?? [];
 
-            const immoCrew = immo1?.length ? immo1 : playerData?.player?.character?.crew ?? [];
+            const immoCrew = immo1.length ? immo1 : playerData.player.character.crew;
+
+            const vims = getVoyageImprovements(playerData.player.character.crew, config.settings.magic);
 
             skillPairs.forEach((sk) => {
                 skillbest[`${sk[0]}/${sk[1]}`] = findBest(immoCrew, sk, magic);
@@ -432,7 +507,7 @@ const BetaTachyon = {
                 if (!cf) return -1;
 
                 let so = getSortedSkills(cf);
-                crew.voyagesImproved = makeVoys(crew);
+                crew.voyagesImproved = [...new Set((vims[crew.symbol] ?? []).concat(makeVoys(crew)))];
 
                 let evibe = ((skillScore(so.skills[0]) * 0.35) + (skillScore(so.skills[1]) * 0.25) + (skillScore(so.skills[2]) * 0.15)) / 2.5;
 
@@ -475,18 +550,23 @@ const BetaTachyon = {
             }
 
             const polestars = {} as { [key: string]: PolestarCombo[] };
-
+            const maxgroup = resultCrew.map(rc => (rc.voyagesImproved?.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) ?? 0) / (rc.voyagesImproved?.length ?? 1)).reduce((p, n) => p > n ? p : n, 0);
             resultCrew.forEach((crew) => {
                 polestars[crew.symbol] = findPolestars(crew, allCrew);
-                crew.groupSparsity = crew.voyagesImproved?.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) ?? 0;
-                crew.groupSparsity /= crew.voyagesImproved?.length ?? 1;
-            })
+                if (crew.voyagesImproved) {
+                    let crewnum = crew.voyagesImproved.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) / crew.voyagesImproved.length;
+                    crew.groupSparsity = 1 - (crewnum / maxgroup);
+                }
+                else {
+                    crew.groupSparsity = 0;
+                }
+            });
 
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxsparse = resultCrew.map(c => c.groupSparsity ?? 0).reduce((a, b) => a > b ? a : b);
             const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
-            const maxquip = resultCrew.map(c => c.quipment_score ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxquip = resultCrew.map(c => c.ranks.scores.quipment ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxex = resultCrew.map(c => getSkillOrderScore(c, skill_reports)).reduce((a, b) => a > b ? a : b);
 
@@ -511,7 +591,7 @@ const BetaTachyon = {
                 let gs = multConf.groupSparsity * (crew.groupSparsity ?? 0);
 
                 // more gives weight
-                let quip = multConf.quipment * ((crew.quipment_score ?? 0) / (maxquip ? maxquip : 1));
+                let quip = multConf.quipment * ((crew.ranks.scores.quipment ?? 0) / (maxquip ? maxquip : 1));
 
                 // less gives weight
                 let retrieval = crew.in_portal ? multConf.retrieval * (1 - (max/100)) : 0;
@@ -520,13 +600,15 @@ const BetaTachyon = {
                 let improve = multConf.improved * ((crew.voyagesImproved?.length ?? 0) / (maxvoy ? maxvoy : 1));
 
                 // more gives weight
-                let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
+                //let totalp = multConf.power * ((crew.totalEVContribution ?? 0) / maxev);
+                let totalp = multConf.power * (crew.ranks.scores.voyage / 100);
 
                 // less gives weight
                 let effort = multConf.citeEffort * (1 - ((crew.max_rarity - crew.rarity) / crew.max_rarity));
 
                 // more gives weight
-                let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
+                //let amscore = multConf.antimatter * ((crew.amTraits?.length ?? 0) / maxam);
+                let amscore = multConf.antimatter * (crew.ranks.scores.am_seating / 100);
 
                 // not in portal gives weight
                 let pscore = (acc[crew.symbol].in_portal ? 0 : multConf.portal);
@@ -555,7 +637,8 @@ const BetaTachyon = {
 
                     // less gives weight
                     dbrare = multConf.skillRare * (db.count / 100);
-                    skrare = trrare - dbrare;
+                    //skrare = trrare - dbrare;
+                    skrare = multConf.skillRare * (crew.ranks.scores.skill_rarity / 100)
                 }
 
                 // more gives weight

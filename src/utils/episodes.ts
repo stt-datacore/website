@@ -1,4 +1,4 @@
-import { Mission, MissionChallenge, Quest } from "../model/missions";
+import { MissionChallenge, Quest } from "../model/missions";
 
 export function getEpisodeName(node: any) {
     let name = '';
@@ -19,7 +19,7 @@ export interface NavMapItem {
     id: number;
     challenge: MissionChallenge;
     stage: number;
-    parent?: number;    
+    parent?: number;
     parents?: number[];
     children?: number[];
 }
@@ -47,7 +47,7 @@ export function makeNavMap(quest: Quest | MissionChallenge[]): NavMapItem[] {
         if (item.challenge.children?.length) {
             for (let n of item.challenge.children) {
                 currentData = _internalMakeNavMap(quest, n, currentStage + 1, item, currentData);
-            }       
+            }
         }
 
         return currentData;
@@ -75,7 +75,7 @@ export function makeNavMap(quest: Quest | MissionChallenge[]): NavMapItem[] {
             found.parents ??= [];
             if (item.parent !== found.parent && !found.parents.includes(item.parent)) {
                 found.parents.push(item.parent);
-            }                    
+            }
         }
         else {
             if (item.parent !== undefined) {
@@ -108,7 +108,7 @@ export function getNodePaths(item: NavMapItem, stack: NavMapItem[], parentStack?
 
     parentStack ??= [];
     parentStack.push(item);
-    
+
     if (!item?.children?.length) {
         return [{
             ids: parentStack.map(p => p?.id),
@@ -123,10 +123,10 @@ export function getNodePaths(item: NavMapItem, stack: NavMapItem[], parentStack?
                 let result = getNodePaths(child, stack, [ ...parentStack ]);
                 stacks = stacks.concat(result);
             }
-            
+
         }
-        return stacks;        
-    }    
+        return stacks;
+    }
 }
 
 export function splitPath(path: string): number[] {
@@ -135,11 +135,11 @@ export function splitPath(path: string): number[] {
 
 
 export function pathToNames(path: string, challenges: MissionChallenge[], split?: string) {
-    
+
     split ??= " - "
-    
+
     let sp = path.split("_").map(p => Number.parseInt(p)).map(q => challenges.find(f => f.id === q));
-    
+
     if (sp?.every(s => !!s)) {
         return sp.map(ch => ch?.name).join(split);
     }
@@ -148,9 +148,9 @@ export function pathToNames(path: string, challenges: MissionChallenge[], split?
 }
 
 export function pathToChallenges(path: string, challenges: MissionChallenge[]) {
-    
+
     let sp = path.split("_").map(p => Number.parseInt(p)).map(q => challenges.find(f => f.id === q));
-    
+
     if (sp?.every(s => !!s)) {
         return sp as MissionChallenge[];
     }

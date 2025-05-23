@@ -13,6 +13,7 @@ import CONFIG from "../CONFIG";
 export interface CollectionPrefsProps {
     colCombos: CollectionCombo[];
     playerCollections: PlayerCollection[];
+    extendedCollections: PlayerCollection[];
     workerRunning: boolean;
     mode: 'crew' | 'group' | 'optimizer';
 }
@@ -22,19 +23,18 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt } = globalContext.localized;
     const colContext = React.useContext(CollectionsContext);
-    const { workerRunning, playerCollections } = props;
-    const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, matchMode, setMatchMode, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
-    const { setTierFilter, tierFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, fuseFilter, setFuseFilter, setCollectionSettings } = colContext;
+    const { playerCollections, extendedCollections, mode, colCombos } = props;
+    const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
+    const { setTierFilter, tierFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, fuseFilter, setFuseFilter } = colContext;
 
     const [allCrew, setAllCrew] = React.useState<PlayerCrew[]>([]);
-
-    const { mode, colCombos } = props;
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const tierOpts = [] as DropdownItemProps[];
 
-    const collectionsOptions = playerCollections
+    const collectionsOptions = React.useMemo(() => {
+        const results = (mode === 'crew' ? extendedCollections : playerCollections)
         .filter(collection => collection.milestone.goal != 'n/a' && collection.milestone.goal > 0)
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(collection => {
@@ -44,6 +44,15 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
                 text: collection.name + ' (' + collection.progress + ' / ' + collection.milestone.goal + ')'
             };
         });
+
+        if (mapFilter.collectionsFilter?.length &&
+            mapFilter.collectionsFilter.some(col => !results.some(opt => opt.key == col))
+        ) {
+            setMapFilter({...mapFilter, collectionsFilter: mapFilter.collectionsFilter.filter(col => results.some(opt => opt.key == col))})
+        }
+        return results;
+    }, [mode, playerCollections, extendedCollections]);
+
 
     const ownedFilterOptions = [] as DropdownItemProps;
 

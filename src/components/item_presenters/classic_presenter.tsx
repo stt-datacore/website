@@ -4,15 +4,15 @@ import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic
 
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
-import CrewStat from '../../components/crewstat';
-import { applyCrewBuffs, crewGender, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
+import CrewStat from './crewstat';
+import { applyCrewBuffs, crewGender, formatMissingTrait, getShortNameFromTrait, getVariantTraits, prettyObtained } from '../../utils/crewutils';
 
 import { ShipSkill } from './shipskill';
 import { CrewRankHighlights, CrewRanks } from './crew_ranks';
 import { OwnedLabel } from '../crewtables/commonoptions';
 import { CrewItemsView } from './crew_items';
 import { PlayerCrew } from '../../model/player';
-import { CollectionDisplay } from './crew_presenter';
+import { CollectionDisplay } from './presenter_utils';
 
 type ValidField =
 	'collections' |
@@ -227,7 +227,7 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	const { t } = globalContext.localized;
 	return (
 		<p>
-			<b>{t('base.release_date')}: </b>{new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 		</p>
 	);
 };
@@ -237,7 +237,7 @@ const CapAchiever = (props: { crew: CrewMember }) => {
 	const { crew } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	if (!crew.cap_achiever) return <></>
+	if (!crew.cap_achiever || crew.preview) return <></>
 	return (
 		<p>
 			<b>{t('base.cap_achiever')}: </b>{crew.cap_achiever.name} ({new Date(crew.cap_achiever.date * 1000).toLocaleDateString()})
@@ -462,9 +462,9 @@ const Traits = (props: { crew: CrewMember }) => {
 		<p>
 			<b>{t('hints.traits')}: </b>
 			{crew.traits_named
-				.map(trait => (
+				.map((trait, idx) => (
 					<Link key={trait} to={`/?search=trait:${trait}`}>
-						{trait}
+						{trait || formatMissingTrait(crew.traits[idx])}
 					</Link>
 				))
 				.reduce((prev, curr) => <>{prev}, {curr}</>)}

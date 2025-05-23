@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
-import { Form, Dropdown, Rating, Menu, MenuItemProps } from "semantic-ui-react";
+import { Form, Dropdown, Rating, Menu, MenuItemProps, DropdownItemProps } from "semantic-ui-react";
 import { PlayerData } from "../../model/player";
-import { Ship, Schematics } from "../../model/ship";
+import { Ship } from "../../model/ship";
 import { DropDownItem } from "../../utils/misc";
-import { ShipPickerFilter, mergeShips, filterBy } from "../../utils/shiputils";
+import { ShipPickerFilter, filterBy, mergeRefShips } from "../../utils/shiputils";
 import CONFIG from "../CONFIG";
 import { getIconByKey } from "../item_presenters/shipskill";
 import { ShipSkillRanking } from "../../utils/crewutils";
 import { GlobalContext } from "../../context/globalcontext";
 import { ShipAdvantage } from "./views/shipabilities";
+import { OptionsPanelFlexRow } from "../stats/utils";
 
 export type AbilityUsesProps = {
     uses: number[];
@@ -50,6 +51,7 @@ export const AbilityUses = (props: AbilityUsesProps) => {
 
 export type ShipPickerProps = {
 	clearable?: boolean;
+	showStaff?: boolean;
 	filter?: ShipPickerFilter;
     playerData?: PlayerData;
 	pool?: Ship[];
@@ -58,38 +60,51 @@ export type ShipPickerProps = {
 };
 
 export const ShipPicker = (props: ShipPickerProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const globalContext = React.useContext(GlobalContext);
+	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
+	const { pool } = props;
 	const { clearable, selectedShip, setSelectedShip, filter } = props;
-
-    const [availableShips, setAvailableShips] = React.useState<Ship[] | undefined>(props.pool);
+	const { playerShips } = globalContext.player;
     const [filteredShips, setFilteredShips] = React.useState<Ship[] | undefined>(props.pool);
 
-	if (!availableShips || availableShips.length === 0) {
-        if (!props.playerData) return <></>;
-        let pd = props.playerData;
-
-        fetch('/structured/ship_schematics.json')
-            .then(response => response.json())
-            .then((ship_schematics: Schematics[]) => {
-                let data = mergeShips(ship_schematics, pd.player.character.ships);
-                setAvailableShips(data);
-            });
-    }
+	const availableShips = React.useMemo(() => {
+		if (pool) return pool;
+		const { all_ships } = globalContext.core;
+		if (playerShips) {
+			return playerShips;
+		}
+		else {
+			let data = mergeRefShips(all_ships, [], SHIP_TRAIT_NAMES);
+			return data;
+		}
+	}, [pool, playerShips]);
 
 	const placeholder = t('hints.select_ship');
+	const flexRow = OptionsPanelFlexRow;
 
     React.useEffect(() => {
-        setShip(selectedShip?.symbol ?? '');
+        setShip(selectedShip?.id);
     }, [filteredShips]);
 
     const poolList = filteredShips?.map((c) => (
 		{
-			key: c.symbol,
-			value: c.symbol,
+			key: c.symbol + c.id.toString(),
+			value: c.id,
 			image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
-			title: CONFIG.RARITIES[c.rarity].name + ` ${t('ship.ship')} / ${t('ship.attack')} ${c.attack?.toLocaleString()} / ${t('ship.shields')} ${c.shields?.toLocaleString()} / ${t('ship.hull')} ${c.hull?.toLocaleString()}`
-		} as DropDownItem
+			title: CONFIG.RARITIES[c.rarity].name + ` ${t('ship.ship')} / ${t('ship.attack')} ${c.attack?.toLocaleString()} / ${t('ship.shields')} ${c.shields?.toLocaleString()} / ${t('ship.hull')} ${c.hull?.toLocaleString()}`,
+			content: (
+				<div style={{...flexRow, justifyContent: 'flex-start', gap: '1em', display: 'inline-flex', flexWrap: 'wrap'}}>
+					{/* <img src={`${process.env.GATSBY_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png`} style={{height: '24px'}} /> */}
+					<div style={{width: '10em'}}>
+						{c.name}
+					</div>
+					{!!props.showStaff && c.battle_stations?.map((bs, i) => {
+						return <img key={`${bs.crew?.symbol}_staff_${c.id}_${i}`} src={`${process.env.GATSBY_ASSETS_URL}${bs.crew?.imageUrlPortrait}`} style={{height:'24px'}} />
+					})}
+				</div>
+			)
+		} as DropdownItemProps
 	));
 
     React.useEffect(() => {
@@ -110,18 +125,18 @@ export const ShipPicker = (props: ShipPickerProps) => {
                 fluid
 				placeholder={placeholder}
 				options={poolList}
-				value={selectedShip?.symbol ?? ''}
-				onChange={(e, { value }) => setShip(value as string)}
+				value={selectedShip?.id ?? undefined}
+				onChange={(e, { value }) => setShip(value as number)}
 			/>
 		</React.Fragment>
 	);
 
-	function setShip(value: string): void {
-		if (value == '' || value === undefined)  {
+	function setShip(value?: number): void {
+		if (value == 0 || value === undefined)  {
 			setSelectedShip(undefined);
 			return;
 		}
-		let valid = filteredShips?.find((c) => c.symbol === value);
+		let valid = filteredShips?.find((c) => c.id === value);
 
 		if (valid) {
 			setSelectedShip(valid);

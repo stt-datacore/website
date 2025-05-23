@@ -20,6 +20,7 @@ const FleetPage = () => {
 	const dbid = playerData?.player.dbid ?? '';
 	const guild = playerData?.player.fleet?.id ?? 0;
 	const fleetName = playerData?.player.fleet.slabel;
+	const fleetSince = playerData?.player.fleet.created ? new Date(playerData.player.fleet.created) : undefined;
 
 	if (typeof window !== 'undefined') {
 		window['fleetDataSetter'] = (value: string) => {
@@ -30,7 +31,20 @@ const FleetPage = () => {
 	return (
 		<DataPageLayout
 			pageTitle={fleetName || t('global.fleet')}
-			pageTitleJSX={fleetName ? <ColorName text={fleetName} /> : undefined}
+			pageTitleJSX={(() => {
+				if (fleetName) {
+					return (
+						<>
+						<ColorName text={fleetName} />
+						<br/>
+						<sub style={{fontSize: '0.6em'}}>
+							{!!fleetSince && t('active.online_since_time', { time: fleetSince?.toLocaleDateString() })}
+						</sub>
+						</>
+					)
+				}
+				return undefined;
+			})()}
 			pageDescription={t('fleet.description')}
 			playerPromptType='require'
             demands={['factions', 'event_instances']}

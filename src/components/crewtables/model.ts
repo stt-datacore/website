@@ -1,7 +1,5 @@
-import { Skill } from '../../model/crew';
-import { EquipmentItem } from '../../model/equipment';
-import { Offer, OfferCrew as CrewOffer } from '../../model/offers';
-import { PlayerCrew, PlayerUtilityRanks } from '../../model/player';
+import { OfferCrew as CrewOffer } from '../../model/offers';
+import { PlayerCrew } from '../../model/player';
 
 export interface IRosterCrew extends PlayerCrew {
 	any_immortal?: boolean;
@@ -14,7 +12,7 @@ export interface IRosterCrew extends PlayerCrew {
 	offers?: CrewOffer[];
 };
 
-export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' | 'offers';
+export type RosterType = 'allCrew' | 'myCrew' | 'profileCrew' | 'buyBack' | 'offers' | 'no_skills';
 
 export interface ICrewFilter {
 	id: string;

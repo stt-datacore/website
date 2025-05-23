@@ -3,8 +3,10 @@ import {
 	Dropdown,
 	DropdownItemProps,
 	Form,
+	Icon,
 	Message,
 	Pagination,
+	Popup,
 	Table
 } from 'semantic-ui-react';
 
@@ -15,7 +17,7 @@ import { formatTime } from '../../utils/voyageutils';
 import CONFIG from '../CONFIG';
 
 import { HistoryContext } from './context';
-import { deleteTrackedData, removeVoyageFromHistory, SyncState } from './utils';
+import { deleteTrackedData, postUnsynchronizedVoyages, removeVoyageFromHistory, SyncState } from './utils';
 import { VoyageModal } from './voyagemodal';
 
 interface ITableState {
@@ -88,7 +90,8 @@ export const VoyagesTable = () => {
 		{ /* Ship Trait */ column: '_shipTrait', title: t('voyage.voyage_history.fields.ship_trait') },
 		{ /* Antimatter */ column: 'max_hp', title: t('voyage.voyage_history.fields.antimatter'), firstSort: 'descending' },
 		{ /* Initial Estimate */ column: 'estimate.median', title: t('voyage.voyage_history.fields.initial_estimate'), firstSort: 'descending' },
-		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.fields.last_estimate'), firstSort: 'descending' }
+		{ /* Last Estimate */ column: 'checkpoint.estimate.median', title: t('voyage.voyage_history.fields.last_estimate'), firstSort: 'descending' },
+		{ /* Remotely Tracked */ column: 'remote', title: t('voyage.history.remote_tracking') }
 	];
 
 	// Filter
@@ -175,32 +178,51 @@ export const VoyagesTable = () => {
 		const dtCreated: Date = new Date(row.created_at);
 		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
 		return (
-			<Table.Row key={row.tracker_id} onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
-				<Table.Cell>
-					{dtCreated.toLocaleDateString()}
-					{isRunning && <><br/>{t('voyage.running_voyage')}</>}
+			<Table.Row key={row.tracker_id}>
+				<Table.Cell style={{
+					display: 'flex',
+					padding: '1em',
+					flexDirection: 'row',
+					alignItems: 'center',
+					justifyContent: 'flex-start',
+					gap: '1em'
+				}}>
+					<Icon name='trash' onClick={() => removeTrackedVoyage(row.tracker_id)} style={{cursor: 'pointer'}} />
+					<div onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+						{dtCreated.toLocaleDateString()}
+						{isRunning && <><br/>{t('voyage.running_voyage')}</>}
+					</div>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{CONFIG.SKILLS[row.skills.secondary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{SHIP_TRAIT_NAMES[row.ship_trait] ?? row.ship_trait}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{row.max_hp}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					<b>{formatTime(row.estimate.median, t)}</b>
 					<br />({`${formatTime(row.estimate.minimum, t)} - ${formatTime(row.estimate.moonshot, t)}`})
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
+				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 					{renderLastEstimate(row.checkpoint)}
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{row.remote ? t('global.yes') : t('global.no')}
+					{!row.remote && <Icon onClick={() => synchronizeVoyage(row)} style={{margin: '0.5em', cursor: 'pointer'}} name='upload' />}
 				</Table.Cell>
 			</Table.Row>
 		);
+	}
+
+	async function synchronizeVoyage(row: ITrackedVoyage) {
+		await postUnsynchronizedVoyages(dbid, history, row.tracker_id);
+		setHistory({...history});
 	}
 
 	function renderLastEstimate(checkpoint: ITrackedCheckpoint): JSX.Element {
@@ -223,6 +245,10 @@ export const VoyagesTable = () => {
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
+		if (typeof window !== 'undefined') {
+			let result = window.confirm(t('voyage.history.warn_delete'));
+			if (!result) return;
+		}
 		if (syncState === SyncState.RemoteReady) {
 			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
 				if (success) {
