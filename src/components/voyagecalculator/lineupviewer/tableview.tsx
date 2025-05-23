@@ -73,17 +73,17 @@ export const TableView = () => {
 				content={t('clipboard.copied_exclaim')}
 			/>
 			<div id={exportKey} style={{ display: 'none' }}>
-				<Aggregates for_export={true} />
 				{jsx}
+				<Aggregates for_export={true} />
 			</div>
 		</>
 	);
 
 	function richCopy() {
 		if (typeof navigator !== 'undefined' && typeof document !== 'undefined') {
-			const el = document.getElementById(exportKey);
+			let el = document.getElementById(exportKey);
 			if (el) {
-				const blob = new Blob([el.innerHTML], { type: 'text/html' });
+				const blob = new Blob([el.outerHTML], { type: 'text/html' });
 				navigator.clipboard.write([
 					new ClipboardItem({
 						[blob.type]: blob
@@ -127,6 +127,16 @@ export const TableView = () => {
 		return (
 			<Table key={index} fixed selectable striped unstackable compact='very' className={`voyageLineup ${compact ? 'compactView' : ''}`}>
 				<Table.Body>
+					{!!for_export && <Table.Header>
+						<Table.Row>
+							<Table.HeaderCell>Assignment</Table.HeaderCell>
+							<Table.HeaderCell>Crew Image</Table.HeaderCell>
+							<Table.HeaderCell>Crew Name</Table.HeaderCell>
+							<Table.HeaderCell>Voyage Skills</Table.HeaderCell>
+							<Table.HeaderCell>Quipment</Table.HeaderCell>
+							<Table.HeaderCell>Bonus</Table.HeaderCell>
+						</Table.Row>
+					</Table.Header>}
 					{seated.map((assignment, idx) => {
 						const { crew, name, trait, bestRank } = assignment;
 						const highlight = (highlightedSkills?.length && highlightedSkills.every(hs => crew?.skill_order?.includes(hs)))
@@ -166,8 +176,9 @@ export const TableView = () => {
 								</Table.Cell>}
 								{!!for_export &&
 									(<React.Fragment>
-										{!compact && <Table.Cell>
-											<AvatarView
+										<Table.Cell>
+											<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} style={{height: '48px'}} />
+											{/* <AvatarView
 												src={imgdata}
 												mode='crew'
 												item={crew}
@@ -176,8 +187,8 @@ export const TableView = () => {
 												style={{ verticalAlign: 'middle' }}
 												ignorePlayer={rosterType !== 'myCrew'}
 												hideRarity={true}
-											/>
-										</Table.Cell>}
+											/> */}
+										</Table.Cell>
 										<Table.Cell>
 											<b>{crew.name}</b>{!!highlight && <Icon name='check' style={{ margin: '0 0.5em' }} />}
 										</Table.Cell>

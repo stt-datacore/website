@@ -10,13 +10,16 @@ import CONFIG from '../../CONFIG';
 import { POPUP_DELAY, voySkillScore } from '../utils';
 import { LayoutContext, ViewerContext } from './context';
 
-export const Aggregates = (props: { for_export?: boolean }) => {
-	const { for_export } = props;
+export const Aggregates = (props: { for_export?: boolean, export_id?: string }) => {
+	const { for_export, export_id } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig, ship, shipData } = React.useContext(ViewerContext);
 	const { layout } = React.useContext(LayoutContext);
 	const landscape = layout === 'grid-cards' || layout === 'grid-icons';
 
+	if (for_export) {
+		return renderAggregateTable(['command_skill', 'diplomacy_skill', 'engineering_skill', 'security_skill', 'medicine_skill', 'science_skill']);
+	}
 	return (
 		<React.Fragment>
 			{!landscape &&
@@ -55,7 +58,7 @@ export const Aggregates = (props: { for_export?: boolean }) => {
 
 	function renderAntimatterRow(): JSX.Element {
 		return (
-			<Table.Row>
+			<Table.Row key={`aggregate_antimatter_row`}>
 				<Table.Cell>{t('ship.antimatter')}</Table.Cell>
 				<Table.Cell className='iconic' style={{width: '2.2em'}}>&nbsp;</Table.Cell>
 				<Table.Cell style={{ textAlign: 'right', fontSize: '1.1em' }}>
@@ -84,7 +87,7 @@ export const Aggregates = (props: { for_export?: boolean }) => {
 
 	function renderAggregateTable(skills: string[]): JSX.Element {
 		return (
-			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
+			<Table id={export_id} collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
 					{skills.map((entry, idx) => {
 						const agg = voyageConfig.skill_aggregates[entry];
@@ -124,6 +127,7 @@ export const Aggregates = (props: { for_export?: boolean }) => {
 							);
 						}
 					})}
+					{!!for_export && renderAntimatterRow()}
 				</Table.Body>
 			</Table>
 		);
