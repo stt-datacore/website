@@ -8,16 +8,16 @@ import { Leaderboard } from '../../model/events';
 
 type LiveType = 'na' | 'live' | 'not_live';
 
-function LeaderboardTab(props: { leaderboard: Leaderboard[] }) {
+function LeaderboardTab(props: { leaderboard: Leaderboard[], instanceId?: number }) {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
+	const { instanceId } = props;
 	const { playerData, ephemeral } = globalContext.player;
 	const [leaderboard, setLeaderboard] = React.useState<Leaderboard[]>(props.leaderboard);
 	const [isLive, setIsLive] = React.useState<LiveType>('na');
-
 	React.useEffect(() => {
 		if (ephemeral?.events) {
-			let f = ephemeral.events.find(f => f.seconds_to_start === 0 && f.seconds_to_end > 0);
+			let f = ephemeral.events.find(f => !!instanceId && f.instance_id === instanceId && f.seconds_to_start === 0 && f.seconds_to_end > 0);
 			if (f) {
 				fetch(`https://datacore.app/api/leaderboard?instance_id=${f.instance_id}`)
 					.then(result => result.json())
@@ -40,6 +40,9 @@ function LeaderboardTab(props: { leaderboard: Leaderboard[] }) {
 			</Message>}
 			{isLive === 'live' && <Message positive>
 				{t('event_info.active_event')}
+			</Message>}
+			{!leaderboard?.length && <Message>
+				{t('global.no_items_found')}
 			</Message>}
 			<Table celled striped compact='very'>
 				<Table.Body>

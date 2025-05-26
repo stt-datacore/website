@@ -354,10 +354,11 @@ const RunningTracker = (props: RunningTrackerProps) => {
 				const trackableVoyage: ITrackedVoyage = createTrackableVoyage(
 					voyage as IVoyageCalcConfig, ship.symbol, initial, NEW_TRACKER_ID, voyage, checkpoint
 				);
+				trackableVoyage.lootcrew = voyage.pending_rewards.loot.filter(f => f.type === 1).map(m => m.symbol);
 				const trackableCrew: IFullPayloadAssignment[] = createTrackableCrew(voyage as IVoyageCalcConfig, NEW_TRACKER_ID);
 				if (syncState === SyncState.RemoteReady) {
 					postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
-						if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {
+						if ((!result.status || result.status < 300) && result.trackerId && result.inputId === NEW_TRACKER_ID) {
 							const newRemoteId: number = result.trackerId;
 							addVoyageToHistory(history, newRemoteId, trackableVoyage);
 							addCrewToHistory(history, newRemoteId, trackableCrew);

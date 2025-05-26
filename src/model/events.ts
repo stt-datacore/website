@@ -43,3 +43,15 @@ export interface EventInstance {
   image: string
   event_details?: boolean
 }
+
+export interface EventScoring {
+  type: 'crew' | 'trait' | 'variant';
+  symbol: string;
+  score: number;
+}
+
+export interface EventScoreSet {
+  crew: EventScoring[];
+  traits: EventScoring[];
+  variants: EventScoring[];
+}

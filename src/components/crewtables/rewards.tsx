@@ -88,35 +88,6 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 		}
 	}
 
-
-	const quantityLabel = (quantity?: number, neg?: boolean, owned?: number) => {
-
-		if (quantity === undefined) return '0';
-		if (quantity === 0 || neg) {
-			if (neg) {
-				return <Icon name='close' style={{ margin: 0, padding: 0, textAlign: 'center', color: 'gray', height: '24px' }} />
-			}
-			else {
-				return <Icon name='check circle' style={{ margin: 0, padding: 0, textAlign: 'center', color: 'lightgreen', height: '24px' }} />
-			}
-		}
-
-		let qstr = "";
-
-		if (quantity >= 10000) {
-			qstr = Math.round(quantity / 1000).toLocaleString() + 'K';
-		}
-		else {
-			qstr = quantity.toLocaleString();
-		}
-
-		if (owned) {
-			qstr = `${owned}/${qstr}`;
-		}
-
-		return qstr;
-	};
-
 	const { negative } = props;
 
 	const rewardRows = [] as Reward[][];
@@ -267,6 +238,31 @@ export const RewardPicker = (props: RewardPickerProps) => {
 		/>
 
 	</>)
-
-
 }
+
+export function quantityLabel(quantity?: number, neg?: boolean, owned?: number, silentZero?: boolean) {
+	if (quantity === undefined) return silentZero ? '' : '0';
+	if (quantity === 0 || neg) {
+		if (neg) {
+			return <Icon name='close' style={{ margin: 0, padding: 0, textAlign: 'center', color: 'gray', height: '24px' }} />
+		}
+		else {
+			return <Icon name='check circle' style={{ margin: 0, padding: 0, textAlign: 'center', color: 'lightgreen', height: '24px' }} />
+		}
+	}
+
+	let qstr = "";
+
+	if (quantity >= 10000) {
+		qstr = Math.round(quantity / 1000).toLocaleString() + 'K';
+	}
+	else {
+		qstr = quantity.toLocaleString();
+	}
+
+	if (owned) {
+		qstr = `${owned}/${qstr}`;
+	}
+
+	return qstr;
+};

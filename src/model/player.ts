@@ -1,15 +1,16 @@
 
 
-import { Ship } from "./ship";
+import { ReferenceShip, Ship } from "./ship";
 import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, ComputedSkill, CapAchiever, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
 import { EquipmentItem } from "./equipment";
 import { Collection, Icon } from "./game-elements";
-import { ShuttleAdventure } from "./shuttle";
+import { ShuttleAdventure, StaticFaction } from "./shuttle";
 import { IVoyageEventContent } from "./voyage";
 import { ArchetypeRoot20 } from "./archetype";
+import { Cost } from "./offers";
 
 export const ISM_ID = 14152;
 
@@ -17,13 +18,9 @@ export type TranslateMethod = (key: string, options?: { [key: string]: string | 
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
 
-export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment_2' | 'max_quipment_3';
+export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment_2' | 'max_quipment_3' | 'max_quipment_best';
 
 export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
-
-export interface AtlasIcon extends Icon {
-  atlas_info: string
-}
 
 export type CiteEngine = 'original' | 'beta_tachyon_pulse';
 
@@ -133,6 +130,14 @@ export interface ReplicatorRationType {
   item_sources: any[]
 }
 
+export interface GalaxyCrewCooldown {
+    crew_id: number;
+    disabled_until: Date;
+
+    /** Used internally. Not part of game data. */
+    is_disabled?: boolean;
+}
+
 export interface Character {
   id: number
   display_name: string
@@ -211,7 +216,8 @@ export interface Character {
   all_buffs_cap_hash: AllBuffsCapHash
   all_buffs: AllBuff[]
   total_marketplace_claimables: number
-  seasons: Season[]
+  seasons: Season[];
+  galaxy_crew_cooldowns?: GalaxyCrewCooldown[];
 }
 
 export interface ClientAsset {
@@ -290,6 +296,7 @@ export interface CrewAvatar {
 export interface StoredImmortal {
   id: number
   quantity: number
+  qbits: number
 }
 
 export interface BoostWindow {
@@ -479,9 +486,12 @@ export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillDa
   max_equipment_rank: number
   equipment_slots: EquipmentSlot[]
 
+  /** Used internally by DataCore, not part of game data */
+  local_slots?: EquipmentSlot[];
+
   /**
    * Input equipment slots are nested arrays,
-   * they are mapped to 1-dimensional arrays during processing if the crew is frozen
+   * they are mapped to 1-dimensional arrays during processing
    */
   equipment: number[][] | number[]
 
@@ -675,7 +685,7 @@ export interface NodeMatches {
 }
 
 
-export interface PlayerEquipmentItem extends BuffBase {
+export interface PlayerEquipmentItem extends ItemArchetypeBase {
   id?: number
   type?: number
   symbol: string
@@ -739,7 +749,7 @@ export interface DailyActivity {
   id?: number
   name: string
   description: string
-  icon?: AtlasIcon
+  icon?: Icon
   area?: string
   weight?: number
   category?: any
@@ -757,7 +767,7 @@ export interface FleetActivity {
   id: number
   name: string
   description: string
-  icon: AtlasIcon
+  icon: Icon
   area: string
   sort_priority: number
   category: string
@@ -861,7 +871,35 @@ export interface SquadronRankedBracket {
   quantity: number
 }
 
-  export interface Content {
+export interface SpecialistMission {
+  id: number;
+  event_run_id: number;
+  desc_id: number;
+  crew_id?: number;
+  start_time?: Date;
+  completion_time?: Date;
+  progress_speed?: number;
+  state:	"available" | "started";
+  event_instance_id: number;
+  vp_rewards_amount: number;
+  title: string;
+  description: string;
+  icon: Icon;
+  bonus_traits: string[];
+  requirements: string[];
+  min_req_threshold: number;
+}
+
+export interface SpecialistMainMission {
+  progress: number;
+  bonus_failures: number;
+  title: string;
+  description: string;
+  icon: Icon;
+  victory_points_reward: number;
+}
+
+export interface Content {
     content_type: string
     crew_bonuses?: CrewBonuses
     gather_pools?: GatherPool[]
@@ -871,6 +909,22 @@ export interface SquadronRankedBracket {
     shuttles?: Shuttle[]
     bonus_crew?: string[]
     bonus_traits?: string[]
+
+    // Specialist voyages
+    missions?: SpecialistMission[];
+    completion_progress?: number;
+    passive_progress_interval?: number;
+    featured_crew_bonus_chance?: number;
+    featured_trait_bonus_chance?: number;
+    start_mission_cost?: number;
+    galaxy_cooldown_reset_cost?: Cost;
+    reroll_cost?: Cost;
+    skip_mission_cost_interval?: number;
+    skip_mission_cost_per_interval?: number;
+    bonus_chance_inc?: number;
+    main_mission?: SpecialistMainMission;
+    featured_traits?: string[];
+
     voyage_symbol?: string;	// encounter_voyage
     primary_skill?: string;
     secondary_skill?: string;
@@ -978,7 +1032,7 @@ export interface PotentialRewardDetails {
   name: string
   full_name: string
   flavor: string
-  icon: AtlasIcon
+  icon: Icon
   quantity: number
   rarity: number
   portrait?: Icon
@@ -1154,7 +1208,7 @@ export interface Loot {
   name: string
   full_name: string
   flavor: string
-  icon: AtlasIcon
+  icon: Icon
   quantity: number
   rarity: number
   portrait?: Icon
@@ -1206,21 +1260,24 @@ export interface PlayerCollection extends CryoCollection {
   owned: number;
 }
 
-export interface BuffBase {
+export interface ItemArchetypeBase {
   symbol?: string
   name?: string
-  icon?: Icon | AtlasIcon;
+  icon?: Icon | Icon;
   flavor?: string
   quantity?: number;
   rarity?: number;
+
+  /** Used internally by DataCore. Not part of game data */
+  data?: any;
 }
 
-export interface ImmortalReward extends BuffBase {
+export interface ImmortalReward extends ItemArchetypeBase {
   quantity: number;
-  icon?: AtlasIcon;
+  icon?: Icon;
 }
 
-export interface Reward extends BuffBase {
+export interface Reward extends ItemArchetypeBase {
   type: number
   id: number
   full_name: string
@@ -1232,21 +1289,21 @@ export interface Reward extends BuffBase {
   traits?: string[]
   action?: ShipAction
   ship?: Ship
-  icon?: AtlasIcon;
+  icon?: Icon;
   item_type?: number
   bonuses?: Bonuses
   faction_id?: number
   owned?: number
 }
 
-export interface MilestoneBuff extends BuffBase {
+export interface MilestoneBuff extends ItemArchetypeBase {
   id: number
   type: number
   rarity: number
   item_sources: any[]
 }
 
-export interface AdvancementBuff extends BuffBase {
+export interface AdvancementBuff extends ItemArchetypeBase {
   short_name?: string
   operator: string
   value: number
@@ -1391,7 +1448,7 @@ export interface Season {
 export interface ExclusiveCrew {
   name: string
   max_rarity: number
-  full_body: AtlasIcon
+  full_body: Icon
   archetype_id: number
 }
 
@@ -1784,48 +1841,71 @@ export interface ObjectiveEventRoot {
   statuses: ObjectiveEvent[];
 }
 
+
 export interface ObjectiveEvent {
-  id: number
-  symbol: string
-  name: string
-  description: string
-  image: AtlasIcon
-  rewards: Reward[]
-  participation_rewards: Reward[]
-  objective_archetype_ids: number[]
-  level_gate: number
-  prerequisites: any[]
-  announce_at: number
-  start_at: number
-  end_at: number
-  opened: boolean
-  objective_archetypes?: ObjectiveArchetype[]
-  concluded?: boolean
-  completion_rewards_claimed?: boolean
-  participation_rewards_claimed?: boolean
-  eligible_for_completion_rewards?: boolean
-  eligible_for_participation_rewards?: boolean
-  objectives?: Objectives[]
+  id: number;
+  symbol: string;
+  name: string;
+  description: string;
+  image: Icon;
+  rewards: Reward[];
+  participation_rewards: ParticipationReward[];
+  objective_archetype_ids: number[];
+  level_gate: number;
+  prerequisites: Prerequisite[];
+  announce_at: number;
+  start_at: number;
+  end_at: number;
+  opened: boolean;
+  concluded?: boolean;
+  completion_rewards_claimed?: boolean;
+  participation_rewards_claimed?: boolean;
+  eligible_for_completion_rewards?: boolean;
+  eligible_for_participation_rewards?: boolean;
+  objectives?: Objective[];
+  objective_archetypes: ObjectiveArchetype[];
 }
 
+export interface ParticipationReward {
+  type: number;
+  id: number;
+  symbol: string;
+  name: string;
+  full_name: string;
+  flavor: string;
+  icon: Icon;
+  quantity: number;
+  rarity: number;
+}
+
+export interface Prerequisite {
+  dependent: string;
+  dependencies: string[];
+}
+
+export interface Objective {
+  id: number;
+  archetype_id: number;
+  status: number;
+  current_value: number;
+  target_value: number;
+  milestone_claimed?: number;
+}
+
+export type OERefType = CrewMember | PlayerCrew | ReferenceShip | Ship | StaticFaction | { id: number, name: string, symbol: string };
+
 export interface ObjectiveArchetype {
-  id: number
-  symbol: string
-  type: string
-  area: string
-  milestones: ObjectiveMilestone[]
+  id: number;
+  symbol: string;
+  type: string;
+  area: string;
+  milestones: ObjectiveMilestone[];
+  target?: OERefType;
+  objective?: Objective;
 }
 
 export interface ObjectiveMilestone {
-  rewards: Reward[]
-  requirement: string
-  target_value: number
-}
-
-export interface Objectives {
-  id: number
-  archetype_id: number
-  status: number
-  current_value: number
-  target_value: number
+  rewards: Reward[];
+  requirement: string;
+  target_value: number;
 }

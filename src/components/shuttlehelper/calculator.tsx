@@ -13,6 +13,8 @@ import { Missions } from './missions';
 import { Assignments } from './assignments';
 import { getSkillSetId } from './utils';
 import { isQuipped } from '../../utils/crewutils';
+import { CrewExcluder } from '../excluder/crewexcluder';
+import { PlayerCrew } from '../../model/player';
 
 export const Calculator = () => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
@@ -30,11 +32,19 @@ export const Calculator = () => {
 	const [calcState, setCalcState] = React.useState<number>(0);
 	const [crewScores, setCrewScores] = React.useState<CrewScores>(new CrewScores());
 
+	const [preExcludedCrew, setPreExcludedCrew] = React.useState<PlayerCrew[]>([]);
+	const [excludedIds, setExcludedIds] = React.useState<number[]>([]);
 	const [activeStep, setActiveStep] = React.useState<'missions' | 'assignments'>(getInitialView());
 
 	// Reset scores on roster, event, filter changes
 	React.useEffect(() => {
 		setCrewScores(new CrewScores());
+		setPreExcludedCrew(rosterCrew.filter(crew => {
+			if (rosterType === 'myCrew') {
+				return crewPassesFilter(crew);
+			}
+			return true;
+		}));
 	}, [rosterCrew, eventData, considerActive, considerVoyage, considerFrozen, considerShared, excludeQuipped]);
 
 	React.useEffect(() => {
@@ -65,7 +75,7 @@ export const Calculator = () => {
 									{missionsRunning !== 1 && t('shuttle_helper.calculator.you_have_n_running', { n: `${missionsRunning}`})}
 								</p>
 								<p>
-									{tfmt('shuttle_helper.calculator.you_can_view_running', { link: <Button compact content={t('shuttle_helper.calculator.view_running')} onClick={() => importAssignments()} /> })} 
+									{tfmt('shuttle_helper.calculator.you_can_view_running', { link: <Button compact content={t('shuttle_helper.calculator.view_running')} onClick={() => importAssignments()} /> })}
 									{assigned.length > 0 && t('shuttle_helper.calculator.warn_replace')}
 									</p>
 							</Message>
@@ -104,12 +114,15 @@ export const Calculator = () => {
 							checked={considerFrozen}
 							onChange={(e, { checked }) => setConsiderFrozen(checked)}
 						/>
-						<Form.Field
+
+						{/* When the crew excluder is showing, this is redundant */}
+						{!!shuttlersContext?.eventData && <Form.Field
 							control={Checkbox}
 							label={t('consider_crew.exclude_quipped')}
 							checked={excludeQuipped}
 							onChange={(e, { checked }) => setExcludeQuipped(checked)}
-						/>
+						/>}
+
 						{canBorrow && (
 							<Form.Field
 								control={Checkbox}
@@ -125,6 +138,14 @@ export const Calculator = () => {
 						)}
 					</Form.Group>
 				)}
+				{!shuttlersContext?.eventData &&
+				<CrewExcluder
+					rosterCrew={rosterCrew}
+					preExcludedCrew={preExcludedCrew}
+					excludedCrewIds={excludedIds}
+					updateExclusions={setExcludedIds}
+					considerFrozen={considerFrozen}
+					/>}
 				<Form.Group>
 					<Button fluid size='big' color='green' onClick={() => recommendShuttlers()} disabled={missionsSelected === 0}>
 						{t('global.recommend_crew')}
@@ -172,26 +193,34 @@ export const Calculator = () => {
 		scrollToResults();
 	}
 
+	function crewPassesFilter(crew: IRosterCrew) {
+		if (!considerActive && crew.active_status === 2)
+			return false;
+
+		if (!considerVoyage && crew.active_status === 3)
+			return false;
+
+		if (!considerFrozen && crew.immortal > 0)
+			return false;
+
+		if ((!canBorrow || !considerShared) && crew.shared)
+			return false;
+
+		if (excludeQuipped && !shuttlersContext?.eventData && isQuipped(crew))
+			return false;
+
+		return true;
+	}
+
 	function updateCrewScores(todo: ShuttleSeat[] = []): void {
 		const newSkills: ICrewSkillSets = {};
 		const newScores: ICrewScore[] = [];
 
 		for (let i = 0; i < rosterCrew.length; i++) {
+			if (!shuttlersContext?.eventData && excludedIds.includes(rosterCrew[i].id)) continue;
+
 			if (rosterType === 'myCrew') {
-				if (!considerActive && rosterCrew[i].active_status === 2)
-					continue;
-
-				if (!considerVoyage && rosterCrew[i].active_status === 3)
-					continue;
-
-				if (!considerFrozen && rosterCrew[i].immortal > 0)
-					continue;
-
-				if ((!canBorrow || !considerShared) && rosterCrew[i].shared)
-					continue;
-
-				if (excludeQuipped && isQuipped(rosterCrew[i]))
-					continue;
+				if (!crewPassesFilter(rosterCrew[i])) continue;
 			}
 
 			todo.forEach(seat => {

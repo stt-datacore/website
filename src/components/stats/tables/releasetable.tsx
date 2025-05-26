@@ -172,11 +172,13 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                 <span>
                                     {crew.name}
                                 </span>
+
                                 {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
                                 <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                                     {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                                 </div>
-                                {daydiff > 1 && <i>({t('stat_trends.released_duration_ago', {
+                                {!crew.preview && <>
+                                    {daydiff > 1 && <i>({t('stat_trends.released_duration_ago', {
                                     duration: formatElapsedDays(daydiff, t)
                                 })})</i>}
                                 {daydiff === 1 && <i>({t('stat_trends.released_duration', {
@@ -185,6 +187,10 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                 {!daydiff && <i>({t('stat_trends.released_duration', {
                                     duration: formatElapsedDays(0, t, true)
                                 })})</i>}
+                                </>}
+
+                                {!!crew.preview && <i>({t('global.pending_release')})</i>}
+
                                 <div style={flexRow}>
                                     {canGauntlet(diff.crew[idx]) && <img src={`/media/gauntlet.png`} style={{height: '24px'}} />}
                                     {canVoyage(diff.crew[idx]) && <img src={`/media/voyage.png`} style={{height: '24px'}} />}

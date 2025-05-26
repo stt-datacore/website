@@ -1,13 +1,34 @@
 import React from 'react';
-import { Icon, Message, Form, Checkbox, Button } from 'semantic-ui-react';
+import {
+	Button,
+	Checkbox,
+	Dimmer,
+	Form,
+	Icon,
+	Loader,
+	Message
+} from 'semantic-ui-react';
 
-import { BossBattle, Chain, Collaboration, CrewTrial, Solve, Spotter } from '../../model/boss';
+import { BossBattle, Chain, Collaboration, CrewTrial, Solve, Spotter, UnlockedCharacter } from '../../model/boss';
 
 import { UserContext, ISolverContext, SolverContext } from './context';
 import { ChainSolver } from './chainsolver';
 
-const API_URL = process.env.GATSBY_DATACORE_URL;
-const SIMULATE_API = false;
+const SIMULATE_API: boolean = false;
+
+const API_URL: string | undefined = process.env.GATSBY_DATACORE_URL;
+const DEFAULT_POLL: number = 60;	// In seconds
+
+enum FetchState {
+	Idle,
+	Fetching
+};
+
+enum SyncState {
+	Idle,
+	Syncing,
+	Failed
+};
 
 interface IDetectedChanges {
 	newChain: boolean;
@@ -16,30 +37,39 @@ interface IDetectedChanges {
 	pendingCrew: string[];
 };
 
+interface IPostRequest {
+	route: string;
+	body: string;
+};
+
 type CollaboratorProps = {
 	bossBattleId: number;
+	fleetId: number;
 	localBossBattle?: BossBattle;
 	localSpotter?: Spotter;
 	setLocalSpotter?: (spotter: Spotter) => void;
 	userRole: 'player' | 'anonymous';
+	abortCollaboration: () => void;
 };
 
 export const Collaborator = (props: CollaboratorProps) => {
 	const { userPrefs, setUserPrefs } = React.useContext(UserContext);
-	const { bossBattleId, userRole } = props;
+	const { bossBattleId, fleetId, userRole, abortCollaboration } = props;
 
 	// Simulated remote response
 	const [remoteSim, setRemoteSim] = React.useState<Collaboration | undefined>(undefined);
 
 	const [control, setControl] = React.useState<Collaboration | undefined>(undefined);
-	const [isChecking, setIsChecking] = React.useState(false);
 
-	const [updatesDetected, setUpdatesDetected] = React.useState(false);
+	const [fetchState, setFetchState] = React.useState<FetchState>(FetchState.Idle);
+	const [syncState, setSyncState] = React.useState<SyncState>(SyncState.Idle);
+
+	const [updatesDetected, setUpdatesDetected] = React.useState<boolean>(false);
 	const [detectedChanges, setDetectedChanges] = React.useState<IDetectedChanges>({
 		newChain: false,
 		newSolves: false,
-		attemptedCrew: [] as string[],
-		pendingCrew: [] as string[]
+		attemptedCrew: [],
+		pendingCrew: []
 	});
 
 	React.useEffect(() => {
@@ -50,14 +80,18 @@ export const Collaborator = (props: CollaboratorProps) => {
 		if (control) setUpdatesDetected(false);
 	}, [control]);
 
-	const pollingEnabled = control && !updatesDetected && userPrefs.pollInterval > 0 && !isChecking;
+	const pollingEnabled: boolean = !!control
+		&& userPrefs.pollInterval > 0
+		&& !updatesDetected
+		&& fetchState === FetchState.Idle
+		&& syncState === SyncState.Idle;
 
-	useInterval(pollCollaboration, pollingEnabled ? userPrefs.pollInterval*1000 : null);
+	useInterval(pollCollaboration, pollingEnabled ? userPrefs.pollInterval * 1000 : null);
 
 	if (!control)
-		return (<div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>);
+		return <div style={{ marginTop: '1em' }}><Icon loading name='spinner' /> Loading...</div>;
 
-	const providerValue = {
+	const providerValue: ISolverContext = {
 		bossBattleId,
 		bossBattle: {
 			id: control.bossBattleId,
@@ -73,24 +107,31 @@ export const Collaborator = (props: CollaboratorProps) => {
 			solves: control.solves,
 			attemptedCrew: control.trials.filter(trial => trial.trialType === 'attemptedCrew').map(trial => trial.crewSymbol),
 			pendingCrew: control.trials.filter(trial => trial.trialType === 'pendingCrew').map(trial => trial.crewSymbol),
-			ignoredTraits: [] as string[]
+			ignoredTraits: []
 		},
 		setSpotter,
 		collaboration: {
 			roomCode: control.roomCode,
 			userRole
 		}
-	} as ISolverContext;
+	};
 
 	return (
 		<React.Fragment>
 			{updatesDetected && (
 				<Message icon warning
-					onClick={() => { fetchCollaboration().then(collaboration => { if (collaboration) setControl({...collaboration}); }) }}
+					onClick={() => {
+						fetchCollaboration().then(collaboration => {
+							if (collaboration) setControl({...collaboration});
+						})
+						.catch(e => {
+							console.warn('Warning! Unable to fetch collaboration after detected updates requested.', e);
+						});
+					}}
 					style={{ cursor: 'pointer' }}
 				>
-					{!isChecking && <Icon name='cloud download' />}
-					{isChecking && <Icon loading name='circle notched' />}
+					{fetchState === FetchState.Idle && <Icon name='cloud download' />}
+					{fetchState === FetchState.Fetching && <Icon loading name='circle notched' />}
 					<Message.Content>
 						<Message.Header>
 							Collaboration Updates Available!
@@ -101,26 +142,34 @@ export const Collaborator = (props: CollaboratorProps) => {
 			)}
 			{!updatesDetected && (
 				<Message icon>
-					{!isChecking && <Icon name='cloud upload' color='green' />}
-					{isChecking && <Icon loading name='circle notched' />}
+					{fetchState === FetchState.Idle && <Icon name='cloud upload' color='green' />}
+					{fetchState === FetchState.Fetching && <Icon loading name='circle notched' />}
 					<Message.Content>
 						<Message.Header>
 							Collaboration Mode Enabled{SIMULATE_API && <>{` `}*** SIMULATION ONLY! ***</>}
 						</Message.Header>
-						<p>You are now sharing your solutions and attempted crew with all collaborating fleetmates. You will also be notified here when other players make progress on this fleet boss battle.</p>
+						<p>You are sharing your solutions and attempted crew with all collaborating fleetmates.</p>
+						{userPrefs.pollInterval > 0 && <p>You will be notified here when other players make progress on this fleet boss battle.</p>}
 						<Form>
 							<Form.Group inline style={{ marginBottom: '0' }}>
 								<Form.Field>
-									<Checkbox
-										label='Check for updates every 60 seconds'
+									<Checkbox	/* Check for updates every DEFAULT_POLL seconds */
+										label={`Check for updates every ${DEFAULT_POLL} seconds`}
 										checked={userPrefs.pollInterval > 0}
-										onChange={(e, { checked }) => setUserPrefs({...userPrefs, pollInterval: checked ? 60 : 0})}
+										onChange={(e, { checked }) => setUserPrefs({...userPrefs, pollInterval: checked ? DEFAULT_POLL : 0})}
 									/>
 								</Form.Field>
 								<Form.Field>
-									<Button
+									<Button	/* Check now */
 										content='Check now'
-										onClick={() => { fetchCollaboration().then(collaboration => { if (collaboration) setControl({...collaboration}); }) }}
+										onClick={() => {
+											fetchCollaboration().then(collaboration => {
+												if (collaboration) setControl({...collaboration});
+											})
+											.catch(e => {
+												console.warn('Warning! Unable to fetch collaboration after manual check requested.', e);
+											});
+										}}
 									/>
 								</Form.Field>
 							</Form.Group>
@@ -128,66 +177,113 @@ export const Collaborator = (props: CollaboratorProps) => {
 					</Message.Content>
 				</Message>
 			)}
+			{syncState === SyncState.Failed && (
+				<Message icon negative onDismiss={() => setSyncState(SyncState.Idle)}>
+					<Icon name='warning sign' />
+					Error! Unable to synchronize. The service may not be available right now. Please try again. If the error persists, contact the DataCore support team.
+				</Message>
+			)}
 			<SolverContext.Provider value={providerValue}>
 				<ChainSolver key={control.chain.id} />
 			</SolverContext.Provider>
+			<Dimmer active={syncState === SyncState.Syncing} page>
+				<Loader />
+			</Dimmer>
 		</React.Fragment>
 	);
 
 	function setSpotter(spotter: Spotter): void {
 		if (!control) return;
 
-		const chainIndex = control.chainIndex;
-		postSpotter(chainIndex, spotter).then(() => {
-			if (props.setLocalSpotter) props.setLocalSpotter({...spotter});
-			fetchCollaboration().then(collaboration => {
-				if (collaboration) setControl({...collaboration});
-			});
+		setSyncState(SyncState.Syncing);
+		const chainIndex: number = control.chainIndex;
+		postSpotter(chainIndex, spotter).then(postSuccessful => {
+			if (postSuccessful) {
+				// Update control from spotter (to update UI immediately)
+				setControl({
+					...control,
+					solves: spotter.solves,
+					trials: getCrewTrialsFromSpotter(spotter)
+				})
+
+				// Update local spotter (to preserve spotter when disabling collaboration)
+				if (props.setLocalSpotter) props.setLocalSpotter({...spotter});
+
+				setSyncState(SyncState.Idle);
+
+				// Update control from remote (to download new collaborations)
+				fetchCollaboration().then(collaboration => {
+					if (collaboration) setControl({...collaboration});
+				})
+				.catch(e => {
+					console.warn('Warning! Unable to fetch collaboration after posting spotter.', e);
+				});
+			}
+			else {
+				setSyncState(SyncState.Failed);
+				console.error('Error! Unable to post spotter to remote.');
+			}
 		});
 	}
 
 	function reconcileCollaboration(): void {
 		fetchCollaboration().then(remoteCollaboration => {
-			const localBossBattle = props.localBossBattle;
-			const localSpotter = props.localSpotter;
+			const localBossBattle: BossBattle | undefined = props.localBossBattle;
+			const localSpotter: Spotter | undefined = props.localSpotter;
 
-			// Remote and local exists, so compare which one is newer
+			// Remote and local exists
 			if (remoteCollaboration && localBossBattle) {
-				// Newer is if chainIndex is higher or solved nodes is higher
-				const isLocalNewer = () => {
-					if (localBossBattle.chainIndex > remoteCollaboration.chainIndex) return true;
+				// Chain newer on remote => use remote as control
+				if (remoteCollaboration.chainIndex > localBossBattle.chainIndex) {
+					setControl({...remoteCollaboration});
+				}
+				else {
 					const countSolves = (chain: Chain) => {
 						return chain.nodes.filter(node => node.unlocked_character);
 					};
-					return countSolves(localBossBattle.chain) > countSolves(remoteCollaboration.chain);
-				};
-				// If props.localBossBattle is newer, POST props.localBossBattle and use as control
-				if (isLocalNewer()) {
-					postBossBattle(localBossBattle).then(postSuccessful => {
-						if (postSuccessful) {
-							if (localSpotter) {
-								postSpotter(localBossBattle.chainIndex, localSpotter).then(() => {
+					// Chain newer on local OR authenticated solves count higher on local
+					//	=> POST localBossBattle/localSpotter and use as control
+					if (localBossBattle.chainIndex > remoteCollaboration.chainIndex || countSolves(localBossBattle.chain) > countSolves(remoteCollaboration.chain)) {
+						postBossBattle(localBossBattle).then(postSuccessful => {
+							if (postSuccessful) {
+								if (localSpotter) {
+									postSpotter(localBossBattle.chainIndex, localSpotter).then(() => {
+										fetchCollaboration().then(collaboration => {
+											if (collaboration) setControl({...collaboration});
+										});
+									});
+								}
+								else {
 									fetchCollaboration().then(collaboration => {
 										if (collaboration) setControl({...collaboration});
 									});
-								});
+								}
 							}
 							else {
+								abortCollaboration();
+								console.error('Error! Unable to post updated local data to remote.');
+							}
+						});
+					}
+					// Same chain => POST localSpotter and use merge as control
+					else {
+						if (localSpotter) {
+							postSpotter(localBossBattle.chainIndex, localSpotter).then(() => {
 								fetchCollaboration().then(collaboration => {
 									if (collaboration) setControl({...collaboration});
 								});
-							}
+							});
 						}
-					});
-				}
-				// If remote is newer, use remote as control
-				else {
-					setControl({...remoteCollaboration});
+						else {
+							fetchCollaboration().then(collaboration => {
+								if (collaboration) setControl({...collaboration});
+							});
+						}
+					}
 				}
 			}
-			// No remote => use local as control
+			// No remote => POST localBossBattle and localSpotter, and use as control
 			else if (localBossBattle) {
-				// POST props.localBossBattle and use as control
 				postBossBattle(localBossBattle).then(postSuccessful => {
 					if (postSuccessful) {
 						if (localSpotter) {
@@ -203,6 +299,10 @@ export const Collaborator = (props: CollaboratorProps) => {
 							});
 						}
 					}
+					else {
+						abortCollaboration();
+						console.error('Error! Unable to post initial local data to remote.');
+					}
 				});
 			}
 			// No local => use remote as control
@@ -211,52 +311,64 @@ export const Collaborator = (props: CollaboratorProps) => {
 			}
 			// No remote OR local => ERROR!
 			else {
-				throw('No fleet boss battle data!');
+				abortCollaboration();
+				console.error('Error! No fleet boss battle data.');
 			}
+		})
+		.catch(e => {
+			abortCollaboration();
+			console.error('Error! Unable to connect to collaboration API.', e);
 		});
 	}
 
 	async function fetchCollaboration(): Promise<Collaboration | undefined> {
-		setIsChecking(true);
+		setFetchState(FetchState.Fetching);
 		if (SIMULATE_API) {
 			return new Promise((resolve, reject) => {
 				if (remoteSim) {
 					setTimeout(() => {
 						resolve(remoteSim);
-						setIsChecking(false);
+						setFetchState(FetchState.Idle);
 					}, Math.random()*1000);
 				}
 				else {
 					resolve(undefined);
-					setIsChecking(false);
+					setFetchState(FetchState.Idle);
 				}
 			});
 		}
 
-		const route = `${API_URL}api/getBossBattle?fleetId=${control?.fleetId}&id=${bossBattleId}`;
+		const route: string = `${API_URL}api/getBossBattle?fleetId=${fleetId}&id=${bossBattleId}`;
 		return fetch(route)
-			.then((response: Response) => response.json())
+			.then((response: Response) => {
+				if (response.status !== 200) throw(response.statusText);
+				return response.json();
+			})
 			.then((result: Collaboration[]) => {
 				if (result.length === 0) return undefined;
-				const collaboration = result[0];
+				const collaboration: Collaboration = result[0];
 				// Remove duplicate solves here
-				const validatedSolves = [] as Solve[];
+				const validatedSolves: Solve[] = [];
 				collaboration.solves.forEach(solve => {
-					const existing = validatedSolves.find(existing => existing.node === solve.node);
+					const existing: Solve | undefined = validatedSolves.find(existing => existing.node === solve.node);
+					// Assume newer entries are more accurate on duplicate solve
 					if (existing) {
-						existing.traits = solve.traits;	// Assume newer traits are more accurate on duplicate solve
+						existing.traits = solve.traits;
+						existing.crew = solve.crew;
 					}
 					else {
 						validatedSolves.push(solve);
 					}
 				});
-				collaboration.solves = validatedSolves;
+				// Also remove solves where all traits are ? (i.e. an undone solve)
+				collaboration.solves = validatedSolves.filter(solve => !solve.traits.every(trait => trait === '?'));
 				// Remove duplicate trials here
-				const validatedTrials = [] as CrewTrial[];
+				const validatedTrials: CrewTrial[] = [];
 				collaboration.trials.forEach(trial => {
-					const existing = validatedTrials.find(existing => existing.crewSymbol === trial.crewSymbol);
+					const existing: CrewTrial | undefined = validatedTrials.find(existing => existing.crewSymbol === trial.crewSymbol);
+					// Assume attempt is more accurate on duplicate trial
 					if (existing) {
-						if (trial.trialType === 'attemptedCrew') existing.trialType = 'attemptedCrew';	// Assume attempt is more accurate on duplicate trial
+						if (trial.trialType === 'attemptedCrew') existing.trialType = 'attemptedCrew';
 					}
 					else {
 						validatedTrials.push(trial);
@@ -265,14 +377,19 @@ export const Collaborator = (props: CollaboratorProps) => {
 				collaboration.trials = validatedTrials;
 				return collaboration;
 			})
-			.catch((error) => { throw(error); })
-			.finally(() => setIsChecking(false));
+			.catch(e => {
+				// fetchCollaboration callers should CATCH ERRORS
+				//	INITIAL fetchCollaboration error => abort collaboration
+				//	SUBSEQUENT fetchCollaboration errors => silently ignore
+				throw(e);
+			})
+			.finally(() => setFetchState(FetchState.Idle));
 	}
 
 	async function postBossBattle(bossBattle: BossBattle): Promise<boolean> {
 		if (SIMULATE_API) {
 			return new Promise((resolve, reject) => {
-				const newCollaboration = {
+				const newCollaboration: Collaboration = {
 					bossBattleId: bossBattle.id,
 					fleetId: bossBattle.fleetId,
 					bossGroup: bossBattle.bossGroup,
@@ -283,21 +400,28 @@ export const Collaborator = (props: CollaboratorProps) => {
 					roomCode: 'ABCDE',
 					solves: [],
 					trials: []
-				} as Collaboration;
+				};
 				setRemoteSim({...newCollaboration});
 				setControl({...newCollaboration});
 				resolve(false);
 			});
 		}
 
-		const route = `${API_URL}api/postBossBattle`;
+		const route: string = `${API_URL}api/postBossBattle`;
 		return fetch(route, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(bossBattle)
 			})
-			.then((response: Response) => !!response)
-			.catch((error) => { throw(error); });
+			.then((response: Response) => {
+				return response.status === 201;
+			})
+			.catch(e => {
+				// postBossBattle callers should handle FALSE response
+				//	ALL postBossBattle errors => abort collaboration
+				console.warn('Warning! Unable to post collaboration.', e);
+				return false;
+			});
 	}
 
 	async function postSpotter(chainIndex: number, spotter: Spotter): Promise<boolean> {
@@ -307,9 +431,9 @@ export const Collaborator = (props: CollaboratorProps) => {
 					resolve(false);
 					return;
 				}
-				const newSim = JSON.parse(JSON.stringify(remoteSim)) as Collaboration;
+				const newSim: Collaboration = JSON.parse(JSON.stringify(remoteSim));
 				newSim.solves = spotter.solves;
-				const newTrials = [] as CrewTrial[];
+				const newTrials: CrewTrial[] = [];
 				['attemptedCrew', 'pendingCrew'].forEach(trialType => {
 					spotter[trialType].forEach((crewSymbol: string) => {
 						newTrials.push({ crewSymbol, trialType });
@@ -321,52 +445,88 @@ export const Collaborator = (props: CollaboratorProps) => {
 			});
 		}
 
-		interface PostRequest {
-			route: string;
-			body: string;
-		};
-		const postRequests = [] as PostRequest[];
+		const postRequests: IPostRequest[] = [];
 
-		const newSolves = [] as Solve[];
-		spotter.solves.forEach(solve => {
-			const exists = control?.solves.find(control =>
-				control.node === solve.node
-				&& control.traits.length === solve.traits.length
-				&& control.traits.every(trait => solve.traits.includes(trait))
+		const sameChain: boolean = control?.chainIndex === chainIndex;
+
+		// Only post solves if new chain or new solve on the same chain
+		const solvesToPost: Solve[] = [];
+		spotter.solves.forEach(spotterSolve => {
+			const alreadyPosted: Solve | undefined = control?.solves.find(controlSolve =>
+				sameChain
+					&& controlSolve.node === spotterSolve.node
+					&& controlSolve.traits.length === spotterSolve.traits.length
+					&& controlSolve.traits.every(trait => spotterSolve.traits.includes(trait))
+					&& controlSolve.crew.length === spotterSolve.crew.length
 			);
-			if (!exists) newSolves.push(solve);
+			if (!alreadyPosted) solvesToPost.push(spotterSolve);
 		});
-		if (newSolves.length > 0) {
+		if (solvesToPost.length > 0) {
 			postRequests.push({
 				route: `${API_URL}api/postBossBattleSolves`,
 				body: JSON.stringify({
-					fleetId: control?.fleetId,
+					fleetId,
 					bossBattleId,
 					chainIndex,
-					solves: newSolves
+					solves: solvesToPost
 				})
 			});
 		}
 
-		const newTrials = [] as CrewTrial[];
+		// Delete trials first if fewer trials are in spotter than control
+		const deleteTrialsFirst: boolean = sameChain && getCrewTrialsFromSpotter(spotter).length < (control?.trials ?? []).length;
+
+		// Only post trials if new chain, new trial on the same chain, or fewer trials in spotter than control
+		const trialsToPost: CrewTrial[] = [];
 		['attemptedCrew', 'pendingCrew'].forEach(trialType => {
 			spotter[trialType].forEach((crewSymbol: string) => {
-				const exists = control?.trials.find(trial => trial.crewSymbol === crewSymbol && trial.trialType === trialType);
-				if (!exists) newTrials.push({ crewSymbol, trialType });
+				const alreadyPosted: CrewTrial | undefined = control?.trials.find(controlTrial =>
+					sameChain
+						&& controlTrial.crewSymbol === crewSymbol
+						&& controlTrial.trialType === trialType
+				);
+				if (deleteTrialsFirst || !alreadyPosted) trialsToPost.push({ crewSymbol, trialType });
 			});
 		});
-		if (newTrials.length > 0) {
+		if (trialsToPost.length > 0) {
 			postRequests.push({
 				route: `${API_URL}api/postBossBattleTrials`,
 				body: JSON.stringify({
-					fleetId: control?.fleetId,
+					fleetId,
 					bossBattleId,
 					chainIndex,
-					trials: newTrials
+					trials: trialsToPost
 				})
 			});
 		}
 
+		// postSpotter callers should handle FALSE response
+		//	ALL postSpotter errors => try again prompt
+		if (deleteTrialsFirst) {
+			return deleteTrials(chainIndex)
+				.then(deleteSuccessful => {
+					if (deleteSuccessful) return postAllAsync(postRequests);
+					return false;
+				});
+		}
+		return postAllAsync(postRequests);
+	}
+
+	async function deleteTrials(chainIndex: number): Promise<boolean> {
+		const route: string = `${API_URL}api/deleteBossBattleTrial?fleetId=${fleetId}&bossBattleId=${bossBattleId}&chainIndex=${chainIndex}`;
+		return fetch(route, { method: 'delete' })
+			.then((response: Response) => {
+				return response.status === 200;
+			})
+			.catch(e => {
+				// deleteTrials callers should handle FALSE response
+				//	ALL deleteTrials errors => try again prompt
+				console.warn('Warning! Unable to delete trials.', e);
+				return false;
+			});
+	}
+
+	async function postAllAsync(postRequests: IPostRequest[]): Promise<boolean> {
 		return Promise.all(postRequests.map(async request => {
 			await fetch(request.route, {
 				method: 'post',
@@ -374,43 +534,87 @@ export const Collaborator = (props: CollaboratorProps) => {
 				body: request.body
 			});
 		}))
-		.then(() => true);
+		.then(() => true)
+		.catch(e => {
+			// postAllAsync callers should handle FALSE response
+			//	ALL postAllAsync errors => try again prompt
+			console.warn('Warning! Unable to post all async requests.', e);
+			return false;
+		});
 	}
 
 	function pollCollaboration(): void {
 		if (!control) return;
 
-		const countSolves = (collaboration: Collaboration) => {
-			let solved = 0;
-			collaboration.chain.nodes.forEach((node, nodeIndex) => {
-				if (node.unlocked_character) {
-					solved++;
+		const compareSolves = (a: Collaboration, b: Collaboration) => {
+			let differs: boolean = false;
+			for (let nodeIndex = 0; nodeIndex < a.chain.nodes.length; nodeIndex++) {
+				const aUnlocked: UnlockedCharacter | undefined = a.chain.nodes[nodeIndex].unlocked_character;
+				const bUnlocked: UnlockedCharacter | undefined = b.chain.nodes[nodeIndex].unlocked_character;
+				if ((aUnlocked && !bUnlocked) || (!aUnlocked && bUnlocked)) {
+					differs = true;
 				}
 				else {
-					const solve = collaboration.solves.find(solve => solve.node === nodeIndex);
-					if (solve) solved++;
+					const aSolve: Solve | undefined = a.solves.find(solve => solve.node === nodeIndex);
+					const bSolve: Solve | undefined = b.solves.find(solve => solve.node === nodeIndex);
+					if ((aSolve && !bSolve) || (!aSolve && bSolve)) {
+						differs = true;
+					}
+					else if (aSolve && bSolve) {
+						if ((aSolve.traits.length !== bSolve.traits.length) || (!aSolve.traits.every(aTrait => bSolve.traits.includes(aTrait)))) {
+							differs = true;
+						}
+						else if ((aSolve.crew.length !== bSolve.crew.length) || (!aSolve.crew.every(aCrew => bSolve.crew.includes(aCrew)))) {
+							differs = true;
+						}
+					}
 				}
-			});
-			return solved;
+				if (differs) break;
+			}
+			return differs;
 		};
 
 		fetchCollaboration().then(remoteCollaboration => {
 			if (remoteCollaboration) {
-				const newChain = control.chainIndex !== remoteCollaboration.chainIndex;
-				const newSolves = countSolves(control) !== countSolves(remoteCollaboration);
-				const newTrials = [] as CrewTrial[];
+				const newChain: boolean = control.chainIndex !== remoteCollaboration.chainIndex;
+				const newSolves: boolean = newChain || compareSolves(control, remoteCollaboration);
+				const newTrials: CrewTrial[] = [];
 				remoteCollaboration.trials.forEach(trial => {
-					const existing = control.trials.find(existing => existing.crewSymbol === trial.crewSymbol && existing.trialType === trial.trialType);
+					const existing: CrewTrial | undefined = control.trials.find(existing =>
+						existing.crewSymbol === trial.crewSymbol && existing.trialType === trial.trialType
+					);
 					if (!existing) newTrials.push(trial);
 				});
-				const attemptedCrew = newTrials.filter(trial => trial.trialType === 'attemptedCrew').map(trial => trial.crewSymbol);
-				const pendingCrew = newTrials.filter(trial => trial.trialType === 'pendingCrew').map(trial => trial.crewSymbol);
+				const attemptedCrew: string[] = newTrials.filter(trial => trial.trialType === 'attemptedCrew').map(trial => trial.crewSymbol);
+				const pendingCrew: string[] = newTrials.filter(trial => trial.trialType === 'pendingCrew').map(trial => trial.crewSymbol);
 				setDetectedChanges({
 					newChain, newSolves, attemptedCrew, pendingCrew
 				});
-				setUpdatesDetected(newChain || newSolves || attemptedCrew.length > 0 || pendingCrew.length > 0);
+				setUpdatesDetected(
+					newChain
+						|| newSolves
+						|| attemptedCrew.length > 0
+						|| pendingCrew.length > 0
+						|| control.trials.length !== remoteCollaboration.trials.length
+				);
 			}
+		})
+		.catch(e => {
+			console.warn('Warning! Unable to fetch collaboration for polling.', e);
 		});
+	}
+
+	function getCrewTrialsFromSpotter(spotter: Spotter): CrewTrial[] {
+		const crewTrials: CrewTrial[] = [];
+		['attemptedCrew', 'pendingCrew'].forEach(trialType => {
+			spotter[trialType].forEach((crewSymbol: string) => {
+				crewTrials.push({
+					crewSymbol,
+					trialType
+				});
+			});
+		});
+		return crewTrials;
 	}
 };
 

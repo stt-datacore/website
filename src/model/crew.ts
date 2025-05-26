@@ -68,6 +68,24 @@ export interface CapAchiever {
     date: number
 }
 
+
+export interface Achiever {
+	player_guid: string,
+	player_name: string,
+	date: Date,
+	crew_archetype_id: number,
+	published?: boolean;
+	crew_symbol?: string;
+	crew_name?: string;
+	crew_url?: string;
+	crew_rarity?: number;
+}
+
+export type CapAchievers = {
+	action: string,
+	achievers: Achiever[]
+}
+
 /**
  * The is the crew roster model from crew.json
  *
@@ -75,7 +93,7 @@ export interface CapAchiever {
  * PlayerCrew derives from this and CompactCrew.
  */
 export interface CrewMember extends QuipmentScores {
-    id?: number;
+    id: number;
     symbol: string;
     name: string;
 	name_english?: string;
@@ -137,6 +155,7 @@ export interface CrewMember extends QuipmentScores {
 }
 
 export interface EquipmentSlot {
+    archetype: number;
     level: number;
     symbol: string;
     imageUrl?: string;
@@ -234,6 +253,30 @@ export interface Nickname {
     creator?: string;
 }
 
+export interface ConstituentWeights {
+    voyage: number
+    voyage_plus: number
+    shuttle: number
+    shuttle_plus: number
+    gauntlet: number
+    gauntlet_plus: number
+    crit: number
+    ship: number
+    quipment: number
+    collections: number
+    trait: number
+    main_cast: number
+    variant: number
+    potential_cols: number
+    skill_positions: number
+    skill_rarity: number
+    am_seating: number
+    tertiary_rarity: number
+    velocity: number
+}
+
+export type CurrentWeighting = { [key:string]: ConstituentWeights };
+
 export interface ShipScores {
     overall: number,
     arena: number,
@@ -302,6 +345,8 @@ export interface RankScoring {
     skill_positions: number;
     variant: number;
     quipment_details: QuipmentDetails;
+    versatility_quipment_details: QuipmentDetails;
+    power_quipment_details: QuipmentDetails;
 }
 
 export interface Ranks {

@@ -42,7 +42,7 @@ const EventPlannerSetup = () => {
 	React.useEffect(() => {
 		setRosterType(playerData ? 'myCrew' : 'allCrew');
 		getEvents(globalContext).then((result) => setActiveEvents(result));
-	}, [playerData]);
+	}, [playerData, globalContext]);
 
 	if (!activeEvents) return <></>;
 

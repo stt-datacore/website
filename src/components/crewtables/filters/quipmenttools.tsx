@@ -1,56 +1,49 @@
 import React from 'react';
-import { Form, Dropdown, Checkbox, DropdownItemProps } from 'semantic-ui-react';
+import { Form, Dropdown, DropdownItemProps } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ItemWithBonus } from '../../../utils/itemutils';
 import { GlobalContext } from '../../../context/globalcontext';
-import { QuestDropDown } from '../../missions/questdropdown';
-import { Mission, Quest } from '../../../model/missions';
 import { useStateWithStorage } from '../../../utils/storage';
 import { ContinuumMission } from '../../../model/continuum';
+import { QuestDropDown } from '../../missions/questdropdown';
+import { Mission } from '../../../model/missions';
 
 export type PowerMode = 'all' | 'core' | 'proficiency';
 
 type QuipmentToolsFilterProps = {
 	pageId: string;
-	crewFilters: ICrewFilter[];
 	quipment: ItemWithBonus[];
+
+	altTitle?: string;
+	immortalOnly?: boolean;
 	maxxed?: boolean;
+	missions?: ContinuumMission[];
+    hideForm?: boolean;
+
+	crewFilters: ICrewFilter[];
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
-    slots?: number;
-    setSlots: (value?: number) => void;
-	pstMode: boolean | 2 | 3;
-    setPstMode: (value: boolean | 2 | 3) => void;
+
 	powerMode: PowerMode;
 	setPowerMode: (value: PowerMode) => void;
+
+	pstMode: boolean | 2 | 3;
+    setPstMode: (value: boolean | 2 | 3) => void;
+
 	questFilter?: string[];
 	setQuestFilter: (value?: string[]) => void;
-	altTitle?: string;
-    hideForm?: boolean;
-	immortalOnly?: boolean;
+
+	slots?: number;
+    setSlots: (value?: number) => void;
 };
 
 export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
-	const { t, tfmt } = globalContext.localized;
-	const { questFilter, setQuestFilter, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
+	const { t } = globalContext.localized;
+	const { missions, questFilter, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 	const [mission, setMission] = useStateWithStorage('quipmentTools_mission', undefined as ContinuumMission | undefined);
-
-	const slotFilterOptions = [
-		{ key: 'slot0', value: 'slot0', text: t('quipment_dropdowns.slots.natural') },
-		{ key: 'slot1', value: 'slot1', text: t('quipment_dropdowns.slots.one_slot') },
-		{ key: 'slot2', value: 'slot2', text: t('quipment_dropdowns.slots.n_slots', { slots: "2" }) },
-		{ key: 'slot3', value: 'slot3', text: t('quipment_dropdowns.slots.n_slots', { slots: "3" }) },
-		{ key: 'slot4', value: 'slot4', text: t('quipment_dropdowns.slots.n_slots', { slots: "4" }) },
-	];
-
-	const filterCrew = (crew: IRosterCrew) => {
-		let skills = mission?.quests?.filter(f => questFilter?.includes(f.symbol))?.map(m => m.challenges?.map(c => c.skill)).flat();
-		if (!!skills?.length && !skills?.includes(crew.skill_order[0])) return false;
-		return true;
-	};
 
 	React.useEffect(() => {
 		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'qp_best');
@@ -64,21 +57,19 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
             setSlots(undefined);
         }
 		setCrewFilters([...crewFilters]);
-	}, [slotFilter]);
-
-    // React.useEffect(() => {
-	// 	const { continuum_missions } = globalContext.core;
-	// 	if (continuum_missions.length) {
-	// 		const current = continuum_missions[continuum_missions.length - 1];
-	// 		setTimeout(() => {
-	// 			fetchContinuum(current);
-	// 		});
-	// 	}
-    // }, []);
+	}, [slotFilter, questFilter]);
 
     if (hideForm) {
         return <></>;
     }
+
+	const slotFilterOptions = [
+		{ key: 'slot0', value: 'slot0', text: t('quipment_dropdowns.slots.natural') },
+		{ key: 'slot1', value: 'slot1', text: t('quipment_dropdowns.slots.one_slot') },
+		{ key: 'slot2', value: 'slot2', text: t('quipment_dropdowns.slots.n_slots', { slots: "2" }) },
+		{ key: 'slot3', value: 'slot3', text: t('quipment_dropdowns.slots.n_slots', { slots: "3" }) },
+		{ key: 'slot4', value: 'slot4', text: t('quipment_dropdowns.slots.n_slots', { slots: "4" }) },
+	];
 
 	const contentOptions = [
 		{
@@ -147,10 +138,11 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 				closeOnChange
 			/>
 
-			{/* <QuestDropDown
-				selection={questFilter?.length ? questFilter[0] : undefined}
+			{!!missions?.length && <QuestDropDown
+				continuum={true}
+				selection={mission?.symbol}
 				setSelection={(v) => setQuestFilter(v ? [v as string] : undefined)}
-				mission={mission}
+				missionsfull={missions as Mission[]}
 				customRender={(quest) => {
 					const skills = [ ...new Set(quest.challenges?.map(m => m.skill) ?? [])];
 					return <div style={{
@@ -175,19 +167,30 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 						</div>
 					</div>
 				}}
-				/> */}
-
+				/>}
 		</Form.Field>
 	);
 
+	function filterCrew(crew: IRosterCrew) {
+		let skills = mission?.quests?.filter(f => questFilter?.includes(f.symbol))?.map(m => m.challenges?.map(c => c.skill)).flat();
+		if (!!skills?.length && !skills?.includes(crew.skill_order[0])) return false;
+		return true;
+	};
 
-    function fetchContinuum(mission: ContinuumMission) {
-        const missionUrl = `/structured/continuum/${mission.id}.json`;
-        fetch(missionUrl)
-            .then((response) => response.json())
-            .then((result: ContinuumMission) => {
-                setMission(result);
-            });
-    }
+	function setQuestFilter(v?: string[]) {
+		if (!v) {
+			setMission(undefined);
+			props.setQuestFilter(undefined);
+			return;
+		}
+		if (typeof v === 'string') v = [v];
+		let m = missions?.filter(f => v?.includes(f.symbol));
+		if (m?.length) setMission(m[0]);
+		else setMission(undefined);
+		setTimeout(() => {
+			props.setQuestFilter(v);
+		});
+
+	}
 
 };

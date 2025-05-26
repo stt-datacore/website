@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Skill } from '../model/crew';
+import { Skill } from '../../model/crew';
 
 type CrewStatProps = {
 	skill_name: string;
@@ -8,6 +8,7 @@ type CrewStatProps = {
 	proficiencies?: boolean;
 	quipmentMode?: boolean;
 	style?: React.CSSProperties;
+	gridStyle?: React.CSSProperties;
 	vertical?: boolean;
 };
 
@@ -35,6 +36,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 					gridGap: `${0.2 * scale}em`,
 					paddingTop: `${0.2 * scale}em`,
 					paddingRight: vertical ? '0' : `${0.4 * scale}em`,
+					...this.props.gridStyle
 				}}>
 				<div style={{ gridArea: 'icon' }}>
 					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />

@@ -8,6 +8,7 @@ export interface IDemand {
 	factionOnly: boolean;
 	have: number;
 	crewSymbols: string[];
+  primary?: boolean;
 }
 
 export interface ICrewDemandsMeta {
@@ -29,51 +30,37 @@ export interface DemandCounts {
 }
 
 
-export interface EquipmentCommon extends PlayerEquipmentItem {
+export interface EquipmentItem extends PlayerEquipmentItem {
   symbol: string
   type: number
   name: string
+  short_name?: string
   name_english?: string;
   flavor: string
   flavorContext?: JSX.Element;
   rarity: number
-  short_name?: string
   imageUrl: string
+  item_sources: EquipmentItemSource[]
   bonuses?: EquipmentBonuses
-  quantity?: number;
-  needed?: number;
-  factionOnly?: boolean;
-  demandCrew?: string[];
-
   duration?: number;
-  max_rarity_requirement?: number;
   traits_requirement_operator?: string; // "and" | "or" | "not" | "xor";
   traits_requirement?: string[];
-  kwipment?: boolean;
-  kwipment_id?: number | string;
-}
+  max_rarity_requirement?: number;
 
-export interface EquipmentItem extends EquipmentCommon {
-  symbol: string
-  type: number
-  name: string
-  name_english?: string;
-  flavor: string
-  flavorContext?: JSX.Element;
-  rarity: number
-  short_name?: string
-  imageUrl: string
-  bonuses?: EquipmentBonuses
   quantity?: number;
   needed?: number;
-  factionOnly?: boolean;
 
-  item_sources: EquipmentItemSource[]
   recipe?: EquipmentRecipe
   demands?: IDemand[];
 
+  demandCrew?: string[];
+  needed_by?: string[];
+
+  factionOnly?: boolean;
   empty?: boolean;
   isReward?: boolean;
+  kwipment?: boolean;
+  kwipment_id?: number | string;
 }
 
 export interface EquipmentItemSource {

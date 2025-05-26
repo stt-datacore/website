@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Aktiv seit {{time}}",
+        "online_since_time": "Online seit {{time}}"
+    },
     "alerts": {
         "add": "Hinzufügen",
         "always_alert_legendary": "Seien Sie immer wachsam, wenn im Rückkaufpool neue legendäre Crewmitglieder entdeckt werden.",
@@ -91,6 +95,7 @@
         "rewards": "Belohnungen",
         "score": "Punktzahl",
         "secondary": "Sekundär",
+        "series": "Serie",
         "ship_taits": "Schiffseigenschaften",
         "ship_trait": "Schiffseigenschaft",
         "short_name": "Kurzname",
@@ -100,6 +105,8 @@
         "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Eindeutig abrufbar",
+        "variant": "Variante",
+        "variants": "Varianten",
         "voyage": "Reise",
         "voyages": "Reisen"
     },
@@ -135,6 +142,7 @@
     },
     "buffs": {
         "max_buffs": "Maximale Buffs",
+        "max_quipment_buffs_best": "Maximale Rüstzeug Buffs (Beste Rüstzeug)",
         "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
         "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)",
         "no_buffs": "Keine Buffs",
@@ -329,6 +337,20 @@
         "consider_shared": "Gemeinsame Crew berücksichtigen",
         "consider_unowned": "Unbesessene Crew berücksichtigen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
+        "excluder": {
+            "all_event_crew": "Alle Event-Crews",
+            "by_event": "Das Ereignis, von dem die Besatzung ausgeschlossen werden soll",
+            "denote_current": "Aktuelle Notizen löschen",
+            "do_not_exclude_event_crew": "Crew des Ereignisses nicht ausschließen",
+            "event_skill_matrix_crew": "Crew innerhalb der Ereignisfertigkeitsmatrix",
+            "featured_event_crew": "Vorgestellte Event-Crew",
+            "note_current": "Aktuelle Ausschlüsse notieren",
+            "phase_type": "Phasentyp",
+            "restore_notes": "Notierte Ausschlüsse abrufen",
+            "search": "Suche nach auszuschließender Crew",
+            "select_event": "Wählen Sie ein Ereignis aus",
+            "title": "Auszuschließende Crew"
+        },
         "only_immortal": "Nur unsterbliche Crew",
         "shared_crew_popup": "Die Skill-Zahlen der gemeinsamen Crew basieren auf den Buffs Ihres Spielers und stimmen möglicherweise nicht mit dem tatsächlichen Punktestand überein"
     },
@@ -442,6 +464,7 @@
             "title": "Potenzielle Crew"
         },
         "quipment": "Rüstzeug anzeigen",
+        "scoring": "Rangliste und Punktestand anzeigen",
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
@@ -452,6 +475,7 @@
     },
     "duration": {
         "all_time": "Alle Zeiten",
+        "custom_date": "Benutzerdefiniertes Datum",
         "n_d": "{{days}} T",
         "n_d_compact": "{{days}}T",
         "n_day": "{{days}} Tag",
@@ -730,6 +754,7 @@
         "import": {
             "click_here": "Klicken Sie hier, um Ihre Daten hochzuladen",
             "heading": "Sie können auf Ihre Flottendaten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen.",
+            "live": "Live-Flottendaten",
             "title": "Flottendaten"
         },
         "member_columns": {
@@ -747,6 +772,16 @@
         "only_event": "Nur Veranstaltungsteilnehmer anzeigen",
         "only_officers": "Nicht-Offiziere ausblenden",
         "squadrons": "Staffeln"
+    },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Spieler",
+            "total": "Gesamtzahl der Crew"
+        },
+        "description": "Sehen Sie sich Details zu den Spielern an, die als erste ein Crewmitglied auf das Maximum gebracht haben",
+        "group_by_player": "Nach Spieler gruppieren"
     },
     "gather": {
         "item_filter": {
@@ -892,6 +927,7 @@
         "admiral": "Admiral",
         "advanced_settings": "Erweiterte Einstellungen",
         "adventure": "Abenteuer",
+        "alternative_layout": "Alternativer Aufbau",
         "and": "und",
         "and_n_more_ellipses": "und {{n}} weitere ...",
         "any": "Beliebig",
@@ -919,6 +955,7 @@
         "date_start": "Startdatum",
         "default": "Standard",
         "delete": "Löschen",
+        "delete_confirm": "Möchten Sie diese Daten wirklich löschen?",
         "delete_selected": "Ausgewählte löschen",
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
@@ -928,6 +965,7 @@
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
         "episode": "Episode",
+        "error": "Fehler",
         "exclusive": "Exklusive",
         "experimental": "Experimentell",
         "filters": "Filter",
@@ -960,6 +998,7 @@
             "equipment": "Ausrüstung",
             "honor": "Ehre",
             "honorable_citation": "ehrenvolle Erwähnung",
+            "intel": "Intel",
             "interstellar_medium": "Interstellares Medium",
             "ism": "ISM",
             "merits": "Verdienste",
@@ -1012,6 +1051,7 @@
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
+        "portal_update": "Zeitportal-Update",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1043,6 +1083,7 @@
         "squadron_leader": "Geschwaderführer",
         "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
         "toggle_layout": "Layout umschalten",
+        "type": "Typ",
         "uncheck_all": "Deaktivieren Sie alle",
         "unselect_all": "Auswahl aufheben",
         "view_options": "Optionen anzeigen",
@@ -1087,6 +1128,7 @@
         "filter_by_event_type": "Filtern nach Ereignistyp",
         "filter_by_item_type": "Filtern nach Artikeltyp",
         "filter_by_listed_status": "Filtern nach Listenstatus",
+        "filter_by_mastery": "Filtern nach Meisterschafts",
         "filter_by_movement": "Filtern nach Bewegung",
         "filter_by_owned_status": "Filtern nach Besitzstatus",
         "filter_by_polestars": "Filtern nach Polarsterne",
@@ -1124,14 +1166,53 @@
         "traits": "Merkmalen"
     },
     "hof": {
+        "average_duration": "Durchschnittliche Dauer",
+        "crew_selection_placeholder": "Wählen Sie ein Besatzungsmitglied aus, um detaillierte Statistiken anzuzeigen ...",
+        "details": {
+            "clear": "Detailansicht löschen",
+            "most_frequent_covoyagers": "Häufigste Mitreisende",
+            "most_frequent_voyages": "Häufigste Reisen",
+            "most_frequent_voyages_together": "Häufigste gemeinsame Reisen",
+            "other_voyages": "Andere Reisen",
+            "seating_frequency": "Sitzplatzhäufigkeit",
+            "shared_voyages": "Gemeinsame Reisen",
+            "timeframe_details": "{{timeframe}} Details"
+        },
+        "details_timeframe": "Zeitrahmen der Details",
+        "max_duration": "Maximale Dauer",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Durchschnittliche Dauer",
             "maxdur": "Maximale Dauer",
+            "norm": "Normalisierter Durchschnitt von Dauer und Anzahl",
+            "norm_max": "Normalisierter Durchschnitt der maximalen Dauer und Anzahl",
             "rank_by_colon": "Rangfolge nach:",
             "voyages": "Anzahl der Reisen",
             "voydur": "Anzahl der Reisen * Durchschnittliche Dauer",
             "voymaxdur": "Anzahl der Reisen * Maximale Dauer"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "Statistiken für ausgewählte Crew anzeigen",
+                "title": "Reisedetails für die Crewmitglieder"
+            },
+            "rankings": {
+                "description": "Zeigen Sie Ranglisten für verschiedene Zeiträume an",
+                "title": "Ruhmeshalle Ranglisten"
+            }
+        },
+        "timeframe_placeholder": "Wählen Sie einen Zeitraum zur Anzeige aus...",
+        "timeframes": {
+            "lastNinetyDays": "die letzten 90 Tage",
+            "lastSevenDays": "die letzten 7 Tage",
+            "lastSixMonths": "die letzten 6 Monate",
+            "lastThirtyDays": "die letzten 30 Tage",
+            "oneYear": "das letzte Jahr"
+        },
+        "voyage_count": "Anzahl der Reisen",
+        "voyage_stats_for_timeframe": "Reisestatistiken für {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -1244,6 +1325,12 @@
             "paste_here_placeholder": "Fügen Sie hier Ihre {{data}} ein",
             "title": "Kopieren und Einfügen"
         },
+        "existing": {
+            "clear": "Klicken Sie hier, um Ihre Daten zu löschen",
+            "click_here": "Klicken Sie hier, um Ihre Daten zu aktualisieren",
+            "header": "Live {{data}} ist bereits vorhanden.",
+            "live_data": "Live {{data}}"
+        },
         "or": "ODER",
         "upload_file": {
             "browse_ellipses": "Suchen Sie nach der hochzuladenden {{data}}-Datei...",
@@ -1282,7 +1369,21 @@
         "fleet_data": "Flottendaten",
         "gauntlet_data": "Herausforderungsdaten",
         "player_data": "Spielerdaten",
+        "pvp_3": "Daten zur Commander-Liga",
+        "pvp_4": "Daten zur Kapitän-Liga",
+        "pvp_5": "Daten der Admiral-Liga",
         "quest_data": "Quest-Daten"
+    },
+    "logic": {
+        "AND": "UND",
+        "NOR": "NOR",
+        "OR": "ODER",
+        "XOR": "XOR"
+    },
+    "mastery": {
+        "elite": "Elite",
+        "epic": "Episch",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "Über uns",
@@ -1293,7 +1394,9 @@
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
             "episodes": "Folgen",
             "events": "Ereignisen",
+            "ftm_hof": "ZZM Ruhmeshalle",
             "misc_game_stats": "Verschiedene Spielstatistiken",
+            "objective_events": "Objektive-Ereignisse",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Ruhmeshalle der Reise"
         },
@@ -1328,7 +1431,8 @@
             "factions": "Fraktionen",
             "fleet_boss_battles": "Flottenbosskämpfe",
             "gauntlet": "Herausforderung",
-            "shuttle_helper": "Shuttle Helfer",
+            "objective_event_helper": "Objektive-Ereignisse-Helfer",
+            "shuttle_helper": "Shuttle-Helfer",
             "voyage_calculator": "Reiserechner",
             "voyage_history": "Reiseverlauf"
         },
@@ -1343,6 +1447,12 @@
         "continuum_mission_map": "Kontinuumsmissionskarte",
         "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}",
         "mission_map": "Missionskarte"
+    },
+    "objective_events": {
+        "mini_helper_available": "Mini-Helfer vorhanden!",
+        "stages": "Etappen",
+        "toggle_mini_helper": "Mini-Helfer umschalten",
+        "x_is_locked_by_y": "{{x}} ist von {{y}} gesperrt"
     },
     "obtained": {
         "long": {
@@ -1499,6 +1609,12 @@
         "add_crew": "Crew Hinzufügen",
         "select_crew": "Crew Auswählen"
     },
+    "pvp": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Sie können auf Ihre SGS-Daten auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen."
+        }
+    },
     "quipment_dropdowns": {
         "calc_mode": {
             "core": "Grundkenntnisse",
@@ -1548,6 +1664,7 @@
         "datacore_grade": "DataCore-Klasse",
         "datacore_rating": "DataCore-Bewertung",
         "datascore": "DataScore",
+        "datascore_ranks": "DataScore-Ranglisten",
         "fbb_rank": "Flottenboss",
         "gauntlet_rank": "Herausforderungsrang",
         "quipment_score": "Rüstzeug Werte",
@@ -1556,6 +1673,7 @@
             "am_seating": "Antimaterie-Sitze",
             "collections": "Stat-Boosting-Sammlungen",
             "crit": "Erhöhte Krit",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
             "gauntlet_plus": "Herausforderung+",
             "main_cast": "Hauptbesetzung",
@@ -2061,6 +2179,7 @@
         "cite_opt": "Laden Ehrenvolle Erwähnung Optimierer...",
         "default": "Daten werden geladen…",
         "demands": "Crew fordert Berechnung...",
+        "hof": "Ruhmeshalle wird geladen...",
         "please_wait": "Bitte warten...",
         "quipment": "Berechnungsausrüstung..."
     },
@@ -2077,6 +2196,7 @@
         "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
         "graphs": {
             "circle": "Kompetenzkreise",
+            "event_distributions": "Verteilungen der Ereignisse",
             "ignore_filters": "Derzeit aktive Filter ignorieren",
             "map_skill_order_density": "Die Fertigkeitsreihenfolgedichte abbilden",
             "map_skill_order_power": "Ordnen Sie die Fertigkeitsreihenfolgestärke zu",
@@ -2118,6 +2238,10 @@
                 "description": "Statistiken zu Komponenten und Ausrüstung im Spiel",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Durchsuchen Sie die Zeitportal-Updates",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Statistiken zu Crew-Eigenschaften im Spiel",
                 "title": "{{hints.traits}}"
@@ -2130,7 +2254,7 @@
             "mean_time_between_releases": "Mediane Zeit zwischen Veröffentlichungen",
             "mean_velocity": "Mediane Geschwindigkeit"
         },
-        "title": "Statistiktrends",
+        "title": "Detaillierte Spielstatistiken",
         "total_power_difference": "Gesamtleistungsdifferenz",
         "trait_columns": {
             "collection": "{{base.collection}}",

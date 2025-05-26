@@ -1,39 +1,43 @@
-import React from 'react';
-import { Gauntlet } from '../model/gauntlets';
-import { CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
-import { Ship, Schematics, BattleStations } from '../model/ship';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { Collection, Constellation, KeystoneBase, Polestar, POST_BIGBOOK_EPOCH } from '../model/game-elements';
-import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
-import { Mission } from '../model/missions';
-import { Icon } from 'semantic-ui-react';
 import { navigate } from 'gatsby';
+import React from 'react';
+import { Icon } from 'semantic-ui-react';
 import { ContinuumMission } from '../model/continuum';
-import { calcQuipmentScore } from '../utils/equipment';
-import { getItemWithBonus } from '../utils/itemutils';
+import { Achiever, CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { EventInstance, EventLeaderboard } from '../model/events';
-import { StaticFaction } from '../model/shuttle';
-import { highestLevel } from '../utils/shiputils';
+import { Collection, KeystoneBase, PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
+import { Gauntlet } from '../model/gauntlets';
+import { Mission } from '../model/missions';
 import { ObjectiveEvent } from '../model/player';
-import { ICoreData } from './coremodel';
+import { BattleStations, ReferenceShip, Schematics, Ship } from '../model/ship';
+import { StaticFaction } from '../model/shuttle';
+import { calcQuipmentScore } from '../utils/equipment';
 import { EventStats } from '../utils/event_stats';
+import { getItemWithBonus } from '../utils/itemutils';
+import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
+import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
+import { ICoreData } from './coremodel';
 
 const DC_DEBUGGING: boolean = false;
 
 export type ValidDemands =
 	'all_buffs' |
+	'all_ships' |
 	'battle_stations' |
 	'cadet' |
 	'collections' |
 	'continuum_missions' |
 	'crew' |
+	'current_weighting' |
 	'dilemmas' |
 	'disputes' |
 	'episodes' |
 	'event_instances' |
 	'event_leaderboards' |
+	'event_scoring' |
 	'event_stats' |
 	'factions' |
+	'ftm_log' |
 	'gauntlets' |
 	'items' |
 	'keystones' |
@@ -41,6 +45,7 @@ export type ValidDemands =
 	'missions' |
 	'missionsfull' |
 	'objective_events' |
+	'portal_log' |
 	'quests' |
 	'ship_schematics' |
 	'skill_bufs';
@@ -62,24 +67,29 @@ interface IDemandResult {
 
 const defaultData = {
 	all_buffs: {} as BuffStatTable,
+	all_ships: [] as ReferenceShip[],
 	battle_stations: [] as BattleStations[],
 	cadet: [] as Mission[],
 	collections: [] as Collection[],
+	continuum_missions: [] as ContinuumMission[],
 	crew: [] as CrewMember[],
+	current_weighting: {},
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
+	event_scoring: {},
 	event_stats: [] as EventStats[],
 	factions: [] as StaticFaction[],
+	ftm_log: [] as Achiever[],
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
-	continuum_missions: [] as ContinuumMission[],
+	objective_events: [] as ObjectiveEvent[],
+	portal_log: [] as PortalLogEntry[],
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
-	objective_events: [] as ObjectiveEvent[],
 	topQuipmentScores: [] as QuipmentScores[],
 } as ICoreData;
 
@@ -123,18 +133,22 @@ export const DataProvider = (props: DataProviderProperties) => {
 		// Fetch only if valid demand is not already satisfied
 		const valid = [
 			'all_buffs',
+			'all_ships',
 			'battle_stations',
 			'cadet',
 			'crew',
 			'collections',
 			'continuum_missions',
+			'current_weighting',
 			'dilemmas',
 			'disputes',
 			'episodes',
 			'event_instances',
 			'event_leaderboards',
+			'event_scoring',
 			'event_stats',
 			'factions',
+			'ftm_log',
 			'gauntlets',
 			'items',
 			'keystones',
@@ -142,6 +156,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'missions',
 			'missionsfull',
 			'objective_events',
+			'portal_log',
 			'quests',
 			'ship_schematics',
 			'skill_bufs',
@@ -159,7 +174,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (demand === 'all_buffs' && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -203,6 +218,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'items':
 						newData.items = processItems(result.json);
 						break;
+					case 'all_ships':
+						newData.all_ships = processAllShips(result.json);
+						break;
+					case 'portal_log':
+						newData.portal_log = result.json;
+						newData.portal_log?.forEach(log => log.date = new Date(log.date));
+						break;
+
 					default:
 						newData[result.demand] = result.json;
 						break;
@@ -317,10 +340,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return scores;
 	}
 
-
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
+	}
+
+	function processAllShips(all_ships: ReferenceShip[]) {
+		for (let ship of all_ships) {
+			ship.id = ship.archetype_id;
+			ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
+		}
+		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels) }));
+		return all_ships;
 	}
 
 	function processCrew(result: CrewMember[]): CrewMember[] {
@@ -378,7 +409,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					}
 				}
 			}
-			data.ships = scsave;
+			//data.ships = scsave;
 		}
 	}
 

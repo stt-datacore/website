@@ -1,4 +1,8 @@
 {
+    "active": {
+        "active_for_time": "Active for {{time}}",
+        "online_since_time": "Online since {{time}}"
+    },
     "alerts": {
         "add": "Add",
         "always_alert_legendary": "Always alert when new legendary crew are discovered in the buy-back well.",
@@ -91,6 +95,7 @@
         "rewards": "Rewards",
         "score": "Score",
         "secondary": "Secondary",
+        "series": "Series",
         "ship_taits": "Ship Traits",
         "ship_trait": "Ship Trait",
         "short_name": "Short Name",
@@ -100,6 +105,8 @@
         "status": "Status",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Uniquely Retrievable",
+        "variant": "Variant",
+        "variants": "Variants",
         "voyage": "Voyage",
         "voyages": "Voyages"
     },
@@ -135,6 +142,7 @@
     },
     "buffs": {
         "max_buffs": "Max buffs",
+        "max_quipment_buffs_best": "Max Quipment Buffs (Best Quipment)",
         "max_quipment_buffs_double": "Max Quipment Buffs (Two Skills)",
         "max_quipment_buffs_triple": "Max Quipment Buffs (Three Skills)",
         "no_buffs": "No buffs",
@@ -329,6 +337,20 @@
         "consider_shared": "Consider shared crew",
         "consider_unowned": "Consider unowned crew",
         "exclude_quipped": "Exclude quipped crew",
+        "excluder": {
+            "all_event_crew": "All event crew",
+            "by_event": "Exclude crew from the event",
+            "denote_current": "Clear current notes",
+            "do_not_exclude_event_crew": "Do not exclude event crew",
+            "event_skill_matrix_crew": "Event skill matrix crew",
+            "featured_event_crew": "Featured event crew",
+            "note_current": "Note current exclusions",
+            "phase_type": "Phase type",
+            "restore_notes": "Recall noted exclusions",
+            "search": "Search for crew to exclude",
+            "select_event": "Select event",
+            "title": "Crew to Exclude"
+        },
         "only_immortal": "Only immortal crew",
         "shared_crew_popup": "Skill numbers of shared crew are based on your player buffs and may not match actual score"
     },
@@ -442,6 +464,7 @@
             "title": "Prospective Crew"
         },
         "quipment": "Show quipment scores",
+        "scoring": "Show ranking and scoring",
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
@@ -452,6 +475,7 @@
     },
     "duration": {
         "all_time": "All Time",
+        "custom_date": "Custom Date",
         "n_d": "{{days}} d",
         "n_d_compact": "{{days}}d",
         "n_day": "{{days}} day",
@@ -730,6 +754,7 @@
         "import": {
             "click_here": "Click here to upload your data",
             "heading": "You can access your fleet data in a similar way to how you access your player data, currently.",
+            "live": "Live Fleet Data",
             "title": "Fleet Data"
         },
         "member_columns": {
@@ -747,6 +772,16 @@
         "only_event": "Show only event participants",
         "only_officers": "Hide non-officers",
         "squadrons": "Squadons"
+    },
+    "ftm": {
+        "columns": {
+            "crew": "{{base.crew}}",
+            "date": "{{base.date}}",
+            "player": "Player",
+            "total": "Total crew count"
+        },
+        "description": "View details about players who were the first to max crew",
+        "group_by_player": "Group by player"
     },
     "gather": {
         "item_filter": {
@@ -892,6 +927,7 @@
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
         "adventure": "Adventure",
+        "alternative_layout": "Alternative Layout",
         "and": "and",
         "and_n_more_ellipses": "and {{n}} more ...",
         "any": "Any",
@@ -919,6 +955,7 @@
         "date_start": "Start Date",
         "default": "Default",
         "delete": "Delete",
+        "delete_confirm": "Are you sure you wish to delete this data?",
         "delete_selected": "Delete Selected",
         "disable": "Disable",
         "disabled": "Disabled",
@@ -928,6 +965,7 @@
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
+        "error": "Error",
         "exclusive": "Exclusive",
         "experimental": "Experimental",
         "filters": "Filters",
@@ -960,6 +998,7 @@
             "equipment": "Equipment",
             "honor": "Honor",
             "honorable_citation": "Honorable citation",
+            "intel": "Intel",
             "interstellar_medium": "Interstellar Medium",
             "ism": "ISM",
             "merits": "Merits",
@@ -1012,6 +1051,7 @@
         "percentile": "Percentile",
         "permalink": "permalink",
         "portal": "Portal",
+        "portal_update": "Portal Update",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1043,6 +1083,7 @@
         "squadron_leader": "Squadron Leader",
         "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "toggle_layout": "Toggle layout",
+        "type": "Type",
         "uncheck_all": "Uncheck all",
         "unselect_all": "Unselect All",
         "view_options": "View Options",
@@ -1087,6 +1128,7 @@
         "filter_by_event_type": "Filter by event type",
         "filter_by_item_type": "Filter by item type",
         "filter_by_listed_status": "Filter by listed status",
+        "filter_by_mastery": "Filter by mastery",
         "filter_by_movement": "Filter by movement",
         "filter_by_owned_status": "Filter by owned status",
         "filter_by_polestars": "Filter by polestars",
@@ -1124,14 +1166,53 @@
         "traits": "Traits"
     },
     "hof": {
+        "average_duration": "Average duration",
+        "crew_selection_placeholder": "Select crew to see detailed stats...",
+        "details": {
+            "clear": "Clear Details View",
+            "most_frequent_covoyagers": "Most frequent co-voyagers",
+            "most_frequent_voyages": "Most frequent voyages",
+            "most_frequent_voyages_together": "Most frequent voyages together",
+            "other_voyages": "Other voyages",
+            "seating_frequency": "Seating frequency",
+            "shared_voyages": "Shared Voyages",
+            "timeframe_details": "{{timeframe}} details"
+        },
+        "details_timeframe": "Details Timeframe",
+        "max_duration": "Max duration",
+        "page": {
+            "title": "{{menu.game_info.voyage_hof}}"
+        },
         "rank_by": {
             "duration": "Average Duration",
             "maxdur": "Maximum Duration",
+            "norm": "Normalized average of duration and count",
+            "norm_max": "Normalized average of maximum duration and count",
             "rank_by_colon": "Rank By:",
             "voyages": "Number of Voyages",
             "voydur": "Number of Voyages * Average Duration",
             "voymaxdur": "Number of Voyages * Maximum Duration"
-        }
+        },
+        "tabs": {
+            "details": {
+                "description": "View statistics for selected crew",
+                "title": "Voyage Crew Details"
+            },
+            "rankings": {
+                "description": "Show rankings for various time-periods",
+                "title": "Hall Of Fame Rankings"
+            }
+        },
+        "timeframe_placeholder": "Select a timeframe to view...",
+        "timeframes": {
+            "lastNinetyDays": "the last 90 days",
+            "lastSevenDays": "the last 7 days",
+            "lastSixMonths": "the last 6 months",
+            "lastThirtyDays": "the last 30 days",
+            "oneYear": "the last year"
+        },
+        "voyage_count": "Voyage count",
+        "voyage_stats_for_timeframe": "Voyage stats for {{timeframe}}"
     },
     "item_picker": {
         "all_items": {
@@ -1244,6 +1325,12 @@
             "paste_here_placeholder": "Paste your {{data}} here",
             "title": "Copy and Paste"
         },
+        "existing": {
+            "clear": "Click here to clear your data",
+            "click_here": "Click here to update your data",
+            "header": "Live {{data}} is already present.",
+            "live_data": "Live {{data}}"
+        },
         "or": "OR",
         "upload_file": {
             "browse_ellipses": "Browse for {{data}} file to upload...",
@@ -1282,7 +1369,21 @@
         "fleet_data": "fleet data",
         "gauntlet_data": "gauntlet data",
         "player_data": "player data",
+        "pvp_3": "commander division data",
+        "pvp_4": "captain division data",
+        "pvp_5": "admiral division data",
         "quest_data": "quest data"
+    },
+    "logic": {
+        "AND": "AND",
+        "NOR": "NOR",
+        "OR": "OR",
+        "XOR": "XOR"
+    },
+    "mastery": {
+        "elite": "Elite",
+        "epic": "Epic",
+        "normal": "Normal"
     },
     "menu": {
         "about_title": "About",
@@ -1293,7 +1394,9 @@
             "bridge_crew_tool": "Bridge Crew Tool",
             "episodes": "Episodes",
             "events": "Events",
+            "ftm_hof": "FTM Hall of Fame",
             "misc_game_stats": "Misc Game Stats",
+            "objective_events": "Objective Events",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Voyage Hall of Fame"
         },
@@ -1328,6 +1431,7 @@
             "factions": "Factions",
             "fleet_boss_battles": "Fleet Boss Battles",
             "gauntlet": "Gauntlet",
+            "objective_event_helper": "Objective Event Helper",
             "shuttle_helper": "Shuttle Helper",
             "voyage_calculator": "Voyage Calculator",
             "voyage_history": "Voyage History"
@@ -1343,6 +1447,12 @@
         "continuum_mission_map": "Continuum Mission Map",
         "current_continuum_mission_date": "Current continuum mission: {{date}}",
         "mission_map": "Mission Map"
+    },
+    "objective_events": {
+        "mini_helper_available": "Mini-helper available!",
+        "stages": "Stages",
+        "toggle_mini_helper": "Toggle Mini-helper",
+        "x_is_locked_by_y": "{{x}} is locked by {{y}}"
     },
     "obtained": {
         "long": {
@@ -1499,6 +1609,12 @@
         "add_crew": "Add Crew",
         "select_crew": "Select Crew"
     },
+    "pvp": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "You can access your PVP data in a similar way to how you access your player data, currently."
+        }
+    },
     "quipment_dropdowns": {
         "calc_mode": {
             "core": "Core Skill",
@@ -1548,6 +1664,7 @@
         "datacore_grade": "DataCore Grade",
         "datacore_rating": "DataCore Rating",
         "datascore": "DataScore",
+        "datascore_ranks": "DataScore Ranks",
         "fbb_rank": "Boss",
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
@@ -1556,6 +1673,7 @@
             "am_seating": "Antimatter Seats",
             "collections": "Stat-Boosting Collections",
             "crit": "Elevated Crit",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
             "main_cast": "Main Cast",
@@ -2061,6 +2179,7 @@
         "cite_opt": "Loading citation optimizer...",
         "default": "Loading data...",
         "demands": "Calculating crew demands...",
+        "hof": "Loading Hall of Fame...",
         "please_wait": "Please wait...",
         "quipment": "Calculating quipment..."
     },
@@ -2077,6 +2196,7 @@
         "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
         "graphs": {
             "circle": "Skill Circles",
+            "event_distributions": "Event distributions",
             "ignore_filters": "Ignore currently active filters",
             "map_skill_order_density": "Map skill order density",
             "map_skill_order_power": "Map skill order power",
@@ -2118,6 +2238,10 @@
                 "description": "Stats about components and equipment in the game",
                 "title": "{{global.items}}"
             },
+            "portal_update": {
+                "description": "Browse portal updates",
+                "title": "{{global.portal_update}}"
+            },
             "traits": {
                 "description": "Stats about crew traits in the game",
                 "title": "{{hints.traits}}"
@@ -2130,7 +2254,7 @@
             "mean_time_between_releases": "Mean time between releases",
             "mean_velocity": "Mean Velocity"
         },
-        "title": "Stats Trends",
+        "title": "Deep-Dive Game Stats",
         "total_power_difference": "Total power difference",
         "trait_columns": {
             "collection": "{{base.collection}}",

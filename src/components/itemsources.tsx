@@ -90,7 +90,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 				questidx.forEach(({ quest: q, index: idx}) => {
 					let t = `${e.episode > 0 ? "(" + e.episode + ") " : ''}${e.episode_title ?? e.name}`;
 					let n = `(${idx}) ${q.name}`;
-					eps[q.symbol] = <>{t}: {noHeading && <br />}{n}</>;
+					eps[q.symbol] = <>{t}: {noHeading && <><br />&nbsp;&#x21b3;&nbsp;</>}{n}</>;
 				});
 			});
 		}
@@ -164,7 +164,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.faction_missions')}: </b>}{brief && <>{briefSepInit}</>}
 					{factions
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
-						.map((entry, idx) => <>{`${entry.name} (${entry.chance_grade}/5)`}</>)
+						.map((entry, idx) => noHeading ? <></> : <>{`${entry.name} (${entry.chance_grade}/5)`}</>)
 						.reduce((prev, curr) => <>{prev}{brief && <>{briefSep}</> || <>{', '}</>}{curr}</>)}
 					{refItem && brief && isBriefed && factions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('faction', false)}>({t('global.show_n_more_ellipses', { n: `${factions.length - briefLen}` })})</a></>}
 					{refItem && brief && !isBriefed && factions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('faction', true)}>({t('global.show_less')})</a></>}

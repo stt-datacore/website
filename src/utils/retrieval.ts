@@ -1,8 +1,6 @@
 import { CrewMember } from "../model/crew";
 import { PolestarCombo } from "../model/game-elements";
-import { CompactCrew, PlayerCrew } from "../model/player";
-
-
+import { PlayerCrew } from "../model/player";
 
 export function findPolestars(crew: PlayerCrew | CrewMember, roster: (PlayerCrew | CrewMember)[]): PolestarCombo[] {
     // Generate crewman's list of polestars (traits + rarity + skills)

@@ -9,7 +9,7 @@ import { GameEvent, Voyage, VoyageDescription } from '../../model/player';
 import { Ship } from '../../model/ship';
 import { ITrackedVoyage, IVoyageCrew, IVoyageEventContent, IVoyageHistory, IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
-import { getEventData, getRecentEvents, guessEncounterTimes, guessEncounterTraits } from '../../utils/events';
+import { getEventData, getRecentEvents, guessEncounterTimes } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IEventData } from '../eventplanner/model';
@@ -18,7 +18,7 @@ import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { HistoryContext, IHistoryContext } from '../voyagehistory/context';
 import { HistoryHome } from '../voyagehistory/historyhome';
 import { HistoryMessage } from '../voyagehistory/message';
-import { createCheckpoint, defaultHistory, getTrackedData, InitState, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
+import { createCheckpoint, defaultHistory, getTrackedData, InitState, mergeHistories, NEW_VOYAGE_ID, postVoyage, SyncState, updateVoyageInHistory } from '../voyagehistory/utils';
 
 import { ICalculatorContext, CalculatorContext } from './context';
 import { CIVASMessage } from './civas';
@@ -32,6 +32,7 @@ import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
 import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { SkillCheckAccordion } from './skillcheck/accordion';
 import { VoyageStatsAccordion } from './stats/stats_accordion';
+import { refShips } from '../../utils/shiputils';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -47,6 +48,7 @@ export const VoyageHome = () => {
 
 const NonPlayerHome = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { all_ships } = globalContext.core;
 	const { t } = globalContext.localized;
 
 	const [voyageConfig, setVoyageConfig] = React.useState<IVoyageInputConfig | undefined>(undefined);
@@ -101,7 +103,7 @@ const NonPlayerHome = () => {
 
 	function getEvents(): void {
 		// Guess event from autosynced events
-		getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
+		getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, refShips(all_ships)).then(recentEvents => {
 			setEventData([...recentEvents]);
 		});
 	}
@@ -129,8 +131,9 @@ type PlayerHomeProps = {
 
 const PlayerHome = (props: PlayerHomeProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData, ephemeral } = globalContext.player;
+	const { playerData, ephemeral, playerShips } = globalContext.player;
 	const { t } = globalContext.localized;
+	const { all_ships } = globalContext.core;
 	const { TRAIT_NAMES } = globalContext.localized.english;
 	const { dbid } = props;
 
@@ -143,7 +146,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 			onInitialize: () => setHistoryInitState(prev => prev + 1)
 		}
 	);
-	const [postRemote, setPostRemote] = useStateWithStorage<boolean>(
+	const [postRemote, internalSetPostRemote] = useStateWithStorage<boolean>(
 		dbid+'/voyage/postRemote',
 		false,
 		{
@@ -176,7 +179,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		if (historyInitState === InitState.VarsLoaded) {
 			if (postRemote) {
 				getTrackedData(dbid).then(async (remoteHistory) => {
-					if (!!remoteHistory) setHistory(remoteHistory);
+					if (!!remoteHistory) setHistory(mergeHistories(history, remoteHistory));
 					setHistorySyncState(SyncState.RemoteReady);
 					setHistoryInitState(InitState.HistoryLoaded);
 				}).catch(e => {
@@ -227,10 +230,15 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		</HistoryContext.Provider>
 	);
 
+	function setPostRemote(value: boolean) {
+		internalSetPostRemote(value);
+		setHistoryInitState(InitState.VarsLoaded);
+	}
+
 	function getEvents(): void {
 		// Get event data from recently uploaded playerData
 		if (ephemeral?.events) {
-			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew))
+			const currentEvents: IEventData[] = ephemeral.events.map(ev => getEventData(ev, globalContext.core.crew, playerShips))
 				.filter(ev => ev !== undefined).map(ev => ev as IEventData)
 				.filter(ev => ev.seconds_to_end > 0)
 				.sort((a, b) => (a && b) ? (a.seconds_to_start - b.seconds_to_start) : a ? -1 : 1);
@@ -238,7 +246,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 		// Otherwise guess event from autosynced events
 		else {
-			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, globalContext.core.ship_schematics.map(m => m.ship)).then(recentEvents => {
+			getRecentEvents(globalContext.core.crew, globalContext.core.event_instances, refShips(all_ships)).then(recentEvents => {
 				setEventData([...recentEvents]);
 			});
 		}
@@ -340,10 +348,12 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		const trackedRunningVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
 		if (trackedRunningVoyage) {
 			const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(trackedRunningVoyage));
+			updatedVoyage.lootcrew = running.pending_rewards.loot.filter(f => f.type === 1).map(m => m.symbol);
+
 			return createCheckpoint(running).then(checkpoint => {
 				if (historySyncState === SyncState.RemoteReady) {
 					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {
-						if (result.status < 300 && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
+						if ((!result.status || result.status < 300) && result.trackerId && result.inputId === updatedVoyage.tracker_id) {
 							setHistory(history => {
 								updateVoyageInHistory(history, {...updatedVoyage, checkpoint});
 								return history;
@@ -387,6 +397,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				updatedVoyage.voyage_id = running.id;
 				updatedVoyage.created_at = Date.parse(running.created_at);
 				updatedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;
+				updatedVoyage.lootcrew = running.pending_rewards.loot.filter(f => f.type === 1).map(m => m.symbol);
 				// If the lineup sent out doesn't match the tracked recommendation, maybe reconcile crew and max_hp here or show a warning?
 				if (historySyncState === SyncState.RemoteReady) {
 					return postVoyage(dbid, {...updatedVoyage, checkpoint}).then(result => {
@@ -609,16 +620,16 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					highlightedSkills={highlightedSkills}
 					setHighlightedSkills={setHighlightedSkills}
 				/>
-				{/* {voyage.voyage_type === 'encounter' && (
-					<EncounterHelperAccordion
-						voyageConfig={voyage}
-					/>
-				)} */}
 				<StatsRewardsAccordion
 					voyage={voyage}
 					roster={myCrew}
 					initialExpand={recalled}
 				/>
+				{voyage.voyage_type === 'encounter' && (
+					<EncounterHelperAccordion
+						voyageConfig={voyage}
+					/>
+				)}
 			</div>
 			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />

@@ -1,11 +1,11 @@
 import CONFIG from '../components/CONFIG';
 import { CrewMember, Skill } from '../model/crew';
-import { EquipmentCommon, EquipmentItem, EquipmentItemSource } from '../model/equipment';
-import { ISymbol } from '../model/game-elements';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { Icon, ISymbol } from '../model/game-elements';
 import { Mission } from '../model/missions';
-import { AtlasIcon, BuffBase, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
+import { ItemArchetypeBase, Milestone, PlayerCollection, PlayerCrew, PlayerEquipmentItem, Reward, TranslateMethod } from '../model/player';
 import { getIconPath } from './assets';
-import { simplejson2csv, ExportField } from './misc';
+import { ExportField, simplejson2csv } from './misc';
 
 
 export interface ItemBonusInfo {
@@ -19,7 +19,7 @@ export interface ItemWithBonus {
 }
 
 export function mergeItems(player_items: PlayerEquipmentItem[], items: EquipmentItem[], include_missing = false) {
-	let data = [] as EquipmentCommon[];
+	let data = [] as EquipmentItem[];
 	player_items.forEach(item => {
 		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
 		if (itemEntry) {
@@ -44,7 +44,8 @@ export function mergeItems(player_items: PlayerEquipmentItem[], items: Equipment
 				bonuses: undefined,
 				imageUrl: item.imageUrl ?? "",
 				symbol: item.symbol,
-				quantity: item.quantity
+				quantity: item.quantity,
+				item_sources: []
 			});
 		}
 	});
@@ -97,7 +98,7 @@ export function exportItemFields(): ExportField[] {
 	];
 }
 
-export function exportItems(items: EquipmentCommon[]): string {
+export function exportItems(items: EquipmentItem[]): string {
 	return simplejson2csv(items, exportItemFields());
 }
 
@@ -133,7 +134,7 @@ export function exportItemFieldsAlt(): ExportField[] {
 	];
 }
 
-export function exportItemsAlt(items: EquipmentCommon[]): string {
+export function exportItemsAlt(items: EquipmentItem[]): string {
 	return simplejson2csv(items, exportItemFieldsAlt());
 }
 
@@ -202,7 +203,7 @@ export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
 	return result;
 }
 
-export function getItemBonuses(item: EquipmentItem): ItemBonusInfo {
+export function getItemBonuses(item: EquipmentItem | EquipmentItem): ItemBonusInfo {
     let bonusText = [] as string[];
     let bonuses = {} as { [key: string]: Skill };
 
@@ -329,7 +330,7 @@ export function binaryLocate<T extends ISymbol>(symbol: string, items: T[]) : T 
 	return undefined;
 }
 
-export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: Reward, needed?: boolean) {
+export function checkReward(items: (EquipmentItem | EquipmentItem)[], reward: Reward, needed?: boolean) {
  	let foundItem = items.find(f => (f as EquipmentItem).isReward && f.symbol === reward.symbol && f.quantity === reward.quantity);
 	if (!foundItem) {
 		let template_item = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
@@ -342,7 +343,7 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 			bonuses: {},
 			quantity: !!needed ? 0 : reward.quantity,
 			needed: !needed ? 0 : reward.quantity,
-			imageUrl: getIconPath(reward.icon ?? {} as AtlasIcon, true),
+			imageUrl: getIconPath(reward.icon ?? {} as Icon, true),
 			item_sources: [],
 			archetype_id: reward.id,
 			isReward: !needed
@@ -354,10 +355,60 @@ export function checkReward(items: (EquipmentCommon | EquipmentItem)[], reward: 
 }
 
 
+export function getMilestoneRewards(milestones: Milestone[]) {
+	return milestones.map((milestone) => {
+		return (milestone.buffs?.map(b => b as ItemArchetypeBase) ?? [] as Reward[]).concat(milestone.rewards ?? [] as Reward[]) as Reward[];
+	}).flat();
+}
+
 export function getCollectionRewards(playerCollections: PlayerCollection[]) {
 	return playerCollections.map((col) => {
-		return (col?.milestone.buffs?.map(b => b as BuffBase) ?? [] as Reward[]).concat(col?.milestone.rewards ?? [] as Reward[]) as Reward[];
+		return (col?.milestone.buffs?.map(b => b as ItemArchetypeBase) ?? [] as Reward[]).concat(col?.milestone.rewards ?? [] as Reward[]) as Reward[];
 	}).flat();
+}
+
+
+export function formatTime(milliseconds: number, t?: TranslateMethod) {
+	let seconds = Math.floor(milliseconds / 1000);
+	milliseconds -= seconds * 1000;
+	let minutes = Math.floor(seconds / 60);
+	milliseconds -= minutes * 60;
+	let hours = Math.floor(minutes / 60);
+	minutes -= hours * 60;
+	let days = Math.floor(hours / 24);
+	hours -= days * 24;
+
+	let s = '';
+
+	if (t) {
+		if (days) {
+			if (s) s += ' ';
+			s += t('duration.n_d', { days });
+		}
+		if (hours) {
+			if (s) s += ' ';
+			s += t('duration.n_h', { hours });
+		}
+		if (minutes) {
+			if (s) s += ' ';
+			s += t('duration.n_m', { minutes });
+		}
+		// if (seconds) {
+		// 	if (s) s += ' ';
+		// 	s += t('duration.n_s', { seconds: milliseconds });
+		// }
+		// if (milliseconds) {
+		// 	if (s) s += ' ';
+		// 	s += t('duration.n_ms', { seconds: milliseconds });
+		// }
+	}
+	else {
+		for (let part of [days, hours, minutes, milliseconds]) {
+			if (s) s += ':';
+			s += `${part.toString().padStart(2, '0')}`;
+		}
+	}
+	return s;
 }
 
 export function formatDuration(time: number, t?: TranslateMethod) {
@@ -383,7 +434,7 @@ export function getQuipmentAsItemWithBonus(items: EquipmentItem[]) {
 	return items.filter(f => f.type === 14 && !!f.max_rarity_requirement).map(m => getItemWithBonus(m));
 }
 
-export function getItemWithBonus(item: EquipmentItem) {
+export function getItemWithBonus(item: EquipmentItem | EquipmentItem) {
 	return {
 		item,
 		bonusInfo: getItemBonuses(item)

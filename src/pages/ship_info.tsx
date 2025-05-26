@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { mergeShips, setupShip } from '../utils/shiputils';
+import { getShipDivision, mergeRefShips, setupShip } from '../utils/shiputils';
 import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
@@ -33,7 +33,7 @@ const ShipInfoPage = () => {
 		setShipKey(ship_key);
 	}, []);
 
-	return <DataPageLayout pageTitle={t('pages.ship_info')} demands={['ship_schematics', 'battle_stations']}>
+	return <DataPageLayout pageTitle={t('pages.ship_info')}>
 		<div>
 			{!!shipKey && <ShipViewer ship={shipKey} setShip={setShipKey} />}
 			{!shipKey && globalContext.core.spin(t('spinners.default'))}
@@ -123,6 +123,13 @@ const ShipViewer = (props: ShipViewerProps) => {
 		}
 	}, [ships, shipKey]);
 
+	const division = React.useMemo(() => {
+		if (ship) {
+			return (getShipDivision(ship.rarity) + 2) as 3 | 4 | 5;
+		}
+		return undefined;
+	}, [ship]);
+
 	return (<>
 		<div style={{
 			display: "flex",
@@ -183,9 +190,9 @@ const ShipViewer = (props: ShipViewerProps) => {
 				onlyImmortal={onlyImmortal}
 				pageId={'shipInfo'}
 				setCrewStations={setCrewStations}
+				division={division}
 				ship={ship}
 				setShip={(ship) => ship ? setShipKey(ship.symbol) : null}
-				showLineupManager={false}
 				/>}
 
 			{activeTabIndex === 1 &&
@@ -198,9 +205,9 @@ const ShipViewer = (props: ShipViewerProps) => {
 				onlyImmortal={onlyImmortal}
 				pageId={'opponentInfo'}
 				setCrewStations={setOpponentStations}
+				division={division}
 				ship={opponentShip}
 				setShip={(ship) => setOpponentShip(ship)}
-				showLineupManager={true}
 				/>}
 		</div>
 	</>)
@@ -220,40 +227,12 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	function loadShips() {
 		if (!context) return [];
-		const schematics = [...context.core.ship_schematics];
-
-		const constellation = {
-			symbol: 'constellation_ship',
-			rarity: 1,
-			max_level: 5,
-			antimatter: 1250,
-			name: 'Constellation Class',
-			icon: { file: '/ship_previews_fed_constellationclass' },
-			traits: ['federation','explorer'],
-			battle_stations: [
-				{
-					skill: 'command_skill'
-				},
-				{
-					skill: 'diplomacy_skill'
-				}
-			],
-			owned: true
-		} as Ship;
-
-		schematics.push({
-			ship: constellation,
-			rarity: constellation.rarity,
-			cost: 0,
-			id: 1,
-			icon: constellation.icon!
-		});
-
-		let ships = mergeShips(schematics, context.player.playerData?.player.character.ships ?? []) ?? [];
+		const { SHIP_TRAIT_NAMES } = context.localized;
+		const all_ships = [...context.core.all_ships];
+		let ships = mergeRefShips(all_ships, context.player.playerData?.player.character.ships ?? [], SHIP_TRAIT_NAMES) ?? [];
 		return [...ships];
 	}
 
 }
-
 
 export default ShipInfoPage;

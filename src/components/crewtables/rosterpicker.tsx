@@ -1,5 +1,5 @@
 import React from 'react';
-import { Step, Icon, Label, Message, Button } from 'semantic-ui-react';
+import { Step, Icon, Label, Message } from 'semantic-ui-react';
 
 import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode, CryoCollection } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
@@ -9,7 +9,7 @@ import { IRosterCrew, RosterType } from './model';
 import { CrewMember } from '../../model/crew';
 import { loadOfferCrew } from '../../utils/offers';
 import { appelate } from '../../utils/misc';
-import { Offer, OfferCrew } from '../../model/offers';
+import { OfferCrew } from '../../model/offers';
 import { useStateWithStorage } from '../../utils/storage';
 import { AlertContext } from '../alerts/alertprovider';
 import { AvatarView } from '../item_presenters/avatarview';
@@ -430,7 +430,6 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 				crewman.cost_text = offerData[crewman.symbol].map(offer => offer.drop_info.map(drop => drop.cost).sort((a, b) => b - a)[0].toString()).join(" / ");
 				crewman.offers = offerData[crewman.symbol];
-
 			}
 			if (playerData) {
 				const owned = playerData.player.character.crew.filter(crew => crew.symbol === crewman.symbol);

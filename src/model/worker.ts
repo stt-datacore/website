@@ -1,9 +1,9 @@
-import { BossBattlesRoot, BossEffect } from "./boss";
+import { BossEffect } from "./boss";
 import { BaseSkills, CrewMember, Skill } from "./crew";
 import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
-import { EquipmentCommon, EquipmentItem } from "./equipment";
+import { EquipmentItem } from "./equipment";
 import { Collection } from "./game-elements";
 import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
@@ -124,10 +124,12 @@ export interface EquipmentWorkerConfig {
     items: EquipmentItem[];
     playerData: PlayerData;
     addNeeded?: boolean;
+    crewFilter?: number[];
+    excludePrimary?: boolean;
 }
 
 export interface EquipmentWorkerResults {
-    items: (EquipmentCommon | EquipmentItem)[];
+    items: (EquipmentItem | EquipmentItem)[];
 }
 
 export interface BetaTachyonSettings {
@@ -188,6 +190,7 @@ export interface VoyageImprovement {
 	crew: PlayerCrew[];
 	maxEV: number;
 	remainingEV: number;
+    skills: string[];
 }
 
 export interface CiteData {
@@ -225,6 +228,7 @@ export interface CrewChallengeInfo {
 export interface AssociatedPath {
     path: string;
     needed_kwipment?: number[];
+    needed_kwipment_expiration?: number[];
     skills: BaseSkills;
 }
 

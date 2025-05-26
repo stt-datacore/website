@@ -1,11 +1,10 @@
-import React from "react";
-import { CrewMember } from "../../model/crew";
-import { PlayerData, PlayerCrew, CompletionState, PlayerBuffMode, PlayerImmortalMode } from "../../model/player";
-import { prepareOne, applyCrewBuffs, getSkills, PREPARE_MAX_RARITY } from "../../utils/crewutils";
-import { BuffStatTable } from "../../utils/voyageutils";
 import { IDefaultGlobal } from "../../context/globalcontext";
+import { CrewMember } from "../../model/crew";
 import { EquipmentItem } from "../../model/equipment";
-import { ItemBonusInfo, getItemBonuses } from "../../utils/itemutils";
+import { CompletionState, PlayerBuffMode, PlayerCrew, PlayerData, PlayerImmortalMode } from "../../model/player";
+import { applyCrewBuffs, getSkills, PREPARE_MAX_RARITY, prepareOne } from "../../utils/crewutils";
+import { getItemBonuses, ItemBonusInfo } from "../../utils/itemutils";
+import { BuffStatTable } from "../../utils/voyageutils";
 
 export const BuffNames = {
     'none': "buffs.no_buffs",
@@ -14,6 +13,7 @@ export const BuffNames = {
     'quipment': "buffs.quipment_buffs",
     'max_quipment_2': "buffs.max_quipment_buffs_double",
     'max_quipment_3': "buffs.max_quipment_buffs_triple",
+    'max_quipment_best': "buffs.max_quipment_buffs_best",
 }
 
 export const ImmortalNames = {
@@ -173,32 +173,37 @@ export class CrewPreparer {
         let quips = [] as EquipmentItem[];
         let buffs = undefined as ItemBonusInfo[] | undefined;
         let immoMode: PlayerImmortalMode[] | undefined = undefined;
+        let have = false;
 
         if (dataIn) {
             let item: PlayerCrew;
 
             if (hasPlayer) {
                 if (useInputQuip) {
-                    item = playerData.player.character.crew.find((xcrew) => {
-                        if ("id" in dataIn) {
+                    let imp = playerData.player.character.crew.find((xcrew) => {
+                        if ("id" in dataIn && dataIn.id) {
                             return xcrew.id === dataIn.id;
                         }
                         else {
                             return xcrew.symbol === dataIn.symbol;
                         }
-                    }) ?? dataIn as PlayerCrew;
-                    item = { ...dataIn, ...item, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };
+                    });
+                    if (!imp) imp = dataIn as PlayerCrew;
+                    else have = true;
+                    item = { ...dataIn, ...imp, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };
                 }
                 else {
-                    item = playerData.player.character.crew.find((xcrew) => {
-                        if ("id" in dataIn) {
+                    let imp = playerData.player.character.crew.find((xcrew) => {
+                        if ("id" in dataIn && dataIn.id) {
                             return xcrew.id === dataIn.id;
                         }
                         else {
                             return xcrew.symbol === dataIn.symbol;
                         }
-                    }) ?? dataIn as PlayerCrew;
-                    item = { ...dataIn, ...item };
+                    });
+                    if (!imp) imp = dataIn as PlayerCrew;
+                    else have = true;
+                    item = { ...dataIn, ...imp };
                 }
             }
             else {
@@ -212,6 +217,7 @@ export class CrewPreparer {
                 buffs = quips.map(q => getItemBonuses(q));
                 item.kwipment_slots = quips.map(q => {
                     return {
+                        archetype: q.archetype_id,
                         level: 100,
                         symbol: q.symbol,
                         imageUrl: q.imageUrl
@@ -288,10 +294,12 @@ export class CrewPreparer {
                     }
                     })
             }
-
+            if (have) {
+                item.have = true;
+                (item as any)['any_immortal'] = playerData?.player?.character?.crew?.some(c => c.symbol === item.symbol && c.immortal);
+            }
             return [item, immoMode];
         }
-
         return [dataIn, []];
     }
 }

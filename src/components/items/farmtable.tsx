@@ -1,5 +1,5 @@
 import React from "react";
-import { FormInput, Button, Table, Pagination, Dropdown } from "semantic-ui-react";
+import { Table, Pagination, Dropdown } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EquipmentItemSource, EquipmentItem } from "../../model/equipment";
 import { useStateWithStorage } from "../../utils/storage";
@@ -7,8 +7,13 @@ import { GatherItemFilter } from "../gather/gather_planner";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import CONFIG from "../CONFIG";
 import { ItemDropDown } from "./itemdropdown";
+import { printChrons, printIntel } from "../retrieval/context";
+import { filterHighs, OptionsPanelFlexRow } from "../stats/utils";
+import { IEventData } from "../eventplanner/model";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { Filter } from "../../model/game-elements";
+import { omniSearchFilter } from "../../utils/omnisearch";
 
 export interface FarmSources {
 
@@ -20,20 +25,26 @@ export interface FarmSources {
 export interface FarmTableProps {
     pageId: string;
     sources: FarmSources[];
-    hover_target?: string;
+    hoverTarget?: string;
+    showOwned?: boolean;
+    showFarmable?: boolean;
+    excludedSourceTypes?: number[];
+    textStyle?: React.CSSProperties;
+    eventData?: IEventData;
+    renderExpanded?: (row: FarmSources) => JSX.Element;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
     // const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const { sources, pageId } = props;
-    const hover_target = props.hover_target ?? 'farm_item_target';
+    const { sources, pageId, renderExpanded, excludedSourceTypes, eventData } = props;
+    const hover_target = props.hoverTarget ?? 'farm_item_target';
 
     let allItems = [ ...new Set(sources.map(m => m.items).flat())];
     allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
     const globalContext = React.useContext(GlobalContext);
-    const { playerData } = globalContext.player;
-    const { t } = globalContext.localized;
+    const { playerData, ephemeral } = globalContext.player;
+    const { t, tfmt } = globalContext.localized;
 
     const [itemFilter, setItemFilter] = useStateWithStorage(`${pageId}/farm/item_filter`, '', { rememberForever: true });
 
@@ -48,7 +59,17 @@ export const FarmTable = (props: FarmTableProps) => {
     const [distinctItems, setDistinctItems] = React.useState<EquipmentItem[]>([]);
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
 
-    const searchText = selectedItems.join(',')
+    const [expanded, setExpanded] = React.useState<FarmSources | undefined>(undefined);
+
+    const { searchText, phrases } = React.useMemo(() => {
+        const searchText = selectedItems.join(',')
+        const phrase = searchText.toLowerCase().trim();
+        const phrases = phrase ? phrase.split(",").map(p => p.trim()) : [];
+        return { searchText, phrases };
+    }, [selectedItems]);
+
+    const expanding = !!renderExpanded;
+    const flexRow = OptionsPanelFlexRow;
 
     React.useEffect(() => {
         const distinctItems = [ ... new Set(sources.map(m => m.items).flat().map(m => m.symbol)) ]
@@ -60,8 +81,8 @@ export const FarmTable = (props: FarmTableProps) => {
             });
 
         const newList = (JSON.parse(JSON.stringify(sources)) as FarmSources[]).filter(item => {
-            if (item.source.type === 4) return false;
-
+            //if (item.source.type === 4) return false;
+            if (excludedSourceTypes?.includes(item.source.type)) return false;
             item.items = item.items.filter(fitem => {
                 if (itemFilter === 'single_source_items') {
                     return (fitem.item_sources.length === 1);
@@ -84,77 +105,55 @@ export const FarmTable = (props: FarmTableProps) => {
 
             if (!item.items.length) return false;
 
-            let phrase = searchText.toLowerCase().trim();
-            if (!phrase || item.source.name.toLowerCase().includes(phrase)) return true;
+            if (phrases.length) {
+                for (let phrase of phrases) {
+                    let test = item.items.filter(fitem => {
+                        if (fitem.symbol?.toLowerCase().includes(phrase)) return true;
+                        if (fitem.name?.toLowerCase().includes(phrase)) return true;
+                        if (fitem.flavor?.toLowerCase().includes(phrase)) return true;
+                        if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
 
-            let phrases = phrase.split(",").map(p => p.trim());
-            for (let phrase of phrases) {
-                let test = item.items.filter(fitem => {
-                    if (fitem.symbol.toLowerCase().includes(phrase)) return true;
-                    if (fitem.name.toLowerCase().includes(phrase)) return true;
-                    if (fitem.flavor.toLowerCase().includes(phrase)) return true;
-                    if (fitem.name_english?.toLowerCase().includes(phrase)) return true;
-
-                    return false;
-                });
-                if (!test.length) return false;
+                        return false;
+                    });
+                    if (test.length) return true;
+                }
+                return false;
             }
 
             return true;
         });
 
-        const mul = sortDirection === 'descending' ? -1 : 1;
-
-        if (sortColumn === 'demands') {
-            newList.sort((a, b) => {
-                let acount = a.items.reduce((p, n) => p + n.needed!, 0);
-                let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
-                return mul *  (acount - bcount);
-            })
-        }
-        else if (sortColumn === 'source') {
-            newList.sort((a, b) => {
-                return mul * a.source.name.localeCompare(b.source.name);
-            });
-        }
-
         setDistinctItems(distinctItems);
         setSortedSources(newList);
     }, [sources, sortColumn, sortDirection, searchText, itemFilter]);
 
-    const columnClick = (name: 'source' | 'demands') => {
-        if (name === sortColumn) {
-            setSortDirection(sortDirection === 'ascending' ? 'descending' : 'ascending');
-        }
-        else {
-            setSortColumn(name);
-        }
-    }
+    if (!playerData) return <></>
 
-    const pagingOptions = [
-        { key: "0", value: 10, text: "10" },
-        { key: "1", value: 25, text: "25" },
-        { key: "2", value: 50, text: "50" },
-        { key: "3", value: 100, text: "100" },
-    ];
-
-    const totalPages = Math.ceil(sortedSources.length / itemsPerPage);
-
-    let phrase = searchText.toLowerCase().trim();
-    let phrases = phrase ? phrase.split(",").map(p => p.trim()) : [];
-
-    if (currentPage > totalPages) {
-        if (totalPages === 0) {
-            if (currentPage !== 1) {
-                setCurrentPage(1);
+    const tableConfig = [
+        {
+            width: 2, column: 'source.name', title: t('shuttle_helper.missions.columns.mission'),
+            pseudocolumns: ['source.name', 'source.cost', 'source.type'],
+            translatePseudocolumn: (field) => {
+                field = field.replace('source.', '');
+                return t(`global.${field}`) || field;
+            },
+            customCompare: (a: FarmSources, b: FarmSources, options) => {
+                let r = 0;
+                if (options.field === 'source.name') r = a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0) || (a.source.type - b.source.type);
+                else if (options.field === 'source.cost') r = (a.source.cost ?? 0) - (b.source.cost ?? 0) || a.source.name.localeCompare(b.source.name) || (a.source.type - b.source.type);
+                else if (options.field === 'source.type') r = (a.source.type - b.source.type) || a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0);
+                return r;
+            }
+        },
+        {
+            width: 9, column: 'source.items', title: t('demands.items'),
+            customCompare: (a: FarmSources, b: FarmSources, options) => {
+                let acount = a.items.reduce((p, n) => p + n.needed!, 0);
+                let bcount = b.items.reduce((p, n) => p + n.needed!, 0);
+                return acount - bcount;
             }
         }
-        else {
-            setCurrentPage(totalPages);
-        }
-    }
-
-    if (!playerData) return <></>
+    ] as ITableConfigRow[];
 
     return (<div style={{ marginTop: "1em"}}>
         <h2>{t('items.item_sources')}</h2>
@@ -163,6 +162,7 @@ export const FarmTable = (props: FarmTableProps) => {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 margin: '0.25em',
+                marginBottom: '1em',
                 gap: '0.5em'
             }}>
 
@@ -175,58 +175,56 @@ export const FarmTable = (props: FarmTableProps) => {
 
             <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
-        <Table striped sortable>
-            <Table.Header>
-                {renderRowHeaders()}
-            </Table.Header>
-            <Table.Body>
-                {sortedSources
-                    .slice((currentPage - 1) * itemsPerPage, ((currentPage - 1) * itemsPerPage) + itemsPerPage)
-                    .map((source) => renderTableRow(source, phrases))}
-            </Table.Body>
-            <Table.Footer>
-                <Table.Row>
-                    <Table.HeaderCell colSpan="8">
-                        <Pagination
-                            totalPages={totalPages}
-                            activePage={currentPage}
-                            onPageChange={(event, { activePage }) =>
-                                setCurrentPage(activePage as number)
-                            }
-                        />
-                        <span style={{ paddingLeft: "2em" }}>
-                            {t("global.rows_per_page")}:{" "}
-                            <Dropdown
-                                inline
-                                options={pagingOptions}
-                                value={itemsPerPage}
-                                onChange={(event, { value }) =>
-                                    setItemsPerPage(value as number)
-                                }
-                            />
-                        </span>
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Footer>
-
-        </Table>
+        <SearchableTable
+            tableStyle={{width: '100%'}}
+            id={`${pageId}/farm_table`}
+            data={sortedSources}
+            config={tableConfig}
+            renderTableRow={(row, idx, isActive) => renderTableRow(row, phrases)}
+            filterRow={filterTableRow}
+            />
     </div>)
 
-    function renderRowHeaders() {
-
-        return <Table.Row>
-            <Table.HeaderCell sorted={sortColumn === 'source' ? sortDirection : undefined} onClick={() => columnClick('source')}>
-                {t('shuttle_helper.missions.columns.mission')}
-            </Table.HeaderCell>
-            <Table.HeaderCell sorted={sortColumn === 'demands' ? sortDirection : undefined} onClick={() => columnClick('demands')}>
-                {t('demands.items')}
-            </Table.HeaderCell>
-        </Table.Row>
+    function filterTableRow(row: FarmSources, filter: Filter[], search?: string) {
+        return omniSearchFilter(row, filter, search, [
+            'source.name',
+            {
+                field: 'items',
+                customMatch: (value: EquipmentItem[], text) => {
+                    text = text.toLowerCase();
+                    return value.some(eq => {
+                        return eq.name.toLowerCase().includes(text) || eq.name_english?.toLowerCase().includes(text)
+                    });
+                }
+            }
+        ]);
     }
 
     function renderTableRow(row: FarmSources, phrases: string[]) {
-
-        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}>
+        let cost = row.source.cost ?? 0;
+        let intel = 0;
+        let costColor = undefined as string | undefined;
+        if (row.source.type === 2 && eventData?.activeContent?.content_type === 'skirmish') {
+            intel = cost * 10;
+        }
+        if ([0, 2].includes(row.source.type) && ephemeral?.stimpack?.energy_discount) {
+            cost = Math.ceil(cost - (cost * (ephemeral.stimpack.energy_discount / 100)));
+            costColor = 'lightgreen';
+        }
+        return <Table.Row key={row.source.name + '_row_' + `${row.source.mastery}`}
+            style={{
+                cursor: expanding ? (expanded ? 'zoom-out' : 'zoom-in') : undefined
+            }}
+            onClick={() => {
+                if (!expanding) return;
+                if (expanded == row) {
+                    setExpanded(undefined);
+                }
+                else {
+                    setExpanded(row);
+                }
+            }}
+            >
             <Table.Cell width={4}>
                 <h3>{row.source.name}</h3>
                 <div style={{ fontSize: '1em' }}>
@@ -235,12 +233,20 @@ export const FarmTable = (props: FarmTableProps) => {
                 <div>
                     <ItemSources farmFormat={true} item_sources={[row.source]} />
                 </div>
+                {[0, 2].includes(row.source.type) && !!row.source.cost &&
+                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
+                    {t('global.cost{{:}}')}<span style={{color:costColor}}>{printChrons(cost)}</span>
+                </div>}
+                {!!intel &&
+                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
+                    <span style={{color: 'white'}}>{printIntel(intel, t, true)}</span>
+                </div>}
             </Table.Cell>
             <Table.Cell>
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'space-between',
                     gap: '1em',
                     flexWrap: 'wrap'
@@ -248,6 +254,8 @@ export const FarmTable = (props: FarmTableProps) => {
                     {row.items.map((item, idx) => {
                         if (!item) return <div key={`empty_${idx}_event_demand_${row.source.name}_${row.source.mastery}`}></div>
                         const itemHi = phrases.some(p => item!.name.toLowerCase().includes(p));
+                        const srcRef = item.item_sources.find(src => src.name === row.source.name);
+                        const chance = srcRef ? srcRef.chance_grade : 0;
                         return <div
                             key={item.symbol + "_event_demand_mapping" + idx.toString()}
                             style={{
@@ -292,18 +300,42 @@ export const FarmTable = (props: FarmTableProps) => {
                                         fontWeight: itemHi ? 'bold' : undefined
                                     }}
                                 >{item!.rarity}* <u>{item!.name}</u></span>
+                                 {!!chance && <span>({t('shuttle_helper.missions.columns.success_chance{{:}}')}{chance}/5)</span>}
                                 <span
                                     style={{
                                         fontStyle: 'italic',
+                                        ... props.textStyle,
                                         color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
                                     }}
-                                    >{t('items.n_needed', { n: item.needed?.toString() ?? '' })}
+                                    >
+                                        {t('items.n_needed', { n: item.needed?.toLocaleString() ?? '' })}
                                 </span>
+                                {!!props.showOwned && <span
+                                    style={{
+                                        fontStyle: 'italic',
+                                        ... props.textStyle,
+                                        color: (item.needed ?? 0) > (item.quantity ?? 0) ? undefined : 'lightgreen'
+                                    }}
+                                    >
+                                        {t('items.n_owned', { n: item.quantity?.toLocaleString() ?? '' })}
+                                </span>}
+                                {!!props.showFarmable && !!item.needed && typeof item.quantity === 'number' && item.needed > item.quantity && <span
+                                    style={{
+                                        fontStyle: 'italic',
+                                        ... props.textStyle,
+                                        color: 'lightblue'
+                                    }}
+                                    >
+                                        {t('items.n_farmable', { n: (item.needed - item.quantity)?.toLocaleString() ?? '' })}
+                                </span>}
                             </div>
                         </div>
                     })}
                 </div>
-
+                {expanded === row && !!renderExpanded &&
+                <div>
+                    {renderExpanded(row)}
+                </div>}
             </Table.Cell>
         </Table.Row>
 

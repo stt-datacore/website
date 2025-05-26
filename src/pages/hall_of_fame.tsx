@@ -14,12 +14,12 @@ class HallOfFamePage extends PureComponent<HallOfFamePageProps, HallOfFamePageSt
 
 	render() {
 			return (
-				<DataPageLayout pageTitle='Hall of Fame'>
+				<DataPageLayout>
 					<React.Fragment>
 						<CrewHoverStat targetGroup='voyagehof' />
 						<ItemHoverStat activationDelay={250} compact targetGroup='voyagehofitem' />
 						<VoyageHOF />
-					</React.Fragment>					
+					</React.Fragment>
 				</DataPageLayout>
 			);
 	}

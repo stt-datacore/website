@@ -56,6 +56,7 @@ const EventsPage = () => {
 				"cadet",
 				"all_buffs",
 				"items",
+				"all_ships",
 				"ship_schematics",
 				"event_instances",
 				"event_stats",
@@ -570,42 +571,70 @@ const EventStatsComponent = () => {
 	}
 };
 
+export type CustomTimeFilterProps = DropdownItemProps & {
+	onSelect?: (opt?: CustomTimeFilterProps) => void;
+}
+
 interface TimeframeFilterProps {
 	timeframe?: string;
 	setTimeframe: (value?: string) => void;
 	setWeeks?: (value?: number) => void;
+	customOptions?: CustomTimeFilterProps[];
+	customBefore?: boolean;
 }
 
-const TimeframeFilter = (props: TimeframeFilterProps) => {
+export const TimeframeFilter = (props: TimeframeFilterProps) => {
 
-	const { timeframe, setTimeframe, setWeeks } = props;
+	const { timeframe, setTimeframe, setWeeks, customBefore, customOptions } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const options = [
 		//{ key: 'all_time', value: 'all_time', text: t('duration.all_time') },
 		{ key: '2_years', value: '2_years', text: t('duration.n_years', { years: `2`} ) },
+		{ key: '18_months', value: '18_months', text: t('duration.n_months', { months: `18`}) },
 		{ key: '12_months', value: '12_months', text: t('duration.n_months', { months: `12`}) },
 		{ key: '9_months', value: '9_months', text: t('duration.n_months', { months: `9`}) },
 		{ key: '6_months', value: '6_months', text: t('duration.n_months', { months: `6`}) },
 		{ key: '3_months', value: '3_months', text: t('duration.n_months', { months: `3`}) },
-		{ key: '4_weeks', value: '4_months', text: t('duration.n_weeks', { weeks: `4` }) }
+		{ key: '2_months', value: '2_months', text: t('duration.n_months', { months: `2`}) },
+		{ key: '4_weeks', value: '4_weeks', text: t('duration.n_weeks', { weeks: `4` }) },
+		{ key: '2_weeks', value: '2_weeks', text: t('duration.n_weeks', { weeks: `2` }) },
 	] as DropdownItemProps[];
+
+	if (customOptions) {
+		const addopts = [...customOptions];
+		if (customBefore) addopts.reverse();
+		for (let opt of addopts) {
+			if (customBefore) {
+				options.unshift(opt);
+			}
+			else {
+				options.push(opt);
+			}
+		}
+	}
+
+	options.reverse();
 
 	return <Dropdown
 			placeholder={t('hints.filter_by_timeframe')}
 			clearable
-			search
 			selection
 			options={options}
 			value={timeframe}
-			onChange={(e, { value }) => {
+			onChange={(e, data) => {
+				const { value } = data;
+				const optData = data.options?.find(o => o.value === value) as CustomTimeFilterProps;
+				if (optData?.onSelect) {
+					optData.onSelect(optData);
+					return;
+				}
 				if (setWeeks) {
 					setWeeks(timeframeToWeeks(value as string | undefined))
 				}
 				setTimeframe(value as string | undefined);
 			}}
 		/>
-
 }
 
 interface EventTypeFilterProps {
@@ -645,14 +674,14 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 		/>
 }
 
-function timeframeParts(timeframe?: string): string[] | undefined {
+export function timeframeParts(timeframe?: string): string[] | undefined {
 	if (!timeframe) return undefined;
 	let sp = timeframe.split("_");
 	if (sp.length !== 2) return undefined;
 	return sp;
 }
 
-function timeframeToWeeks(timeframe?: string) {
+export function timeframeToWeeks(timeframe?: string) {
 	if (!timeframe) return undefined;
 	let sp = timeframe.split("_");
 	if (sp.length !== 2) return undefined;

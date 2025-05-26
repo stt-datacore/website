@@ -1,12 +1,12 @@
 
-import { BaseSkills, ComputedSkill, CrewMember, QuippedPower, Skill } from "../model/crew";
+import { ComputedSkill, CrewMember, QuippedPower, Skill } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Gauntlet, GauntletContestCrew, OwnedStatus, PairGroup } from "../model/gauntlets";
-import { CompletionState, GauntletPlayerBuffMode, PlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
+import { CompletionState, GauntletPlayerBuffMode, PlayerCrew, PlayerImmortalMode } from "../model/player";
 import { TraitNames } from "../model/traits";
 import { EMPTY_SKILL } from "../model/worker";
 
-import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillAdd, skillSum, skillToShort, updatePairScore } from "./crewutils";
+import { applyCrewBuffs, getCrewPairScore, getCrewQuipment, getPlayerPairs, getSkills, shortToSkill, skillSum, skillToShort, updatePairScore } from "./crewutils";
 import { calcQLots } from "./equipment";
 import { ItemBonusInfo, getItemBonuses, getQuipmentAsItemWithBonus } from "./itemutils";
 import { BuffStatTable } from "./voyageutils";
@@ -457,6 +457,7 @@ export type GauntletPane = 'today' | 'yesterday' | 'previous' | 'browse' | 'live
 export interface GauntletUserPrefs {
 	settings: GauntletSettings,
 	buffMode: GauntletPlayerBuffMode;
+	natural: boolean;
 	rankByPair?: string,
 	range_max?: number,
 	filter?: FilterProps,
@@ -497,7 +498,7 @@ export interface GauntletCalcConfig extends GauntletUserPrefs {
 
 export function calculateGauntlet(config: GauntletCalcConfig) {
 
-	const { bonusCache: bonusInfo, equipmentCache: crewQuip, settings, buffMode, context, gauntlet, range_max, filter, textFilter, hideOpponents, onlyActiveRound } = config;
+	const { natural, bonusCache: bonusInfo, equipmentCache: crewQuip, settings, buffMode, context, gauntlet, range_max, filter, textFilter, hideOpponents, onlyActiveRound } = config;
 	let { rankByPair } = config;
 	if (rankByPair === '' || rankByPair === 'none') rankByPair = undefined;
 
@@ -608,8 +609,9 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 
 	const applyMaxQuip = (crew: PlayerCrew, buffs: BuffStatTable) => {
 		if (buffMode.startsWith('max_quipment')) {
-			crew = calcQLots(crew, allQuipment, buffs, true, 4, "proficiency");
+			crew = calcQLots(crew, allQuipment, buffs, !natural, undefined, "proficiency");
 			let bestQuip = undefined as QuippedPower | undefined;
+			let one = false;
 			if (buffMode === 'max_quipment_2' && crew.best_quipment_1_2) {
 				bestQuip = crew.best_quipment_1_2
 			}
@@ -619,8 +621,12 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			else if (buffMode === 'max_quipment_3' && crew.best_quipment_1_2) {
 				bestQuip = crew.best_quipment_1_2;
 			}
+			else if (buffMode === 'max_quipment_best' && crew.best_quipment_top) {
+				bestQuip = crew.best_quipment_top;
+			}
 			else if (crew.best_quipment) {
-				bestQuip = crew.best_quipment
+				bestQuip = crew.best_quipment;
+				one = true;
 			}
 
 			if (bestQuip) {
@@ -633,7 +639,8 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				});
 				while (crew.kwipment.length < 4) crew.kwipment.push(0 as any);
 				crew.kwipment_prospects = true;
-				Object.keys(bestQuip.skills_hash).forEach((skill) => {
+				Object.keys(bestQuip.skills_hash).forEach((skill, idx) => {
+					if (one && idx) return;
 					crew[skill].base = bestQuip.skills_hash[skill].base;
 					crew[skill].min = bestQuip.skills_hash[skill].range_min;
 					crew[skill].max = bestQuip.skills_hash[skill].range_max;

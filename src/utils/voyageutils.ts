@@ -3,7 +3,6 @@ import { CrewMember, BaseSkills, Skill } from '../model/crew';
 import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/player';
 import { AntimatterSeatMap } from '../model/voyage';
 import { Estimate } from "../model/voyage";
-import { skillSum } from './crewutils';
 
 export const formatTime = (time: number, t?: TranslateMethod): string => {
 

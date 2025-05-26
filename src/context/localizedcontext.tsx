@@ -4,13 +4,14 @@ import { Icon } from 'semantic-ui-react';
 import { Action, ItemTranslation, ShipTraitNames, TraitNames, TranslationSet } from '../model/traits';
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
-import { Schematics, Ship } from '../model/ship';
+import { ReferenceShip, Schematics, Ship } from '../model/ship';
 import { Collection } from '../model/game-elements';
 import { CryoCollection, PlayerCrew, TranslateMethod } from '../model/player';
 import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
 import CONFIG from '../components/CONFIG';
 import { useStateWithStorage } from '../utils/storage';
+import { allLevelsToLevelStats } from '../utils/shiputils';
 //import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
@@ -21,10 +22,13 @@ export type SupportedLanguage = 'en' | 'sp' | 'de' | 'fr';
 
 export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | JSX.Element }) => JSX.Element;
 
+export type UseTMethod = (prefix: string) => { t: TranslateMethod, tfmt: JSXTranslateMethod };
+
 export interface TranslatedCore {
 	crew?: CrewMember[];
 	ship_schematics?: Schematics[];
 	ships?: Ship[];
+	all_ships?: ReferenceShip[];
 	collections?: Collection[];
 	items?: EquipmentItem[];
 };
@@ -82,7 +86,7 @@ export interface ILocalizedData extends IGameStrings {
 	translatePlayer: () => PlayerContextData;
 	t: TranslateMethod,
 	tfmt: JSXTranslateMethod,
-	//col: (key: string | number) => string;
+	useT: UseTMethod
 };
 
 const defaultGameStrings: IGameStrings = {
@@ -102,7 +106,8 @@ export const DefaultLocalizedData: ILocalizedData = {
 	translateCore: () => { return {}; },
 	translatePlayer: () => { return {} as PlayerContextData; },
 	t: () => '',
-	tfmt: () => <></>
+	tfmt: () => <></>,
+	useT: () => ({ t: () => '', tfmt: () => <></> })
 };
 
 export const LocalizedContext = React.createContext(DefaultLocalizedData);
@@ -194,7 +199,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		translateCore,
 		translatePlayer,
 		t,
-		tfmt
+		tfmt,
+		useT
 	};
 
 	return (
@@ -305,13 +311,14 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			return {};
 
 		const newCrew: CrewMember[] | undefined = postProcessCrewTranslations(core.crew, gameStrings);
-		const [newSchematics, newShips] = postProcessShipTranslations(core.ship_schematics, core.ships, gameStrings)
+		const [newSchematics, newShips, allShips] = postProcessShipTranslations(core.ship_schematics, core.ships, core.all_ships, gameStrings);
 		const newCollections: Collection[] | undefined = postProcessCollectionTranslations(core.collections, newCrew!, gameStrings);
 		const newItems: EquipmentItem[] | undefined = postProcessItemTranslations(core.items, gameStrings);
 		return {
 			crew: newCrew,
 			ship_schematics: newSchematics,
 			ships: newShips,
+			all_ships: allShips,
 			collections: newCollections,
 			items: newItems
 		};
@@ -338,9 +345,9 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			localizedUnOwned = postProcessCrewTranslations(playerData.player.character.unOwnedCrew, gameStrings)!;
 		}
 
-		let localizedShips: Ship[] | undefined = undefined;
+		let localizedShips: (Ship | ReferenceShip)[] | undefined = undefined;
 		if (player.playerShips) {
-			[,localizedShips] = postProcessShipTranslations([], player.playerShips, gameStrings, true);
+			[,localizedShips,] = postProcessShipTranslations([], player.playerShips, [], gameStrings, true);
 		}
 
 		return {
@@ -357,7 +364,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					}
 				}
 			},
-			playerShips: localizedShips
+			playerShips: localizedShips as Ship[]
 		};
 	}
 
@@ -439,8 +446,8 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[]] | [undefined, undefined] {
-		if ((ship_schematics.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
+	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], all_ships: ReferenceShip[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[], ReferenceShip[]] | [undefined, undefined, undefined] {
+		if ((ship_schematics.length || all_ships.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
 			let result1 = ignoreSchematics ? [] : ship_schematics.map((ship) => {
 				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? JSON.parse(JSON.stringify(ship.ship.actions)) : undefined }};
 				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
@@ -469,10 +476,24 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				});
 				return ship;
 			});
-			return [result1, result2];
+			let result3 = ignoreSchematics ? [] : all_ships.map((ship) => {
+				ship = { ... ship, actions: ship.actions ? JSON.parse(JSON.stringify(ship.actions)): undefined };
+				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
+				ship.flavor = arch?.flavor ?? ship.flavor;
+				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
+				ship.name = arch?.name ?? ship.name;
+				arch?.actions?.forEach((action) => {
+					let act = ship.actions?.find(f => f.symbol === action.symbol);
+					if (act) {
+						act.name = action.name;
+					}
+				});
+				return ship;
+			});
+			return [result1, result2, result3];
 		}
 		else {
-			return [undefined, undefined];
+			return [undefined, undefined, undefined];
 		}
 	}
 
@@ -501,30 +522,36 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				v = newkey;
 			}
 		}
+		//v = v.replace(/\{\{:\}\}/g, webStringMap['global.colon'] || fallbackMap['global.colon'] || ": ");
 		try {
-			let obj = webStringMap[v] ?? fallbackMap[v];
-			if (opts && typeof obj === 'string') {
-				let parts = getParts(obj);
-				let finals = [] as string[];
+			let inparts = getParts(v);
+			let obj = '';
+			for (let v2 of inparts) {
+				if (v2 === '{{:}}') v2 = 'global.colon';
+				let obji = webStringMap[v2] ?? fallbackMap[v2];
+				if (opts && typeof obji === 'string') {
+					let parts = getParts(obji);
+					let finals = [] as string[];
 
-				for (let part of parts) {
-					if (part.startsWith("{{") && part.endsWith("}}")) {
-						let key = part.slice(2, part.length - 2);
-						if (key in opts) {
-							finals.push(`${opts[key]}`);
+					for (let part of parts) {
+						if (part.startsWith("{{") && part.endsWith("}}")) {
+							let key = part.slice(2, part.length - 2);
+							if (key in opts) {
+								finals.push(`${opts[key]}`);
+							}
+							else if (key in webStringMap) {
+								finals.push(webStringMap[key]);
+							}
+							else if (key in fallbackMap) {
+								finals.push(fallbackMap[key]);
+							}
 						}
-						else if (key in webStringMap) {
-							finals.push(webStringMap[key]);
-						}
-						else if (key in fallbackMap) {
-							finals.push(fallbackMap[key]);
+						else {
+							finals.push(part);
 						}
 					}
-					else {
-						finals.push(part);
-					}
+					obj += finals.join("");
 				}
-				return finals.reduce((p, n) => p ? p + n : n);
 			}
 			return obj;
 		}
@@ -541,85 +568,108 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				v = newkey;
 			}
 		}
+		//v = v.replace(/\{\{:\}\}/g, webStringMap['global.colon'] || fallbackMap['global.colon'] || ": ");
 		try {
 			if (!webStringMap && !fallbackMap) return <>{v}</>;
-			let obj = webStringMap[v] ?? fallbackMap[v];
-			if (opts && typeof obj === 'string') {
-				let parts = getParts(obj);
-				let finals = [] as JSX.Element[];
-
-				for (let part of parts) {
-					if (part === '\n') {
-						finals.push(<br />);
-					}
-					else if (part.startsWith("{{") && part.endsWith("}}")) {
-						let key = part.slice(2, part.length - 2);
-						if (key in opts) {
-							finals.push(<>{opts[key]}</>);
+			let inparts = getParts(v);
+			let output = [] as JSX.Element[];
+			for (let v2 of inparts) {
+				if (v2 === '{{:}}') v2 = 'global.colon';
+				let obj = webStringMap[v2] ?? fallbackMap[v2];
+				if (opts && typeof obj === 'string') {
+					let parts = getParts(obj);
+					let finals = [] as JSX.Element[];
+					for (let part of parts) {
+						if (part === '\n') {
+							finals.push(<br />);
 						}
-						else if (key in webStringMap) {
-							finals.push(<>{webStringMap[key]}</>);
+						else if (part.startsWith("{{") && part.endsWith("}}")) {
+							let key = part.slice(2, part.length - 2);
+							if (key in opts) {
+								finals.push(<>{opts[key]}</>);
+							}
+							else if (key in webStringMap) {
+								finals.push(<>{webStringMap[key]}</>);
+							}
+							else if (key in fallbackMap) {
+								finals.push(<>{fallbackMap[key]}</>);
+							}
 						}
-						else if (key in fallbackMap) {
-							finals.push(<>{fallbackMap[key]}</>);
+						else {
+							finals.push(<>{part}</>);
 						}
 					}
-					else {
-						finals.push(<>{part}</>);
-					}
+					output.push(finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>));
 				}
-				return finals.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);
+				else {
+					output.push(<>{obj}</>);
+				}
 			}
-			else {
-				return <>{obj}</>
-			}
+			return output.reduce((p, n) => p ? <>{p}{n}</> : <>{n}</>);
 		}
 		catch {
 			return <>{v}</>;
 		}
 	}
 
-
 	function getParts(str: string) {
 		let output = [] as string[];
-		let c = str.length;
-		let inthing = false;
-		let csp = "";
-
-		for (let i = 0; i < c; i++) {
-			if (!inthing) {
+		let count = str.length;
+		let varblock = false;
+		let currstr = "";
+		for (let i = 0; i < count; i++) {
+			if (!varblock) {
 				if (str[i] === '\n') {
-					if (csp) {
-						output.push(csp);
+					if (currstr) {
+						output.push(currstr);
 						output.push('\n');
 					}
-					csp = '';
+					currstr = '';
 				}
-				else if (str[i] === '{' && i < c - 1 && str[i + 1] === '{') {
-					if (csp) output.push(csp);
-					csp = '';
-					inthing = true;
+				else if (str[i] === '{' && i < count - 1 && str[i + 1] === '{') {
+					if (currstr) output.push(currstr);
+					currstr = '';
+					varblock = true;
 					i++;
 				}
 				else {
-					csp += str[i];
+					currstr += str[i];
 				}
 			}
 			else {
-				if (str[i] === '}' && i < c - 1 && str[i + 1] === '}') {
-					if (csp === ':') output.push('{{global.colon}}')
-					else if (csp) output.push(`{{${csp}}}`);
-					csp = '';
-					inthing = false;
+				if (str[i] === '}' && i < count - 1 && str[i + 1] === '}') {
+					if (currstr) output.push(`{{${currstr}}}`);
+					currstr = '';
+					varblock = false;
 					i++;
 				}
 				else {
-					csp += str[i];
+					currstr += str[i];
 				}
 			}
 		}
-		if (csp) output.push(csp);
+		if (currstr) output.push(currstr);
 		return output;
 	}
 
+	function useT(prefix: string) {
+		prefix = prefix.replace(/\.\./g, '.');
+		if (prefix.endsWith(".")) prefix = prefix.slice(0, prefix.length - 1);
+		if (prefix.startsWith(".")) prefix = prefix.slice(1);
+
+		const usePrefix = prefix;
+
+		const newFunc = (key: string, options?: {[key:string]: string | number }) => {
+			return t(`${usePrefix}.${key}`, options);
+		}
+
+		const newFmtFnc = (key: string, options?: {[key:string]: string | JSX.Element | number }) => {
+			return tfmt(`${usePrefix}.${key}`, options);
+		}
+
+		return {
+			t: newFunc,
+			tfmt: newFmtFnc
+		};
+	}
 };

@@ -1,7 +1,19 @@
 import React from 'react';
-import { Header, Dropdown, Form, Table, Icon, Grid, Label, Message, Button, Popup } from 'semantic-ui-react';
+import {
+	Button,
+	Dropdown,
+	DropdownItemProps,
+	Form,
+	Grid,
+	Header,
+	Icon,
+	Label,
+	Message,
+	Popup,
+	Table
+} from 'semantic-ui-react';
 
-import { SolveStatus, Solver, SolverNode, SolverTrait, Spotter, TraitOption } from '../../model/boss';
+import { Solve, SolveStatus, Solver, SolverNode, SolverTrait, Spotter } from '../../model/boss';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { UserContext, SolverContext } from './context';
@@ -26,8 +38,8 @@ const ChainTraits = (props: ChainTraitsProps) => {
 	);
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
-		const solves = spotter.solves;
-		const solve = solves.find(solve => solve.node === nodeIndex);
+		const solves: Solve[] = JSON.parse(JSON.stringify(spotter.solves));
+		const solve: Solve | undefined = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;
 			solve.crew = [];
@@ -52,10 +64,9 @@ type TraitsProgressProps = {
 const TraitsProgress = (props: TraitsProgressProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { spotterPrefs } = React.useContext(UserContext);
-	const { collaboration } = React.useContext(SolverContext);
 	const { solver } = props;
 
-	const traitPool = solver.traits.filter(t => t.source === 'pool');
+	const traitPool: SolverTrait[] = solver.traits.filter(t => t.source === 'pool');
 
 	return (
 		<div style={{ margin: '2em 0' }}>
@@ -77,7 +88,6 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 
 	function renderRow(node: SolverNode, nodeIndex: number): JSX.Element {
 		const { givenTraitIds, solve } = node;
-		const readonly = !!collaboration || (node.solveStatus === SolveStatus.Infallible);
 		let checkIcon: JSX.Element | undefined = undefined;
 		if (node.solveStatus === SolveStatus.Infallible)
 			checkIcon = <Icon name='check' />;
@@ -97,7 +107,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 							{solve.map((trait, traitIndex) =>
 								<TraitPicker key={`${solver.id}-${nodeIndex}-${traitIndex}`}
 									nodeIndex={nodeIndex} traitIndex={traitIndex}
-									traitPool={traitPool} readonly={readonly}
+									traitPool={traitPool} readonly={node.solveStatus === SolveStatus.Infallible}
 									trait={trait} setTrait={onTraitSolve}
 								/>
 							)}
@@ -109,7 +119,7 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 	}
 
 	function onTraitSolve(nodeIndex: number, traitIndex: number, newTrait: string): void {
-		const solve = solver.nodes[nodeIndex].solve;
+		const solve: string[] = solver.nodes[nodeIndex].solve.slice();
 		solve[traitIndex] = newTrait !== '' ? newTrait : '?';
 		props.solveNode(nodeIndex, solve);
 	}
@@ -125,19 +135,19 @@ type TraitPickerProps = {
 };
 
 const TraitPicker = (props: TraitPickerProps) => {
-	const [activeTrait, setActiveTrait] = React.useState('?');
+	const [activeTrait, setActiveTrait] = React.useState<string>('?');
 
 	React.useEffect(() => {
 		setActiveTrait(props.trait);
 	}, [props.trait]);
 
-	const traitOptions: TraitOption[] = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
+	const traitOptions: DropdownItemProps[] = props.traitPool.filter(t => t.trait === activeTrait || (!props.readonly && !t.consumed))
 		.map(t => {
 			return {
 				key: t.id,
 				value: t.trait,
 				text: t.name
-			} as TraitOption;
+			};
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	// Add ? as an option for unsolved nodes
@@ -204,20 +214,19 @@ type TraitsChecklistProps = {
 
 const TraitsChecklist = (props: TraitsChecklistProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { t, tfmt } = globalContext.localized;
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { t, tfmt, TRAIT_NAMES } = globalContext.localized;
 	const { solver, spotter, updateSpotter } = props;
 
-	const traits = [] as string[];
+	const traits: string[] = [];
 	solver.traits.forEach(t => {
 		if (!traits.includes(t.trait)) traits.push(t.trait);
 	});
-	const traitOptions = traits.map(trait => {
+	const traitOptions: DropdownItemProps[] = traits.map(trait => {
 			return {
 				key: trait,
 				value: trait,
 				text: TRAIT_NAMES[trait]
-			} as TraitOption;
+			};
 		}).sort((a, b) => a.text.localeCompare(b.text));
 
 	return (
@@ -284,7 +293,7 @@ const TraitsExporter = (props: TraitsExporterProps) => {
 					})}
 				</p>
 				<Popup
-					content='Copied!'
+					content={t('clipboard.copied_exclaim')}
 					on='click'
 					position='right center'
 					size='tiny'

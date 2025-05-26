@@ -7,6 +7,7 @@ import CrewCard, { CrewCardBrief } from './crew_card';
 import { PlayerCrew } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { CrewTarget } from '../hovering/crewhoverstat';
+import { Ship } from '../../model/ship';
 
 const contentTypeMap = {
 	gather: 'Galaxy',
@@ -48,9 +49,9 @@ function EventInformationTab(props: { eventData: GameEvent, lastEvent?: GameEven
 	const context = React.useContext(GlobalContext);
 	const { t, TRAIT_NAMES } = context.localized;
 
-	const { crew: allCrew } = context.core;
+	const { crew: allCrew, all_ships } = context.core;
 
-	const allShips = context.core.ship_schematics.map(m => m.ship);
+	const allShips = all_ships.map(ship => ({ ...ship, id: ship.archetype_id, levels: undefined }) as Ship);
 
 	const crewData = allCrew; // crewJson.edges.map(edge => edge.node) as PlayerCrew[];
 	const crewMap: { [key: string]: PlayerCrew } = {};

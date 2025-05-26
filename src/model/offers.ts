@@ -6,6 +6,7 @@ export interface OfferCrew {
     name: string;
     drop_info: DropInfo[];
     crew: CrewMember[];
+    seconds_remain?: number;
 }
 
 export interface DropInfo {

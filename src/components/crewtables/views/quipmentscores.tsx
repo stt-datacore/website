@@ -4,7 +4,7 @@ import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
 import { Table } from "semantic-ui-react";
 import { QuipmentScores } from "../../../model/crew";
-import { gradeToColor, missionsToNext, numberToGrade, qbitsToSlots, skillToShort } from "../../../utils/crewutils";
+import { gradeToColor, missionsToNext, numberToGrade, qbitsToSlots, qbProgressToNext, skillToShort } from "../../../utils/crewutils";
 import { TranslateMethod } from "../../../model/player";
 import { GlobalContext } from "../../../context/globalcontext";
 
@@ -44,7 +44,17 @@ export const getQuipmentTableConfig = (t: TranslateMethod, excludeQBits?: boolea
         })
     })
 
-    if (!excludeQBits) config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
+    if (!excludeQBits) {
+        config.push({ width: 1, column: 'q_bits', title: t('base.qp'), reverse: true });
+        config.push({
+            width: 1, column: 'to_next', title: t('collections.panes.progress.title'), reverse: false,
+            customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+                let an = qbProgressToNext(a.q_bits)[0];
+                let bn = qbProgressToNext(b.q_bits)[0];
+                return an - bn;
+            }
+        });
+    }
     return config;
 }
 
@@ -104,19 +114,24 @@ export const QuipmentScoreCells = (props: QuipmentScoreProps) => {
         })}
         {!excludeQBits && <Table.Cell style={{textAlign: 'center'}}>
            {qbslots !== undefined && <div title={
-                crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+                !crew.immortal || crew.immortal < -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
                 }>
                 <div>
-                    {crew.immortal !== -1 ? 'N/A' : crew.q_bits.toLocaleString()}
+                    {!!crew.immortal && crew.immortal >= -1 ? crew.q_bits.toLocaleString() : 'N/A'}
                 </div>
-                {crew.immortal === -1 &&
+                {!!crew.immortal && crew.immortal >= -1 &&
                 <div style={{fontSize:"0.8em"}}>
                     ({t('base.n_slots', { n: `${qbslots}`})})
                 </div>}
-                {!!to_next && crew.immortal === -1 &&
+            </div> || <>N/A</>}
+        </Table.Cell>}
+        {!excludeQBits && <Table.Cell style={{textAlign: 'center'}}>
+           {qbslots !== undefined && <div>
+                {!!to_next && !!crew.immortal && crew.immortal >= -1 &&
                 <div style={{fontSize:"0.8em"}}>
                     ({t('crew_views.n_missions_to_next', { n: to_next })})
                 </div>
+                || <>N/A</>
                 }
             </div> || <>N/A</>}
         </Table.Cell>}

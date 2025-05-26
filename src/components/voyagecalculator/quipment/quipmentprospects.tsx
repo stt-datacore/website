@@ -6,17 +6,17 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../../stats/utils';
 import { Skill } from '../../../model/crew';
 import { PlayerCrew, Voyage } from '../../../model/player';
 import { ITableConfigRow, SearchableTable } from '../../searchabletable';
-import { EquipmentCommon, EquipmentItem } from '../../../model/equipment';
+import { EquipmentItem } from '../../../model/equipment';
 import { getItemWithBonus, ItemWithBonus, mergeItems } from '../../../utils/itemutils';
 import { AvatarView } from '../../item_presenters/avatarview';
-import CrewStat from '../../crewstat';
+import CrewStat from '../../item_presenters/crewstat';
 import { skillSum } from '../../../utils/crewutils';
 import { omniSearchFilter } from '../../../utils/omnisearch';
 import CONFIG from '../../CONFIG';
 import { useStateWithStorage } from '../../../utils/storage';
 import { IVoyageCalcConfig } from '../../../model/voyage';
 
-type RecipeType = { [key: string]: EquipmentCommon[] };
+type RecipeType = { [key: string]: EquipmentItem[] };
 type CrewRefType = { [key: string]: PlayerCrew[] };
 
 export interface QuipmentProspectAccordionProps {
@@ -256,7 +256,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     },
                     {
                         field: 'item',
-                        customMatch: (field: EquipmentCommon, text) => {
+                        customMatch: (field: EquipmentItem, text) => {
                             if (!text) return true;
                             if (recipes[field.symbol]) {
                                 if (recipes[field.symbol].some(e => e.name.toLowerCase().includes(text))) return true;
@@ -459,7 +459,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 }
             });
         });
-        const newitems = [] as EquipmentCommon[];
+        const newitems = [] as EquipmentItem[];
         const newrecipes = {} as RecipeType;
         Object.entries(counts).forEach(([symbol, count]) => {
             let item = quipment.find(f => f.symbol === symbol);
@@ -479,7 +479,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 else return undefined;
             }).filter(i => i) as EquipmentItem[];
 
-            let items = [] as EquipmentCommon[];
+            let items = [] as EquipmentItem[];
 
             if (globalContext.player.playerData) {
                 let pitems = globalContext.player.playerData.player.character.items.filter(f => list.some(li => li.symbol === f.symbol)).map(e => e as EquipmentItem);
@@ -500,7 +500,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
         return { newitems, newrecipes, newref };
     }
 
-    function compareIngredients(a: EquipmentCommon, b: EquipmentCommon) {
+    function compareIngredients(a: EquipmentItem, b: EquipmentItem) {
         if (!recipes[a.symbol] && !recipes[b.symbol]) return 0;
         else if (!recipes[a.symbol]) return -1;
         else if (!recipes[b.symbol]) return 1;
