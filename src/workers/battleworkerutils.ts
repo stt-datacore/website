@@ -441,7 +441,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
         if (work_opponent) oppo_crew?.forEach(c => c.action.crew = c.id!);
 
         let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.filter(f => f).map(c => c.action)])) as ChargeAction[];
-        let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? JSON.parse(JSON.stringify([...work_opponent?.actions ?? [], ...oppo_crew.map(c => c.action)])) as ChargeAction[] : undefined;
+        let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? JSON.parse(JSON.stringify([...(work_opponent?.actions ?? []), ...(oppo_crew?.map(c => c.action) ?? [])])) as ChargeAction[] : undefined;
 
         const delay = () => {
             if (simulate) {
