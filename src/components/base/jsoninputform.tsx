@@ -144,7 +144,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{tfmt('json.copy_and_paste.description_1', {
 						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
-								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}} tabIndex={0}>
 									{caption}
 								</span>
 					})}
@@ -205,7 +205,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{tfmt('json.copy_and_paste.description_1', {
 						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
-								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}} tabIndex={0}>
 									{caption}
 								</span>
 					})}
