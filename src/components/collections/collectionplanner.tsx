@@ -136,15 +136,28 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	if (checkAnchor(crewAnchor)) return <></>;
 
 	const playerCollections = React.useMemo(() => {
-		return tempcol.filter((col) => {
+		const playerCollections: PlayerCollection[] = tempcol?.filter((col) => {
 			if (hardFilter && mapFilter?.rewardFilter) {
 				return rewardsFilterPassFail(mapFilter, [col], short);
 			}
 			else {
 				return true;
 			}
-		});
-	}, [hardFilter, mapFilter]);
+		})
+		?.map(c => JSON.parse(JSON.stringify(c))) ?? [];
+		if (mapFilter?.collectionsFilter?.length === 1) {
+			let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
+			if (idx >= 0) {
+				let n = playerCollections[idx].claimable_milestone_index ?? -1;
+				if (n !== -1 && n != ((playerCollections[idx].milestones?.length ?? 0) - 1)) {
+					if (tierFilter && mapFilter.collectionsFilter?.length === 1) {
+						playerCollections[idx] = mergeTiers(playerCollections[idx], playerCollections[idx].claimable_milestone_index ?? 0, tierFilter);
+					}
+				}
+			}
+		}
+		return playerCollections;
+	}, [hardFilter, mapFilter, tempcol, tierFilter]);
 
 	const extendedCollections = React.useMemo(() => {
 		return tempcol.filter((col) => {
@@ -157,17 +170,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		});
 	}, [hardFilter, mapFilter]);
 
-	if (mapFilter.collectionsFilter?.length === 1) {
-		let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
-		if (idx >= 0) {
-			let n = playerCollections[idx].claimable_milestone_index ?? -1;
-			if (n !== -1 && n != ((playerCollections[idx].milestones?.length ?? 0) - 1)) {
-				if (tierFilter > 1 && mapFilter.collectionsFilter?.length === 1) {
-					playerCollections[idx] = mergeTiers(playerCollections[idx], playerCollections[idx].claimable_milestone_index ?? 0, tierFilter);
-				}
-			}
-		}
-	}
+
 
 	const displayCrew = directFilterCrew(collectionCrew);
 
@@ -282,16 +285,16 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 	}
 
 
-    function mergeTiers(col: PlayerCollection, startTier: number, endTier: number): PlayerCollection {
+    function mergeTiers(col: PlayerCollection, startTier: number | 'n/a', endTier: number | 'n/a'): PlayerCollection {
         let result = JSON.parse(JSON.stringify(col)) as PlayerCollection;
-
+		if (startTier === 'n/a' || endTier === 'n/a') return col;
 
         let mergedRewards = {} as { [key: number]: Reward };
         let mergedBuffs = {} as { [key: number]: MilestoneBuff };
         let mergedCount = 0;
 
         result.milestones?.forEach((m, idx) => {
-            if (idx >= startTier && idx <= endTier) {
+            if (m.goal >= startTier && m.goal <= endTier) {
                 mergedCount = m.goal;
 
                 m.rewards.forEach((reward) => {

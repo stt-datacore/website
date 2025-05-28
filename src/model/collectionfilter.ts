@@ -56,7 +56,7 @@ export interface CollectionsToolSettings {
     hardFilter: boolean;
     favorited: boolean;
     showIncomplete: boolean;
-    tierFilter: number;
+    tierFilter?: number;
     byCost: boolean;
 };
 
@@ -79,8 +79,8 @@ export interface ICollectionsContext extends CollectionsToolSettings {
     searchFilter: string;
     setSearchFilter: (value?: string) => void;
 
-    tierFilter: number;
-    setTierFilter: (value: number) => void;
+    tierFilter?: number;
+    setTierFilter: (value: number | undefined) => void;
 
     rarityFilter: number[];
     setRarityFilter: (value: number[]) => void;

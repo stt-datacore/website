@@ -31,7 +31,28 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
 
     const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const tierOpts = [] as DropdownItemProps[];
+    const tierOpts = React.useMemo(() => {
+        const results = [] as DropdownItemProps[];
+        if (playerCollections?.length) {
+            if (mapFilter.collectionsFilter?.length === 1) {
+                let col = playerCollections.find(f => Number(mapFilter.collectionsFilter![0]) === Number(f.type_id!));
+                if (col && col.milestone.goal !== 'n/a') {
+                    let mis = col.milestones?.filter(f => f.goal >= (col.milestone.goal as number)) ?? [];
+                    mis.forEach((mi, idx) => {
+                        results.push({
+                            key: `${col.type_id}_milestone_${mi.goal}`,
+                            value: mi.goal,
+                            text: `${mi.goal}`
+                        })
+                    });
+                }
+            }
+        }
+        if (!results.length && tierFilter) {
+            setTierFilter(undefined);
+        }
+        return results;
+    }, [playerCollections, mapFilter]);
 
     const collectionsOptions = React.useMemo(() => {
         const results = (mode === 'crew' ? extendedCollections : playerCollections)
