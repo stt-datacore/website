@@ -20,11 +20,14 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
     const { seatSkills, priSkills, secSkills, collections } = citeConfig;
     const { portal, nameFilter } = citeConfig;
 
-    const preFilterData = results?.citeData;
     const compareCount = citeConfig.checks?.filter(z => z.checked)?.length;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const [citeData, setCiteData] = React.useState<CiteData | undefined>(undefined);
     const [confine, setConfine] = React.useState([] as string[]);
+
+    const preFilterData = React.useMemo(() => {
+        return results?.citeData;
+    }, [results]);
 
     React.useEffect(() => {
         const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [...preFilterData?.crewToCite ?? []], crewToTrain: [...preFilterData?.crewToTrain ?? []] } as CiteData;
@@ -109,7 +112,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                 .filter((crew) => crew.collection_ids.some(id => collections?.includes(Number(id))))
         }
         setCiteData(workset);
-    }, [citeConfig, results]);
+    }, [citeConfig, preFilterData]);
 
     return <><Segment>
         {!citeData &&
@@ -117,7 +120,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                 <Icon loading name='spinner' /> {t('spinners.cite_opt')}
             </>}
 
-        {citeData &&
+        {!!citeData &&
             <>
                 <Tab
                     panes={[
