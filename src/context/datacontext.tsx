@@ -350,7 +350,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			ship.id = ship.archetype_id;
 			//ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
 		}
-		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels) }));
+		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels), id: ship.id || ship.archetype_id }));
 		return all_ships;
 	}
 
