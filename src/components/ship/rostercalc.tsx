@@ -1,7 +1,7 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
 import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
-import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
+import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Grid, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
@@ -70,6 +70,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
+    const [buffUnownedShips, setBuffUnownedShips] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/buffUnownedShips`, true, { rememberForever: true });
     const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
     // const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
     // const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
@@ -328,19 +329,24 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     React.useEffect(() => {
         const newconfig = { ...battleConfig };
+        newconfig.defense = 0;
+        newconfig.offense = 0;
 
         if (globalContext.player.playerData) {
             if (battleMode.startsWith('fbb')) {
                 let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
-                newconfig.defense = bs?.value;
+                newconfig.defense = bs?.value ?? 0;
                 bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_player_ship_attack');
-                newconfig.offense = bs?.value;
-            }
-            else {
-                newconfig.defense = 0;
-                newconfig.offense = 0;
+                newconfig.offense = bs?.value ?? 0;
             }
         }
+        else {
+            if (battleMode.startsWith('fbb') && buffUnownedShips) {
+                newconfig.defense = 0.528;
+                newconfig.offense = 0.528;
+            }
+        }
+
         if (battleMode.startsWith('fbb')) {
             let rarity = Number.parseInt(battleMode.slice(4));
             let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
@@ -638,7 +644,63 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             {t('global.advanced_settings')}
                         </Accordion.Title>
                         <Accordion.Content active={advancedOpen} style={{ textAlign: 'left' }}>
-                            <div style={{
+                            <Grid columns={3} style={{margin: '0em'}}>
+                                <Grid.Column>
+                                    <Checkbox
+                                        disabled={running}
+                                        label={t('ship.calc.apply_buffs')}
+                                        value={t('ship.calc.apply_buffs')}
+                                        checked={buffUnownedShips}
+                                        onChange={(e, { checked }) => setBuffUnownedShips(checked as boolean)} />
+
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Checkbox
+                                        disabled={running}
+                                        label={t('ship.calc.ignore_skill')}
+                                        value={t('ship.calc.ignore_skill')}
+                                        checked={ignoreSkills}
+                                        onChange={(e, { checked }) => setIgnoreSkills(checked as boolean)} />
+
+                                </Grid.Column>
+                                {!!globalContext.player.playerData && <>
+                                    <Grid.Column>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('consider_crew.consider_frozen')}
+                                            value={t('consider_crew.consider_frozen')}
+                                            checked={considerFrozen}
+                                            onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
+                                    </Grid.Column>
+
+                                    <Grid.Column>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('consider_crew.consider_unowned')}
+                                            checked={considerUnowned}
+                                            onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
+                                    </Grid.Column>
+
+                                    <Grid.Column>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('consider_crew.only_immortal')}
+                                            checked={onlyImmortal}
+                                            onChange={(e, { checked }) => setOnlyImmortal(checked as boolean)} />
+                                    </Grid.Column>
+                                </>}
+
+                                <Grid.Column>
+                                    <Checkbox
+                                        disabled={running}
+                                        label={t('ship.calc.verbose_status_updates')}
+                                        value={t('ship.calc.verbose_status_updates')}
+                                        checked={verbose}
+                                        onChange={(e, { checked }) => setVerbose(checked as boolean)} />
+                                </Grid.Column>
+
+                            </Grid>
+                            {/* <div style={{
                                 display: 'flex',
                                 flexDirection: 'row',
                                 flexWrap: 'wrap',
@@ -647,7 +709,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                 margin: '1em',
                                 gap: '1em'
                             }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <Checkbox
+                                        disabled={running}
+                                        label={t('ship.calc.apply_buffs')}
+                                        value={t('ship.calc.apply_buffs')}
+                                        checked={buffUnownedShips}
+                                        onChange={(e, { checked }) => setBuffUnownedShips(checked as boolean)} />
+
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <Checkbox
                                         disabled={running}
                                         label={t('ship.calc.ignore_skill')}
@@ -657,7 +728,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                                 </div>
                                 {!!globalContext.player.playerData && <>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <Checkbox
                                             disabled={running}
                                             label={t('consider_crew.consider_frozen')}
@@ -691,7 +762,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         checked={verbose}
                                         onChange={(e, { checked }) => setVerbose(checked as boolean)} />
                                 </div>
-                            </div>
+                            </div> */}
                             <div style={{
                                 display: 'grid',
                                 width: "100%",
@@ -956,7 +1027,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             const config = {
                 event_crew: ccrew ? JSON.parse(JSON.stringify(ccrew)) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
-                ship: JSON.parse(JSON.stringify(ship)),
+                ship: prepareShip(ship),
                 crew: JSON.parse(JSON.stringify(current ? crewStations : pfcrew)),
                 battle_mode: battleMode,
                 power_depth: powerDepth,
@@ -982,6 +1053,18 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             results.length = 0;
             runWorker({ config, callback: workerMessage, fbb_mode, max_workers: numWorkers });
         }
+    }
+
+    function prepareShip(ship: Ship) {
+        ship = JSON.parse(JSON.stringify(ship));
+        if (!globalContext.player.playerShips?.some(ps => ps.symbol === ship.symbol) && buffUnownedShips) {
+            ship.accuracy *= 1.16;
+            ship.attack *= 1.16;
+            ship.evasion *= 1.16;
+            ship.hull *= 1.16;
+            ship.shields *= 1.16;
+        }
+        return ship;
     }
 
     function selectBattleMode(battleMode: BattleMode) {
