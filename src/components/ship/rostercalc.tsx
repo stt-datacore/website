@@ -1071,6 +1071,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         const results = crew.filter((crew) => {
+            if (min_rarity && crew.max_rarity < min_rarity) return false;
             if (onlyImmortal && ("immortal" in crew && !crew.immortal)) return false;
             if (!fbb_mode && maxInitTime !== undefined) {
                 if (crew.action.initial_cooldown > maxInitTime) return false;
