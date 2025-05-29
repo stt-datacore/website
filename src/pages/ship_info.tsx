@@ -75,24 +75,23 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [activeTabIndex, setActiveTabIndex] = React.useState<number>(0);
 
 	React.useEffect(() => {
-		if (inputShip && crewStations.length !== inputShip.battle_stations?.length) {
-			setCrewStations(inputShip.battle_stations?.map(b => undefined as PlayerCrew | CrewMember | undefined) ?? []);
+		if (inputShip) {
+			if ((inputShip.battle_stations?.length !== crewStations?.length) || (inputShip?.battle_stations?.some(bs => bs.crew) && !crewStations?.every(cs => cs))) {
+				setCrewStations(inputShip?.battle_stations?.map(b => b.crew) ?? [])
+			}
+			else {
+				setCrewStations([...crewStations]);
+			}
+		}
+		else {
+			setCrewStations([]);
 		}
 	}, [inputShip]);
 
 	React.useEffect(() => {
 		const c = inputShip?.battle_stations?.length ?? 0;
-		if (inputShip && !!inputShip.battle_stations?.length && crewStations.length === inputShip.battle_stations.length) {
-			let i = 0;
-			if (ship?.battle_stations?.length && ship.battle_stations?.length === crewStations.length) {
-				for (i = 0; i < c; i++) {
-					if (ship.battle_stations[i].crew?.id !== crewStations[i]?.id) break;
-				}
-			}
-
-			if (i < c) {
-				setShip(setupShip(inputShip, crewStations));
-			}
+		if (inputShip) {
+			setShip(setupShip(inputShip, crewStations));
 		}
 	}, [crewStations]);
 
@@ -192,7 +191,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				setCrewStations={setCrewStations}
 				division={division}
 				ship={ship}
-				setShip={(ship) => ship ? setShipKey(ship.symbol) : null}
+				setShip={(ship) => ship?.symbol ? setShipKey(ship.symbol) : false}
 				/>}
 
 			{activeTabIndex === 1 &&
