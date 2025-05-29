@@ -437,7 +437,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			if (!crew.preview && immortal) {
 				crew = JSON.parse(JSON.stringify(templateCrew));
 				crew.immortal = immortal.quantity;
-				crew.q_bits = immortal.qbits;
+				crew.q_bits = immortal.qbits ?? 0;
 			}
 			else {
 				crew.immortal = CompletionState.NotComplete;
