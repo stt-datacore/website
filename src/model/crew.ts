@@ -298,6 +298,19 @@ export interface ShipScores {
             1?: number,
             2?: number,
             3?: number
+        },
+        fbb_crew: {
+            1?: string[],
+            2?: string[],
+            3?: string[],
+            4?: string[],
+            5?: string[],
+            6?: string[],
+        },
+        arena_crew: {
+            1?: string[],
+            2?: string[],
+            3?: string[]
         }
     }
 }
