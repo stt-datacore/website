@@ -206,7 +206,7 @@ export const Calculator = () => {
 		if ((!canBorrow || !considerShared) && crew.shared)
 			return false;
 
-		if (excludeQuipped && !shuttlersContext?.eventData && isQuipped(crew))
+		if (excludeQuipped && isQuipped(crew))
 			return false;
 
 		return true;
