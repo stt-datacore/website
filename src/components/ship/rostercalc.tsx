@@ -1057,12 +1057,33 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     function prepareShip(ship: Ship) {
         ship = JSON.parse(JSON.stringify(ship));
-        if (!globalContext.player.playerShips?.some(ps => ps.symbol === ship.symbol) && buffUnownedShips) {
-            ship.accuracy *= 1.16;
-            ship.attack *= 1.16;
-            ship.evasion *= 1.16;
-            ship.hull *= 1.16;
-            ship.shields *= 1.16;
+        if (buffUnownedShips) {
+            if (!globalContext.player.playerShips?.some(ps => ps.symbol === ship.symbol && ps.owned)) {
+                if (globalContext.player.playerData) {
+                    let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'ship_attack');
+                    ship.attack *= 1 + (bs?.value ?? 0);
+                    bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'ship_accuracy');
+                    ship.accuracy *= 1 + (bs?.value ?? 0);
+                    bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'ship_evasion');
+                    ship.evasion *= 1 + (bs?.value ?? 0);
+                    bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'ship_hull');
+                    ship.hull *= 1 + (bs?.value ?? 0);
+                    bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'ship_shields');
+                    ship.shields *= 1 + (bs?.value ?? 0);
+                }
+                else {
+                    ship.attack *= 1.16;
+                    ship.accuracy *= 1.16;
+                    ship.evasion *= 1.16;
+                    ship.hull *= 1.16;
+                    ship.shields *= 1.16;
+                }
+                ship.attack = Math.ceil(ship.attack);
+                ship.accuracy = Math.ceil(ship.accuracy);
+                ship.evasion = Math.ceil(ship.evasion);
+                ship.hull = Math.ceil(ship.hull);
+                ship.shields = Math.ceil(ship.shields);
+            }
         }
         return ship;
     }
