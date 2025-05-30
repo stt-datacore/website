@@ -76,21 +76,19 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	React.useEffect(() => {
 		if (inputShip) {
-			if ((inputShip.battle_stations?.length !== crewStations?.length) || (inputShip?.battle_stations?.some(bs => bs.crew) && !crewStations?.every(cs => cs))) {
-				setCrewStations(inputShip?.battle_stations?.map(b => b.crew) ?? [])
+			if ((inputShip.battle_stations?.length !== crewStations?.length)) {
+				setCrewStations(inputShip?.battle_stations?.map(b => undefined) ?? [])
 			}
 			else {
 				setCrewStations([...crewStations]);
 			}
 		}
-		else {
-			setCrewStations([]);
-		}
 	}, [inputShip]);
 
 	React.useEffect(() => {
 		const c = inputShip?.battle_stations?.length ?? 0;
-		if (inputShip) {
+		if (inputShip && crewStations) {
+			if (ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs == ship.battle_stations![i].crew)) return;
 			setShip(setupShip(inputShip, crewStations));
 		}
 	}, [crewStations]);
