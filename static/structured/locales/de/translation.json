@@ -1981,6 +1981,7 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
+            "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
