@@ -402,9 +402,6 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
 
-	if (origCrew.symbol === 'william_boimler_captain_crew') {
-		console.log("break");
-	}
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
 	if ("prospect" in origCrew && origCrew.prospect && origCrew.rarity) {
@@ -624,7 +621,11 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let cidx = -1;
 
 	for (let c of allcrew) {
+		if (c.symbol === 'troi_ageofsail_crew') {
+			console.log('break');
+		}
 		for (let crew of prepareOne(c, playerData, buffConfig, undefined)) {
+
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
