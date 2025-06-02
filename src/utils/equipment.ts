@@ -210,15 +210,14 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	let demands: IDemand[] = [];
 	let dupeChecker = new Set<string>();
 
-	let { level: lvl, local, notneeded } = getRealCrewLevel(crew);
-
-	const base = !(lvl % 10);
+	let { level, notneeded } = fromCurrLvl ? getRealCrewLevel(crew) : { level: -1, notneeded: [] as string[] };
+	const base = !(level % 10);
 
 	crew.equipment_slots.forEach((es, idx) => {
 		if (fromCurrLvl && "level" in crew && !crew.immortal) {
 			if (notneeded.includes(es.symbol)) return;
-			else if (es.level < lvl) return;
-			else if (base && es.level === lvl && !cadence[idx]) {
+			else if (es.level < level) return;
+			else if (base && es.level === level && !cadence[idx]) {
 				return;
 			}
 		}
