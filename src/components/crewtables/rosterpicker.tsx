@@ -258,7 +258,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	function getUnownedBuybackCrew() {
 		if (!playerData?.buyback_well?.length) return [];
-		return playerData.buyback_well.map(f => playerData.player.character.unOwnedCrew?.find(u => u.symbol === f.symbol)!).sort((a, b) => a.name.localeCompare(b.name));
+		return playerData.buyback_well.map(f => playerData.player.character.unOwnedCrew?.find(u => u.symbol === f.symbol)!).filter(f => f !== undefined).sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	function getFusesInBuybackWell() {
