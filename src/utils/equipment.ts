@@ -166,16 +166,12 @@ export function demandsBySymbol(eqsym: string, items: EquipmentItem[], dupeCheck
 	return equipment.recipe.craftCost;
 }
 
-export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean, bySymbol?: boolean, excludePrimary?: boolean): ICrewDemands {
-	let craftCost = 0;
-	let demands: IDemand[] = [];
-	let dupeChecker = new Set<string>();
+export function getRealCrewLevel(crew: CrewMember | PlayerCrew) {
+	const notneeded = [] as string[];
 
 	let lvl = -1;
 	let local = false;
-	const notneeded = [] as string[];
-
-	if (fromCurrLvl && "level" in crew) {
+	if ("level" in crew) {
 		if (crew.local_slots?.length && crew.local_slots[0]) {
 			lvl = crew.local_slots[0].level;
 			local = true;
@@ -202,15 +198,19 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 			}
 			if (notneeded.length >= 4) lvl += 10;
 			if (lvl >= 100) {
-				return {
-					craftCost: 0,
-					demands: [],
-					factionOnlyTotal: 0,
-					totalChronCost: 0
-				};
+				return { level: 100, local, notneeded };
 			}
 		}
 	}
+	return { level: lvl, local, notneeded };
+}
+
+export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: EquipmentItem[], fromCurrLvl?: boolean, bySymbol?: boolean, excludePrimary?: boolean): ICrewDemands {
+	let craftCost = 0;
+	let demands: IDemand[] = [];
+	let dupeChecker = new Set<string>();
+
+	let { level: lvl, local, notneeded } = getRealCrewLevel(crew);
 
 	const base = !(lvl % 10);
 
