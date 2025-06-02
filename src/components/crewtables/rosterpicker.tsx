@@ -253,7 +253,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	function getOwnedBuybackCrew() {
 		if (!playerData?.buyback_well?.length) return [];
-		return playerData.buyback_well.map(bw => playerData.player.character.crew.find(f => f.symbol === bw.symbol && (f.rarity === f.highest_owned_rarity || f.highest_owned_rarity === undefined))).filter(f => f !== undefined).sort((a, b) => a.name.localeCompare(b.name));;
+		return playerData.buyback_well.map(bw => playerData.player.character.crew.find(f => f.symbol === bw.symbol && f.rarity !== f.max_rarity && ((f.rarity === f.highest_owned_rarity || f.highest_owned_rarity === undefined)))).filter(f => f !== undefined).sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	function getUnownedBuybackCrew() {
