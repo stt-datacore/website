@@ -11,6 +11,7 @@ import { printShortDistance } from '../../utils/misc';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { getRealCrewLevel } from '../../utils/equipment';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -65,13 +66,15 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
     crew.equipment ??= [];
     let startlevel = 0;
-    if (crew.local_slots?.length && crew.local_slots[0]?.level === crew.level) {
-        startlevel = Math.floor(crew.local_slots[0].level / 10) * 4;
-    }
-    else {
-        startlevel = Math.floor(crew.level / 10) * 4;
-        if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
-    }
+    let { level: lvl } = getRealCrewLevel(crew);
+    startlevel = Math.floor(lvl / 10) * 4;
+    // if (crew.local_slots?.length && crew.local_slots[0]?.level === crew.level) {
+    //     startlevel = Math.floor(crew.local_slots[0].level / 10) * 4;
+    // }
+    // else {
+    //     startlevel = Math.floor(crew.level / 10) * 4;
+    //     if (crew.level % 10 == 0 && crew.equipment.length >= 1) startlevel = startlevel - 4;
+    // }
     let equip = [] as EquipmentItem[];
     let disabled = [] as boolean[];
     let expirations: Date[] | undefined = undefined;
