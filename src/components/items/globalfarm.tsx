@@ -34,7 +34,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     const { cancel, runWorker, running } = workerContext;
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters, itemSourceFilter, masteryFilter } = filterContext;
+    const { available, filterItems, rarityFilter, itemTypeFilter, hideUnneeded, showUnownedNeeded, configureFilters, itemSourceFilter, masteryFilter } = filterContext;
 
     const rosterCrew = React.useMemo(() => {
         if (playerData) {
@@ -77,11 +77,11 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         setTimeout(() => {
             runWorker(
                 "equipmentWorker", {
-                    playerData,
-                    items: coreItems,
-                    addNeeded: true,
-                    crewFilter
-                },
+                playerData,
+                items: coreItems,
+                addNeeded: true,
+                crewFilter
+            },
                 (data: { data: { result: EquipmentWorkerResults } }) => {
                     if (playerData && !crewFilter?.length) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setPrefilteredData(filterDemands(data.data.result.items as EquipmentItem[]));
@@ -104,7 +104,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         else {
             return prefiteredData ?? props.items ?? globalContext.core.items;
         }
-    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter]);
+    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter, hideUnneeded]);
 
     const sources = React.useMemo(() => {
         const demands = (displayData as EquipmentItem[]); //.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
@@ -148,9 +148,9 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                     selectedCrew={crewFilter}
                     updateSelected={setCrewFilter}
                     rosterCrew={rosterCrew}
-                    />
+                />
 
-                <div style={{...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start'}}>
+                <div style={{ ...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start' }}>
                     {globalContext.core.spin(t('spinners.demands'))}
 
                 </div>
@@ -165,7 +165,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 selectedCrew={crewFilter}
                 updateSelected={setCrewFilter}
                 rosterCrew={rosterCrew}
-                />
+            />
             <ItemHoverStat targetGroup="global_farm" />
 
             <FarmTable
@@ -176,23 +176,23 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 hoverTarget="global_farm"
                 pageId='global_farm'
                 sources={sources}
-                textStyle={{fontStyle: 'normal', fontSize: '1em'}}
-                />
-            </React.Fragment>
+                textStyle={{ fontStyle: 'normal', fontSize: '1em' }}
+            />
+        </React.Fragment>
     }
 
     function renderExpanded(item: FarmSources) {
-        const crewSymbols = [... new Set(item.items.map(i => i.demandCrew ?? []).flat()) ]
+        const crewSymbols = [... new Set(item.items.map(i => i.demandCrew ?? []).flat())]
         const workCrew = rosterCrew
             .filter(rc => crewSymbols.includes(rc.symbol))
             .sort((a, b) => b.max_rarity - a.max_rarity || b.rarity - a.rarity || b.level - a.level || b.equipment.length - a.equipment.length || a.name.localeCompare(b.name));
 
         return (
             <div className="ui segment">
-                <div style={{...flexRow, flexWrap: 'wrap', overflowY: 'auto', maxHeight: '30em'}}>
+                <div style={{ ...flexRow, flexWrap: 'wrap', overflowY: 'auto', maxHeight: '30em' }}>
                     {workCrew.map((crew) => {
                         return <div
-                            style={{...flexCol, width: '8em', height: '8em', cursor: 'pointer', textAlign: 'center', justifyContent: 'flex-start'}}
+                            style={{ ...flexCol, width: '8em', height: '8em', cursor: 'pointer', textAlign: 'center', justifyContent: 'flex-start' }}
                             onClick={() => {
                                 if (!crewFilter.includes(crew.id)) {
                                     setCrewFilter([...crewFilter, crew.id]);
@@ -207,7 +207,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                                 item={crew}
                                 size={64}
                                 targetGroup="global_farm_crew"
-                                />
+                            />
                             {crew.name}
                         </div>
                     })}
@@ -216,7 +216,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }
 
     function globalCrewToPlayerCrew() {
-        return globalContext.core.crew.map(c => ({...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew);
+        return globalContext.core.crew.map(c => ({ ...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew);
     }
 
 }

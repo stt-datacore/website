@@ -1271,6 +1271,7 @@
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
         "faction_only": "Nur Fraktion",
+        "hide_unneeded_items": "Nicht benötigte Artikel ausblenden",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
         "item_sources": "Artikelquellen",
         "n_farmable": "{{n}} landwirtschaftliche",

@@ -17,6 +17,7 @@ import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import { DataPicker } from '../dataset_presenters/datapicker';
 import { IDataGridSetup, IDataPickerState, IEssentialData } from '../dataset_presenters/model';
+import { CrewItemsView } from '../item_presenters/crew_items';
 
 // interface IPickerFilters {
 //     availability: string;
@@ -160,6 +161,8 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
                     {crew.name}
                 </div>
                 <div><Rating defaultRating={highest_owned_rarity === undefined ? crew.max_rarity : highest_owned_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
+                <div>{t('base.level')}{' '}{(crew as PlayerCrew).level ?? 'N/A'}</div>
+                <div><CrewItemsView itemSize={24} crew={crew} /></div>
             </React.Fragment>
         );
     }

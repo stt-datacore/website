@@ -1271,6 +1271,7 @@
         "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
         "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
         "faction_only": "Faction Only",
+        "hide_unneeded_items": "Hide unneeded items",
         "is_used_to_build": "Is used to build these",
         "item_sources": "Item sources",
         "n_farmable": "{{n}} farmable",
