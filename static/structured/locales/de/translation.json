@@ -1285,6 +1285,9 @@
             "owned_or_buildable": "Eigene oder baubare Rüstzeugen anzeigen"
         },
         "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
+        "quick_select": {
+            "favorites": "Wähle alle favorisierten Crewmitglieder aus"
+        },
         "recipe": "Rezept",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",

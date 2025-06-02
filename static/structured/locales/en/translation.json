@@ -1285,6 +1285,9 @@
             "owned_or_buildable": "Show owned or buildable quipment"
         },
         "post_immortalization_advancement": "Post-immortalization advancement",
+        "quick_select": {
+            "favorites": "Select all favorited crew"
+        },
         "recipe": "Recipe",
         "required_traits": "Required Traits: {{traits}}",
         "show_unowned_needed": "Show unowned needed items",

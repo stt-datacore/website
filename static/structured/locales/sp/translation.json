@@ -1295,6 +1295,9 @@
             "owned_or_buildable": "Mostrar equipo propio o construible"
         },
         "post_immortalization_advancement": "Avance posterior a la inmortalización",
+        "quick_select": {
+            "favorites": "Seleccionar toda los tripulantes favoritos"
+        },
         "recipe": "Receta",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario",

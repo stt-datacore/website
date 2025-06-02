@@ -1297,6 +1297,9 @@
             "owned_or_buildable": "Afficher les quipements possédées ou constructibles"
         },
         "post_immortalization_advancement": "Avancement après l'immortalisation",
+        "quick_select": {
+            "favorites": "Sélectionnez tous les équipiers favoris"
+        },
         "recipe": "Recette",
         "required_traits": "Traits Requises: {{traits}}",
         "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",

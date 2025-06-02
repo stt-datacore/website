@@ -13,6 +13,7 @@ import { CompletionState, PlayerCrew } from "../../model/player";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { getEventData } from "../../utils/events";
+import { Button } from "semantic-ui-react";
 
 interface GlobalFarmProps {
     pageId?: string;
@@ -92,6 +93,14 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }, [playerData, coreItems, crewFilter, props.noRender]);
 
     React.useEffect(() => {
+        if (crewFilter?.length && rosterCrew?.length) {
+            let cfnew = rosterCrew.filter(f => crewFilter.includes(f.id)).map(c => c.id);
+            if (cfnew.length === crewFilter.length) return;
+            setCrewFilter(cfnew);
+        }
+    }, [rosterCrew, crewFilter]);
+
+    React.useEffect(() => {
         if (available && !props.noRender) {
             configureFilters(prefiteredData);
         }
@@ -144,6 +153,8 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         return (
             <>
                 <CrewMultiPicker
+                    renderExtraContent={drawExtraContent}
+                    selectionPosition="after"
                     pageId={pageId || 'items/global_farm'}
                     selectedCrew={crewFilter}
                     updateSelected={setCrewFilter}
@@ -161,13 +172,14 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         return <React.Fragment>
             <CrewHoverStat targetGroup="global_farm_crew" />
             <CrewMultiPicker
+                renderExtraContent={drawExtraContent}
+                selectionPosition="after"
                 pageId='items/global_farm'
                 selectedCrew={crewFilter}
                 updateSelected={setCrewFilter}
                 rosterCrew={rosterCrew}
             />
             <ItemHoverStat targetGroup="global_farm" />
-
             <FarmTable
                 eventData={eventData}
                 renderExpanded={crewFilter?.length ? undefined : renderExpanded}
@@ -179,6 +191,19 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 textStyle={{ fontStyle: 'normal', fontSize: '1em' }}
             />
         </React.Fragment>
+    }
+
+    function drawExtraContent() {
+        const selFav = () => {
+            let favs = rosterCrew.filter(f => f.favorite && !f.immortal).map(m => m.id) ?? [];
+            let cf = [... new Set(crewFilter.concat(favs))];
+            setCrewFilter(cf);
+        }
+        return (
+            <div style={{margin:'0 0 1em 0'}}>
+                <Button onClick={selFav}>{t('items.quick_select.favorites')}</Button>
+            </div>
+        )
     }
 
     function renderExpanded(item: FarmSources) {
