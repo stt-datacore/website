@@ -1796,6 +1796,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Mindestanzahl nicht einzigartiger Besatzungsmitglieder",
         "modes": {
             "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner",
             "mutual_polestar_calculator_desc": "Finden Sie Combos, die gleiche Chancen bieten, Nicht-Unsterbliche zurückzuholen",

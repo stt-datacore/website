@@ -1796,6 +1796,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Minimum non-uniques",
         "modes": {
             "mutual_polestar_calculator": "Mutual Polestar Calculator",
             "mutual_polestar_calculator_desc": "Find combos that give equal chances of retrieving non-immortals",

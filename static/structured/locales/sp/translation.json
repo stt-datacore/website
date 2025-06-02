@@ -1806,6 +1806,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Tripulantes mínimos no únicos",
         "modes": {
             "mutual_polestar_calculator": "Calculadora mutua de estrellas polares",
             "mutual_polestar_calculator_desc": "Encuentra combinaciones que den las mismas posibilidades de recuperar a los no inmortales",

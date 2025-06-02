@@ -1808,6 +1808,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Nombre minimum des équipiers non uniques",
         "modes": {
             "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels",
             "mutual_polestar_calculator_desc": "Trouvez des combos qui donnent des chances égales de récupérer les non-immortels",
