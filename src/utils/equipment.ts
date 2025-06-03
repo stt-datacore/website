@@ -212,7 +212,14 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 
 	let { level, notneeded } = fromCurrLvl ? getRealCrewLevel(crew) : { level: -1, notneeded: [] as string[] };
 	const base = !(level % 10);
-
+	if (level === 100) {
+		return {
+			craftCost: 0,
+			demands: [],
+			factionOnlyTotal: 0,
+			totalChronCost: 0
+		};
+	}
 	crew.equipment_slots.forEach((es, idx) => {
 		if (fromCurrLvl && "level" in crew && !crew.immortal) {
 			if (notneeded.includes(es.symbol)) return;
