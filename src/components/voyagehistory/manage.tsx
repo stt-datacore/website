@@ -11,7 +11,7 @@ import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage, IVoyageHist
 import { downloadData } from '../../utils/crewutils';
 
 import { HistoryContext } from './context';
-import { getTrackedData, mergeHistories, NEW_TRACKER_ID, postTrackedData, SyncState } from './utils';
+import { getTrackedData, mergeHistories, NEW_TRACKER_ID, postTrackedData, postTrackedDataBatch, SyncState } from './utils';
 
 const IMPORT_ONLY = false;
 
@@ -99,12 +99,7 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 			if (remoteHistory) {
 				const voyagesToPost: ITrackedVoyage[] = discoverVoyages(remoteHistory.voyages, history.voyages);
 				if (voyagesToPost.length > 0) {
-					let voyagesPosted: number = 0;
-					Promise.all(
-						voyagesToPost.map(voyageToSync => tryPostVoyage(voyageToSync))
-					).then(postedIds => {
-						voyagesPosted = postedIds.length;
-					});
+					let voyagesPosted: number = await tryPostVoyageAll(voyagesToPost);
 					if (voyagesPosted === 0)
 						throw('Failed tryEnableSync -> 0 voyages posted to remote sync!');
 					if (voyagesToPost.length > voyagesPosted)
@@ -150,6 +145,39 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 			}
 		});
 	}
+
+	async function tryPostVoyageAll(trackableVoyages: ITrackedVoyage[]): Promise<number> {
+		const trackableCrews: IFullPayloadAssignment[][] = [];
+		trackableVoyages.forEach((trackableVoyage, idx) => {
+			const oldTrackerId: number = trackableVoyage.tracker_id;
+			trackableVoyage.tracker_id = NEW_TRACKER_ID;
+			const trackableCrew: IFullPayloadAssignment[] = [];
+			trackableCrews.push(trackableCrew);
+
+			Object.keys(history.crew).forEach(crewSymbol => {
+				const assignment: ITrackedAssignment | undefined = history.crew[crewSymbol].find(assignment =>
+					assignment.tracker_id === oldTrackerId
+				);
+				if (assignment) {
+					trackableCrew.push({
+						...assignment,
+						crew: crewSymbol,
+						tracker_id: NEW_TRACKER_ID
+					});
+				}
+			});
+		});
+
+		return postTrackedDataBatch(dbid, trackableVoyages, trackableCrews).then(result => {
+			if (result.status < 300) {
+				return result.data.filter(f => !(f.status >= 300)).length;
+			}
+			else {
+				throw('Failed tryPostVoyage -> postTrackedData');
+			}
+		});
+	}
+
 
 	function discoverVoyages(hv1: ITrackedVoyage[], hv2: ITrackedVoyage[]): ITrackedVoyage[] {
 		const newVoyages: ITrackedVoyage[] = [];

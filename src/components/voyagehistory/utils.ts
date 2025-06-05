@@ -25,10 +25,20 @@ export enum SyncState {
 	RemoteReady
 };
 
+
 export interface TrackerPostResult {
 	status: number;
 	inputId?: number;
 	trackerId?: number;
+};
+
+export interface TrackerPostResultBatch {
+	status: number;
+	data: {
+		status: number;
+		inputId?: number;
+		trackerId?: number;
+	}[]
 };
 
 export interface LootCrew {
@@ -275,6 +285,21 @@ export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assi
 		body: JSON.stringify({
 			dbid,
 			voyage,
+			assignments
+		})
+	})
+	.then((response: Response) => response.json())
+	.catch((error) => { throw(error); });
+}
+
+export async function postTrackedDataBatch(dbid: string, voyages: ITrackedVoyage[], assignments: IFullPayloadAssignment[][]): Promise<TrackerPostResultBatch> {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedDataBatch`
+	return await fetch(route, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			dbid,
+			voyages,
 			assignments
 		})
 	})
