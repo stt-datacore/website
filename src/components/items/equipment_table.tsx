@@ -42,7 +42,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     const { selection, setSelection, maxSelections, selectionMode } = props;
 
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter } = filterContext;
+    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, hideUnneeded, itemSourceFilter, masteryFilter } = filterContext;
 
     const items = React.useMemo(() => {
         if (available) {
@@ -51,7 +51,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
         else {
             return props.items ?? globalContext.core.items;
         }
-    }, [props.items, globalContext.core.items, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter]);
+    }, [props.items, globalContext.core.items, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter, hideUnneeded]);
 
     const buffCache = React.useMemo(() => {
         if (items?.length && buffs) {

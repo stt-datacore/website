@@ -25,10 +25,20 @@ export enum SyncState {
 	RemoteReady
 };
 
+
 export interface TrackerPostResult {
 	status: number;
 	inputId?: number;
 	trackerId?: number;
+};
+
+export interface TrackerPostResultBatch {
+	status: number;
+	data: {
+		status: number;
+		inputId?: number;
+		trackerId?: number;
+	}[]
 };
 
 export interface LootCrew {
@@ -282,6 +292,21 @@ export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assi
 	.catch((error) => { throw(error); });
 }
 
+export async function postTrackedDataBatch(dbid: string, voyages: ITrackedVoyage[], assignments: IFullPayloadAssignment[][]): Promise<TrackerPostResultBatch> {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedDataBatch`
+	return await fetch(route, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			dbid,
+			voyages,
+			assignments
+		})
+	})
+	.then((response: Response) => response.json())
+	.catch((error) => { throw(error); });
+}
+
 export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHistory, tracker_id?: number) {
 	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
 	let unsynced = history.voyages.filter(v => !v.remote);
@@ -319,6 +344,10 @@ export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHi
 			voyage.remote = true;
 		}
 	}
+}
+
+export async function repairRemoteHistory(dbid: string): Promise<void> {
+	await fetch(`${process.env.GATSBY_DATACORE_URL}api/repairVoyages?dbid=${dbid}`);
 }
 
 export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
@@ -394,46 +423,25 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 
 	localIds.sort();
 
-	let maxRemote = remoteIds.sort().reverse()[0];
+	let maxRemote = remoteIds.sort((a, b) => b - a)[0];
 	let minLocal = maxRemote + 1;
 	let lvoyages = local.voyages.slice();
 
 	if (lvoyages.length) {
-		for (let voy of lvoyages) {
+		lvoyages.forEach((voy) => {
 			let rf = remote.voyages.find(f => f.voyage_id === voy.voyage_id);
-			if (rf) {
+			if (voy.voyage_id && rf) {
 				removeTrackerId(local, voy.tracker_id);
 			}
-			else if (remoteIds.includes(voy.tracker_id)) {
+			else if (remoteIds.includes(voy.tracker_id))  {
 				changeTrackerId(local, voy.tracker_id, minLocal++);
 			}
-		}
+		});
 	}
 
-	remote = JSON.parse(JSON.stringify(remote), (key, value) => {
-		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
-			try {
-				return new Date(value);
-			}
-			catch {
-				return value;
-			}
-		}
-		return value;
-	}) as IVoyageHistory;
+	remote = JSON.parse(JSON.stringify(remote)) as IVoyageHistory;
 
-	const newhistory = JSON.parse(JSON.stringify(local), (key, value) => {
-		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
-			try {
-				return new Date(value);
-			}
-			catch {
-				return value;
-			}
-		}
-		return value;
-	}) as IVoyageHistory;
-
+	const newhistory = JSON.parse(JSON.stringify(local)) as IVoyageHistory;
 	newhistory.voyages = newhistory.voyages.concat(remote.voyages);
 
 	Object.keys(remote.crew).forEach((symbol) => {
