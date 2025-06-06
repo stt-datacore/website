@@ -11,7 +11,7 @@ import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage, IVoyageHist
 import { downloadData } from '../../utils/crewutils';
 
 import { HistoryContext } from './context';
-import { getTrackedData, mergeHistories, NEW_TRACKER_ID, postTrackedData, postTrackedDataBatch, SyncState } from './utils';
+import { getTrackedData, InitState, mergeHistories, NEW_TRACKER_ID, postTrackedData, postTrackedDataBatch, repairRemoteHistory, SyncState } from './utils';
 import { OptionsPanelFlexRow } from '../stats/utils';
 
 const IMPORT_ONLY = false;
@@ -23,7 +23,7 @@ type ManageRemoteSyncProps = {
 };
 
 export const DataManagement = (props: ManageRemoteSyncProps) => {
-	const { syncState } = React.useContext(HistoryContext);
+	const { syncState, setHistoryInitState } = React.useContext(HistoryContext);
 
 	if (IMPORT_ONLY) {
 		return (
@@ -54,7 +54,7 @@ export const DataManagement = (props: ManageRemoteSyncProps) => {
 };
 
 const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
-	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
+	const { dbid, history, setHistory, syncState, setMessageId, setHistoryInitState } = React.useContext(HistoryContext);
 	const { postRemote, setPostRemote, setSyncState } = props;
 	const [syncMessage, setSyncMessage] = React.useState("");
 
@@ -84,6 +84,7 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 					{!!syncMessage && <div>
 						{syncMessage}
 					</div>}
+					{!!postRemote && <Button onClick={() => repairVoyages()}>Repair Remote History</Button>}
 				</div>
 			</Message.Content>
 		</Message>
@@ -102,39 +103,40 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 			setPostRemote(false);
 		}
 	}
-
+	function repairVoyages(): void {
+		repairRemoteHistory(dbid).then(() => {
+			setHistoryInitState(InitState.VarsLoaded);
+		});
+	}
 	function tryEnableSync(): void {
 		getTrackedData(dbid).then(async (remoteHistory) => {
 			if (remoteHistory) {
 				const voyagesToPost: ITrackedVoyage[] = discoverVoyages(remoteHistory.voyages, history.voyages);
-
 				if (voyagesToPost.length > 0) {
 					console.log(`Posting batch voyages`);
 					if (voyagesToPost.length > 10) {
 						setTimeout(() => setSyncMessage(`You have ${voyagesToPost.length} missing from remote history. Attempting batch post...`));
 
-						const vps = [] as ITrackedVoyage[][];
-						let c = voyagesToPost.length;
-						let d = 0;
-						let e = -1;
+						const voyageGroups = [] as ITrackedVoyage[][];
+						const c = voyagesToPost.length;
 
+						let idx = 0;
+						let grp = -1;
 						for (let i = 0; i < c; i++) {
-							if (d === 0) {
-								e++;
-								vps.push([]);
+							if (idx === 0) {
+								grp++;
+								voyageGroups.push([]);
 							}
-
-							vps[e].push(voyagesToPost[i]);
-							d++;
-
-							if (d == 10) {
-								d = 0;
+							voyageGroups[grp].push(voyagesToPost[i]);
+							idx++;
+							if (idx == 10) {
+								idx = 0;
 							}
 						}
 						setTimeout(async () => {
 							let voyagesPosted = 0;
 							let start = 1;
-							for (let voypost of vps) {
+							for (let voypost of voyageGroups) {
 								setSyncMessage(`Syncing ${start} to ${start + (voypost.length - 1)}...`);
 								await new Promise((resolve) => setTimeout(resolve));
 								voyagesPosted += await tryPostVoyageAll(voypost);
