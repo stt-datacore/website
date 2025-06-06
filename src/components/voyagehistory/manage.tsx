@@ -105,6 +105,7 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 	}
 	function repairVoyages(): void {
 		repairRemoteHistory(dbid).then(() => {
+			setHistory({ voyages:[], crew: {} });
 			setHistoryInitState(InitState.VarsLoaded);
 		});
 	}
@@ -285,7 +286,7 @@ interface IManageButton {
 };
 
 const AdvancedOptions = () => {
-	const { history, syncState, setHistory } = React.useContext(HistoryContext);
+	const { history, syncState, setHistory, setHistoryInitState } = React.useContext(HistoryContext);
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const buttons: IManageButton[] = [
@@ -350,6 +351,7 @@ const AdvancedOptions = () => {
 						const importHistory = JSON.parse(read) as IVoyageHistory;
 						const newhistory = mergeHistories(importHistory, history);
 						setHistory(newhistory);
+						setHistoryInitState(InitState.VarsLoaded);
 					}
 					catch {
 

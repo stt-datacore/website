@@ -423,46 +423,25 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 
 	localIds.sort();
 
-	let maxRemote = remoteIds.sort().reverse()[0];
+	let maxRemote = remoteIds.sort((a, b) => b - a)[0];
 	let minLocal = maxRemote + 1;
 	let lvoyages = local.voyages.slice();
 
 	if (lvoyages.length) {
-		for (let voy of lvoyages) {
+		lvoyages.forEach((voy) => {
 			let rf = remote.voyages.find(f => f.voyage_id === voy.voyage_id);
-			if (rf) {
+			if (voy.voyage_id && rf) {
 				removeTrackerId(local, voy.tracker_id);
 			}
-			else if (remoteIds.includes(voy.tracker_id)) {
+			else if (remoteIds.includes(voy.tracker_id))  {
 				changeTrackerId(local, voy.tracker_id, minLocal++);
 			}
-		}
+		});
 	}
 
-	remote = JSON.parse(JSON.stringify(remote), (key, value) => {
-		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
-			try {
-				return new Date(value);
-			}
-			catch {
-				return value;
-			}
-		}
-		return value;
-	}) as IVoyageHistory;
+	remote = JSON.parse(JSON.stringify(remote)) as IVoyageHistory;
 
-	const newhistory = JSON.parse(JSON.stringify(local), (key, value) => {
-		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
-			try {
-				return new Date(value);
-			}
-			catch {
-				return value;
-			}
-		}
-		return value;
-	}) as IVoyageHistory;
-
+	const newhistory = JSON.parse(JSON.stringify(local)) as IVoyageHistory;
 	newhistory.voyages = newhistory.voyages.concat(remote.voyages);
 
 	Object.keys(remote.crew).forEach((symbol) => {
