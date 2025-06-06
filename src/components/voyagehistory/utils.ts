@@ -346,6 +346,10 @@ export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHi
 	}
 }
 
+export async function repairRemoteHistory(dbid: string): Promise<void> {
+	await fetch(`${process.env.GATSBY_DATACORE_URL}api/repairVoyages?dbid=${dbid}`);
+}
+
 export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
 	let route = `${process.env.GATSBY_DATACORE_URL}api/postVoyage`
 	return await fetch(route, {
