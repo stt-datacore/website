@@ -1,5 +1,5 @@
 ---
-name: Bat'Leth Curzon
+name: Bat'leth Curzon
 rarity: 5
 series: low
 memory_alpha:
