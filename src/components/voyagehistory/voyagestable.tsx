@@ -187,7 +187,7 @@ export const VoyagesTable = () => {
 					justifyContent: 'flex-start',
 					gap: '1em'
 				}}>
-					<Icon name='trash' onClick={() => removeTrackedVoyage(row.tracker_id)} style={{cursor: 'pointer'}} />
+					{!!row.tracker_id && <Icon name='trash' onClick={() => removeTrackedVoyage(row.tracker_id)} style={{cursor: 'pointer'}} />}
 					<div onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 						{dtCreated.toLocaleDateString()}
 						{isRunning && <><br/>{t('voyage.running_voyage')}</>}

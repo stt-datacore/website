@@ -121,6 +121,7 @@ export interface ITrackedVoyage {
 	revivals: number;
     lootcrew: string[];
     remote?: boolean;
+    orphan?: boolean;
 };
 
 export interface ITrackedFlatEstimate {

@@ -349,7 +349,7 @@ const AdvancedOptions = () => {
 				if (read?.length) {
 					try {
 						const importHistory = JSON.parse(read) as IVoyageHistory;
-						const newhistory = mergeHistories(importHistory, history);
+						const newhistory = mergeHistories(importHistory, history, true);
 						setHistory(newhistory);
 						setHistoryInitState(InitState.VarsLoaded);
 					}
