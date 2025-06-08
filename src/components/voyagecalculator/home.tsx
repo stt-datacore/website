@@ -67,7 +67,9 @@ const NonPlayerHome = () => {
 				setHistory: () => {},
 				syncState: SyncState.ReadOnly,
 				messageId: '',
-				setMessageId: () => {}
+				setMessageId: () => {},
+				historyInitState: InitState.Initializing,
+				setHistoryInitState: () => false
 			};
 			return (
 				<HistoryContext.Provider value={historyContext}>
@@ -214,7 +216,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		setHistory,
 		syncState: historySyncState,
 		messageId: historyMessageId,
-		setMessageId: setHistoryMessageId
+		setMessageId: setHistoryMessageId,
+		setHistoryInitState,
+		historyInitState
 	};
 
 	return (
