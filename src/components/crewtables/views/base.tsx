@@ -144,15 +144,11 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 				customCompare: (a: CrewMember, b: CrewMember) => {
 					a.date_added ??= new Date();
 					b.date_added ??= new Date();
+					if (!!a.preview != !!b.preview) return a.preview ? 1 : -1;
 					if (typeof a.date_added === 'string') a.date_added = new Date(a.date_added);
 					if (typeof b.date_added === 'string') b.date_added = new Date(b.date_added);
 					let m = a.date_added.getTime() - b.date_added.getTime();
-					if (!m) {
-						if (a.preview !== b.preview) {
-							if (a.preview) m = -1;
-							else if (b.preview) m = 1;
-						}
-					}
+					if (!m) m = a.name.localeCompare(b.name);
 					return m;
 				}
 			},
