@@ -420,6 +420,19 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	templateCrew.events ??= 0;
 	templateCrew.obtained ??= "Unknown";
 	templateCrew.q_bits = 0;
+	templateCrew.date_added = origCrew.date_added;
+	templateCrew.preview = origCrew.preview;
+
+	if (templateCrew.date_added) {
+		templateCrew.date_added = new Date(templateCrew.date_added);
+
+		if (templateCrew.preview) {
+			const nowdate = new Date();
+			if (nowdate.toLocaleDateString() === templateCrew.date_added.toLocaleDateString()) {
+				templateCrew.date_added.setDate(templateCrew.date_added.getDate() + 1);
+			}
+		}
+	}
 
 	let inroster = [] as PlayerCrew[];
 
