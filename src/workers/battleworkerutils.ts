@@ -595,13 +595,11 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
             }
 
             if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
-
                 if (action.comes_from === 'crew' && powerInfo && (!action.ability || action.ability?.type === 0)) {
                     let proposed_boost = 0;
                     let current_base = 0;
                     let current_total = 0;
                     let notype = true;
-
                     if (action.bonus_type === 0 && (!action.ability || action.ability.type === 0)) {
                         current_base = powerInfo?.condensed.base.attack;
                         current_total = powerInfo?.condensed.active.attack;

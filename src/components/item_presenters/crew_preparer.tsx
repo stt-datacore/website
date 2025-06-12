@@ -193,8 +193,9 @@ export class CrewPreparer {
                     item = { ...dataIn, ...imp, kwipment: dataIn.kwipment, q_bits: dataIn.q_bits };
                 }
                 else {
-                    let imp = playerData.player.character.crew.find((xcrew) => {
-                        if ("id" in dataIn && dataIn.id) {
+                    let imp: PlayerCrew | undefined = undefined;
+                    if ("id" in dataIn && dataIn.id && dataIn.id) {
+                        imp = playerData.player.character.crew.find((xcrew) => {
                             if (xcrew.id === dataIn.id) {
                                 if (xcrew.archetype_id && dataIn.archetype_id) {
                                     return xcrew.archetype_id === dataIn.archetype_id;
@@ -204,9 +205,10 @@ export class CrewPreparer {
                                 }
                             }
                             return false;
-                        }
-                        return xcrew.symbol === dataIn.symbol;
-                    }) ?? playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol);
+                        });
+                    }
+                    imp ??= playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol);
+
                     if (!imp) imp = dataIn as PlayerCrew;
                     else have = true;
                     item = { ...dataIn, ...imp };

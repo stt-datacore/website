@@ -1211,7 +1211,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] = crew.action.bonus_amount;
                         }
                     }
-                    else {
+                    else if (crew.action.bonus_type === 0) {
                         let total = crew.action.bonus_amount + crew.action.ability.amount;
                         if (maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] < total) {
                             maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] = total;
@@ -1228,7 +1228,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         .filter((crew) => {
             if (crew.action.ability && advanced_power.ability_exclusions[crew.action.ability.type]) return false;
             if (fbb_mode && crew.action.limit) return false;
-
             if (crew.action.ability && typeof advanced_power.ability_depths[crew.action.ability.type] === 'number') {
                 let atype = maxabilityvalues[crew.max_rarity - 1][crew.action.ability.type] - advanced_power.ability_depths[crew.action.ability.type]!;
                 if (crew.action.ability.type === 0) {
@@ -1238,9 +1237,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (crew.action.bonus_amount < atype) return false;
                 }
             }
-
             if (crew.action.bonus_type === 0 && advanced_power.attack_depth !== null) {
-                if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - advanced_power.attack_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
+                if (crew.action.ability?.type === 0) {
+                    if (crew.action.bonus_amount + crew.action.ability.amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - advanced_power.attack_depth)) return false;
+                }
+                else {
+                    if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - advanced_power.attack_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
+                }
             }
             else if (crew.action.bonus_type === 1 && advanced_power.evasion_depth !== null) {
                 if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - advanced_power.evasion_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
@@ -1251,7 +1254,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             else {
                 if (crew.action.bonus_amount < (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] - power_depth) && (!fbb_mode || crew.action.ability?.type !== 2)) return false;
             }
-
             return true;
         })
         .sort((a, b) => {
