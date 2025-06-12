@@ -206,7 +206,7 @@ export class CrewPreparer {
                             return false;
                         }
                         return xcrew.symbol === dataIn.symbol;
-                    });
+                    }) ?? playerData.player.character.crew.find((xcrew) => xcrew.symbol === dataIn.symbol);
                     if (!imp) imp = dataIn as PlayerCrew;
                     else have = true;
                     item = { ...dataIn, ...imp };
