@@ -203,6 +203,7 @@ export class CrewPreparer {
                                     return true;
                                 }
                             }
+                            return false;
                         }
                         return xcrew.symbol === dataIn.symbol;
                     });
