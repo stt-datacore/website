@@ -195,11 +195,16 @@ export class CrewPreparer {
                 else {
                     let imp = playerData.player.character.crew.find((xcrew) => {
                         if ("id" in dataIn && dataIn.id) {
-                            return xcrew.id === dataIn.id;
+                            if (xcrew.id === dataIn.id) {
+                                if (xcrew.archetype_id && dataIn.archetype_id) {
+                                    return xcrew.archetype_id === dataIn.archetype_id;
+                                }
+                                else if (!dataIn.archetype_id) {
+                                    return true;
+                                }
+                            }
                         }
-                        else {
-                            return xcrew.symbol === dataIn.symbol;
-                        }
+                        return xcrew.symbol === dataIn.symbol;
                     });
                     if (!imp) imp = dataIn as PlayerCrew;
                     else have = true;
