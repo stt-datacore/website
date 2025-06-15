@@ -194,7 +194,7 @@ export class CrewPreparer {
                 }
                 else {
                     let imp: PlayerCrew | undefined = undefined;
-                    if ("id" in dataIn && dataIn.id && dataIn.id) {
+                    if ("id" in dataIn && dataIn.id) {
                         imp = playerData.player.character.crew.find((xcrew) => {
                             if (xcrew.id === dataIn.id) {
                                 if (xcrew.archetype_id && dataIn.archetype_id) {
@@ -225,7 +225,7 @@ export class CrewPreparer {
                 buffs = quips.map(q => getItemBonuses(q));
                 item.kwipment_slots = quips.map(q => {
                     return {
-                        archetype: q.archetype_id,
+                        archetype: Number(q.id),
                         level: 100,
                         symbol: q.symbol,
                         imageUrl: q.imageUrl
