@@ -419,9 +419,11 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	templateCrew.action.cycle_time = templateCrew.action.cooldown + templateCrew.action.duration;
 	templateCrew.events ??= 0;
 	templateCrew.obtained ??= "Unknown";
-	templateCrew.q_bits = 0;
+	templateCrew.q_bits = origCrew.q_bits ?? 0;
 	templateCrew.date_added = origCrew.date_added;
 	templateCrew.preview = origCrew.preview;
+	templateCrew.kwipment = origCrew.kwipment;
+	templateCrew.kwipment_expiration = origCrew.kwipment_expiration;
 
 	if (templateCrew.date_added) {
 		templateCrew.date_added = new Date(templateCrew.date_added);
@@ -458,8 +460,8 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
 			crew.highest_owned_level = crew.max_level ?? 100;
 			crew.q_bits ??= 0;
-			crew.kwipment = [0, 0, 0, 0];
-			crew.kwipment_expiration = [0, 0, 0, 0];
+			crew.kwipment ??= [0, 0, 0, 0];
+			crew.kwipment_expiration ??= [0, 0, 0, 0];
 			inroster.push(crew);
 			crew = templateCrew;
 		}
