@@ -221,9 +221,10 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 
 	// Sorting
-	let sortColumn = column;
+	let sortColumn = column ?? '';
 	let sortDirection = direction;
-	if (!props.config.some(f => f.column === sortColumn)) sortColumn = "";
+	if (!props.config.some(f => f.column === sortColumn) && !props.config.some(c => c.pseudocolumns?.some(c => c === column)))
+		sortColumn = "";
 	// If no column set, use date_added as default column when available
 	if (!sortColumn) {
 		if (data.length > 0 && data[0].date_added) {
