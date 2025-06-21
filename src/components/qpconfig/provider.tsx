@@ -97,7 +97,7 @@ export const QPConfigProvider = (props: QPConfigProps) => {
 export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], buffConfig: BuffStatTable | undefined, params: IQPParams) {
 	const { voyageConfig, qpConfig } = params;
 
-	if (qpConfig.enabled && c.immortal === -1 && c.q_bits >= 100) {
+	if (qpConfig.enabled && c.immortal && c.immortal >= -1 && c.q_bits >= 100) {
 		if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
 			return c;
 		}
