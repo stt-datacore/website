@@ -2025,6 +2025,7 @@
         "crit_rating": "Krit Treffer",
         "cycle_time": "Zykluszeit",
         "depth_hr_warn": "* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
+        "dps": "SPS",
         "duration": "Dauer",
         "equipment_bonus": "Ausrüstungsbonus",
         "evasion": "Ausweichen",

@@ -140,6 +140,7 @@ export interface Ship extends ShipBonus {
   levels?: ShipLevels;
   ranks?: ShipScores;
   predefined?: boolean;
+  dps?: number;
 }
 
 

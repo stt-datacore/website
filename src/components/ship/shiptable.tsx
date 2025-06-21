@@ -80,6 +80,9 @@ export const ShipTable = (props: ShipTableProps) => {
 		{ width: 1, column: 'hull', title: t('ship.hull'), reverse: true },
 		{ width: 1, column: 'shields', title: t('ship.shields'), reverse: true },
 		{
+			width: 1, column: 'dps', title: t('ship.dps'), reverse: false
+		},
+		{
 			width: 1,
 			column: 'level',
 			title: t('ship.level'),
@@ -171,6 +174,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			let traits = ship.traits?.filter(f => event_ship_traits?.includes(f))?.length ?? 0;
 			ship.antimatter += (100 * traits);
 		}
+		ship.dps = Math.ceil(ship.attacks_per_second * ship.attack);
 		return ship;
 	}
 
@@ -232,6 +236,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			<Table.Cell>{ship.evasion}</Table.Cell>
 			<Table.Cell>{ship.hull}</Table.Cell>
 			<Table.Cell>{ship.shields} ({t('ship.regen')} {ship.shield_regen})</Table.Cell>
+			<Table.Cell>{ship.dps}</Table.Cell>
 			<Table.Cell>
 				{ship.level && <> {ship.level} / {ship.max_level} </>
 					|| <>{ship.max_level}</>}

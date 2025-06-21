@@ -2037,6 +2037,7 @@
         "crit_rating": "Chance du Crit",
         "cycle_time": "Un cycle",
         "depth_hr_warn": "* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
+        "dps": "DPS",
         "duration": "Durée",
         "equipment_bonus": "Bonus d'équipement",
         "evasion": "Évasion",

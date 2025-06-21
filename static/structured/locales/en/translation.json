@@ -2025,6 +2025,7 @@
         "crit_rating": "Crit Rating",
         "cycle_time": "Cycle Time",
         "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
+        "dps": "DPS",
         "duration": "Duration",
         "equipment_bonus": "Equipment Bonus",
         "evasion": "Evasion",

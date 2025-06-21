@@ -2035,6 +2035,7 @@
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
         "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a los tripulantes de reparación de casco.",
+        "dps": "DPS",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
