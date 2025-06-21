@@ -263,6 +263,7 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 		}
 
 		ship.max_level = refship.max_level + 1;
+		ship.dps = Math.ceil(ship.attacks_per_second * ship.attack);
 
 		ship.traits_named = traits_named;
 		newShips.push(ship);
@@ -474,7 +475,10 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 					break;
 			}
 			if (!pvp_division) return;
+
 			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+			ship.dps = Math.ceil(ship.attacks_per_second * ship.attack);
+
 			if (setupToSlots(division.setup, ship)) {
 				results.push({
 					ship,
