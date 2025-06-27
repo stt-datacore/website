@@ -1281,6 +1281,7 @@
         "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes rasgos: {{traits}}",
         "equippable_by_traits": "Equipable por tripulación con los siguientes rasgos: {{traits}}",
         "faction_only": "Solo facción",
+        "hide_unneeded_items": "Ocultar artículos innecesarios",
         "is_used_to_build": "Se utiliza para construir estos",
         "item_sources": "Fuentes de artículo",
         "n_farmable": "{{n}} cultivables",
@@ -1294,6 +1295,9 @@
             "owned_or_buildable": "Mostrar equipo propio o construible"
         },
         "post_immortalization_advancement": "Avance posterior a la inmortalización",
+        "quick_select": {
+            "favorites": "Seleccionar toda los tripulantes favoritos"
+        },
         "recipe": "Receta",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
@@ -1802,6 +1806,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Tripulantes mínimos no únicos",
         "modes": {
             "mutual_polestar_calculator": "Calculadora mutua de estrellas polares",
             "mutual_polestar_calculator_desc": "Encuentra combinaciones que den las mismas posibilidades de recuperar a los no inmortales",
@@ -1991,6 +1996,7 @@
                 "exclude_ability": "Excluir los tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
+            "apply_buffs": "Aplicar mejoras a buques sin propietario",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -2029,6 +2035,7 @@
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
         "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a los tripulantes de reparación de casco.",
+        "dps": "DPS",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
