@@ -9,6 +9,7 @@ import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
 import { ShipTraitNames } from "../model/traits";
+import { BuffStatTable } from "./voyageutils";
 
 export const OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
 export const DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
@@ -226,7 +227,7 @@ export function highestLevel(ship: Ship) {
 	return highest;
 }
 
-export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false, player_direct = false): Ship[] {
+export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false, player_direct = false, playerBuffs?: BuffStatTable): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
 	ref_ships = JSON.parse(JSON.stringify(ref_ships));
@@ -248,18 +249,25 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 			}
 			ship.immortal = owned.level >= ship.max_level! ? -1 : 0;
 			ship.owned = true;
+			ship.buffed = true;
 
 		} else {
 			ship.owned = false;
-			delete (ship as any).level;
-
-			ship.accuracy *= power;
-			ship.attack *= power;
-			ship.evasion *= power;
-			ship.hull *= power;
-			ship.shields *= power;
+			ship.level = 0;
 			ship.id = unowned_id--;
-			ship.level ??= 0;
+
+			if (playerBuffs) {
+				buffShip(ship, playerBuffs);
+			}
+			else {
+				ship.antimatter *= power;
+				ship.accuracy *= power;
+				ship.attack *= power;
+				ship.evasion *= power;
+				ship.hull *= power;
+				ship.shields *= power;
+				ship.buffed = power != 1;
+			}
 		}
 
 		ship.max_level = refship.max_level + 1;
@@ -283,7 +291,18 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 	});
 
 	return newShips;
+}
 
+export function buffShip(ship: Ship, buffs: BuffStatTable) {
+	if (ship.buffed) return;
+	Object.keys(buffs).forEach((buff) => {
+		if (!buff.startsWith("ship_")) return;
+		buff = buff.replace("ship_", "");
+		if (ship[buff] && typeof ship[buff] === 'number') {
+			ship[buff] *= (1 + buffs[`ship_${buff}`].percent_increase);
+		}
+	});
+	ship.buffed = true;
 }
 
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buffs = false): Ship[] {

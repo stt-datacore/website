@@ -58,7 +58,7 @@ export function calculateMaxBuffs(allBuffs: AllBuffsCapHash): BuffStatTable {
 	};
 
 	Object.keys(allBuffs)
-		.filter(z => z.includes("skill"))
+		.filter(z => z.includes("skill") || z.includes("ship"))
 		.forEach(buff => {
 			let p = parseBuff(buff);
 			if (p) result[p.skill] = {} as IBuffStat;
@@ -100,6 +100,13 @@ export function calculateBuffConfig(playerData: Player): BuffStatTable {
 			}
 		}
 	}
+
+	playerData.character.captains_bridge_buffs.forEach((buff) => {
+		buffConfig[buff.stat] = {
+			multiplier: 1,
+			percent_increase: buff.value
+		}
+	});
 
 	return buffConfig;
 }

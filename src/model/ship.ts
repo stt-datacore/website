@@ -141,6 +141,9 @@ export interface Ship extends ShipBonus {
   ranks?: ShipScores;
   predefined?: boolean;
   dps?: number;
+
+  /** Internal use only, not part of game data */
+  buffed?: boolean;
 }
 
 
