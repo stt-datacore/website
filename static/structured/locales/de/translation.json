@@ -2060,6 +2060,11 @@
             "captain": "Captain Division",
             "commander": "Commander Division"
         },
+        "roster": {
+            "all": "Alle Schiffe",
+            "owned": "Schiffe im Besitz",
+            "unowned": "Schiffe ohne Besitz"
+        },
         "shields": "Schilde",
         "ship": "Schiff",
         "show": {

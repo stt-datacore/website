@@ -2072,6 +2072,11 @@
             "captain": "Division Capitaine",
             "commander": "Division Commandeur"
         },
+        "roster": {
+            "all": "Tous les vaisseaux",
+            "owned": "Vaisseaux en propriété",
+            "unowned": "Vaisseaux sans propriétaire"
+        },
         "shields": "Boucliers",
         "ship": "Vaisseau",
         "show": {

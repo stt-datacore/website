@@ -299,7 +299,7 @@ export function buffShip(ship: Ship, buffs: BuffStatTable) {
 		if (!buff.startsWith("ship_")) return;
 		buff = buff.replace("ship_", "");
 		if (ship[buff] && typeof ship[buff] === 'number') {
-			ship[buff] *= (1 + buffs[`ship_${buff}`].percent_increase);
+			ship[buff] = Math.round(ship[buff] * (1 + buffs[`ship_${buff}`].percent_increase));
 		}
 	});
 	ship.buffed = true;
