@@ -1376,7 +1376,8 @@
         "pvp_3": "Daten zur Commander-Liga",
         "pvp_4": "Daten zur Kapitän-Liga",
         "pvp_5": "Daten der Admiral-Liga",
-        "quest_data": "Quest-Daten"
+        "quest_data": "Quest-Daten",
+        "voyage_log": "Reiseprotokolldaten"
     },
     "logic": {
         "AND": "UND",
@@ -2674,6 +2675,12 @@
             "current": "Aktuelle Reisen",
             "custom": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
+        }
+    },
+    "voyage_log": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Sie können auf Ihre Reiseprotokolle auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen."
         }
     }
 }

@@ -1376,7 +1376,8 @@
         "pvp_3": "commander division data",
         "pvp_4": "captain division data",
         "pvp_5": "admiral division data",
-        "quest_data": "quest data"
+        "quest_data": "quest data",
+        "voyage_log": "voyage log data"
     },
     "logic": {
         "AND": "AND",
@@ -2674,6 +2675,12 @@
             "current": "Current Voyages",
             "custom": "Custom Voyages",
             "upcoming": "Upcoming Voyages"
+        }
+    },
+    "voyage_log": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "You can access your voyage logs in a similar way to how you access your player data, currently."
         }
     }
 }

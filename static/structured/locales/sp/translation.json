@@ -1386,7 +1386,8 @@
         "pvp_3": "datos de la división del comandante",
         "pvp_4": "datos de la división del capitán",
         "pvp_5": "datos de la división del almirante",
-        "quest_data": "datos de la misión"
+        "quest_data": "datos de la misión",
+        "voyage_log": "atos de registro de viaje"
     },
     "logic": {
         "AND": "AND",
@@ -2684,6 +2685,12 @@
             "current": "Viajes actuales",
             "custom": "Viajes personalizados",
             "upcoming": "Próximos viajes"
+        }
+    },
+    "voyage_log": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Puedes acceder a tus registros de viaje de forma similar a como accedes a tus datos de jugador actualmente."
         }
     }
 }

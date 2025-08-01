@@ -1388,7 +1388,8 @@
         "pvp_3": "données de la division commandant",
         "pvp_4": "données de la division capitaine",
         "pvp_5": "données de la division amirale",
-        "quest_data": "données de quête"
+        "quest_data": "données de quête",
+        "voyage_log": "données du journal de voyage"
     },
     "logic": {
         "AND": "ET",
@@ -2686,6 +2687,12 @@
             "current": "Voyages en cours",
             "custom": "Voyages personnalisés",
             "upcoming": "Voyages à venir"
+        }
+    },
+    "voyage_log": {
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Vous pouvez accéder à vos journaux de voyage de la même manière que vous accédez actuellement à vos données de joueur."
         }
     }
 }
