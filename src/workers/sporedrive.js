@@ -177,7 +177,7 @@ function getEstimate(config, reportProgress = () => true) {
 
     let hazardScore = 0;
     // Create an array functions to be called at each hazard tick (including rewards and dilemmaas)
-    const allHazards = Array.from({length:hazPerHour*(selectedTime + 16)}, (v, n) => {
+    const allHazards = Array.from({length:hazPerHour*(Math.max(selectedTime + 10, selectedTime * 2))}, (v, n) => {
       if (n%7 == 6) // reward found instead of hazard
         return () => 29;
 
