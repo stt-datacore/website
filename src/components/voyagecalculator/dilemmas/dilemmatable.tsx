@@ -49,9 +49,29 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         },
         { width: 1, title: t('base.rarity'), column: 'rarity' },
         { width: 1, title: t('voyage_log.behold'), column: 'parsed.behold' },
-        { width: 2, title: t('voyage_log.choice_x', { x: 'A' }), column: 'choiceA.title' },
-        { width: 2, title: t('voyage_log.choice_x', { x: 'B' }), column: 'choiceB.title' },
-        { width: 2, title: t('voyage_log.choice_x', { x: 'C' }), column: 'choiceC.title' },
+        {
+            width: 2, title: t('voyage_log.choice_x', { x: 'A' }), column: 'choiceA.title',
+            customCompare: (a: Dilemma, b: Dilemma) => {
+                return a.choiceA.text.localeCompare(b.choiceA.text);
+            }
+        },
+        {
+            width: 2, title: t('voyage_log.choice_x', { x: 'B' }), column: 'choiceB.title',
+            customCompare: (a: Dilemma, b: Dilemma) => {
+                return a.choiceB.text.localeCompare(b.choiceB.text);
+            }
+        },
+        {
+            width: 2, title: t('voyage_log.choice_x', { x: 'C' }), column: 'choiceC.title',
+            customCompare: (a: Dilemma, b: Dilemma) => {
+                if (a.choiceC && b.choiceC) {
+                    return a.choiceC.text.localeCompare(b.choiceC.text);
+                }
+                else if (a.choiceC) return 1;
+                else if (b.choiceC) return -1;
+                return 0;
+            }
+        },
     ]
 
     return (
@@ -108,7 +128,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     function renderChoiceRewards(choice: DilemmaChoice) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
-        if (choice.reward.some(s => s.includes('5') && s.includes(':star:'))) {
+        if (choice.parsed?.rarity == 5) {
             crewrewards = goldRewards;
         }
         let scheme = choice.parsed?.schematics;
@@ -152,7 +172,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 }
 
 function getChoiceRarity(choice: DilemmaChoice) {
-	if (choice.reward.some((r: string) => r.includes("100 :honor:"))) return 5;
+	if (choice.reward.some((r: string) => r.includes("100 :honor:")) && choice.reward.some(s => s.includes('4') && s.includes(':star:'))) return 5;
 	else if (choice.reward.some((r: string) => r.includes("60 :honor:"))) return 4;
 	else return 3;
 }
