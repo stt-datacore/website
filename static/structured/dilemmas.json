@@ -1,81 +1,196 @@
 [
 	{
 		"title": "A Higher Duty, Part 1",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Give a rousing speech in support of the diplomat. (Choice A can lead to **A Higher Duty, Part 2**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Give a neutral speech to avoid sides. (Choice B can lead to **A Higher Duty, Part 2**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceC": {
 			"text": "Refuse to speak at the diplomat's gala.",
-			"reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
 		}
 	},
 	{
 		"title": "A Higher Duty, Part 2",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Suggest a lenient sentence in the hopes of reform.",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Suggest a harsh sentence in light of the consequences of his theft. (Choice B can lead to **A Higher Duty, Part 3**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		}
 	},
 	{
 		"title": "A Higher Duty, Part 3",
-		"choiceA": { "text": "Disable his ship before he can harm the colony.", "reward": ["**Fierce Guinan**"] },
-		"choiceB": { "text": "Talk him down before he or anyone else is hurt.", "reward": ["**Dr. Leonard McCoy**"] }
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 100,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
+		"choiceA": {
+			"text": "Disable his ship before he can harm the colony.",
+			"reward": [
+				"**Fierce Guinan**"
+			]
+		},
+		"choiceB": {
+			"text": "Talk him down before he or anyone else is hurt.",
+			"reward": [
+				"**Dr. Leonard McCoy**"
+			]
+		}
 	},
 	{
 		"title": "A Life Alone, Part 1",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Encourage the young Trill to join Starfleet (Choice A can lead to **A Life Alone, Part 2**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Advise the young Trill to look for purpose elsewhere.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "A Life Alone, Part 2",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 100,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Tell him to remain at Starfleet Academy.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew OR **Jannar** OR 600 Ship Schematics <!--NX-01 Schematics-->"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"**Jannar**"
+			]
 		},
 		"choiceB": {
 			"text": "Tell him to return home for the joining.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		}
 	},
 	{
 		"title": "A Tense Temporal Conundrum",
+		"chances": {
+			"legendary_behold": 2,
+			"superrare_behold": 9,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Tell him a palatable version of the truth.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Lie to him.",
-			"reward": ["100 :honor:", "75 :chrons:", "500 :honor:"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"500 :honor:"
+			]
 		},
 		"choiceC": {
 			"text": "Contact the DTI.",
-			"reward": ["100 :honor:", "75 :chrons:", "900 :honor:"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"900 :honor:"
+			]
 		}
 	},
 	{
 		"title": "Blood-Red Tide",
+		"chances": {
+			"legendary_behold": 1,
+			"superrare_behold": 10,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Avoid taking sides in the rebellion.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star: Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star: Replicator Rations"
+			]
 		},
 		"choiceB": {
 			"text": "Support the colony's governor.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star: Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star: Replicator Rations"
+			]
 		},
 		"choiceC": {
 			"text": "Support the rebelling colonists.",
@@ -88,164 +203,394 @@
 	},
 	{
 		"title": "Blow by Blow",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Protect the Andorian by stunning the Gorn. (Choice A unlocks Choice B of **Friends in Need**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Protect the Gorn by stunning the Andorian. (Choice B unlocks Choice C of **Friends in Need**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Burden of Proof",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 10,
+			"ship_schematic": 90
+		},
 		"choiceA": {
 			"text": "Encourage him to gather definitive proof before accusing the Ardanan.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Urge him to arrest the suspect before she can flee the system.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		},
 		"choiceC": {
 			"text": "Share the secret correspondences we received from the Ardanan's servant.  (Requires Choice B in **Class Act**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew,(3 :star:, 4 :star:) OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"500 Ship Schematics"
+			]
 		}
 	},
 	{
 		"title": "By Our Own Hands",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Repay the outpost for what **crew name**'s counterpart took.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Reassure the outpost's inhabitants that **crew name** means them no harm.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Champion of the People, Part 1",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Reveal their leader's true identity. (Choice A can lead to **Champion of the People, Part 2**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Allow the colonists to continue following her.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Champion of the People, Part 2",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Arrest all of the mercenaries for attacking the crew.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Give the Ventaxian a chance to flee. (Choice B can lead to **Champion of the People, Part 3**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Champion of the People, Part 3",
-		"choiceA": { "text": "Reinforce the Ventaxian colony.", "reward": ["**Ensign Picard**"] },
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 100,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
+		"choiceA": {
+			"text": "Reinforce the Ventaxian colony.",
+			"reward": [
+				"**Ensign Picard**"
+			]
+		},
 		"choiceB": {
 			"text": "Encourage the former mercenary and the colonists to work together.",
-			"reward": ["**Colonel Worf**"]
+			"reward": [
+				"**Colonel Worf**"
+			]
 		}
 	},
 	{
 		"title": "Class Act",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Support the respectable Ardanan's accusations.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Defend the frightened servant. (Choice B unlocks Choice C of **Burden of Proof**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Cracks in the Wall",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Cross the border and assist the Romulan interceptor. (Choice A may lead to Choice C in **First Author**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Ensure that the distress call reaches another Romulan ship. (Choice B may lead to Choice C in **First Author**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
-		"choiceC": { "text": "Ignore the distress call.", "reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"] }
+		"choiceC": {
+			"text": "Ignore the distress call.",
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
+		}
 	},
 	{
 		"title": "Dangerous Whispers",
+		"chances": {
+			"legendary_behold": 2,
+			"superrare_behold": 9,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Tip the captain off.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Try to persuade the crew plotting a potential mutiny.",
-			"reward": ["600 :honor:", "75 :chrons:"]
+			"reward": [
+				"500 :honor:",
+				"75 :chrons:"
+			]
 		},
 		"choiceC": {
 			"text": "Inform Starfleet.",
-			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"900 :merits:"
+			]
 		}
 	},
 	{
 		"title": "First Author",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 10,
+			"ship_schematic": 90
+		},
 		"choiceA": {
 			"text": "Allow the researcher to claim the doctor's work.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		},
-		"choiceB": { "text": "Attempt to warn the Romulan doctor.", "reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"] },
+		"choiceB": {
+			"text": "Attempt to warn the Romulan doctor.",
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
+		},
 		"choiceC": {
 			"text": "The captain of the Romulan interceptor we assisted is at the conference. Ask her to warn the doctor. (Requires Choice A or B in **Cracks in the Wall**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:) OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"500 Ship Schematics"
+			]
 		}
 	},
 	{
 		"title": "Friends in Need",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 10,
+			"ship_schematic": 90
+		},
 		"choiceA": {
 			"text": "Negotiate with the guards for freedom.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Ask the Andorian we rescued to distract the guards. (If you saved the Andorian in **Blow by Blow**)",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"500 Ship Schematics"
+			]
 		},
 		"choiceC": {
 			"text": "Ask the Gorn we rescued to fight the guards. (If you saved the Gorn in **Blow by Blow**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Interference, Part 1",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Leave the substance on the planet where it was found.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Take a sample back to the **ship name** for further study. (Choice B may lead to **Interference, Part 2**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceC": {
 			"text": "Destroy the potentially dangerous substance.",
-			"reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
 		}
 	},
 	{
 		"title": "Interference, Part 2",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Lure the substance out without harming it.",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, other 4 :star:) OR **Lucien**) OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"**Lucien**"
+			]
 		},
 		"choiceB": {
 			"text": "Dissolve the substance before it reaches the impulse engines.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		}
 	},
 	{
 		"title": "Ladders and Chains",
+		"chances": {
+			"legendary_behold": 1,
+			"superrare_behold": 10,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Defend the Vorta passenger.",
 			"reward": [
@@ -265,152 +610,364 @@
 	},
 	{
 		"title": "Lost Among the Stars",
+		"chances": {
+			"legendary_behold": 2,
+			"superrare_behold": 9,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Search for the ship or any other survivors.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Tell the survivor I cannot take the risk.",
-			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"900 :merits:"
+			]
 		}
 	},
 	{
 		"title": "Mystery Haul",
+		"chances": {
+			"legendary_behold": 2,
+			"superrare_behold": 9,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Retrieve it.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Leave it.",
-			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"900 :merits:"
+			]
 		}
 	},
 	{
 		"title": "Next Stop Absolution",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Take the stowaway to see his family.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Arrest the Maquis stowaway.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceC": {
 			"text": "Leave the stowaway at the nearest outpost.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Off the Books, Part 1",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Allow the supposed agent to use the **ship name**. (Choice A may lead to **Off the Books, Part 2**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
-		"choiceB": { "text": "Refuse the supposed agent's demands.", "reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"] }
+		"choiceB": {
+			"text": "Refuse the supposed agent's demands.",
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
+		}
 	},
 	{
 		"title": "Off the Books, Part 2",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Transport the wounded agent to sickbay.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Transport the agent to the brig.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew OR **Thot Gor** OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"**Thot Gor**"
+			]
 		},
 		"choiceC": {
 			"text": "Leave the agent to face the enemies she has made.",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
 		}
 	},
 	{
 		"title": "Outstretched Talons",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Contact the Romulans and demand that they reverse course.",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Open fire on the trespassing Romulan warbird.",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Profit in the Wind",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Give the mining rights to the colonists, who own this star system.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Give the mining rights to the Ferengi company, who found the deposit.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Reality Unwound",
+		"chances": {
+			"legendary_behold": 2,
+			"superrare_behold": 9,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Use patience and empathy to get through to him.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Take the officer back to the ship by force.",
-			"reward": ["600 :honor:", "75 :chrons:"]
+			"reward": [
+				"500 :honor:",
+				"75 :chrons:"
+			]
 		},
 		"choiceC": {
 			"text": "Turn the situation over to Starfleet higher-ups.",
-			"reward": ["100 :honor:", "75 :chrons:", "900 :merits:"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"900 :merits:"
+			]
 		}
 	},
 	{
 		"title": "Retrofit",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Give the space to **crew name** for auxiliary deflector array. (Choice A unlocks Choice B of **The Tools at Hand**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Give the space to **crew name** for torpedo development. (Choice B unlocks Choice C of **The Tools at Hand**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Sticks and Stones",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Endure the Klingon captain's insults.",
-			"reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Insult the drunken captain for his behavior.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceC": {
 			"text": "Correct the offensive rumors the Klingon captain has heard.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "The Beginning of the End of the World",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Debate the vedek (Choice A may lead to **The Voice of the Prophets**)",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Reassure the crowd that they are safe.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
-		"choiceC": { "text": "Allow the vedek to share his beliefs.", "reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"] }
+		"choiceC": {
+			"text": "Allow the vedek to share his beliefs.",
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
+		}
 	},
 	{
 		"title": "The Buried Years",
+		"chances": {
+			"legendary_behold": 1,
+			"superrare_behold": 10,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Make the surface habitable for the Yalosians once again.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star: Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star: Replicator Rations"
+			]
 		},
 		"choiceB": {
 			"text": "Leave the planet's life to develop without interfering.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star: Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star: Replicator Rations"
+			]
 		}
 	},
 	{
 		"title": "The Cost of Living",
+		"chances": {
+			"legendary_behold": 1,
+			"superrare_behold": 10,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Continue to help the colonist search for a cure",
 			"reward": [
@@ -421,91 +978,225 @@
 		},
 		"choiceB": {
 			"text": "Refuse to help until the colony's doctors have stopped these experiments.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star:Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star:Replicator Rations"
+			]
 		},
 		"choiceC": {
 			"text": "Leave the colonists to find a cure on their own",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star:Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star:Replicator Rations"
+			]
 		}
 	},
 	{
 		"title": "The Greater Need",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Confiscate the stolen items.",
-			"reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
 		},
 		"choiceB": {
 			"text": "Allow the scavenger to leave with what she has taken.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "The Tools at Hand",
-		"choiceA": { "text": "Distract the probe with phaser fire.", "reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"] },
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 10,
+			"ship_schematic": 90
+		},
+		"choiceA": {
+			"text": "Distract the probe with phaser fire.",
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
+		},
 		"choiceB": {
 			"text": "Disable the probe with **crew name**'s new deflector array. (Requires Choice A in **Retrofit**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		},
 		"choiceC": {
 			"text": "Destroy the probe with **crew name**'s new experimental torpedo. (Requires Choice B in **Retrofit**)",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:) OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"500 Ship Schematics"
+			]
 		}
 	},
 	{
 		"title": "The Voice of the Prophets",
-		"choiceA": { "text": "Ask the vedek to hand over the Orb.", "reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"] },
-		"choiceB": { "text": "Stun him before he can open the Orb.", "reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew"] },
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
+		"choiceA": {
+			"text": "Ask the vedek to hand over the Orb.",
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
+		},
+		"choiceB": {
+			"text": "Stun him before he can open the Orb.",
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"3 :star: Crew"
+			]
+		},
 		"choiceC": {
 			"text": "Convince the vedek that he does not need the Orb's visions. (Requires Choice A from **The Beginning of the End of the World**)",
-			"reward": ["60 :honor:", "50 :chrons:", "3 :star: Crew OR **The Clown** OR 600 Ship Schematics"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"**The Clown**"
+			]
 		}
 	},
 	{
 		"title": "True to the Uniform",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Recommend the commander for promotion",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Advise Against promoting the commander.",
-			"reward": ["30 :honor:", "30 :chrons:", "2 :star: Crew"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"2 :star: Crew"
+			]
 		},
 		"choiceC": {
 			"text": "Decline to comment on the potential promotion.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "What Smiles May Hide",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Allow the trader to board the **ship name**.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Tell the trader to make other arrangements.",
-			"reward": ["30 :honor:", "30 :chrons:", "Crew (2 :star:, 3 :star:)"]
+			"reward": [
+				"30 :honor:",
+				"30 :chrons:",
+				"Crew (2 :star:, 3 :star:)"
+			]
 		}
 	},
 	{
 		"title": "Where Earth Meets Sky",
+		"chances": {
+			"legendary_behold": 1,
+			"superrare_behold": 10,
+			"superrrare_crew": 84,
+			"replicator_fuel": 5,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Evacuate the station for as long as possible, allowing it to crash.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star: Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star: Replicator Rations"
+			]
 		},
 		"choiceB": {
 			"text": "Destroy the station before it can impact the planet's surface.",
-			"reward": ["100 :honor:", "75 :chrons:", "4 :star: Crew OR 5x 5 :star: Replicator Rations"]
+			"reward": [
+				"100 :honor:",
+				"75 :chrons:",
+				"4 :star: Crew OR 5x 5 :star: Replicator Rations"
+			]
 		}
 	},
 	{
 		"title": "Winter's Price",
+		"chances": {
+			"legendary_behold": 0,
+			"superrare_behold": 0,
+			"superrrare_crew": 0,
+			"replicator_fuel": 0,
+			"ship_schematic": 0
+		},
 		"choiceA": {
 			"text": "Save the captain.",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		},
 		"choiceB": {
 			"text": "Save the prisoner.",
-			"reward": ["60 :honor:", "50 :chrons:", "Crew (3 :star:, 4 :star:)"]
+			"reward": [
+				"60 :honor:",
+				"50 :chrons:",
+				"Crew (3 :star:, 4 :star:)"
+			]
 		}
 	}
 ]
