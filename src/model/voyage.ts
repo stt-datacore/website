@@ -716,6 +716,13 @@ export interface DilemmaChoice {
 
 export interface Dilemma {
     title: string;
+    chances: {
+        legendary_behold: number,
+        superrare_behold: number,
+        superrrare_crew: number,
+        replicator_fuel: number,
+        ship_schematic: number
+    },
     choiceA: DilemmaChoice;
     choiceB: DilemmaChoice;
     choiceC?: DilemmaChoice;
