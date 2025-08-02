@@ -17,6 +17,7 @@ import { getItemWithBonus } from '../utils/itemutils';
 import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
+import { Dilemma } from '../model/voyage';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -74,6 +75,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	crew: [] as CrewMember[],
 	current_weighting: {},
+	dilemmas: [] as Dilemma[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],

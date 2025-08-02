@@ -2681,6 +2681,7 @@
         "import": {
             "click_here": "{{fleet.import.click_here}}",
             "heading": "You can access your voyage logs in a similar way to how you access your player data, currently."
-        }
+        },
+        "title": "Voyage Dilemma Utility"
     }
 }
