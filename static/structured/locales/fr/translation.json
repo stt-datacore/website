@@ -2691,6 +2691,8 @@
     },
     "voyage_log": {
         "behold": "Choix",
+        "choice_x": "Choix {{x}}",
+        "choices": "Choix",
         "import": {
             "click_here": "{{fleet.import.click_here}}",
             "heading": "Vous pouvez accéder à vos journaux de voyage de la même manière que vous accédez actuellement à vos données de joueur."

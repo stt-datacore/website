@@ -10,6 +10,7 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { AvatarView } from "../../item_presenters/avatarview";
 import CONFIG from "../../CONFIG";
 import { CrewHoverStat } from "../../hovering/crewhoverstat";
+import { printChrons, printCredits, printHonor, printMerits } from "../../retrieval/context";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
@@ -47,8 +48,10 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             customCompare: (a, b, config) => nameSort(a, b)
         },
         { width: 1, title: t('base.rarity'), column: 'rarity' },
-        { width: 4, title: t('base.rewards'), column: 'parsed.crew.name' },
         { width: 1, title: t('voyage_log.behold'), column: 'parsed.behold' },
+        { width: 2, title: t('voyage_log.choice_x', { x: 'A' }), column: 'choiceA.title' },
+        { width: 2, title: t('voyage_log.choice_x', { x: 'B' }), column: 'choiceB.title' },
+        { width: 2, title: t('voyage_log.choice_x', { x: 'C' }), column: 'choiceC.title' },
     ]
 
     return (
@@ -68,14 +71,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     function renderTableRow(row: Dilemma, idx?: number) {
         let choices = [row.choiceA, row.choiceB, row.choiceC].filter(f => f !== undefined);
-        let crewrewards = choices.map(c => c.parsed?.crew).filter(f => f !== undefined);
-        if (row.rarity === 5) {
-            crewrewards = goldRewards;
-        }
-        let scheme = choices.find(f => f.parsed?.schematics)?.parsed?.schematics;
         return <>
-            <Table.Row positive={!!row.narrative}>
-                <Table.Cell>
+            <Table.Row>
+                <Table.Cell positive={!!row.narrative}>
                     <div style={{
                         display: 'grid',
                         gridTemplateAreas: `'left right'`,
@@ -94,31 +92,62 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     {row.rarity}
                 </Table.Cell>
                 <Table.Cell>
-                    <div style={{...flexRow, alignItems: 'center', justifyContent: 'space-between', gap: '1em', minHeight: '3em', margin: "0 2em"}}>
-                        {!!crewrewards?.length &&
-                        <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', maxHeight: '14em', gap: '1em'}}>
-                            {crewrewards.map(crew => {
-                                return (
-                                    <div style={{...flexRow}}>
-                                        <AvatarView
-                                            mode='crew'
-                                            item={crew}
-                                            size={32}
-                                            targetGroup={targetGroup}
-                                            />
-                                        {crew.name}
-                                    </div>
-                                )
-                            })}
-                        </div>}
-                        {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
-                    </div>
-                </Table.Cell>
-                <Table.Cell>
                     {(choices.some(c => c.parsed?.behold) && t('global.yes')) || t('global.no')}
                 </Table.Cell>
+                {choices.map((choice, i) => {
+                    return (
+                        <Table.Cell key={`table_cell_${row.title}_choice_${choice.text}`}>
+                            {renderChoiceRewards(choice)}
+                        </Table.Cell>
+                    )
+                })}
+                {!row.choiceC && <Table.Row></Table.Row>}
             </Table.Row>
         </>
+    }
+
+    function renderChoiceRewards(choice: DilemmaChoice) {
+        let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
+        if (choice.reward.some(s => s.includes('5') && s.includes(':star:'))) {
+            crewrewards = goldRewards;
+        }
+        let scheme = choice.parsed?.schematics;
+
+        return (
+            <div style={{...flexCol, gap: '1em', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                <div style={{
+                    backgroundColor: 'slategray',
+                    border: '1px solid',
+                    padding: '1em',
+                    borderRadius: '0.75em',
+                    fontWeight: 'bold',
+                    width: '100%'}}>
+                        {choice.text}
+                </div>
+                {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
+                {!!choice.parsed?.chrons && printChrons(choice.parsed.chrons, t, true)}
+                {!!choice.parsed?.merits && printMerits(choice.parsed.merits, t, true)}
+                {!!choice.parsed?.honor && printHonor(choice.parsed.honor, t, true)}
+                <div style={{...flexCol, alignItems: 'center', justifyContent: 'space-between', gap: '1em'}}>
+                    {!!crewrewards?.length &&
+                    <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
+                        {crewrewards.map(crew => {
+                            return (
+                                <div key={`${choice.text}_${crew.symbol}`} style={{...flexRow}}>
+                                    <AvatarView
+                                        mode='crew'
+                                        item={crew}
+                                        size={32}
+                                        targetGroup={targetGroup}
+                                        />
+                                    {crew.name}
+                                </div>
+                            )
+                        })}
+                    </div>}
+                </div>
+            </div>
+        )
     }
 }
 
@@ -153,21 +182,20 @@ function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: Voyage
                 let i = 0;
                 choice.parsed ??= {};
                 choice.parsed.rarity = getChoiceRarity(choice);
-                if (choice.parsed.rarity > maxrare) maxrare = choice.parsed.rarity;
                 for (let s of choice.reward) {
                     if (schem.test(s)) {
                         let val = schem.exec(s);
                         if (val?.length) choice.parsed.schematics = Number(val[1]);
                     }
-                    else if (honorex.test(s)) {
+                    if (honorex.test(s)) {
                         let val = honorex.exec(s);
                         if (val?.length) choice.parsed.honor = Number(val[1]);
                     }
-                    else if (meritrex.test(s)) {
+                    if (meritrex.test(s)) {
                         let val = meritrex.exec(s);
                         if (val?.length) choice.parsed.merits = Number(val[1]);
                     }
-                    else if (chronrex.test(s)) {
+                    if (chronrex.test(s)) {
                         let val = chronrex.exec(s);
                         if (val?.length) choice.parsed.chrons = Number(val[1]);
                     }
@@ -185,10 +213,19 @@ function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: Voyage
                             let crew = botCrew.find(crew => crew.name === crewname);
                             if (crew) {
                                 choice.parsed.crew = crew;
+                                if (!choice.parsed.behold) {
+                                    choice.parsed.behold = true;
+                                }
+                                if (choice.parsed.rarity < crew.max_rarity) {
+                                    choice.parsed.rarity = crew.max_rarity;
+                                }
                             }
                         }
                     }
                     i++;
+                }
+                if (maxrare < choice.parsed.rarity) {
+                    maxrare = choice.parsed.rarity;
                 }
             }
             dil++;
