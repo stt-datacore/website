@@ -1,12 +1,12 @@
 import React from "react";
 
-import { GlobalContext } from "../../context/globalcontext";
+import { GlobalContext } from "../../../context/globalcontext";
 
-import { JsonInputForm } from "../base/jsoninputform";
-import { Notification } from "../page/notification";
-import { Fleet } from "../../model/fleet";
-import { PvpRoot } from "../../model/pvp";
-import { VoyageLogRoot } from "../../model/voyagelog";
+import { JsonInputForm } from "../../base/jsoninputform";
+import { Notification } from "../../page/notification";
+import { Fleet } from "../../../model/fleet";
+import { PvpRoot } from "../../../model/pvp";
+import { VoyageLogRoot } from "../../../model/voyagelog";
 
 export interface VoyageLogImporterProps {
     setVoyageLog: (result?: VoyageLogRoot) => void;
@@ -63,9 +63,9 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
                         <p>
                         {t('voyage_log.import.click_here')}
                         </p>
-                        <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={VOYAGELINK}>{t('voyage.import.title')}</a></b>
-                        </p>
+                        {/* <p>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank'>{t('voyage.import.title')}</a></b>
+                        </p> */}
                         </div>
                     }
                     icon="database"

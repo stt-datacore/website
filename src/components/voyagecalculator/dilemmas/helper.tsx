@@ -6,7 +6,7 @@ import { Ship } from "../../../model/ship";
 import { IVoyageCalcConfig } from "../../../model/voyage";
 import { LineupViewer } from "../lineupviewer/lineup_accordion";
 import { DilemmaTable } from "./dilemmatable";
-import { VoyageLogImportComponent } from "../voyage_log_importer";
+import { VoyageLogImportComponent } from "./voyage_log_importer";
 import { useStateWithStorage } from "../../../utils/storage";
 import { VoyageLogRoot } from "../../../model/voyagelog";
 import { OptionsPanelFlexColumn } from "../../stats/utils";

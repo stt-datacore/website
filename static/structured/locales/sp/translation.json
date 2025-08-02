@@ -2689,6 +2689,8 @@
     },
     "voyage_log": {
         "behold": "Reconocimiento",
+        "choice_x": "Opción {{x}}",
+        "choices": "Opciones",
         "import": {
             "click_here": "{{fleet.import.click_here}}",
             "heading": "Puedes acceder a tus registros de viaje de forma similar a como accedes a tus datos de jugador actualmente."
