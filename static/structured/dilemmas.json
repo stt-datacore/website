@@ -560,7 +560,7 @@
 		"title": "Interference, Part 2",
 		"chances": {
 			"legendary_behold": 0,
-			"superrare_behold": 0,
+			"superrare_behold": 100,
 			"superrrare_crew": 0,
 			"replicator_fuel": 0,
 			"ship_schematic": 0
@@ -724,7 +724,7 @@
 		"title": "Off the Books, Part 2",
 		"chances": {
 			"legendary_behold": 0,
-			"superrare_behold": 0,
+			"superrare_behold": 100,
 			"superrrare_crew": 0,
 			"replicator_fuel": 0,
 			"ship_schematic": 0
@@ -1057,7 +1057,7 @@
 		"title": "The Voice of the Prophets",
 		"chances": {
 			"legendary_behold": 0,
-			"superrare_behold": 0,
+			"superrare_behold": 100,
 			"superrrare_crew": 0,
 			"replicator_fuel": 0,
 			"ship_schematic": 0
