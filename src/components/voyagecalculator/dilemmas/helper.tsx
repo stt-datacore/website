@@ -19,6 +19,7 @@ type DilemmaHelperProps = {
 	rosterType?: 'allCrew' | 'myCrew';
 	initialExpand?: boolean;
     targetGroup?: string;
+	dbid?: number | string;
 };
 
 export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
@@ -26,7 +27,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
     const { t } = globalContext.localized;
 
     const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { targetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive } = props;
+	const { targetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive, dbid } = props;
 
 	React.useEffect(() => {
 		if (externActive !== undefined) {
@@ -51,6 +52,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 							configSource={configSource}
 							voyage={voyage}
 							ship={ship}
+							dbid={dbid}
 							roster={roster}
 							rosterType={rosterType}
 						/>
@@ -62,8 +64,8 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 };
 
 export const DilemmaHelper = (props: DilemmaHelperProps) => {
-    const { voyage, targetGroup } = props;
-    const [voyageLog, setVoyageLog] = useStateWithStorage<VoyageLogRoot | undefined>(`dilemma_helper/voyage_log`, undefined);
+    const { voyage, targetGroup, dbid } = props;
+    const [voyageLog, setVoyageLog] = useStateWithStorage<VoyageLogRoot | undefined>(`${dbid ? dbid + "/" : ""}dilemma_helper/voyage_log`, undefined);
     const flexCol = OptionsPanelFlexColumn;
 
     const narrative = React.useMemo(() => {
@@ -71,7 +73,7 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
             return voyageLog[1];
         }
         return undefined;
-    }, [voyageLog]);
+    }, [voyageLog, dbid]);
 
     return (
         <React.Fragment>

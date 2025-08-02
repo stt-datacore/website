@@ -11,6 +11,7 @@ import { AvatarView } from "../../item_presenters/avatarview";
 import CONFIG from "../../CONFIG";
 import { CrewHoverStat } from "../../hovering/crewhoverstat";
 import { printChrons, printCredits, printHonor, printMerits } from "../../retrieval/context";
+import { omniSearchFilter } from "../../../utils/omnisearch";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
@@ -47,8 +48,31 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             width: 1, title: t('global.name'), column: 'title',
             customCompare: (a, b, config) => nameSort(a, b)
         },
-        { width: 1, title: t('base.rarity'), column: 'rarity' },
-        { width: 1, title: t('voyage_log.behold'), column: 'parsed.behold' },
+        {
+            width: 1, title: t('base.rarity'), column: 'rarity',
+            customCompare: (a: Dilemma, b: Dilemma) => {
+                let r = 0;
+                if (!r) r = (a.rarity || 3) - (b.rarity || 3);
+                if (!r) r = a.chances.legendary_behold - b.chances.legendary_behold;
+                if (!r) r = a.chances.superrare_behold - b.chances.superrare_behold;
+                if (!r) r = a.chances.ship_schematic - b.chances.ship_schematic;
+                if (!r && !!a.narrative !== !!b.narrative) r = a.narrative ? 1 : -1;
+                return r;
+            }
+
+        },
+        {
+            width: 1, title: t('voyage_log.behold'), column: 'parsed.behold',
+            customCompare: (a: Dilemma, b: Dilemma) => {
+                let r = 0;
+                if (!r) r = a.chances.legendary_behold - b.chances.legendary_behold;
+                if (!r) r = a.chances.superrare_behold - b.chances.superrare_behold;
+                if (!r) r = a.chances.ship_schematic - b.chances.ship_schematic;
+                if (!r) r = (a.rarity || 3) - (b.rarity || 3);
+                if (!r && !!a.narrative !== !!b.narrative) r = a.narrative ? 1 : -1;
+                return r;
+            }
+        },
         {
             width: 2, title: t('voyage_log.choice_x', { x: 'A' }), column: 'choiceA.title',
             customCompare: (a: Dilemma, b: Dilemma) => {
@@ -86,7 +110,35 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
     )
 
     function searchTable(row: Dilemma, filter: Filter[], filterType?: string) {
-        return true;
+        return omniSearchFilter(row, filter, filterType, [
+            "title",
+            {
+                field: "choiceA",
+                customMatch: (fieldValue: DilemmaChoice, text: string) => {
+                    text = text.toLowerCase();
+                    let search = (fieldValue.text + fieldValue.reward.join()).toLowerCase();
+                    return search.includes(text);
+                }
+            },
+            {
+                field: "choiceB",
+                customMatch: (fieldValue: DilemmaChoice, text: string) => {
+                    text = text.toLowerCase();
+                    let search = (fieldValue.text + fieldValue.reward.join()).toLowerCase();
+                    return search.includes(text);
+                }
+            },
+            {
+                field: "choiceC",
+                customMatch: (fieldValue: DilemmaChoice, text: string) => {
+                    if (!fieldValue) return false;
+                    text = text.toLowerCase();
+                    let search = (fieldValue.text + fieldValue.reward.join()).toLowerCase();
+                    return search.includes(text);
+                }
+            },
+        ]);
+        //return true;
     }
 
     function renderTableRow(row: Dilemma, idx?: number) {
@@ -112,11 +164,18 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     {row.rarity}
                 </Table.Cell>
                 <Table.Cell>
-                    {(choices.some(c => c.parsed?.behold) && t('global.yes')) || t('global.no')}
+                    {!!row.chances.superrare_behold && <div>{`4* ${row.chances.superrare_behold}%`}</div>}
+                    {!!row.chances.legendary_behold && <div>{`5* ${row.chances.legendary_behold}%`}</div>}
+                    {!!row.chances.ship_schematic && <div>{t('global.item_types.ship_schematic')}</div>}
+
+                    {!row.chances.legendary_behold &&
+                     !row.chances.superrare_behold &&
+                     !row.chances.ship_schematic &&
+                      t('global.no')}
                 </Table.Cell>
                 {choices.map((choice, i) => {
                     return (
-                        <Table.Cell key={`table_cell_${row.title}_choice_${choice.text}`}>
+                        <Table.Cell key={`table_cell_${row.title}_choice_${choice.text}`} className="top aligned">
                             {renderChoiceRewards(choice)}
                         </Table.Cell>
                     )
@@ -179,7 +238,7 @@ function getChoiceRarity(choice: DilemmaChoice) {
 
 function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: VoyageNarrative[]): Dilemma[] {
     let rex = new RegExp(/.*\*\*(.+)\*\*.*/);
-    let schem = /.*\s+(\d+) Ship Schematics.*/;
+    let schem = /^(\d+) Ship Schematics$/i;
     let honorex = /(\d+)\s*:honor:/;
     let meritrex = /(\d+)\s*:merits:/;
     let chronrex = /(\d+)\s*:chrons:/;
@@ -203,7 +262,7 @@ function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: Voyage
                 choice.parsed ??= {};
                 choice.parsed.rarity = getChoiceRarity(choice);
                 for (let s of choice.reward) {
-                    if (schem.test(s)) {
+                    if (s.includes("Schematics") || schem.test(s)) {
                         let val = schem.exec(s);
                         if (val?.length) choice.parsed.schematics = Number(val[1]);
                     }
