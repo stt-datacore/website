@@ -8,28 +8,47 @@ import { Filter } from "../../../model/game-elements";
 import { Table } from "semantic-ui-react";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { AvatarView } from "../../item_presenters/avatarview";
+import CONFIG from "../../CONFIG";
+import { CrewHoverStat } from "../../hovering/crewhoverstat";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
+    targetGroup?: string;
 }
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { dilemmas: dilemmaSource, crew } = globalContext.core;
     const { t } = globalContext.localized;
-    const { voyageLog } = props;
+    const { voyageLog, targetGroup } = props;
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
+    const goldRewards = crew.filter(f => f.traits_hidden.includes("exclusive_voyage") && f.max_rarity === 5);
 
+    function nameSort(a: Dilemma, b: Dilemma) {
+        if (a.narrative && b.narrative) {
+            return a.narrative.index - b.narrative.index;
+        }
+        else if (a.narrative && !b.narrative) {
+            return -1;
+        }
+        else if (b.narrative && !a.narrative) {
+            return 1;
+        }
+        return a.title.localeCompare(b.title);
+    }
     const dilemmas = React.useMemo(() => {
-        return getDilemmaData(crew, dilemmaSource, voyageLog?.voyage_narrative);
+        return getDilemmaData(crew, dilemmaSource, voyageLog?.voyage_narrative).sort(nameSort);
     }, [voyageLog, dilemmaSource, crew]);
 
     const tableConfig: ITableConfigRow[] = [
-        { width: 1, title: t('voyage.dilemma'), column: 'title' },
+        {
+            width: 1, title: t('global.name'), column: 'title',
+            customCompare: (a, b, config) => nameSort(a, b)
+        },
         { width: 1, title: t('base.rarity'), column: 'rarity' },
-        { width: 1, title: t('base.crew'), column: 'parsed.crew.name' },
-        { width: 1, title: t('global.behold'), column: 'parsed.behold' },
+        { width: 4, title: t('base.rewards'), column: 'parsed.crew.name' },
+        { width: 1, title: t('voyage_log.behold'), column: 'parsed.behold' },
     ]
 
     return (
@@ -50,28 +69,49 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
     function renderTableRow(row: Dilemma, idx?: number) {
         let choices = [row.choiceA, row.choiceB, row.choiceC].filter(f => f !== undefined);
         let crewrewards = choices.map(c => c.parsed?.crew).filter(f => f !== undefined);
+        if (row.rarity === 5) {
+            crewrewards = goldRewards;
+        }
+        let scheme = choices.find(f => f.parsed?.schematics)?.parsed?.schematics;
         return <>
-            <Table.Row>
+            <Table.Row positive={!!row.narrative}>
                 <Table.Cell>
-                    {row.title}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateAreas: `'left right'`,
+                        gridTemplateColumns: '12px auto',
+                        gap: '0.5em'
+                    }}>
+                        <div style={{gridArea: 'left', height: "100%", width: "100%", backgroundColor: CONFIG.RARITIES[row.rarity!].color}}>
+                            &nbsp;
+                        </div>
+                        <div style={{gridArea: 'right'}}>
+                            {row.title}
+                        </div>
+                    </div>
                 </Table.Cell>
                 <Table.Cell>
                     {row.rarity}
                 </Table.Cell>
                 <Table.Cell>
-                    <div style={{...flexRow}}>
-                        {crewrewards.map(crew => {
-                            return (
-                                <div style={{...flexCol}}>
-                                    <AvatarView
-                                        mode='crew'
-                                        item={crew}
-                                        size={64}
-                                        />
-                                    {crew.name}
-                                </div>
-                            )
-                        })}
+                    <div style={{...flexRow, alignItems: 'center', justifyContent: 'space-between', gap: '1em', minHeight: '3em', margin: "0 2em"}}>
+                        {!!crewrewards?.length &&
+                        <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', maxHeight: '14em', gap: '1em'}}>
+                            {crewrewards.map(crew => {
+                                return (
+                                    <div style={{...flexRow}}>
+                                        <AvatarView
+                                            mode='crew'
+                                            item={crew}
+                                            size={32}
+                                            targetGroup={targetGroup}
+                                            />
+                                        {crew.name}
+                                    </div>
+                                )
+                            })}
+                        </div>}
+                        {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
                     </div>
                 </Table.Cell>
                 <Table.Cell>

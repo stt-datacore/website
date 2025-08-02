@@ -11,7 +11,7 @@ const VoyagePage = () => {
 			pageTitle={t('menu.tools.voyage_calculator')}
 			pageDescription={t('menu.descriptions.voyage_calculator')}
 			playerPromptType='recommend'
-			demands={['collections', 'event_instances']}
+			demands={['collections', 'event_instances', 'dilemmas']}
 		>
 			<VoyageHome />
 		</DataPageLayout>

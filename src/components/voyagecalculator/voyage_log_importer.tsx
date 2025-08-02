@@ -43,13 +43,13 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
         if (!json) {
             return ("No data");
         }
-        if (json?.length !== 2) return 'Data does not appear to be voyage log data';
+        if (json?.length < 2) return 'Data does not appear to be voyage log data';
         if (json[0].character && json[1].voyage_narrative?.length) return true;
         return 'Data does not appear to be voyage log data';
     }
 
     function renderCopyPaste(): JSX.Element {
-        const PLAYERLINK = `https://app.startrektimelines.com/voyage/refresh`;
+        const VOYAGELINK = `https://app.startrektimelines.com/voyage/refresh`;
         let title = t(`json_types.voyage_log_data`)
         title = title.slice(0, 1).toUpperCase() + title.slice(1);
         return (
@@ -64,7 +64,7 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
                         {t('voyage_log.import.click_here')}
                         </p>
                         <p>
-                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={PLAYERLINK}>{t('voyage.import.title')}</a></b>
+                            <b><a onClick={() => setCollapsed(false)} target='_blank' href={VOYAGELINK}>{t('voyage.import.title')}</a></b>
                         </p>
                         </div>
                     }
@@ -104,8 +104,8 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
                             new_only: false,
                             client_api: 27
                         },
-                        dataUrl: PLAYERLINK,
-                        dataName: t(`json_types.voyage_log_data`),
+                        dataUrl: VOYAGELINK,
+                        dataName: t(`json_types.voyage_log`),
                         jsonHint: '{"action":"update","character":',
                         androidFileHint: 'refresh.json',
                         iOSFileHint: 'refresh?id'

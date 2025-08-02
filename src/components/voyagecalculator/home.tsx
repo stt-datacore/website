@@ -633,6 +633,7 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 				{voyage.voyage_type === 'dilemma' && (
 					<DilemmaHelperAccordion
 						voyage={voyage}
+						targetGroup='voyageRewards_crew'
 						/>
 				)}
 				{voyage.voyage_type === 'encounter' && (

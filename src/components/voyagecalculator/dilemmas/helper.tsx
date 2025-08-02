@@ -18,13 +18,15 @@ type DilemmaHelperProps = {
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
 	initialExpand?: boolean;
+    targetGroup?: string;
 };
 
 export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
 
-	const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { configSource, voyage, ship, roster, rosterType, initialExpand: externActive } = props;
+    const [isActive, setIsActive] = React.useState<boolean>(false);
+	const { targetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive } = props;
 
 	React.useEffect(() => {
 		if (externActive !== undefined) {
@@ -45,6 +47,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 				{isActive && (
 					<Segment>
 						<DilemmaHelper
+                            targetGroup={targetGroup}
 							configSource={configSource}
 							voyage={voyage}
 							ship={ship}
@@ -59,7 +62,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 };
 
 export const DilemmaHelper = (props: DilemmaHelperProps) => {
-    const { voyage } = props;
+    const { voyage, targetGroup } = props;
     const [voyageLog, setVoyageLog] = useStateWithStorage<VoyageLogRoot | undefined>(`dilemma_helper/voyage_log`, undefined);
     const flexCol = OptionsPanelFlexColumn;
 
@@ -72,13 +75,16 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
 
     return (
         <React.Fragment>
-            <div style={{...flexCol, gap: '1em', justifyContent: 'stretch', alignItems: 'center' }}>
+            <div style={{...flexCol, gap: '1em', justifyContent: 'stretch', alignItems: 'stretch' }}>
                 <VoyageLogImportComponent
                     setVoyageLog={setVoyageLog}
                     clearVoyageLog={() => setVoyageLog(undefined)}
                     voyageId={voyage.id}
                 />
-                <DilemmaTable voyageLog={narrative} />
+                <DilemmaTable
+                    targetGroup={targetGroup}
+                    voyageLog={narrative}
+                />
             </div>
         </React.Fragment>
     )
