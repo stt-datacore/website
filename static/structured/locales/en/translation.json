@@ -1271,6 +1271,7 @@
         "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
         "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
         "faction_only": "Faction Only",
+        "hide_unneeded_items": "Hide unneeded items",
         "is_used_to_build": "Is used to build these",
         "item_sources": "Item sources",
         "n_farmable": "{{n}} farmable",
@@ -1284,6 +1285,9 @@
             "owned_or_buildable": "Show owned or buildable quipment"
         },
         "post_immortalization_advancement": "Post-immortalization advancement",
+        "quick_select": {
+            "favorites": "Select all favorited crew"
+        },
         "recipe": "Recipe",
         "required_traits": "Required Traits: {{traits}}",
         "show_unowned_needed": "Show unowned needed items",
@@ -1372,7 +1376,8 @@
         "pvp_3": "commander division data",
         "pvp_4": "captain division data",
         "pvp_5": "admiral division data",
-        "quest_data": "quest data"
+        "quest_data": "quest data",
+        "voyage_log": "voyage log data"
     },
     "logic": {
         "AND": "AND",
@@ -1792,6 +1797,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Minimum non-uniques",
         "modes": {
             "mutual_polestar_calculator": "Mutual Polestar Calculator",
             "mutual_polestar_calculator_desc": "Find combos that give equal chances of retrieving non-immortals",
@@ -1981,6 +1987,7 @@
                 "exclude_ability": "Exclude crew with this ability",
                 "power_depth": "Advanced Power Depth"
             },
+            "apply_buffs": "Apply buffs to unowned ships",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
@@ -2019,6 +2026,7 @@
         "crit_rating": "Crit Rating",
         "cycle_time": "Cycle Time",
         "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
+        "dps": "DPS",
         "duration": "Duration",
         "equipment_bonus": "Equipment Bonus",
         "evasion": "Evasion",
@@ -2052,6 +2060,11 @@
             "admiral": "Admiral Division",
             "captain": "Captain Division",
             "commander": "Commander Division"
+        },
+        "roster": {
+            "all": "All Ships",
+            "owned": "Owned Ships",
+            "unowned": "Unowned Ships"
         },
         "shields": "Shields",
         "ship": "Ship",
@@ -2663,5 +2676,15 @@
             "custom": "Custom Voyages",
             "upcoming": "Upcoming Voyages"
         }
+    },
+    "voyage_log": {
+        "behold": "Behold",
+        "choice_x": "Choice {{x}}",
+        "choices": "Choices",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "You can access your voyage logs in a similar way to how you access your player data, currently."
+        },
+        "title": "Voyage Dilemma Utility"
     }
 }

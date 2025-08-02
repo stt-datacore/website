@@ -1271,6 +1271,7 @@
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
         "faction_only": "Nur Fraktion",
+        "hide_unneeded_items": "Nicht benötigte Artikel ausblenden",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
         "item_sources": "Artikelquellen",
         "n_farmable": "{{n}} landwirtschaftliche",
@@ -1284,6 +1285,9 @@
             "owned_or_buildable": "Eigene oder baubare Rüstzeugen anzeigen"
         },
         "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
+        "quick_select": {
+            "favorites": "Wähle alle favorisierten Crewmitglieder aus"
+        },
         "recipe": "Rezept",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
@@ -1372,7 +1376,8 @@
         "pvp_3": "Daten zur Commander-Liga",
         "pvp_4": "Daten zur Kapitän-Liga",
         "pvp_5": "Daten der Admiral-Liga",
-        "quest_data": "Quest-Daten"
+        "quest_data": "Quest-Daten",
+        "voyage_log": "Reiseprotokolldaten"
     },
     "logic": {
         "AND": "UND",
@@ -1792,6 +1797,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Mindestanzahl nicht einzigartiger Besatzungsmitglieder",
         "modes": {
             "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner",
             "mutual_polestar_calculator_desc": "Finden Sie Combos, die gleiche Chancen bieten, Nicht-Unsterbliche zurückzuholen",
@@ -1981,6 +1987,7 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
+            "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
@@ -2019,6 +2026,7 @@
         "crit_rating": "Krit Treffer",
         "cycle_time": "Zykluszeit",
         "depth_hr_warn": "* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
+        "dps": "SPS",
         "duration": "Dauer",
         "equipment_bonus": "Ausrüstungsbonus",
         "evasion": "Ausweichen",
@@ -2052,6 +2060,11 @@
             "admiral": "Admiral Division",
             "captain": "Captain Division",
             "commander": "Commander Division"
+        },
+        "roster": {
+            "all": "Alle Schiffe",
+            "owned": "Schiffe im Besitz",
+            "unowned": "Schiffe ohne Besitz"
         },
         "shields": "Schilde",
         "ship": "Schiff",
@@ -2663,5 +2676,15 @@
             "custom": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
         }
+    },
+    "voyage_log": {
+        "behold": "Anblick",
+        "choice_x": "Wahl {{x}}",
+        "choices": "Auswahlmöglichkeiten",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Sie können auf Ihre Reiseprotokolle auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen."
+        },
+        "title": "Reisedilemma-Dienstprogramm"
     }
 }

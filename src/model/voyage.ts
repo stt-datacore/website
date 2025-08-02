@@ -1,10 +1,10 @@
 // import { Helper } from '../components/voyagecalculator/helpers/Helper';
 import { VPDetails } from '../utils/voyagevp';
-import { BaseSkills } from './crew';
+import { BaseSkills, CrewMember } from './crew';
 import { Icon } from './game-elements';
-import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
+import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, Reward, VoyageCrewSlot, VoyageSkills } from './player';
 import { Ship } from './ship';
-
+import { VoyageNarrative as Narrative } from './voyagelog';
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
 	skills: BaseSkills;
@@ -121,6 +121,7 @@ export interface ITrackedVoyage {
 	revivals: number;
     lootcrew: string[];
     remote?: boolean;
+    orphan?: boolean;
 };
 
 export interface ITrackedFlatEstimate {
@@ -698,3 +699,33 @@ export interface VoyageNarrative {
 	event_time: number;
 	crew: string[];	// crew symbol
 };
+
+export interface DilemmaChoice {
+    text: string,
+    reward: string[];
+    parsed?: {
+        rarity?: number;
+        crew?: CrewMember;
+        chrons?: number;
+        merits?: number;
+        honor?: number;
+        behold?: boolean;
+        schematics?: number;
+    }
+}
+
+export interface Dilemma {
+    title: string;
+    chances: {
+        legendary_behold: number,
+        superrare_behold: number,
+        superrrare_crew: number,
+        replicator_fuel: number,
+        ship_schematic: number
+    },
+    choiceA: DilemmaChoice;
+    choiceB: DilemmaChoice;
+    choiceC?: DilemmaChoice;
+    narrative?: Narrative;
+    rarity?: number;
+}
