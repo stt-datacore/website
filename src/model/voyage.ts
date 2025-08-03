@@ -728,4 +728,5 @@ export interface Dilemma {
     choiceC?: DilemmaChoice;
     narrative?: Narrative;
     rarity?: number;
+    selection?: number;
 }

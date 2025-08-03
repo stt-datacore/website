@@ -43,6 +43,7 @@ export interface VoyageNarrative {
     crew?: string[]
     skill_check?: SkillCheck
     rewards?: Rewards
+    selection?: number;
 }
 
 export interface SkillCheck {

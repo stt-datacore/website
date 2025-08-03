@@ -1,28 +1,28 @@
 import React from "react";
-import { NarrativeData, VoyageNarrative } from "../../../model/voyagelog"
-import { GlobalContext } from "../../../context/globalcontext";
-import { Dilemma, DilemmaChoice } from "../../../model/voyage";
-import { CrewMember } from "../../../model/crew";
-import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { Filter } from "../../../model/game-elements";
 import { Table } from "semantic-ui-react";
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
-import { AvatarView } from "../../item_presenters/avatarview";
-import CONFIG from "../../CONFIG";
-import { CrewHoverStat } from "../../hovering/crewhoverstat";
-import { printChrons, printCredits, printHonor, printMerits } from "../../retrieval/context";
+import { GlobalContext } from "../../../context/globalcontext";
+import { CrewMember } from "../../../model/crew";
+import { Filter } from "../../../model/game-elements";
+import { Dilemma, DilemmaChoice } from "../../../model/voyage";
+import { NarrativeData, VoyageNarrative } from "../../../model/voyagelog";
 import { omniSearchFilter } from "../../../utils/omnisearch";
+import CONFIG from "../../CONFIG";
+import { AvatarView } from "../../item_presenters/avatarview";
+import { printChrons, printHonor, printMerits } from "../../retrieval/context";
+import { ITableConfigRow, SearchableTable } from "../../searchabletable";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
     targetGroup?: string;
+    updateDilemma: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { dilemmas: dilemmaSource, crew } = globalContext.core;
     const { t } = globalContext.localized;
-    const { voyageLog, targetGroup } = props;
+    const { voyageLog, targetGroup, updateDilemma } = props;
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
     const goldRewards = crew.filter(f => f.traits_hidden.includes("exclusive_voyage") && f.max_rarity === 5);
@@ -145,7 +145,11 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         let choices = [row.choiceA, row.choiceB, row.choiceC].filter(f => f !== undefined);
         return <>
             <Table.Row>
-                <Table.Cell positive={!!row.narrative}>
+                <Table.Cell
+                    style={{
+                        backgroundColor: !!row.narrative ? 'forestgreen' : undefined
+                    }}
+                >
                     <div style={{
                         display: 'grid',
                         gridTemplateAreas: `'left right'`,
@@ -175,7 +179,15 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 </Table.Cell>
                 {choices.map((choice, i) => {
                     return (
-                        <Table.Cell key={`table_cell_${row.title}_choice_${choice.text}`} className="top aligned">
+                        <Table.Cell
+                            key={`table_cell_${row.title}_choice_${choice.text}`}
+                            className="top aligned"
+                            style={{
+                                cursor: !!row.narrative ? 'pointer' : undefined,
+                                backgroundColor: row.narrative?.selection === i ? 'royalblue' : undefined
+                            }}
+                            onClick={() => updateDilemma(row, i, row.selection === i)}
+                            >
                             {renderChoiceRewards(choice)}
                         </Table.Cell>
                     )
@@ -253,6 +265,7 @@ function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: Voyage
             let n = log.find(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
             if (n) {
                 dilemma.narrative = n;
+                if (n.selection !== undefined) dilemma.selection = n.selection;
             }
         }
         let maxrare = 3;
