@@ -403,6 +403,11 @@
             "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Aktive Rüstzeug Fähigkeiten",
+        "compatible_quipment": "Kompatible Rüstzeugen",
+        "trait_limited": "Nur merkmalsbeschränkte Rüszeuge anzeigen"
+    },
     "crew_state": {
         "expires_in": "Crew läuft in {{time}} ab",
         "frozen": "Eingefroren",

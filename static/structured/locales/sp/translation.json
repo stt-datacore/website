@@ -403,6 +403,11 @@
             "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Habilidades activas para los quipos",
+        "compatible_quipment": "Quipos compatibles",
+        "trait_limited": "Mostrar solo quipos vinculados a características"
+    },
     "crew_state": {
         "expires_in": "La tripulante caduca en {{time}}",
         "frozen": "Congelado",
