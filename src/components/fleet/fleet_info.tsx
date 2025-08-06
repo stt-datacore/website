@@ -66,7 +66,13 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 			const fleetData = { ...processedFleetData, members: [...processedFleetData.members] };
 			const icons = {} as {[key:string]: string}
 			fleetData.members = fleetData.members.filter((member) => {
-				icons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
+				if (member.crew_avatar?.icon) {
+					icons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
+				}
+				else {
+					icons[member.dbid] = "crew_portraits_cm_empty_sm.png";
+				}
+
 				if (!member.squadron_event_rank) {
 					let squad = inputFleetData.squads.find(f => f.id == member.squad_id);
 					if (squad) {
@@ -284,7 +290,8 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 	function prepareFleetData(fleet: Fleet) {
 		fleet = {...fleet, members: [...fleet.members] };
 		fleet.members = fleet.members.filter((member) => {
-			if (member.crew_avatar.icon.file.startsWith("crew_portraits") && !member.crew_avatar.icon.file.endsWith("_sm.png")) {
+
+			if (!!member.crew_avatar?.icon && member.crew_avatar.icon.file.startsWith("crew_portraits") && !member.crew_avatar.icon.file.endsWith("_sm.png")) {
 				member.crew_avatar.icon.file = member.crew_avatar.icon.file.replace("_icon.png", "_sm.png");
 			}
 			let ranks = [] as string[];
