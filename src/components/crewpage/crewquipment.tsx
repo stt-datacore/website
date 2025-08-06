@@ -6,6 +6,8 @@ import { ShipSeatPicker } from "../crewtables/shipoptions";
 import { EquipmentItem } from "../../model/equipment";
 import CONFIG from "../CONFIG";
 import { QuipmentTable } from "../items/quipmenttable";
+import { Checkbox } from "semantic-ui-react";
+import { useStateWithStorage } from "../../utils/storage";
 
 export interface CrewQuipmentProps {
     crew: CrewMember;
@@ -13,21 +15,32 @@ export interface CrewQuipmentProps {
 
 export const CrewQuipment = (props: CrewQuipmentProps) => {
 
-    const context = React.useContext(GlobalContext);
+    const globalContext = React.useContext(GlobalContext);
+    const { playerData } = globalContext.player;
+    const { t } = globalContext.localized;
     const { crew } = props;
     const crew_skills = Object.keys(crew.base_skills);
-    const [skills, setSkills] = React.useState(crew_skills);
 
-    const [quips, setQuips] = React.useState([] as ItemWithBonus[]);
-    const [quipment, setQuipment] = React.useState([] as EquipmentItem[]);
+    const dbidPrefix = React.useMemo(() => {
+        if (playerData?.player?.dbid) {
+            return `${playerData.player.dbid}/`;
+        }
+        else {
+            return "";
+        }
+    }, [playerData]);
+
+    const [skills, setSkills] = React.useState(crew_skills);
+    const [limited, setLimited] = useStateWithStorage<boolean>(`${dbidPrefix}crew_page/trait_limit`, false, { rememberForever: !!dbidPrefix });
 
     React.useEffect(() => {
         if (skills.length === 0) {
             setSkills(crew_skills);
         }
     }, [skills]);
-    React.useEffect(() => {
-        let qps = context.core.items.filter(f =>
+
+    const itemBonusData = React.useMemo(() => {
+        let quipdata = globalContext.core.items.filter(f =>
             f.type === 14 &&
             (!!f.max_rarity_requirement || !!f.traits_requirement?.length)
             && isQuipmentMatch(crew, f)
@@ -41,13 +54,20 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                 return false;
             }
         });
-        sortItemsWithBonus(qps, undefined, undefined, -1);
-        setQuips(qps);
-    }, [context, skills]);
+        if (limited && quipdata?.some(q => !!q.item.traits_requirement?.length)) {
+            quipdata = quipdata.filter(q => !!q.item.traits_requirement?.length);
+        }
+        sortItemsWithBonus(quipdata, undefined, undefined, -1);
+        return quipdata;
+    }, [globalContext, skills, limited]);
 
-    React.useEffect(() => {
-        setQuipment(quips.map(q => q.item));
-    }, [quips])
+    const quipment = React.useMemo(() => {
+        return itemBonusData.map(q => q.item);
+    }, [itemBonusData]);
+
+    const canLimit = React.useMemo(() =>
+        quipment.some(q => !!q.traits_requirement?.length),
+    [quipment]);
 
     const formatTitle = (value: string, state: boolean) => {
         let s = `${state ? 'Hide' : 'Show'} ${CONFIG.SKILLS[value]} Skill`;
@@ -64,22 +84,31 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                 marginBottom: "0.25em"
             }}>
                 <div>
-                    <h4>Compatible Quipment</h4>
+                    <h4>{t('crew_quipment.compatible_quipment')}</h4>
                 </div>
-                <div style={{display:'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                    <div>
-                        <h4 style={{marginRight:"0.5em"}}>Active Quipment Skills:</h4>
+                <div style={{display:'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '1em'}}>
+                    <div style={{display:'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{marginRight:"0.5em", marginTop: "1.0em"}}>
+                            <span>{t('crew_quipment.active_quipment_skills{{:}}')}</span>
+                        </div>
+                        <ShipSeatPicker
+                            formatTitle={formatTitle}
+                            fluid={false}
+                            selectedSeats={skills}
+                            setSelectedSeats={setSkills}
+                            availableSeats={crew_skills}  />
                     </div>
-                    <ShipSeatPicker
-                        formatTitle={formatTitle}
-                        fluid={false}
-                        selectedSeats={skills}
-                        setSelectedSeats={setSkills}
-                        availableSeats={crew_skills}  />
+                    {canLimit && <div>
+                        <Checkbox
+                            label={t('crew_quipment.trait_limited')}
+                            checked={limited}
+                            onChange={(e, { checked }) => setLimited(!!checked)}
+                            />
+                    </div>}
                 </div>
             </div>
             <QuipmentTable
-                ownedItems={!!context.player.playerData}
+                ownedItems={!!globalContext.player.playerData}
                 ownedCrew={false}
                 itemTargetGroup={'crew_quipment'}
                 pageId={'crew_' + crew.symbol}

@@ -403,6 +403,11 @@
             "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Compétences actives pour les quipements",
+        "compatible_quipment": "Quipements compatibles",
+        "trait_limited": "Afficher uniquement les quipements liés aux traits"
+    },
     "crew_state": {
         "expires_in": "L'équipier expire dans {{time}}",
         "frozen": "Congelé(e)",

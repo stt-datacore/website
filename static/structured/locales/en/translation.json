@@ -403,6 +403,11 @@
             "double_tap": "Tip: Double-tap to select a crew more quickly."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Active Quipment Skills{{:}}",
+        "compatible_quipment": "Compatible Quipment",
+        "trait_limited": "Show only trait-limited quipment"
+    },
     "crew_state": {
         "expires_in": "Crew expires in {{time}}",
         "frozen": "Frozen",
