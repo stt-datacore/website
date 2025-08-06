@@ -2307,6 +2307,12 @@
             "title": "Owned Crew"
         }
     },
+    "view_special": {
+        "options": {
+            "as_immortalized": "View all as immortalized"
+        },
+        "title": "Special views"
+    },
     "voyage": {
         "active": {
             "active_voyage_colon": "Active Voyage:"

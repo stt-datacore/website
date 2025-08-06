@@ -2307,6 +2307,12 @@
             "title": "Eigene Crew"
         }
     },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Alle als unsterblich ansehen"
+        },
+        "title": "Besondere Ansichten"
+    },
     "voyage": {
         "active": {
             "active_voyage_colon": "Aktive Reise:"

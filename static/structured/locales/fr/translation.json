@@ -2319,6 +2319,12 @@
             "title": "Équipage Possédé"
         }
     },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Tout voir comme immortalisé"
+        },
+        "title": "Vues spéciales"
+    },
     "voyage": {
         "active": {
             "active_voyage_colon": "Voyage actif :"

@@ -2317,6 +2317,12 @@
             "title": "Tripulación Propia"
         }
     },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Ver todo como inmortalizado"
+        },
+        "title": "Vistas especiales"
+    },
     "voyage": {
         "active": {
             "active_voyage_colon": "Viaje activo:"
