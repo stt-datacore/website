@@ -3,7 +3,7 @@ import { Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
 import { Filter } from "../../../model/game-elements";
-import { Dilemma, DilemmaChoice } from "../../../model/voyage";
+import { AlphaRef, Dilemma, DilemmaChoice, DilemmaMultipartData } from "../../../model/voyage";
 import { NarrativeData, VoyageNarrative } from "../../../model/voyagelog";
 import { omniSearchFilter } from "../../../utils/omnisearch";
 import CONFIG from "../../CONFIG";
@@ -242,6 +242,12 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
     }
 }
 
+function getChoices(d: Dilemma) {
+    const res = [d.choiceA, d.choiceB];
+    if (d.choiceC) res.push(d.choiceC);
+    return res;
+}
+
 function getChoiceRarity(choice: DilemmaChoice) {
 	if (choice.reward.some((r: string) => r.includes("100 :honor:")) && choice.reward.some(s => s.includes('4') && s.includes(':star:'))) return 5;
 	else if (choice.reward.some((r: string) => r.includes("60 :honor:"))) return 4;
@@ -331,7 +337,54 @@ function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: Voyage
         if (r2 > r) r = r2;
         if (r3 > r) r = r3;
         if (crewurl && r < 4) r = 4;
+
+        linkMultipart(dilemma, dilemmas);
     }
 
     return dilemmas;
 }
+
+function findDilemmaGroup(baseTitle: string, dilemmas: Dilemma[]) {
+    return dilemmas.filter(f => f.title.startsWith(baseTitle)).sort((a, b) => a.title.localeCompare(b.title));
+}
+
+function linkMultipart(dilemma: Dilemma, dilemmas: Dilemma[]) {
+    const titleRex = /^(.+),\s*Part\s+(\d+)$/;
+    let res = titleRex.exec(dilemma.title);
+    if (res) {
+        dilemma.baseTitle = res[1];
+    }
+    //const group = findDilemmaGroup(dilemma.baseTitle, dilemmas);
+    const choiceRex = /^(.+)\s+\(.*\*\*(.+)\*\*.*\)\s*$/;
+    const dscRex = /^.*\s+Choice\s+(\d|\w)\s+.*/;
+    const mp = [] as DilemmaMultipartData[];
+    getChoices(dilemma).forEach((choice, idx) => {
+        let cres = choiceRex.exec(choice.text);
+        if (cres) {
+            let tdil = dilemmas.find(f => f.title === cres[2]);
+            if (tdil) {
+                let tres = dscRex.exec(choice.text);
+                let c = -1;
+                if (tres) {
+                    c = AlphaRef.findIndex((a, idx) => a === tres[1] || idx === Number(tres[1]) - 1);
+                }
+
+                let mpfind = mp.find(m => m.dilemma === tdil);
+                if (!mpfind || c !== -1){
+                    mpfind = {
+                        requiredChoices: [AlphaRef[idx]],
+                        dilemma: tdil,
+                        unlock: c === -1 ? undefined : c
+                    };
+                    mp.push(mpfind);
+                }
+                else {
+                    mpfind.requiredChoices.push(AlphaRef[idx]);
+                }
+            }
+        }
+    });
+    if (mp.length) dilemma.multipart = mp;
+
+}
+

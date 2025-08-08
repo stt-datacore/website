@@ -714,8 +714,17 @@ export interface DilemmaChoice {
     }
 }
 
+export const AlphaRef = ["A", "B", "C"];
+
+export interface DilemmaMultipartData {
+    requiredChoices: string[];
+    dilemma: Dilemma;
+    unlock?: number;
+}
+
 export interface Dilemma {
     title: string;
+    baseTitle?: string;
     chances: {
         legendary_behold: number,
         superrare_behold: number,
@@ -729,4 +738,5 @@ export interface Dilemma {
     narrative?: Narrative;
     rarity?: number;
     selection?: number;
+    multipart?: DilemmaMultipartData[];
 }
