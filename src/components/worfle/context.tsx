@@ -1,5 +1,5 @@
 import React from 'react';
 
-import { PlayerCrew } from '../../model/player';
+import { CrewMember } from '../../model/crew';
 
-export const PortalCrewContext = React.createContext<PlayerCrew[]>([]);
+export const PortalCrewContext = React.createContext<CrewMember[]>([]);

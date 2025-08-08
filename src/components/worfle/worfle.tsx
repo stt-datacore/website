@@ -5,7 +5,6 @@ import {
 } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
-import { PlayerCrew } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 
 import { PortalCrewContext } from './context';
@@ -13,17 +12,24 @@ import { DEFAULT_GUESSES } from './game';
 import { DailyGame } from './dailygame';
 import { PracticeGame } from './practicegame';
 
+interface ISeriesFix {
+	symbol: string;
+	series: string;
+	audit: string;
+}
+
 export const Worfle = () => {
+	const globalContext = React.useContext(GlobalContext);
+
 	const [portalCrew, setPortalCrew] = React.useState<CrewMember[]>([]);
-	const context = React.useContext(GlobalContext);
 
 	function fetchAllCrew() {
-		const allcrew = context.core.crew;
+		const allcrew: CrewMember[] = globalContext.core.crew;
 		// Sort here to ensure consistency for seedrandom
-		const portalcrew = allcrew.filter(crew => crew.in_portal).sort((a, b) => a.name.localeCompare(b.name));
+		const portalcrew: CrewMember[] = allcrew.filter(crew => crew.in_portal).sort((a, b) => a.name.localeCompare(b.name));
 		// Fix incorrect series; changes here are consistent with unofficial Trait Audit thread:
 		//	https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread
-		const fixes = [
+		const fixes: ISeriesFix[] = [
 			/* Missing series */
 			{ symbol: 'data_mirror_crew', series: 'tng', audit: '+' },
 			/* Incorrect series */
@@ -51,24 +57,33 @@ export const Worfle = () => {
 
 	React.useEffect(() => {
 		fetchAllCrew();
-	}, [context]);
+	}, [globalContext]);
 
 	if (!portalCrew) return <></>;
 
 	return (
-		<PortalCrewContext.Provider value={portalCrew as PlayerCrew[]}>
+		<PortalCrewContext.Provider value={portalCrew}>
 			<WorfleTabs />
 		</PortalCrewContext.Provider>
 	);
 };
 
 const WorfleTabs = () => {
-	const [activeItem, setActiveItem] = React.useState('daily');
+	const [activeItem, setActiveItem] = React.useState<string>('daily');
 
 	const menuItems = [
-		{ name: 'daily', title: 'Daily Game' },
-		{ name: 'practice', title: 'Practice Game' },
-		{ name: 'instructions', title: <span><Icon name='question circle outline' /> How to Play</span> }
+		{	/* Daily Game */
+			name: 'daily',
+			title: 'Daily Game'
+		},
+		{	/* Practice Game */
+			name: 'practice',
+			title: 'Practice Game'
+		},
+		{	/* How to Play */
+			name: 'instructions',
+			title: <span><Icon name='question circle outline' /> How to Play</span>
+		}
 	];
 
 	return (
@@ -87,13 +102,23 @@ const WorfleTabs = () => {
 	);
 
 	function renderInstructions(): JSX.Element {
-		const adjacentStyle = { backgroundColor: 'yellow', color: 'black', padding: '3px .5em' };
+		const exactStyle: React.CSSProperties = {
+			backgroundColor: 'green',
+			color: 'white',
+			padding: '3px .5em'
+		};
+
+		const adjacentStyle: React.CSSProperties = {
+			backgroundColor: 'yellow',
+			color: 'black',
+			padding: '3px .5em'
+		};
 
 		return (
 			<React.Fragment>
 				<p>How well do you know the characters from Star Trek Timelines? We pick one mystery crew member every day. Guess who it is, using your knowledge of <b>Variants</b>, <b>Series</b>, <b>Rarity</b>, <b>Skills</b>, and <b>Traits</b> to help narrow the possibilities. You have <b>{DEFAULT_GUESSES} tries</b> to guess the mystery crew.</p>
 				<p>Only crew that are currently <b>available in the time portal</b> will be used as mystery crew and valid guesses.</p>
-				<p>Anything <span style={{ backgroundColor: 'green', padding: '3px .5em' }}>highlighted green</span> indicates an exact match between your guess and the mystery crew on one or more of these criteria: series, rarity, or skills.</p>
+				<p>Anything <span style={exactStyle}>highlighted green</span> indicates an exact match between your guess and the mystery crew on one or more of these criteria: series, rarity, or skills.</p>
 				<p>A <span style={adjacentStyle}>yellow crew name</span> indicates the mystery crew is a variant* of your guess.</p>
 				<p>A <span style={adjacentStyle}>yellow series</span> indicates the mystery crew is from a different series* in the same production era as your guess. The possible eras are:</p>
 				<ol>
