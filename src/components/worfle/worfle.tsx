@@ -37,7 +37,6 @@ export const Worfle = () => {
 			{ symbol: 'chang_general_crew', series: 'tos', audit: '-tng' },
 			{ symbol: 'earp_wyatt_crew', series: 'tos', audit: '-tng' },
 			{ symbol: 'janeway_admiral_crew', series: 'tng', audit: '-voy' },
-			{ symbol: 'jarok_crew', series: 'tng', audit: '-ds9' },
 			{ symbol: 'keiko_bride_crew', series: 'tng', audit: '-ds9' },
 			{ symbol: 'kirk_generations_crew', series: 'tng', audit: '-tos' },
 			{ symbol: 'laforge_captain_crew', series: 'voy', audit: '-tng' },
@@ -45,8 +44,9 @@ export const Worfle = () => {
 			{ symbol: 'scott_movievest_crew', series: 'tng', audit: '-tos' },
 			{ symbol: 'spock_ambassador_crew', series: 'tng', audit: '-tos' },
 			{ symbol: 'sulu_demora_ensign_crew', series: 'tng', audit: '-tos' },
+			{ symbol: 'tpring_spock_crew', series: 'snw', audit: '-tos' },
 			{ symbol: 'trul_subcommander_crew', series: 'ds9', audit: '-tng' },
-			{ symbol: 'worf_midwife_crew', series: 'tng', audit: '-ds9' }
+			{ symbol: 'worf_midwife_crew', series: 'tng', audit: '-ds9' },
 		];
 		fixes.forEach(fix => {
 			const pc = portalcrew.find(crew => crew.symbol === fix.symbol);
