@@ -5,17 +5,17 @@ import {
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { oneCrewCopy } from '../../utils/crewutils';
+import { crewVariantIgnore, getVariantTraits, oneCrewCopy } from '../../utils/crewutils';
 
-import { IPortalCrew } from './model';
-import { PortalCrewContext } from './context';
+import { IRosterCrew } from './model';
+import { WorfleContext } from './context';
 import { DailyGame } from './dailygame';
 import { PracticeGame } from './practicegame';
 import { GameInstructions } from './instructions';
 
 // Crew with missing or incorrect series are considered nonviable
 //	Nonviable crew will NOT be Worfle solutions
-const nonviableCrew: string[] = [
+const invalidSeries: string[] = [
 	/* Missing series */
 	'data_mirror_crew',			// correct: 'tng', audit: '+'
 
@@ -39,28 +39,76 @@ const nonviableCrew: string[] = [
 export const Worfle = () => {
 	const globalContext = React.useContext(GlobalContext);
 
-	const [portalCrew, setPortalCrew] = React.useState<IPortalCrew[]>([]);
+	const [roster, setRoster] = React.useState<IRosterCrew[]>([]);
 
 	React.useEffect(() => {
-		const portalCrew: IPortalCrew[] = [];
-		// Only consider crew currently in portal
-		globalContext.core.crew.filter(crewMember => crewMember.in_portal).forEach(crewMember => {
-			const crew: IPortalCrew = oneCrewCopy(crewMember) as IPortalCrew;
-			crew.viable_guess = !nonviableCrew.includes(crew.symbol);
-			portalCrew.push(crew);
-		});
-		// Sort here to ensure consistency for seedrandom
-		portalCrew.sort((a, b) => a.name.localeCompare(b.name));
-		setPortalCrew(portalCrew);
+		rosterizeCrew();
 	}, [globalContext]);
 
-	if (!portalCrew) return <></>;
+	if (!roster) return <></>;
 
 	return (
-		<PortalCrewContext.Provider value={portalCrew}>
+		<WorfleContext.Provider value={{ roster }}>
 			<WorfleTabs />
-		</PortalCrewContext.Provider>
+		</WorfleContext.Provider>
 	);
+
+	function rosterizeCrew(): void {
+		const searchableCrew: IRosterCrew[] = [];
+		globalContext.core.crew.forEach(crewMember => {
+			const crew: IRosterCrew = oneCrewCopy(crewMember) as IRosterCrew;
+
+			const usableShortName: string = getUsableShortName(crew);
+			const variantTraits: string[] = crewVariantIgnore.includes(crew.symbol) ? [] : getVariantTraits(crew.traits_hidden);
+
+			// Attach usable short name, variants, and traits here
+			crew.usable_short_name = usableShortName;
+			crew.usable_variants = getUsableVariants(variantTraits, usableShortName);
+			crew.usable_traits = getUsableTraits(crew, variantTraits);
+
+			// Flag crew with invalid series traits here
+			crew.valid_series = !invalidSeries.includes(crew.symbol);
+
+			searchableCrew.push(crew);
+		});
+		// Sort here to ensure consistency for seedrandom
+		searchableCrew.sort((a, b) => a.name.localeCompare(b.name));
+		setRoster(searchableCrew);
+	}
+
+	function getUsableShortName(crew: IRosterCrew): string {
+		let shortName: string = crew.short_name;
+		// Dax hacks
+		if (shortName === 'E. Dax') shortName = 'Ezri';
+		if (shortName === 'J. Dax') shortName = 'Jadzia';
+		return shortName;
+	}
+
+	function getUsableVariants(variantTraits: string[], shortName: string): string[] {
+		const variants: string[] = variantTraits.slice();
+		// Dax hacks
+		const daxIndex: number = variants.indexOf('dax');
+		if (daxIndex >= 0) {
+			variantTraits.unshift(shortName);
+			variants[daxIndex] = shortName;
+		}
+		return variants;
+	}
+
+	function getUsableTraits(crew: IRosterCrew, variantTraits: string[]): string[] {
+		const traits: string[] = variantTraits.slice();
+		['Female', 'Male'].forEach(usable => { if (crew.traits_hidden.includes(usable.toLowerCase())) traits.push(usable); });
+		const usableCollections: string[] = [
+			'A Little Stroll', 'Animated', 'Badda-Bing, Badda-Bang', 'Bride of Chaotica', 'Convergence Day', 'Delphic Expanse',
+			'Holodeck Enthusiasts', 'Our Man Bashir', 'Pet People', 'Play Ball!', 'Set Sail!', 'Sherwood Forest',
+			'The Big Goodbye', 'The Wild West'
+		];
+		crew.collections.forEach(collection => {
+			if (usableCollections.includes(collection))
+				traits.push(collection);
+		});
+		return traits.concat(crew.traits_named);
+	}
 };
 
 const WorfleTabs = () => {

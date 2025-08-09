@@ -1,5 +1,9 @@
 import React from 'react';
 
-import { IPortalCrew } from './model';
+import { IRosterCrew } from './model';
 
-export const PortalCrewContext = React.createContext<IPortalCrew[]>([]);
+export interface IWorfleContext {
+	roster: IRosterCrew[];
+};
+
+export const WorfleContext = React.createContext<IWorfleContext>({} as IWorfleContext);

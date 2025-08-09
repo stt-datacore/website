@@ -4,11 +4,11 @@ import {
 	Segment
 } from 'semantic-ui-react';
 
-import { PortalCrewContext } from './context';
+import { WorfleContext } from './context';
 import { DEFAULT_GUESSES } from './game';
 
 export const GameInstructions = () => {
-	const portalCrew = React.useContext(PortalCrewContext);
+	const { roster } = React.useContext(WorfleContext);
 
 	const exactStyle: React.CSSProperties = {
 		backgroundColor: 'green',
@@ -43,7 +43,7 @@ export const GameInstructions = () => {
 			<p>** Some crew will be excluded as mystery crew because their in-game series traits are incorrect. You can still use these crew as guesses. The crew known to have incorrect series traits are:</p>
 			<Segment>
 				<Label.Group>
-					{portalCrew.filter(crew => !crew.viable_guess).map(crew => (
+					{roster.filter(crew => !crew.valid_series).map(crew => (
 						<Label key={crew.symbol}>{crew.name}</Label>
 					))}
 				</Label.Group>

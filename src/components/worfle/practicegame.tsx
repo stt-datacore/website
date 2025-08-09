@@ -1,21 +1,23 @@
 import React from 'react';
 import {
 	Button,
+	Checkbox,
 	Dropdown,
 	DropdownItemProps,
+	Form,
 	Icon,
 	Modal
 } from 'semantic-ui-react';
 
 import { useStateWithStorage } from '../../utils/storage';
 
-import { IPortalCrew, SolveState } from './model';
-import { PortalCrewContext } from './context';
-import { DEFAULT_GUESSES, DEFAULT_RARITIES, DEFAULT_SERIES, Game, GameRules } from './game';
+import { IRosterCrew, SolveState } from './model';
+import { WorfleContext } from './context';
+import { DEFAULT_GUESSES, DEFAULT_PORTAL_ONLY, DEFAULT_RARITIES, DEFAULT_SERIES, Game, GameRules } from './game';
 
 export const PracticeGame = () => {
-	const portalCrew = React.useContext(PortalCrewContext);
-	const [rules, setRules] = useStateWithStorage<GameRules>('datalore/practiceRules', newPracticeRules());
+	const { roster } = React.useContext(WorfleContext);
+	const [rules, setRules] = useStateWithStorage<GameRules>('datalore/practiceRules', new GameRules());
 	const [solution, setSolution] = useStateWithStorage<string>('datalore/practiceSolution', '');
 	const [guesses, setGuesses] = useStateWithStorage<string[]>('datalore/practiceGuesses', []);
 	const [solveState, setSolveState] = useStateWithStorage<SolveState>('datalore/practiceSolveState', SolveState.Unsolved);
@@ -53,24 +55,31 @@ export const PracticeGame = () => {
 		</React.Fragment>
 	);
 
-	function newPracticeRules(): GameRules {
-		const newRules: GameRules = new GameRules();
-		newRules.series = DEFAULT_SERIES;
-		newRules.rarities = DEFAULT_RARITIES;
-		return newRules;
-	}
-
 	function changePracticeRules(newRules: GameRules): void {
 		setRules(newRules);
 		setSolution('');
 	}
 
 	function createPracticeGame(): void {
-		let pool: IPortalCrew[] = portalCrew.slice();
-		if (rules.excludedCrew.length > 0)
-			pool = pool.filter(crew => !rules.excludedCrew.includes(crew.symbol));
-		const randomIndex: number = Math.floor(Math.random() * pool.length);
-		setSolution(pool[randomIndex].symbol);
+		// Viable as solution for practice game only if:
+		//	1) Series trait is valid
+		//	2) Crew matches conditions of all defined rules
+		const testViability = (index: number) => {
+			const testCrew: IRosterCrew = roster[index];
+			return testCrew.valid_series
+				&& rules.series.includes(testCrew.series ?? '')
+				&& rules.rarities.includes(testCrew.max_rarity)
+				&& (!rules.portal_only || testCrew.in_portal)
+		};
+
+		let randomIndex: number = Math.floor(Math.random() * roster.length);
+		let crewIsViable: boolean = testViability(randomIndex);
+		while (!crewIsViable) {
+			randomIndex = Math.floor(Math.random() * roster.length);
+			crewIsViable = testViability(randomIndex);
+		}
+
+		setSolution(roster[randomIndex].symbol);
 		setGuesses([]);
 		setSolveState(SolveState.Unsolved);
 	}
@@ -86,19 +95,21 @@ type CustomRulesProps = {
 };
 
 const CustomRules = (props: CustomRulesProps) => {
-	const portalCrew = React.useContext(PortalCrewContext);
+	const { roster } = React.useContext(WorfleContext);
 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
-	const [guesses, setGuesses] = React.useState<number>(props.rules.guesses);
+	const [maxGuesses, setMaxGuesses] = React.useState<number>(props.rules.max_guesses);
 	const [series, setSeries] = React.useState<string[]>(props.rules.series);
 	const [rarities, setRarities] = React.useState<number[]>(props.rules.rarities);
-	const [excludedCrew, setExcludedCrew] = React.useState<string[]>([]);
+	const [portalOnly, setPortalOnly] = React.useState<boolean>(props.rules.portal_only);
 
-	React.useEffect(() => {
-		const excludes: string[] = portalCrew.filter(crew =>
-			!series.includes(crew.series ?? "") || !rarities.includes(crew.max_rarity)
-		).map(crew => crew.symbol);
-		setExcludedCrew([...excludes ?? []]);
-	}, [series, rarities]);
+	const possibleCount = React.useMemo(() => {
+		return roster.filter(crew =>
+			crew.valid_series
+				&& series.includes(crew.series ?? '')
+				&& rarities.includes(crew.max_rarity)
+				&& (!portalOnly || crew.in_portal)
+		).length;
+	}, [series, rarities, portalOnly]);
 
 	const guessOptions: DropdownItemProps[] = [];
 	for (let i = 1; i <= 20; i++) {
@@ -122,7 +133,7 @@ const CustomRules = (props: CustomRulesProps) => {
 		{ key: 'original', value: 'original', text: 'Timelines Originals' }
 	];
 
-	const rarityOptions = [
+	const rarityOptions: DropdownItemProps[] = [
 		{ key: '1*', value: 1, text: '1* Common' },
 		{ key: '2*', value: 2, text: '2* Uncommon' },
 		{ key: '3*', value: 3, text: '3* Rare' },
@@ -130,13 +141,15 @@ const CustomRules = (props: CustomRulesProps) => {
 		{ key: '5*', value: 5, text: '5* Legendary' }
 	];
 
-	const isDefault: boolean = guesses === DEFAULT_GUESSES
+	const isDefault: boolean = maxGuesses === DEFAULT_GUESSES
 		&& series.length === DEFAULT_SERIES.length
-		&& rarities.length === DEFAULT_RARITIES.length;
-	const isDirty: boolean = guesses !== props.rules.guesses
+		&& rarities.length === DEFAULT_RARITIES.length
+		&& portalOnly === DEFAULT_PORTAL_ONLY;
+	const isDirty: boolean = maxGuesses !== props.rules.max_guesses
 		|| series.length !== props.rules.series.length
-		|| rarities.length !== props.rules.rarities.length;
-	const isValid: boolean = portalCrew.length - excludedCrew.length > 0;
+		|| rarities.length !== props.rules.rarities.length
+		|| portalOnly !== props.rules.portal_only;
+	const isValid: boolean = possibleCount > 0;
 
 	return (
 		<Modal
@@ -149,38 +162,45 @@ const CustomRules = (props: CustomRulesProps) => {
 			<Modal.Header /* Custom rules */>
 				Custom rules
 				<span style={{ paddingLeft: '1em', fontSize: '.9em', fontWeight: 'normal' }}>
-					(Possible solutions: {portalCrew.length - excludedCrew.length})
+					(Possible solutions: {possibleCount})
 				</span>
 			</Modal.Header>
 			<Modal.Content>
-				<div /* Max guesses: */>
-					Max guesses:{' '}
-					<Dropdown selection
+				<Form>
+					<Form.Field	/* Max guesses: */
+						control={Dropdown}
+						label='Max guesses:'
+						placeholder='Select a number'
+						inline selection
 						options={guessOptions}
-						value={guesses}
-						onChange={(e, { value }) => setGuesses(value as number)}
+						value={maxGuesses}
+						onChange={(e, { value }) => setMaxGuesses(value as number)}
 					/>
-				</div>
-				<div style={{ marginTop: '1em' }} /* Include crew by series: */>
-					Include crew by series:
-					<Dropdown	/* Select at least 1 series */
-						selection multiple fluid clearable closeOnChange
+					<Form.Field	/* Include crew by series: */
+						control={Dropdown}
+						label='Include crew by series:'
 						placeholder='Select at least 1 series'
+						selection multiple fluid clearable closeOnChange
 						options={seriesOptions}
 						value={series}
 						onChange={(e, { value }) => setSeries(value as string[])}
 					/>
-				</div>
-				<div style={{ marginTop: '1em' }} /* Include crew by rarity: */>
-					Include crew by rarity:
-					<Dropdown	/* Select at least 1 rarity */
-						selection multiple fluid clearable closeOnChange
+					<Form.Field	/* Include crew by rarity: */
+						control={Dropdown}
+						label='Include crew by rarity:'
 						placeholder='Select at least 1 rarity'
+						selection multiple fluid clearable closeOnChange
 						options={rarityOptions}
 						value={rarities}
 						onChange={(e, { value }) => setRarities(value as number[])}
 					/>
-				</div>
+					<Form.Field	/* Only use crew in portal */
+						control={Checkbox}
+						label='Only use crew in portal'
+						checked={portalOnly}
+						onChange={(e, { checked }) => setPortalOnly(checked)}
+					/>
+				</Form>
 			</Modal.Content>
 			<Modal.Actions>
 				{!isDefault && (
@@ -226,24 +246,26 @@ const CustomRules = (props: CustomRulesProps) => {
 	}
 
 	function revertRules(): void {
-		setGuesses(props.rules.guesses);
+		setMaxGuesses(props.rules.max_guesses);
 		setSeries(props.rules.series);
 		setRarities(props.rules.rarities);
+		setPortalOnly(props.rules.portal_only);
 	}
 
 	function resetRules(): void {
-		setGuesses(DEFAULT_GUESSES);
+		setMaxGuesses(DEFAULT_GUESSES);
 		setSeries(DEFAULT_SERIES);
 		setRarities(DEFAULT_RARITIES);
+		setPortalOnly(DEFAULT_PORTAL_ONLY);
 	}
 
 	function applyRules(): void {
 		if (!isValid) return;
 		const newRules: GameRules = new GameRules();
-		newRules.guesses = guesses;
-		newRules.excludedCrew = excludedCrew;
+		newRules.max_guesses = maxGuesses;
 		newRules.series = series;
 		newRules.rarities = rarities;
+		newRules.portal_only = portalOnly;
 		props.changeRules(newRules);
 		setModalIsOpen(false);
 	}

@@ -12,32 +12,19 @@ export enum EvaluationState {
 	Exact
 }
 
-export interface IPortalCrew extends CrewMember {
-	viable_guess: boolean;
+export interface IRosterCrew extends CrewMember {
+	usable_short_name: string;
+	usable_variants: string[];
+	usable_traits: string[];
+	valid_series: boolean;
 }
 
-export interface IGuessableCrew {
-	symbol: string;
-	name: string;
-	short_name: string;
-	variants: string[];
-	imageUrlPortrait: string;
-	flavor: string;
-	series: string;
-	rarity: number;
-	skill_order: string[];
-	traits: string[];
-}
-
-export interface IEvaluatedCrew extends IGuessableCrew {
-	evaluation: IEvaluation;
-}
-
-export interface IEvaluation {
-	crew: EvaluationState;
-	variant: EvaluationState;
-	series: EvaluationState;
-	rarity: EvaluationState;
-	skills: EvaluationState[];
+export interface IEvaluatedGuess {
+	crew: IRosterCrew;
+	crewEval: EvaluationState;
+	variantEval: EvaluationState;
+	seriesEval: EvaluationState;
+	rarityEval: EvaluationState;
+	skillsEval: EvaluationState[];
 	matching_traits: string[];
 }

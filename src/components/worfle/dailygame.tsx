@@ -8,8 +8,8 @@ import {
 
 import { useStateWithStorage } from '../../utils/storage';
 
-import { IPortalCrew, SolveState } from './model';
-import { PortalCrewContext } from './context';
+import { IRosterCrew, SolveState } from './model';
+import { WorfleContext } from './context';
 import { DEFAULT_GUESSES, Game, GameRules } from './game';
 
 interface IPlayerGuesses {
@@ -33,7 +33,7 @@ export class PlayerStats {
 }
 
 export const DailyGame = () => {
-	const portalCrew = React.useContext(PortalCrewContext);
+	const { roster } = React.useContext(WorfleContext);
 
 	const [dailyId, setDailyId] = useStateWithStorage<string>('datalore/dailyId', '', { rememberForever: true, onInitialize: variableReady });
 	const [solution, setSolution] = useStateWithStorage<string>('datalore/dailySolution', '', { rememberForever: true, onInitialize: variableReady });
@@ -86,6 +86,9 @@ export const DailyGame = () => {
 	}
 
 	function initializeDailyGame(): void {
+		// Only consider crew currently in portal for daily game
+		const portalCrew: IRosterCrew[] = roster.filter(crew => crew.in_portal);
+
 		const getGameIdFromDate = (gameTime: Date) => {
 			const utcYear: number = gameTime.getUTCFullYear();
 			const utcMonth: number = gameTime.getUTCMonth() + 1;
@@ -101,12 +104,26 @@ export const DailyGame = () => {
 
 		const getFreshSeed = (gameId: string) => {
 			let randomSeed: number = getSeed(gameId);
-			const testCrew: IPortalCrew = portalCrew[randomSeed];
-			while (recentSeeds.includes(randomSeed) || !testCrew.viable_guess) {
+			let crewIsViable: boolean = testViability(randomSeed);
+			while (!crewIsViable) {
 				gameId += '+';
 				randomSeed = getSeed(gameId);
+				crewIsViable = testViability(randomSeed);
 			}
 			return randomSeed;
+		};
+
+		// Viable as solution for daily game only if:
+		//	1) Series trait is valid
+		//	2) Crew matches conditions of all defined rules (can NOT be customized)
+		//	3) Not a recently-used solution
+		const testViability = (index: number) => {
+			const testCrew: IRosterCrew = portalCrew[index];
+			return testCrew.valid_series
+				&& rules.series.includes(testCrew.series ?? '')
+				&& rules.rarities.includes(testCrew.max_rarity)
+				&& (!rules.portal_only || testCrew.in_portal)
+				&& !recentSeeds.includes(index);
 		};
 
 		// Don't re-use likely solutions from the past 3 weeks
