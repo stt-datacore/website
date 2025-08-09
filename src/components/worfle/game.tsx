@@ -11,11 +11,10 @@ import {
 	SemanticCOLORS
 } from 'semantic-ui-react';
 
-import { BaseSkills, CrewMember, Skill } from '../../model/crew';
 import { crewVariantIgnore, getVariantTraits } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 
-import { EvaluationState, IEvaluation, IGuessedCrew, SolveState } from './model';
+import { EvaluationState, IEvaluatedCrew, IEvaluation, IGuessableCrew, IPortalCrew, SolveState } from './model';
 import { PortalCrewContext } from './context';
 import { GuessTable } from './guesstable';
 
@@ -51,34 +50,38 @@ type GameProps = {
 };
 
 export const Game = (props: GameProps) => {
-	const { rules, solution, guesses, setGuesses, solveState, setSolveState } = props;
 	const portalCrew = React.useContext(PortalCrewContext);
+	const { rules, solution, guesses, setGuesses, solveState, setSolveState } = props;
 
-	const [solvedCrew, setSolvedCrew] = React.useState<IGuessedCrew | undefined>(undefined);
-	const [guessesEvaluated, setGuessesEvaluated] = React.useState<IGuessedCrew[]>([]);
+	const [solvedCrew, setSolvedCrew] = React.useState<IGuessableCrew | undefined>(undefined);
+	const [evaluatedCrew, setEvaluatedCrew] = React.useState<IEvaluatedCrew[]>([]);
 
 	React.useEffect(() => {
 		if (solution === '') return;
 		setSolvedCrew(getCrew(solution));
-		setGuessesEvaluated([]);
+		setEvaluatedCrew([]);
 	}, [solution]);
 
 	if (!solvedCrew) return <></>;
 
-	const newEvaluations: IGuessedCrew[] = [];
+	const newEvaluations: IEvaluatedCrew[] = [];
 	guesses.forEach(guess => {
-		if (!guessesEvaluated.find(evaluation => evaluation.symbol === guess)) {
-			const guessedCrew: IGuessedCrew = getCrew(guess);
-			guessedCrew.evaluation = evaluateGuess(guessedCrew, solvedCrew);
-			newEvaluations.push(guessedCrew);
+		if (!evaluatedCrew.find(evaluation => evaluation.symbol === guess)) {
+			const evaluatedCrew: IEvaluatedCrew = getCrew(guess) as IEvaluatedCrew;
+			evaluatedCrew.evaluation = evaluateGuess(evaluatedCrew, solvedCrew);
+			newEvaluations.push(evaluatedCrew);
 		}
 	});
 	if (newEvaluations.length > 0)
-		setGuessesEvaluated([...guessesEvaluated, ...newEvaluations]);
+		setEvaluatedCrew([...evaluatedCrew, ...newEvaluations]);
 
 	return (
 		<React.Fragment>
-			<GuessTable solveState={solveState} solvedCrew={solvedCrew} guessesEvaluated={guessesEvaluated} />
+			<GuessTable
+				solveState={solveState}
+				solvedCrew={solvedCrew}
+				evaluatedCrew={evaluatedCrew}
+			/>
 			{renderInput()}
 			{renderShare()}
 		</React.Fragment>
@@ -109,7 +112,7 @@ export const Game = (props: GameProps) => {
 			const shortId = `${(props.gameTime?.getUTCMonth() ?? 0)+1}/${(props.gameTime?.getUTCDate() ?? 1)}`;
 			let output = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${guesses.length}!` : `${GAME_NAME} ${shortId} stumped me!`;
 			output += `\n${GAME_URL}`;
-			guessesEvaluated.forEach(guess => {
+			evaluatedCrew.forEach(guess => {
 				output += '\n';
 				['variant', 'series', 'rarity'].forEach(evaluation => {
 					output += formatEvaluation(guess.evaluation[evaluation]);
@@ -151,7 +154,7 @@ export const Game = (props: GameProps) => {
 		if (props.onGameEnd) props.onGameEnd(solveState);
 	}
 
-	function getCrew(symbol: string): IGuessedCrew {
+	function getCrew(symbol: string): IGuessableCrew {
 		const getVariants = (variantTraits: string[], shortName: string) => {
 			const variants: string[] = variantTraits.slice();
 			// Dax hacks
@@ -163,7 +166,7 @@ export const Game = (props: GameProps) => {
 			return variants;
 		};
 
-		const getUsableTraits = (crew: CrewMember, variantTraits: string[]) => {
+		const getUsableTraits = (crew: IPortalCrew, variantTraits: string[]) => {
 			const traits: string[] = variantTraits.slice();
 			['Female', 'Male'].forEach(usable => { if (crew.traits_hidden.includes(usable.toLowerCase())) traits.push(usable); });
 			const usableCollections: string[] = [
@@ -178,27 +181,27 @@ export const Game = (props: GameProps) => {
 			return traits.concat(crew.traits_named);
 		};
 
-		const crewMember: CrewMember = portalCrew.find(crew => crew.symbol === symbol)!;
-		let shortName: string = crewMember.short_name;
+		const crew: IPortalCrew = portalCrew.find(crew => crew.symbol === symbol)!;
+		let shortName: string = crew.short_name;
 		// Dax hacks
 		if (shortName === 'E. Dax') shortName = 'Ezri';
 		if (shortName === 'J. Dax') shortName = 'Jadzia';
-		const variantTraits = crewVariantIgnore.includes(crewMember.symbol) ? [] : getVariantTraits(crewMember.traits_hidden);
+		const variantTraits: string[] = crewVariantIgnore.includes(crew.symbol) ? [] : getVariantTraits(crew.traits_hidden);
 		return {
-			symbol: crewMember.symbol,
-			name: crewMember.name,
+			symbol: crew.symbol,
+			name: crew.name,
 			short_name: shortName,
 			variants: getVariants(variantTraits, shortName),
-			imageUrlPortrait: crewMember.imageUrlPortrait,
-			flavor: crewMember.flavor,
-			series: crewMember.series ?? 'original',
-			rarity: crewMember.max_rarity,
-			skill_order: crewMember.skill_order,
-			traits: getUsableTraits(crewMember, variantTraits)
-		} as IGuessedCrew;
+			imageUrlPortrait: crew.imageUrlPortrait,
+			flavor: crew.flavor,
+			series: crew.series ?? 'original',
+			rarity: crew.max_rarity,
+			skill_order: crew.skill_order,
+			traits: getUsableTraits(crew, variantTraits)
+		};
 	}
 
-	function evaluateGuess(guessedCrew: IGuessedCrew, solvedCrew: IGuessedCrew): IEvaluation {
+	function evaluateGuess(guess: IEvaluatedCrew, solvedCrew: IGuessableCrew): IEvaluation {
 		const evaluateVariant = (symbol: string, variants: string[]) => {
 			if (solvedCrew.symbol === symbol)
 				return EvaluationState.Exact;
@@ -259,12 +262,12 @@ export const Game = (props: GameProps) => {
 		};
 
 		return {
-			crew: guessedCrew.symbol === solution ? EvaluationState.Exact : EvaluationState.Wrong,
-			variant: evaluateVariant(guessedCrew.symbol, guessedCrew.variants),
-			series: evaluateSeries(guessedCrew.series),
-			rarity: evaluateRarity(guessedCrew.rarity),
-			skills: [0, 1, 2].map(index => evaluateSkill(guessedCrew.skill_order, index)),
-			matching_traits: evaluateTraits(guessedCrew.traits)
+			crew: guess.symbol === solution ? EvaluationState.Exact : EvaluationState.Wrong,
+			variant: evaluateVariant(guess.symbol, guess.variants),
+			series: evaluateSeries(guess.series),
+			rarity: evaluateRarity(guess.rarity),
+			skills: [0, 1, 2].map(index => evaluateSkill(guess.skill_order, index)),
+			matching_traits: evaluateTraits(guess.traits)
 		};
 	}
 };
@@ -282,7 +285,7 @@ const CrewPicker = (props: CrewPickerProps) => {
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const [searchFilter, setSearchFilter] = React.useState('');
 	const [paginationPage, setPaginationPage] = React.useState(1);
-	const [selectedCrew, setSelectedCrew] = React.useState<CrewMember | undefined>(undefined);
+	const [selectedCrew, setSelectedCrew] = React.useState<IPortalCrew | undefined>(undefined);
 	const [showHints, setShowHints] = React.useState(true);
 
 	const guessesLeft = rules.guesses - guesses.length;

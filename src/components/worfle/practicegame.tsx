@@ -7,10 +7,9 @@ import {
 	Modal
 } from 'semantic-ui-react';
 
-import { CrewMember } from '../../model/crew';
 import { useStateWithStorage } from '../../utils/storage';
 
-import { SolveState } from './model';
+import { IPortalCrew, SolveState } from './model';
 import { PortalCrewContext } from './context';
 import { DEFAULT_GUESSES, DEFAULT_RARITIES, DEFAULT_SERIES, Game, GameRules } from './game';
 
@@ -67,7 +66,7 @@ export const PracticeGame = () => {
 	}
 
 	function createPracticeGame(): void {
-		let pool: CrewMember[] = portalCrew.slice();
+		let pool: IPortalCrew[] = portalCrew.slice();
 		if (rules.excludedCrew.length > 0)
 			pool = pool.filter(crew => !rules.excludedCrew.includes(crew.symbol));
 		const randomIndex: number = Math.floor(Math.random() * pool.length);
@@ -164,7 +163,8 @@ const CustomRules = (props: CustomRulesProps) => {
 				</div>
 				<div style={{ marginTop: '1em' }} /* Include crew by series: */>
 					Include crew by series:
-					<Dropdown selection multiple fluid clearable closeOnChange
+					<Dropdown	/* Select at least 1 series */
+						selection multiple fluid clearable closeOnChange
 						placeholder='Select at least 1 series'
 						options={seriesOptions}
 						value={series}
@@ -173,7 +173,8 @@ const CustomRules = (props: CustomRulesProps) => {
 				</div>
 				<div style={{ marginTop: '1em' }} /* Include crew by rarity: */>
 					Include crew by rarity:
-					<Dropdown selection multiple fluid clearable closeOnChange
+					<Dropdown	/* Select at least 1 rarity */
+						selection multiple fluid clearable closeOnChange
 						placeholder='Select at least 1 rarity'
 						options={rarityOptions}
 						value={rarities}

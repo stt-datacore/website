@@ -8,16 +8,21 @@ import {
 
 import { useStateWithStorage } from '../../utils/storage';
 
-import { Guess, SolveState } from './model';
+import { IPortalCrew, SolveState } from './model';
 import { PortalCrewContext } from './context';
 import { DEFAULT_GUESSES, Game, GameRules } from './game';
+
+interface IPlayerGuesses {
+	fail: number;
+	[key: number]: number;
+}
 
 export class PlayerStats {
 	plays: number = 0;
 	wins: number = 0;
 	streak: number = 0;
 	maxStreak: number = 0;
-	guesses: Guess;
+	guesses: IPlayerGuesses;
 	constructor() {
 		this.guesses = { fail: 0 };
 		for (let i = 1; i <= DEFAULT_GUESSES; i++) {
@@ -96,7 +101,8 @@ export const DailyGame = () => {
 
 		const getFreshSeed = (gameId: string) => {
 			let randomSeed: number = getSeed(gameId);
-			while (recentSeeds.includes(randomSeed)) {
+			const testCrew: IPortalCrew = portalCrew[randomSeed];
+			while (recentSeeds.includes(randomSeed) || !testCrew.viable_guess) {
 				gameId += '+';
 				randomSeed = getSeed(gameId);
 			}

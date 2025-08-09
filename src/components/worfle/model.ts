@@ -1,3 +1,5 @@
+import { CrewMember } from '../../model/crew';
+
 export enum SolveState {
 	Unsolved,
 	Winner,
@@ -10,12 +12,11 @@ export enum EvaluationState {
 	Exact
 }
 
-export interface Guess {
-	fail: number;
-	[key: number]: number;
+export interface IPortalCrew extends CrewMember {
+	viable_guess: boolean;
 }
 
-export interface IGuessedCrew {
+export interface IGuessableCrew {
 	symbol: string;
 	name: string;
 	short_name: string;
@@ -26,6 +27,9 @@ export interface IGuessedCrew {
 	rarity: number;
 	skill_order: string[];
 	traits: string[];
+}
+
+export interface IEvaluatedCrew extends IGuessableCrew {
 	evaluation: IEvaluation;
 }
 

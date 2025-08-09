@@ -6,7 +6,7 @@ import {
 	Table
 } from 'semantic-ui-react';
 
-import { EvaluationState, IGuessedCrew, SolveState } from './model';
+import { EvaluationState, IEvaluatedCrew, IGuessableCrew, SolveState } from './model';
 
 const STYLE_SOLVED: React.CSSProperties = { backgroundColor: 'green', color: 'white' };
 const STYLE_ADJACENT: React.CSSProperties = { backgroundColor: 'yellow', color: 'black' };
@@ -14,16 +14,16 @@ const STYLE_LOSER: React.CSSProperties = { backgroundColor: 'maroon', color: 'wh
 
 type GuessTableProps = {
 	solveState: SolveState;
-	solvedCrew: IGuessedCrew;
-	guessesEvaluated: IGuessedCrew[];
+	solvedCrew: IGuessableCrew;
+	evaluatedCrew: IEvaluatedCrew[];
 };
 
 export const GuessTable = (props: GuessTableProps) => {
 	const { solveState, solvedCrew } = props;
 
-	const guessesEvaluated: IGuessedCrew[] = props.guessesEvaluated.slice();
+	const guessedCrew: IEvaluatedCrew[] = props.evaluatedCrew.slice();
 	if (solveState === SolveState.Loser) {
-		guessesEvaluated.push({
+		guessedCrew.push({
 			...solvedCrew,
 			evaluation: {
 				crew: EvaluationState.Exact,
@@ -39,7 +39,7 @@ export const GuessTable = (props: GuessTableProps) => {
 			}
 		});
 	}
-	if (guessesEvaluated.length === 0) return <></>;
+	if (guessedCrew.length === 0) return <></>;
 
 	return (
 		<div style={{ overflow: 'auto' }}>
@@ -64,11 +64,11 @@ export const GuessTable = (props: GuessTableProps) => {
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{guessesEvaluated.map(guess => (
+					{guessedCrew.map(guess => (
 						<GuessRow key={guess.symbol}
-							guess={guess}
+							guessedCrew={guess}
 							solveState={solveState}
-							guessCount={props.guessesEvaluated.length}
+							guessCount={props.evaluatedCrew.length}
 						/>
 					))}
 				</Table.Body>
@@ -78,20 +78,20 @@ export const GuessTable = (props: GuessTableProps) => {
 };
 
 type GuessRowProps = {
-	guess: IGuessedCrew;
+	guessedCrew: IEvaluatedCrew;
 	solveState: SolveState;
 	guessCount: number;
 };
 
 const GuessRow = (props: GuessRowProps) => {
-	const { guess, solveState, guessCount } = props;
+	const { guessedCrew, solveState, guessCount } = props;
 
-	const isSolution: boolean = guess.evaluation.crew === EvaluationState.Exact;
-	const traits: string[] = guess.evaluation.matching_traits ?? guess.traits;
+	const isSolution: boolean = guessedCrew.evaluation.crew === EvaluationState.Exact;
+	const traits: string[] = guessedCrew.evaluation.matching_traits ?? guessedCrew.traits;
 
 	return (
 		<Table.Row style={styleRow()}>
-			<Table.Cell style={styleCell(guess.evaluation.variant)}>
+			<Table.Cell style={styleCell(guessedCrew.evaluation.variant)}>
 				{isSolution && (
 					<div>
 						{solveState === SolveState.Winner && (
@@ -107,21 +107,21 @@ const GuessRow = (props: GuessRowProps) => {
 					</div>
 				)}
 				<div style={{ margin: '.5em 0', whiteSpace: 'nowrap' }}>
-					<img width={48} height={48} src={`${process.env.GATSBY_ASSETS_URL}${guess.imageUrlPortrait}`} style={{ verticalAlign: 'middle' }} />
-					<span style={{ padding: '0 .5em', fontSize: '1.25em' }}>{guess.name}</span>
+					<img width={48} height={48} src={`${process.env.GATSBY_ASSETS_URL}${guessedCrew.imageUrlPortrait}`} style={{ verticalAlign: 'middle' }} />
+					<span style={{ padding: '0 .5em', fontSize: '1.25em' }}>{guessedCrew.name}</span>
 				</div>
-				{isSolution && guess.flavor && (
-					<div>{guess.flavor}</div>
+				{isSolution && guessedCrew.flavor && (
+					<div>{guessedCrew.flavor}</div>
 				)}
 			</Table.Cell>
-			<Table.Cell textAlign='center' style={styleCell(guess.evaluation.series)}>
-				{guess.series && <Image src={`/media/series/${guess.series}.png`} size='small' style={{ margin: '0 auto' }} />}
+			<Table.Cell textAlign='center' style={styleCell(guessedCrew.evaluation.series)}>
+				{guessedCrew.series && <Image src={`/media/series/${guessedCrew.series}.png`} size='small' style={{ margin: '0 auto' }} />}
 			</Table.Cell>
-			<Table.Cell style={styleCell(guess.evaluation.rarity)}>
-				<Rating defaultRating={guess.rarity} maxRating={guess.rarity} icon='star' size='large' disabled />
+			<Table.Cell style={styleCell(guessedCrew.evaluation.rarity)}>
+				<Rating defaultRating={guessedCrew.rarity} maxRating={guessedCrew.rarity} icon='star' size='large' disabled />
 			</Table.Cell>
 			{[0, 1, 2].map(index => (
-				<Table.Cell key={index} textAlign='center' style={styleCell(guess.evaluation.skills[index])}>
+				<Table.Cell key={index} textAlign='center' style={styleCell(guessedCrew.evaluation.skills[index])}>
 					{renderSkillCell(index)}
 				</Table.Cell>
 			))}
@@ -139,8 +139,8 @@ const GuessRow = (props: GuessRowProps) => {
 	);
 
 	function renderSkillCell(index: number): JSX.Element {
-		if (index >= guess.skill_order.length) return <Icon name='minus' />;
-		const skill: string = guess.skill_order[index];
+		if (index >= guessedCrew.skill_order.length) return <Icon name='minus' />;
+		const skill: string = guessedCrew.skill_order[index];
 		return <img alt={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '2em' }} />;
 	}
 
@@ -165,10 +165,10 @@ const GuessRow = (props: GuessRowProps) => {
 			return trait.replace(/_/g, ' ').split(' ').map(word => word.slice(0, 1).toUpperCase()+word.slice(1)).join(' ');
 		};
 		// Display short_name instead of variant trait when appropriate
-		if (guess.variants.includes(trait)) {
-			if (simpleName(trait).indexOf(simpleName(guess.short_name)) >= 0
-					|| simpleName(guess.short_name).indexOf(simpleName(trait)) >= 0)
-				return guess.short_name;
+		if (guessedCrew.variants.includes(trait)) {
+			if (simpleName(trait).indexOf(simpleName(guessedCrew.short_name)) >= 0
+					|| simpleName(guessedCrew.short_name).indexOf(simpleName(trait)) >= 0)
+				return guessedCrew.short_name;
 		}
 		return properName(trait);
 	}
