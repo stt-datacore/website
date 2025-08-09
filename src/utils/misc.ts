@@ -56,20 +56,37 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 		}
 	}
 
-	Object.keys(crew.ranks.scores).forEach((score) => {
+	let minglescore = {
+		... crew.ranks.scores,
+		arena: crew.ranks.scores.ship.arena_rank,
+		fbb: crew.ranks.scores.ship.fbb_rank
+	};
+
+	Object.keys(minglescore).forEach((score) => {
 		if (score.endsWith("_rank")) return;
-		const rankKey = `${score}_rank`;
-		if (crew.ranks[rankKey] && typeof crew.ranks[rankKey] === 'number' && crew.ranks[rankKey] <= dThreshold) {
-			if (score === 'ship') {
-				if (crew.ranks.scores.ship.kind === 'offense') {
-					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.o')})`, rank: crew.ranks[rankKey], priority: 1 });
-				}
-				else {
-					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.d')})`, rank: crew.ranks[rankKey], priority: 1 });
-				}
+		if (['fbb', 'arena'].includes(score) && minglescore[score] <= dThreshold) {
+			const rankKey = `${score}`;
+			if (crew.ranks.scores.ship.kind === 'offense') {
+				stats.push({ stat: `${t(`rank_names.${rankKey}_rank`)} #${minglescore[rankKey]} (${t('rank_names.advantage.o')})`, rank: minglescore[rankKey], priority: 1 });
 			}
 			else {
-				stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
+				stats.push({ stat: `${t(`rank_names.${rankKey}_rank`)} #${minglescore[rankKey]} (${t('rank_names.advantage.d')})`, rank: minglescore[rankKey], priority: 1 });
+			}
+		}
+		else {
+			const rankKey = `${score}_rank`;
+			if (crew.ranks[rankKey] && typeof crew.ranks[rankKey] === 'number' && crew.ranks[rankKey] <= dThreshold) {
+				if (score === 'ship') {
+					if (crew.ranks.scores.ship.kind === 'offense') {
+						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.o')})`, rank: crew.ranks[rankKey], priority: 1 });
+					}
+					else {
+						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.d')})`, rank: crew.ranks[rankKey], priority: 1 });
+					}
+				}
+				else {
+					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
+				}
 			}
 		}
 	});

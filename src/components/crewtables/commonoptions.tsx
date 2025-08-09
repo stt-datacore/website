@@ -127,7 +127,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 };
 
 
-export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwned?: boolean): JSX.Element {
+export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwned?: boolean, special?: boolean): JSX.Element {
 
 	const counts = [
 		{ name: crew.collections.length !== 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }
@@ -145,6 +145,12 @@ export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwne
 				{!!crew.expires_in && <Icon name='warning sign' title={ t('crew_state.expires_in', { time: printShortDistance(undefined, crew.expires_in * 1000) })} />}
 				{crew.favorite && <Icon name='heart' />}
 				{crew.prospect && <Icon name='add user' />}
+				{!!special && crew.immortal === CompletionState.DisplayAsImmortalOwned &&
+					<Icon
+						name='user times'
+						title={t('crew_state.shown_immortalized')}
+						style={{color: CONFIG.RARITIES[crew.max_rarity].color }}
+					/>}
 				{crew.active_status > 0 && <Icon name='space shuttle' />}
 				{crew.active_status === 2 && <>&nbsp;{t('base.shuttle')}<br /></>}
 				{crew.active_status === 3 && <>&nbsp;{t('base.voyage')}<br /></>}
@@ -271,5 +277,37 @@ export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) =
 				{/* <img title={"You own " + crew.name} style={{height:'12px', margin: "5px 4px 0px 4px" }} src='/media/vault.png'/>Yoyoyo */}
 			</Label>
 		}</>
+	);
+};
+
+
+export type SpecialViews = '' | 'as_immortalized';
+
+export type SpecialViewProps = {
+	specialView?: SpecialViews;
+	setSpecialView: (value?: SpecialViews) => void;
+	altTitle?: string;
+	noneValue?: string;
+}
+
+export const SpecialViewMode = (props: SpecialViewProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
+	const viewModes = [] as DropdownItemProps[];
+
+	viewModes.push({ key: 'as_immortalized', value: 'as_immortalized', text: t('view_special.options.as_immortalized') })
+
+	return (
+		<Form.Field>
+			<Dropdown
+				placeholder={props.altTitle ?? t('view_special.title')}
+				clearable
+				selection
+				multiple={false}
+				options={viewModes}
+				value={props.specialView}
+				onChange={(e, { value }) => props.setSpecialView(value === '' ? undefined : value as SpecialViews | undefined)}
+				closeOnChange
+			/>
+		</Form.Field>
 	);
 };

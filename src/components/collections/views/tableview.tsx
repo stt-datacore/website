@@ -16,6 +16,7 @@ import { AvatarView } from "../../item_presenters/avatarview";
 import { getMilestoneRewards } from "../../../utils/itemutils";
 import { EquipmentItem } from "../../../model/equipment";
 import { getIconPath } from "../../../utils/assets";
+import { renderMainDataScore } from "../../crewtables/views/base";
 
 
 export interface CollectionTableProps {
@@ -40,6 +41,12 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: t('collections.columns.crew'), pseudocolumns: ['name', 'level', 'date_added'] },
 		{ width: 1, column: 'max_rarity', title: t('collections.columns.rarity'), reverse: true, tiebreakers: ['highest_owned_rarity'] },
+		{
+			width: 1, column: 'ranks.scores.overall_rank', title: t('rank_names.datascore'), reverse: false,
+			customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+				return a.ranks.scores.overall_rank - b.ranks.scores.overall_rank;
+			}
+		},
 		{ width: 2, column: 'unmaxedIds.length', title: t('collections.columns.collections'), reverse: true },
 		{
 			width: 1,
@@ -148,6 +155,9 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 				</Table.Cell>
 				<Table.Cell>
 					<Rating icon='star' rating={crew.highest_owned_rarity} maxRating={crew.max_rarity} size='large' disabled />
+				</Table.Cell>
+				<Table.Cell>
+					{renderMainDataScore(crew)}
 				</Table.Cell>
 				<Table.Cell>
 					{tabledProgress && (

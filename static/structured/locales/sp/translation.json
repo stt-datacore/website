@@ -403,6 +403,11 @@
             "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Habilidades activas para los quipos",
+        "compatible_quipment": "Quipos compatibles",
+        "trait_limited": "Mostrar solo quipos vinculados a características"
+    },
     "crew_state": {
         "expires_in": "La tripulante caduca en {{time}}",
         "frozen": "Congelado",
@@ -1281,6 +1286,7 @@
         "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes rasgos: {{traits}}",
         "equippable_by_traits": "Equipable por tripulación con los siguientes rasgos: {{traits}}",
         "faction_only": "Solo facción",
+        "hide_unneeded_items": "Ocultar artículos innecesarios",
         "is_used_to_build": "Se utiliza para construir estos",
         "item_sources": "Fuentes de artículo",
         "n_farmable": "{{n}} cultivables",
@@ -1294,6 +1300,9 @@
             "owned_or_buildable": "Mostrar equipo propio o construible"
         },
         "post_immortalization_advancement": "Avance posterior a la inmortalización",
+        "quick_select": {
+            "favorites": "Seleccionar toda los tripulantes favoritos"
+        },
         "recipe": "Receta",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
@@ -1382,7 +1391,8 @@
         "pvp_3": "datos de la división del comandante",
         "pvp_4": "datos de la división del capitán",
         "pvp_5": "datos de la división del almirante",
-        "quest_data": "datos de la misión"
+        "quest_data": "datos de la misión",
+        "voyage_log": "atos de registro de viaje"
     },
     "logic": {
         "AND": "AND",
@@ -1802,6 +1812,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Tripulantes mínimos no únicos",
         "modes": {
             "mutual_polestar_calculator": "Calculadora mutua de estrellas polares",
             "mutual_polestar_calculator_desc": "Encuentra combinaciones que den las mismas posibilidades de recuperar a los no inmortales",
@@ -1991,6 +2002,7 @@
                 "exclude_ability": "Excluir los tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
+            "apply_buffs": "Aplicar mejoras a buques sin propietario",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -2029,6 +2041,7 @@
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
         "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a los tripulantes de reparación de casco.",
+        "dps": "DPS",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
@@ -2062,6 +2075,11 @@
             "admiral": "División de almirante",
             "captain": "División de capitán",
             "commander": "División de comandante"
+        },
+        "roster": {
+            "all": "Todos los buques",
+            "owned": "Buques propios",
+            "unowned": "Buques sin propietario"
         },
         "shields": "Escudos",
         "ship": "buque",
@@ -2298,6 +2316,12 @@
             "description": "Considere solo a su propia tripulantes",
             "title": "Tripulación Propia"
         }
+    },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Ver todo como inmortalizado"
+        },
+        "title": "Vistas especiales"
     },
     "voyage": {
         "active": {
@@ -2673,5 +2697,15 @@
             "custom": "Viajes personalizados",
             "upcoming": "Próximos viajes"
         }
+    },
+    "voyage_log": {
+        "behold": "Reconocimiento",
+        "choice_x": "Opción {{x}}",
+        "choices": "Opciones",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Puedes acceder a tus registros de viaje de forma similar a como accedes a tus datos de jugador actualmente."
+        },
+        "title": "Utilidad del dilema del viaje"
     }
 }

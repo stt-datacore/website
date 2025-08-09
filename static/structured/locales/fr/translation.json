@@ -403,6 +403,11 @@
             "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Compétences actives pour les quipements",
+        "compatible_quipment": "Quipements compatibles",
+        "trait_limited": "Afficher uniquement les quipements liés aux traits"
+    },
     "crew_state": {
         "expires_in": "L'équipier expire dans {{time}}",
         "frozen": "Congelé(e)",
@@ -1283,6 +1288,7 @@
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipier {{rarity}} avec les traits suivants : {{traits}}",
         "equippable_by_traits": "Peut être équipé par les équipiers avec les traits suivantes : {{traits}}",
         "faction_only": "Factions uniquement",
+        "hide_unneeded_items": "Masquer les articles inutiles",
         "is_used_to_build": "Est utilisé pour construire ces",
         "item_sources": "Sources d'article",
         "n_farmable": "{{n}} cultivable",
@@ -1296,6 +1302,9 @@
             "owned_or_buildable": "Afficher les quipements possédées ou constructibles"
         },
         "post_immortalization_advancement": "Avancement après l'immortalisation",
+        "quick_select": {
+            "favorites": "Sélectionnez tous les équipiers favoris"
+        },
         "recipe": "Recette",
         "required_traits": "Traits Requises: {{traits}}",
         "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
@@ -1384,7 +1393,8 @@
         "pvp_3": "données de la division commandant",
         "pvp_4": "données de la division capitaine",
         "pvp_5": "données de la division amirale",
-        "quest_data": "données de quête"
+        "quest_data": "données de quête",
+        "voyage_log": "données du journal de voyage"
     },
     "logic": {
         "AND": "ET",
@@ -1804,6 +1814,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Nombre minimum des équipiers non uniques",
         "modes": {
             "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels",
             "mutual_polestar_calculator_desc": "Trouvez des combos qui donnent des chances égales de récupérer les non-immortels",
@@ -1993,6 +2004,7 @@
                 "exclude_ability": "Exclure les équipiers avec cette compétence",
                 "power_depth": "Profondeur de puissance avancée"
             },
+            "apply_buffs": "Appliquer des buffs aux vaisseaux sans propriétaire",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
@@ -2031,6 +2043,7 @@
         "crit_rating": "Chance du Crit",
         "cycle_time": "Un cycle",
         "depth_hr_warn": "* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
+        "dps": "DPS",
         "duration": "Durée",
         "equipment_bonus": "Bonus d'équipement",
         "evasion": "Évasion",
@@ -2064,6 +2077,11 @@
             "admiral": "Division Amiral",
             "captain": "Division Capitaine",
             "commander": "Division Commandeur"
+        },
+        "roster": {
+            "all": "Tous les vaisseaux",
+            "owned": "Vaisseaux en propriété",
+            "unowned": "Vaisseaux sans propriétaire"
         },
         "shields": "Boucliers",
         "ship": "Vaisseau",
@@ -2300,6 +2318,12 @@
             "description": "Considérez uniquement vos équipiers",
             "title": "Équipage Possédé"
         }
+    },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Tout voir comme immortalisé"
+        },
+        "title": "Vues spéciales"
     },
     "voyage": {
         "active": {
@@ -2675,5 +2699,15 @@
             "custom": "Voyages personnalisés",
             "upcoming": "Voyages à venir"
         }
+    },
+    "voyage_log": {
+        "behold": "Choix",
+        "choice_x": "Choix {{x}}",
+        "choices": "Choix",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Vous pouvez accéder à vos journaux de voyage de la même manière que vous accédez actuellement à vos données de joueur."
+        },
+        "title": "Utilité du dilemme du voyage"
     }
 }

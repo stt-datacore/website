@@ -17,12 +17,12 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     const [showCopied, setShowCopied] = React.useState(false);
     const [copies, setCopies] = React.useState('');
 
-    if (typeof window !== 'undefined' && document.location.search) {
-        let parm = new URLSearchParams();
-        if (parm.get("pmc")?.length) {
-            let value = parm.get("pmc");
-        }
-    }
+    // if (typeof window !== 'undefined' && document.location.search) {
+    //     let parm = new URLSearchParams();
+    //     if (parm.get("pmc")?.length) {
+    //         let value = parm.get("pmc");
+    //     }
+    // }
 
     React.useEffect(() => {
         setInnerSettings(JSON.parse(JSON.stringify(config)));
@@ -94,7 +94,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
                 </div>
             </Modal.Content>
             <Modal.Actions>
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <div key={'alert_modal_actions'} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                         {/* <Button
                             style={{alignSelf: "flex-start"}}

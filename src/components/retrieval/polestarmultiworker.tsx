@@ -45,14 +45,14 @@ export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProp
     protected getRunConfig(options: IMultiWorkerConfig<IPolestarWorkerConfig, IPolestarWorkerItem>): IPolestarWorkerConfig {
         const allCrew = this.context.core.crew;
         const ownedCrew = this.context.player.playerData?.player.character.crew;
-        const { polestars, comboSize, allowUnowned, no100 } = options.config;
+        const { polestars, comboSize, allowUnowned, no100, min_rarity, max_rarity, non_unique } = options.config;
 
         if (!ownedCrew) throw new Error("No player data");
 
 		let eligibleCrew = ownedCrew.filter(f =>
             f.rarity < f.max_rarity && f.in_portal
             && f.rarity === f.highest_owned_rarity
-            && (!no100 || !f.unique_polestar_combos?.length)).map(c => makeCompact(c, ['ship_battle', 'base_skills', 'skills', 'equipment']) as IPolestarCrew);
+            && (!!no100 || !!f.unique_polestar_combos?.length)).map(c => ({...makeCompact(c, ['ship_battle', 'base_skills', 'skills', 'equipment']), unique: !!c.unique_polestar_combos?.length }) as IPolestarCrew);
 
         eligibleCrew = eligibleCrew.filter((f, idx) => eligibleCrew.findIndex(f2 => f2.symbol === f.symbol) === idx);
 
@@ -124,6 +124,9 @@ export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProp
             crew: copycrew,
             max_iterations: total,
             allowUnowned,
+            min_rarity,
+            max_rarity,
+            non_unique
         } as any
     }
 
