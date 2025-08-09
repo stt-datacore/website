@@ -714,7 +714,15 @@ export interface DilemmaChoice {
     }
 }
 
-export const AlphaRef = ["A", "B", "C"];
+export const AlphaRef = (() => {
+    const res = [] as string[];
+    const charStart = "A".charCodeAt(0);
+    const charEnd = "Z".charCodeAt(0);
+    for (let i = charStart; i <= charEnd; i++) {
+        res.push(String.fromCharCode(i));
+    }
+    return res;
+})();
 
 export interface DilemmaMultipartData {
     requiredChoices: string[];
