@@ -34,7 +34,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Build project
         env:
-          GATSBY_DATACORE_URL: https://beta.datacore.app/
+          GATSBY_DATACORE_URL: https://dev.datacore.app/
           GATSBY_ASSETS_URL: https://assets.datacore.app/
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
