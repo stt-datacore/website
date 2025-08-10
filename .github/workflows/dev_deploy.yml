@@ -1,0 +1,55 @@
+# STT DataCore Beta Website Build Pipeline
+
+name: Website CI Deploy Dev
+
+# Controls when the action will run. Triggers the workflow on push
+# events but only for the master branch
+on:
+  push:
+    branches: [ dev ]
+
+#   workflow_run:
+#     workflows: ["sync-dev"]
+#     types:
+#       - completed
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+            ref: beta
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      # Runs a single command using the runners shell
+      - name: Build project
+        env:
+          GATSBY_DATACORE_URL: https://beta.datacore.app/
+          GATSBY_ASSETS_URL: https://assets.datacore.app/
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: |
+          yarn install
+          yarn run build
+
+      # Install our SSH Key into build server
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PROD_SSH_KEY }}
+          known_hosts: ${{ secrets.PROD_KNOWN_HOSTS }}
+
+      # Runs a set of commands using the runners shell
+      - name: Rsync over ssh
+        run: |
+          rsync -avz --progress --delete ./public/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/
