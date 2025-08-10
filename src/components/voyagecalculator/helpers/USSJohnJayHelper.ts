@@ -19,7 +19,7 @@ export class USSJohnJayHelper extends Helper {
 		this.calcOptions = {
 			strategy: props.calcOptions?.strategy ?? 'estimate',
 			proficiency: props.calcOptions?.proficiency ?? 1,
-			mandate: props.calcOptions?.mandate ?? 2
+			mandate: props.calcOptions?.mandate ?? 2	// Experimental
 		};
 	}
 
