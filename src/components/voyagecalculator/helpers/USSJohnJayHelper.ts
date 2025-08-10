@@ -18,7 +18,8 @@ export class USSJohnJayHelper extends Helper {
 		this.calcName = calculator === 'idic' ? 'Infinite Diversity' : 'Multi-vector Assault';
 		this.calcOptions = {
 			strategy: props.calcOptions?.strategy ?? 'estimate',
-			proficiency: props.calcOptions?.proficiency ?? 1
+			proficiency: props.calcOptions?.proficiency ?? 1,
+			mandate: props.calcOptions?.mandate ?? 2
 		};
 	}
 

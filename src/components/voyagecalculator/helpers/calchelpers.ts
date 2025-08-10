@@ -95,6 +95,22 @@ export const CALCULATORS = {
 				{ key: 'prof-5', text: 'Prefer highest proficiency', value: 5 },
 			],
 			default: 1
+		},
+		{
+			calculators: ['ussjohnjay-mvam'],
+			id: 'mandate',
+			name: 'Skill Mandate',
+			description: 'Lineup must have at least this many crew with each skill',
+			control: 'select',
+			options: [
+				{ key: 'mandate-2', text: 'None (default)', value: 2 },
+				{ key: 'mandate-3', text: 'At least 3 crew with each skill', value: 3 },
+				{ key: 'mandate-4', text: 'At least 4 crew with each skill', value: 4 },
+				{ key: 'mandate-5', text: 'At least 5 crew with each skill', value: 5 },
+				{ key: 'mandate-6', text: 'At least 6 crew with each skill', value: 6 },
+			],
+			default: 2
 		}
+
 	]
 };

@@ -94,6 +94,7 @@ export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
 export interface GameWorkerOptions {
     strategy?: string;
     proficiency?: number;
+    mandate?: number;
     searchDepth?: number;
     extendsTarget?: number;
 }

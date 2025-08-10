@@ -18,6 +18,15 @@ interface ILineupSkills {
 	engineering_skill: ISkillAggregate;
 };
 
+interface ILineupSkillCounts {
+	security_skill: number;
+	command_skill: number;
+	diplomacy_skill: number;
+	medicine_skill: number;
+	science_skill: number;
+	engineering_skill: number;
+};
+
 const SKILL_IDS: string[] = [
 	'command_skill', 'diplomacy_skill', 'security_skill',
 	'engineering_skill', 'science_skill', 'medicine_skill'
@@ -32,6 +41,7 @@ export class VoyagersLineup {
 	proficiency: number;
 	antimatter: number;
 	vp: number;
+	counts: ILineupSkillCounts;
 	coverage: number;
 	vectors: number[];
 	log: string;
@@ -46,6 +56,14 @@ export class VoyagersLineup {
 			engineering_skill: { skill: 'engineering_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
 			science_skill: { skill: 'science_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 },
 			medicine_skill: { skill: 'medicine_skill', core: 0, range_min: 0, range_max: 0, voyage: 0 }
+		};
+		const skillCounts: ILineupSkillCounts = {
+			command_skill: 0,
+			diplomacy_skill: 0,
+			security_skill: 0,
+			engineering_skill: 0,
+			science_skill: 0,
+			medicine_skill: 0
 		};
 		const skillCoverage: Set<string> = new Set();
 		let dTotalScore: number = 0, dTotalProficiency: number = 0;
@@ -71,6 +89,7 @@ export class VoyagersLineup {
 				skillScores[SKILL_IDS[iSkill]].core += skill.core;
 				skillScores[SKILL_IDS[iSkill]].range_min += skill.range_min;
 				skillScores[SKILL_IDS[iSkill]].range_max += skill.range_max;
+				skillCounts[SKILL_IDS[iSkill]]++;
 				dTotalScore += dSkillScore;
 				dTotalProficiency += dProficiency;
 			}
@@ -94,6 +113,7 @@ export class VoyagersLineup {
 		this.proficiency = Math.floor(dTotalProficiency/dTotalScore*100);
 		this.antimatter = iTotalBonus;
 		this.vp = iTotalVP;
+		this.counts = skillCounts;
 		this.coverage = skillCoverage.size;
 		this.vectors = [];
 		this.log = assemblyLog;

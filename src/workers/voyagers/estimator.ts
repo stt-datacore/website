@@ -7,6 +7,7 @@ import { projectLineup } from './projector';
 interface IEstimatorOptions {
 	strategy: string;
 	scanDepth: number;
+	mandate: number;
 	progressCallback?: (message: string) => void;
 	debugCallback?: (message: string) => void;
 };
@@ -38,6 +39,18 @@ export const estimateLineups = (
 				weights: getWeights(lineup)
 			}
 		});
+
+		// Mandate minimum skill count, by request
+		if (options.mandate > 2) {
+			considered = considered.filter(lineup => {
+				const minSkillCount: number = Object.values(lineup.counts).reduce((prev, curr) => Math.min(prev, curr), 12);
+				return minSkillCount >= options.mandate;
+			});
+			if (considered.length === 0) {
+				reject('Estimator unable to find lineups with mandated minimum skill count!');
+				return;
+			}
+		}
 
 		if (considered.length > options.scanDepth) {
 			// Always narrow by average tick count
