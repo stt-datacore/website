@@ -4,6 +4,7 @@ import { ShipAction, Ship } from "../model/ship";
 import { setupShip } from "../utils/shiputils";
 import { getPermutations } from "../utils/misc";
 import { ComesFrom } from "../model/worker";
+import { BossEffect } from "../model/boss";
 
 export interface PowerStat {
     attack: number;
@@ -407,11 +408,78 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship, crew: CrewMember[], opponent?: Ship, defense?: number, offense?: number, time = 180, activation_offsets?: number[], fixed_delay = 0.4, simulate = false, opponent_variance?: number, ignoreSeats = false, ignoreDefeat = false, ignorePassives = false) {
+export function applyEffects(ship: Ship, boss: Ship, effects: BossEffect[], copy = false) {
+
+    if (copy) {
+        ship = JSON.parse(JSON.stringify(ship));
+        boss = JSON.parse(JSON.stringify(boss));
+        effects = JSON.parse(JSON.stringify(effects));
+    }
+
+    let reflect = 0;
+    let ba = boss.attack;
+
+    effects.forEach((effect) => {
+        const name = effect.description;
+        switch (name) {
+            case "Actions cooldown":
+                ship.actions?.forEach((action) => {
+                    action.cooldown += effect.value * effect.multiplier;
+                });
+                break;
+            case "Boss ship attack":
+                boss.attack += (ba * (effect.value / 100) * effect.multiplier);
+                break;
+            case "Reflection bonus":
+                reflect += (effect.value / 100) * effect.multiplier;
+                break;
+            case "Ship attack speed":
+                ship.attacks_per_second += ship.attacks_per_second * (effect.value / 100) * effect.multiplier;
+                break;
+            case "Ship attack":
+                ship.attack += (ship.attack)
+                break;
+            case "Ship crit chance":
+                ship.crit_chance += effect.value * effect.multiplier;
+                break;
+            case "Ship crit damage":
+                ship.crit_bonus += effect.value * effect.multiplier;
+                break;
+            default:
+                break;
+        }
+    });
+
+    return { ship, boss, effects, reflect };
+}
+
+export function iterateBattle(
+    rate: number,
+    fbb_mode: boolean,
+    input_ship: Ship,
+    crew: CrewMember[],
+    opponent?: Ship,
+    defense?: number,
+    offense?: number,
+    time = 180,
+    activation_offsets?: number[],
+    fixed_delay = 0.4,
+    simulate = false,
+    opponent_variance?: number,
+    ignoreSeats = false,
+    ignoreDefeat = false,
+    ignorePassives = false,
+    effects?: BossEffect[]
+) {
     try {
         let ship = setupShip(input_ship, crew, false, ignoreSeats, false, ignorePassives) || undefined;
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives) as Ship;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
+        let reflect = 0;
+        if (ship && fbb_mode && effects?.length) {
+            let result = applyEffects(ship, work_opponent, effects);
+            reflect = result.reflect;
+        }
 
         opponent_variance ??= 0.2;
 
@@ -848,6 +916,7 @@ export function iterateBattle(rate: number, fbb_mode: boolean, input_ship: Ship,
 
         const hitme = (damage: number) => {
             if ((hull <= 0 || oppo_hull <= 0) && !ignoreDefeat) return 0;
+            if (reflect) hitoppo(reflect * damage);
             if (shields > 0) {
                 shields -= damage;
                 if (shields < 0) {
