@@ -7,7 +7,7 @@ import { WorkerContext } from "../../context/workercontext";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GameEvent, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from "../../utils/storage";
-import { BossShip } from "../../model/boss";
+import { BossEffect, BossShip } from "../../model/boss";
 import { compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
 import { BattleGraph } from "./battlegraph";
 import { formatRunTime } from "../../utils/misc";
@@ -45,6 +45,7 @@ interface BattleConfig {
     defense?: number;
     offense?: number;
     opponent?: Ship;
+    effects?: BossEffect[];
 }
 
 export const ShipRosterCalc = (props: RosterCalcProps) => {
@@ -71,6 +72,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
     const [buffUnownedShips, setBuffUnownedShips] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/buffUnownedShips`, true, { rememberForever: true });
+    const [applyBossEffects, setApplyBossEffects] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/applyBossEffects`, false, { rememberForever: true });
     const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
     // const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
     // const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
@@ -347,10 +349,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
         }
 
+        delete newconfig.effects;
+
         if (battleMode.startsWith('fbb')) {
             let rarity = Number.parseInt(battleMode.slice(4));
-            let boss = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1)?.boss_ship;
+            let bossData = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1);
+            let boss = bossData?.boss_ship;
             if (boss) {
+                if (bossData?.combo?.active_effects?.length) {
+                    newconfig.effects = JSON.parse(JSON.stringify(bossData.combo.active_effects));
+                }
                 boss = JSON.parse(JSON.stringify(boss)) as BossShip;
                 boss.rarity = rarity;
             }
@@ -664,6 +672,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                                 </Grid.Column>
                                 {!!globalContext.player.playerData && <>
+                                    {fbb_mode && <Grid.Column>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('ship.calc.apply_boss_effects')}
+                                            value={t('ship.calc.apply_boss_effects')}
+                                            checked={applyBossEffects}
+                                            onChange={(e, { checked }) => setApplyBossEffects(checked as boolean)} />
+                                    </Grid.Column>}
                                     <Grid.Column>
                                         <Checkbox
                                             disabled={running}
@@ -1047,7 +1063,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 simulate: false,
                 fixed_activation_delay: fixedActivationDelay,
                 opponent_variance: variance,
-                rate
+                rate,
+                effects: applyBossEffects ? battleConfig.effects : undefined
             } as ShipWorkerConfig;
 
             results.length = 0;

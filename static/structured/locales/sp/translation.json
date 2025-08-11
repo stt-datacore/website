@@ -2002,6 +2002,7 @@
                 "exclude_ability": "Excluir los tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
+            "apply_boss_effects": "Aplicar mejoras en las cadenas de jefes",
             "apply_buffs": "Aplicar mejoras a buques sin propietario",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",

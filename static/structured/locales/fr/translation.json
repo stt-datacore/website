@@ -2004,6 +2004,7 @@
                 "exclude_ability": "Exclure les équipiers avec cette compétence",
                 "power_depth": "Profondeur de puissance avancée"
             },
+            "apply_boss_effects": "Appliquer les buffs des chaînes de boss",
             "apply_buffs": "Appliquer des buffs aux vaisseaux sans propriétaire",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
