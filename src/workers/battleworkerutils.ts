@@ -408,8 +408,17 @@ export interface IterateBattleConfig {
     simulate?: boolean;
 }
 
-export function applyEffects(ship: Ship, boss: Ship, effects: BossEffect[], copy = false) {
+export type EffectMode = 'all' | 'actions' | 'non-actions';
 
+export interface EffectData {
+    ship: Ship;
+    boss: Ship;
+    reflect: number;
+    effects: BossEffect[];
+    cooldown: number;
+}
+
+export function applyEffects(ship: Ship, boss: Ship, effects: BossEffect[], copy = false): EffectData {
     if (copy) {
         ship = JSON.parse(JSON.stringify(ship));
         boss = JSON.parse(JSON.stringify(boss));
@@ -417,15 +426,14 @@ export function applyEffects(ship: Ship, boss: Ship, effects: BossEffect[], copy
     }
 
     let reflect = 0;
+    let cooldown = 0;
     let ba = boss.attack;
 
     effects.forEach((effect) => {
         const name = effect.description;
         switch (name) {
             case "Actions cooldown":
-                ship.actions?.forEach((action) => {
-                    action.cooldown += effect.value * effect.multiplier;
-                });
+                cooldown += (effect.value * effect.multiplier);
                 break;
             case "Boss ship attack":
                 boss.attack += (ba * (effect.value / 100) * effect.multiplier);
@@ -450,7 +458,7 @@ export function applyEffects(ship: Ship, boss: Ship, effects: BossEffect[], copy
         }
     });
 
-    return { ship, boss, effects, reflect };
+    return { ship, boss, effects, reflect, cooldown };
 }
 
 export function iterateBattle(
@@ -472,14 +480,17 @@ export function iterateBattle(
     effects?: BossEffect[]
 ) {
     try {
-        let ship = setupShip(input_ship, crew, false, ignoreSeats, false, ignorePassives) || undefined;
-        let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives) as Ship;
-        let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
         let reflect = 0;
-        if (ship && fbb_mode && effects?.length) {
-            let result = applyEffects(ship, work_opponent, effects);
-            reflect = result.reflect;
+        let econf: EffectData | undefined = undefined;
+        if (input_ship && opponent && fbb_mode && effects?.length) {
+            input_ship = JSON.parse(JSON.stringify(input_ship));
+            opponent = JSON.parse(JSON.stringify(opponent));
+            econf = applyEffects(input_ship, opponent!, effects);
+            reflect = econf.reflect;
         }
+        let ship = setupShip(input_ship, crew, false, ignoreSeats, false, ignorePassives) || undefined;
+        let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives, !!econf) as Ship;
+        let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
 
         opponent_variance ??= 0.2;
 
@@ -510,6 +521,12 @@ export function iterateBattle(
 
         let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.filter(f => f).map(c => c.action)])) as ChargeAction[];
         let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? JSON.parse(JSON.stringify([...(work_opponent?.actions ?? []), ...(oppo_crew?.map(c => c.action) ?? [])])) as ChargeAction[] : undefined;
+
+        if (allactions && econf) {
+            allactions.forEach((action) => {
+                action.cooldown += econf.cooldown;
+            });
+        }
 
         const delay = () => {
             if (simulate) {
