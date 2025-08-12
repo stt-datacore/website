@@ -257,7 +257,7 @@
 			"reward": [
 				"60 :honor:",
 				"50 :chrons:",
-				"500 Ship Schematics"
+				"**D'Kora Krayton**"
 			]
 		}
 	},
@@ -484,7 +484,7 @@
 			"reward": [
 				"60 :honor:",
 				"50 :chrons:",
-				"500 Ship Schematics"
+				"**I.S.S. Enterprise NCC-1701**"
 			]
 		}
 	},
@@ -510,7 +510,7 @@
 			"reward": [
 				"60 :honor:",
 				"50 :chrons:",
-				"500 Ship Schematics"
+				"**U.S.S. Shenzhou**"
 			]
 		},
 		"choiceC": {
@@ -1049,7 +1049,7 @@
 			"reward": [
 				"60 :honor:",
 				"50 :chrons:",
-				"500 Ship Schematics"
+				"**Prakesh**"
 			]
 		}
 	},
