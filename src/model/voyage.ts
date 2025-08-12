@@ -3,7 +3,7 @@ import { VPDetails } from '../utils/voyagevp';
 import { BaseSkills, CrewMember } from './crew';
 import { Icon } from './game-elements';
 import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, Reward, VoyageCrewSlot, VoyageSkills } from './player';
-import { Ship } from './ship';
+import { ReferenceShip, Ship } from './ship';
 import { VoyageNarrative as Narrative } from './voyagelog';
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
@@ -706,6 +706,7 @@ export interface DilemmaChoice {
     parsed?: {
         rarity?: number;
         crew?: CrewMember;
+        ship?: Ship | ReferenceShip;
         chrons?: number;
         merits?: number;
         honor?: number;

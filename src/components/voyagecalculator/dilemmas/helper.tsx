@@ -18,7 +18,8 @@ type DilemmaHelperProps = {
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
 	initialExpand?: boolean;
-    targetGroup?: string;
+    crewTargetGroup?: string;
+	shipTargetGroup?: string;
 	dbid?: number | string;
 };
 
@@ -33,7 +34,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
     const { t } = globalContext.localized;
 
     const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { targetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive, dbid } = props;
+	const { crewTargetGroup, shipTargetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive, dbid } = props;
 
 	React.useEffect(() => {
 		if (externActive !== undefined) {
@@ -54,7 +55,8 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 				{isActive && (
 					<Segment>
 						<DilemmaHelper
-                            targetGroup={targetGroup}
+                            crewTargetGroup={crewTargetGroup}
+							shipTargetGroup={shipTargetGroup}
 							configSource={configSource}
 							voyage={voyage}
 							ship={ship}
@@ -70,7 +72,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 };
 
 export const DilemmaHelper = (props: DilemmaHelperProps) => {
-    const { voyage, targetGroup, dbid } = props;
+    const { voyage, crewTargetGroup, shipTargetGroup, dbid } = props;
     const [voyageLog, setVoyageLog] = useStateWithStorage<VoyageLogRoot | undefined>(`${voyage.id}/dilemma_helper/voyage_log`, undefined, { rememberForever: false });
     const [answeredDilemmas, setAnsweredDilemmas] = useStateWithStorage<AnsweredDilemma[]>(`dilemma_helper/answered_dilemmas`, [], { rememberForever: true });
     const flexCol = OptionsPanelFlexColumn;
@@ -112,7 +114,8 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
                 />
                 <DilemmaTable
 					updateDilemma={updateDilemma}
-                    targetGroup={targetGroup}
+                    crewTargetGroup={crewTargetGroup}
+					shipTargetGroup={shipTargetGroup}
                     voyageLog={narrative}
                 />
             </div>
