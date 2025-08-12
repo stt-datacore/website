@@ -34,6 +34,7 @@ import { SkillCheckAccordion } from './skillcheck/accordion';
 import { VoyageStatsAccordion } from './stats/stats_accordion';
 import { refShips } from '../../utils/shiputils';
 import { DilemmaHelperAccordion } from './dilemmas/helper';
+import { ShipHoverStat } from '../hovering/shiphoverstat';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -634,7 +635,8 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					<DilemmaHelperAccordion
 						voyage={voyage}
 						dbid={playerData?.player.dbid}
-						targetGroup='voyageRewards_crew'
+						crewTargetGroup='voyageRewards_crew'
+						shipTargetGroup='voyageRewards_ship'
 						/>
 				)}
 				{voyage.voyage_type === 'encounter' && (
@@ -646,6 +648,7 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />
+			<ShipHoverStat targetGroup='voyageRewards_ship' />
 		</React.Fragment>
 	);
 };

@@ -11,18 +11,20 @@ import { AvatarView } from "../../item_presenters/avatarview";
 import { printChrons, printHonor, printMerits } from "../../retrieval/context";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
+import { ReferenceShip, Ship } from "../../../model/ship";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
-    targetGroup?: string;
+    crewTargetGroup?: string;
+    shipTargetGroup?: string;
     updateDilemma: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { dilemmas: dilemmaSource, crew } = globalContext.core;
+    const { dilemmas: dilemmaSource, crew, all_ships: ships } = globalContext.core;
     const { t } = globalContext.localized;
-    const { voyageLog, targetGroup, updateDilemma } = props;
+    const { voyageLog, crewTargetGroup, shipTargetGroup, updateDilemma } = props;
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
     const goldRewards = crew.filter(f => f.traits_hidden.includes("exclusive_voyage") && f.max_rarity === 5);
@@ -33,13 +35,13 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
     const [inverse, setInverse] = React.useState<DilemmaMultipartData[]>([]);
 
     React.useEffect(() => {
-        const dilemmas = getDilemmaData(crew, dilemmaSource, voyageLog?.voyage_narrative)
+        const dilemmas = getDilemmaData(crew, ships, dilemmaSource, voyageLog?.voyage_narrative)
         const { eligible, inverse } = getForwardDilemmaInfo(dilemmas);
         dilemmas.sort((a, b) => nameSort(a, b, eligible));
         setDilemmas(dilemmas);
         setEligble(eligible);
         setInverse(inverse);
-    }, [voyageLog, dilemmaSource, crew]);
+    }, [voyageLog, dilemmaSource, crew, ships]);
 
     const tableConfig: ITableConfigRow[] = [
         {
@@ -226,7 +228,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     function renderChoiceRewards(choice: DilemmaChoice) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
-        if (choice.parsed?.rarity == 5) {
+        let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
+
+        if (choice.parsed?.rarity == 5 && !choice.parsed?.ship) {
             crewrewards = goldRewards;
         }
         let scheme = choice.parsed?.schematics;
@@ -251,18 +255,35 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
                         {crewrewards.map(crew => {
                             return (
-                                <div key={`${choice.text}_${crew.symbol}`} style={{...flexRow}}>
+                                <div key={`${choice.text}_${crew.symbol}`} style={{...flexRow, gap: '1em'}}>
                                     <AvatarView
                                         mode='crew'
                                         item={crew}
                                         size={32}
-                                        targetGroup={targetGroup}
+                                        targetGroup={crewTargetGroup}
                                         />
                                     {crew.name}
                                 </div>
                             )
                         })}
                     </div>}
+                    {!!shiprewards?.length &&
+                    <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
+                        {shiprewards.map(ship => {
+                            return (
+                                <div key={`${choice.text}_${ship.symbol}`} style={{...flexRow, gap: '1em'}}>
+                                    <AvatarView
+                                        mode='ship'
+                                        item={ship}
+                                        size={32}
+                                        targetGroup={shipTargetGroup}
+                                        />
+                                    {ship.name}
+                                </div>
+                            )
+                        })}
+                    </div>}
+
                 </div>
             </div>
         )
@@ -315,7 +336,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         else return 3;
     }
 
-    function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: VoyageNarrative[]): Dilemma[] {
+    function getDilemmaData(allCrew: CrewMember[], allShips: ReferenceShip[], dilemmas: Dilemma[], log?: VoyageNarrative[]): Dilemma[] {
         let rex = new RegExp(/.*\*\*(.+)\*\*.*/);
         let schem = /^(\d+) Ship Schematics$/i;
         let honorex = /(\d+)\s*:honor:/;
@@ -376,6 +397,19 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                     }
                                     if (choice.parsed.rarity < crew.max_rarity) {
                                         choice.parsed.rarity = crew.max_rarity;
+                                    }
+                                }
+                                else {
+                                    let ship = allShips.find(ship => ship.name === crewname);
+                                    if (ship) {
+                                        choice.parsed.ship = ship;
+                                        if (!choice.parsed.behold) {
+                                            choice.parsed.behold = true;
+                                        }
+                                        // if (choice.parsed.rarity < ship.rarity) {
+                                        //     choice.parsed.rarity = ship.rarity;
+                                        // }
+                                        choice.parsed.schematics = choice.parsed.schematics || 500;
                                     }
                                 }
                             }
@@ -445,7 +479,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         const mp = [] as DilemmaMultipartData[];
         getChoices(dilemma).forEach((choice, idx) => {
             let cres = choiceRex.exec(choice.text);
-            if (cres && !choice.text.includes("Requires")) {
+            if (cres && !choice.text.includes("Requires") && !choice.text.includes("If you")) {
                 let tdil = dilemmas.find(f => f.title === cres[2]);
                 if (tdil) {
                     let tres = dscRex.exec(choice.text);
