@@ -78,18 +78,34 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
-		[ ...CONFIG.SERIES].reverse().forEach(series => {
-			options.unshift({
-				key: series,
-				value: series,
-				text: t(`series.${series}`)
-			})
-		});
-		options.unshift({
-			key: 'maincast',
-			value: 'maincast',
-			text: t('rank_names.scores.main_cast')
-		});
+		// [ ...CONFIG.SERIES].reverse().forEach(series => {
+		// 	options.unshift({
+		// 		key: series,
+		// 		value: series,
+		// 		text: t(`series.${series}`)
+		// 	})
+		// });
+		// options.unshift({
+		// 	key: 'maincast',
+		// 	value: 'maincast',
+		// 	text: t('rank_names.scores.main_cast')
+		// });
+		options.sort((a, b) => {
+			if (a.key === 'maincast') return -1;
+			else if (b.key === 'maincast') return 1;
+			else if (CONFIG.SERIES.includes(a.key) && CONFIG.SERIES.includes(b.key)) {
+				return a.text.localeCompare(b.text);
+			}
+			else if (CONFIG.SERIES.includes(a.key)) {
+				return -1;
+			}
+			else if (CONFIG.SERIES.includes(b.key)) {
+				return 1;
+			}
+			else {
+				return a.text.localeCompare(b.text);
+			}
+		})
 		setTraitOptions([...options]);
 	}, [allowed]);
 
