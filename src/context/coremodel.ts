@@ -32,6 +32,7 @@ export interface ICoreData {
 	gauntlets: Gauntlet[];
 	items: EquipmentItem[];
 	keystones: (KeystoneBase | Polestar | Constellation)[];
+	maincast: { [key:string]: string[] };
 	missions: Mission[];
 	missionsfull: Mission[];
 	objective_events: ObjectiveEvent[];

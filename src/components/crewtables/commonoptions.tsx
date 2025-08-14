@@ -85,6 +85,11 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				text: t(`series.${series}`)
 			})
 		});
+		options.unshift({
+			key: 'maincast',
+			value: 'maincast',
+			text: t('rank_names.scores.main_cast')
+		});
 		setTraitOptions([...options]);
 	}, [allowed]);
 

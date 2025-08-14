@@ -42,6 +42,7 @@ export type ValidDemands =
 	'gauntlets' |
 	'items' |
 	'keystones' |
+	'maincast' |
 	'misc_stats' |
 	'missions' |
 	'missionsfull' |
@@ -86,6 +87,7 @@ const defaultData = {
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
+	maincast: {},
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
 	objective_events: [] as ObjectiveEvent[],
@@ -154,6 +156,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'gauntlets',
 			'items',
 			'keystones',
+			'maincast',
 			'misc_stats',
 			'missions',
 			'missionsfull',
@@ -176,7 +179,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
