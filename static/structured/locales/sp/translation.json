@@ -27,6 +27,7 @@
         "trigger_always": "Activar siempre",
         "trigger_once": "Activar una vez",
         "trigger_once_desc": "Una vez que se active la alerta, se desactivará, pero podrás volver a activarla desde el modal de alerta.",
+        "watched_crew": "Alerta: ¡Se ha adquirido la tripulante vigilada '{{subject}}' ({{rarity}}/{{max_rarity}}*)!",
         "when_new_crew": "Alerta cuando se descubren copias de una tripulante sin propietario en el pozo de recompra.",
         "when_new_fuse": "Alerta cuando se descubre un fusible de una tripulación propia en el pozo de recompra."
     },
