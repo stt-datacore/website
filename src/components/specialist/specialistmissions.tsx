@@ -453,7 +453,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
             const missioncrew = positionCrew
                 .filter(c =>
-                        !c.active_status &&
+                        // (c.active_status === 0 || c.active_status === 3) &&
                         !galaxyCooldowns.some(g => g.crew_id === c.id && g.disabled_until.getTime() > Date.now())
                 )
 
