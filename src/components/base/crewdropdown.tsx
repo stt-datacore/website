@@ -17,10 +17,11 @@ export interface CrewPickerProperties {
     showRarity?: boolean;
     custom?: (crew: PlayerCrew | CrewMember) => JSX.Element;
     archetypeId?: boolean;
+    upward?: boolean;
 }
 
 export const CrewDropDown = (props: CrewPickerProperties) => {
-    const { archetypeId, showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
+    const { upward, archetypeId, showRarity, custom, pool, multiple, setSelection, style, placeholder, maxSelection, fluid, plain } = props;
     const [crewChoices, setCrewChoices] = React.useState([] as DropdownItemProps[]);
 
     const selection = !!props.selection && typeof props.selection !== 'number' && !props.multiple ? props.selection[0] : props.selection;
@@ -104,6 +105,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         search
         selection
         clearable
+        upward={upward}
         fluid={fluid}
         multiple={multiple}
         placeholder={placeholder ?? "Search for a crew member..."}

@@ -179,6 +179,7 @@ export const EventPicker = (props: EventPickerProps) => {
 						<h4>{t('base.event_ships')}</h4>
 					</div>
 					<ShipTable
+						mode='all'
 						pageId='event_picker'
 						event_ships={eventData.bonus_ships}
 						high_bonus={eventData.featured_ships}

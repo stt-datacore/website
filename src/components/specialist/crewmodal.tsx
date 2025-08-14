@@ -341,7 +341,8 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             traitcontent.push(img);
         }
 
-        const isDisabled = (!!row.crew.active_status || !!cooldown?.is_disabled);
+        const isDisabled =  //!!row.crew.active_status ||
+                !!cooldown?.is_disabled;
 
         return <Table.Row
                     positive={selection?.id == row.crew.id}
