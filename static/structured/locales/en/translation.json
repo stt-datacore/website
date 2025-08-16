@@ -541,8 +541,11 @@
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",
         "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "specialist": {
+            "instructions": "To use the auto-staffer, select one or missions by tapping the title column, and then tap the auto-staff button."
+        },
         "specialist_missions": "Specialist Missions",
-        "staff_selected": "Staff Selected",
+        "staff_selected": "Auto-Staff",
         "table": {
             "columns": {
                 "best": "Best",
