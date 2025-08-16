@@ -142,6 +142,11 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         return undefined;
     }, [specialistCrew, selection]);
 
+    const pageOptions = [
+        { key: '0', value: 5, text: '5' },
+        { key: '0', value: 10, text: '10' }
+    ];
+
     const tableConfig = [
         { width: 1, column: 'crew.name', title: t('global.name') },
         {
@@ -255,10 +260,11 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                     onChange={(e, { checked }) => setHideActive(!!checked)}
                     />
                 <SearchableTable
+                    defaultPaginationRows={5}
                     lockable={activeLock}
                     lockTitle={(obj: ISpecialistCrewConfig) => obj.crew.name}
                     hideExplanation={true}
-                    pagingOptions={[{ key: '0', value: 5, text: '5' }, { key: '0', value: 10, text: '10' }]}
+                    pagingOptions={pageOptions}
                     data={specialistCrew}
                     config={tableConfig}
                     renderTableRow={renderTableRow}
@@ -312,13 +318,26 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         }
         const skillimg = row.matched_skills.map((skill) => {
             let skill_icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`;
-            return <div title={CONFIG.SKILLS[skill]} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start', gap: '0.5em'}}>
-                {<div style={{fontWeight: 'bold', width: '3em'}}>{row.crew[skill].core}</div>}
-                <div style={{width:'28px'}}>
-                    <img src={skill_icon} style={{maxHeight: '24px', maxWidth: '24px'}} />
+            return (
+                <div title={CONFIG.SKILLS[skill]} style={{
+                    ...flexRow,
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    margin: '0.25em 0'}}>
+                    <div style={{
+                        ...flexRow, gap: '1em',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '32px'
+                        }}>
+                        <img src={skill_icon} style={{maxHeight: '24px', maxWidth: '24px'}} />
+                    </div>
+                    <div style={{fontWeight: 'bold', width: '3em'}}>{row.crew[skill].core}</div>
+                    {/* <div>
+                        {CONFIG.SKILLS[skill]}
+                    </div> */}
                 </div>
-                {CONFIG.SKILLS[skill]}
-            </div>
+            )
         });
 
         const skillcontent = [] as JSX.Element[];

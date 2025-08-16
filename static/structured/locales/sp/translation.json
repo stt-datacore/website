@@ -547,8 +547,11 @@
         "select_phase": "Seleccione una fase",
         "skill_matrix": "Matriz de Habilidades",
         "skill_matrix_heading": "Esta matriz muestra tu mejor equipo para cada combinación de habilidades posible. Utilice esta matriz para identificar su mejor equipo para este evento. Toca una celda para ver otros miembros del equipo con esa combinación de habilidades.",
+        "specialist": {
+            "instructions": "Para utilizar el personal automático, seleccione una o más misiones tocando la columna de título y luego toque el botón de dotar automáticamente."
+        },
         "specialist_missions": "Misiones especializadas",
-        "staff_selected": "Equipar a los seleccionados",
+        "staff_selected": "Dotar automáticamente",
         "table": {
             "columns": {
                 "best": "Mejo",

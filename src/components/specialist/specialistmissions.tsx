@@ -2,7 +2,7 @@ import React from "react";
 import { IEventData, IRosterCrew } from "../eventplanner/model"
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
-import { Button, Checkbox, Icon, Label, Modal, Segment, Table } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Label, Message, Modal, Segment, Table } from "semantic-ui-react";
 import { SpecialistMission } from "../../model/player";
 import { Filter } from "../../model/game-elements";
 import { omniSearchFilter } from "../../utils/omnisearch";
@@ -166,6 +166,10 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     return <React.Fragment>
         <h2>{t('event_planner.specialist_missions')}</h2>
         <CrewHoverStat targetGroup="specialist_missions" />
+        <Message color='blue'>
+            <Icon name='info' bordered style={{ borderRadius: '16px', backgroundColor: 'white' }} />
+            {t('event_planner.specialist.instructions')}
+        </Message>
         <div style={{...flexRow, gap: '1em', margin: '1em 0'}}>
             <Button onClick={() => staffSelected()}><Icon name='user' /> {t('event_planner.staff_selected')}</Button>
             <Button onClick={() => selectAll()}><Icon name='globe' /> {t('global.select_all')}</Button>
