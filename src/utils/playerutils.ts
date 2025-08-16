@@ -229,6 +229,11 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
         p.player.character.stored_immortals.filter((im) => im.quantity !== 1 || !!im.qbits);
     p.player.character.c_stored_immortals = c_stored_immortals;
 
+    // For Apple webarchives
+    p.player.character.cryo_collections.forEach(col => {
+        col.description = col.description?.replace(/&gt;/g, '>').replace(/&lt;/g, '<');
+    })
+
     p.stripped = true;
     return p;
 }
