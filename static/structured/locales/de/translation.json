@@ -542,7 +542,7 @@
         "skill_matrix": "Kompetenzmatrix",
         "skill_matrix_heading": "Diese Matrix zeigt Ihre beste Crew für jede mögliche Fähigkeitskombination. Verwenden Sie diese Matrix, um Ihre beste Crew für dieses Ereignis zu ermitteln. Tippen Sie auf eine Zelle, um andere Crew mit dieser Fähigkeitskombination anzuzeigen.",
         "specialist": {
-            "instructions": "Um die automatische Besetzung zu verwenden, wählen Sie eine oder mehrere Missionen aus, indem Sie auf die Titelspalte tippen, und tippen Sie dann auf die Schaltfläche „Automatische Besetzung“."
+            "instructions": "Um den Auto-Staffer zu verwenden, wählen Sie eine oder mehrere Missionen aus, indem Sie auf die Titelspalte tippen, und tippen Sie dann auf die Schaltfläche „Automatische Besetzung“."
         },
         "specialist_missions": "Spezialmissionen",
         "staff_selected": "Automatische Besetzung",
