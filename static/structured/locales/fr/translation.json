@@ -549,8 +549,11 @@
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
         "skill_matrix_heading": "Cette matrice montre vos meilleurs équipiers pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres équipiers possédant cette combinaison de compétences.",
+        "specialist": {
+            "instructions": "Pour utiliser le personnel automatique, sélectionnez une ou plusieurs missions en appuyant sur la colonne de titre, puis appuyez sur le bouton de doter automatiquement."
+        },
         "specialist_missions": "Missions spécialisées",
-        "staff_selected": "Équiper les sélectionnés",
+        "staff_selected": "Doter automatiquement",
         "table": {
             "columns": {
                 "best": "Meilleur",
