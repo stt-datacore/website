@@ -531,7 +531,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | undefined {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false, precopied = false): Ship | undefined {
 	if (ship.predefined) return ship;
 	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
@@ -545,7 +545,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 	let new_bs = ship.battle_stations.map(m => ({...m, crew: undefined } as BattleStation));
 	let old_bs = ship.battle_stations;
 
-	let newship = JSON.parse(JSON.stringify({...ship, battle_stations: new_bs })) as Ship;
+	let newship = precopied ? {...ship, battle_stations: new_bs } : JSON.parse(JSON.stringify({...ship, battle_stations: new_bs })) as Ship;
 
 	newship.battle_stations = new_bs.map((bs, idx) => {
 		bs.crew = old_bs[idx].crew;

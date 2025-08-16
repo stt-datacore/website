@@ -27,6 +27,7 @@
         "trigger_always": "Trigger Always",
         "trigger_once": "Trigger Once",
         "trigger_once_desc": "Once the alert has been triggered, it will be deactivated, but you can re-activate it from the alert modal.",
+        "watched_crew": "Alert: Watched crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) has been acquired!",
         "when_new_crew": "Alert when copies of an unowned crew are discovered in the buy-back well.",
         "when_new_fuse": "Alert when a fuse for an owned crew is discovered in the buy-back well."
     },
@@ -1992,6 +1993,7 @@
                 "exclude_ability": "Exclude crew with this ability",
                 "power_depth": "Advanced Power Depth"
             },
+            "apply_boss_effects": "Apply boss chain buffs",
             "apply_buffs": "Apply buffs to unowned ships",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",

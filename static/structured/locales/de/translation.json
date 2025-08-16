@@ -27,6 +27,7 @@
         "trigger_always": "Immer auslösen",
         "trigger_once": "Einmal auslösen",
         "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren.",
+        "watched_crew": "Alarm: Beobachtete Crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) wurde erworben!",
         "when_new_crew": "Alarm, wenn Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
@@ -1992,6 +1993,7 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
+            "apply_boss_effects": "Boss-Ketten-Buffs anwenden",
             "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
