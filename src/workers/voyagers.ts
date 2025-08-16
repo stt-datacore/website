@@ -29,13 +29,14 @@ type InputType = {
 		assembler: string;
 		strategy: string;
 		proficiency: number;
+		mandate: number;
 	};
 };
 type OutputType = (result: (JohnJayBest[] | { error: string }), inProgress?: boolean) => void;
 type ChewableType = (config: any, reportProgress?: () => boolean) => Estimate;
 
 const VoyagersWorker = (input: InputType, output: OutputType, chewable: ChewableType) => {
-	const { voyage_description, roster, bestShip, options: { assembler, strategy, proficiency } } = input;
+	const { voyage_description, roster, bestShip, options: { assembler, strategy, proficiency, mandate } } = input;
 
 	const debugCallback: ((message: string) => void) | undefined = DEBUGGING ? (message: string) => console.log(message) : undefined;
 
@@ -44,7 +45,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 		.then(lineups => {
 			// Estimate only as many lineups as necessary
 			const scanDepth: number = assembler === 'idic' ? 30 : 5;
-			estimateLineups(datacoreEstimator, lineups, voyage_description, bestShip.score, { strategy, scanDepth, debugCallback })
+			estimateLineups(datacoreEstimator, lineups, voyage_description, bestShip.score, { strategy, scanDepth, mandate, debugCallback })
 				.then(estimates => {
 					// Return only the best lineups by requested strategy
 					let methods: string[] = ['estimate', 'minimum', 'moonshot'];
@@ -62,6 +63,9 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						.then(sorted => {
 							output(JSON.parse(JSON.stringify(sorted)), false);
 						});
+				})
+				.catch(error => {
+					output({ error: `${error}` });
 				});
 		})
 		.catch(error => {
