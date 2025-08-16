@@ -27,6 +27,7 @@
         "trigger_always": "Immer auslösen",
         "trigger_once": "Einmal auslösen",
         "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren.",
+        "watched_crew": "Alarm: Beobachtete Crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) wurde erworben!",
         "when_new_crew": "Alarm, wenn Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
@@ -403,6 +404,11 @@
             "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Aktive Rüstzeug Fähigkeiten",
+        "compatible_quipment": "Kompatible Rüstzeugen",
+        "trait_limited": "Nur merkmalsbeschränkte Rüszeuge anzeigen"
+    },
     "crew_state": {
         "expires_in": "Crew läuft in {{time}} ab",
         "frozen": "Eingefroren",
@@ -535,8 +541,11 @@
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",
         "skill_matrix_heading": "Diese Matrix zeigt Ihre beste Crew für jede mögliche Fähigkeitskombination. Verwenden Sie diese Matrix, um Ihre beste Crew für dieses Ereignis zu ermitteln. Tippen Sie auf eine Zelle, um andere Crew mit dieser Fähigkeitskombination anzuzeigen.",
+        "specialist": {
+            "instructions": "Um den Auto-Staffer zu verwenden, wählen Sie eine oder mehrere Missionen aus, indem Sie auf die Titelspalte tippen, und tippen Sie dann auf die Schaltfläche „Automatische Besetzung“."
+        },
         "specialist_missions": "Spezialmissionen",
-        "staff_selected": "Besetzen Sie die ausgewählten",
+        "staff_selected": "Automatische Besetzung",
         "table": {
             "columns": {
                 "best": "Am besten",
@@ -1271,6 +1280,7 @@
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
         "faction_only": "Nur Fraktion",
+        "hide_unneeded_items": "Nicht benötigte Artikel ausblenden",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
         "item_sources": "Artikelquellen",
         "n_farmable": "{{n}} landwirtschaftliche",
@@ -1284,6 +1294,9 @@
             "owned_or_buildable": "Eigene oder baubare Rüstzeugen anzeigen"
         },
         "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
+        "quick_select": {
+            "favorites": "Wähle alle favorisierten Crewmitglieder aus"
+        },
         "recipe": "Rezept",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
@@ -1372,7 +1385,8 @@
         "pvp_3": "Daten zur Commander-Liga",
         "pvp_4": "Daten zur Kapitän-Liga",
         "pvp_5": "Daten der Admiral-Liga",
-        "quest_data": "Quest-Daten"
+        "quest_data": "Quest-Daten",
+        "voyage_log": "Reiseprotokolldaten"
     },
     "logic": {
         "AND": "UND",
@@ -1792,6 +1806,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Mindestanzahl nicht einzigartiger Besatzungsmitglieder",
         "modes": {
             "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner",
             "mutual_polestar_calculator_desc": "Finden Sie Combos, die gleiche Chancen bieten, Nicht-Unsterbliche zurückzuholen",
@@ -1981,6 +1996,8 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
+            "apply_boss_effects": "Boss-Ketten-Buffs anwenden",
+            "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
@@ -2019,6 +2036,7 @@
         "crit_rating": "Krit Treffer",
         "cycle_time": "Zykluszeit",
         "depth_hr_warn": "* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
+        "dps": "SPS",
         "duration": "Dauer",
         "equipment_bonus": "Ausrüstungsbonus",
         "evasion": "Ausweichen",
@@ -2052,6 +2070,11 @@
             "admiral": "Admiral Division",
             "captain": "Captain Division",
             "commander": "Commander Division"
+        },
+        "roster": {
+            "all": "Alle Schiffe",
+            "owned": "Schiffe im Besitz",
+            "unowned": "Schiffe ohne Besitz"
         },
         "shields": "Schilde",
         "ship": "Schiff",
@@ -2288,6 +2311,12 @@
             "description": "Berücksichtigen Sie nur Ihre eigene Crew",
             "title": "Eigene Crew"
         }
+    },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Alle als unsterblich ansehen"
+        },
+        "title": "Besondere Ansichten"
     },
     "voyage": {
         "active": {
@@ -2663,5 +2692,15 @@
             "custom": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
         }
+    },
+    "voyage_log": {
+        "behold": "Anblick",
+        "choice_x": "Wahl {{x}}",
+        "choices": "Auswahlmöglichkeiten",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Sie können auf Ihre Reiseprotokolle auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen."
+        },
+        "title": "Reisedilemma-Dienstprogramm"
     }
 }

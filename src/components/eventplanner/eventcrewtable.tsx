@@ -99,20 +99,23 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			width: 1,
 			column: `${skill.name}.core`,
 			title:
-				<div
+				<span
 					title={title}
-					style={{
-						display: 'flex',
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center',
-						gap: '0.5em'
-					}}>
+				>
 					{eventData.activeContent?.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
 					{eventData.activeContent?.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
-					<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
-				</div>,
-			reverse: true
+					<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+				</span>,
+			reverse: true,
+			customCompare:
+				// Sort by skill voyage score for voyage events
+				eventData.activeContent?.content_type === 'voyage' ?
+					(a: IRosterCrew, b: IRosterCrew) => {
+						const voyScore = (crew: IRosterCrew) => Math.floor(crew[skill.name].core + (crew[skill.name].min + crew[skill.name].max) / 2);
+						return voyScore(a) - voyScore(b);
+					}
+				// Otherwise sort by skill base score (default behavior)
+				: undefined
 		});
 	});
 
