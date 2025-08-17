@@ -1,27 +1,22 @@
 import React from 'react';
-import { InView } from 'react-intersection-observer';
 import {
 	Button,
-	Grid,
-	Icon,
-	Input,
-	Message,
-	Modal,
-	Popup,
-	SemanticCOLORS
+	Popup
 } from 'semantic-ui-react';
 
-import CONFIG from '../CONFIG';
+import { TraitNames } from '../../model/traits';
 
-import { EvaluationState, IEvaluatedGuess, IRosterCrew, SolveState } from './model';
+import { EvaluationState, IEvaluatedGuess, IRosterCrew, IVariantMap, SolveState, TTraitType } from './model';
+import { SERIES_ERAS, USABLE_COLLECTIONS, USABLE_HIDDEN_TRAITS } from './config';
 import { WorfleContext } from './context';
+import { GuessPicker } from './guesspicker';
 import { GuessTable } from './guesstable';
 
 const GAME_NAME = 'Worfle';
 const GAME_URL = 'https://datacore.app/crewchallenge';
 
 export const DEFAULT_GUESSES = 8;
-export const DEFAULT_SERIES = CONFIG.SERIES;
+export const DEFAULT_SERIES = SERIES_ERAS.map(seriesEra => seriesEra.series);
 export const DEFAULT_RARITIES = [1, 2, 3, 4, 5];
 export const DEFAULT_PORTAL_ONLY = true;
 
@@ -73,23 +68,21 @@ export const Game = (props: GameProps) => {
 	return (
 		<React.Fragment>
 			<GuessTable
+				rules={rules}
 				solveState={solveState}
 				mysteryCrew={mysteryCrew}
 				evaluatedGuesses={evaluatedGuesses}
 			/>
-			{renderInput()}
+			{solveState === SolveState.Unsolved && (
+				<GuessPicker
+					rules={rules}
+					evaluatedGuesses={evaluatedGuesses}
+					setSelectedCrew={handleCrewSelect}
+				/>
+			)}
 			{renderShare()}
 		</React.Fragment>
 	);
-
-	function renderInput(): JSX.Element {
-		if (solveState !== SolveState.Unsolved) return <></>;
-		return (
-			<div style={{ margin: '1em 0' }}>
-				<CrewPicker rules={rules} guesses={guesses} handleSelect={handleCrewSelect} />
-			</div>
-		);
-	}
 
 	function renderShare(): JSX.Element {
 		if (solveState === SolveState.Unsolved) return <></>;
@@ -155,7 +148,7 @@ export const Game = (props: GameProps) => {
 				return EvaluationState.Exact;
 			else {
 				let hasVariant: boolean = false;
-				mysteryCrew.usable_variants.forEach(variant => {
+				mysteryCrew.gamified_variants.forEach(variant => {
 					if (variants.includes(variant)) hasVariant = true;
 				});
 				if (hasVariant) return EvaluationState.Adjacent;
@@ -164,17 +157,9 @@ export const Game = (props: GameProps) => {
 		};
 
 		const evaluateSeries = (series: string) => {
-			const getEra = (series: string) => {
-				if (series === 'tos' || series === 'tas') return 1;
-				if (series === 'tng' || series === 'ds9' || series === 'voy' || series === 'ent') return 2;
-				if (series === 'original') return 0;
-				if (series === '') return -1;
-				return 3;
-			};
-
-			if (mysteryCrew.series === series)
+			if (mysteryCrew.gamified_series === series)
 				return EvaluationState.Exact;
-			else if (getEra(mysteryCrew.series ?? "") === getEra(series))
+			else if (getEraBySeries(mysteryCrew.gamified_series) === getEraBySeries(series))
 				return EvaluationState.Adjacent;
 			return EvaluationState.Wrong;
 		};
@@ -204,7 +189,7 @@ export const Game = (props: GameProps) => {
 		const evaluateTraits = (traits: string[]) => {
 			const matches: string[] = [];
 			traits.forEach(trait => {
-				if (mysteryCrew?.usable_traits.includes(trait) && !matches.includes(trait))
+				if (mysteryCrew.gamified_traits.includes(trait) && !matches.includes(trait))
 					matches.push(trait);
 			});
 			return matches;
@@ -213,161 +198,37 @@ export const Game = (props: GameProps) => {
 		return {
 			crew: guessedCrew,
 			crewEval: guessedCrew.symbol === solution ? EvaluationState.Exact : EvaluationState.Wrong,
-			variantEval: evaluateVariant(guessedCrew.symbol, guessedCrew.usable_variants),
-			seriesEval: evaluateSeries(guessedCrew.series ?? ''),
+			variantEval: evaluateVariant(guessedCrew.symbol, guessedCrew.gamified_variants),
+			seriesEval: evaluateSeries(guessedCrew.gamified_series),
 			rarityEval: evaluateRarity(guessedCrew.max_rarity),
 			skillsEval: [0, 1, 2].map(index => evaluateSkill(guessedCrew.skill_order, index)),
-			matching_traits: evaluateTraits(guessedCrew.usable_traits)
+			matching_traits: evaluateTraits(guessedCrew.gamified_traits)
 		};
 	}
 };
 
-type CrewPickerProps = {
-	rules: GameRules;
-	guesses: string[];
-	handleSelect: (value: string) => void;
-};
+export function getEraBySeries(series: string): number {
+	return SERIES_ERAS.find(seriesEra => seriesEra.series === series)?.era ?? -1;
+}
 
-const CrewPicker = (props: CrewPickerProps) => {
-	const { roster } = React.useContext(WorfleContext);
-	const { rules, guesses, handleSelect } = props;
+export function getTraitType(trait: string, variantMap: IVariantMap): TTraitType {
+	let type: TTraitType = 'trait';
+	if (USABLE_HIDDEN_TRAITS.includes(trait)) type = 'hidden_trait';
+	if (USABLE_COLLECTIONS.includes(trait)) type = 'collection';
+	if (!!variantMap[trait]) type = 'variant';
+	return type;
+}
 
-	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-	const [searchFilter, setSearchFilter] = React.useState('');
-	const [paginationPage, setPaginationPage] = React.useState(1);
-	const [selectedCrew, setSelectedCrew] = React.useState<IRosterCrew | undefined>(undefined);
-	const [showHints, setShowHints] = React.useState(true);
-
-	const guessesLeft = rules.max_guesses - guesses.length;
-
-	const inputRef = React.createRef<Input>();
-
-	React.useEffect(() => {
-		if (modalIsOpen) inputRef.current?.focus();
-	}, [modalIsOpen]);
-
-	return (
-		<Modal
-			open={modalIsOpen}
-			onClose={() => setModalIsOpen(false)}
-			onOpen={() => setModalIsOpen(true)}
-			trigger={renderButton()}
-			size='tiny'
-			centered={false}
-			closeIcon
-		>
-			<Modal.Header>
-				<Input ref={inputRef}
-					size='mini' fluid
-					iconPosition='left'
-					placeholder='Search for crew by name'
-					value={searchFilter}
-					onChange={(e, { value }) => {
-							setSearchFilter(value);
-							setPaginationPage(1);
-							setSelectedCrew(undefined);
-							}}>
-						<input />
-						<Icon name='search' />
-						<Button icon onClick={() => {
-							setSearchFilter('');
-							setPaginationPage(1);
-							setSelectedCrew(undefined);
-							inputRef.current?.focus();
-							}} >
-							<Icon name='delete' />
-						</Button>
-				</Input>
-			</Modal.Header>
-			<Modal.Content scrolling>
-				{renderGrid()}
-			</Modal.Content>
-			<Modal.Actions>
-				<Button content={`${showHints ? 'Show' : 'Hide'} hints`} onClick={() => setShowHints(!showHints) } />
-				{selectedCrew && (
-					<Button color='blue'
-						content={`Guess ${selectedCrew.name}`}
-						onClick={() => confirmGuess(selectedCrew.symbol)} />
-				)}
-				{!selectedCrew && (
-					<Button content='Close' onClick={() => setModalIsOpen(false)} />
-				)}
-			</Modal.Actions>
-		</Modal>
-	);
-
-	function renderButton(): JSX.Element {
-		return (
-			<Button fluid size='big' color='blue'>
-				<Icon name='zoom-in' />
-				Guess Crew
-				<span style={{ fontSize: '.95em', fontWeight: 'normal', paddingLeft: '1em' }}>
-					({guessesLeft} guess{guessesLeft !== 1 ? 'es' : ''} remaining)
-				</span>
-			</Button>
-		);
+export function getTraitName(trait: string, variantMap: IVariantMap, traitNames: TraitNames, type?: TTraitType): string {
+	type ??= getTraitType(trait, variantMap);
+	let name: string = trait;
+	switch (type) {
+		case 'trait':
+			name = traitNames[trait];
+			break;
+		case 'variant':
+			name = variantMap[trait].display_name;
+			break;
 	}
-
-	function renderGrid(): JSX.Element {
-		if (!modalIsOpen) return (<></>);
-
-		let data = roster.slice();
-
-		// if (rules.excludedCrew.length > 0)
-		// 	data = data.filter(crew => !rules.excludedCrew.includes(crew.symbol));
-
-		// Filtering
-		if (searchFilter !== '') {
-			const filter = (input: string) => input.toLowerCase().indexOf(searchFilter.toLowerCase()) >= 0;
-			data = data.filter(crew => filter(crew.name));
-		}
-		if (data.length === 0) return (
-			<Message>
-				<p>No crew names match your current search.</p>
-				<p>Only crew that are currently <b>available in the time portal</b> will be used as mystery crew and valid guesses.</p>
-			</Message>
-		);
-
-		// Pagination
-		const itemsPerPage = 24, itemsToShow = itemsPerPage*paginationPage;
-
-		return (
-			<div>
-				<Grid doubling columns={3} textAlign='center'>
-					{data.slice(0, itemsToShow).map(crew => (
-						<Grid.Column key={crew.symbol} style={{ cursor: 'pointer' }}
-							onClick={() => { if (!guesses.includes(crew.symbol)) setSelectedCrew(crew); }}
-							onDoubleClick={() => { if (!guesses.includes(crew.symbol)) confirmGuess(crew.symbol); }}
-							color={selectedCrew?.symbol === crew.symbol ? 'blue' as SemanticCOLORS : undefined}
-						>
-							<img width={48} height={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-							<div>
-								{guesses.includes(crew.symbol) && (<Icon name='x' color='red' />)}
-								{crew.name}
-							</div>
-							{!showHints && (
-								<div>({[crew.series?.toUpperCase(), `${crew.max_rarity}*`, `${Object.keys(crew.base_skills).length}`].join(', ')})</div>
-							)}
-						</Grid.Column>
-					))}
-				</Grid>
-				{itemsToShow < data.length && (
-					<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
-						onChange={(inView, entry) => { if (inView) setPaginationPage(prevState => prevState + 1); }}
-					>
-						<Icon loading name='spinner' /> Loading...
-					</InView>
-				)}
-				{itemsToShow >= data.length && (
-					<Message>Tip: Double-tap a crew to make your guess more quickly.</Message>
-				)}
-			</div>
-		);
-	}
-
-	function confirmGuess(symbol: string): void {
-		handleSelect(symbol);
-		setModalIsOpen(false);
-		setSelectedCrew(undefined);
-	}
-};
+	return name;
+}

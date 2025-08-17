@@ -12,6 +12,7 @@ import {
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IRosterCrew, SolveState } from './model';
+import { SERIES_ERAS } from './config';
 import { WorfleContext } from './context';
 import { DEFAULT_GUESSES, DEFAULT_PORTAL_ONLY, DEFAULT_RARITIES, DEFAULT_SERIES, Game, GameRules } from './game';
 
@@ -62,12 +63,10 @@ export const PracticeGame = () => {
 
 	function createPracticeGame(): void {
 		// Viable as solution for practice game only if:
-		//	1) Series trait is valid
-		//	2) Crew matches conditions of all defined rules
+		//	1) Crew matches conditions of all defined rules
 		const testViability = (index: number) => {
 			const testCrew: IRosterCrew = roster[index];
-			return testCrew.valid_series
-				&& rules.series.includes(testCrew.series ?? '')
+			return rules.series.includes(testCrew.gamified_series)
 				&& rules.rarities.includes(testCrew.max_rarity)
 				&& (!rules.portal_only || testCrew.in_portal)
 		};
@@ -104,8 +103,8 @@ const CustomRules = (props: CustomRulesProps) => {
 
 	const possibleCount = React.useMemo(() => {
 		return roster.filter(crew =>
-			crew.valid_series
-				&& series.includes(crew.series ?? '')
+			crew.gamified_series !== 'n/a'
+				&& series.includes(crew.gamified_series)
 				&& rarities.includes(crew.max_rarity)
 				&& (!portalOnly || crew.in_portal)
 		).length;
@@ -118,20 +117,13 @@ const CustomRules = (props: CustomRulesProps) => {
 		);
 	}
 
-	const seriesOptions: DropdownItemProps[] = [
-		{ key: 'tos', value: 'tos', text: 'The Original Series' },
-		{ key: 'tas', value: 'tas', text: 'The Animated Series' },
-		{ key: 'tng', value: 'tng', text: 'The Next Generation' },
-		{ key: 'ds9', value: 'ds9', text: 'Deep Space Nine' },
-		{ key: 'voy', value: 'voy', text: 'Voyager' },
-		{ key: 'ent', value: 'ent', text: 'Enterprise' },
-		{ key: 'dsc', value: 'dsc', text: 'Discovery' },
-		{ key: 'pic', value: 'pic', text: 'Picard' },
-		{ key: 'low', value: 'low', text: 'Lower Decks' },
-		{ key: 'snw', value: 'snw', text: 'Strange New Worlds' },
-		{ key: 'vst', value: 'vst', text: 'Very Short Treks' },
-		{ key: 'original', value: 'original', text: 'Timelines Originals' }
-	];
+	const seriesOptions: DropdownItemProps[] = SERIES_ERAS.map(seriesEra => {
+		return {
+			key: seriesEra.series,
+			value: seriesEra.series,
+			text: seriesEra.title
+		};
+	});
 
 	const rarityOptions: DropdownItemProps[] = [
 		{ key: '1*', value: 1, text: '1* Common' },

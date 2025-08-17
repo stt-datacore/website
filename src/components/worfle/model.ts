@@ -1,23 +1,38 @@
 import { CrewMember } from '../../model/crew';
 
+export interface IRosterCrew extends CrewMember {
+	gamified_series: string;
+	gamified_variants: string[];
+	gamified_traits: string[];
+};
+
+export interface IVariantMap {
+	[key: string]: {
+		short_names: string[];
+		display_name: string;
+	};
+};
+
+export type TTraitType = 'trait' | 'hidden_trait' | 'collection' | 'variant';
+
+export interface ITraitMap {
+	[key: string]: {
+		type: TTraitType;
+		count: number;
+	};
+};
+
 export enum SolveState {
 	Unsolved,
 	Winner,
 	Loser
-}
+};
 
 export enum EvaluationState {
 	Wrong,
 	Adjacent,
 	Exact
-}
-
-export interface IRosterCrew extends CrewMember {
-	usable_short_name: string;
-	usable_variants: string[];
-	usable_traits: string[];
-	valid_series: boolean;
-}
+};
 
 export interface IEvaluatedGuess {
 	crew: IRosterCrew;
@@ -27,4 +42,4 @@ export interface IEvaluatedGuess {
 	rarityEval: EvaluationState;
 	skillsEval: EvaluationState[];
 	matching_traits: string[];
-}
+};

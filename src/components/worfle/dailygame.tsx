@@ -15,9 +15,9 @@ import { DEFAULT_GUESSES, Game, GameRules } from './game';
 interface IPlayerGuesses {
 	fail: number;
 	[key: number]: number;
-}
+};
 
-export class PlayerStats {
+class PlayerStats {
 	plays: number = 0;
 	wins: number = 0;
 	streak: number = 0;
@@ -87,6 +87,7 @@ export const DailyGame = () => {
 
 	function initializeDailyGame(): void {
 		// Only consider crew currently in portal for daily game
+		//	Consistency of seedrandom relies on number of crew in portal
 		const portalCrew: IRosterCrew[] = roster.filter(crew => crew.in_portal);
 
 		const getGameIdFromDate = (gameTime: Date) => {
@@ -114,13 +115,11 @@ export const DailyGame = () => {
 		};
 
 		// Viable as solution for daily game only if:
-		//	1) Series trait is valid
-		//	2) Crew matches conditions of all defined rules (can NOT be customized)
-		//	3) Not a recently-used solution
+		//	1) Crew matches conditions of all defined rules (can NOT be customized)
+		//	2) Not a recently-used solution
 		const testViability = (index: number) => {
 			const testCrew: IRosterCrew = portalCrew[index];
-			return testCrew.valid_series
-				&& rules.series.includes(testCrew.series ?? '')
+			return rules.series.includes(testCrew.gamified_series)
 				&& rules.rarities.includes(testCrew.max_rarity)
 				&& (!rules.portal_only || testCrew.in_portal)
 				&& !recentSeeds.includes(index);
