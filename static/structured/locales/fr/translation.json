@@ -1654,6 +1654,7 @@
             "skill_order": "Ordre des compétences"
         },
         "mode_label": "Mode Compétences",
+        "quippable_traits": "Afficher uniquement l'équipage avec des quipements limités en traits",
         "slot_label": "Mode Emplacements",
         "slots": {
             "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",

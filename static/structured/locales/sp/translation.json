@@ -1652,6 +1652,7 @@
             "skill_order": "Orden de habilidades"
         },
         "mode_label": "Modo habilidad",
+        "quippable_traits": "Mostrar solo tripulación con quipos con características limitadas",
         "slot_label": "Modo de ranura",
         "slots": {
             "n_natural": "Quipar hasta {{n}} espacios naturales",
