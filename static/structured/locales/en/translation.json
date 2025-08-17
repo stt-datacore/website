@@ -1642,6 +1642,7 @@
             "skill_order": "Skill Order"
         },
         "mode_label": "Skill mode",
+        "quippable_traits": "Only show crew with trait-limited quipment",
         "slot_label": "Slot mode",
         "slots": {
             "n_natural": "Quip up to {{n}} natural slots",

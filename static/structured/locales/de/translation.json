@@ -1558,7 +1558,7 @@
             "priority": "Nur vollständig fusionierte Nicht-Unsterbliche anzeigen",
             "quippable": "Nur rüstbare Crew anzeigen",
             "quipped": "Nur gerüstete Crew anzeigen",
-            "quipped_hide": "Crew mit Rüstzeugen verstecken",
+            "quipped_hide": "Crew mit Rüstzeug verstecken",
             "threshold": "Nur Crew anzeigen, die 2 Sicherungen benötigt"
         },
         "text_match": {
@@ -1642,6 +1642,7 @@
             "skill_order": "Fähigkeitsreihenfolge"
         },
         "mode_label": "Fertigkeiten-Modus",
+        "quippable_traits": "Nur Crew mit merkmalsbeschränkter Rüstzeug anzeigen",
         "slot_label": "Slots-Modus",
         "slots": {
             "n_natural": "Bis zu {{n}} natürliche Ablagefächer ausstatten",

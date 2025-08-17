@@ -1,13 +1,14 @@
 import React from 'react';
-import { Form, Dropdown, DropdownItemProps } from 'semantic-ui-react';
+import { Form, Dropdown, DropdownItemProps, Checkbox } from 'semantic-ui-react';
 
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
-import { ItemWithBonus } from '../../../utils/itemutils';
+import { getPossibleQuipment, ItemWithBonus } from '../../../utils/itemutils';
 import { GlobalContext } from '../../../context/globalcontext';
 import { useStateWithStorage } from '../../../utils/storage';
 import { ContinuumMission } from '../../../model/continuum';
 import { QuestDropDown } from '../../missions/questdropdown';
 import { Mission } from '../../../model/missions';
+import { EquipmentItem } from '../../../model/equipment';
 
 export type PowerMode = 'all' | 'core' | 'proficiency';
 
@@ -20,6 +21,9 @@ type QuipmentToolsFilterProps = {
 	maxxed?: boolean;
 	missions?: ContinuumMission[];
     hideForm?: boolean;
+
+	traitsOnly: boolean;
+	setTraitsOnly: (value: boolean) => void,
 
 	crewFilters: ICrewFilter[];
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
@@ -41,9 +45,13 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 
 	const { t } = globalContext.localized;
-	const { missions, questFilter, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
+	const quipment = globalContext.core.items.filter(f => f.type === 14);
+	const { traitsOnly, setTraitsOnly, missions, questFilter, hideForm, crewFilters, setCrewFilters, slots, setSlots, pstMode, setPstMode, powerMode, setPowerMode } = props;
 	const [slotFilter, setSlotFilter] = React.useState<string>(slots ? `slot${slots}` : 'slot0');
 	const [mission, setMission] = useStateWithStorage('quipmentTools_mission', undefined as ContinuumMission | undefined);
+
+
+	const quipmentcache = {} as {[key:string]: EquipmentItem[]};
 
 	React.useEffect(() => {
 		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'qp_best');
@@ -57,7 +65,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
             setSlots(undefined);
         }
 		setCrewFilters([...crewFilters]);
-	}, [slotFilter, questFilter]);
+	}, [slotFilter, questFilter, traitsOnly]);
 
     if (hideForm) {
         return <></>;
@@ -168,11 +176,22 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 					</div>
 				}}
 				/>}
+			<Checkbox
+				label={t('quipment_dropdowns.quippable_traits')}
+				checked={traitsOnly}
+				onChange={(e, { checked }) => setTraitsOnly(!!checked)}
+				/>
 		</Form.Field>
 	);
 
 	function filterCrew(crew: IRosterCrew) {
 		let skills = mission?.quests?.filter(f => questFilter?.includes(f.symbol))?.map(m => m.challenges?.map(c => c.skill)).flat();
+		if (traitsOnly) {
+			if (!quipmentcache[crew.symbol]?.length) {
+				quipmentcache[crew.symbol] = getPossibleQuipment(crew, quipment);
+			}
+			if (!quipmentcache[crew.symbol]?.some(item => !!item.traits_requirement?.length)) return false;
+		}
 		if (!!skills?.length && !skills?.includes(crew.skill_order[0])) return false;
 		return true;
 	};
