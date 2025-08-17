@@ -78,6 +78,10 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
     const flexCol = OptionsPanelFlexColumn;
 
 	React.useEffect(() => {
+		if (!!voyage?.id && typeof window !== 'undefined') {
+			(window as any)['voyageId'] = voyage.id;
+			(window as any)['setVoyageLog'] = setVoyageLog;
+		}
 		if (voyage?.id && answeredDilemmas?.length) {
 			const newDilemmas = answeredDilemmas.filter(f => f.voyage_id === voyage.id);
 			if (newDilemmas.length !== answeredDilemmas.length) {
