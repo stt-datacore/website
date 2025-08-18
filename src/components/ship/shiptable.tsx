@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Checkbox, Label } from 'semantic-ui-react';
+import { Table, Checkbox, Label, DropdownItemProps, Dropdown } from 'semantic-ui-react';
 
 import { Ship, ShipInUse } from '../../model/ship';
 import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
@@ -44,9 +44,10 @@ export const ShipTable = (props: ShipTableProps) => {
 	const [buffMode, setBuffMode] = React.useState<PlayerBuffMode>('player');
 	const [showRanks, setShowRanks] = useStateWithStorage<boolean>(`${pageId}/ship_table_show_ranks`, true);
 	const [ships, setShips] = React.useState<Ship[]>([]);
+	const [minOpts, setMinOpts] = React.useState<DropdownItemProps[] | undefined>(undefined);
+	const [minSeats, setMinSeats] = useStateWithStorage<number | undefined>(`${pageId}/ship_table_filter/min_seats`, undefined);
 
 	React.useEffect(() => {
-
 		if (playerShips?.length && !!playerData && mode === 'owned') {
 			const merged = playerShips.filter(f => f.owned);
 			const shipsInUse = getShipsInUse(globalContext.player);
@@ -72,8 +73,22 @@ export const ShipTable = (props: ShipTableProps) => {
 		}
 	}, [playerData, event_ships, SHIP_TRAIT_NAMES, all_ships, mode, buffMode]);
 
+	React.useEffect(() => {
+		let stations = [...new Set(ships.map(r => r.battle_stations?.length)) ?? []].filter(n => n !== undefined);
+		let opts = [] as DropdownItemProps[];
+		for (let sta of stations) {
+			opts.push({
+				key: `bs_${sta}`,
+				value: sta,
+				text: `${sta}`
+			});
+		}
+		setMinOpts(opts);
+		if (minSeats && !opts.some(o => o.value === minSeats)) setMinSeats(undefined);
+	}, [ships]);
+
 	const filteredShips = React.useMemo(() => {
-		return ships.filter((ship) => {
+		const result = ships.filter((ship) => {
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
@@ -87,9 +102,11 @@ export const ShipTable = (props: ShipTableProps) => {
 					return shipsInUse.some(usage => usage.ship.id === ship.id);
 				}
 			}
+			if (minSeats && ship.battle_stations?.length && ship.battle_stations.length < minSeats) return false;
 			return true;
 		});
-	}, [ships, shipsInUse, rarityFilter, grantFilter, abilityFilter, traitFilter, ownership, onlyUsed, mode, buffMode]);
+		return result;
+	}, [ships, shipsInUse, rarityFilter, grantFilter, abilityFilter, traitFilter, ownership, onlyUsed, mode, buffMode, minSeats]);
 
 	const tableConfig = React.useMemo(() => {
 		const conf = [
@@ -154,6 +171,16 @@ export const ShipTable = (props: ShipTableProps) => {
 					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter(value as string[])} />
 					{mode === 'all' && <CrewBuffModes buffMode={buffMode} setBuffMode={(e) => setBuffMode(e || 'none')} playerAvailable={!!playerShips} />}
 					{!!playerShips && mode === 'all' && <ShipOwnership selectedValue={ownership} setSelectedValue={setOwnership} />}
+					{!!minOpts && (
+						<Dropdown
+							placeholder={t('hints.min_battle_stations')}
+							selection
+							clearable
+							options={minOpts}
+							value={minSeats}
+							onChange={(e, { value }) => setMinSeats(value as number | undefined)}
+							/>
+					)}
 					<Checkbox
 						onChange={(e, { checked }) => setShowRanks(!!checked)}
 						checked={showRanks}

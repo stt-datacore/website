@@ -1173,6 +1173,7 @@
         "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "min_battle_stations": "Stations de combat minimales",
         "prioritize_rewards": "Prioriser les récompenses",
         "roster_maintenance": "Entretien de la liste",
         "select_crew": "Sélectionnez l'équipage",

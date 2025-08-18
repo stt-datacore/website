@@ -1171,6 +1171,7 @@
         "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
+        "min_battle_stations": "Estaciones de batalla mínimas",
         "prioritize_rewards": "Priorizar recompensas",
         "roster_maintenance": "Mantenimiento de la lista",
         "select_crew": "Seleccionar tripulación",
