@@ -86,7 +86,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             if (skills?.length) {
                 if (!skills.includes(c.skill_order[0])) return false;
             }
-            if (ephemeral && ephemeral.activeCrew.some(ac => ac.id === c.id)) return false;
+            //if (ephemeral && ephemeral.activeCrew.some(ac => ac.id === c.id)) return false;
             if (rarities.length && !rarities.includes(c.max_rarity)) return false;
             return true;
         })
