@@ -1163,6 +1163,7 @@
         "filter_crew_by_rank": "Filter crew by rank",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
+        "min_battle_stations": "Minimum battle stations",
         "prioritize_rewards": "Prioritize Rewards",
         "roster_maintenance": "Roster maintenance",
         "select_crew": "Select Crew",
