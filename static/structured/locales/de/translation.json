@@ -1163,6 +1163,7 @@
         "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
+        "min_battle_stations": "Mindestanzahl an Gefechtsstationen",
         "prioritize_rewards": "Belohnungen priorisieren",
         "roster_maintenance": "Dienstplanpflege",
         "select_crew": "Crew auswählen",
