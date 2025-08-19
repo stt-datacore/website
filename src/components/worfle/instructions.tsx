@@ -40,7 +40,7 @@ export const GameInstructions = () => {
 			<p>"<b>Traits in Common</b>" identify the traits* your guess and the mystery crew share in common.</p>
 			<p>If you need a little help, feel free to use the "Show hints" button on the crew picker. Hints identify a crew's series, rarity, and number of skills.</p>
 			<p>* All information used here comes directly from the Star Trek Timelines game data. Variants and traits may not always be what you expect; please see <a href='https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread'>this thread</a> for known issues.</p>
-			<p>** Some crew will be excluded as mystery crew because their in-game series traits are misleading. The crew known to have misleading series traits are:</p>
+			<p>** Some crew will be excluded as mystery crew because their in-game traits are misleading. The crew known to have misleading traits are:</p>
 			<Segment>
 				<Label.Group>
 					{roster.filter(crew => crew.gamified_series === 'n/a').map(crew => (

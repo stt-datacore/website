@@ -2,71 +2,41 @@ import React from 'react';
 import {
 	Button,
 	Checkbox,
-	Dropdown,
-	DropdownItemProps,
 	Form,
 	Icon,
 	Image,
 	Label,
 	Message,
 	Popup,
-	Segment
+	SemanticICONS
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 
-import { RarityFilter } from '../crewtables/commonoptions';
 import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
 import CONFIG from '../CONFIG';
 
-import { EvaluationState, IEvaluatedGuess, IRosterCrew, TTraitType } from './model';
+import { EvaluationState, ICrewPickerFilters, IDeduction, IEvaluatedGuess, IRosterCrew, ISolverPrefs, ITraitOption, TAssertion, TEvaluationField, TTraitType } from './model';
 import { SERIES_ERAS } from './config';
-import { WorfleContext } from './context';
+import { GuesserContext, IGuesserContext, WorfleContext } from './context';
 import { GameRules, getEraBySeries, getTraitName } from './game';
+import { DeductionContent, DeductionPicker, DeductionPickerModal } from './deductionpicker';
 
-interface IPickerFilters {
-	series_potential: string[];
-	rarity_potential: number[];
-	skills_required: string[];
-	skills_rejected: string[];
-	traits_required: string[];
-	traits_rejected: string[];
-	valid_series_only: boolean;
-	portal_only: boolean;
+const defaultCrewPickerFilters: ICrewPickerFilters = {
+	deductions: [],
+	hide_nonviable: true,
+	hide_guessed: true
 };
 
-interface IHintOptions {
-	variants: boolean;
-	gender: boolean;
-	series: boolean;
-	rarity: boolean;
-	skills: boolean;
-	traits: boolean;
-};
-
-const defaultHintOptions: IHintOptions = {
-	variants: true,
+const defaultSolverPrefs: ISolverPrefs = {
+	variants: false,
 	gender: false,
 	series: false,
 	rarity: false,
 	skills: false,
 	traits: false
-};
-
-interface IReduction {
-	type: 'rarity' | 'series' | 'skill' | 'trait';
-	value: number | string;
-};
-
-interface ITraitDatum {
-	id: number;
-	name: string;
-	icon: string;
-	trait: string;
-	type: string;
-	count: number;
 };
 
 type GuessPickerProps = {
@@ -76,48 +46,52 @@ type GuessPickerProps = {
 };
 
 export const GuessPicker = (props: GuessPickerProps) => {
-	const { roster: data } = React.useContext(WorfleContext);
+	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
+	const { variantMap, traitMap } = React.useContext(WorfleContext);
 	const { rules, evaluatedGuesses, setSelectedCrew } = props;
 
-	const [filters, setFilters] = React.useState<IPickerFilters>(getDefaultFilters(rules));
+	const [filters, setFilters] = React.useState<ICrewPickerFilters>({...defaultCrewPickerFilters});
+	const [solverPrefs, setSolverPrefs] = React.useState<ISolverPrefs>({...defaultSolverPrefs});
+	const [readOnlyFilters, setReadOnlyFilters] = React.useState<string[]>([]);
+
+	const [crewPickerIsOpen, setCrewPickerIsOpen] = React.useState<boolean>(false);
+	const [traitPickerIsOpen, setTraitPickerIsOpen] = React.useState<boolean>(false);
 	const [showHints, setShowHints] = React.useState<boolean>(false);
-	const [hintOptions, setHintOptions] = React.useState<IHintOptions>({...defaultHintOptions});
-	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 
-	const filteredIds = React.useMemo<Set<number>>(() => {
-		const filteredIds: Set<number> = new Set<number>();
-		data.forEach(crew => {
-			const canShowCrew: boolean =
-				(filters.series_potential.length === 0 || filters.series_potential.includes(crew.gamified_series) || (!filters.valid_series_only && crew.gamified_series === 'n/a'))
-					&& (filters.rarity_potential.length === 0 || filters.rarity_potential.includes(crew.max_rarity))
-					&& (filters.skills_required.length === 0 || filters.skills_required.every(required => crew.skill_order.includes(required)))
-					&& (filters.skills_rejected.length === 0 || !filters.skills_rejected.some(rejected => crew.skill_order.includes(rejected)))
-					&& (filters.traits_required.length === 0 || filters.traits_required.every(required => crew.gamified_traits.includes(required)))
-					&& (filters.traits_rejected.length === 0 || !filters.traits_rejected.some(rejected => crew.gamified_traits.includes(rejected)))
-					&& (!filters.portal_only || crew.in_portal)
-			if (!canShowCrew) filteredIds.add(crew.id);
-		});
-		return filteredIds;
-	}, [data, filters]);
+	const traitOptions = React.useMemo(() => {
+		return getTraitOptions();
+	}, [rules]);
 
-	const reductions = React.useMemo<IReduction[]>(() => {
-		return getReductions();
+	const deductions = React.useMemo<IDeduction[]>(() => {
+		return getDeductions();
 	}, [evaluatedGuesses]);
 
 	React.useEffect(() => {
-		deduceFilters();
-	}, [hintOptions, evaluatedGuesses]);
-
-	const gridSetup: IDataGridSetup = {
-		renderGridColumn: (datum: IEssentialData) => renderGridCrew(datum as IRosterCrew)
-	};
+		solveFilters();
+		const readonly: string[] = Object.keys(solverPrefs).filter(key => solverPrefs[key]);
+		setReadOnlyFilters(readonly);
+	}, [deductions, solverPrefs]);
 
 	const guessesLeft: number = rules.max_guesses - evaluatedGuesses.length;
 
+	const guesserData: IGuesserContext = {
+		rules,
+		evaluatedGuesses,
+		setSelectedCrew,
+		traitOptions,
+		deductions,
+		filters,
+		setFilters,
+		solverPrefs,
+		setSolverPrefs,
+		readOnlyFilters,
+		openTraitPicker: () => setTraitPickerIsOpen(true)
+	};
+
 	return (
-		<React.Fragment>
+		<GuesserContext.Provider value={guesserData}>
 			<div style={{ margin: '1em 0' }}>
-				<Button fluid size='big' color='blue' onClick={() => setModalIsOpen(true)}>
+				<Button fluid size='big' color='blue' onClick={() => setCrewPickerIsOpen(true)}>
 					<Icon name='zoom-in' />
 					Guess Crew
 					<span style={{ fontSize: '.95em', fontWeight: 'normal', paddingLeft: '1em' }}>
@@ -125,178 +99,296 @@ export const GuessPicker = (props: GuessPickerProps) => {
 					</span>
 				</Button>
 			</div>
-			{modalIsOpen && (
-				<DataPicker	/* Search for crew by name */
-					id='/worfle/crewpicker'
-					data={data}
-					closePicker={handleSelectedIds}
-					selection
-					closeOnChange
-					preFilteredIds={filteredIds}
-					search
-					searchPlaceholder='Search for crew by name'
-					renderOptions={renderOptions}
-					renderPreface={renderPreface}
-					renderActions={renderActions}
-					gridSetup={gridSetup}
+			{crewPickerIsOpen && (
+				<GuessPickerModal
+					closeModal={() => setCrewPickerIsOpen(false)}
+					showHints={showHints}
+					setShowHints={setShowHints}
 				/>
 			)}
-		</React.Fragment>
+			{traitPickerIsOpen && (
+				<DeductionPickerModal
+					closeModal={() => setTraitPickerIsOpen(false)}
+				/>
+			)}
+		</GuesserContext.Provider>
 	);
 
-	function getReductions(): IReduction[] {
-		const reductions: IReduction[] = [];
-		const knownVariants: string[] = [];
-		let knownRarity: number = 0;
-		let knownSeries: string = '';
-		const knownTraits: string[] = [];
-		evaluatedGuesses.forEach(evaluatedGuess => {
-			if (evaluatedGuess.variantEval === EvaluationState.Adjacent) {
-				evaluatedGuess.crew.gamified_variants.forEach(variant => {
-					if (evaluatedGuess.matching_traits.includes(variant)) {
-						if (!knownVariants.includes(variant))
-							knownVariants.push(variant);
-					}
+	function getTraitOptions(): ITraitOption[] {
+		const options: ITraitOption[] = [];
+		rules.series.forEach(series => {
+			options.push({
+				id: options.length + 1,
+				name: `   ${SERIES_ERAS.find(seriesEra => seriesEra.series === series)!.title}`,
+				icon: 'tv',
+				field: 'series',
+				value: series
+			});
+		});
+		rules.rarities.forEach(rarity => {
+			options.push({
+				id: options.length + 1,
+				name: `${rarity}*`,
+				icon: 'star',
+				field: 'rarity',
+				value: rarity
+			});
+		});
+		Object.keys(CONFIG.SKILLS).forEach(skill => {
+			options.push({
+				id: options.length + 1,
+				name: `  ${CONFIG.SKILLS[skill]}`,
+				iconUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`,
+				field: 'skills',
+				value: skill
+			});
+		});
+		Object.keys(traitMap).forEach(trait => {
+			if (traitMap[trait].count > 1) {
+				const type: TTraitType = traitMap[trait].type;
+				let icon: SemanticICONS | undefined;
+				if (trait === 'female') icon = 'venus';
+				if (trait === 'male') icon = 'mars';
+				options.push({
+					id: options.length + 1,
+					name: getTraitName(trait, variantMap, TRAIT_NAMES, type),
+					icon,
+					iconUrl: !icon ? getTraitIconUrl(trait, type) : undefined,
+					field: 'traits',
+					value: trait
 				});
 			}
-			if (evaluatedGuess.seriesEval === EvaluationState.Exact) {
-				knownSeries = evaluatedGuess.crew.gamified_series;
-			}
-			if (evaluatedGuess.rarityEval === EvaluationState.Exact) {
-				knownRarity = evaluatedGuess.crew.max_rarity;
-			}
-			evaluatedGuess.matching_traits.forEach(trait => {
-				if (!knownTraits.includes(trait)) knownTraits.push(trait);
-			});
 		});
-		if (knownSeries !== '') reductions.push({
-			type: 'series',
-			value: knownSeries
-		});
-		if (knownRarity > 0) reductions.push({
-			type: 'rarity',
-			value: knownRarity
-		});
-		knownTraits.forEach(trait => {
-			reductions.push({
-				type: 'trait',
-				value: trait
-			});
-		});
-		return reductions;
+		return options;
 	}
 
-	function deduceFilters(): void {
-		const filters: IPickerFilters = {
-			series_potential: rules.series.slice(),
-			rarity_potential: rules.rarities.slice(),
-			skills_required: [],
-			skills_rejected: [],
-			traits_rejected: [],
-			traits_required: [],
-			valid_series_only: true,
-			portal_only: rules.portal_only
-		};
+	function getTraitIconUrl(trait: string, type: TTraitType): string {
+		let iconUrl: string = '';
+		switch (type) {
+			case 'collection':
+				iconUrl = '/media/vault.png';
+				break;
+			case 'trait':
+				iconUrl = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+				break;
+			case 'variant':
+				iconUrl = '/media/crew_icon.png';
+				break;
+		}
+		return iconUrl;
+	}
+
+	function deduce(deductions: IDeduction[], field: TEvaluationField, value: string | number, assertion: TAssertion): void {
+		const existing: IDeduction | undefined = deductions.find(deduction =>
+			deduction.field === field && deduction.value === value
+		);
+		if (existing) {
+			existing.assertion = assertion;
+		}
+		else {
+			deductions.push({ field, value, assertion });
+		}
+	}
+
+	function getDeductions(): IDeduction[] {
+		const deductions: IDeduction[] = [];
 		evaluatedGuesses.forEach(evaluatedGuess => {
-			if (hintOptions.variants) {
-				if (evaluatedGuess.variantEval === EvaluationState.Adjacent) {
-					evaluatedGuess.crew.gamified_variants.forEach(variant => {
-						if (evaluatedGuess.matching_traits.includes(variant)) {
-							if (!filters.traits_required.includes(variant))
-								filters.traits_required.push(variant);
-						}
-					});
-				}
-				else if (evaluatedGuess.variantEval === EvaluationState.Wrong) {
-					evaluatedGuess.crew.gamified_variants.forEach(variant => {
-						if (!filters.traits_rejected.includes(variant))
-							filters.traits_rejected.push(variant);
-					});
-				}
+			if (evaluatedGuess.seriesEval === EvaluationState.Exact) {
+				deduce(deductions, 'series', evaluatedGuess.crew.gamified_series, 'required');
 			}
-			if (hintOptions.gender) {
-				['female', 'male'].forEach(gender => {
-					if (evaluatedGuess.matching_traits.includes(gender)) {
-						if (!filters.traits_required.includes(gender))
-							filters.traits_required.push(gender);
-					}
-					else {
-						if (evaluatedGuess.crew.gamified_traits.includes(gender)) {
-							if (!filters.traits_rejected.includes(gender))
-								filters.traits_rejected.push(gender);
-						}
-					}
-				})
-			}
-			if (hintOptions.series) {
-				if (evaluatedGuess.seriesEval === EvaluationState.Exact) {
-					filters.series_potential = [evaluatedGuess.crew.gamified_series];
-				}
-				else if (evaluatedGuess.seriesEval === EvaluationState.Adjacent) {
-					const adjacentSeries: string = evaluatedGuess.crew.gamified_series;
-					const mysteryEra: number = getEraBySeries(adjacentSeries);
-					filters.series_potential = filters.series_potential.filter(series =>
-						series !== adjacentSeries && getEraBySeries(series) === mysteryEra
-					);
-				}
-				else if (evaluatedGuess.seriesEval === EvaluationState.Wrong) {
-					const wrongSeries: string = evaluatedGuess.crew.gamified_series;
-					const wrongEra: number = getEraBySeries(wrongSeries);
-					filters.series_potential = filters.series_potential.filter(series =>
-						getEraBySeries(series) !== wrongEra
-					);
-				}
-			}
-			if (hintOptions.rarity) {
-				if (evaluatedGuess.rarityEval === EvaluationState.Exact) {
-					filters.rarity_potential = [evaluatedGuess.crew.max_rarity];
-				}
-				else if (evaluatedGuess.rarityEval === EvaluationState.Adjacent) {
-					const adjacentRarity: number = evaluatedGuess.crew.max_rarity;
-					filters.rarity_potential = filters.rarity_potential.filter(rarity =>
-						[adjacentRarity - 1, adjacentRarity + 1].includes(rarity)
-					);
-				}
-				else if (evaluatedGuess.rarityEval === EvaluationState.Wrong) {
-					const wrongRarity: number = evaluatedGuess.crew.max_rarity;
-					filters.rarity_potential = filters.rarity_potential.filter(rarity =>
-						![wrongRarity, wrongRarity - 1, wrongRarity + 1].includes(rarity)
-					);
-				}
-			}
-			if (hintOptions.skills) {
-				[0, 1, 2].forEach(index => {
-					if (evaluatedGuess.crew.skill_order.length >= index) {
-						const skill: string = evaluatedGuess.crew.skill_order[index];
-						if (evaluatedGuess.skillsEval[index] === EvaluationState.Wrong) {
-							if (!filters.skills_rejected.includes(skill))
-								filters.skills_rejected.push(skill)
-						}
-						else {
-							if (!filters.skills_required.includes(skill))
-								filters.skills_required.push(skill)
-						}
-					}
+			else if (evaluatedGuess.seriesEval === EvaluationState.Adjacent) {
+				const adjacentSeries: string = evaluatedGuess.crew.gamified_series;
+				const mysteryEra: number = getEraBySeries(adjacentSeries);
+				SERIES_ERAS.filter(seriesEra => seriesEra.series === adjacentSeries || seriesEra.era !== mysteryEra).forEach(seriesEra => {
+					deduce(deductions, 'series', seriesEra.series, 'rejected');
 				});
 			}
-			if (hintOptions.traits) {
-				evaluatedGuess.crew.gamified_traits.forEach(trait => {
-					if (evaluatedGuess.matching_traits.includes(trait)) {
-						if (!filters.traits_required.includes(trait))
-							filters.traits_required.push(trait);
+			else if (evaluatedGuess.seriesEval === EvaluationState.Wrong) {
+				const wrongSeries: string = evaluatedGuess.crew.gamified_series;
+				const wrongEra: number = getEraBySeries(wrongSeries);
+				SERIES_ERAS.filter(seriesEra => seriesEra.era === wrongEra).forEach(seriesEra => {
+					deduce(deductions, 'series', seriesEra.series, 'rejected');
+				});
+			}
+
+			if (evaluatedGuess.rarityEval === EvaluationState.Exact) {
+				deduce(deductions, 'rarity', evaluatedGuess.crew.max_rarity, 'required');
+			}
+			else if (evaluatedGuess.rarityEval === EvaluationState.Adjacent) {
+				const adjacentRarity: number = evaluatedGuess.crew.max_rarity;
+				rules.rarities.forEach(rarity => {
+					if (![adjacentRarity - 1, adjacentRarity + 1].includes(rarity))
+						deduce(deductions, 'rarity', rarity, 'rejected');
+				});
+			}
+			else if (evaluatedGuess.rarityEval === EvaluationState.Wrong) {
+				const wrongRarity: number = evaluatedGuess.crew.max_rarity;
+				rules.rarities.forEach(rarity => {
+					if ([wrongRarity - 1, wrongRarity, wrongRarity + 1].includes(rarity))
+						deduce(deductions, 'rarity', rarity, 'rejected');
+				});
+			}
+
+			[0, 1, 2].forEach(index => {
+				if (evaluatedGuess.crew.skill_order.length > index) {
+					const skill: string = evaluatedGuess.crew.skill_order[index];
+					if (evaluatedGuess.skillsEval[index] === EvaluationState.Wrong) {
+						deduce(deductions, 'skills', skill, 'rejected');
 					}
 					else {
-						if (!filters.traits_rejected.includes(trait))
-							filters.traits_rejected.push(trait);
+						deduce(deductions, 'skills', skill, 'required');
 					}
+				}
+			});
+
+			evaluatedGuess.crew.gamified_traits.forEach(trait => {
+				if (evaluatedGuess.matching_traits.includes(trait)) {
+					deduce(deductions, 'traits', trait, 'required');
+				}
+				else {
+					deduce(deductions, 'traits', trait, 'rejected');
+				}
+			});
+		});
+
+		return deductions;
+	}
+
+	function solveFilters(): void {
+		let newDeductions: IDeduction[] = JSON.parse(JSON.stringify(filters.deductions));
+		(['series', 'rarity', 'skills', 'traits'] as TEvaluationField[]).forEach(field => {
+			if (solverPrefs[field]) {
+				deductions.filter(deduction => deduction.field === field).forEach(deduction => {
+					deduce(newDeductions, deduction.field, deduction.value, deduction.assertion);
 				});
 			}
 		});
-		setFilters(filters);
+
+		// if (solverOptions.variants) {
+		// 	if (evaluatedGuess.variantEval === EvaluationState.Adjacent) {
+		// 		evaluatedGuess.crew.gamified_variants.forEach(variant => {
+		// 			if (evaluatedGuess.matching_traits.includes(variant)) {
+		// 				assertLogic(newFilters.logic, 'traits', variant, 'required');
+		// 			}
+		// 		});
+		// 	}
+		// 	else if (evaluatedGuess.variantEval === EvaluationState.Wrong) {
+		// 		evaluatedGuess.crew.gamified_variants.forEach(variant => {
+		// 			assertLogic(newFilters.logic, 'traits', variant, 'rejected');
+		// 		});
+		// 	}
+		// }
+		// if (solverOptions.gender) {
+		// 	['female', 'male'].forEach(gender => {
+		// 		if (evaluatedGuess.matching_traits.includes(gender)) {
+		// 			assertLogic(newFilters.logic, 'traits', gender, 'required');
+		// 		}
+		// 		else {
+		// 			if (evaluatedGuess.crew.gamified_traits.includes(gender)) {
+		// 				assertLogic(newFilters.logic, 'traits', gender, 'rejected');
+		// 			}
+		// 		}
+		// 	})
+		// }
+
+		setFilters({
+			...filters,
+			deductions: newDeductions
+		});
 	}
+};
+
+type GuessPickerModalProps = {
+	closeModal: () => void;
+	showHints: boolean;
+	setShowHints: (showHints: boolean) => void;
+};
+
+const GuessPickerModal = (props: GuessPickerModalProps) => {
+	const { roster: data } = React.useContext(WorfleContext);
+	const { rules, evaluatedGuesses, setSelectedCrew, filters } = React.useContext(GuesserContext);
+	const { showHints, setShowHints } = props;
+
+	const filteredIds = React.useMemo<Set<number>>(() => {
+		const getAssertedValues = (field: TEvaluationField, assertion: TAssertion) => {
+			return filters.deductions.filter(deduction =>
+				deduction.field === field && deduction.assertion === assertion
+			).map(deduction => deduction.value);
+		};
+
+		const deductionMap: { [field: string]: { [assertion: string]: (string|number)[] } } = {};
+		(['series', 'rarity', 'skills', 'traits'] as TEvaluationField[]).forEach(field => {
+			deductionMap[field] = {};
+			(['required', 'rejected'] as TAssertion[]).forEach(assertion => {
+				deductionMap[field][assertion] = getAssertedValues(field, assertion);
+			});
+		});
+
+		const crewMatchesViability = (crew: IRosterCrew) => {
+			return !filters.hide_nonviable ||
+				(rules.series.includes(crew.gamified_series)
+					&& rules.rarities.includes(crew.max_rarity)
+					&& (!rules.portal_only || crew.in_portal));
+		};
+		const crewMatchesGuess = (crew: IRosterCrew) => {
+			return !filters.hide_guessed || !evaluatedGuesses.find(
+				evaluatedGuess => evaluatedGuess.crew.symbol === crew.symbol
+			);
+		};
+		const crewMatchesSeries = (crew: IRosterCrew) => {
+			return (deductionMap.series.required.length === 0 || deductionMap.series.required.includes(crew.gamified_series))
+				&& (deductionMap.series.rejected.length === 0 || !deductionMap.series.rejected.includes(crew.gamified_series));
+		};
+		const crewMatchesRarity = (crew: IRosterCrew) => {
+			return (deductionMap.rarity.required.length === 0 || deductionMap.rarity.required.includes(crew.max_rarity))
+				&& (deductionMap.rarity.rejected.length === 0 || !deductionMap.rarity.rejected.includes(crew.max_rarity));
+		};
+		const crewMatchesSkills = (crew: IRosterCrew) => {
+			return (deductionMap.skills.required.length === 0 || deductionMap.skills.required.every(required => crew.skill_order.includes(required as string)))
+				&& (deductionMap.skills.rejected.length === 0 || !deductionMap.skills.rejected.some(rejected => crew.skill_order.includes(rejected as string)))
+		};
+		const crewMatchesTraits = (crew: IRosterCrew) => {
+			return (deductionMap.traits.required.length === 0 || deductionMap.traits.required.every(required => crew.gamified_traits.includes(required as string)))
+				&& (deductionMap.traits.rejected.length === 0 || !deductionMap.traits.rejected.some(rejected => crew.gamified_traits.includes(rejected as string)))
+		};
+
+		const filteredIds: Set<number> = new Set<number>();
+		data.forEach(crew => {
+			const canShowCrew: boolean =
+				crewMatchesViability(crew)
+					&& crewMatchesGuess(crew)
+					&& crewMatchesSeries(crew)
+					&& crewMatchesRarity(crew)
+					&& crewMatchesSkills(crew)
+					&& crewMatchesTraits(crew)
+			if (!canShowCrew) filteredIds.add(crew.id);
+		});
+		return filteredIds;
+	}, [data, filters]);
+
+	const gridSetup: IDataGridSetup = {
+		renderGridColumn: (datum: IEssentialData) => renderGridCrew(datum as IRosterCrew)
+	};
+
+	return (
+		<DataPicker	/* Search for crew by name */
+			id='/worfle/crewpicker'
+			data={data}
+			closePicker={handleSelectedIds}
+			selection
+			closeOnChange
+			preFilteredIds={filteredIds}
+			search
+			searchPlaceholder='Search for crew by name'
+			renderOptions={renderOptions}
+			renderPreface={renderPreface}
+			renderActions={renderActions}
+			gridSetup={gridSetup}
+		/>
+	);
 
 	function handleSelectedIds(selectedIds: Set<number>, _affirmative: boolean): void {
-		setModalIsOpen(false);
+		props.closeModal();
 		if (selectedIds.size > 0) {
 			const selectedId: number = [...selectedIds][0];
 			const selectedCrew: IRosterCrew | undefined = data.find(datum =>
@@ -307,24 +399,12 @@ export const GuessPicker = (props: GuessPickerProps) => {
 	}
 
 	function renderOptions(): JSX.Element {
-		return (
-			<GuessPickerOptions
-				rules={rules}
-				filters={filters}
-				setFilters={setFilters}
-			/>
-		);
+		return <GuessPickerOptions />;
 	}
 
 	function renderPreface(): JSX.Element {
 		if (!showHints || evaluatedGuesses.length === 0) return <></>;
-		return (
-			<GuessHintOptions
-				reductions={reductions}
-				hintOptions={hintOptions}
-				setHintOptions={setHintOptions}
-			/>
-		);
+		return <GuessHintOptions />;
 	}
 
 	function renderActions(): JSX.Element {
@@ -337,7 +417,7 @@ export const GuessPicker = (props: GuessPickerProps) => {
 				/>
 				<Button /* Close */
 					content='Close'
-					onClick={() => setModalIsOpen(false)}
+					onClick={() => props.closeModal()}
 				/>
 			</React.Fragment>
 		);
@@ -385,330 +465,106 @@ export const GuessPicker = (props: GuessPickerProps) => {
 	}
 };
 
-type GuessHintOptionsProps = {
-	reductions: IReduction[];
-	hintOptions: IHintOptions;
-	setHintOptions: (hintOptions: IHintOptions) => void;
-};
+const GuessHintOptions = () => {
+	const { deductions, solverPrefs, setSolverPrefs, openTraitPicker } = React.useContext(GuesserContext);
 
-const GuessHintOptions = (props: GuessHintOptionsProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { variantMap } = React.useContext(WorfleContext);
-	const { reductions, hintOptions, setHintOptions } = props;
+	const affirmations: IDeduction[] = deductions.filter(deduction => deduction.assertion === 'required');
 
 	return (
 		<Message>
-			{reductions.length > 0 && (
+			{/* {affirmations.length > 0 && (
 				<div>
-					Based on your guesses, the mystery crew must be:
+					Based on your guesses, the mystery crew must have the following traits:
 					<Label.Group>
-						{reductions.map((reduction, idx) =>
-							<Label key={idx} size='small'>
-								{formatReduction(reduction)}
-							</Label>
-						)}
+						{affirmations.map(affirmation => renderAffirmation(affirmation))}
 					</Label.Group>
 				</div>
-			)}
+			)} */}
 			<Form>
 				We can automatically narrow down the list of possible solutions for you. Don't use these options if you want the game to be more challenging!
-				<Form.Group inline style={{ marginTop: '1em' }}>
+				<Form.Group inline style={{ margin: '1em 0 0' }}>
 					<label>Filter by deduced:</label>
-					<Form.Field	/* Variant */
-						control={Checkbox}
-						label='Variant'
-						checked={hintOptions.variants}
-						onChange={(e, { checked }) => setHintOptions({...hintOptions, variants: checked})}
-					/>
-					<Form.Field	/* Gender */
-						control={Checkbox}
-						label='Gender'
-						checked={hintOptions.gender}
-						onChange={(e, { checked }) => setHintOptions({...hintOptions, gender: checked})}
-					/>
 					<Form.Field	/* Series */
 						control={Checkbox}
 						label='Series'
-						checked={hintOptions.series}
-						onChange={(e, { checked }) => setHintOptions({...hintOptions, series: checked})}
+						checked={solverPrefs.series}
+						onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, series: checked})}
 					/>
 					<Form.Field	/* Rarity */
 						control={Checkbox}
 						label='Rarity'
-						checked={hintOptions.rarity}
-						onChange={(e, { checked }) => setHintOptions({...hintOptions, rarity: checked})}
+						checked={solverPrefs.rarity}
+						onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, rarity: checked})}
 					/>
 					<Form.Field	/* Skills */
 						control={Checkbox}
 						label='Skills'
-						checked={hintOptions.skills}
-						onChange={(e, { checked }) => setHintOptions({...hintOptions, skills: checked})}
+						checked={solverPrefs.skills}
+						onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, skills: checked})}
 					/>
 					<Form.Field	/* Traits */
 						control={Checkbox}
 						label='Traits'
-						checked={hintOptions.traits}
-						onChange={(e, { checked }) => setHintOptions({...hintOptions, traits: checked})}
+						checked={solverPrefs.traits}
+						onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, traits: checked})}
 					/>
+					<Button icon='search' size='small' content='Search deduced traits...' onClick={openTraitPicker} />
 				</Form.Group>
 			</Form>
 		</Message>
 	);
 
-	function formatReduction(reduction: IReduction): JSX.Element {
-		if (reduction.type === 'series')
-			return <>{(reduction.value as string).toUpperCase()}</>;
-			// return SERIES_ERAS.find(seriesEra => seriesEra.series === (reduction.value as string))!.title;
-
-		if (reduction.type === 'rarity')
-			return <>{`${reduction.value}*`}</>;
-			// return <Rating defaultRating={reduction.value as number} maxRating={reduction.value as number} icon='star' size='mini' disabled />
-
-		return <>{getTraitName(reduction.value as string, variantMap, TRAIT_NAMES)}</>;
+	function renderAffirmation(affirmation: IDeduction): JSX.Element {
+		return (
+			<Label key={`${affirmation.field},${affirmation.value}`} size='small'>
+				<div><DeductionContent deduction={affirmation} /></div>
+			</Label>
+		);
 	}
 };
 
-type GuessPickerOptionsProps = {
-	rules: GameRules;
-	filters: IPickerFilters;
-	setFilters: (filters: IPickerFilters) => void;
-};
-
-const GuessPickerOptions = (props: GuessPickerOptionsProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { variantMap, traitMap } = React.useContext(WorfleContext);
-	const { rules, filters, setFilters } = props;
-
-	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
-
-	const traitPresets = React.useMemo<string[]>(() => {
-		const presets: string[] = filters.traits_required.concat(filters.traits_rejected);
-		presets.sort((a, b) => a.localeCompare(b));
-		return presets;
-	}, [filters]);
-
-	const traitData = React.useMemo<ITraitDatum[]>(() => {
-		return Object.keys(traitMap).filter(trait =>
-				traitMap[trait].count > 1
-			).map((trait, idx) => {
-				const type: TTraitType = traitMap[trait].type;
-				let icon: string = '';
-				switch (type) {
-					case 'collection':
-						icon = '/media/vault.png';
-						break;
-					case 'trait':
-						icon = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
-						break;
-					case 'variant':
-						icon = '/media/crew_icon.png';
-						break;
-				}
-				return {
-					id: idx + 1,
-					name: getTraitName(trait, variantMap, TRAIT_NAMES, type),
-					icon,
-					trait,
-					type,
-					count: traitMap[trait].count
-				};
-			});
-	}, [traitMap]);
-
-	const seriesOptions: DropdownItemProps[] = SERIES_ERAS.map(seriesEra => {
-		return {
-			key: seriesEra.series,
-			value: seriesEra.series,
-			text: seriesEra.title
-		};
-	});
-
-	const gridSetup: IDataGridSetup = {
-		renderGridColumn: (datum: IEssentialData) => renderTrait(datum as ITraitDatum)
-	};
-
+const GuessPickerOptions = () => {
+	const { filters, setFilters, setSolverPrefs } = React.useContext(GuesserContext);
 	return (
 		<Form>
-			<Form.Group widths='equal'>
-				<Form.Field	/* Filter by series */
-					control={Dropdown}
-					placeholder='Any series'
-					selection multiple fluid clearable closeOnChange
-					options={seriesOptions}
-					value={filters.series_potential}
-					onChange={(e, { value }) => setFilters({...filters, series_potential: value})}
-				/>
-				<RarityFilter
-					rarityFilter={filters.rarity_potential}
-					setRarityFilter={(value: number[]) => setFilters({...filters, rarity_potential: value})}
-				/>
-			</Form.Group>
-			<Form.Group inline>
-				<label>
-					Toggle skill filters:
-					<Popup
-						content={(
-							<React.Fragment>
-								{/* Only show crew who have all CHECKED skills (in any order) and no BANNED skills. */}
-								Only show crew who have all <Icon name='check' color='green' fitted /> skills (in any order) and no <Icon name='ban' color='red' fitted /> skills.
-							</React.Fragment>
-						)}
-						trigger={<Icon name='question' />}
-					/>
-				</label>
-				<div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
-					{Object.keys(CONFIG.SKILLS).map(skill => renderToggleOption('skills', skill, CONFIG.SKILLS[skill]))}
-				</div>
-			</Form.Group>
-			<Form.Group inline>
-				<label style={{ whiteSpace: 'nowrap' }}>
-					<span >Toggle trait filters:</span>
-					<Popup
-						content={(
-							<React.Fragment>
-								{/* Only show crew who have all CHECKED traits and no BANNED traits. */}
-								Only show crew who have all <Icon name='check' color='green' fitted /> traits and no <Icon name='ban' color='red' fitted /> traits.
-							</React.Fragment>
-						)}
-						trigger={<Icon name='question' />}
-					/>
-				</label>
-				<Segment raised inverted attached>
-					<div style={{ maxHeight: '4em', overflowY: 'scroll' }}>
-						<div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
-							{traitPresets.map(trait => renderToggleOption('traits', trait, getTraitName(trait, variantMap, TRAIT_NAMES)))}
-							<Button size='small' compact icon='search' onClick={() => setModalIsOpen(true)} />
-						</div>
-					</div>
-					{modalIsOpen && (
-						<DataPicker	/* Search for trait by name */
-							id='/worfle/traitpicker'
-							data={traitData.filter(traitDatum => traitDatum.count > 1)}
-							closePicker={handleSelectedIds}
-							selection
-							closeOnChange
-							search
-							searchPlaceholder='Search for trait by name'
-							gridSetup={gridSetup}
-						/>
-					)}
-				</Segment>
-			</Form.Group>
+			<DeductionPicker />
 			<Form.Group>
-				<Form.Field	/* Hide crew with misleading series traits */
+				<Form.Field	/* Hide nonviable crew */
 					control={Checkbox}
 					label={(
 						<label>
-							Hide crew with misleading series traits
-							<Popup content='Some crew will be excluded as mystery crew because their in-game series traits are misleading.' trigger={<Icon name='question' />} />
+							Hide nonviable crew
+							<Popup
+								trigger={<Icon name='question' />}
+								content={(
+									<React.Fragment>
+										Some crew are not viable as mystery crew because the defined game rules exclude them (e.g. they are not in the portal) or because their traits are known to be misleading.
+									</React.Fragment>
+								)}
+							/>
 						</label>
 					)}
-					checked={filters.valid_series_only}
-					onChange={(e, { checked }) => setFilters({...filters, valid_series_only: checked})}
+					checked={filters.hide_nonviable}
+					onChange={(e, { checked }) => setFilters({...filters, hide_nonviable: checked})}
 				/>
-				{rules.portal_only && (
-					<React.Fragment>
-						<Form.Field	/* Hide non-portal crew */
-							control={Checkbox}
-							label={(
-								<label>
-									Hide non-portal crew
-									<Popup content='Only crew who are currently available in the time portal will be used as mystery crew.' trigger={<Icon name='question' />} />
-								</label>
-							)}
-							checked={filters.portal_only}
-							onChange={(e, { checked }) => setFilters({...filters, portal_only: checked})}
-						/>
-					</React.Fragment>
-				)}
+				<Form.Field	/* Hide guessed crew */
+					control={Checkbox}
+					label='Hide guessed crew'
+					checked={filters.hide_guessed}
+					onChange={(e, { checked }) => setFilters({...filters, hide_guessed: checked})}
+				/>
 			</Form.Group>
 			<Form.Group style={{ justifyContent: 'end', marginBottom: '0' }}>
 				<Form.Field>
 					<Button	/* Reset */
 						content='Reset'
-						onClick={() => setFilters(getDefaultFilters(rules))}
+						onClick={() => {
+							setFilters({...defaultCrewPickerFilters});
+							setSolverPrefs({...defaultSolverPrefs});
+						}}
 					/>
 				</Form.Field>
 			</Form.Group>
 		</Form>
 	);
-
-	function renderToggleOption(group: string, itemKey: string, itemText: string): JSX.Element {
-		const required: boolean = filters[`${group}_required`].includes(itemKey);
-		const rejected: boolean = filters[`${group}_rejected`].includes(itemKey);
-		return (
-			<Button key={itemKey} size='small' compact onClick={() => toggleOption(group, itemKey)}>
-				{required && <Icon name='check' color='green' />}
-				{rejected && <Icon name='ban' color='red' />}
-				{itemText}
-			</Button>
-		);
-	}
-
-	function toggleOption(group: string, itemKey: string): void {
-		const required: boolean = filters[`${group}_required`].includes(itemKey);
-		const rejected: boolean = filters[`${group}_rejected`].includes(itemKey);
-
-		const newRequires: string[] = filters[`${group}_required`].slice();
-		const newRejects: string[] = filters[`${group}_rejected`].slice();
-		const requiredIndex: number = newRequires.indexOf(itemKey);
-		const rejectedIndex: number = newRejects.indexOf(itemKey);
-
-		// Move from required to rejected
-		if (required) {
-			if (requiredIndex >= 0) newRequires.splice(requiredIndex);
-			if (!newRejects.includes(itemKey)) newRejects.push(itemKey);
-		}
-		// Move from rejected to neither (i.e. remove from both)
-		else if (rejected) {
-			if (requiredIndex >= 0) newRequires.splice(requiredIndex);
-			if (rejectedIndex >= 0) newRejects.splice(rejectedIndex);
-		}
-		// Add to required
-		else {
-			if (!newRequires.includes(itemKey)) newRequires.push(itemKey);
-			if (rejectedIndex >= 0) newRejects.splice(rejectedIndex);
-		}
-
-		setFilters({
-			...filters,
-			[`${group}_required`]: newRequires,
-			[`${group}_rejected`]: newRejects
-		});
-	};
-
-	function renderTrait(traitDatum: ITraitDatum): JSX.Element {
-		return (
-			<React.Fragment>
-				<div>
-					{traitDatum.icon !== '' && <img width={32} src={traitDatum.icon} />}
-				</div>
-				{traitDatum.name}
-			</React.Fragment>
-		);
-	}
-
-	function handleSelectedIds(selectedIds: Set<number>, affirmative: boolean): void {
-		setModalIsOpen(false);
-		if (selectedIds.size > 0 && affirmative) {
-			const selectedId: number = [...selectedIds][0];
-			const selectedTrait: ITraitDatum | undefined = traitData.find(datum =>
-				datum.id === selectedId
-			);
-			if (selectedTrait) toggleOption('traits', selectedTrait.trait);
-		}
-	}
 };
-
-function getDefaultFilters(rules: GameRules): IPickerFilters {
-	return {
-		series_potential: rules.series.slice(),
-		rarity_potential: rules.rarities.slice(),
-		skills_required: [],
-		skills_rejected: [],
-		traits_rejected: [],
-		traits_required: [],
-		valid_series_only: true,
-		portal_only: rules.portal_only
-	};
-}

@@ -1,4 +1,9 @@
+import { SemanticICONS } from 'semantic-ui-react';
 import { CrewMember } from '../../model/crew';
+
+export type TTraitType = 'trait' | 'hidden_trait' | 'collection' | 'variant';
+export type TEvaluationField = 'series' | 'rarity' | 'skills' | 'traits';
+export type TAssertion = 'required' | 'rejected';
 
 export interface IRosterCrew extends CrewMember {
 	gamified_series: string;
@@ -12,8 +17,6 @@ export interface IVariantMap {
 		display_name: string;
 	};
 };
-
-export type TTraitType = 'trait' | 'hidden_trait' | 'collection' | 'variant';
 
 export interface ITraitMap {
 	[key: string]: {
@@ -42,4 +45,34 @@ export interface IEvaluatedGuess {
 	rarityEval: EvaluationState;
 	skillsEval: EvaluationState[];
 	matching_traits: string[];
+};
+
+export interface IDeduction {
+	field: TEvaluationField;
+	value: string | number;
+	assertion: TAssertion;
+};
+
+export interface ITraitOption {
+	id: number;
+	name: string;
+	icon?: SemanticICONS;
+	iconUrl?: string;
+	field: TEvaluationField;
+	value: string | number;
+};
+
+export interface ICrewPickerFilters {
+	deductions: IDeduction[];
+	hide_nonviable: boolean;
+	hide_guessed: boolean;
+};
+
+export interface ISolverPrefs {
+	variants: boolean;
+	gender: boolean;
+	series: boolean;
+	rarity: boolean;
+	skills: boolean;
+	traits: boolean;
 };
