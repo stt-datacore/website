@@ -44,7 +44,11 @@ export const CombosModal = (props: CombosModalProps) => {
 
 	const [actionableOnlyMode, setActionableOnlyMode] = React.useState<boolean>(true);
 	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`retrieval/always_show_polestars`, false, { rememberForever: true });
-	const [alwaysSortByCost, setAlwaysSortByCost] = useStateWithStorage(`retrieval/always_sort_by_cost`, false, { rememberForever: true });
+	const [internalAlwaysSortByCost, setAlwaysSortByCost] = useStateWithStorage(`retrieval/always_sort_by_cost`, false, { rememberForever: true });
+
+	const alwaysSortByCost = React.useMemo(() => {
+		return alwaysShowPrice && internalAlwaysSortByCost;
+	}, [internalAlwaysSortByCost, alwaysShowPrice]);
 
 	// Calc algo is always set to short now, but deep algo code should still work, if the option is ever needed
 	const [algo, setAlgo] = React.useState<string>('');
