@@ -1,6 +1,8 @@
 import React from 'react';
 import {
 	Button,
+	Checkbox,
+	Form,
 	Icon,
 	Image,
 	Label,
@@ -8,86 +10,55 @@ import {
 	Segment
 } from 'semantic-ui-react';
 
-import { GlobalContext } from '../../context/globalcontext';
-
 import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
-import { IDeduction, ITraitOption, TAssertion } from './model';
-import { GuesserContext, WorfleContext } from './context';
-import { getTraitName } from './game';
-
-export const DeductionPicker = () => {
-	const { filters, setFilters, readOnlyFilters, openTraitPicker } = React.useContext(GuesserContext);
-
-	return (
-		<React.Fragment>
-			<Message attached='top'	/* Only show crew who have all CHECKED traits and no BANNED traits. */>
-				Only show crew who have all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits as shown below:
-			</Message>
-			<Segment attached='bottom'>
-				<div style={{ maxHeight: '5em', overflowY: 'scroll' }}>
-					<div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
-						<Button compact onClick={() => openTraitPicker()}>
-							<Icon name='search' />
-							Search deduced traits...
-						</Button>
-						{filters.deductions.map(deduction => renderCancel(deduction))}
-					</div>
-				</div>
-			</Segment>
-		</React.Fragment>
-	);
-
-	function renderCancel(deduction: IDeduction): JSX.Element {
-		const readonly: boolean = readOnlyFilters.includes(deduction.field);
-		return (
-			<Button key={deduction.value} size='small' compact onClick={!readonly ? () => cancelDeduction(deduction) : undefined}>
-				{deduction.assertion === 'required' && <Icon name='check' color={readonly ? 'grey' : undefined} />}
-				{deduction.assertion === 'rejected' && <Icon name='ban' color={readonly ? 'grey' : undefined} />}
-				<DeductionContent deduction={deduction} />
-			</Button>
-		);
-	}
-
-	function cancelDeduction(deduction: IDeduction): void {
-		let newDeductions: IDeduction[] = JSON.parse(JSON.stringify(filters.deductions));
-		newDeductions = newDeductions.filter(existing =>
-			existing.field !== deduction.field || existing.value !== deduction.value
-		);
-		setFilters({
-			...filters,
-			deductions: newDeductions
-		});
-	}
-};
+import { IDeduction, ISolverPrefs, ITraitOption, TAssertion } from './model';
+import { GuesserContext } from './context';
 
 type DeductionPickerModalProps = {
-	closeModal: () => void;
+	closeDeductionPicker: () => void;
 };
 
 export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
-	const { traitOptions, deductions, filters, setFilters, readOnlyFilters } = React.useContext(GuesserContext);
+	const { traitOptions, deductions, filters, setFilters, solverPrefs, setSolverPrefs } = React.useContext(GuesserContext);
+
+	const [showAll, setShowAll] = React.useState<boolean>(true);
+	const [pendingSolverPrefs, setPendingSolverPrefs] = React.useState<ISolverPrefs>(JSON.parse(JSON.stringify(solverPrefs)));
 
 	const data = React.useMemo<ITraitOption[]>(() => {
 		return traitOptions.filter(traitOption =>
-			!readOnlyFilters.includes(traitOption.field)
-				&& !!deductions.find(deduction =>
-						deduction.field === traitOption.field && deduction.value === traitOption.value
-					)
+			!!deductions.find(deduction =>
+				(showAll || deduction.assertion === 'required')
+					&& deduction.field === traitOption.field && deduction.value === traitOption.value
+			)
 		);
-	}, [traitOptions, deductions, readOnlyFilters]);
+	}, [traitOptions, deductions, showAll]);
 
+	// Existing deductions in filters that are NOT preset by solverPrefs
 	const preSelectedIds = React.useMemo<Set<number>>(() => {
-		const ids: Set<number> = new Set<number>();
+		const selectedIds: Set<number> = new Set<number>();
 		filters.deductions.forEach(deduction => {
-			const option: ITraitOption | undefined = traitOptions.find(option =>
-				option.field === deduction.field && option.value === deduction.value
-			);
-			if (option) ids.add(option.id);
+			if (!solverPrefs[deduction.field]) {
+				const option: ITraitOption | undefined = traitOptions.find(option =>
+					option.field === deduction.field && option.value === deduction.value
+				);
+				if (option) selectedIds.add(option.id);
+			}
 		});
-		return ids;
-	}, [traitOptions, filters]);
+		return selectedIds;
+	}, [traitOptions, filters, solverPrefs]);
+
+	// Deductions that are preset by solverPrefs
+	//	These should be readonly but DataPicker can't do that yet
+	const preFixedIds = React.useMemo<Set<number>>(() => {
+		const fixedIds: Set<number> = new Set<number>();
+		traitOptions.forEach(option => {
+			if (pendingSolverPrefs[option.field])
+				fixedIds.add(option.id);
+		});
+		return fixedIds;
+	}, [traitOptions, pendingSolverPrefs]);
 
 	const gridSetup: IDataGridSetup = {
 		renderGridColumn: (datum: IEssentialData, isSelected: boolean) => renderTrait(datum as ITraitOption, isSelected)
@@ -103,6 +74,7 @@ export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
 			search
 			searchPlaceholder='Search for deduced trait by name'
 			renderPreface={renderPreface}
+			renderActions={renderActions}
 			gridSetup={gridSetup}
 		/>
 	);
@@ -110,12 +82,33 @@ export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
 	function renderPreface(): JSX.Element {
 		return (
 			<React.Fragment>
-				Based on your guesses, the mystery crew must have all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits as shown below. Tap a trait to select a deduction. Double-tap to make a selection more quickly. The list of possible solutions will be narrowed down to crew who match all selected deductions.
+				Based on your guesses, we know that the mystery crew must have all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits shown below. Tap to select a deduced trait. Double-tap to make a selection more quickly. The list of possible solutions will be narrowed down to crew who match all selected traits.
+				<AutoDeductionOptions
+					pendingSolverPrefs={pendingSolverPrefs}
+					setPendingSolverPrefs={setPendingSolverPrefs}
+				/>
+			</React.Fragment>
+		);
+	}
+
+	function renderActions(): JSX.Element {
+		const allText: string = showAll ? 'Only show required' : 'Show all';
+		return (
+			<React.Fragment>
+				<Button
+					content={allText}
+					onClick={() => setShowAll(!showAll)}
+				/>
+				<Button /* Close */
+					content='Close'
+					onClick={() => props.closeDeductionPicker()}
+				/>
 			</React.Fragment>
 		);
 	}
 
 	function renderTrait(option: ITraitOption, isSelected: boolean): JSX.Element {
+		const showAsSelected: boolean = isSelected || preFixedIds.has(option.id);
 		const assertion: TAssertion | undefined = deductions.find(deduction =>
 			deduction.field === option.field && deduction.value === option.value
 		)!.assertion;
@@ -126,7 +119,7 @@ export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
 						{option.iconUrl !== '' && <img src={option.iconUrl} style={{ maxHeight: '32px' }} />}
 						{option.icon && <Icon name={option.icon} size='big' />}
 					</div>
-					<Label floating circular color={isSelected ? 'blue' : undefined}>
+					<Label floating circular color={showAsSelected ? 'blue' : undefined}>
 						{assertion === 'required' && <Icon name='check' fitted /> }
 						{assertion === 'rejected' && <Icon name='ban' fitted /> }
 					</Label>
@@ -153,27 +146,57 @@ export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
 			...filters,
 			deductions: newDeductions
 		});
-		props.closeModal();
+		setSolverPrefs(pendingSolverPrefs);
+		props.closeDeductionPicker();
 	}
 };
 
-type DeductionContentProps = {
-	deduction: IDeduction;
+type AutoDeductionOptionsProps = {
+	pendingSolverPrefs: ISolverPrefs;
+	setPendingSolverPrefs: (pendingSolverPrefs: ISolverPrefs) => void;
 };
 
-export const DeductionContent = (props: DeductionContentProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { variantMap } = React.useContext(WorfleContext);
-	const { deduction } = props;
+const AutoDeductionOptions = (props: AutoDeductionOptionsProps) => {
+	const { pendingSolverPrefs: solverPrefs, setPendingSolverPrefs: setSolverPrefs } = props;
 
-	if (deduction.field === 'series')
-		return <>{(deduction.value as string).toUpperCase()}</>;
-
-	if (deduction.field === 'rarity')
-		return <>{`${deduction.value}*`}</>;
-
-	if (deduction.field === 'skills')
-		return <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
-
-	return <>{getTraitName(deduction.value as string, variantMap, TRAIT_NAMES)}</>;
+	return (
+		<React.Fragment>
+			<Message attached='top'>
+				We can automatically select all traits by group type. Don't use these options if you want the game to be more challenging!
+			</Message>
+			<Segment attached='bottom'>
+				<Form>
+					<Form.Group inline style={{ marginBottom: '0' }}>
+						<label	/* Automatically select all: */>
+							Automatically select all:
+						</label>
+						<Form.Field	/* Series */
+							control={Checkbox}
+							label='Series'
+							checked={solverPrefs.series}
+							onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, series: checked})}
+						/>
+						<Form.Field	/* Rarity */
+							control={Checkbox}
+							label='Rarity'
+							checked={solverPrefs.rarity}
+							onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, rarity: checked})}
+						/>
+						<Form.Field	/* Skills */
+							control={Checkbox}
+							label='Skills'
+							checked={solverPrefs.skills}
+							onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, skills: checked})}
+						/>
+						<Form.Field	/* Traits */
+							control={Checkbox}
+							label='Traits'
+							checked={solverPrefs.traits}
+							onChange={(e, { checked }) => setSolverPrefs({...solverPrefs, traits: checked})}
+						/>
+					</Form.Group>
+				</Form>
+			</Segment>
+		</React.Fragment>
+	);
 };

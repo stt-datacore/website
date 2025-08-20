@@ -14,15 +14,12 @@ export const WorfleContext = React.createContext<IWorfleContext>({} as IWorfleCo
 export interface IGuesserContext {
 	rules: GameRules;
 	evaluatedGuesses: IEvaluatedGuess[];
-	setSelectedCrew: (crewSymbol: string) => void;
 	traitOptions: ITraitOption[];
 	deductions: IDeduction[];
 	filters: ICrewPickerFilters;
 	setFilters: (filters: ICrewPickerFilters) => void;
 	solverPrefs: ISolverPrefs;
 	setSolverPrefs: (solverPrefs: ISolverPrefs) => void;
-	readOnlyFilters: string[];
-	openTraitPicker: () => void;
 };
 
 export const GuesserContext = React.createContext<IGuesserContext>({} as IGuesserContext);
