@@ -55,14 +55,16 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
         const quipment = globalContext.core.items.filter(f => f.type === 14);
         if (!ephemeral || !playerData?.player?.character?.crew?.length) return [] as PlayerCrew[];
         return playerData?.player?.character?.crew.filter(c => {
-            if (!c.immortal || c.immortal > 0) return false;
+            if (!c.immortal) return false;
             if (c.q_bits >= 1300) return false;
+
             if (filters.length) {
                 let p = false;
                 if (filters.includes(3)) {
                     let possquip = getPossibleQuipment(c, quipment);
                     p = possquip?.some(item => !!item.traits_requirement?.length);
                 }
+                //let f = (filters.includes(4) && !!c.immortal && c.immortal > 0);
                 let v = (filters.includes(0) && c.ranks.voyRank <= 50);
                 let g = (filters.includes(1) && c.ranks.gauntletRank <= 50);
                 let b = (filters.includes(2) && c.ranks.shuttleRank <= 50);
@@ -74,6 +76,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                     g = !filters.includes(1) || g;
                     b = !filters.includes(2) || b;
                     p = !filters.includes(3) || p;
+                    //f = !filters.includes(4) || f;
                     if (!(v && g && b && p)) return false;
                 }
                 else if (logic === 'XOR') {
@@ -83,6 +86,9 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                     if (v || g || b || p) return false;
                 }
             }
+
+            if (!filters.includes(4) && !!c.immortal && c.immortal > 0) return false;
+
             if (skills?.length) {
                 if (!skills.includes(c.skill_order[0])) return false;
             }
@@ -90,13 +96,13 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             if (rarities.length && !rarities.includes(c.max_rarity)) return false;
             return true;
         })
-            .sort((a, b) => {
-                let [aprog, agoal] = qbProgressToNext(a.q_bits);
-                let [bprog, bgoal] = qbProgressToNext(b.q_bits);
-                let anext = missionsToNext(a.q_bits);
-                let bnext = missionsToNext(b.q_bits);
-                return anext - bnext || aprog - bprog || agoal - bgoal || b.ranks.scores.overall - a.ranks.scores.overall;
-            });
+        .sort((a, b) => {
+            let [aprog, agoal] = qbProgressToNext(a.q_bits);
+            let [bprog, bgoal] = qbProgressToNext(b.q_bits);
+            let anext = missionsToNext(a.q_bits);
+            let bnext = missionsToNext(b.q_bits);
+            return anext - bnext || aprog - bprog || agoal - bgoal || b.ranks.scores.overall - a.ranks.scores.overall;
+        });
     }, [playerData, ephemeral, data, filters, rarities, skills, logic]);
 
 
@@ -176,6 +182,20 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                         </span>
                     </div>
                 </Button>
+                <Button
+                    active={filters.includes(4)}
+                    style={{ width: btnWidth, padding: 4 }}
+                    onClick={() => toggleFilter(4)}
+                    color={filters.includes(4) ? 'blue' : undefined}
+                    >
+                    <div style={{...flexRow, gap: 0, margin: 0, justifyContent: 'center', height: '28px',
+                            fontSize: '0.9em', fontWeight: 'bold', textAlign: 'center'}}>
+                        <span>
+                            <Icon style={{margin:0,padding:0}} name='snowflake' />
+                        </span>
+                    </div>
+                </Button>
+
             </div>
 
         </div>
@@ -205,6 +225,8 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
                             item={row}
                             size={32}
                         />
+                        {!!row.immortal && row.immortal > 0 &&
+                        <Icon name='snowflake' style={{margin: 0, padding: 0}} />}
                         <div style={{ flexGrow: 1 }}>
                             {row.name}
                         </div>
@@ -227,11 +249,11 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
         const qbslots = qbitsToSlots(crew.q_bits);
         return (
             <React.Fragment>
-                {crew.immortal === -1 &&
+                {!!crew.immortal &&
                     <div style={{ fontSize: "0.8em", minWidth: '4em' }}>
                         ({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
                     </div>}
-                {crew.immortal === -1 && qbslots < 4 &&
+                {!!crew.immortal && qbslots < 4 &&
                     <div style={{ fontSize: "0.8em", minWidth: '6em' }}>
                         {/* ({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })}) */}
                         ({t('crew_views.n_missions_to_next', { n: missionsToNext(crew.q_bits).toString() })})
