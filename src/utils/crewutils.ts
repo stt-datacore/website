@@ -636,11 +636,10 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let cidx = -1;
 
 	for (let c of allcrew) {
-		if (c.symbol === 'troi_ageofsail_crew') {
-			console.log('break');
-		}
+		// if (c.symbol === 'troi_ageofsail_crew') {
+		// 	console.log('break');
+		// }
 		for (let crew of prepareOne(c, playerData, buffConfig, undefined)) {
-
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
