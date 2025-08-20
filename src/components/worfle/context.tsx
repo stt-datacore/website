@@ -11,11 +11,19 @@ export interface IWorfleContext {
 
 export const WorfleContext = React.createContext<IWorfleContext>({} as IWorfleContext);
 
-export interface IGuesserContext {
+export interface IGameContext {
 	rules: GameRules;
-	evaluatedGuesses: IEvaluatedGuess[];
 	traitOptions: ITraitOption[];
+	mysteryCrew: IRosterCrew;
+	evaluatedGuesses: IEvaluatedGuess[];
 	deductions: IDeduction[];
+	deductionsUsed: IDeduction[];
+	solveState: number;
+};
+
+export const GameContext = React.createContext<IGameContext>({} as IGameContext);
+
+export interface IGuesserContext {
 	filters: ICrewPickerFilters;
 	setFilters: (filters: ICrewPickerFilters) => void;
 	solverPrefs: ISolverPrefs;

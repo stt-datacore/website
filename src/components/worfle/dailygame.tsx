@@ -3,12 +3,13 @@ import {
 	Button,
 	Divider,
 	Header,
+	Popup,
 	Statistic
 } from 'semantic-ui-react';
 
 import { useStateWithStorage } from '../../utils/storage';
 
-import { IRosterCrew, SolveState } from './model';
+import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, SolveState } from './model';
 import { WorfleContext } from './context';
 import { DEFAULT_GUESSES, Game, GameRules } from './game';
 
@@ -35,9 +36,12 @@ class PlayerStats {
 export const DailyGame = () => {
 	const { roster } = React.useContext(WorfleContext);
 
+	const VARIABLES_TO_LOAD = 5;
+
 	const [dailyId, setDailyId] = useStateWithStorage<string>('datalore/dailyId', '', { rememberForever: true, onInitialize: variableReady });
 	const [solution, setSolution] = useStateWithStorage<string>('datalore/dailySolution', '', { rememberForever: true, onInitialize: variableReady });
 	const [guesses, setGuesses] = useStateWithStorage<string[]>('datalore/dailyGuesses', [], { rememberForever: true, onInitialize: variableReady });
+	const [deductionsUsed, setDeductionsUsed] = useStateWithStorage<IDeduction[]>('datalore/dailyDeductions', [], { rememberForever: true, onInitialize: variableReady });
 	const [stats, setStats] = useStateWithStorage<PlayerStats>('datalore/dailyStats', new PlayerStats(), { rememberForever: true, onInitialize: variableReady });
 	const [loadState, setLoadState] = React.useState<number>(0);
 	const [solveState, setSolveState] = React.useState<SolveState>(SolveState.Unsolved);
@@ -55,14 +59,14 @@ export const DailyGame = () => {
 	resetTime.setUTCDate(resetTime.getUTCDate() + 1)
 
 	React.useEffect(() => {
-		if (loadState === 4) initializeDailyGame();
+		if (loadState === VARIABLES_TO_LOAD) initializeDailyGame();
 	}, [loadState]);
 
 	React.useEffect(() => {
 		setShowStats(solveState !== SolveState.Unsolved);
 	}, [solveState]);
 
-	if (loadState < 4 || solution === '')
+	if (loadState < VARIABLES_TO_LOAD || solution === '')
 		return <></>;
 
 	const rules: GameRules = new GameRules();
@@ -73,8 +77,10 @@ export const DailyGame = () => {
 			<Game
 				rules={rules} solution={solution}
 				guesses={guesses} setGuesses={setGuesses}
+				deductionsUsed={deductionsUsed} setDeductionsUsed={setDeductionsUsed}
 				solveState={solveState} setSolveState={setSolveState}
-				gameTime={gameTime} onGameEnd={handleGameEnd}
+				onGameEnd={handleGameEnd}
+				renderShare={renderShare}
 			/>
 			{renderResetTime()}
 			{renderStats()}
@@ -82,7 +88,7 @@ export const DailyGame = () => {
 	);
 
 	function variableReady(_keyName: string): void {
-		setLoadState(prevState => Math.min(prevState + 1, 4));
+		setLoadState(prevState => Math.min(prevState + 1, VARIABLES_TO_LOAD));
 	}
 
 	function initializeDailyGame(): void {
@@ -145,8 +151,9 @@ export const DailyGame = () => {
 
 		// Create new game
 		if (dailyId === '' || dailyId !== gameId) {
-			setGuesses([]);
 			setSolution(dailySolution);
+			setGuesses([]);
+			setDeductionsUsed([]);
 			setSolveState(SolveState.Unsolved);
 			return;
 		}
@@ -181,6 +188,16 @@ export const DailyGame = () => {
 			stats.streak = 0;
 		}
 		setStats({... stats});
+	}
+
+	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): JSX.Element {
+		return (
+			<DailyShare
+				evaluatedGuesses={evaluatedGuesses}
+				solveState={solveState}
+				gameTime={gameTime}
+			/>
+		);
 	}
 
 	function renderStats(): JSX.Element {
@@ -244,4 +261,59 @@ export const DailyGame = () => {
 			</div>
 		);
 	}
+};
+
+type DailyShareProps = {
+	solveState: SolveState;
+	evaluatedGuesses: IEvaluatedGuess[];
+	gameTime: Date;
+};
+
+const DailyShare = (props: DailyShareProps) => {
+	const { solveState, evaluatedGuesses, gameTime } = props;
+
+	const GAME_NAME = 'Worfle';
+	const GAME_URL = '<https://datacore.app/crewchallenge>';
+
+	const formatEvaluation = (evaluation: number) => {
+		if (evaluation === EvaluationState.Exact)
+			return '🟩';
+		else if (evaluation === EvaluationState.Adjacent)
+			return '🟨';
+		return '⬜';
+	};
+
+	const formatGrid = () => {
+		const shortId: string = `${(gameTime.getUTCMonth() ?? 0)+1}/${(gameTime.getUTCDate() ?? 1)}`;
+		let output: string = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${evaluatedGuesses.length}!` : `${GAME_NAME} ${shortId} stumped me!`;
+		output += `\n${GAME_URL}`;
+		evaluatedGuesses.forEach(evaluatedGuess => {
+			output += '\n';
+			['variantEval', 'seriesEval', 'rarityEval'].forEach(evaluation => {
+				output += formatEvaluation(evaluatedGuess[evaluation]);
+			});
+			[0, 1, 2].forEach(idx => {
+				output += formatEvaluation(evaluatedGuess.skillsEval[idx]);
+			});
+		});
+		navigator.clipboard.writeText(output);
+	};
+
+	return (
+		<div style={{ marginTop: '2em' }}>
+			<Popup	/* Copied! */
+				content='Copied!'
+				on='click'
+				position='right center'
+				size='tiny'
+				trigger={
+					<Button	/* Copy results to clipboard */
+						content='Copy results to clipboard'
+						icon='clipboard check'
+						onClick={() => formatGrid()}
+					/>
+				}
+			/>
+		</div>
+	);
 };

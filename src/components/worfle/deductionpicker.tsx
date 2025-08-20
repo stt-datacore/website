@@ -10,18 +10,19 @@ import {
 	Segment
 } from 'semantic-ui-react';
 
-import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
+import { IDataGridSetup, IDataPickerState, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
 import { IDeduction, ISolverPrefs, ITraitOption, TAssertion } from './model';
-import { GuesserContext } from './context';
+import { GameContext, GuesserContext } from './context';
 
 type DeductionPickerModalProps = {
 	closeDeductionPicker: () => void;
 };
 
 export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
-	const { traitOptions, deductions, filters, setFilters, solverPrefs, setSolverPrefs } = React.useContext(GuesserContext);
+	const { traitOptions, deductions } = React.useContext(GameContext);
+	const { filters, setFilters, solverPrefs, setSolverPrefs } = React.useContext(GuesserContext);
 
 	const [showAll, setShowAll] = React.useState<boolean>(true);
 	const [pendingSolverPrefs, setPendingSolverPrefs] = React.useState<ISolverPrefs>(JSON.parse(JSON.stringify(solverPrefs)));
@@ -91,7 +92,7 @@ export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
 		);
 	}
 
-	function renderActions(): JSX.Element {
+	function renderActions(dataPickerState: IDataPickerState): JSX.Element {
 		const allText: string = showAll ? 'Only show required' : 'Show all';
 		return (
 			<React.Fragment>
@@ -101,7 +102,7 @@ export const DeductionPickerModal = (props: DeductionPickerModalProps) => {
 				/>
 				<Button /* Close */
 					content='Close'
-					onClick={() => props.closeDeductionPicker()}
+					onClick={() => handleSelectedIds(dataPickerState.pendingSelectedIds)}
 				/>
 			</React.Fragment>
 		);

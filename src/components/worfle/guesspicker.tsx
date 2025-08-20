@@ -8,21 +8,14 @@ import {
 	Label,
 	Message,
 	Popup,
-	Segment,
-	SemanticICONS
+	Segment
 } from 'semantic-ui-react';
-
-import { GlobalContext } from '../../context/globalcontext';
 
 import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
-import CONFIG from '../CONFIG';
-
-import { EvaluationState, ICrewPickerFilters, IDeduction, IEvaluatedGuess, IRosterCrew, ISolverPrefs, ITraitOption, TAssertion, TEvaluationField, TTraitType } from './model';
-import { SERIES_ERAS } from './config';
-import { GuesserContext, IGuesserContext, WorfleContext } from './context';
-import { GameRules, getEraBySeries, getTraitName } from './game';
+import { ICrewPickerFilters, IDeduction, IRosterCrew, ISolverPrefs, ITraitOption, TAssertion, TEvaluationField } from './model';
+import { GameContext, GuesserContext, IGuesserContext, WorfleContext } from './context';
 import { DeductionPickerModal } from './deductionpicker';
 
 const defaultCrewPickerFilters: ICrewPickerFilters = {
@@ -41,15 +34,13 @@ const defaultSolverPrefs: ISolverPrefs = {
 };
 
 type GuessPickerProps = {
-	rules: GameRules;
-	evaluatedGuesses: IEvaluatedGuess[];
 	setSelectedCrew: (crewSymbol: string) => void;
+	useDeductions: (deductions: IDeduction[]) => void;
 };
 
 export const GuessPicker = (props: GuessPickerProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { variantMap, traitMap } = React.useContext(WorfleContext);
-	const { rules, evaluatedGuesses, setSelectedCrew } = props;
+	const { rules, evaluatedGuesses, deductions } = React.useContext(GameContext);
+	const { setSelectedCrew, useDeductions } = props;
 
 	const [filters, setFilters] = React.useState<ICrewPickerFilters>(JSON.parse(JSON.stringify(defaultCrewPickerFilters)));
 	const [solverPrefs, setSolverPrefs] = React.useState<ISolverPrefs>(JSON.parse(JSON.stringify(defaultSolverPrefs)));
@@ -58,14 +49,6 @@ export const GuessPicker = (props: GuessPickerProps) => {
 	const [deductionPickerIsOpen, setDeductionPickerIsOpen] = React.useState<boolean>(false);
 	const [showHints, setShowHints] = React.useState<boolean>(false);
 
-	const traitOptions = React.useMemo(() => {
-		return getTraitOptions();
-	}, [rules]);
-
-	const deductions = React.useMemo<IDeduction[]>(() => {
-		return getDeductions();
-	}, [evaluatedGuesses]);
-
 	React.useEffect(() => {
 		deduceFilters();
 	}, [deductions, solverPrefs]);
@@ -73,10 +56,6 @@ export const GuessPicker = (props: GuessPickerProps) => {
 	const guessesLeft: number = rules.max_guesses - evaluatedGuesses.length;
 
 	const guesserData: IGuesserContext = {
-		rules,
-		evaluatedGuesses,
-		traitOptions,
-		deductions,
 		filters,
 		setFilters,
 		solverPrefs,
@@ -114,70 +93,6 @@ export const GuessPicker = (props: GuessPickerProps) => {
 		</GuesserContext.Provider>
 	);
 
-	function getTraitOptions(): ITraitOption[] {
-		const options: ITraitOption[] = [];
-		rules.series.forEach(series => {
-			options.push({
-				id: options.length + 1,
-				name: `   ${SERIES_ERAS.find(seriesEra => seriesEra.series === series)!.title}`,
-				icon: 'tv',
-				field: 'series',
-				value: series
-			});
-		});
-		rules.rarities.forEach(rarity => {
-			options.push({
-				id: options.length + 1,
-				name: `  ${rarity}*`,
-				icon: 'star',
-				field: 'rarity',
-				value: rarity
-			});
-		});
-		Object.keys(CONFIG.SKILLS).forEach(skill => {
-			options.push({
-				id: options.length + 1,
-				name: ` ${CONFIG.SKILLS[skill]}`,
-				iconUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`,
-				field: 'skills',
-				value: skill
-			});
-		});
-		Object.keys(traitMap).forEach(trait => {
-			if (traitMap[trait].count > 1) {
-				const type: TTraitType = traitMap[trait].type;
-				let icon: SemanticICONS | undefined;
-				if (trait === 'female') icon = 'venus';
-				if (trait === 'male') icon = 'mars';
-				options.push({
-					id: options.length + 1,
-					name: getTraitName(trait, variantMap, TRAIT_NAMES, type),
-					icon,
-					iconUrl: !icon ? getTraitIconUrl(trait, type) : undefined,
-					field: 'traits',
-					value: trait
-				});
-			}
-		});
-		return options;
-	}
-
-	function getTraitIconUrl(trait: string, type: TTraitType): string {
-		let iconUrl: string = '';
-		switch (type) {
-			case 'collection':
-				iconUrl = '/media/vault.png';
-				break;
-			case 'trait':
-				iconUrl = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
-				break;
-			case 'variant':
-				iconUrl = '/media/crew_icon.png';
-				break;
-		}
-		return iconUrl;
-	}
-
 	function assert(deductions: IDeduction[], field: TEvaluationField, value: string | number, assertion: TAssertion): void {
 		const existing: IDeduction | undefined = deductions.find(deduction =>
 			deduction.field === field && deduction.value === value
@@ -188,70 +103,6 @@ export const GuessPicker = (props: GuessPickerProps) => {
 		else {
 			deductions.push({ field, value, assertion });
 		}
-	}
-
-	function getDeductions(): IDeduction[] {
-		const deductions: IDeduction[] = [];
-		evaluatedGuesses.forEach(evaluatedGuess => {
-			if (evaluatedGuess.seriesEval === EvaluationState.Exact) {
-				assert(deductions, 'series', evaluatedGuess.crew.gamified_series, 'required');
-			}
-			else if (evaluatedGuess.seriesEval === EvaluationState.Adjacent) {
-				const adjacentSeries: string = evaluatedGuess.crew.gamified_series;
-				const mysteryEra: number = getEraBySeries(adjacentSeries);
-				SERIES_ERAS.filter(seriesEra => seriesEra.series === adjacentSeries || seriesEra.era !== mysteryEra).forEach(seriesEra => {
-					assert(deductions, 'series', seriesEra.series, 'rejected');
-				});
-			}
-			else if (evaluatedGuess.seriesEval === EvaluationState.Wrong) {
-				const wrongSeries: string = evaluatedGuess.crew.gamified_series;
-				const wrongEra: number = getEraBySeries(wrongSeries);
-				SERIES_ERAS.filter(seriesEra => seriesEra.era === wrongEra).forEach(seriesEra => {
-					assert(deductions, 'series', seriesEra.series, 'rejected');
-				});
-			}
-
-			if (evaluatedGuess.rarityEval === EvaluationState.Exact) {
-				assert(deductions, 'rarity', evaluatedGuess.crew.max_rarity, 'required');
-			}
-			else if (evaluatedGuess.rarityEval === EvaluationState.Adjacent) {
-				const adjacentRarity: number = evaluatedGuess.crew.max_rarity;
-				rules.rarities.forEach(rarity => {
-					if (![adjacentRarity - 1, adjacentRarity + 1].includes(rarity))
-						assert(deductions, 'rarity', rarity, 'rejected');
-				});
-			}
-			else if (evaluatedGuess.rarityEval === EvaluationState.Wrong) {
-				const wrongRarity: number = evaluatedGuess.crew.max_rarity;
-				rules.rarities.forEach(rarity => {
-					if ([wrongRarity - 1, wrongRarity, wrongRarity + 1].includes(rarity))
-						assert(deductions, 'rarity', rarity, 'rejected');
-				});
-			}
-
-			[0, 1, 2].forEach(index => {
-				if (evaluatedGuess.crew.skill_order.length > index) {
-					const skill: string = evaluatedGuess.crew.skill_order[index];
-					if (evaluatedGuess.skillsEval[index] === EvaluationState.Wrong) {
-						assert(deductions, 'skills', skill, 'rejected');
-					}
-					else {
-						assert(deductions, 'skills', skill, 'required');
-					}
-				}
-			});
-
-			evaluatedGuess.crew.gamified_traits.forEach(trait => {
-				if (evaluatedGuess.matching_traits.includes(trait)) {
-					assert(deductions, 'traits', trait, 'required');
-				}
-				else {
-					assert(deductions, 'traits', trait, 'rejected');
-				}
-			});
-		});
-
-		return deductions;
 	}
 
 	function deduceFilters(): void {
@@ -291,6 +142,8 @@ export const GuessPicker = (props: GuessPickerProps) => {
 		// 	})
 		// }
 
+		useDeductions(newDeductions);
+
 		setFilters({
 			...filters,
 			deductions: newDeductions
@@ -308,7 +161,8 @@ type GuessPickerModalProps = {
 
 const GuessPickerModal = (props: GuessPickerModalProps) => {
 	const { roster: data } = React.useContext(WorfleContext);
-	const { rules, evaluatedGuesses, filters } = React.useContext(GuesserContext);
+	const { rules, evaluatedGuesses } = React.useContext(GameContext);
+	const { filters } = React.useContext(GuesserContext);
 	const { setSelectedCrew, showHints, setShowHints } = props;
 
 	const filteredIds = React.useMemo<Set<number>>(() => {
@@ -512,8 +366,7 @@ const GuessPickerOptions = () => {
 };
 
 const DeductionsSelected = () => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { variantMap } = React.useContext(WorfleContext);
+	const { traitOptions } = React.useContext(GameContext);
 	const { filters } = React.useContext(GuesserContext);
 
 	return (
@@ -532,27 +385,24 @@ const DeductionsSelected = () => {
 	);
 
 	function renderLabel(deduction: IDeduction): JSX.Element {
+		let label: JSX.Element = <></>;
+		if (deduction.field === 'skills') {
+			label = <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
+		}
+		else {
+			const option: ITraitOption | undefined = traitOptions.find(option =>
+				option.field === deduction.field && option.value === deduction.value
+			);
+			if (option) label = <>{option.name}</>;
+		}
 		return (
 			<Label key={`${deduction.field},${deduction.value}`} size='small'>
 				<div>
 					{deduction.assertion === 'required' && <Icon name='check' />}
 					{deduction.assertion === 'rejected' && <Icon name='ban' />}
-					{renderDeduction(deduction)}
+					{label}
 				</div>
 			</Label>
 		);
-	}
-
-	function renderDeduction(deduction: IDeduction): JSX.Element {
-		if (deduction.field === 'series')
-			return <>{(deduction.value as string).toUpperCase()}</>;
-
-		if (deduction.field === 'rarity')
-			return <>{`${deduction.value}*`}</>;
-
-		if (deduction.field === 'skills')
-			return <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
-
-		return <>{getTraitName(deduction.value as string, variantMap, TRAIT_NAMES)}</>;
 	}
 };

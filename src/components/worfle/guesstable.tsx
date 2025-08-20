@@ -9,40 +9,17 @@ import {
 
 import { GlobalContext } from '../../context/globalcontext';
 
-import { EvaluationState, IEvaluatedGuess, IRosterCrew, SolveState } from './model';
-import { WorfleContext } from './context';
-import { GameRules, getTraitName } from './game';
+import { EvaluationState, IEvaluatedGuess, SolveState } from './model';
+import { GameContext, WorfleContext } from './context';
+import { getTraitName } from './game';
 
 const STYLE_SOLVED: React.CSSProperties = { backgroundColor: 'green', color: 'white' };
 const STYLE_ADJACENT: React.CSSProperties = { backgroundColor: 'yellow', color: 'black' };
 const STYLE_LOSER: React.CSSProperties = { backgroundColor: 'maroon', color: 'white' };
 
-type GuessTableProps = {
-	rules: GameRules;
-	solveState: SolveState;
-	mysteryCrew: IRosterCrew;
-	evaluatedGuesses: IEvaluatedGuess[];
-};
+export const GuessTable = () => {
+	const { solveState, mysteryCrew, evaluatedGuesses } = React.useContext(GameContext);
 
-export const GuessTable = (props: GuessTableProps) => {
-	const { rules, solveState, mysteryCrew } = props;
-
-	const evaluatedGuesses: IEvaluatedGuess[] = props.evaluatedGuesses.slice();
-	if (solveState === SolveState.Loser) {
-		evaluatedGuesses.push({
-			crew: mysteryCrew,
-			crewEval: EvaluationState.Exact,
-			variantEval: EvaluationState.Wrong,
-			seriesEval: EvaluationState.Wrong,
-			rarityEval: EvaluationState.Wrong,
-			skillsEval: [
-				EvaluationState.Wrong,
-				EvaluationState.Wrong,
-				EvaluationState.Wrong
-			],
-			matching_traits: mysteryCrew.gamified_traits
-		});
-	}
 	if (evaluatedGuesses.length === 0) return <></>;
 
 	return (
@@ -68,33 +45,52 @@ export const GuessTable = (props: GuessTableProps) => {
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{evaluatedGuesses.map(guess => (
-						<GuessRow key={guess.crew.symbol}
-							rules={rules}
-							evaluatedGuess={guess}
-							solveState={solveState}
-							guessCount={props.evaluatedGuesses.length}
+					{evaluatedGuesses.map(evaluatedGuess => (
+						<GuessRow key={evaluatedGuess.crew.symbol}
+							evaluatedGuess={evaluatedGuess}
 						/>
 					))}
+					{solveState === SolveState.Loser && renderLoserRow()}
 				</Table.Body>
 			</Table>
 		</div>
 	);
+
+	function renderLoserRow(): JSX.Element {
+		const evaluatedMysteryCrew: IEvaluatedGuess = {
+			crew: mysteryCrew,
+			crewEval: EvaluationState.Exact,
+			variantEval: EvaluationState.Wrong,
+			seriesEval: EvaluationState.Wrong,
+			rarityEval: EvaluationState.Wrong,
+			skillsEval: [
+				EvaluationState.Wrong,
+				EvaluationState.Wrong,
+				EvaluationState.Wrong
+			],
+			matching_traits: mysteryCrew.gamified_traits
+		};
+		return (
+			<GuessRow key={mysteryCrew.symbol}
+				evaluatedGuess={evaluatedMysteryCrew}
+			/>
+		);
+	}
 };
 
 type GuessRowProps = {
-	rules: GameRules;
 	evaluatedGuess: IEvaluatedGuess;
-	solveState: SolveState;
-	guessCount: number;
 };
 
 const GuessRow = (props: GuessRowProps) => {
 	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
 	const { variantMap } = React.useContext(WorfleContext);
-	const { rules, evaluatedGuess, solveState, guessCount } = props;
+	const { rules, evaluatedGuesses, deductionsUsed, solveState } = React.useContext(GameContext);
+	const { evaluatedGuess } = props;
 
 	const isSolution: boolean = evaluatedGuess.crewEval === EvaluationState.Exact;
+
+	const guessCount: number = evaluatedGuesses.length;
 
 	return (
 		<Table.Row style={styleRow()}>
@@ -103,7 +99,7 @@ const GuessRow = (props: GuessRowProps) => {
 					<div>
 						{solveState === SolveState.Winner && (
 							<span style={{ whiteSpace: 'nowrap' }} /* You got it in N try (tries) */>
-								You got it in {guessCount} tr{guessCount !== 1 ? 'ies' : 'y'}!
+								You got it in {guessCount} tr{guessCount !== 1 ? 'ies' : 'y'}, using {deductionsUsed.length} deductions!
 							</span>
 						)}
 						{solveState === SolveState.Loser && (

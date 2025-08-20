@@ -1,19 +1,18 @@
 import React from 'react';
 import {
-	Button,
-	Popup
+	SemanticICONS
 } from 'semantic-ui-react';
 
 import { TraitNames } from '../../model/traits';
+import { GlobalContext } from '../../context/globalcontext';
 
-import { EvaluationState, IEvaluatedGuess, IRosterCrew, IVariantMap, SolveState, TTraitType } from './model';
+import CONFIG from '../CONFIG';
+
+import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, ITraitOption, IVariantMap, SolveState, TAssertion, TEvaluationField, TTraitType } from './model';
 import { SERIES_ERAS, USABLE_COLLECTIONS, USABLE_HIDDEN_TRAITS } from './config';
-import { WorfleContext } from './context';
+import { GameContext, IGameContext, WorfleContext } from './context';
 import { GuessPicker } from './guesspicker';
 import { GuessTable } from './guesstable';
-
-const GAME_NAME = 'Worfle';
-const GAME_URL = 'https://datacore.app/crewchallenge';
 
 export const DEFAULT_GUESSES = 8;
 export const DEFAULT_SERIES = SERIES_ERAS.map(seriesEra => seriesEra.series);
@@ -38,21 +37,31 @@ type GameProps = {
 	solution: string;
 	guesses: string[];
 	setGuesses: (guesses: string[]) => void;
+	deductionsUsed: IDeduction[];
+	setDeductionsUsed: (deductionsUsed: IDeduction[]) => void;
 	solveState: number;
 	setSolveState: (solveState: number) => void;
-	gameTime?: Date;
 	onGameEnd?: (solveState: number) => void;
+	renderShare?: (evaluatedGuesses: IEvaluatedGuess[]) => JSX.Element;
 };
 
 export const Game = (props: GameProps) => {
-	const { roster } = React.useContext(WorfleContext);
-	const { rules, solution, guesses, setGuesses, solveState, setSolveState } = props;
+	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
+	const { roster, traitMap, variantMap } = React.useContext(WorfleContext);
+	const { rules, solution, guesses, setGuesses, deductionsUsed, setDeductionsUsed, solveState, setSolveState } = props;
+
+	const [evaluatedGuesses, setEvaluatedGuesses] = React.useState<IEvaluatedGuess[]>([]);
+	const [deductions, setDeductions] = React.useState<IDeduction[]>([]);
+
+	const traitOptions = React.useMemo(() => {
+		return getTraitOptions();
+	}, [rules]);
 
 	const mysteryCrew = React.useMemo<IRosterCrew | undefined>(() => {
 		return roster.find(crew => crew.symbol === solution);
 	}, [solution]);
 
-	const evaluatedGuesses = React.useMemo<IEvaluatedGuess[]>(() => {
+	React.useEffect(() => {
 		const evaluatedGuesses: IEvaluatedGuess[] = [];
 		if (mysteryCrew) {
 			guesses.forEach(guess => {
@@ -60,71 +69,98 @@ export const Game = (props: GameProps) => {
 				if (guessedCrew) evaluatedGuesses.push(evaluateGuess(guessedCrew, mysteryCrew));
 			});
 		}
-		return evaluatedGuesses;
+		const deductions: IDeduction[] = getDeductions(evaluatedGuesses);
+		setEvaluatedGuesses(evaluatedGuesses);
+		setDeductions(deductions);
 	}, [mysteryCrew, guesses]);
 
 	if (!mysteryCrew) return <></>;
 
+	const gameData: IGameContext = {
+		rules,
+		traitOptions,
+		mysteryCrew,
+		evaluatedGuesses,
+		deductions,
+		deductionsUsed,
+		solveState
+	};
+
 	return (
-		<React.Fragment>
-			<GuessTable
-				rules={rules}
-				solveState={solveState}
-				mysteryCrew={mysteryCrew}
-				evaluatedGuesses={evaluatedGuesses}
-			/>
+		<GameContext.Provider value={gameData}>
+			<GuessTable />
 			{solveState === SolveState.Unsolved && (
 				<GuessPicker
-					rules={rules}
-					evaluatedGuesses={evaluatedGuesses}
 					setSelectedCrew={handleCrewSelect}
+					useDeductions={useDeductions}
 				/>
 			)}
-			{renderShare()}
-		</React.Fragment>
+			{solveState !== SolveState.Unsolved && props.renderShare && props.renderShare(evaluatedGuesses)}
+		</GameContext.Provider>
 	);
 
-	function renderShare(): JSX.Element {
-		if (solveState === SolveState.Unsolved) return <></>;
-		if (!props.gameTime) return <></>;
-
-		const formatEvaluation = (evaluation: number) => {
-			if (evaluation === EvaluationState.Exact)
-				return '🟩';
-			else if (evaluation === EvaluationState.Adjacent)
-				return '🟨';
-			return '⬜';
-		};
-
-		const formatGrid = () => {
-			const shortId = `${(props.gameTime?.getUTCMonth() ?? 0)+1}/${(props.gameTime?.getUTCDate() ?? 1)}`;
-			let output = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${guesses.length}!` : `${GAME_NAME} ${shortId} stumped me!`;
-			output += `\n${GAME_URL}`;
-			evaluatedGuesses.forEach(evaluatedGuess => {
-				output += '\n';
-				['variantEval', 'seriesEval', 'rarityEval'].forEach(evaluation => {
-					output += formatEvaluation(evaluatedGuess[evaluation]);
-				});
-				[0, 1, 2].forEach(idx => {
-					output += formatEvaluation(evaluatedGuess.skillsEval[idx]);
-				});
+	function getTraitOptions(): ITraitOption[] {
+		const options: ITraitOption[] = [];
+		rules.series.forEach(series => {
+			options.push({
+				id: options.length + 1,
+				name: `   ${SERIES_ERAS.find(seriesEra => seriesEra.series === series)!.title}`,
+				icon: 'tv',
+				field: 'series',
+				value: series
 			});
-			navigator.clipboard.writeText(output);
-		};
+		});
+		rules.rarities.forEach(rarity => {
+			options.push({
+				id: options.length + 1,
+				name: `  ${rarity}*`,
+				icon: 'star',
+				field: 'rarity',
+				value: rarity
+			});
+		});
+		Object.keys(CONFIG.SKILLS).forEach(skill => {
+			options.push({
+				id: options.length + 1,
+				name: ` ${CONFIG.SKILLS[skill]}`,
+				iconUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`,
+				field: 'skills',
+				value: skill
+			});
+		});
+		Object.keys(traitMap).forEach(trait => {
+			if (traitMap[trait].count > 1) {
+				const type: TTraitType = traitMap[trait].type;
+				let icon: SemanticICONS | undefined;
+				if (trait === 'female') icon = 'venus';
+				if (trait === 'male') icon = 'mars';
+				options.push({
+					id: options.length + 1,
+					name: getTraitName(trait, variantMap, TRAIT_NAMES, type),
+					icon,
+					iconUrl: !icon ? getTraitIconUrl(trait, type) : undefined,
+					field: 'traits',
+					value: trait
+				});
+			}
+		});
+		return options;
+	}
 
-		return (
-			<div style={{ marginTop: '2em' }}>
-				<Popup
-					content='Copied!'
-					on='click'
-					position='right center'
-					size='tiny'
-					trigger={
-						<Button icon='clipboard check' content='Copy results to clipboard' onClick={() => formatGrid()} />
-					}
-				/>
-			</div>
-		);
+	function getTraitIconUrl(trait: string, type: TTraitType): string {
+		let iconUrl: string = '';
+		switch (type) {
+			case 'collection':
+				iconUrl = '/media/vault.png';
+				break;
+			case 'trait':
+				iconUrl = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+				break;
+			case 'variant':
+				iconUrl = '/media/crew_icon.png';
+				break;
+		}
+		return iconUrl;
 	}
 
 	function handleCrewSelect(symbol: string): void {
@@ -205,11 +241,98 @@ export const Game = (props: GameProps) => {
 			matching_traits: evaluateTraits(guessedCrew.gamified_traits)
 		};
 	}
-};
 
-export function getEraBySeries(series: string): number {
-	return SERIES_ERAS.find(seriesEra => seriesEra.series === series)?.era ?? -1;
-}
+	function assert(deductions: IDeduction[], field: TEvaluationField, value: string | number, assertion: TAssertion): void {
+		const existing: IDeduction | undefined = deductions.find(deduction =>
+			deduction.field === field && deduction.value === value
+		);
+		if (existing) {
+			existing.assertion = assertion;
+		}
+		else {
+			deductions.push({ field, value, assertion });
+		}
+	}
+
+	function getDeductions(evaluatedGuesses: IEvaluatedGuess[]): IDeduction[] {
+		const deductions: IDeduction[] = [];
+		evaluatedGuesses.forEach(evaluatedGuess => {
+			if (evaluatedGuess.seriesEval === EvaluationState.Exact) {
+				assert(deductions, 'series', evaluatedGuess.crew.gamified_series, 'required');
+			}
+			else if (evaluatedGuess.seriesEval === EvaluationState.Adjacent) {
+				const adjacentSeries: string = evaluatedGuess.crew.gamified_series;
+				const mysteryEra: number = getEraBySeries(adjacentSeries);
+				SERIES_ERAS.filter(seriesEra => seriesEra.series === adjacentSeries || seriesEra.era !== mysteryEra).forEach(seriesEra => {
+					assert(deductions, 'series', seriesEra.series, 'rejected');
+				});
+			}
+			else if (evaluatedGuess.seriesEval === EvaluationState.Wrong) {
+				const wrongSeries: string = evaluatedGuess.crew.gamified_series;
+				const wrongEra: number = getEraBySeries(wrongSeries);
+				SERIES_ERAS.filter(seriesEra => seriesEra.era === wrongEra).forEach(seriesEra => {
+					assert(deductions, 'series', seriesEra.series, 'rejected');
+				});
+			}
+
+			if (evaluatedGuess.rarityEval === EvaluationState.Exact) {
+				assert(deductions, 'rarity', evaluatedGuess.crew.max_rarity, 'required');
+			}
+			else if (evaluatedGuess.rarityEval === EvaluationState.Adjacent) {
+				const adjacentRarity: number = evaluatedGuess.crew.max_rarity;
+				rules.rarities.forEach(rarity => {
+					if (![adjacentRarity - 1, adjacentRarity + 1].includes(rarity))
+						assert(deductions, 'rarity', rarity, 'rejected');
+				});
+			}
+			else if (evaluatedGuess.rarityEval === EvaluationState.Wrong) {
+				const wrongRarity: number = evaluatedGuess.crew.max_rarity;
+				rules.rarities.forEach(rarity => {
+					if ([wrongRarity - 1, wrongRarity, wrongRarity + 1].includes(rarity))
+						assert(deductions, 'rarity', rarity, 'rejected');
+				});
+			}
+
+			[0, 1, 2].forEach(index => {
+				if (evaluatedGuess.crew.skill_order.length > index) {
+					const skill: string = evaluatedGuess.crew.skill_order[index];
+					if (evaluatedGuess.skillsEval[index] === EvaluationState.Wrong) {
+						assert(deductions, 'skills', skill, 'rejected');
+					}
+					else {
+						assert(deductions, 'skills', skill, 'required');
+					}
+				}
+			});
+
+			evaluatedGuess.crew.gamified_traits.forEach(trait => {
+				if (evaluatedGuess.matching_traits.includes(trait)) {
+					assert(deductions, 'traits', trait, 'required');
+				}
+				else {
+					assert(deductions, 'traits', trait, 'rejected');
+				}
+			});
+		});
+
+		return deductions;
+	}
+
+	function getEraBySeries(series: string): number {
+		return SERIES_ERAS.find(seriesEra => seriesEra.series === series)?.era ?? -1;
+	}
+
+	function useDeductions(deductions: IDeduction[]): void {
+		const usedDeductions: IDeduction[] = deductionsUsed.slice();
+		deductions.forEach(deduction => {
+			if (!usedDeductions.find(existing =>
+				existing.field === deduction.field && existing.value === deduction.value
+			))
+				usedDeductions.push(deduction);
+		});
+		setDeductionsUsed(usedDeductions);
+	}
+};
 
 export function getTraitType(trait: string, variantMap: IVariantMap): TTraitType {
 	let type: TTraitType = 'trait';
