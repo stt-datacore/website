@@ -43,7 +43,8 @@ export const CombosModal = (props: CombosModalProps) => {
 	const [groupIndex, setGroupIndex] = React.useState<number>(0);
 
 	const [actionableOnlyMode, setActionableOnlyMode] = React.useState<boolean>(true);
-	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`retrieval/always_show_polestars`, false, { rememberForever: true })
+	const [alwaysShowPrice, setAlwaysShowPrice] = useStateWithStorage(`retrieval/always_show_polestars`, false, { rememberForever: true });
+	const [alwaysSortByCost, setAlwaysSortByCost] = useStateWithStorage(`retrieval/always_sort_by_cost`, false, { rememberForever: true });
 
 	// Calc algo is always set to short now, but deep algo code should still work, if the option is ever needed
 	const [algo, setAlgo] = React.useState<string>('');
@@ -77,8 +78,8 @@ export const CombosModal = (props: CombosModalProps) => {
 				{renderContent()}
 			</Modal.Content>
 			<Modal.Actions>
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					<div style={{display: 'flex', flexDirection:'column', alignItems: 'flex-start', gap: '0.5em', justifyContent: 'flex-start'}}>
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+					<div style={{display: 'flex', flexDirection:'column', alignItems: 'flex-start', gap: '0.75em', justifyContent: 'flex-start'}}>
 						{showModeToggler && (
 							<Checkbox
 								label={t('retrieval.hide_combos_with_unowned_polestars')}
@@ -91,6 +92,12 @@ export const CombosModal = (props: CombosModalProps) => {
 							checked={alwaysShowPrice}
 							onChange={(e, { checked }) => setAlwaysShowPrice(checked as boolean)}
 						/>
+						{alwaysShowPrice &&
+						<Checkbox
+							label={t('collections.options.sort_by_cost')}
+							onChange={(e, { checked }) => setAlwaysSortByCost(checked as boolean)}
+							checked={alwaysSortByCost}
+						/>}
 					</div>
 					<Button onClick={() => setModalIsOpen(false)}>
 						{t('global.close')}
@@ -231,7 +238,12 @@ export const CombosModal = (props: CombosModalProps) => {
 						<Message>
 							<CombosPlanner uniqueCombos={uniqueCombos} />
 						</Message>
-						<CombosGrid alwaysShowPrice={alwaysShowPrice} combos={uniqueCombos} fuseIndex={fuseIndex} />
+						<CombosGrid
+							alwaysShowPrice={alwaysShowPrice}
+							alwaysSortByCost={alwaysSortByCost}
+							combos={uniqueCombos}
+							fuseIndex={fuseIndex}
+						/>
 					</React.Fragment>
 				);
 			}
@@ -263,12 +275,22 @@ export const CombosModal = (props: CombosModalProps) => {
 							)}
 						</Message>
 					)}
-					<CombosGrid alwaysShowPrice={alwaysShowPrice} combos={combos} fuseIndex={fuseIndex} />
+					<CombosGrid
+						alwaysShowPrice={alwaysShowPrice}
+						alwaysSortByCost={alwaysSortByCost}
+						combos={combos}
+						fuseIndex={fuseIndex}
+						/>
 				</React.Fragment>
 			);
 		}
 
-		return <CombosGrid alwaysShowPrice={alwaysShowPrice} combos={uniqueCombos} fuseIndex={1} />;
+		return <CombosGrid
+			alwaysShowPrice={alwaysShowPrice}
+			alwaysSortByCost={alwaysSortByCost}
+			combos={uniqueCombos}
+			fuseIndex={1}
+			/>;
 	}
 
 	function preCalculateCombos(): void {
