@@ -9,6 +9,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { Link } from 'gatsby';
 import { AvatarView } from '../item_presenters/avatarview';
 import { getIconPath } from '../../utils/assets';
+import { OptionsPanelFlexColumn } from '../stats/utils';
 
 export interface PairCardProps {
     crew: CrewMember | PlayerCrew;
@@ -18,7 +19,7 @@ export interface PairCardProps {
     onlyActiveRound?: boolean;
 }
 
-export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean): JSX.Element => {
+export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean, key?: string): JSX.Element => {
     if (!pair?.length || !pair[0]?.skill) return <></>
 
     const disabledOpacity = 0.5;
@@ -26,38 +27,55 @@ export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: 
     const orangeColor = 'orange';
     const redColor = '#ff3300';
 
+    const flexCol = OptionsPanelFlexColumn;
+
     return (
-        <div style={{
+        <div
+            key={key}
+            style={{
             ...style,
             display: "flex",
-            flexDirection: "row",
-            justifyContent: "center"
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            borderBottom: !!key ? '1px solid darkgray' : undefined
         }}>
             {debuff && <i title={"Crew power is reduced"} className="down arrow icon" style={{ margin: "0.375em 0", fontSize: "10pt", color: orangeColor }} />}
             {disabled && <i title={"Crew is disabled"} className="exclamation circle icon" style={{ margin: "0.375em 0", fontSize: "10pt", color: redColor }} />}
             <div style={{
-                display: "flex",
-                flexDirection: "row",
+                textAlign: 'left',
+                display: "grid",
+                gridTemplateAreas: "'image power'",
+                gridTemplateColumns: "52px 100px",
                 opacity: disabled ? disabledOpacity : undefined
             }}>
-                <img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
+                <img style={{ height: '24px', gridArea: "image", margin: '0 auto' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
                 <div style={{
-                    margin: "0.5em"
+                    gridArea: "power",
+                    margin: "0.5em",
+                    textAlign: 'left'
                 }}>
-                    {pair[0].range_min}-{pair[0].range_max}
+                    <span>
+                        {pair[0].range_min}-{pair[0].range_max}
+                    </span>
                 </div>
             </div>
             {pair.length > 1 &&
                 <div style={{
-                    display: "flex",
-                    flexDirection: "row",
+                    display: "grid",
+                    gridTemplateAreas: "'image power'",
+                    gridTemplateColumns: "52px 100px",
                     opacity: disabled ? disabledOpacity : undefined
                 }}>
-                    <img style={{ maxHeight: '1.5em', margin: "0.25em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
+                    <img style={{ height: '24px', gridArea: "image", margin: '0 auto' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
                     <div style={{
-                        margin: "0.5em"
+                        gridArea: "power",
+                        margin: "0.5em",
+                        textAlign: 'left'
                     }}>
-                        {pair[1].range_min}-{pair[1].range_max}
+                        <span>
+                            {pair[1].range_min}-{pair[1].range_max}
+                        </span>
                     </div>
                 </div>}
         </div>
