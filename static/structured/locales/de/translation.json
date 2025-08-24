@@ -1688,7 +1688,7 @@
         "rank": "Rang",
         "scores": {
             "am_seating": "Antimaterie-Sitze",
-            "collections": "Stat-Boosting-Sammlungen",
+            "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
