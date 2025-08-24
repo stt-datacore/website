@@ -457,7 +457,7 @@ export function getAllCrewRewards(col: Collection) {
         return [];
     }
 
-    let rewards = JSON.parse(JSON.stringify(col.milestones)).map((c: Milestone) => c.rewards!).filet(f => f.type === 1).flat() as Reward[];
+    let rewards = JSON.parse(JSON.stringify(col.milestones)).map((c: Milestone) => c.rewards!).filter((f: Reward) => f.type === 1).flat() as Reward[];
 
     rewards.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 
