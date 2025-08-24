@@ -1700,7 +1700,7 @@
         "rank": "Rang",
         "scores": {
             "am_seating": "Sièges antimatière",
-            "collections": "Collections améliorant les statistiques",
+            "collections": "Collections",
             "crit": "Critique élevée",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
