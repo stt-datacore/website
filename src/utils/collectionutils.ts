@@ -452,3 +452,35 @@ export function getAllStatBuffs(col: Collection) {
     return output;
 }
 
+export function getAllCrewRewards(col: Collection) {
+    if (!col.milestones) {
+        return [];
+    }
+
+    let rewards = JSON.parse(JSON.stringify(col.milestones)).map((c: Milestone) => c.rewards!).filet(f => f.type === 1).flat() as Reward[];
+
+    rewards.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
+
+    let output = [] as Reward[];
+    let lastSymbol = '';
+
+    for (let reward of rewards) {
+        if (reward.symbol === lastSymbol) {
+            output[output.length - 1].quantity!++;
+        }
+        else {
+            reward.quantity ??= 1;
+            output.push(reward);
+        }
+        lastSymbol = reward.symbol!;
+    }
+
+    output.sort((a, b) => {
+        let r = b.quantity! - a.quantity!;
+        if (!r) r = a.symbol!.localeCompare(b.symbol!);
+        return r;
+    })
+
+    return output;
+}
+
