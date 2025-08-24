@@ -1671,7 +1671,7 @@
         "rank": "Rank",
         "scores": {
             "am_seating": "Antimatter Seats",
-            "collections": "Stat-Boosting Collections",
+            "collections": "Collections",
             "crit": "Elevated Crit",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",

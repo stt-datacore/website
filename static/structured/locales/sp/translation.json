@@ -1681,7 +1681,7 @@
         "rank": "Rango",
         "scores": {
             "am_seating": "Asientos de antimateria",
-            "collections": "Colecciones que mejoran las estadísticas",
+            "collections": "Colecciones",
             "crit": "Crítico elevado",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Reto",
