@@ -413,11 +413,10 @@ export function reverseDeduction<T extends ItemArchetypeBase>(item: EquipmentIte
 	return true;
 }
 
-export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly?: boolean) {
+export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly = false) {
 	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
-
 	if (overallOnly) {
-		crew.quipment_score = qps.map(m => Object.values(m.bonusInfo.bonuses)
+		crew.quipment_score ??= qps.map(m => Object.values(m.bonusInfo.bonuses)
 			.filter(n => crew.skill_order.includes(n.skill))
 			.sort((a, b) => skillSum(b) - skillSum(a))
 			.map((n: Skill) => skillSum(n)))
@@ -426,7 +425,6 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 
 		return;
 	}
-
 	crew.quipment_scores ??= {
 		command_skill: 0,
 		medicine_skill: 0,
@@ -436,21 +434,16 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 		engineering_skill: 0,
 		trait_limited: 0
 	};
-
-	crew.quipment_scores.trait_limited = qps.filter(f => !!f.item.traits_requirement?.length)
+	crew.quipment_scores.trait_limited ??= qps.filter(f => !!f.item.traits_requirement?.length)
 			.map(item => Object.values(item.bonusInfo.bonuses)
 			.filter(bonus => crew.skill_order.includes(bonus.skill))
 			.sort((a, b) => skillSum(b) - skillSum(a))
 			.map((skill: Skill) => skillSum(skill)))
 			.flat()
 			.reduce((p, n) => p + n, 0) * crew.max_rarity;
-
 	let qsum = 0;
-
 	CONFIG.SKILLS_SHORT.forEach(skinfo => {
-
 		if (!crew.skill_order.includes(skinfo.name)) return;
-
 		if (crew.quipment_scores) {
 			qsum += crew.quipment_scores[skinfo.name] = qps.map(m => Object.values(m.bonusInfo.bonuses)
 				.filter(bonus => bonus.skill === skinfo.name)
@@ -460,8 +453,7 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 				.reduce((p, n) => p + n, 0) * crew.max_rarity;
 		}
 	});
-
-	crew.quipment_score = Math.floor(qsum);
+	crew.quipment_score ??= Math.floor(qsum);
 }
 
 interface QpCount {
