@@ -210,7 +210,7 @@ const CustomRules = (props: CustomRulesProps) => {
 				{isDirty && (
 					<Button /* New Practice Game */
 						content='New Practice Game'
-						positive={isValid ? true : undefined}
+						disabled={!isValid ? true : undefined}
 						onClick={() => applyRules()}
 					/>
 				)}

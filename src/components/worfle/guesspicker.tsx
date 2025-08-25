@@ -17,10 +17,11 @@ import {
 import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
-import { IDeduction, IDeductionOption, IRosterCrew, TAssertion, TDeductionField, THintGroup } from './model';
+import { IDeduction, IRosterCrew, TAssertion, TDeductionField, THintGroup } from './model';
 import { GameContext, WorfleContext } from './context';
 import { getEraBySeries } from './game';
 import { HintPickerModal } from './hintpicker';
+import { DeductionList } from './deductionlist';
 
 type GuessPickerProps = {
 	readyToGuess: boolean;
@@ -288,7 +289,18 @@ const GuessPickerOptions = () => {
 
 	return (
 		<Form>
-			{hints.length > 0 && <HintsSelected />}
+			{hints.length > 0 && (
+				<React.Fragment>
+					<Message attached='top'	/* Only show crew who match all CHECKED traits and no BANNED traits shown below: */>
+						Only show crew who match all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits shown below:
+					</Message>
+					<Segment attached='bottom'>
+						<div style={{ maxHeight: '5em', overflowY: 'scroll' }}>
+							<DeductionList deductions={hints} />
+						</div>
+					</Segment>
+				</React.Fragment>
+			)}
 			<Form.Group>
 				<Form.Field	/* Hide nonviable crew */
 					control={Checkbox}
@@ -341,44 +353,4 @@ const GuessPickerOptions = () => {
 			</Form.Group>
 		</Form>
 	);
-};
-
-const HintsSelected = () => {
-	const { deductionOptions, hints } = React.useContext(GameContext);
-	return (
-		<React.Fragment>
-			<Message attached='top'	/* Only show crew who match all CHECKED traits and no BANNED traits shown below: */>
-				Only show crew who match all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits shown below:
-			</Message>
-			<Segment attached='bottom'>
-				<div style={{ maxHeight: '5em', overflowY: 'scroll' }}>
-					<Label.Group>
-						{hints.map(deduction => renderLabel(deduction))}
-					</Label.Group>
-				</div>
-			</Segment>
-		</React.Fragment>
-	);
-
-	function renderLabel(deduction: IDeduction): JSX.Element {
-		let label: JSX.Element = <></>;
-		if (deduction.field === 'skills') {
-			label = <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
-		}
-		else {
-			const option: IDeductionOption | undefined = deductionOptions.find(option =>
-				option.field === deduction.field && option.value === deduction.value
-			);
-			if (option) label = <>{option.name}</>;
-		}
-		return (
-			<Label key={`${deduction.field},${deduction.value}`} size='small'>
-				<div>
-					{deduction.assertion === 'required' && <Icon name='check' />}
-					{deduction.assertion === 'rejected' && <Icon name='ban' />}
-					{label}
-				</div>
-			</Label>
-		);
-	}
 };

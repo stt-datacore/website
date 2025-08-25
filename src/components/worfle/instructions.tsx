@@ -38,8 +38,8 @@ export const GameInstructions = () => {
 			<p>A <span style={adjacentStyle}>yellow rarity</span> indicates the mystery crew has a max rarity that is either 1 star higher or 1 star lower than your guess.</p>
 			<p>"<b>Skill Order</b>" lists the guessed crew's skills from highest to lowest base value. A <span style={adjacentStyle}>yellow skill</span> indicates the mystery crew has that skill, but not in the same position as your guess.</p>
 			<p>"<b>Traits in Common</b>" identify the traits* your guess and the mystery crew share in common.</p>
-			<p>If you need a little help, feel free to use the "Show hints" button on the crew picker. Hints identify a crew's series, rarity, and number of skills.</p>
-			<p>* All information used here comes directly from the Star Trek Timelines game data. Variants and traits may not always be what you expect; please see <a href='https://forum.wickedrealmgames.com/stt/discussion/18700/trait-audit-thread'>this thread</a> for known issues.</p>
+			<p>If you need a little help, feel free to use a Hint; hints will narrow down the list of solutions for you (but don't use too many hints if you want the game to be more challenging!). You can also enable Handicaps for the crew picker; handicaps will label each crew's series, rarity, and/or skills.</p>
+			<p>* All information used here comes directly from the Star Trek Timelines game data. Variants and traits may not always be what you expect.</p>
 			<p>** Some crew will be excluded as mystery crew because their in-game traits are misleading. The crew known to have misleading traits are:</p>
 			<Segment>
 				<Label.Group>

@@ -11,6 +11,7 @@ import {
 
 import { EvaluationState, IEvaluatedGuess, IRosterCrew, SolveState } from './model';
 import { GameContext, WorfleContext } from './context';
+import { DeductionList } from './deductionlist';
 
 const STYLE_SOLVED: React.CSSProperties = { backgroundColor: 'green', color: 'white' };
 const STYLE_ADJACENT: React.CSSProperties = { backgroundColor: 'yellow', color: 'black' };
@@ -89,7 +90,6 @@ const GuessRow = (props: GuessRowProps) => {
 	const isSolution: boolean = evaluatedGuess.crewEval === EvaluationState.Exact;
 
 	const guessCount: number = evaluatedGuesses.length;
-	const hintCount: number = hints.length;
 
 	return (
 		<Table.Row style={styleRow()}>
@@ -99,7 +99,7 @@ const GuessRow = (props: GuessRowProps) => {
 						<div>
 							{solveState === SolveState.Winner && (
 								<span style={{ whiteSpace: 'nowrap' }} /* You got it in N try (tries) */>
-									You got it in <b>{guessCount} tr{guessCount !== 1 ? 'ies' : 'y'}</b>, using {hintCount} hint{hintCount !== 1 ? 's' : ''}!
+									You got it in <b>{guessCount} tr{guessCount !== 1 ? 'ies' : 'y'}</b>, using {renderHints()}!
 								</span>
 							)}
 							{solveState === SolveState.Loser && (
@@ -207,6 +207,28 @@ const GuessRow = (props: GuessRowProps) => {
 					content={popupContent}
 				/>
 			</React.Fragment>
+		);
+	}
+
+	function renderHints(): JSX.Element {
+		const hintCount: number = hints.length;
+		if (hintCount === 0) return <>0 hints</>;
+		return (
+			<Popup
+				on='click'
+				position='top center'
+				wide
+				trigger={(
+					<span style={{ borderBottom: '1px dotted white', cursor: 'pointer' }}>
+						{hintCount} hint{hintCount !== 1 ? 's' : ''}
+					</span>
+				)}
+				content={(
+					<div style={{ maxHeight: '10em', overflowY: 'scroll' }}>
+						<DeductionList deductions={hints} />
+					</div>
+				)}
+			/>
 		);
 	}
 };

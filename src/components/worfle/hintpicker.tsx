@@ -121,14 +121,14 @@ export const HintPickerModal = (props: HintPickerModalProps) => {
 						onClick={() => applyChanges(manualIds)}
 					/>
 				)}
-				{dirtyGroups && newCount === 0 && (
+				{newCount === 0 && dirtyGroups && (
 					<Button /* Apply */
 						content='Apply'
 						onClick={() => applyChanges(manualIds)}
 					/>
 				)}
 				<Button /* Close or Cancel */
-					content={newCount === 0 ? 'Close' : 'Cancel'}
+					content={newCount === 0 && !dirtyGroups ? 'Close' : 'Cancel'}
 					onClick={props.closeHintPicker}
 				/>
 			</div>
@@ -217,47 +217,49 @@ const HintGroups = (props: HintGroupsProps) => {
 			<Segment attached='bottom'>
 				<Form>
 					<Form.Group inline style={{ marginBottom: '0' }}>
-						<Form.Field	/* Automatically select all: */
-							label='Automatically select all:'
-						/>
-						<Form.Field	/* Series */
-							control={Checkbox}
-							label='Series'
-							checked={pendingGroups.includes('series')}
-							onChange={() => toggleGroup('series')}
-						/>
-						<Form.Field	/* Rarity */
-							control={Checkbox}
-							label='Rarity'
-							checked={pendingGroups.includes('rarity')}
-							onChange={() => toggleGroup('rarity')}
-						/>
-						<Form.Field	/* Skills */
-							control={Checkbox}
-							label='Skills'
-							checked={pendingGroups.includes('skills')}
-							onChange={() => toggleGroup('skills')}
-						/>
-						<Form.Field	/* Traits */
-							control={Checkbox}
-							label='Traits'
-							checked={pendingGroups.includes('traits')}
-							onChange={() => toggleGroup('traits')}
-						/>
-						<Form.Field	/* Matching */
-							control={Checkbox}
-							label='Matching'
-							checked={pendingGroups.includes('required')}
-							onChange={() => toggleGroup('required')}
-						/>
-						<Form.Field>
-							<Button	/* Show matching traits or Show all traits */
-								size='small'
-								content={showAssertions !== 'required' ? 'Show matching traits' : 'Show all traits'}
-								onClick={() => setShowAssertions(showAssertions !== 'required' ? 'required' : '')}
-								toggle={true}
+						<div style={{ display: 'flex', flexWrap: 'wrap', rowGap: '.5em', alignItems: 'center' }}>
+							<Form.Field	/* Automatically select all: */
+								label='Automatically select all:'
 							/>
-						</Form.Field>
+							<Form.Field	/* Series */
+								control={Checkbox}
+								label='Series'
+								checked={pendingGroups.includes('series')}
+								onChange={() => toggleGroup('series')}
+							/>
+							<Form.Field	/* Rarity */
+								control={Checkbox}
+								label='Rarity'
+								checked={pendingGroups.includes('rarity')}
+								onChange={() => toggleGroup('rarity')}
+							/>
+							<Form.Field	/* Skills */
+								control={Checkbox}
+								label='Skills'
+								checked={pendingGroups.includes('skills')}
+								onChange={() => toggleGroup('skills')}
+							/>
+							<Form.Field	/* Traits */
+								control={Checkbox}
+								label='Traits'
+								checked={pendingGroups.includes('traits')}
+								onChange={() => toggleGroup('traits')}
+							/>
+							<Form.Field	/* Matching */
+								control={Checkbox}
+								label='Matching'
+								checked={pendingGroups.includes('required')}
+								onChange={() => toggleGroup('required')}
+							/>
+							<Form.Field>
+								<Button	/* Show matching traits or Show all traits */
+									size='small'
+									content={showAssertions !== 'required' ? 'Show matching traits' : 'Show all traits'}
+									onClick={() => setShowAssertions(showAssertions !== 'required' ? 'required' : '')}
+									toggle={true}
+								/>
+							</Form.Field>
+						</div>
 					</Form.Group>
 				</Form>
 			</Segment>

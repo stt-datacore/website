@@ -24,12 +24,14 @@ class PlayerStats {
 	streak: number = 0;
 	maxStreak: number = 0;
 	guesses: IPlayerGuesses;
+	hints: { [key: number]: number; };
 	constructor() {
 		this.guesses = { fail: 0 };
 		for (let i = 1; i <= DEFAULT_GUESSES; i++) {
 			this.guesses[i] = 0;
 		}
 		this.guesses.fail = 0;
+		this.hints = {};
 	}
 }
 
@@ -157,6 +159,7 @@ export const DailyGame = () => {
 			setSolution(dailySolution);
 			setGuesses([]);
 			setHints([]);
+			setHintGroups([]);
 			setSolveState(SolveState.Unsolved);
 			return;
 		}
@@ -185,6 +188,11 @@ export const DailyGame = () => {
 			stats.guesses[guesses.length]++;
 			stats.streak++;
 			stats.maxStreak = Math.max(stats.streak, stats.maxStreak);
+
+			// Keep track of number of hints used successfully
+			stats.hints ??= {};
+			stats.hints[hints.length] ??= 0;
+			stats.hints[hints.length]++;
 		}
 		else {
 			stats.guesses.fail++;

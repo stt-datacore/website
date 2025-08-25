@@ -76,7 +76,7 @@ export const Game = (props: GameProps) => {
 
 	// Automatically add relevant hints
 	React.useEffect(() => {
-		deduceHints();
+		if (solveState === SolveState.Unsolved) deduceHints();
 	}, [deductions, hintGroups]);
 
 	if (!mysteryCrew)
