@@ -1,33 +1,26 @@
 import React from 'react';
 
-import { ICrewPickerFilters, IDeduction, IEvaluatedGuess, IRosterCrew, ISolverPrefs, ITraitMap, ITraitOption, IVariantMap } from './model';
+import { IDeduction, IDeductionOption, IEvaluatedGuess, IRosterCrew, ITraitMap, IUserPrefs, THintGroup } from './model';
 import { GameRules } from './game';
 
 export interface IWorfleContext {
 	roster: IRosterCrew[];
-	variantMap: IVariantMap;
 	traitMap: ITraitMap;
+	userPrefs: IUserPrefs;
+	setUserPrefs: (userPrefs: IUserPrefs) => void;
 };
 
 export const WorfleContext = React.createContext<IWorfleContext>({} as IWorfleContext);
 
 export interface IGameContext {
 	rules: GameRules;
-	traitOptions: ITraitOption[];
+	deductionOptions: IDeductionOption[];
 	mysteryCrew: IRosterCrew;
 	evaluatedGuesses: IEvaluatedGuess[];
 	deductions: IDeduction[];
-	deductionsUsed: IDeduction[];
+	hints: IDeduction[];	// Hints are deductions used to filter crew list
+	hintGroups: THintGroup[];
 	solveState: number;
 };
 
 export const GameContext = React.createContext<IGameContext>({} as IGameContext);
-
-export interface IGuesserContext {
-	filters: ICrewPickerFilters;
-	setFilters: (filters: ICrewPickerFilters) => void;
-	solverPrefs: ISolverPrefs;
-	setSolverPrefs: (solverPrefs: ISolverPrefs) => void;
-};
-
-export const GuesserContext = React.createContext<IGuesserContext>({} as IGuesserContext);

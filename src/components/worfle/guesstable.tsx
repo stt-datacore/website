@@ -2,16 +2,15 @@ import React from 'react';
 import {
 	Icon,
 	Image,
-	Label,
+	Popup,
 	Rating,
+	SemanticCOLORS,
+	SemanticICONS,
 	Table
 } from 'semantic-ui-react';
 
-import { GlobalContext } from '../../context/globalcontext';
-
-import { EvaluationState, IEvaluatedGuess, SolveState } from './model';
+import { EvaluationState, IEvaluatedGuess, IRosterCrew, SolveState } from './model';
 import { GameContext, WorfleContext } from './context';
-import { getTraitName } from './game';
 
 const STYLE_SOLVED: React.CSSProperties = { backgroundColor: 'green', color: 'white' };
 const STYLE_ADJACENT: React.CSSProperties = { backgroundColor: 'yellow', color: 'black' };
@@ -83,55 +82,62 @@ type GuessRowProps = {
 };
 
 const GuessRow = (props: GuessRowProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { variantMap } = React.useContext(WorfleContext);
-	const { rules, evaluatedGuesses, deductionsUsed, solveState } = React.useContext(GameContext);
+	const { traitMap, userPrefs, setUserPrefs } = React.useContext(WorfleContext);
+	const { evaluatedGuesses, hints, solveState } = React.useContext(GameContext);
 	const { evaluatedGuess } = props;
 
 	const isSolution: boolean = evaluatedGuess.crewEval === EvaluationState.Exact;
 
 	const guessCount: number = evaluatedGuesses.length;
+	const hintCount: number = hints.length;
 
 	return (
 		<Table.Row style={styleRow()}>
 			<Table.Cell style={styleCell(evaluatedGuess.variantEval)}>
-				{isSolution && (
-					<div>
-						{solveState === SolveState.Winner && (
-							<span style={{ whiteSpace: 'nowrap' }} /* You got it in N try (tries) */>
-								You got it in {guessCount} tr{guessCount !== 1 ? 'ies' : 'y'}, using {deductionsUsed.length} deductions!
-							</span>
-						)}
-						{solveState === SolveState.Loser && (
-							<span style={{ whiteSpace: 'nowrap' }} /* You lose! The correct answer is: */>
-								You lose! The correct answer is:
-							</span>
-						)}
+				<div style={{ display: 'flex', flexDirection: 'column', rowGap: '.5em' }}>
+					{isSolution && (
+						<div>
+							{solveState === SolveState.Winner && (
+								<span style={{ whiteSpace: 'nowrap' }} /* You got it in N try (tries) */>
+									You got it in <b>{guessCount} tr{guessCount !== 1 ? 'ies' : 'y'}</b>, using {hintCount} hint{hintCount !== 1 ? 's' : ''}!
+								</span>
+							)}
+							{solveState === SolveState.Loser && (
+								<span style={{ whiteSpace: 'nowrap' }} /* You lose! The correct answer is: */>
+									You lose! The correct answer is:
+								</span>
+							)}
+						</div>
+					)}
+					<div style={{ display: 'flex', alignItems: 'center', columnGap: '1em' }}>
+						<div>
+							<img src={`${process.env.GATSBY_ASSETS_URL}${evaluatedGuess.crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+						</div>
+						<div style={{ fontSize: '1.25em' }}>
+							{evaluatedGuess.crew.name}
+						</div>
+						<div>
+							{renderFavoriteToggle(evaluatedGuess.crew)}
+						</div>
 					</div>
-				)}
-				<div style={{ margin: '.5em 0', whiteSpace: 'nowrap' }}>
-					<img width={48} height={48} src={`${process.env.GATSBY_ASSETS_URL}${evaluatedGuess.crew.imageUrlPortrait}`} style={{ verticalAlign: 'middle' }} />
-					<span style={{ padding: '0 .5em', fontSize: '1.25em' }}>{evaluatedGuess.crew.name}</span>
-					{rules.portal_only && !evaluatedGuess.crew.in_portal && (
-						<Label color='orange'	/* Not in portal */>
-							Not in portal
-						</Label>
+					{isSolution && evaluatedGuess.crew.flavor && (
+						<div>
+							{evaluatedGuess.crew.flavor}
+						</div>
 					)}
 				</div>
-				{isSolution && evaluatedGuess.crew.flavor && (
-					<div>{evaluatedGuess.crew.flavor}</div>
-				)}
 			</Table.Cell>
 			<Table.Cell textAlign='center' style={styleCell(evaluatedGuess.seriesEval)}>
-				{evaluatedGuess.crew.gamified_series !== 'n/a' && <Image src={`/media/series/${evaluatedGuess.crew.gamified_series}.png`} size='small' style={{ margin: '0 auto' }} />}
-				{evaluatedGuess.crew.gamified_series === 'n/a' && (
-					<Label color='orange'	/* Misleading series */>
-						Misleading series
-					</Label>
+				{evaluatedGuess.crew.gamified_series !== 'n/a' && (
+					<Image src={`/media/series/${evaluatedGuess.crew.gamified_series}.png`} size='small' style={{ margin: '0 auto' }} />
 				)}
 			</Table.Cell>
 			<Table.Cell style={styleCell(evaluatedGuess.rarityEval)}>
-				<Rating defaultRating={evaluatedGuess.crew.max_rarity} maxRating={evaluatedGuess.crew.max_rarity} icon='star' size='large' disabled />
+				<Rating
+					icon='star' size='large' disabled
+					defaultRating={evaluatedGuess.crew.max_rarity}
+					maxRating={evaluatedGuess.crew.max_rarity}
+				/>
 			</Table.Cell>
 			{[0, 1, 2].map(index => (
 				<Table.Cell key={index} textAlign='center' style={styleCell(evaluatedGuess.skillsEval[index])}>
@@ -142,7 +148,7 @@ const GuessRow = (props: GuessRowProps) => {
 				{evaluatedGuess.matching_traits.map((trait, idx) => (
 					<span key={idx}>
 						<span style={{ whiteSpace: 'nowrap' }}>
-							{getTraitName(trait, variantMap, TRAIT_NAMES)}
+							{traitMap[trait].display_name}
 						</span>
 						{idx < evaluatedGuess.matching_traits.length - 1 ? ', ' : ''}
 					</span>
@@ -168,5 +174,39 @@ const GuessRow = (props: GuessRowProps) => {
 		else if (evaluationState === EvaluationState.Adjacent)
 			return STYLE_ADJACENT;
 		return {};
+	}
+
+	function renderFavoriteToggle(crew: IRosterCrew): JSX.Element {
+		const isFavorited: boolean = userPrefs.favorites.includes(crew.symbol);
+		const iconName: SemanticICONS = isFavorited ? 'heart' : 'heart outline';
+		const iconColor: SemanticCOLORS | undefined = isFavorited ? 'pink' : undefined;
+		const popupContent: string = isFavorited
+			? `Remove ${crew.name} from favorite guesses`
+			: `Add ${crew.name} to favorite guesses`
+		const toggleFavorite = () => {
+			if (isFavorited) {
+				const index: number = userPrefs.favorites.indexOf(crew.symbol);
+				if (index >= 0) userPrefs.favorites.splice(index, 1);
+			}
+			else {
+				userPrefs.favorites.push(crew.symbol);
+			}
+			setUserPrefs({...userPrefs});
+		};
+		return (
+			<React.Fragment>
+				<Popup	/* Add CREW to OR remove CREW from favorite guesses */
+					trigger={(
+						<Icon
+							name={iconName}
+							color={iconColor}
+							style={{ cursor: 'pointer' }}
+							onClick={toggleFavorite}
+						/>
+					)}
+					content={popupContent}
+				/>
+			</React.Fragment>
+		);
 	}
 };

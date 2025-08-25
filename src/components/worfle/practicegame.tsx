@@ -11,7 +11,7 @@ import {
 
 import { useStateWithStorage } from '../../utils/storage';
 
-import { IDeduction, IRosterCrew, SolveState } from './model';
+import { IDeduction, IRosterCrew, SolveState, THintGroup } from './model';
 import { SERIES_ERAS } from './config';
 import { WorfleContext } from './context';
 import { DEFAULT_GUESSES, DEFAULT_PORTAL_ONLY, DEFAULT_RARITIES, DEFAULT_SERIES, Game, GameRules } from './game';
@@ -21,7 +21,8 @@ export const PracticeGame = () => {
 	const [rules, setRules] = useStateWithStorage<GameRules>('datalore/practiceRules', new GameRules());
 	const [solution, setSolution] = useStateWithStorage<string>('datalore/practiceSolution', '');
 	const [guesses, setGuesses] = useStateWithStorage<string[]>('datalore/practiceGuesses', []);
-	const [deductionsUsed, setDeductionsUsed] = useStateWithStorage<IDeduction[]>('datalore/practiceDeduction', []);
+	const [hints, setHints] = useStateWithStorage<IDeduction[]>('datalore/practiceHints', []);
+	const [hintGroups, setHintGroups] = useStateWithStorage<THintGroup[]>('datalore/practiceGroups', []);
 	const [solveState, setSolveState] = useStateWithStorage<SolveState>('datalore/practiceSolveState', SolveState.Unsolved);
 
 	if (!solution) {
@@ -38,7 +39,8 @@ export const PracticeGame = () => {
 			<Game
 				rules={rules} solution={solution}
 				guesses={guesses} setGuesses={setGuesses}
-				deductionsUsed={deductionsUsed} setDeductionsUsed={setDeductionsUsed}
+				hints={hints} setHints={setHints}
+				hintGroups={hintGroups} setHintGroups={setHintGroups}
 				solveState={solveState} setSolveState={setSolveState}
 			/>
 			<div style={{ marginTop: '2em' }}>
@@ -82,7 +84,8 @@ export const PracticeGame = () => {
 
 		setSolution(roster[randomIndex].symbol);
 		setGuesses([]);
-		setDeductionsUsed([]);
+		setHints([]);
+		setHintGroups([]);
 		setSolveState(SolveState.Unsolved);
 	}
 

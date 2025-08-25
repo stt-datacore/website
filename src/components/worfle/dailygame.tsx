@@ -9,7 +9,7 @@ import {
 
 import { useStateWithStorage } from '../../utils/storage';
 
-import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, SolveState } from './model';
+import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, SolveState, THintGroup } from './model';
 import { WorfleContext } from './context';
 import { DEFAULT_GUESSES, Game, GameRules } from './game';
 
@@ -36,12 +36,13 @@ class PlayerStats {
 export const DailyGame = () => {
 	const { roster } = React.useContext(WorfleContext);
 
-	const VARIABLES_TO_LOAD = 5;
+	const VARIABLES_TO_LOAD = 6;
 
 	const [dailyId, setDailyId] = useStateWithStorage<string>('datalore/dailyId', '', { rememberForever: true, onInitialize: variableReady });
 	const [solution, setSolution] = useStateWithStorage<string>('datalore/dailySolution', '', { rememberForever: true, onInitialize: variableReady });
 	const [guesses, setGuesses] = useStateWithStorage<string[]>('datalore/dailyGuesses', [], { rememberForever: true, onInitialize: variableReady });
-	const [deductionsUsed, setDeductionsUsed] = useStateWithStorage<IDeduction[]>('datalore/dailyDeductions', [], { rememberForever: true, onInitialize: variableReady });
+	const [hints, setHints] = useStateWithStorage<IDeduction[]>('datalore/dailyHints', [], { rememberForever: true, onInitialize: variableReady });
+	const [hintGroups, setHintGroups] = useStateWithStorage<THintGroup[]>('datalore/dailyGroups', [], { rememberForever: true, onInitialize: variableReady });
 	const [stats, setStats] = useStateWithStorage<PlayerStats>('datalore/dailyStats', new PlayerStats(), { rememberForever: true, onInitialize: variableReady });
 	const [loadState, setLoadState] = React.useState<number>(0);
 	const [solveState, setSolveState] = React.useState<SolveState>(SolveState.Unsolved);
@@ -56,10 +57,13 @@ export const DailyGame = () => {
 
 	// Daily reset time is next midnight ET
 	const resetTime: Date = new Date(gameTime);
-	resetTime.setUTCDate(resetTime.getUTCDate() + 1)
+	resetTime.setUTCDate(resetTime.getUTCDate() + 1);
+
+	const rules: GameRules = new GameRules();
 
 	React.useEffect(() => {
-		if (loadState === VARIABLES_TO_LOAD) initializeDailyGame();
+		if (loadState === VARIABLES_TO_LOAD)
+			initializeDailyGame();
 	}, [loadState]);
 
 	React.useEffect(() => {
@@ -69,15 +73,14 @@ export const DailyGame = () => {
 	if (loadState < VARIABLES_TO_LOAD || solution === '')
 		return <></>;
 
-	const rules: GameRules = new GameRules();
-
 	return (
 		<React.Fragment>
 			<p>How well do you know the characters from Star Trek Timelines? We pick one mystery crew member every day. Guess who it is, using your knowledge of <b>Variants</b>, <b>Series</b>, <b>Rarity</b>, <b>Skills</b>, and <b>Traits</b> to help narrow the possibilities. You have <b>{DEFAULT_GUESSES} tries</b> to guess the mystery crew. Good luck!</p>
 			<Game
 				rules={rules} solution={solution}
 				guesses={guesses} setGuesses={setGuesses}
-				deductionsUsed={deductionsUsed} setDeductionsUsed={setDeductionsUsed}
+				hints={hints} setHints={setHints}
+				hintGroups={hintGroups} setHintGroups={setHintGroups}
 				solveState={solveState} setSolveState={setSolveState}
 				onGameEnd={handleGameEnd}
 				renderShare={renderShare}
@@ -153,7 +156,7 @@ export const DailyGame = () => {
 		if (dailyId === '' || dailyId !== gameId) {
 			setSolution(dailySolution);
 			setGuesses([]);
-			setDeductionsUsed([]);
+			setHints([]);
 			setSolveState(SolveState.Unsolved);
 			return;
 		}
@@ -193,9 +196,10 @@ export const DailyGame = () => {
 	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): JSX.Element {
 		return (
 			<DailyShare
-				evaluatedGuesses={evaluatedGuesses}
-				solveState={solveState}
 				gameTime={gameTime}
+				solveState={solveState}
+				evaluatedGuesses={evaluatedGuesses}
+				hintCount={hints.length}
 			/>
 		);
 	}
@@ -264,13 +268,14 @@ export const DailyGame = () => {
 };
 
 type DailyShareProps = {
+	gameTime: Date;
 	solveState: SolveState;
 	evaluatedGuesses: IEvaluatedGuess[];
-	gameTime: Date;
+	hintCount: number;
 };
 
 const DailyShare = (props: DailyShareProps) => {
-	const { solveState, evaluatedGuesses, gameTime } = props;
+	const { gameTime, solveState, evaluatedGuesses, hintCount } = props;
 
 	const GAME_NAME = 'Worfle';
 	const GAME_URL = '<https://datacore.app/crewchallenge>';
@@ -285,7 +290,9 @@ const DailyShare = (props: DailyShareProps) => {
 
 	const formatGrid = () => {
 		const shortId: string = `${(gameTime.getUTCMonth() ?? 0)+1}/${(gameTime.getUTCDate() ?? 1)}`;
-		let output: string = solveState === SolveState.Winner ? `I solved ${GAME_NAME} ${shortId} in ${evaluatedGuesses.length}!` : `${GAME_NAME} ${shortId} stumped me!`;
+		let output: string = solveState === SolveState.Winner
+			? `I solved ${GAME_NAME} ${shortId} in ${evaluatedGuesses.length}, using ${hintCount} hint${hintCount !== 1 ? 's' : ''}!`
+			: `${GAME_NAME} ${shortId} stumped me!`;
 		output += `\n${GAME_URL}`;
 		evaluatedGuesses.forEach(evaluatedGuess => {
 			output += '\n';

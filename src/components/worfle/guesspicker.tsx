@@ -2,6 +2,9 @@ import React from 'react';
 import {
 	Button,
 	Checkbox,
+	Divider,
+	Dropdown,
+	DropdownItemProps,
 	Form,
 	Icon,
 	Image,
@@ -14,198 +17,115 @@ import {
 import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
-import { ICrewPickerFilters, IDeduction, IRosterCrew, ISolverPrefs, ITraitOption, TAssertion, TEvaluationField } from './model';
-import { GameContext, GuesserContext, IGuesserContext, WorfleContext } from './context';
-import { DeductionPickerModal } from './deductionpicker';
-
-const defaultCrewPickerFilters: ICrewPickerFilters = {
-	deductions: [],
-	hide_nonviable: true,
-	hide_guessed: true
-};
-
-const defaultSolverPrefs: ISolverPrefs = {
-	variants: false,
-	gender: false,
-	series: false,
-	rarity: false,
-	skills: false,
-	traits: false
-};
+import { IDeduction, IDeductionOption, IRosterCrew, TAssertion, TDeductionField, THintGroup } from './model';
+import { GameContext, WorfleContext } from './context';
+import { getEraBySeries } from './game';
+import { HintPickerModal } from './hintpicker';
 
 type GuessPickerProps = {
+	readyToGuess: boolean;
 	setSelectedCrew: (crewSymbol: string) => void;
-	useDeductions: (deductions: IDeduction[]) => void;
+	setSelectedHints: (newHints: IDeduction[], hintGroups: THintGroup[]) => void;
 };
 
 export const GuessPicker = (props: GuessPickerProps) => {
-	const { rules, evaluatedGuesses, deductions } = React.useContext(GameContext);
-	const { setSelectedCrew, useDeductions } = props;
-
-	const [filters, setFilters] = React.useState<ICrewPickerFilters>(JSON.parse(JSON.stringify(defaultCrewPickerFilters)));
-	const [solverPrefs, setSolverPrefs] = React.useState<ISolverPrefs>(JSON.parse(JSON.stringify(defaultSolverPrefs)));
+	const { rules, evaluatedGuesses } = React.useContext(GameContext);
+	const { readyToGuess, setSelectedCrew, setSelectedHints } = props;
 
 	const [crewPickerIsOpen, setCrewPickerIsOpen] = React.useState<boolean>(false);
-	const [deductionPickerIsOpen, setDeductionPickerIsOpen] = React.useState<boolean>(false);
-	const [showHints, setShowHints] = React.useState<boolean>(false);
-
-	React.useEffect(() => {
-		deduceFilters();
-	}, [deductions, solverPrefs]);
+	const [hintPickerIsOpen, setHintPickerIsOpen] = React.useState<boolean>(false);
 
 	const guessesLeft: number = rules.max_guesses - evaluatedGuesses.length;
 
-	const guesserData: IGuesserContext = {
-		filters,
-		setFilters,
-		solverPrefs,
-		setSolverPrefs
-	};
-
 	return (
-		<GuesserContext.Provider value={guesserData}>
-			<div style={{ margin: '1em 0' }}>
-				<Button /* Guess Crew */
-					fluid size='big' color='blue'
-					onClick={() => setCrewPickerIsOpen(true)}
-				>
-					<Icon name='zoom-in' />
-					Guess Crew
-					<span style={{ fontSize: '.95em', fontWeight: 'normal', paddingLeft: '1em' }}>
-						({guessesLeft} guess{guessesLeft !== 1 ? 'es' : ''} remaining)
-					</span>
-				</Button>
-			</div>
+		<React.Fragment>
+			{readyToGuess && (
+				<div style={{ margin: '1em 0' }}>
+					<Button /* Guess Crew */
+						fluid size='big' color='blue'
+						onClick={() => setCrewPickerIsOpen(true)}
+					>
+						<Icon name='search' />
+						Guess Crew
+						<span style={{ fontSize: '.95em', fontWeight: 'normal', paddingLeft: '1em' }}>
+							({guessesLeft} guess{guessesLeft !== 1 ? 'es' : ''} remaining)
+						</span>
+					</Button>
+				</div>
+			)}
 			{crewPickerIsOpen && (
 				<GuessPickerModal
 					setSelectedCrew={setSelectedCrew}
 					closeCrewPicker={() => setCrewPickerIsOpen(false)}
-					openDeductionPicker={() => setDeductionPickerIsOpen(true)}
-					showHints={showHints}
-					setShowHints={setShowHints}
+					openHintPicker={() => setHintPickerIsOpen(true)}
 				/>
 			)}
-			{deductionPickerIsOpen && (
-				<DeductionPickerModal
-					closeDeductionPicker={() => setDeductionPickerIsOpen(false)}
+			{hintPickerIsOpen && (
+				<HintPickerModal
+					setSelectedHints={setSelectedHints}
+					closeHintPicker={() => setHintPickerIsOpen(false)}
 				/>
 			)}
-		</GuesserContext.Provider>
+		</React.Fragment>
 	);
-
-	function assert(deductions: IDeduction[], field: TEvaluationField, value: string | number, assertion: TAssertion): void {
-		const existing: IDeduction | undefined = deductions.find(deduction =>
-			deduction.field === field && deduction.value === value
-		);
-		if (existing) {
-			existing.assertion = assertion;
-		}
-		else {
-			deductions.push({ field, value, assertion });
-		}
-	}
-
-	function deduceFilters(): void {
-		let newDeductions: IDeduction[] = JSON.parse(JSON.stringify(filters.deductions));
-		(['series', 'rarity', 'skills', 'traits'] as TEvaluationField[]).forEach(field => {
-			if (solverPrefs[field]) {
-				deductions.filter(deduction => deduction.field === field).forEach(deduction => {
-					assert(newDeductions, deduction.field, deduction.value, deduction.assertion);
-				});
-			}
-		});
-
-		// if (solverOptions.variants) {
-		// 	if (evaluatedGuess.variantEval === EvaluationState.Adjacent) {
-		// 		evaluatedGuess.crew.gamified_variants.forEach(variant => {
-		// 			if (evaluatedGuess.matching_traits.includes(variant)) {
-		// 				assertLogic(newFilters.logic, 'traits', variant, 'required');
-		// 			}
-		// 		});
-		// 	}
-		// 	else if (evaluatedGuess.variantEval === EvaluationState.Wrong) {
-		// 		evaluatedGuess.crew.gamified_variants.forEach(variant => {
-		// 			assertLogic(newFilters.logic, 'traits', variant, 'rejected');
-		// 		});
-		// 	}
-		// }
-		// if (solverOptions.gender) {
-		// 	['female', 'male'].forEach(gender => {
-		// 		if (evaluatedGuess.matching_traits.includes(gender)) {
-		// 			assertLogic(newFilters.logic, 'traits', gender, 'required');
-		// 		}
-		// 		else {
-		// 			if (evaluatedGuess.crew.gamified_traits.includes(gender)) {
-		// 				assertLogic(newFilters.logic, 'traits', gender, 'rejected');
-		// 			}
-		// 		}
-		// 	})
-		// }
-
-		useDeductions(newDeductions);
-
-		setFilters({
-			...filters,
-			deductions: newDeductions
-		});
-	}
 };
 
 type GuessPickerModalProps = {
 	setSelectedCrew: (crewSymbol: string) => void;
 	closeCrewPicker: () => void;
-	openDeductionPicker: () => void;
-	showHints: boolean;
-	setShowHints: (showHints: boolean) => void;
+	openHintPicker: () => void;
 };
 
 const GuessPickerModal = (props: GuessPickerModalProps) => {
-	const { roster: data } = React.useContext(WorfleContext);
-	const { rules, evaluatedGuesses } = React.useContext(GameContext);
-	const { filters } = React.useContext(GuesserContext);
-	const { setSelectedCrew, showHints, setShowHints } = props;
+	const { roster: data, userPrefs } = React.useContext(WorfleContext);
+	const { rules, evaluatedGuesses, deductions, hints } = React.useContext(GameContext);
+	const { setSelectedCrew } = props;
 
 	const filteredIds = React.useMemo<Set<number>>(() => {
-		const getAssertedValues = (field: TEvaluationField, assertion: TAssertion) => {
-			return filters.deductions.filter(deduction =>
+		const getAssertedValues = (field: TDeductionField, assertion: TAssertion) => {
+			return hints.filter(deduction =>
 				deduction.field === field && deduction.assertion === assertion
 			).map(deduction => deduction.value);
 		};
 
-		const deductionMap: { [field: string]: { [assertion: string]: (string | number)[] } } = {};
-		(['series', 'rarity', 'skills', 'traits'] as TEvaluationField[]).forEach(field => {
-			deductionMap[field] = {};
+		const hintMap: { [field: string]: { [assertion: string]: (string | number)[] } } = {};
+		(['era', 'series', 'rarity', 'skills', 'traits'] as TDeductionField[]).forEach(field => {
+			hintMap[field] = {};
 			(['required', 'rejected'] as TAssertion[]).forEach(assertion => {
-				deductionMap[field][assertion] = getAssertedValues(field, assertion);
+				hintMap[field][assertion] = getAssertedValues(field, assertion);
 			});
 		});
 
 		const crewMatchesViability = (crew: IRosterCrew) => {
-			return !filters.hide_nonviable ||
+			return !userPrefs.hide_nonviable_crew ||
 				(rules.series.includes(crew.gamified_series)
 					&& rules.rarities.includes(crew.max_rarity)
 					&& (!rules.portal_only || crew.in_portal));
 		};
 		const crewMatchesGuess = (crew: IRosterCrew) => {
-			return !filters.hide_guessed || !evaluatedGuesses.find(
+			return !userPrefs.hide_guessed_crew || !evaluatedGuesses.find(
 				evaluatedGuess => evaluatedGuess.crew.symbol === crew.symbol
 			);
 		};
+		const crewMatchesEra = (crew: IRosterCrew) => {
+			return (hintMap.era.required.length === 0 || hintMap.era.required.includes(getEraBySeries(crew.gamified_series)))
+				&& (hintMap.era.rejected.length === 0 || !hintMap.era.rejected.includes(getEraBySeries(crew.gamified_series)));
+		};
 		const crewMatchesSeries = (crew: IRosterCrew) => {
-			return (deductionMap.series.required.length === 0 || deductionMap.series.required.includes(crew.gamified_series))
-				&& (deductionMap.series.rejected.length === 0 || !deductionMap.series.rejected.includes(crew.gamified_series));
+			return (hintMap.series.required.length === 0 || hintMap.series.required.includes(crew.gamified_series))
+				&& (hintMap.series.rejected.length === 0 || !hintMap.series.rejected.includes(crew.gamified_series));
 		};
 		const crewMatchesRarity = (crew: IRosterCrew) => {
-			return (deductionMap.rarity.required.length === 0 || deductionMap.rarity.required.includes(crew.max_rarity))
-				&& (deductionMap.rarity.rejected.length === 0 || !deductionMap.rarity.rejected.includes(crew.max_rarity));
+			return (hintMap.rarity.required.length === 0 || hintMap.rarity.required.includes(crew.max_rarity))
+				&& (hintMap.rarity.rejected.length === 0 || !hintMap.rarity.rejected.includes(crew.max_rarity));
 		};
 		const crewMatchesSkills = (crew: IRosterCrew) => {
-			return (deductionMap.skills.required.length === 0 || deductionMap.skills.required.every(required => crew.skill_order.includes(required as string)))
-				&& (deductionMap.skills.rejected.length === 0 || !deductionMap.skills.rejected.some(rejected => crew.skill_order.includes(rejected as string)))
+			return (hintMap.skills.required.length === 0 || hintMap.skills.required.every(required => crew.skill_order.includes(required as string)))
+				&& (hintMap.skills.rejected.length === 0 || !hintMap.skills.rejected.some(rejected => crew.skill_order.includes(rejected as string)))
 		};
 		const crewMatchesTraits = (crew: IRosterCrew) => {
-			return (deductionMap.traits.required.length === 0 || deductionMap.traits.required.every(required => crew.gamified_traits.includes(required as string)))
-				&& (deductionMap.traits.rejected.length === 0 || !deductionMap.traits.rejected.some(rejected => crew.gamified_traits.includes(rejected as string)))
+			return (hintMap.traits.required.length === 0 || hintMap.traits.required.every(required => crew.gamified_traits.includes(required as string)))
+				&& (hintMap.traits.rejected.length === 0 || !hintMap.traits.rejected.some(rejected => crew.gamified_traits.includes(rejected as string)))
 		};
 
 		const filteredIds: Set<number> = new Set<number>();
@@ -213,6 +133,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 			const canShowCrew: boolean =
 				crewMatchesViability(crew)
 					&& crewMatchesGuess(crew)
+					&& crewMatchesEra(crew)
 					&& crewMatchesSeries(crew)
 					&& crewMatchesRarity(crew)
 					&& crewMatchesSkills(crew)
@@ -220,10 +141,14 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 			if (!canShowCrew) filteredIds.add(crew.id);
 		});
 		return filteredIds;
-	}, [data, filters]);
+	}, [data, hints, userPrefs.hide_guessed_crew, userPrefs.hide_nonviable_crew]);
 
 	const gridSetup: IDataGridSetup = {
-		renderGridColumn: (datum: IEssentialData) => renderGridCrew(datum as IRosterCrew)
+		renderGridColumn: (datum: IEssentialData) => renderGridCrew(datum as IRosterCrew),
+		defaultSort: {
+			id: '_favorite',
+			customSort: (a: IEssentialData, b: IEssentialData) => sortCrew(a as IRosterCrew, b as IRosterCrew)
+		}
 	};
 
 	return (
@@ -242,7 +167,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		/>
 	);
 
-	function handleSelectedIds(selectedIds: Set<number>, _affirmative: boolean): void {
+	function handleSelectedIds(selectedIds: Set<number>): void {
 		props.closeCrewPicker();
 		if (selectedIds.size > 0) {
 			const selectedId: number = [...selectedIds][0];
@@ -258,17 +183,14 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 	}
 
 	function renderActions(): JSX.Element {
-		const hintText: string = showHints ? 'Hide hints' : 'Show hints';
 		return (
 			<React.Fragment>
-				<Button
-					content='Deductions'
-					onClick={() => props.openDeductionPicker()}
-				/>
-				<Button
-					content={hintText}
-					onClick={() => setShowHints(!showHints) }
-				/>
+				{deductions.length > 0 && (
+					<Button
+						content='Use hints...'
+						onClick={() => props.openHintPicker()}
+					/>
+				)}
 				<Button /* Close */
 					content='Close'
 					onClick={() => props.closeCrewPicker()}
@@ -277,53 +199,96 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		);
 	}
 
+	function sortCrew(a: IRosterCrew, b: IRosterCrew): number {
+		const isFavorited = (crew: IRosterCrew) => {
+			return userPrefs.favorites.includes(crew.symbol);
+		}
+		const aFavorited: boolean = isFavorited(a);
+		const bFavorited: boolean = isFavorited(b);
+		if (aFavorited === bFavorited)
+			return a.name.localeCompare(b.name);
+		if (aFavorited && !bFavorited)
+			return -1;
+		return 1;
+	}
+
 	function renderGridCrew(crew: IRosterCrew): JSX.Element {
 		const isGuessed: boolean = !!evaluatedGuesses.find(evaluatedGuess => evaluatedGuess.crew.symbol === crew.symbol);
+		const isFavorited: boolean = userPrefs.favorites.includes(crew.symbol);
+		const isViable: boolean = rules.series.includes(crew.gamified_series)
+			&& rules.rarities.includes(crew.max_rarity)
+			&& (!rules.portal_only || crew.in_portal);
+
 		return (
 			<React.Fragment>
 				<Image>
 					<div style={{ opacity: isGuessed ? .5 : 1 }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
+						<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 					</div>
 					{isGuessed && (
 						<Label corner='right' color='red' icon='x' />
 					)}
 				</Image>
 				<div>
+					{isFavorited && <Icon name='heart' color='pink' />}
 					{crew.name}
 				</div>
+				<Label.Group size='small'>
+					{userPrefs.handicap_series && <Label>{crew.gamified_series.toUpperCase()}</Label>}
+					{userPrefs.handicap_rarity && <Label>{crew.max_rarity}*</Label>}
+					{userPrefs.handicap_skills === 'count' && <Label>{crew.skill_order.length}</Label>}
+					{userPrefs.handicap_skills === 'order' && (
+						<Label>
+							<div>
+								{crew.skill_order.map(skill => (
+									<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
+								))}
+							</div>
+						</Label>
+					)}
+				</Label.Group>
 				<Label.Group size='small'>
 					{isGuessed && (
 						<Label color='red'	/* Already guessed */>
 							Already guessed
 						</Label>
 					)}
-					{crew.gamified_series === 'n/a' && (
-						<Label color='orange' /* Misleading series */>
-							Misleading series
-						</Label>
-					)}
-					{rules.portal_only && !crew.in_portal && (
-						<Label color='orange'	/* Not in portal */>
-							Not in portal
+					{!isViable && (
+						<Label color='orange' /* Not viable */>
+							Not viable
 						</Label>
 					)}
 				</Label.Group>
-				<div>
-					{showHints && (
-						<div>({[crew.gamified_series.toUpperCase(), `${crew.max_rarity}*`, `${Object.keys(crew.base_skills).length}`].join(', ')})</div>
-					)}
-				</div>
 			</React.Fragment>
 		);
 	}
 };
 
 const GuessPickerOptions = () => {
-	const { filters, setFilters, setSolverPrefs } = React.useContext(GuesserContext);
+	const { userPrefs, setUserPrefs } = React.useContext(WorfleContext);
+	const { hints } = React.useContext(GameContext);
+
+	const skillOptions: DropdownItemProps[] = [
+		{ /* Show skill count */
+			key: 'count',
+			value: 'count',
+			text: 'Show skill count'
+		},
+		{ /* Show skill order */
+			key: 'order',
+			value: 'order',
+			text: 'Show skill order'
+		},
+		{ /* Hide skills */
+			key: 'hide',
+			value: 'hide',
+			text: 'Hide skills'
+		}
+	];
+
 	return (
 		<Form>
-			{filters.deductions.length > 0 && <DeductionsSelected />}
+			{hints.length > 0 && <HintsSelected />}
 			<Form.Group>
 				<Form.Field	/* Hide nonviable crew */
 					control={Checkbox}
@@ -340,44 +305,55 @@ const GuessPickerOptions = () => {
 							/>
 						</label>
 					)}
-					checked={filters.hide_nonviable}
-					onChange={(e, { checked }) => setFilters({...filters, hide_nonviable: checked})}
+					checked={userPrefs.hide_nonviable_crew}
+					onChange={(e, { checked }) => setUserPrefs({...userPrefs, hide_nonviable_crew: checked})}
 				/>
 				<Form.Field	/* Hide guessed crew */
 					control={Checkbox}
 					label='Hide guessed crew'
-					checked={filters.hide_guessed}
-					onChange={(e, { checked }) => setFilters({...filters, hide_guessed: checked})}
+					checked={userPrefs.hide_guessed_crew}
+					onChange={(e, { checked }) => setUserPrefs({...userPrefs, hide_guessed_crew: checked})}
 				/>
 			</Form.Group>
-			<Form.Group style={{ justifyContent: 'end', marginBottom: '0' }}>
-				<Form.Field>
-					<Button	/* Reset */
-						content='Reset'
-						onClick={() => {
-							setFilters(JSON.parse(JSON.stringify(defaultCrewPickerFilters)));
-							setSolverPrefs(JSON.parse(JSON.stringify(defaultSolverPrefs)));
-						}}
-					/>
-				</Form.Field>
+			<Divider />
+			<Form.Group style={{ marginBottom: '0' }}>
+				<Form.Field	inline /* Handicaps: */
+					label='Handicaps:'
+				/>
+				<Form.Field	/* Show series */
+					control={Checkbox}
+					label='Show series'
+					checked={userPrefs.handicap_series}
+					onChange={(e, { checked }) => setUserPrefs({...userPrefs, handicap_series: checked})}
+				/>
+				<Form.Field	/* Show rarity */
+					control={Checkbox}
+					label='Show rarity'
+					checked={userPrefs.handicap_rarity}
+					onChange={(e, { checked }) => setUserPrefs({...userPrefs, handicap_rarity: checked})}
+				/>
+				<Form.Field
+					control={Dropdown}
+					options={skillOptions}
+					value={userPrefs.handicap_skills}
+					onChange={(e, { value }) => setUserPrefs({...userPrefs, handicap_skills: value as 'hide' | 'count' | 'order'})}
+				/>
 			</Form.Group>
 		</Form>
 	);
 };
 
-const DeductionsSelected = () => {
-	const { traitOptions } = React.useContext(GameContext);
-	const { filters } = React.useContext(GuesserContext);
-
+const HintsSelected = () => {
+	const { deductionOptions, hints } = React.useContext(GameContext);
 	return (
 		<React.Fragment>
-			<Message attached='top'	/* Only show crew who have all CHECKED traits and no BANNED traits: */>
-				Only show crew who have all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits shown below:
+			<Message attached='top'	/* Only show crew who match all CHECKED traits and no BANNED traits shown below: */>
+				Only show crew who match all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits shown below:
 			</Message>
 			<Segment attached='bottom'>
 				<div style={{ maxHeight: '5em', overflowY: 'scroll' }}>
 					<Label.Group>
-						{filters.deductions.map(deduction => renderLabel(deduction))}
+						{hints.map(deduction => renderLabel(deduction))}
 					</Label.Group>
 				</div>
 			</Segment>
@@ -390,7 +366,7 @@ const DeductionsSelected = () => {
 			label = <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
 		}
 		else {
-			const option: ITraitOption | undefined = traitOptions.find(option =>
+			const option: IDeductionOption | undefined = deductionOptions.find(option =>
 				option.field === deduction.field && option.value === deduction.value
 			);
 			if (option) label = <>{option.name}</>;

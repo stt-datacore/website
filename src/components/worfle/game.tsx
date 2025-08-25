@@ -3,13 +3,10 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
-import { TraitNames } from '../../model/traits';
-import { GlobalContext } from '../../context/globalcontext';
-
 import CONFIG from '../CONFIG';
 
-import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, ITraitOption, IVariantMap, SolveState, TAssertion, TEvaluationField, TTraitType } from './model';
-import { SERIES_ERAS, USABLE_COLLECTIONS, USABLE_HIDDEN_TRAITS } from './config';
+import { EvaluationState, IDeduction, IDeductionOption, IEvaluatedGuess, IRosterCrew, SolveState, TAssertion, TDeductionField, THintGroup } from './model';
+import { ERA_NAMES, SERIES_ERAS } from './config';
 import { GameContext, IGameContext, WorfleContext } from './context';
 import { GuessPicker } from './guesspicker';
 import { GuessTable } from './guesstable';
@@ -37,8 +34,10 @@ type GameProps = {
 	solution: string;
 	guesses: string[];
 	setGuesses: (guesses: string[]) => void;
-	deductionsUsed: IDeduction[];
-	setDeductionsUsed: (deductionsUsed: IDeduction[]) => void;
+	hints: IDeduction[];
+	setHints: (hints: IDeduction[]) => void;
+	hintGroups: THintGroup[];
+	setHintGroups: (hintGroups: THintGroup[]) => void;
 	solveState: number;
 	setSolveState: (solveState: number) => void;
 	onGameEnd?: (solveState: number) => void;
@@ -46,21 +45,22 @@ type GameProps = {
 };
 
 export const Game = (props: GameProps) => {
-	const { TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { roster, traitMap, variantMap } = React.useContext(WorfleContext);
-	const { rules, solution, guesses, setGuesses, deductionsUsed, setDeductionsUsed, solveState, setSolveState } = props;
+	const { roster, traitMap } = React.useContext(WorfleContext);
+	const { rules, solution, guesses, setGuesses, hints, setHints, hintGroups, setHintGroups, solveState, setSolveState } = props;
 
 	const [evaluatedGuesses, setEvaluatedGuesses] = React.useState<IEvaluatedGuess[]>([]);
 	const [deductions, setDeductions] = React.useState<IDeduction[]>([]);
 
-	const traitOptions = React.useMemo(() => {
-		return getTraitOptions();
+	// Initialize options for ALL possible deductions for game rules
+	const deductionOptions = React.useMemo(() => {
+		return getDeductionOptions();
 	}, [rules]);
 
 	const mysteryCrew = React.useMemo<IRosterCrew | undefined>(() => {
 		return roster.find(crew => crew.symbol === solution);
 	}, [solution]);
 
+	// Evaluate guesses
 	React.useEffect(() => {
 		const evaluatedGuesses: IEvaluatedGuess[] = [];
 		if (mysteryCrew) {
@@ -74,15 +74,22 @@ export const Game = (props: GameProps) => {
 		setDeductions(deductions);
 	}, [mysteryCrew, guesses]);
 
-	if (!mysteryCrew) return <></>;
+	// Automatically add relevant hints
+	React.useEffect(() => {
+		deduceHints();
+	}, [deductions, hintGroups]);
+
+	if (!mysteryCrew)
+		return <></>;
 
 	const gameData: IGameContext = {
 		rules,
-		traitOptions,
+		deductionOptions,
 		mysteryCrew,
 		evaluatedGuesses,
 		deductions,
-		deductionsUsed,
+		hints,
+		hintGroups,
 		solveState
 	};
 
@@ -91,20 +98,30 @@ export const Game = (props: GameProps) => {
 			<GuessTable />
 			{solveState === SolveState.Unsolved && (
 				<GuessPicker
+					readyToGuess={evaluatedGuesses.length === guesses.length}
 					setSelectedCrew={handleCrewSelect}
-					useDeductions={useDeductions}
+					setSelectedHints={handleHintsSelect}
 				/>
 			)}
 			{solveState !== SolveState.Unsolved && props.renderShare && props.renderShare(evaluatedGuesses)}
 		</GameContext.Provider>
 	);
 
-	function getTraitOptions(): ITraitOption[] {
-		const options: ITraitOption[] = [];
+	function getDeductionOptions(): IDeductionOption[] {
+		const options: IDeductionOption[] = [];
+		Object.keys(ERA_NAMES).forEach(era => {
+			options.push({
+				id: options.length + 1,
+				name: ERA_NAMES[era],
+				icon: 'globe',
+				field: 'era',
+				value: era
+			});
+		});
 		rules.series.forEach(series => {
 			options.push({
 				id: options.length + 1,
-				name: `   ${SERIES_ERAS.find(seriesEra => seriesEra.series === series)!.title}`,
+				name: `${SERIES_ERAS.find(seriesEra => seriesEra.series === series)!.title}`,
 				icon: 'tv',
 				field: 'series',
 				value: series
@@ -113,7 +130,7 @@ export const Game = (props: GameProps) => {
 		rules.rarities.forEach(rarity => {
 			options.push({
 				id: options.length + 1,
-				name: `  ${rarity}*`,
+				name: `${rarity}*`,
 				icon: 'star',
 				field: 'rarity',
 				value: rarity
@@ -122,45 +139,28 @@ export const Game = (props: GameProps) => {
 		Object.keys(CONFIG.SKILLS).forEach(skill => {
 			options.push({
 				id: options.length + 1,
-				name: ` ${CONFIG.SKILLS[skill]}`,
+				name: `${CONFIG.SKILLS[skill]}`,
 				iconUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`,
 				field: 'skills',
 				value: skill
 			});
 		});
 		Object.keys(traitMap).forEach(trait => {
-			if (traitMap[trait].count > 1) {
-				const type: TTraitType = traitMap[trait].type;
+			if (traitMap[trait].crew.length > 1) {
 				let icon: SemanticICONS | undefined;
 				if (trait === 'female') icon = 'venus';
 				if (trait === 'male') icon = 'mars';
 				options.push({
 					id: options.length + 1,
-					name: getTraitName(trait, variantMap, TRAIT_NAMES, type),
+					name: traitMap[trait].display_name,
 					icon,
-					iconUrl: !icon ? getTraitIconUrl(trait, type) : undefined,
+					iconUrl: !icon ? traitMap[trait].iconUrl : undefined,
 					field: 'traits',
 					value: trait
 				});
 			}
 		});
 		return options;
-	}
-
-	function getTraitIconUrl(trait: string, type: TTraitType): string {
-		let iconUrl: string = '';
-		switch (type) {
-			case 'collection':
-				iconUrl = '/media/vault.png';
-				break;
-			case 'trait':
-				iconUrl = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
-				break;
-			case 'variant':
-				iconUrl = '/media/crew_icon.png';
-				break;
-		}
-		return iconUrl;
 	}
 
 	function handleCrewSelect(symbol: string): void {
@@ -176,6 +176,18 @@ export const Game = (props: GameProps) => {
 	function endGame(solveState: number): void {
 		setSolveState(solveState);
 		if (props.onGameEnd) props.onGameEnd(solveState);
+	}
+
+	function assert(deductions: IDeduction[], field: TDeductionField, value: string | number, assertion: TAssertion): void {
+		const existing: IDeduction | undefined = deductions.find(deduction =>
+			deduction.field === field && deduction.value === value
+		);
+		if (existing) {
+			existing.assertion = assertion;
+		}
+		else {
+			deductions.push({ field, value, assertion });
+		}
 	}
 
 	function evaluateGuess(guessedCrew: IRosterCrew, mysteryCrew: IRosterCrew): IEvaluatedGuess {
@@ -242,37 +254,28 @@ export const Game = (props: GameProps) => {
 		};
 	}
 
-	function assert(deductions: IDeduction[], field: TEvaluationField, value: string | number, assertion: TAssertion): void {
-		const existing: IDeduction | undefined = deductions.find(deduction =>
-			deduction.field === field && deduction.value === value
-		);
-		if (existing) {
-			existing.assertion = assertion;
-		}
-		else {
-			deductions.push({ field, value, assertion });
-		}
-	}
-
 	function getDeductions(evaluatedGuesses: IEvaluatedGuess[]): IDeduction[] {
-		const deductions: IDeduction[] = [];
+		let deductions: IDeduction[] = [];
 		evaluatedGuesses.forEach(evaluatedGuess => {
 			if (evaluatedGuess.seriesEval === EvaluationState.Exact) {
 				assert(deductions, 'series', evaluatedGuess.crew.gamified_series, 'required');
 			}
 			else if (evaluatedGuess.seriesEval === EvaluationState.Adjacent) {
 				const adjacentSeries: string = evaluatedGuess.crew.gamified_series;
-				const mysteryEra: number = getEraBySeries(adjacentSeries);
+				const mysteryEra: string = getEraBySeries(adjacentSeries);
+				assert(deductions, 'era', mysteryEra, 'required');
 				SERIES_ERAS.filter(seriesEra => seriesEra.series === adjacentSeries || seriesEra.era !== mysteryEra).forEach(seriesEra => {
+					if (seriesEra.era !== mysteryEra) assert(deductions, 'era', seriesEra.era, 'rejected');
 					assert(deductions, 'series', seriesEra.series, 'rejected');
 				});
 			}
 			else if (evaluatedGuess.seriesEval === EvaluationState.Wrong) {
 				const wrongSeries: string = evaluatedGuess.crew.gamified_series;
-				const wrongEra: number = getEraBySeries(wrongSeries);
-				SERIES_ERAS.filter(seriesEra => seriesEra.era === wrongEra).forEach(seriesEra => {
-					assert(deductions, 'series', seriesEra.series, 'rejected');
-				});
+				const wrongEra: string = getEraBySeries(wrongSeries);
+				assert(deductions, 'era', wrongEra, 'rejected');
+				// SERIES_ERAS.filter(seriesEra => seriesEra.era === wrongEra).forEach(seriesEra => {
+				// 	assert(deductions, 'series', seriesEra.series, 'rejected');
+				// });
 			}
 
 			if (evaluatedGuess.rarityEval === EvaluationState.Exact) {
@@ -315,43 +318,95 @@ export const Game = (props: GameProps) => {
 			});
 		});
 
+		// If all but 1 era/series/rarity are rejected, then the remaining option must be the solution
+		processEliminations(deductions, 'era', Object.keys(ERA_NAMES));
+		processEliminations(deductions, 'series', rules.series);
+		processEliminations(deductions, 'rarity', rules.rarities);
+
+		// If we know required era/series/rarity, we can remove rejected deductions of the same field
+		deductions = simplifyAssertions(deductions, 'era');
+		deductions = simplifyAssertions(deductions, 'series');
+		deductions = simplifyAssertions(deductions, 'rarity');
+
+		// If we know required series, we can remove all era deductions
+		if (deductions.find(deduction => deduction.field === 'series' && deduction.assertion === 'required')) {
+			deductions = deductions.filter(deduction => deduction.field !== 'era');
+		}
+		// Otherwise if we know required era, we can remove all series deductions that don't match required era
+		else if (deductions.find(deduction => deduction.field === 'era' && deduction.assertion === 'required')) {
+			const requiredEra: IDeduction | undefined = deductions.find(deduction =>
+				deduction.field === 'era' && deduction.assertion === 'required'
+			);
+			if (requiredEra) {
+				deductions = deductions.filter(deduction =>
+					deduction.field !== 'series' || getEraBySeries(deduction.value as string) === requiredEra.value as string
+				);
+			}
+		}
+
 		return deductions;
 	}
 
-	function getEraBySeries(series: string): number {
-		return SERIES_ERAS.find(seriesEra => seriesEra.series === series)?.era ?? -1;
+	function processEliminations(deductions: IDeduction[], field: TDeductionField, options: (string | number)[]): void {
+		if (!deductions.find(deduction => deduction.field === field && deduction.assertion === 'required')) {
+			const wrong: (string | number)[] = deductions.filter(deduction =>
+				deduction.field === field
+			).map(deduction => deduction.value);
+			if (options.length - wrong.length === 1) {
+				let correct: string | number | undefined;
+				options.forEach(value => {
+					if (!wrong.includes(value))
+						correct = value;
+				});
+				if (correct) assert(deductions, field, correct, 'required');
+			}
+		}
 	}
 
-	function useDeductions(deductions: IDeduction[]): void {
-		const usedDeductions: IDeduction[] = deductionsUsed.slice();
-		deductions.forEach(deduction => {
-			if (!usedDeductions.find(existing =>
-				existing.field === deduction.field && existing.value === deduction.value
+	function simplifyAssertions(deductions: IDeduction[], field: TDeductionField): IDeduction[] {
+		if (deductions.find(deduction => deduction.field === field && deduction.assertion === 'required')) {
+			deductions = deductions.filter(deduction =>
+				deduction.field !== field || deduction.assertion === 'required'
+			);
+		}
+		return deductions;
+	}
+
+	function handleHintsSelect(newHints: IDeduction[], hintGroups: THintGroup[]): void {
+		const updatedHints: IDeduction[] = hints.slice();
+		newHints.forEach(hint => {
+			if (!updatedHints.find(existing =>
+				existing.field === hint.field && existing.value === hint.value
 			))
-				usedDeductions.push(deduction);
+				updatedHints.push(hint);
 		});
-		setDeductionsUsed(usedDeductions);
+		setHints(updatedHints);
+		setHintGroups(hintGroups);
+	}
+
+	function deduceHints(): void {
+		let updatedHints: IDeduction[] = hints.slice();
+		if (hintGroups.includes('required')) {
+			deductions.filter(deduction => deduction.assertion === 'required').forEach(deduction => {
+				assert(updatedHints, deduction.field, deduction.value, deduction.assertion);
+			});
+		}
+		if (hintGroups.includes('series')) {
+			deductions.filter(deduction => ['era', 'series'].includes(deduction.field)).forEach(deduction => {
+				assert(updatedHints, deduction.field, deduction.value, deduction.assertion);
+			});
+		}
+		(['rarity', 'skills', 'traits'] as THintGroup[]).forEach(field => {
+			if (hintGroups.includes(field)) {
+				deductions.filter(deduction => deduction.field === field).forEach(deduction => {
+					assert(updatedHints, deduction.field, deduction.value, deduction.assertion);
+				});
+			}
+		});
+		setHints(updatedHints);
 	}
 };
 
-export function getTraitType(trait: string, variantMap: IVariantMap): TTraitType {
-	let type: TTraitType = 'trait';
-	if (USABLE_HIDDEN_TRAITS.includes(trait)) type = 'hidden_trait';
-	if (USABLE_COLLECTIONS.includes(trait)) type = 'collection';
-	if (!!variantMap[trait]) type = 'variant';
-	return type;
-}
-
-export function getTraitName(trait: string, variantMap: IVariantMap, traitNames: TraitNames, type?: TTraitType): string {
-	type ??= getTraitType(trait, variantMap);
-	let name: string = trait;
-	switch (type) {
-		case 'trait':
-			name = traitNames[trait];
-			break;
-		case 'variant':
-			name = variantMap[trait].display_name;
-			break;
-	}
-	return name;
+export function getEraBySeries(series: string): string {
+	return SERIES_ERAS.find(seriesEra => seriesEra.series === series)!.era;
 }

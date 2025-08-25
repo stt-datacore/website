@@ -7,22 +7,43 @@ import {
 import { GlobalContext } from '../../context/globalcontext';
 import { crewVariantIgnore, getVariantTraits, oneCrewCopy } from '../../utils/crewutils';
 
-import { IRosterCrew, ITraitMap, IVariantMap } from './model';
-import { DAX_FIXES, DISPLAY_NAME_FIXES, INVALID_SERIES, SERIES_ERAS, USABLE_COLLECTIONS, USABLE_HIDDEN_TRAITS } from './config';
-import { WorfleContext } from './context';
+import { useStateWithStorage } from '../../utils/storage';
+
+import { IRosterCrew, ITraitMap, IUserPrefs, TTraitType } from './model';
+import { DAX_FIXES, DISPLAY_NAME_FIXES, MISLEADING_CREW, SERIES_ERAS, USABLE_COLLECTIONS, USABLE_HIDDEN_TRAITS } from './config';
+import { IWorfleContext, WorfleContext } from './context';
 import { DailyGame } from './dailygame';
-import { getTraitType } from './game';
 import { GameInstructions } from './instructions';
 import { PracticeGame } from './practicegame';
 
-const DEBUG_FLAG_BAD_SERIES = false;	// Prints crew with missing or multiple series traits to console
+const DEBUG_FLAG_BAD_SERIES = false;		// Prints crew with missing or multiple series traits to console
+const DEBUG_FLAG_MULTIPLE_NAMES = false;	// Prints crew with multiple short names
+const DEBUG_FLAG_DUPLICATE_NAMES = false;	// Prints crew with non-unique short names
+
+const prefDefaults: IUserPrefs = {
+	favorites: [],
+	handicap_rarity: false,
+	handicap_series: false,
+	handicap_skills: 'hide',
+	hide_guessed_crew: true,
+	hide_nonviable_crew: true
+};
 
 export const Worfle = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const { TRAIT_NAMES } = globalContext.localized;
 
 	const [roster, setRoster] = React.useState<IRosterCrew[]>([]);
-	const [variantMap, setVariantMap] = React.useState<IVariantMap>({});
 	const [traitMap, setTraitMap] = React.useState<ITraitMap>({});
+
+	const [userPrefs, setUserPrefs] = useStateWithStorage<IUserPrefs>(
+		'worfle/prefs',
+		JSON.parse(JSON.stringify(prefDefaults)),
+		{
+			rememberForever: true,
+			onInitialize: (_itemKey: string, userPrefs: IUserPrefs) => validateUserPrefs(userPrefs)
+		}
+	);
 
 	React.useEffect(() => {
 		initializeData();
@@ -30,11 +51,22 @@ export const Worfle = () => {
 
 	if (!roster) return <></>;
 
+	const worfleData: IWorfleContext = {
+		roster,
+		traitMap,
+		userPrefs,
+		setUserPrefs
+	};
+
 	return (
-		<WorfleContext.Provider value={{ roster, variantMap, traitMap }}>
+		<WorfleContext.Provider value={worfleData}>
 			<WorfleTabs />
 		</WorfleContext.Provider>
 	);
+
+	interface IVariantMap {
+		[key: string]: string[];
+	};
 
 	function initializeData(): void {
 		if (DEBUG_FLAG_BAD_SERIES) {
@@ -46,7 +78,7 @@ export const Worfle = () => {
 					}
 				})
 				if (seriesTraits.length !== 1 && !seriesTraits.includes('original'))
-					console.log(crew.name, crew.symbol, crew.series, seriesTraits);
+					console.log('BAD_SERIES', crew.name, crew.symbol, crew.series, seriesTraits);
 			});
 		}
 
@@ -58,13 +90,18 @@ export const Worfle = () => {
 			const variants: string[] = getGamifiedVariants(crew);
 
 			// Attach gamified series, variants, and traits here
-			crew.gamified_series = !!crew.series && !INVALID_SERIES.includes(crew.symbol) ? crew.series : 'n/a';
+			crew.gamified_series = !!crew.series && !MISLEADING_CREW.includes(crew.symbol) ? crew.series : 'n/a';
 			crew.gamified_variants = variants;
 			crew.gamified_traits = getGamifiedTraits(crew, variants);
 
-			// Map display names to variants and crew counts to traits
-			mapVariantNames(variantMap, crew, variants);
-			mapTraitCounts(traitMap, crew, variantMap);
+			// Map default name, image, and crew count to traits
+			mapTraitData(traitMap, crew, variants);
+
+			// Map short names to variants to properly identify variant display names
+			variants.forEach(variant => {
+				if (!variantMap[variant]) variantMap[variant] = [];
+				variantMap[variant].push(crew.short_name);
+			});
 
 			roster.push(crew);
 		});
@@ -73,9 +110,9 @@ export const Worfle = () => {
 		roster.sort((a, b) => a.name.localeCompare(b.name));
 		setRoster(roster);
 
-		fixNameMap(variantMap);
+		// Update traitMap with unique display names for variants
+		identifyVariantNames(traitMap, variantMap);
 
-		setVariantMap(variantMap);
 		setTraitMap(traitMap);
 	}
 
@@ -99,71 +136,121 @@ export const Worfle = () => {
 		return traits.concat(crew.traits);
 	}
 
-	function mapVariantNames(variantMap: IVariantMap, crew: IRosterCrew, variants: string[]): void {
-		variants.forEach(variant => {
-			if (!variantMap[variant]) {
-				variantMap[variant] = {
-					short_names: [],
-					display_name: ''
-				};
+	function mapTraitData(traitMap: ITraitMap, crew: IRosterCrew, variants: string[]): void {
+		const getTraitType = (trait: string) => {
+			let type: TTraitType = 'trait';
+			if (USABLE_HIDDEN_TRAITS.includes(trait)) type = 'hidden_trait';
+			if (USABLE_COLLECTIONS.includes(trait)) type = 'collection';
+			if (variants.includes(trait)) type = 'variant';
+			return type;
+		};
+
+		const getTraitIconUrl = (trait: string, type: TTraitType) => {
+			let iconUrl: string = '';
+			switch (type) {
+				case 'collection':
+					iconUrl = '/media/vault.png';
+					break;
+				case 'trait':
+					iconUrl = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+					break;
+				case 'variant':
+					iconUrl = '/media/crew_icon.png';
+					break;
 			}
+			return iconUrl;
+		};
 
-			variantMap[variant].short_names.push(crew.short_name);
-			variantMap[variant].display_name = crew.short_name;
-
-			if (variantMap[variant].short_names.length > 1) {
-				const shortNames: { [key: string]: number } = {};
-				variantMap[variant].short_names.forEach(shortName => {
-					shortNames[shortName] = (shortNames[shortName] ?? 0) + 1;
-				});
-				variantMap[variant].display_name = Object.keys(shortNames).sort(
-					(a, b) => shortNames[b] - shortNames[a]
-				)[0];
-			}
-		});
-	}
-
-	function mapTraitCounts(traitMap: ITraitMap, crew: IRosterCrew, variantMap: IVariantMap): void {
 		crew.gamified_traits.forEach(trait => {
 			if (!traitMap[trait]) {
+				const type: TTraitType = getTraitType(trait);
 				traitMap[trait] = {
-					type: 'trait',
-					count: 0
+					type,
+					display_name: TRAIT_NAMES[trait] ?? properCase(trait),
+					iconUrl: getTraitIconUrl(trait, type),
+					crew: []
 				};
 			}
-			traitMap[trait].type = getTraitType(trait, variantMap);
-			traitMap[trait].count++;
+			traitMap[trait].crew.push(crew.symbol);
 		});
 	}
 
-	function fixNameMap(variantMap: IVariantMap): void {
-		const properName = (trait: string) => {
-			return trait.replace(/_/g, ' ').split(' ').map(word => word.slice(0, 1).toUpperCase() + word.slice(1)).join(' ');
+	function identifyVariantNames(traitMap: ITraitMap, variantMap: IVariantMap): void {
+		const symbolize = (name: string) => {
+			return name.replace(/[^A-Z0-1]/gi, '').toLowerCase();
 		};
+
 		const nameCounts: { [key: string]: number } = {};
+
 		Object.keys(variantMap).forEach(variant => {
-			let displayName: string = variantMap[variant].display_name;
-			// First fix display names defined in config
+			let displayName: string = '';
+
+			// Used fixed display names defined in config
 			const fix: { variant: string, display_name: string } | undefined = DISPLAY_NAME_FIXES.find(fix => fix.variant === variant);
 			if (fix) {
 				displayName = fix.display_name;
-				variantMap[variant].display_name = displayName;
 			}
-			nameCounts[displayName] ??= 0;
-			nameCounts[displayName]++;
+			// Otherwise use most common short name among variants OR short name that best matches variant symbol
+			else {
+				const shortNames: { [key: string]: number } = {};
+				variantMap[variant].forEach(shortName => {
+					shortNames[shortName] = (shortNames[shortName] ?? 0) + 1;
+				});
+				const bestName: string = Object.keys(shortNames).sort(
+					(a, b) => {
+						const aCount: number = shortNames[a];
+						const bCount: number = shortNames[b];
+						if (aCount === bCount) {
+							if (symbolize(a) === symbolize(variant)) return -1;
+							if (symbolize(b) === symbolize(variant)) return 1;
+						}
+						return bCount - aCount;
+					}
+				)[0];
+				if (DEBUG_FLAG_MULTIPLE_NAMES) {
+					if (Object.keys(shortNames).length > 1)
+						console.log('MULTIPLE NAMES', variant, shortNames, bestName);
+				}
+				displayName = bestName;
+			}
+
+			if (displayName !== '') {
+				traitMap[variant].display_name = displayName;
+				nameCounts[displayName] ??= 0;
+				nameCounts[displayName]++;
+			}
 		});
-		// Then handle duplicate display names
+
+		// Make sure that no variants share the same display name
 		Object.keys(nameCounts).filter(displayName => nameCounts[displayName] > 1).forEach(duplicateName => {
 			Object.keys(variantMap).filter(
-				variant => variantMap[variant].display_name === duplicateName
+				variant => traitMap[variant].display_name === duplicateName
 			).sort((a, b) =>
-				variantMap[b].short_names.length - variantMap[a].short_names.length
+				variantMap[b].length - variantMap[a].length
 			).forEach((variant, idx) => {
 				// Prefer short name of crew with most variants, otherwise use version of variant symbol
-				if (idx > 0 || variantMap[variant].short_names.length === 1)
-					variantMap[variant].display_name = properName(variant);
+				if (idx > 0) {
+					const displayName: string = properCase(variant);
+					traitMap[variant].display_name = displayName;
+					if (DEBUG_FLAG_DUPLICATE_NAMES) {
+						console.log('DUPLICATE_NAME', variant, duplicateName, displayName);
+					}
+				}
 			});
 		});
+	}
+
+	function properCase(trait: string): string {
+		return trait.replace(/_/g, ' ').split(' ').map(word => word.slice(0, 1).toUpperCase() + word.slice(1)).join(' ');
+	}
+
+	function validateUserPrefs(userPrefs: IUserPrefs): void {
+		const validatedPrefs: IUserPrefs = JSON.parse(JSON.stringify(prefDefaults));
+		Object.keys(prefDefaults).forEach(key => {
+			if (typeof userPrefs[key] === typeof prefDefaults[key])
+				validatedPrefs[key] = userPrefs[key];
+		});
+		setUserPrefs(validatedPrefs);
 	}
 };
 
