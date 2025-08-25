@@ -107,7 +107,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			if (!collection) return <></>
 			return (
 				<tr key={collection.id} style={{ cursor: 'pointer' }} onClick={() => setModalInstance({ collection, pageId: 'collections/crew', activeTab: 1 })}>
-					<td style={{ whiteSpace: 'nowrap', fontSize: '.95em' }}>{collection.name}</td>
+					<td style={{ whiteSpace: 'wrap', fontSize: '.95em' }}>{collection.name}</td>
 					<td style={{ textAlign: 'right', fontSize: '.95em' }}>
 						<Popup
 							wide="very"
