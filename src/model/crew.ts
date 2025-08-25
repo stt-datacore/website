@@ -272,6 +272,7 @@ export interface ConstituentWeights {
     skill_rarity: number
     am_seating: number
     tertiary_rarity: number
+    primary_rarity: number
     velocity: number
 }
 
