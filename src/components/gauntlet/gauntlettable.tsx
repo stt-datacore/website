@@ -4,12 +4,12 @@ import { Link } from "gatsby";
 
 import { useStateWithStorage } from "../../utils/storage";
 
-import { Button, Dropdown, DropdownItemProps, Icon, Input, Label, Pagination, Popup, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, Pagination, Popup, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
 
 import { Gauntlet, GauntletFilterProps } from "../../model/gauntlets";
 import { CompletionState, PlayerCrew } from "../../model/player";
 
-import { comparePairs, getPlayerPairs, isImmortal, prettyObtained, printPortalStatus, qbitsToSlots } from "../../utils/crewutils";
+import { comparePairs, getPlayerPairs, isImmortal, prettyObtained, printPortalStatus, qbitsToSlots, skillSum } from "../../utils/crewutils";
 
 import { formatPair } from "./paircard";
 
@@ -19,6 +19,8 @@ import { arrayIntersect } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
 import { getCrewCrit, getCritColor, printGauntlet } from "../../utils/gauntlet";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
+import { renderMainDataScore } from "../crewtables/views/base";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 type BucketType = { crit: number, name: string, count: number };
@@ -54,6 +56,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const [activePage, setActivePage] = React.useState(1);
 
     const [sortDirection, setSortDirection] = useStateWithStorage<SortDirection>(`${pageId}/sortDirection`, 'ascending');
+    const [altLayout, setAltLayout] = useStateWithStorage<boolean>(`${pageId}/altLayout`, false, { rememberForever: true });
 
     const [sortKey, setSortKey] = useStateWithStorage<string | undefined>(`${pageId}/sortKey`, undefined);
 
@@ -94,31 +97,53 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     const prettyTraits = gauntlet.prettyTraits;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
-    const columns = [
-        { title: t('gauntlet.columns.rank'), key: "index" },
-        { title: t('gauntlet.columns.crew'), key: "name", width: 3 as SemanticWIDTHS },
-        { title: t('gauntlet.columns.rarity'), key: "rarity", reverse: true },
-        {
-            title: gauntlets?.length ?
+    const columns = React.useMemo(() => {
+        const cols = [
+                { title: t('gauntlet.columns.rank'), key: "index" },
+                { title: t('gauntlet.columns.crew'), key: "name", width: 3 as SemanticWIDTHS },
+                { title: t('gauntlet.columns.rarity'), key: "rarity", reverse: true },
+                {
+                    title: gauntlets?.length ?
 
-            <Popup
-                trigger={<div>{t('gauntlet.columns.high_crits')} <Icon name='help'/></div>}
-                content={<div>
-                    {t('gauntlet.elevated_note')}
-                </div>}
-             />
+                    <Popup
+                        trigger={<div>{t('gauntlet.columns.high_crits')} <Icon name='help'/></div>}
+                        content={<div>
+                            {t('gauntlet.elevated_note')}
+                        </div>}
+                    />
 
-            : t('gauntlet.columns.crits'),
-            key: "crit",
-            reverse: true
-        },
-        { title: t('gauntlet.columns.first_pair'), key: "pair_1", reverse: true },
-        { title: t('gauntlet.columns.second_pair'), key: "pair_2", reverse: true },
-        { title: t('gauntlet.columns.third_pair'), key: "pair_3", reverse: true },
-        // { title: "Owned", key: "have" },
-        { title: t('gauntlet.columns.in_portal'), key: "in_portal" },
-        { title: t('gauntlet.columns.qp'), key: "q_bits", reverse: true }
-    ];
+                    : t('gauntlet.columns.crits'),
+                    key: "crit",
+                    reverse: true,
+                    width: 2
+                },
+                // { title: "Owned", key: "have" },
+
+            ];
+        if (altLayout) {
+            cols.push(
+                {
+                    title: t('rank_names.datascore'), key: "datascore", reverse: false,
+                },
+                {
+                    title: t('gauntlet.skills_and_pairs'), key: "pairs", reverse: true,
+                },
+            );
+        }
+        else {
+            cols.push(
+                { title: t('gauntlet.columns.first_pair'), key: "pair_1", reverse: true },
+                { title: t('gauntlet.columns.second_pair'), key: "pair_2", reverse: true },
+                { title: t('gauntlet.columns.third_pair'), key: "pair_3", reverse: true }
+            );
+        }
+
+        cols.push(
+            { title: t('gauntlet.columns.in_portal'), key: "in_portal" },
+            { title: t('gauntlet.columns.qp'), key: "q_bits", reverse: true }
+        );
+        return cols;
+    }, [altLayout]);
 
     const pageSizes = [1, 5, 10, 20, 50, 100].map(size => {
         return {
@@ -166,19 +191,30 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         setCrew(rosterizeCrew(data));
     }, [sortKey, sortDirection, elevated, data]);
 
+    const flexCol = OptionsPanelFlexColumn;
+    const flexRow = OptionsPanelFlexRow;
+
     return (<div style={{ overflowX: "auto" }}>
-        <Input
-            style={{ width: isMobile ? '100%' : '50%' }}
-            iconPosition="left"
-            placeholder={t('global.search_ellipses')}
-            value={textFilter}
-            onChange={(e, { value }) => setTextFilter(value)}>
-            <input />
-            <Icon name='search' />
-            <Button icon onClick={() => setTextFilter('')} >
-                <Icon name='delete' />
-            </Button>
-        </Input>
+        <div style={{...flexRow, justifyContent: 'space-between', alignItems: 'center'}}>
+            <Input
+                style={{ width: isMobile ? '100%' : '50%' }}
+                iconPosition="left"
+                placeholder={t('global.search_ellipses')}
+                value={textFilter}
+                onChange={(e, { value }) => setTextFilter(value)}>
+                <input />
+                <Icon name='search' />
+                <Button icon onClick={() => setTextFilter('')} >
+                    <Icon name='delete' />
+                </Button>
+            </Input>
+            <div>
+                <Checkbox label={t('global.alternative_layout')}
+                    checked={altLayout}
+                    onChange={(e, { checked }) => setAltLayout(!!checked)}
+                    />
+            </div>
+        </div>
 
         <Table sortable celled selectable striped collapsing unstackable compact="very">
             <Table.Header>
@@ -193,7 +229,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     {columns.map((col, hidx) =>
                         <Table.HeaderCell
                             key={"k_gauntlet_header_" + hidx}
-                            width={col.width}
+                            width={col.width as SemanticWIDTHS}
                             sorted={sortKey === col.key ? sortDirection : undefined}
                             onClick={() => {
                                 columnClick(col.key);
@@ -297,15 +333,30 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     </>}
                     {!gauntlets?.length && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
                 </Table.Cell>
+                {!altLayout && <>
                 <Table.Cell width={2}>
-                    {pairs && pairs.length >= 1 && formatPair(pairs[0])}
+                    {!!pairs && pairs.length >= 1 && formatPair(pairs[0])}
                 </Table.Cell>
                 <Table.Cell width={2}>
-                    {pairs && pairs.length >= 2 && formatPair(pairs[1])}
+                    {!!pairs && pairs.length >= 2 && formatPair(pairs[1])}
                 </Table.Cell>
                 <Table.Cell width={2}>
-                    {pairs && pairs.length >= 3 && formatPair(pairs[2])}
+                    {!!pairs && pairs.length >= 3 && formatPair(pairs[2])}
                 </Table.Cell>
+                </>}
+                {altLayout && <>
+                <Table.Cell>
+                    {renderMainDataScore(crew)}
+                </Table.Cell>
+                <Table.Cell width={2}>
+                    <div style={{...flexCol, alignItems: 'flex-start', gap: '0.5em'}}>
+                        {!!pairs && !!pairs.length &&
+                        pairs.map((pair, idx) => {
+                            return formatPair(pair, undefined, undefined, undefined, `${crew.symbol}_alt_pairs_${idx}`);
+                        })}
+                    </div>
+                </Table.Cell>
+                </>}
                 <Table.Cell width={2}>
                     <span title={printPortalStatus(crew, t, true, true, true)}>
                         {printPortalStatus(crew, t, true, false)}
@@ -382,6 +433,9 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         else if (key === 'name') {
             newarr = newarr.sort((a, b) => dir * a.name.localeCompare(b.name));
         }
+        else if (key === 'datascore') {
+            newarr = newarr.sort((a, b) => dir * (a.ranks.scores.overall_rank - b.ranks.scores.overall_rank));
+        }
         else if (key === 'rarity') {
             newarr = newarr.sort((a, b) => {
                 let r = a.max_rarity - b.max_rarity;
@@ -440,6 +494,24 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     let pa = [...apairs ?? []];
                     let pb = [...bpairs ?? []];
                     return dir * (-1 * comparePairs(pa[pairIdx], pb[pairIdx]));
+                }
+                else if (apairs) {
+                    return dir * -1;
+                }
+                else if (bpairs) {
+                    return dir * 1;
+                }
+                else {
+                    return 0;
+                }
+            });
+        }
+        else if (key === 'pairs') {
+            newarr = newarr.sort((a, b) => {
+                let apairs = getPlayerPairs(a);
+                let bpairs = getPlayerPairs(b);
+                if (apairs && bpairs) {
+                    return dir * (-1 * (skillSum(apairs!.flat(), 'proficiency') - skillSum(bpairs!.flat(), 'proficiency')));
                 }
                 else if (apairs) {
                     return dir * -1;

@@ -477,7 +477,7 @@ export function getSpecialistBonus(eventData: IEventData) {
 		!eventData.activeContent?.main_mission ||
 		!eventData.activeContent?.featured_crew_bonus_chance ||
 		!eventData.activeContent?.featured_trait_bonus_chance
-	) return undefined;
+	) return { high: 30, low: 15 };
 
 	const inc = eventData.activeContent.bonus_chance_inc;
 	const failures = eventData.activeContent.main_mission.bonus_failures;

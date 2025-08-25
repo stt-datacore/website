@@ -33,6 +33,8 @@ import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { SkillCheckAccordion } from './skillcheck/accordion';
 import { VoyageStatsAccordion } from './stats/stats_accordion';
 import { refShips } from '../../utils/shiputils';
+import { DilemmaHelperAccordion } from './dilemmas/helper';
+import { ShipHoverStat } from '../hovering/shiphoverstat';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -67,7 +69,9 @@ const NonPlayerHome = () => {
 				setHistory: () => {},
 				syncState: SyncState.ReadOnly,
 				messageId: '',
-				setMessageId: () => {}
+				setMessageId: () => {},
+				historyInitState: InitState.Initializing,
+				setHistoryInitState: () => false
 			};
 			return (
 				<HistoryContext.Provider value={historyContext}>
@@ -214,7 +218,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		setHistory,
 		syncState: historySyncState,
 		messageId: historyMessageId,
-		setMessageId: setHistoryMessageId
+		setMessageId: setHistoryMessageId,
+		setHistoryInitState,
+		historyInitState
 	};
 
 	return (
@@ -625,6 +631,14 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					roster={myCrew}
 					initialExpand={recalled}
 				/>
+				{voyage.voyage_type === 'dilemma' && (
+					<DilemmaHelperAccordion
+						voyage={voyage}
+						dbid={playerData?.player.dbid}
+						crewTargetGroup='voyageRewards_crew'
+						shipTargetGroup='voyageRewards_ship'
+						/>
+				)}
 				{voyage.voyage_type === 'encounter' && (
 					<EncounterHelperAccordion
 						voyageConfig={voyage}
@@ -634,6 +648,7 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />
+			<ShipHoverStat targetGroup='voyageRewards_ship' />
 		</React.Fragment>
 	);
 };
