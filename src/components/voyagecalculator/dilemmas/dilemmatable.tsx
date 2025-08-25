@@ -11,42 +11,42 @@ import { AvatarView } from "../../item_presenters/avatarview";
 import { printChrons, printHonor, printMerits } from "../../retrieval/context";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
+import { ReferenceShip, Ship } from "../../../model/ship";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
-    targetGroup?: string;
+    crewTargetGroup?: string;
+    shipTargetGroup?: string;
     updateDilemma: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { dilemmas: dilemmaSource, crew } = globalContext.core;
+    const { dilemmas: dilemmaSource, crew, all_ships: ships } = globalContext.core;
     const { t } = globalContext.localized;
-    const { voyageLog, targetGroup, updateDilemma } = props;
+    const { voyageLog, crewTargetGroup, shipTargetGroup, updateDilemma } = props;
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
     const goldRewards = crew.filter(f => f.traits_hidden.includes("exclusive_voyage") && f.max_rarity === 5);
 
-    function nameSort(a: Dilemma, b: Dilemma) {
-        if (a.narrative && b.narrative) {
-            return a.narrative.index - b.narrative.index;
-        }
-        else if (a.narrative && !b.narrative) {
-            return -1;
-        }
-        else if (b.narrative && !a.narrative) {
-            return 1;
-        }
-        return a.title.localeCompare(b.title);
-    }
-    const dilemmas = React.useMemo(() => {
-        return getDilemmaData(crew, dilemmaSource, voyageLog?.voyage_narrative).sort(nameSort);
-    }, [voyageLog, dilemmaSource, crew]);
+    const [dilemmas, setDilemmas] = React.useState<Dilemma[]>([]);
+
+    const [eligible, setEligble] = React.useState<DilemmaMultipartData[]>([]);
+    const [inverse, setInverse] = React.useState<DilemmaMultipartData[]>([]);
+
+    React.useEffect(() => {
+        const dilemmas = getDilemmaData(crew, ships, dilemmaSource, voyageLog?.voyage_narrative)
+        const { eligible, inverse } = getForwardDilemmaInfo(dilemmas);
+        dilemmas.sort((a, b) => nameSort(a, b, eligible));
+        setDilemmas(dilemmas);
+        setEligble(eligible);
+        setInverse(inverse);
+    }, [voyageLog, dilemmaSource, crew, ships]);
 
     const tableConfig: ITableConfigRow[] = [
         {
             width: 1, title: t('global.name'), column: 'title',
-            customCompare: (a, b, config) => nameSort(a, b)
+            customCompare: (a, b, config) => nameSort(a, b, eligible)
         },
         {
             width: 1, title: t('base.rarity'), column: 'rarity',
@@ -143,11 +143,26 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     function renderTableRow(row: Dilemma, idx?: number) {
         let choices = [row.choiceA, row.choiceB, row.choiceC].filter(f => f !== undefined);
+        let elig = eligible?.find(e => e.dilemma === row);
+        let inv = inverse?.find(i => i.dilemma === row);;
+
+        let bgColor: string | undefined = undefined;
+
+        if (inv && !elig && inv.unlock === undefined) {
+            bgColor = 'salmon';
+        }
+        else if (elig && !row.narrative) {
+            bgColor = 'steelblue';
+        }
+        if (!!row.narrative) {
+            bgColor = 'forestgreen';
+        }
+        const key = `${idx}_dilemma_${row.title}`;
         return <>
-            <Table.Row>
+            <Table.Row key={key}>
                 <Table.Cell
                     style={{
-                        backgroundColor: !!row.narrative ? 'forestgreen' : undefined
+                        backgroundColor: bgColor
                     }}
                 >
                     <div style={{
@@ -178,13 +193,27 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                       t('global.no')}
                 </Table.Cell>
                 {choices.map((choice, i) => {
+                    let choiceBg: string | undefined = undefined;
+
+                    if (elig?.unlock === i) {
+                        choiceBg = 'darkslateblue';
+                    }
+                    if (row.narrative?.selection === i) {
+                        choiceBg = 'royalblue';
+                    }
+                    if (row.narrative?.selection === undefined && row.multipart?.some(mp => mp.requiredChoices.includes(AlphaRef[i]))) {
+                        choiceBg = 'mediumpurple';
+                    }
+                    if (inv?.unlock === i && elig?.unlock !== i) {
+                        choiceBg = 'salmon';
+                    }
                     return (
                         <Table.Cell
-                            key={`table_cell_${row.title}_choice_${choice.text}`}
+                            key={`${key}_choice_${choice.text}`}
                             className="top aligned"
                             style={{
                                 cursor: !!row.narrative ? 'pointer' : undefined,
-                                backgroundColor: row.narrative?.selection === i ? 'royalblue' : undefined
+                                backgroundColor: choiceBg
                             }}
                             onClick={() => updateDilemma(row, i, row.selection === i)}
                             >
@@ -199,7 +228,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     function renderChoiceRewards(choice: DilemmaChoice) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
-        if (choice.parsed?.rarity == 5) {
+        let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
+
+        if (choice.parsed?.rarity == 5 && !choice.parsed?.ship) {
             crewrewards = goldRewards;
         }
         let scheme = choice.parsed?.schematics;
@@ -213,7 +244,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     borderRadius: '0.75em',
                     fontWeight: 'bold',
                     width: '100%'}}>
-                        {choice.text}
+                        {formatChoiceText(choice.text)}
                 </div>
                 {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
                 {!!choice.parsed?.chrons && printChrons(choice.parsed.chrons, t, true)}
@@ -224,167 +255,257 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
                         {crewrewards.map(crew => {
                             return (
-                                <div key={`${choice.text}_${crew.symbol}`} style={{...flexRow}}>
+                                <div key={`${choice.text}_${crew.symbol}`} style={{...flexRow, gap: '1em'}}>
                                     <AvatarView
                                         mode='crew'
                                         item={crew}
                                         size={32}
-                                        targetGroup={targetGroup}
+                                        targetGroup={crewTargetGroup}
                                         />
                                     {crew.name}
                                 </div>
                             )
                         })}
                     </div>}
+                    {!!shiprewards?.length &&
+                    <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
+                        {shiprewards.map(ship => {
+                            return (
+                                <div key={`${choice.text}_${ship.symbol}`} style={{...flexRow, gap: '1em'}}>
+                                    <AvatarView
+                                        mode='ship'
+                                        item={ship}
+                                        size={32}
+                                        targetGroup={shipTargetGroup}
+                                        />
+                                    {ship.name}
+                                </div>
+                            )
+                        })}
+                    </div>}
+
                 </div>
             </div>
         )
     }
-}
 
-function getChoices(d: Dilemma) {
-    const res = [d.choiceA, d.choiceB];
-    if (d.choiceC) res.push(d.choiceC);
-    return res;
-}
-
-function getChoiceRarity(choice: DilemmaChoice) {
-	if (choice.reward.some((r: string) => r.includes("100 :honor:")) && choice.reward.some(s => s.includes('4') && s.includes(':star:'))) return 5;
-	else if (choice.reward.some((r: string) => r.includes("60 :honor:"))) return 4;
-	else return 3;
-}
-
-function getDilemmaData(allCrew: CrewMember[], dilemmas: Dilemma[], log?: VoyageNarrative[]): Dilemma[] {
-    let rex = new RegExp(/.*\*\*(.+)\*\*.*/);
-    let schem = /^(\d+) Ship Schematics$/i;
-    let honorex = /(\d+)\s*:honor:/;
-    let meritrex = /(\d+)\s*:merits:/;
-    let chronrex = /(\d+)\s*:chrons:/;
-    let botCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
-    let legend = [] as string[];
-    dilemmas = JSON.parse(JSON.stringify(dilemmas));
-
-    for (let dilemma of dilemmas) {
-        let crewurl = undefined as string | undefined;
-        let dil = 0;
-        if (log) {
-            let n = log.find(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
-            if (n) {
-                dilemma.narrative = n;
-                if (n.selection !== undefined) dilemma.selection = n.selection;
+    function formatChoiceText(text: string, click?: () => void) {
+        let parts = text.split("**");
+        if (parts.length === 1) return <>{text}</>;
+        return parts.map((part, i) => {
+            if ((i + 1) % 2 == 0) {
+                return (
+                    <b style={{cursor: click ? 'pointer' : undefined, color: 'darkslateblue'}} key={`${text}_${i}`} onClick={() => click ? click() : false}>{part}</b>
+                )
             }
+            else {
+                return <React.Fragment key={`${text}_${i}`}>{part}</React.Fragment>;
+            }
+        })
+    }
+
+    function nameSort(a: Dilemma, b: Dilemma, eligible?: DilemmaMultipartData[]) {
+        if (a.narrative && b.narrative) {
+            return a.narrative.index - b.narrative.index;
         }
-        let maxrare = 3;
-        [dilemma.choiceA, dilemma.choiceB, dilemma.choiceC ?? null].forEach((choice) => {
-            if (choice) {
-                let i = 0;
-                choice.parsed ??= {};
-                choice.parsed.rarity = getChoiceRarity(choice);
-                for (let s of choice.reward) {
-                    if (s.includes("Schematics") || schem.test(s)) {
-                        let val = schem.exec(s);
-                        if (val?.length) choice.parsed.schematics = Number(val[1]);
-                    }
-                    if (honorex.test(s)) {
-                        let val = honorex.exec(s);
-                        if (val?.length) choice.parsed.honor = Number(val[1]);
-                    }
-                    if (meritrex.test(s)) {
-                        let val = meritrex.exec(s);
-                        if (val?.length) choice.parsed.merits = Number(val[1]);
-                    }
-                    if (chronrex.test(s)) {
-                        let val = chronrex.exec(s);
-                        if (val?.length) choice.parsed.chrons = Number(val[1]);
-                    }
+        if (a.narrative && !b.narrative) {
+            return -1;
+        }
+        else if (b.narrative && !a.narrative) {
+            return 1;
+        }
 
-                    // Check for 4/5 star behold eligibility
-                    if (s.includes('4') && s.includes(':star:')) {
-                        legend.push(dil === 0 ? 'A' : (dil === 1 ? 'B' : 'C'));
-                        choice.parsed.behold = true;
-                    }
+        let aelig = !!(eligible?.some(e => e.dilemma === a));
+        let belig = !!(eligible?.some(e => e.dilemma === b));
 
-                    if (rex.test(s)) {
-                        let result = rex.exec(s);
-                        if (result && result.length) {
-                            let crewname = result[1];
-                            let crew = botCrew.find(crew => crew.name === crewname);
-                            if (crew) {
-                                choice.parsed.crew = crew;
-                                if (!choice.parsed.behold) {
-                                    choice.parsed.behold = true;
+        if (aelig && !belig) return -1;
+        else if (belig && !aelig) return 1;
+
+        return a.title.localeCompare(b.title);
+    }
+
+    function getChoices(d: Dilemma) {
+        const res = [d.choiceA, d.choiceB];
+        if (d.choiceC) res.push(d.choiceC);
+        return res;
+    }
+
+    function getChoiceRarity(choice: DilemmaChoice) {
+        if (choice.reward.some((r: string) => r.includes("100 :honor:")) && choice.reward.some(s => s.includes('4') && s.includes(':star:'))) return 5;
+        else if (choice.reward.some((r: string) => r.includes("60 :honor:"))) return 4;
+        else return 3;
+    }
+
+    function getDilemmaData(allCrew: CrewMember[], allShips: ReferenceShip[], dilemmas: Dilemma[], log?: VoyageNarrative[]): Dilemma[] {
+        let rex = new RegExp(/.*\*\*(.+)\*\*.*/);
+        let schem = /^(\d+) Ship Schematics$/i;
+        let honorex = /(\d+)\s*:honor:/;
+        let meritrex = /(\d+)\s*:merits:/;
+        let chronrex = /(\d+)\s*:chrons:/;
+        let botCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
+        let legend = [] as string[];
+        dilemmas = JSON.parse(JSON.stringify(dilemmas));
+
+        for (let dilemma of dilemmas) {
+            let crewurl = undefined as string | undefined;
+            let dil = 0;
+            if (log) {
+                let n = log.find(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
+                if (n) {
+                    dilemma.narrative = n;
+                    if (n.selection !== undefined) dilemma.selection = n.selection;
+                }
+            }
+            let maxrare = 3;
+            [dilemma.choiceA, dilemma.choiceB, dilemma.choiceC ?? null].forEach((choice) => {
+                if (choice) {
+                    let i = 0;
+                    choice.parsed ??= {};
+                    choice.parsed.rarity = getChoiceRarity(choice);
+                    for (let s of choice.reward) {
+                        // Parse rewards
+                        if (s.includes("Schematics") || schem.test(s)) {
+                            let val = schem.exec(s);
+                            if (val?.length) choice.parsed.schematics = Number(val[1]);
+                        }
+                        if (honorex.test(s)) {
+                            let val = honorex.exec(s);
+                            if (val?.length) choice.parsed.honor = Number(val[1]);
+                        }
+                        if (meritrex.test(s)) {
+                            let val = meritrex.exec(s);
+                            if (val?.length) choice.parsed.merits = Number(val[1]);
+                        }
+                        if (chronrex.test(s)) {
+                            let val = chronrex.exec(s);
+                            if (val?.length) choice.parsed.chrons = Number(val[1]);
+                        }
+                        // Check for 4/5 star behold eligibility
+                        if (s.includes('4') && s.includes(':star:')) {
+                            legend.push(dil === 0 ? 'A' : (dil === 1 ? 'B' : 'C'));
+                            choice.parsed.behold = true;
+                        }
+                        if (rex.test(s)) {
+                            let result = rex.exec(s);
+                            if (result && result.length) {
+                                let crewname = result[1];
+                                let crew = botCrew.find(crew => crew.name === crewname);
+                                if (crew) {
+                                    choice.parsed.crew = crew;
+                                    if (!choice.parsed.behold) {
+                                        choice.parsed.behold = true;
+                                    }
+                                    if (choice.parsed.rarity < crew.max_rarity) {
+                                        choice.parsed.rarity = crew.max_rarity;
+                                    }
                                 }
-                                if (choice.parsed.rarity < crew.max_rarity) {
-                                    choice.parsed.rarity = crew.max_rarity;
+                                else {
+                                    let ship = allShips.find(ship => ship.name === crewname);
+                                    if (ship) {
+                                        choice.parsed.ship = ship;
+                                        if (!choice.parsed.behold) {
+                                            choice.parsed.behold = true;
+                                        }
+                                        // if (choice.parsed.rarity < ship.rarity) {
+                                        //     choice.parsed.rarity = ship.rarity;
+                                        // }
+                                        choice.parsed.schematics = choice.parsed.schematics || 500;
+                                    }
                                 }
                             }
                         }
+                        i++;
                     }
-                    i++;
+                    if (maxrare < choice.parsed.rarity) {
+                        maxrare = choice.parsed.rarity;
+                    }
                 }
-                if (maxrare < choice.parsed.rarity) {
-                    maxrare = choice.parsed.rarity;
-                }
+                dil++;
+            });
+
+            dilemma.rarity = maxrare;
+
+            let r = getChoiceRarity(dilemma.choiceA);
+            let r2 = getChoiceRarity(dilemma.choiceB);
+            let r3 = dilemma.choiceC ? getChoiceRarity(dilemma.choiceC) : 0;
+            if (r2 > r) r = r2;
+            if (r3 > r) r = r3;
+            if (crewurl && r < 4) r = 4;
+
+            linkMultipart(dilemma, dilemmas);
+        }
+
+        return dilemmas;
+    }
+
+    function getForwardDilemmaInfo(dilemmas: Dilemma[]) {
+        let resp = dilemmas.filter(f => f.selection !== undefined && f.multipart !== undefined);
+        if (!resp?.length) return {
+            eligible: [],
+            inverse: [],
+        };
+
+        const results = [] as DilemmaMultipartData[];
+        const invres = [] as DilemmaMultipartData[];
+        resp.forEach((dilemma, idx) => {
+            let res = dilemma.selection!;
+            let mp = dilemma.multipart!.filter(f => f.requiredChoices.includes(AlphaRef[res]));
+            let nomp = dilemma.multipart!.filter(f => !mp.includes(f));
+            for (let m of mp) {
+                results.push(m);
+                if (m.dilemma.multipart?.length) results.push(...m.dilemma.multipart);
             }
-            dil++;
+            for (let n of nomp) {
+                invres.push(n);
+                if (n.dilemma.multipart?.length) invres.push(...n.dilemma.multipart);
+            }
         });
 
-        dilemma.rarity = maxrare;
-
-        let r = getChoiceRarity(dilemma.choiceA);
-        let r2 = getChoiceRarity(dilemma.choiceB);
-        let r3 = dilemma.choiceC ? getChoiceRarity(dilemma.choiceC) : 0;
-        if (r2 > r) r = r2;
-        if (r3 > r) r = r3;
-        if (crewurl && r < 4) r = 4;
-
-        linkMultipart(dilemma, dilemmas);
+        return {
+            eligible: results,
+            inverse: invres,
+        };
     }
 
-    return dilemmas;
-}
+    function linkMultipart(dilemma: Dilemma, dilemmas: Dilemma[]) {
+        const titleRex = /^(.+),\s*Part\s+(\d+)$/;
+        let res = titleRex.exec(dilemma.title);
+        if (res) {
+            dilemma.baseTitle = res[1];
+        }
+        //const group = findDilemmaGroup(dilemma.baseTitle, dilemmas);
+        const choiceRex = /^(.+)\s+\(.*\*\*(.+)\*\*.*\)\s*$/;
+        const dscRex = /^.*\s+Choice\s+(\d|\w)\s+.*/;
+        const mp = [] as DilemmaMultipartData[];
+        getChoices(dilemma).forEach((choice, idx) => {
+            let cres = choiceRex.exec(choice.text);
+            if (cres && !choice.text.includes("Requires") && !choice.text.includes("If you")) {
+                let tdil = dilemmas.find(f => f.title === cres[2]);
+                if (tdil) {
+                    let tres = dscRex.exec(choice.text);
+                    let c = -1;
+                    if (tres) {
+                        c = AlphaRef.findIndex((a, idx) => a === tres[1] || idx === Number(tres[1]) - 1);
+                    }
 
-function findDilemmaGroup(baseTitle: string, dilemmas: Dilemma[]) {
-    return dilemmas.filter(f => f.title.startsWith(baseTitle)).sort((a, b) => a.title.localeCompare(b.title));
-}
-
-function linkMultipart(dilemma: Dilemma, dilemmas: Dilemma[]) {
-    const titleRex = /^(.+),\s*Part\s+(\d+)$/;
-    let res = titleRex.exec(dilemma.title);
-    if (res) {
-        dilemma.baseTitle = res[1];
-    }
-    //const group = findDilemmaGroup(dilemma.baseTitle, dilemmas);
-    const choiceRex = /^(.+)\s+\(.*\*\*(.+)\*\*.*\)\s*$/;
-    const dscRex = /^.*\s+Choice\s+(\d|\w)\s+.*/;
-    const mp = [] as DilemmaMultipartData[];
-    getChoices(dilemma).forEach((choice, idx) => {
-        let cres = choiceRex.exec(choice.text);
-        if (cres) {
-            let tdil = dilemmas.find(f => f.title === cres[2]);
-            if (tdil) {
-                let tres = dscRex.exec(choice.text);
-                let c = -1;
-                if (tres) {
-                    c = AlphaRef.findIndex((a, idx) => a === tres[1] || idx === Number(tres[1]) - 1);
-                }
-
-                let mpfind = mp.find(m => m.dilemma === tdil);
-                if (!mpfind || c !== -1){
-                    mpfind = {
-                        requiredChoices: [AlphaRef[idx]],
-                        dilemma: tdil,
-                        unlock: c === -1 ? undefined : c
-                    };
-                    mp.push(mpfind);
-                }
-                else {
-                    mpfind.requiredChoices.push(AlphaRef[idx]);
+                    let mpfind = mp.find(m => m.dilemma === tdil);
+                    if (!mpfind || c !== -1){
+                        mpfind = {
+                            requiredChoices: [AlphaRef[idx]],
+                            dilemma: tdil,
+                            unlock: c === -1 ? undefined : c
+                        };
+                        mp.push(mpfind);
+                    }
+                    else {
+                        mpfind.requiredChoices.push(AlphaRef[idx]);
+                    }
                 }
             }
-        }
-    });
-    if (mp.length) dilemma.multipart = mp;
+        });
+        if (mp.length) dilemma.multipart = mp;
+
+    }
 
 }
 

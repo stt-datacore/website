@@ -182,6 +182,8 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	const qbslots = qbitsToSlots(crew.q_bits);
 	//const tuvixColor = crew.ranks.scores?.tuvix ? gradeToColor(crew.ranks.scores.tuvix / 100) ?? undefined : undefined;
 
+	const voyPower = Math.ceil(skillSum(Object.entries(crew).filter(([key, val]) => key.endsWith("_skill")).map(([key, val]) => val)));
+
 	return (
 		<React.Fragment>
 			{/* <Table.Cell textAlign='center'>
@@ -201,6 +203,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
 					<b>#{crew.ranks.voyRank}</b><br />
 					{crew.ranks.voyTriplet && <small>{CONFIG.TRIPLET_TEXT} #{crew.ranks.voyTriplet.rank}</small>}
+					{crew.ranks.voyTriplet && <><br /><small style={{color: 'lightblue', fontStyle: 'italic'}}>{voyPower.toLocaleString()}</small></>}
 				</div>
 			</Table.Cell>}
 			{(tableType === 'offers' || alternativeLayout) && <>

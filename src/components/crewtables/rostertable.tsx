@@ -239,6 +239,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
+	const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
@@ -359,6 +360,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			},
 			form: <QuipmentToolsFilter
 					//missions={continuum_missions}
+					traitsOnly={traitsOnly}
+					setTraitsOnly={setTraitsOnly}
 					questFilter={questFilter}
 					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
@@ -586,17 +589,15 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			}
 		};
 		prepareCrew();
-	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView, specialView]);
+	}, [rosterCrew, crewMarkups, slots, traitsOnly, powerMode, rosterType, tableView, specialView]);
 
 	React.useEffect(() => {
-
 		setDataPrepared({
 			rosterType,
 			rosterCount: preparedCrew ? preparedCrew.length : 0,
 			tableView,
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
-
 	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	return (

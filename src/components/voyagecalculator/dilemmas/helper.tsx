@@ -18,11 +18,13 @@ type DilemmaHelperProps = {
 	roster?: PlayerCrew[];
 	rosterType?: 'allCrew' | 'myCrew';
 	initialExpand?: boolean;
-    targetGroup?: string;
+    crewTargetGroup?: string;
+	shipTargetGroup?: string;
 	dbid?: number | string;
 };
 
 type AnsweredDilemma = {
+	voyage_id: number;
 	title: string;
 	selection: number;
 }
@@ -32,7 +34,7 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
     const { t } = globalContext.localized;
 
     const [isActive, setIsActive] = React.useState<boolean>(false);
-	const { targetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive, dbid } = props;
+	const { crewTargetGroup, shipTargetGroup, configSource, voyage, ship, roster, rosterType, initialExpand: externActive, dbid } = props;
 
 	React.useEffect(() => {
 		if (externActive !== undefined) {
@@ -53,7 +55,8 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 				{isActive && (
 					<Segment>
 						<DilemmaHelper
-                            targetGroup={targetGroup}
+                            crewTargetGroup={crewTargetGroup}
+							shipTargetGroup={shipTargetGroup}
 							configSource={configSource}
 							voyage={voyage}
 							ship={ship}
@@ -69,10 +72,23 @@ export const DilemmaHelperAccordion = (props: DilemmaHelperProps) => {
 };
 
 export const DilemmaHelper = (props: DilemmaHelperProps) => {
-    const { voyage, targetGroup, dbid } = props;
+    const { voyage, crewTargetGroup, shipTargetGroup, dbid } = props;
     const [voyageLog, setVoyageLog] = useStateWithStorage<VoyageLogRoot | undefined>(`${voyage.id}/dilemma_helper/voyage_log`, undefined, { rememberForever: false });
-    const [answeredDilemmas, setAnsweredDilemmas] = useStateWithStorage<AnsweredDilemma[]>(`${voyage.id}/dilemma_helper/answered_dilemmas`, [], { rememberForever: true });
+    const [answeredDilemmas, setAnsweredDilemmas] = useStateWithStorage<AnsweredDilemma[]>(`dilemma_helper/answered_dilemmas`, [], { rememberForever: true });
     const flexCol = OptionsPanelFlexColumn;
+
+	React.useEffect(() => {
+		if (!!voyage?.id && typeof window !== 'undefined') {
+			(window as any)['voyageId'] = voyage.id;
+			(window as any)['setVoyageLog'] = setVoyageLog;
+		}
+		if (voyage?.id && answeredDilemmas?.length) {
+			const newDilemmas = answeredDilemmas.filter(f => f.voyage_id === voyage.id);
+			if (newDilemmas.length !== answeredDilemmas.length) {
+				setAnsweredDilemmas(newDilemmas);
+			}
+		}
+	}, [voyage]);
 
     const narrative = React.useMemo(() => {
         if (voyageLog) {
@@ -83,10 +99,10 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
 					log.selection = answer.selection;
 				}
 			}
-            return voyageLog[1];
+            return { ... voyageLog[1] };
         }
         return undefined;
-    }, [voyageLog, dbid, answeredDilemmas]);
+    }, [voyageLog, answeredDilemmas, dbid]);
 
     return (
         <React.Fragment>
@@ -102,7 +118,8 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
                 />
                 <DilemmaTable
 					updateDilemma={updateDilemma}
-                    targetGroup={targetGroup}
+                    crewTargetGroup={crewTargetGroup}
+					shipTargetGroup={shipTargetGroup}
                     voyageLog={narrative}
                 />
             </div>
@@ -116,7 +133,6 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
 				delete dil.selection;
 				delete dil.narrative.selection;
 				setAnsweredDilemmas(answeredDilemmas.filter(f => f.title !== dil.title));
-
 			}
 			else {
 				dil.selection = choice;
@@ -128,10 +144,11 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
 				else {
 					answeredDilemmas.push({
 						title: dil.title,
-						selection: choice
+						selection: choice,
+						voyage_id: voyage.id
 					});
 				}
-				setAnsweredDilemmas([...answeredDilemmas]);
+				setAnsweredDilemmas(answeredDilemmas.slice());
 			}
 		}
 	}

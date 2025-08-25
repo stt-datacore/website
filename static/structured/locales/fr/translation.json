@@ -19,7 +19,7 @@
         "hit": "Alerte : {{subject}} a été acquis !",
         "item_type": "{{item.columns.item_type}}",
         "name": "Alertes",
-        "new_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
+        "new_crew": "Alerte : l'équipier surveillé « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
         "remove": "Masquer",
         "show_previously_hidden": "Afficher les alertes précédemment masquées",
         "toggle_buyback_alerts": "Basculer les alertes de pool de rachat",
@@ -27,6 +27,7 @@
         "trigger_always": "Déclencher toujours",
         "trigger_once": "Déclencher une fois",
         "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte.",
+        "watched_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
         "when_new_crew": "Alerte lorsque copies d'un équipier non possédé sont découvertes dans le pool de rachat.",
         "when_new_fuse": "Alerte lorsqu'un fusible pour un équipage possédé est découvert dans le pool de rachat."
     },
@@ -548,8 +549,12 @@
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
         "skill_matrix_heading": "Cette matrice montre vos meilleurs équipiers pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres équipiers possédant cette combinaison de compétences.",
+        "specialist": {
+            "instructions": "Pour utiliser le personnel automatique, sélectionnez une ou plusieurs missions en appuyant sur la colonne de titre, puis appuyez sur le bouton de doter automatiquement.",
+            "mission_running": "La mission est en cours."
+        },
         "specialist_missions": "Missions spécialisées",
-        "staff_selected": "Équiper les sélectionnés",
+        "staff_selected": "Doter automatiquement",
         "table": {
             "columns": {
                 "best": "Meilleur",
@@ -1168,6 +1173,7 @@
         "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "min_battle_stations": "Stations de combat minimales",
         "prioritize_rewards": "Prioriser les récompenses",
         "roster_maintenance": "Entretien de la liste",
         "select_crew": "Sélectionnez l'équipage",
@@ -1650,6 +1656,7 @@
             "skill_order": "Ordre des compétences"
         },
         "mode_label": "Mode Compétences",
+        "quippable_traits": "Afficher uniquement l'équipage avec des quipements limités en traits",
         "slot_label": "Mode Emplacements",
         "slots": {
             "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",
@@ -1693,7 +1700,7 @@
         "rank": "Rang",
         "scores": {
             "am_seating": "Sièges antimatière",
-            "collections": "Collections améliorant les statistiques",
+            "collections": "Collections",
             "crit": "Critique élevée",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
@@ -2004,6 +2011,7 @@
                 "exclude_ability": "Exclure les équipiers avec cette compétence",
                 "power_depth": "Profondeur de puissance avancée"
             },
+            "apply_boss_effects": "Appliquer les buffs des chaînes de boss",
             "apply_buffs": "Appliquer des buffs aux vaisseaux sans propriétaire",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",

@@ -9,6 +9,7 @@ import { OwnedLabel } from "../crewtables/commonoptions";
 import { IRosterCrew } from "../crewtables/model";
 import ItemDisplay from "../itemdisplay";
 import { formatNumber } from "./hofdetails";
+import { AvatarView } from "../item_presenters/avatarview";
 
 export interface VoyageStatsProps {
     period: VoyageHOFPeriod;
@@ -219,14 +220,11 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                             }}
                                         >
                                             <div style={{ gridArea: "icon", display: "flex", flexDirection: "row", alignItems: "center" }}>
-                                                <ItemDisplay
-                                                    itemSymbol={crew.symbol}
-                                                    src={`${process.env.GATSBY_ASSETS_URL}/${crew?.imageUrlPortrait}`}
-                                                    allCrew={context.core.crew}
-                                                    rarity={context.player.playerData ? crew.rarity : crew.max_rarity}
-                                                    maxRarity={crew.max_rarity}
+                                                <AvatarView
+                                                    crewBackground="rich"
+                                                    mode='crew'
+                                                    item={crew}
                                                     targetGroup="voyagehof"
-                                                    playerData={context.player.playerData}
                                                     size={64}
                                                 />
                                                 {/* <CrewTarget inputItem={crew} targetGroup="voyagehof">

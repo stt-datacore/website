@@ -27,6 +27,7 @@
         "trigger_always": "Immer auslösen",
         "trigger_once": "Einmal auslösen",
         "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren.",
+        "watched_crew": "Alarm: Beobachtete Crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) wurde erworben!",
         "when_new_crew": "Alarm, wenn Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
@@ -540,8 +541,12 @@
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",
         "skill_matrix_heading": "Diese Matrix zeigt Ihre beste Crew für jede mögliche Fähigkeitskombination. Verwenden Sie diese Matrix, um Ihre beste Crew für dieses Ereignis zu ermitteln. Tippen Sie auf eine Zelle, um andere Crew mit dieser Fähigkeitskombination anzuzeigen.",
+        "specialist": {
+            "instructions": "Um den Auto-Staffer zu verwenden, wählen Sie eine oder mehrere Missionen aus, indem Sie auf die Titelspalte tippen, und tippen Sie dann auf die Schaltfläche „Automatische Besetzung“.",
+            "mission_running": "Mission läuft."
+        },
         "specialist_missions": "Spezialmissionen",
-        "staff_selected": "Besetzen Sie die ausgewählten",
+        "staff_selected": "Automatische Besetzung",
         "table": {
             "columns": {
                 "best": "Am besten",
@@ -1158,6 +1163,7 @@
         "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
+        "min_battle_stations": "Mindestanzahl an Gefechtsstationen",
         "prioritize_rewards": "Belohnungen priorisieren",
         "roster_maintenance": "Dienstplanpflege",
         "select_crew": "Crew auswählen",
@@ -1554,7 +1560,7 @@
             "priority": "Nur vollständig fusionierte Nicht-Unsterbliche anzeigen",
             "quippable": "Nur rüstbare Crew anzeigen",
             "quipped": "Nur gerüstete Crew anzeigen",
-            "quipped_hide": "Crew mit Rüstzeugen verstecken",
+            "quipped_hide": "Crew mit Rüstzeug verstecken",
             "threshold": "Nur Crew anzeigen, die 2 Sicherungen benötigt"
         },
         "text_match": {
@@ -1638,6 +1644,7 @@
             "skill_order": "Fähigkeitsreihenfolge"
         },
         "mode_label": "Fertigkeiten-Modus",
+        "quippable_traits": "Nur Crew mit merkmalsbeschränkter Rüstzeug anzeigen",
         "slot_label": "Slots-Modus",
         "slots": {
             "n_natural": "Bis zu {{n}} natürliche Ablagefächer ausstatten",
@@ -1681,7 +1688,7 @@
         "rank": "Rang",
         "scores": {
             "am_seating": "Antimaterie-Sitze",
-            "collections": "Stat-Boosting-Sammlungen",
+            "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
@@ -1992,6 +1999,7 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
+            "apply_boss_effects": "Boss-Ketten-Buffs anwenden",
             "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",

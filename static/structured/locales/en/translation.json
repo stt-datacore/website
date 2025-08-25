@@ -27,6 +27,7 @@
         "trigger_always": "Trigger Always",
         "trigger_once": "Trigger Once",
         "trigger_once_desc": "Once the alert has been triggered, it will be deactivated, but you can re-activate it from the alert modal.",
+        "watched_crew": "Alert: Watched crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) has been acquired!",
         "when_new_crew": "Alert when copies of an unowned crew are discovered in the buy-back well.",
         "when_new_fuse": "Alert when a fuse for an owned crew is discovered in the buy-back well."
     },
@@ -540,8 +541,12 @@
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",
         "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "specialist": {
+            "instructions": "To use the auto-staffer, select one or more missions by tapping the title column, and then tap the auto-staff button.",
+            "mission_running": "Mission is running."
+        },
         "specialist_missions": "Specialist Missions",
-        "staff_selected": "Staff Selected",
+        "staff_selected": "Auto-Staff",
         "table": {
             "columns": {
                 "best": "Best",
@@ -1158,6 +1163,7 @@
         "filter_crew_by_rank": "Filter crew by rank",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
+        "min_battle_stations": "Minimum battle stations",
         "prioritize_rewards": "Prioritize Rewards",
         "roster_maintenance": "Roster maintenance",
         "select_crew": "Select Crew",
@@ -1638,6 +1644,7 @@
             "skill_order": "Skill Order"
         },
         "mode_label": "Skill mode",
+        "quippable_traits": "Only show crew with trait-limited quipment",
         "slot_label": "Slot mode",
         "slots": {
             "n_natural": "Quip up to {{n}} natural slots",
@@ -1681,7 +1688,7 @@
         "rank": "Rank",
         "scores": {
             "am_seating": "Antimatter Seats",
-            "collections": "Stat-Boosting Collections",
+            "collections": "Collections",
             "crit": "Elevated Crit",
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
@@ -1992,6 +1999,7 @@
                 "exclude_ability": "Exclude crew with this ability",
                 "power_depth": "Advanced Power Depth"
             },
+            "apply_boss_effects": "Apply boss chain buffs",
             "apply_buffs": "Apply buffs to unowned ships",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
