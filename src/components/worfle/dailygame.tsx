@@ -286,7 +286,7 @@ const DailyShare = (props: DailyShareProps) => {
 	const { gameTime, solveState, evaluatedGuesses, hintCount } = props;
 
 	const GAME_NAME = 'Worfle';
-	const GAME_URL = '<https://datacore.app/crewchallenge>';
+	const GAME_URL = `${process.env.GATSBY_DATACORE_URL}crewchallenge`;
 
 	const formatEvaluation = (evaluation: number) => {
 		if (evaluation === EvaluationState.Exact)
@@ -301,7 +301,7 @@ const DailyShare = (props: DailyShareProps) => {
 		let output: string = solveState === SolveState.Winner
 			? `I solved ${GAME_NAME} ${shortId} in ${evaluatedGuesses.length}, using ${hintCount} hint${hintCount !== 1 ? 's' : ''}!`
 			: `${GAME_NAME} ${shortId} stumped me!`;
-		output += `\n${GAME_URL}`;
+		output += `\n<${GAME_URL}>`;	// Enclose in <> to disable automatic embeds for links in Discord
 		evaluatedGuesses.forEach(evaluatedGuess => {
 			output += '\n';
 			['variantEval', 'seriesEval', 'rarityEval'].forEach(evaluation => {
