@@ -126,11 +126,11 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			);
 		});
 
-		const pctgrade = React.useMemo(() => crew.collectionScore! / topCrewScore, [topCrewScore]);
-		const lettergrade = React.useMemo(() => numberToGrade(pctgrade), [pctgrade]);
+		const pctgrade = crew.collectionScore! / topCrewScore;
+		const lettergrade = numberToGrade(pctgrade);
 
-		const pctgradeN = React.useMemo(() => crew.collectionScoreN === -1 ? 1 : crew.collectionScoreN! / topStarScore, [topStarScore]);
-		const lettergradeN = React.useMemo(() => numberToGrade(pctgradeN), [pctgradeN]);
+		const pctgradeN = crew.collectionScoreN === -1 ? 1 : crew.collectionScoreN! / topStarScore;
+		const lettergradeN = numberToGrade(pctgradeN);
 
 		return (
 			<Table.Row key={crew.symbol}>
