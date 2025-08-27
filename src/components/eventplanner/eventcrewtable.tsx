@@ -52,6 +52,9 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
+	const priText = t('quipment_ranks.primary');
+	const secText = t('quipment_ranks.secondary');
+
 	React.useEffect(() => {
 		setInitOptions({});
 	}, [eventData, phaseIndex]);
@@ -132,9 +135,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			}
 		)
 	}
-
-	const priText = t('quipment_ranks.primary');
-	const secText = t('quipment_ranks.secondary');
 
 	// Check for custom column (i.e. combo from crew matrix click)
 	let customColumn = '';
