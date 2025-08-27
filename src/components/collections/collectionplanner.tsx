@@ -170,11 +170,8 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		});
 	}, [hardFilter, mapFilter]);
 
-
-
-	const displayCrew = directFilterCrew(collectionCrew);
-
-	const [topCrewScore, topStarScore] = computeGrades(playerCollections, displayCrew);
+	const displayCrew = React.useMemo(() => directFilterCrew(collectionCrew), [collectionCrew]);
+	const [topCrewScore, topStarScore] = React.useMemo(() => computeGrades(playerCollections, displayCrew), [playerCollections, displayCrew]);
 
 	return (
 		<React.Fragment>
