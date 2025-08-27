@@ -170,7 +170,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		});
 	}, [hardFilter, mapFilter]);
 
-	const displayCrew = React.useMemo(() => directFilterCrew(collectionCrew), [collectionCrew]);
+	const displayCrew = React.useMemo(() => directFilterCrew(collectionCrew), [collectionCrew, colContext]);
 	const [topCrewScore, topStarScore] = React.useMemo(() => computeGrades(playerCollections, displayCrew), [playerCollections, displayCrew]);
 
 	return (
