@@ -38,7 +38,10 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 
 	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
 	let activeContent: Content | undefined = undefined;
-
+	let mega = activeEvent.threshold_rewards.find(f => f.rewards.some(r => r.type === 1 || r.item_type === 1) && f.points === 25000)?.rewards.find(r => r.type === 1 || r.item_type === 1);
+	if (mega) {
+		result.mega_crew = mega.symbol;
+	}
 	// Content from autosynced events is an array of activeContents, taken at various sync times
 	//	Assume the last content here is the most recent content
 	if (Array.isArray(activeEvent.content)) {
