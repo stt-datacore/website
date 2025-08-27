@@ -416,6 +416,7 @@ export function reverseDeduction<T extends ItemArchetypeBase>(item: EquipmentIte
 export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemWithBonus[], overallOnly = false) {
 	let qps = quipment.filter(f => isQuipmentMatch(crew, f.item));
 	if (overallOnly) {
+		if (crew.quipment_score !== undefined) return;
 		crew.quipment_score ??= qps.map(m => Object.values(m.bonusInfo.bonuses)
 			.filter(n => crew.skill_order.includes(n.skill))
 			.sort((a, b) => skillSum(b) - skillSum(a))
@@ -425,7 +426,8 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 
 		return;
 	}
-	crew.quipment_scores ??= {
+	if (crew.quipment_scores !== undefined) return;
+	crew.quipment_scores = {
 		command_skill: 0,
 		medicine_skill: 0,
 		diplomacy_skill: 0,
@@ -453,6 +455,7 @@ export function calcQuipmentScore<T extends CrewMember>(crew: T, quipment: ItemW
 				.reduce((p, n) => p + n, 0) * crew.max_rarity;
 		}
 	});
+	if (crew.quipment_score !== undefined) return;
 	crew.quipment_score ??= Math.floor(qsum);
 }
 
