@@ -12,7 +12,7 @@ import ProspectPicker from '../../components/prospectpicker';
 import { EventShuttleHelper, ShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
 
 import CONFIG from '../../components/CONFIG';
-import { applySkillBuff } from '../../utils/crewutils';
+import { applyCrewBuffs, applySkillBuff, crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { GatherPlanner } from '../gather/gather_planner';
@@ -22,6 +22,8 @@ import { QPContext } from '../qpconfig/provider';
 import { ShipTable } from '../ship/shiptable';
 import { SpecialistMissionTable } from '../specialist/specialistmissions';
 import { IEventData, IRosterCrew } from './model';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { CrewPresenter } from '../item_presenters/crew_presenter';
 
 interface ISelectOptions {
 	key: string;
@@ -127,6 +129,20 @@ export const EventPicker = (props: EventPickerProps) => {
 
 	const phaseList: ISelectOptions[] = [];
 	const eventData: IEventData = (eventIndex >= events.length) ? events[0] : events[eventIndex];
+	const megacrew = (() => {
+		let ccrew = globalContext.core.crew.find(f => f.symbol === eventData.mega_crew);
+		if (ccrew) {
+			ccrew = oneCrewCopy(ccrew);
+			if (playerData) {
+				applyCrewBuffs(ccrew, globalContext.player.buffConfig!);
+			}
+			else {
+				applyCrewBuffs(ccrew, globalContext.maxBuffs!);
+			}
+		}
+		return ccrew;
+	})();
+
 	if (eventIndex >= events.length) {
 		setEventIndex(0);
 	}
@@ -160,6 +176,8 @@ export const EventPicker = (props: EventPickerProps) => {
 					{t('event_planner.select_phase')}: <Dropdown selection options={phaseList} value={phaseIndex} onChange={(e, { value }) => setPhaseIndex(value as number)} />
 				</div>
 			)}
+
+			{!!megacrew && <EventMega event={eventData} mega={megacrew} />}
 			{!!eventData.featured_ships.length && <EventFeaturedShips event={eventData} />}
 
 			<EventCrewTable rosterType={rosterType} rosterCrew={rosterCrew} eventData={eventData} phaseIndex={phaseIndex} lockable={lockable} />
@@ -248,11 +266,11 @@ const EventShuttles = (props: EventShuttlesProps) => {
 	);
 };
 
-interface FeaturedShipsProps {
+interface FeatureToolProps {
 	event: IEventData;
 }
 
-const EventFeaturedShips = (props: FeaturedShipsProps) => {
+const EventFeaturedShips = (props: FeatureToolProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerShips } = globalContext.player;
@@ -293,5 +311,35 @@ const EventFeaturedShips = (props: FeaturedShipsProps) => {
 
 
 	</div></>)
+}
 
+const EventMega = (props: FeatureToolProps & { mega: CrewMember }) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { event, mega } = props;
+
+	return (<>
+		<h4>{t('obtained.long.Mega')}</h4>
+		<div style={{
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		justifyContent: 'space-evenly'
+	}}>
+		<CrewHoverStat targetGroup='event_mega' />
+		<div style={{
+				display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+				gap: '0.5em'
+			}}>
+
+			<AvatarView
+				mode='crew'
+				item={mega}
+				size={64}
+				targetGroup='event_mega'
+			/>
+			<i>{mega.name}</i>
+		</div>
+	</div></>)
 }
