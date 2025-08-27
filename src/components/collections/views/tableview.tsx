@@ -126,10 +126,11 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			);
 		});
 
-		const pctgrade = crew.collectionScore! / topCrewScore;
-		const pctgradeN = crew.collectionScoreN === -1 ? 1 : crew.collectionScoreN! / topStarScore;
-		const lettergrade = numberToGrade(pctgrade);
-		const lettergradeN = numberToGrade(pctgradeN);
+		const pctgrade = React.useMemo(() => crew.collectionScore! / topCrewScore, [topCrewScore]);
+		const lettergrade = React.useMemo(() => numberToGrade(pctgrade), [pctgrade]);
+
+		const pctgradeN = React.useMemo(() => crew.collectionScoreN === -1 ? 1 : crew.collectionScoreN! / topStarScore, [topStarScore]);
+		const lettergradeN = React.useMemo(() => numberToGrade(pctgradeN), [pctgradeN]);
 
 		return (
 			<Table.Row key={crew.symbol}>
@@ -196,7 +197,6 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			</Table.Row>
 		);
 	}
-
 
 	function compareCrewRewards(a: PlayerCrew, b: PlayerCrew): number {
 		if (!!a.immortalRewards?.length != !!b.immortalRewards?.length) {
