@@ -5,6 +5,7 @@ import { BetaTachyonSettings } from '../../model/worker';
 import { ConstituentWeights, CurrentWeighting } from '../../model/crew';
 import { OptionsPanelFlexColumn } from '../stats/utils';
 import { RarityFilter } from './commonoptions';
+import { Slider } from '../base/slider';
 
 export interface WeightingInfoProps {
     config?: CurrentWeighting;
@@ -67,7 +68,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
 			onClose={closeModal}
 			onOpen={() => setModalIsOpen(true)}
 			trigger={props.renderTrigger ? props.renderTrigger() : renderDefaultTrigger()}
-			size='tiny'
+			size={!editable ? 'tiny' : 'small'}
 			closeIcon
 		>
 			<Modal.Header>
@@ -137,12 +138,12 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
         } as React.CSSProperties;
 
         const weightKeys = weighting ? Object.keys(weighting) : undefined;
-        weightKeys?.sort((a, b) => weighting![b] - weighting![a]);
-
+        if (!editable) weightKeys?.sort((a, b) => weighting![b] - weighting![a]);
+        else weightKeys?.sort((a, b) => a.localeCompare(b));
         return (
             <Table striped>
                 {!!weightKeys && !!weighting && weightKeys.map((key) => {
-                    return (<Table.Row>
+                    return (<Table.Row key={`WeightingRow_${key}`}>
                         <Table.Cell>
                             <div style={titleStyle}>
                                 {t(`rank_names.scores.${key}`)}
@@ -155,6 +156,18 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
                                 value={weighting[key]}
                                 onChange={(e, { value }) => setWeighting({ ... weighting, [key]: value })}>
                             </Input>}
+                            {!!editable && <div>
+                                <Slider
+                                    key={`WeightingRow_${key}_slider`}
+                                    hideValue
+                                    min={0}
+                                    max={10}
+                                    width={400}
+                                    stepSize={0.01}
+                                    value={weighting[key]}
+                                    onChange={(value) => setWeighting({ ... weighting, [key]: value })}
+                                />
+                            </div>}
                             {!editable && <div style={textStyle}>
                                 {t('global.n_%', { n: `${Number((weighting[key] * 100).toFixed(3))}` })}
                             </div>}
