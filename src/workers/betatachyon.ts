@@ -683,4 +683,85 @@ const BetaTachyon = {
 
 }
 
+function getSkoCrew(sko: string, bucket: {[key:string]: SplitType[]}) {
+    let parts = sko.replace(/\//g, ',').split(",");
+    let pri = parts.slice(0, 2).join();
+    let tert = parts.length > 2 ? parts[2] : null;
+    return bucket[pri]?.filter(f => f.pri_key === pri && f.tert_key === tert)?.map(f => f.crew) || null;
+}
+
+function getSplitData(crew: CrewMember, bucket: {[key:string]: SplitType[]}) {
+    return bucket[crew.skill_order.slice(0, 2).sort().join()].find(f => f.crew.symbol === crew.symbol)!
+}
+
+function createSkillBuckets(roster: PlayerCrew[]) {
+
+    const pribucket = {} as {[key:string]: SplitType[]};
+    const tertbucket = {} as {[key:string]: SplitType[]};
+
+    function skillSplit(c: PlayerCrew) {
+        let skills = c.skill_order.map(skill => ({...c[skill], skill }) as ComputedSkill);
+        let i = skills.length;
+        let result: SplitType;
+
+        if (i === 1) {
+            result = {
+                crew: c,
+                primary: skills.slice(0, 1),
+                tertiary: null,
+                primary_aggregate: 0,
+                pri_key: c.skill_order.slice(0, 1).sort().join(),
+                tert_key: null
+            };
+        }
+        else if (i === 2) {
+            result = {
+                crew: c,
+                primary: skills.slice(0, 2).sort(),
+                tertiary: null,
+                primary_aggregate: 0,
+                pri_key: c.skill_order.slice(0, 2).sort().join(),
+                tert_key: null
+            };
+        }
+        else {
+            result = {
+                crew: c,
+                primary: skills.slice(0, 2).sort(),
+                tertiary: skills[2],
+                primary_aggregate: 0,
+                pri_key: c.skill_order.slice(0, 2).sort().join(),
+                tert_key: c.skill_order[2]
+            };
+        }
+        result.primary_aggregate = skillSum(result.primary);
+        return result;
+    }
+
+    roster.forEach((crew, idx) => {
+        const split = skillSplit(crew);
+        pribucket[split.pri_key] ??= [];
+        pribucket[split.pri_key].push(split);
+        if (split.tert_key && split.tertiary) {
+            tertbucket[split.tert_key] ??= [];
+            tertbucket[split.tert_key].push(split);
+        }
+    });
+
+    Object.entries(pribucket).forEach(([key, value]) => {
+        value.sort((a, b) => b.primary_aggregate - a.primary_aggregate);
+    });
+
+    Object.entries(tertbucket).forEach(([key, value]) => {
+        value.sort((a, b) => b.primary_aggregate - a.primary_aggregate);
+    });
+
+    return {
+        primary: pribucket,
+        tertiary: tertbucket
+    };
+}
+
+type SplitType = { primary: ComputedSkill[], tertiary: ComputedSkill | null, primary_aggregate: number, pri_key: string, tert_key: string | null, crew: PlayerCrew };
+
 export default BetaTachyon;
