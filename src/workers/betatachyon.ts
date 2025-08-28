@@ -168,12 +168,13 @@ const BetaTachyon = {
 
             const skillScore = (skill: ComputedSkill | Skill) => {
                 if (!skill?.core) return 0;
-                if ("max" in skill) {
-                    return skill.core + (((skill.max ?? 0) + (skill.min ?? 0)) * 0.5);
-                }
-                else {
-                    return skill.core + (((skill.range_max ?? 0) + (skill.range_min ?? 0)) * 0.5);
-                }
+                return skillSum(skill);
+                // if ("max" in skill) {
+                //     return skill.core + (((skill.max ?? 0) + (skill.min ?? 0)) * 0.5);
+                // }
+                // else {
+                //     return skill.core + (((skill.range_max ?? 0) + (skill.range_min ?? 0)) * 0.5);
+                // }
             }
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
@@ -192,29 +193,9 @@ const BetaTachyon = {
             }
 
             function getSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
-                const sk = [] as Skill[];
-                let x = 0;
-                for (let skill of skills) {
-                    if (skill in crew.base_skills) {
-                        sk.push({ ...crew.base_skills[skill], skill: voyskills[x] });
-                    }
-                    x++;
-                }
-
-                sk.sort((a, b) => b.core - a.core);
-                const output = [] as string[];
-
-                if (sk.length > 0 && sk[0].skill) {
-                    output.push(sk[0].skill);
-                }
-                if (sk.length > 1 && sk[1].skill) {
-                    output.push(sk[1].skill);
-                }
-                if (sk.length > 2 && sk[2].skill) {
-                    output.push(sk[2].skill);
-                }
-
-                return forceTwo ? output.slice(0, 2) : output;
+                if (crew.skill_order.length === 1) return crew.skill_order.slice().map(s => s.replace("_skill", ""));
+                else if (forceTwo || crew.skill_order.length === 2) return crew.skill_order.slice(0, 2).sort().map(s => s.replace("_skill", ""));
+                return [...crew.skill_order.slice(0, 2).sort(), crew.skill_order[2] ].map(s => s.replace("_skill", ""));
             }
 
             function printSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
@@ -550,11 +531,11 @@ const BetaTachyon = {
             }
 
             const polestars = {} as { [key: string]: PolestarCombo[] };
-            const maxgroup = resultCrew.map(rc => (rc.voyagesImproved?.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) ?? 0) / (rc.voyagesImproved?.length ?? 1)).reduce((p, n) => p > n ? p : n, 0);
+            const maxgroup = resultCrew.map(rc => (rc.voyagesImproved?.map(vi => allGroups[vi]).reduce((p, n) => p > n ? p : n, 0) ?? 0)).reduce((p, n) => p > n ? p : n, 0);
             resultCrew.forEach((crew) => {
                 polestars[crew.symbol] = findPolestars(crew, allCrew);
                 if (crew.voyagesImproved) {
-                    let crewnum = crew.voyagesImproved.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) / crew.voyagesImproved.length;
+                    let crewnum = crew.voyagesImproved.map(vi => allGroups[vi]).reduce((p, n) => p > n ? p : n, 0);
                     crew.groupSparsity = 1 - (crewnum / maxgroup);
                 }
                 else {

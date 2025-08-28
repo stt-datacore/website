@@ -5,7 +5,7 @@ import { calculateBuffConfig } from "../../utils/voyageutils";
 import CONFIG from "../CONFIG";
 import { Link } from "gatsby";
 import { Table, Rating, Popup, Checkbox, Pagination, Dropdown } from "semantic-ui-react";
-import { printSkillOrder, gradeToColor, numberToGrade, printPortalStatus } from "../../utils/crewutils";
+import { gradeToColor, numberToGrade, printPortalStatus } from "../../utils/crewutils";
 import { appelate } from "../../utils/misc";
 import { descriptionLabel } from "../crewtables/commonoptions";
 import { CrewTarget } from "../hovering/crewhoverstat";
@@ -375,6 +375,15 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
         </Table>
     </div>);
 
+    function getSkillOrder(crew: PlayerCrew | CrewMember, forceTwo?: boolean) {
+        if (crew.skill_order.length === 1) return crew.skill_order.slice().map(s => s.replace("_skill", ""));
+        else if (forceTwo || crew.skill_order.length === 2) return crew.skill_order.slice(0, 2).sort().map(s => s.replace("_skill", ""));
+        return [...crew.skill_order.slice(0, 2).sort(), crew.skill_order[2] ].map(s => s.replace("_skill", ""));
+    }
+
+    function printSkillOrder(crew: PlayerCrew) {
+        return getSkillOrder(crew).join("/");
+    }
 
     function getChecked(symbol: string) {
         return citeConfig.checks.some(chk => chk.symbol === symbol && !!chk.checked);

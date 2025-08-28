@@ -1643,7 +1643,6 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 	return crew.skill_order.join("/");
 }
 
-
 export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod, long?: boolean) {
 	long ??= false;
 	let obstr = `${crew.obtained}`;

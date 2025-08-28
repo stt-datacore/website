@@ -34,6 +34,9 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
 
         workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
         workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
+        if (workset?.crewToRetrieve) {
+            workset.crewToRetrieve = workset.crewToRetrieve.filter((crew) => globalContext.core.crew.find(c => c.name === crew.name)?.in_portal);
+        }
 
         if (workset && priSkills?.length) {
             workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
@@ -65,6 +68,16 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     return crew;
                 })
                 .filter((crew) => seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
+
+            workset.crewToRetrieve = workset.crewToRetrieve
+                ?.map(crew => {
+                    let fc = playerData?.player?.character?.crew?.find(fc => fc.name === crew.name);
+                    if (fc) {
+                        crew.base_skills = fc.base_skills;
+                    }
+                    return crew;
+                })
+                .filter((crew) => crew.in_portal && seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
         }
 
         if (workset && portal !== undefined && globalContext?.player?.playerData?.player?.character?.crew?.length) {
