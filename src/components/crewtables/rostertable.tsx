@@ -658,7 +658,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						specialView={specialView}
 						loading={isPreparing}
 					/>
-					{tableView === 'dc_ranks' && <WeightingInfoPopup saveConfig={() => false} isOpen={weightingOpen} setIsOpen={setWeightingOpen} />}
+					{tableView === 'dc_ranks' && <WeightingInfoPopup saveConfig={() => false} isOpen={weightingOpen} setIsOpen={setWeightingOpen} editable />}
 				</React.Fragment>
 			}
 			{viewIsReady === false && globalContext.core.spin(view?.spinText ?? 'Calculating...')}
