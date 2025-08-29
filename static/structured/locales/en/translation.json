@@ -1686,7 +1686,9 @@
         "gauntlet_rank": "Gauntlet Rank",
         "quipment_score": "Quipment Score",
         "rank": "Rank",
+        "greatness_rank": "Greatness Rank",
         "scores": {
+            "greatness": "Greatness",
             "am_seating": "Antimatter Seats",
             "collections": "Collections",
             "crit": "Elevated Crit",
