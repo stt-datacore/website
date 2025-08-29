@@ -1679,7 +1679,9 @@
         "gauntlet_rank": "Rango de Reto",
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
+        "greatness_rank": "Rango de grandeza",
         "scores": {
+            "greatness": "Grandeza",
             "am_seating": "Asientos de antimateria",
             "collections": "Colecciones",
             "crit": "Crítico elevado",

@@ -1681,7 +1681,9 @@
         "gauntlet_rank": "Rang Gantelet",
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
+        "greatness_rank": "Rang de grandeur",
         "scores": {
+            "greatness": "Grandeur",
             "am_seating": "Sièges antimatière",
             "collections": "Collections",
             "crit": "Critique élevée",

@@ -1669,7 +1669,9 @@
         "gauntlet_rank": "Herausforderungsrang",
         "quipment_score": "Rüstzeug Werte",
         "rank": "Rang",
+        "greatness_rank": "Größenrang",
         "scores": {
+            "greatness": "Größe",
             "am_seating": "Antimaterie-Sitze",
             "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
