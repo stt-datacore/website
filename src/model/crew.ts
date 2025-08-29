@@ -253,7 +253,25 @@ export interface Nickname {
     creator?: string;
 }
 
+export interface GauntletPlusWeights {
+    gauntlet: number,
+    crit: number,
+    quipment: number
+}
+
+export interface VoyagePlusWeights {
+    voyage: number;
+    am_seating: number;
+    quipment: number;
+}
+
+export interface BasePlusWeights {
+    shuttleRank: number;
+    quipment: number;
+}
+
 export interface ConstituentWeights {
+    greatness: number;
     voyage: number
     voyage_plus: number
     shuttle: number
@@ -274,6 +292,9 @@ export interface ConstituentWeights {
     tertiary_rarity: number
     primary_rarity: number
     velocity: number
+    gauntlet_plus_weights: GauntletPlusWeights;
+    base_plus_weights: BasePlusWeights;
+    voyage_plus_weights: VoyagePlusWeights;
 }
 
 export type CurrentWeighting = { [key:string]: ConstituentWeights };
@@ -328,39 +349,48 @@ export interface QuipmentDetails {
     gprice: number
 };
 
+export interface GreatnessDetails {
+    name: string;
+    rank: number;
+    score: number;
+}
+
 export interface RankScoring {
     am_seating: number;
     collections: number;
-    gauntlet: number;
-    gauntlet_plus: number;
+    crit: number;
     gauntlet_plus_rank: number;
+    gauntlet_plus: number;
+    gauntlet: number;
+    greatness_rank: number;
+    greatness: number;
     main_cast: number;
-    rarity_overall_rank: number;
     overall_grade: string;
     overall_rank: number;
     overall: number;
-    tuvix: number;
     potential_cols: number;
+    primary_rarity: number;
     quipment: number;
+    rarity_overall_rank: number;
     rarity_overall: number;
     ship: ShipScores;
-    shuttle: number;
-    shuttle_plus: number;
     shuttle_plus_rank: number;
+    shuttle_plus: number;
+    shuttle: number;
+    skill_positions: number;
     skill_rarity: number;
     tertiary_rarity: number;
-    primary_rarity: number;
     trait: number;
-    velocity: number;
-    crit: number;
-    voyage: number;
-    voyage_plus: number;
-    voyage_plus_rank: number;
-    skill_positions: number;
+    tuvix: number;
     variant: number;
+    velocity: number;
+    voyage_plus_rank: number;
+    voyage_plus: number;
+    voyage: number;
     quipment_details: QuipmentDetails;
     versatility_quipment_details: QuipmentDetails;
     power_quipment_details: QuipmentDetails;
+    greatness_details: GreatnessDetails[];
 }
 
 export interface Ranks {
@@ -370,19 +400,19 @@ export interface Ranks {
     chronCostRank: number;
     traitRank: number;
 
-    ship_rank: number;
-    skill_rarity_rank: number;
-    tertiary_rarity_rank: number;
-    primary_rarity_rank: number;
-    crit_rank: number;
-    velocity_rank: number;
-    potential_cols_rank: number;
-    main_cast_rank: number;
     am_seating_rank: number;
     collections_rank: number;
+    crit_rank: number;
+    main_cast_rank: number;
+    potential_cols_rank: number;
+    primary_rarity_rank: number;
     quipment_rank: number;
+    ship_rank: number;
     skill_positions_rank: number;
+    skill_rarity_rank: number;
+    tertiary_rarity_rank: number;
     variant_rank: number;
+    velocity_rank: number;
 
     scores: RankScoring;
     B_SEC?: number;
