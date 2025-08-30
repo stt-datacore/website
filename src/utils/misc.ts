@@ -55,14 +55,12 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 			}
 		}
 	}
-
 	let minglescore = {
 		... crew.ranks.scores,
 		arena: crew.ranks.scores.ship.arena_rank,
 		fbb: crew.ranks.scores.ship.fbb_rank
 	};
-
-	Object.keys(minglescore).forEach((score) => {
+	Object.keys(crew.ranks.scores).forEach((score) => {
 		if (score.endsWith("_rank")) return;
 		if (['fbb', 'arena'].includes(score) && minglescore[score] <= dThreshold) {
 			const rankKey = `${score}`;
@@ -75,18 +73,28 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 		}
 		else {
 			const rankKey = `${score}_rank`;
-			if (crew.ranks[rankKey] && typeof crew.ranks[rankKey] === 'number' && crew.ranks[rankKey] <= dThreshold) {
+			let crrank = 0;
+			if (crew.ranks[rankKey] && typeof crew.ranks[rankKey] === 'number') {
+				crrank = crew.ranks[rankKey];
+			}
+			else if (crew.ranks.scores[rankKey] && typeof crew.ranks.scores[rankKey] === 'number') {
+				crrank = crew.ranks.scores[rankKey];
+			}
+			if (crrank && crrank <= dThreshold) {
 				if (score === 'ship') {
 					if (crew.ranks.scores.ship.kind === 'offense') {
-						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.o')})`, rank: crew.ranks[rankKey], priority: 1 });
+						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crrank} (${t('rank_names.advantage.o')})`, rank: crrank, priority: 1 });
 					}
 					else {
-						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]} (${t('rank_names.advantage.d')})`, rank: crew.ranks[rankKey], priority: 1 });
+						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crrank} (${t('rank_names.advantage.d')})`, rank: crrank, priority: 1 });
 					}
 				}
 				else {
-					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
+					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crrank}`, rank: crrank, priority: 2 });
 				}
+			}
+			else {
+				stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
 			}
 		}
 	});
