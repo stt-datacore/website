@@ -232,7 +232,6 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 	let power = 1 + (max_buffs ? 0.16 : 0);
 	ref_ships = JSON.parse(JSON.stringify(ref_ships));
 	ref_ships.map((refship) => {
-
 		let ship = {...refship, id: refship.archetype_id, levels: undefined } as Ship;
 
 		let unowned_id = -1;
@@ -258,6 +257,7 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 
 			if (playerBuffs) {
 				buffShip(ship, playerBuffs);
+				ship.buffed = true;
 			}
 			else {
 				ship.antimatter *= power;
@@ -272,7 +272,6 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 
 		ship.max_level = refship.max_level + 1;
 		ship.dps = Math.ceil(ship.attacks_per_second * ship.attack);
-
 		ship.traits_named = traits_named;
 		newShips.push(ship);
 		return ship;

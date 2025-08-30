@@ -2013,6 +2013,7 @@
             },
             "apply_boss_effects": "Aplicar mejoras en las cadenas de jefes",
             "apply_buffs": "Aplicar mejoras a buques sin propietario",
+            "as_maxed": "Utilice las estadísticas máximas del buque",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",

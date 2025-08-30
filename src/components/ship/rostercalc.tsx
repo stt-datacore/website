@@ -1,24 +1,24 @@
 import React from "react";
-import { CrewMember } from "../../model/crew";
-import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
 import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Grid, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { GameEvent, PlayerCrew } from "../../model/player";
-import { useStateWithStorage } from "../../utils/storage";
 import { BossEffect, BossShip } from "../../model/boss";
-import { compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
-import { BattleGraph } from "./battlegraph";
-import { formatRunTime } from "../../utils/misc";
-import { getEventData } from "../../utils/events";
-import { IEventData } from "../eventplanner/model";
-import { crewCopy, getHighest, prepareOne } from "../../utils/crewutils";
-import { CrewDropDown } from "../base/crewdropdown";
-import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
-import AdvancedCrewPowerPopup from "./advancedpower";
-import CONFIG from "../CONFIG";
+import { CrewMember } from "../../model/crew";
+import { PlayerCrew } from "../../model/player";
+import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
 import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
+import { getHighest, prepareOne } from "../../utils/crewutils";
+import { getEventData } from "../../utils/events";
+import { formatRunTime } from "../../utils/misc";
+import { compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse, mergeRefShips } from "../../utils/shiputils";
+import { useStateWithStorage } from "../../utils/storage";
+import { CrewDropDown } from "../base/crewdropdown";
+import CONFIG from "../CONFIG";
+import { IEventData } from "../eventplanner/model";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import AdvancedCrewPowerPopup from "./advancedpower";
+import { BattleGraph } from "./battlegraph";
+import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -39,6 +39,8 @@ export interface RosterCalcProps {
     setUseOpponents: (value: BattleMode | false) => void;
     opponentStations: (PlayerCrew | CrewMember | undefined)[],
     opponentShip?: Ship
+    asMaxed: boolean;
+    setAsMaxed: (value: boolean) => void;
 }
 
 interface BattleConfig {
@@ -57,7 +59,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { running, runWorker, cancel } = multiWorker;
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
-    const { ships, crew, opponentStations, opponentShip, setUseOpponents, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
+    const { asMaxed, setAsMaxed, ships, crew, opponentStations, opponentShip, setUseOpponents, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
@@ -86,7 +88,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
     const [advancedPowerSettings, setAdvancedPowerSettings] = useStateWithStorage(`${pageId}/${ship.symbol}/advancedPower`, DefaultAdvancedCrewPower, { rememberForever: true });
     const [progressMsg, setProgressMsg] = React.useState<string>('');
-
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
 
@@ -704,6 +705,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             checked={onlyImmortal}
                                             onChange={(e, { checked }) => setOnlyImmortal(checked as boolean)} />
                                     </Grid.Column>
+
+                                    <Grid.Column>
+                                        <Checkbox
+                                            disabled={running}
+                                            label={t('ship.calc.as_maxed')}
+                                            checked={asMaxed}
+                                            onChange={(e, { checked }) => setAsMaxed(checked as boolean)} />
+                                    </Grid.Column>
                                 </>}
 
                                 <Grid.Column>
@@ -716,69 +725,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                 </Grid.Column>
 
                             </Grid>
-                            {/* <div style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                margin: '1em',
-                                gap: '1em'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <Checkbox
-                                        disabled={running}
-                                        label={t('ship.calc.apply_buffs')}
-                                        value={t('ship.calc.apply_buffs')}
-                                        checked={buffUnownedShips}
-                                        onChange={(e, { checked }) => setBuffUnownedShips(checked as boolean)} />
-
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <Checkbox
-                                        disabled={running}
-                                        label={t('ship.calc.ignore_skill')}
-                                        value={t('ship.calc.ignore_skill')}
-                                        checked={ignoreSkills}
-                                        onChange={(e, { checked }) => setIgnoreSkills(checked as boolean)} />
-
-                                </div>
-                                {!!globalContext.player.playerData && <>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <Checkbox
-                                            disabled={running}
-                                            label={t('consider_crew.consider_frozen')}
-                                            value={t('consider_crew.consider_frozen')}
-                                            checked={considerFrozen}
-                                            onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
-                                    </div>
-
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                        <Checkbox
-                                            disabled={running}
-                                            label={t('consider_crew.consider_unowned')}
-                                            checked={considerUnowned}
-                                            onChange={(e, { checked }) => setConsiderUnowned(checked as boolean)} />
-                                    </div>
-
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                        <Checkbox
-                                            disabled={running}
-                                            label={t('consider_crew.only_immortal')}
-                                            checked={onlyImmortal}
-                                            onChange={(e, { checked }) => setOnlyImmortal(checked as boolean)} />
-                                    </div>
-                                </>}
-
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
-                                    <Checkbox
-                                        disabled={running}
-                                        label={t('ship.calc.verbose_status_updates')}
-                                        value={t('ship.calc.verbose_status_updates')}
-                                        checked={verbose}
-                                        onChange={(e, { checked }) => setVerbose(checked as boolean)} />
-                                </div>
-                            </div> */}
                             <div style={{
                                 display: 'grid',
                                 width: "100%",
@@ -846,22 +792,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             onChange={(e, { value }) => fbb_mode ? setFBBRankingMethod(value as ShipRankingMethod) : setRankingMethod(value as ShipRankingMethod)}
                                             options={ranking_methods} />
                                     </div>
-                                    {/* <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
-                                        <Checkbox
-                                            disabled={running}
-                                            label={t('ship.calc.simulate')}
-                                            value={t('ship.calc.simulate')}
-                                            checked={simulate}
-                                            onChange={(e, { checked }) => setSimulate(checked as boolean)} />
-
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1em', height:'3em' }}>
-                                        <Input
-                                            disabled={!simulate || running}
-                                            label={t('ship.calc.iterations')}
-                                            value={iterations}
-                                            onChange={(e, { value }) => setIterations(Number.parseInt(value))} />
-                                    </div> */}
                                 </div>
                                 <div style={{...sectionStyle, gridArea: 'workers', display: 'grid', alignItems:'center', gridTemplateAreas: "'label1 dropdown1' 'label2 dropdown2'"}}>
 
@@ -1040,7 +970,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
 
-            const config = {
+            const config: ShipWorkerConfig = {
                 event_crew: ccrew ? JSON.parse(JSON.stringify(ccrew)) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
                 ship: prepareShip(ship),
@@ -1050,22 +980,20 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 min_rarity: minRarity,
                 max_rarity,
                 max_results: 100,
-                // start_at: 0,
-                // end_at: 40000,
                 opponents: battleConfig.opponent ? [battleConfig.opponent] : undefined,
                 defense: battleConfig.defense,
                 offense: battleConfig.offense,
                 get_attacks: !!current,
                 ignore_skill: ignoreSkills,
                 verbose,
-                max_iterations: !exhaustiveMode ? maxIter : undefined,
+                max_iterations: !exhaustiveMode ? BigInt(maxIter) : undefined,
                 activation_offsets: activationOffsets,
                 simulate: false,
                 fixed_activation_delay: fixedActivationDelay,
                 opponent_variance: variance,
                 rate,
                 effects: applyBossEffects ? battleConfig.effects : undefined
-            } as ShipWorkerConfig;
+            };
 
             results.length = 0;
             runWorker({ config, callback: workerMessage, fbb_mode, max_workers: numWorkers });
@@ -1073,9 +1001,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }
 
     function prepareShip(ship: Ship) {
+        let isowned = globalContext.player.playerShips?.some(ps => ps.symbol === ship.symbol && ps.owned);
         ship = JSON.parse(JSON.stringify(ship));
+
         if (buffUnownedShips) {
-            if (!globalContext.player.playerShips?.some(ps => ps.symbol === ship.symbol && ps.owned)) {
+            if (!isowned) {
                 if (globalContext.player.playerData) {
                     let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'ship_attack');
                     ship.attack *= 1 + (bs?.value ?? 0);
