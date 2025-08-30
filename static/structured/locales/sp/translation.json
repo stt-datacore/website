@@ -1677,6 +1677,7 @@
         "datascore_ranks": "Clasificaciones de DataScore",
         "fbb_rank": "Jefe",
         "gauntlet_rank": "Rango de Reto",
+        "greatness_rank": "Rango de versatilidad",
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
         "scores": {
@@ -1686,6 +1687,7 @@
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Reto",
             "gauntlet_plus": "Reto+",
+            "greatness": "Versatilidad",
             "main_cast": "Elenco principal",
             "overall": "General",
             "overall_grade": "Grado general",
