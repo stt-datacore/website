@@ -397,6 +397,10 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 results found. Please try different search options.",
+        "no_results_parts": {
+            "message": "Please try different search options.",
+            "title": "0 results found."
+        },
         "optional_filters": "Optional Filters",
         "search_by_name": "Search for crew by name",
         "select_crew": "Select {{crew}}",

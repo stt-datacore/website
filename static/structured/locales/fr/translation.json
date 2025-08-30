@@ -397,6 +397,10 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 résultat trouvé. Veuillez essayer différentes options de recherche.",
+        "no_results_parts": {
+            "message": "Veuillez essayer différentes options de recherche.",
+            "title": "0 résultat trouvé."
+        },
         "optional_filters": "Filtres Optionnels",
         "search_by_name": "Rechercher un équipier par nom",
         "select_crew": "Sélectionner {{crew}}",

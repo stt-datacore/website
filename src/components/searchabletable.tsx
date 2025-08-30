@@ -13,6 +13,8 @@ import { translatePseudocolumn } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
 import CONFIG from './CONFIG';
 import { TranslateMethod } from '../model/player';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from './stats/utils';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 export function getFilterTypeOptions(t: TranslateMethod) {
 	return [
@@ -86,6 +88,8 @@ export interface SearchableTableProps {
 	defaultPaginationRows?: number;
 
 	lockTitle?: (obj: any) => string;
+
+	showSortDropdown?: boolean;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -307,19 +311,21 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
 
 	const { toolCaption: caption, checkCaption, checkableEnabled, checkableValue, setCheckableValue } = props;
-
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+	const rightContent = !!props.extraSearchContent && (!!props.showSortDropdown || !!props.setCheckableValue);
 	return (
 		<div>
 			{!props.noSearch && <div style={{
 				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "flex-start",
+				flexDirection: isMobile ? "column" : "row",
+				alignItems: isMobile ? "flex-start" : "center",
+				justifyContent: isMobile ? "center" : "flex-start",
+				gap: isMobile ? '0.5em' : undefined,
 				flexWrap: 'wrap'
 			}}>
 
 				<Input
-					style={{ width: isMobile ? '100%' : '50%' }}
+					style={{ width: isMobile ? '100%' : (rightContent ? undefined : '50%'), flexGrow: rightContent ? 1 : undefined  }}
 					iconPosition="left"
 					placeholder={t('global.search_ellipses')}
 					value={searchFilter}
@@ -332,7 +338,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				</Input>
 
 				{props.showFilterOptions && (
-					<span style={{ paddingLeft: '2em' }}>
+					<span style={{ paddingLeft: isMobile ? undefined : '2em' }}>
 						<Dropdown inline
 							options={getFilterTypeOptions(t)}
 							value={filterType}
@@ -345,14 +351,40 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					header={'Advanced search'}
 					content={props.explanation ? props.explanation : renderDefaultExplanation()}
 				/>}
-				{!!props.extraSearchContent && <>{props.extraSearchContent}</>}
+
 				<div style={{
 					display: "flex",
-					flexDirection: "row",
+					flexDirection: isMobile ? "column" : "row",
 					justifyContent: "flex-end",
-					alignItems: "center"
+					alignItems: isMobile ? "flex-start" : "center",
+					marginLeft: isMobile ? undefined : '1em',
+					gap: isMobile ? '0.25em' : '0.5em'
 				}}>
-					{caption && props.dropDownChoices?.length && (
+					{!!props.extraSearchContent && <>{props.extraSearchContent}</>}
+					{!!props.showSortDropdown && (
+						<div style={{
+							//margin: "0.5em",
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "flex-end",
+							alignSelf: "flex-end",
+							height: "2em"
+						}}>
+							<span>
+								<SortDropDown
+									column={column}
+									setColumn={setColumn}
+									direction={direction}
+									setDirection={setDirection}
+									config={props.config}
+									pseudoColumn={sortColumn}
+									/>
+							</span>
+							{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
+						</div>
+					)}
+					{!!caption && !!props.dropDownChoices?.length && (
 						<div style={{
 							margin: "0.5em",
 							display: "flex",
@@ -362,7 +394,6 @@ export const SearchableTable = (props: SearchableTableProps) => {
 							alignSelf: "flex-end",
 							height: "2em"
 						}}>
-
 							<span style={{ paddingLeft: '2em' }}>
 								<Dropdown inline
 									placeholder={caption}
@@ -455,6 +486,86 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		</div>
 	);
 };
+
+type SortDropdownProps = {
+	config: ITableConfigRow[]
+	direction: SortDirection | 'ascending' | 'descending' | undefined;
+	setDirection: (value: SortDirection | 'ascending' | 'descending' | undefined) => void;
+	column?: string;
+	setColumn: (value?: string) => void;
+	pseudoColumn?: string
+}
+
+export const SortDropDown = (props: SortDropdownProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { pseudoColumn, config, direction, setDirection, column, setColumn } = props;
+
+	const flexCol = OptionsPanelFlexColumn;
+	const flexRow = OptionsPanelFlexRow;
+
+	const items = React.useMemo(() => {
+		const props = [] as DropdownItemProps[];
+
+		config.forEach((col, i) => {
+			let skillText = "";
+			if (typeof col.title !== 'string' && col.column?.includes("_skill")) {
+				let parts = col.column.split(".").find(f => f.endsWith("_skill"))!
+				skillText = ` ${CONFIG.SKILLS[parts]}`;
+			}
+			props.push({
+				key: `${col.column}_dropdown_column`,
+				text: skillText || col.title,
+				value: col.column,
+				content: (
+					<div style={{fontWeight: 'bold', display: 'flex', gap: '0.5em'}}>
+						{col.title}{skillText}
+					</div>
+				)
+			});
+
+			if (col.pseudocolumns) {
+				col.pseudocolumns.forEach(pcol => {
+					props.push({
+						key: `${col.column}_${pcol}_dropdown_pseudocolumn`,
+						text: translatePseudocolumn(pcol, t),
+						value: pcol,
+						content: (
+							<div style={{marginLeft: '1em'}}>
+								<i>&mdash;&nbsp;{translatePseudocolumn(pcol, t)}</i>
+							</div>
+						)
+					});
+				});
+			}
+		});
+
+		return props;
+	}, [config]);
+
+	return (
+		<div style={{ display: 'inline'}}>
+			<Dropdown
+				style={{marginRight: '0.5em'}}
+				clearable
+				selection
+				options={items}
+				value={pseudoColumn || column}
+				onChange={(e, { value }) => setColumn(value as string | undefined)}
+			/>
+			<Button icon={`sort alphabet ${direction === 'ascending' ? 'descending' : 'ascending'}`} onClick={reverseDirection} />
+		</div>
+	)
+
+	function reverseDirection() {
+		if (direction === 'descending') {
+			setDirection('ascending');
+		}
+		else {
+			setDirection('descending');
+		}
+	}
+}
 
 type LockButtonsProps = {
 	lockable: any[];
@@ -563,12 +674,13 @@ export const prettyCrewColumnTitle = (column: string) => {
 };
 
 function renderDefaultZeroMessage(): JSX.Element {
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<Message icon>
 			<Icon name='search' />
 			<Message.Content>
-				<Message.Header>0 results found</Message.Header>
-				Please try different search options.
+				<Message.Header>{t('crew_picker.no_results_parts.title')}</Message.Header>
+				{t('crew_picker.no_results_parts.message')}
 			</Message.Content>
 		</Message>
 	);
