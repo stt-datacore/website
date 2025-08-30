@@ -2003,6 +2003,7 @@
             },
             "apply_boss_effects": "Boss-Ketten-Buffs anwenden",
             "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
+            "as_maxed": "Verwenden Sie maximale Schiffsstatistiken",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
