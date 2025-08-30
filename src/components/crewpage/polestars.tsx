@@ -36,7 +36,7 @@ export const Polestars = (props: PolestarsProps) => {
 		);
 
 		let constellation: ConstellationMap | undefined = undefined;
-		let archdata = ITEM_ARCHETYPES[crew_keystone_crate.symbol];
+		let archdata = crew_keystone_crate ? ITEM_ARCHETYPES[crew_keystone_crate.symbol] : undefined;
 		if (crew_keystone_crate && crew_keystone_crate.keystones) {
 			constellation = {
 				name: archdata?.name || crew_keystone_crate.name,
