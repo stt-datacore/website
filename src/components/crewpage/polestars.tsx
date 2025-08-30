@@ -6,6 +6,8 @@ import { CrewMember } from '../../model/crew';
 import { Constellation, ConstellationMap, Polestar, PolestarCombo, categorizeKeystones } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
 import { findPolestars } from '../../utils/retrieval';
+import { OptionsPanelFlexColumn } from '../stats/utils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 type PolestarsProps = {
 	crew: CrewMember;
@@ -14,9 +16,12 @@ type PolestarsProps = {
 export const Polestars = (props: PolestarsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { crew } = props;
-
+	const { ITEM_ARCHETYPES } = globalContext.localized;
 	const [constellation, setConstellation] = React.useState<ConstellationMap | undefined>(undefined);
 	const [optimalPolestars, setOptimalPolestars] = React.useState<PolestarCombo[]>([] as PolestarCombo[]);
+
+	const flexCol = OptionsPanelFlexColumn;
+	const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
 
 	React.useEffect(() => {
 		const [crates, keystones] = categorizeKeystones(globalContext.core.keystones);
@@ -31,10 +36,11 @@ export const Polestars = (props: PolestarsProps) => {
 		);
 
 		let constellation: ConstellationMap | undefined = undefined;
+		let archdata = ITEM_ARCHETYPES[crew_keystone_crate.symbol];
 		if (crew_keystone_crate && crew_keystone_crate.keystones) {
 			constellation = {
-				name: crew_keystone_crate.name,
-				flavor: crew_keystone_crate.flavor,
+				name: archdata?.name || crew_keystone_crate.name,
+				flavor: archdata?.flavor || crew_keystone_crate.flavor,
 				keystones: (crew_keystone_crate.keystones.map(kId => keystones.find(k => k.id === kId)) ?? [] as Polestar[]) as Polestar[],
 				raritystone,
 				skillstones
@@ -84,19 +90,23 @@ export const Polestars = (props: PolestarsProps) => {
 			<Segment>
 				<Header as='h4'>{constellation.name}</Header>
 				<div dangerouslySetInnerHTML={{ __html: constellation.flavor }} />
-				<Grid columns={5} centered padded>
-					{constellation.keystones.map((kk, idx) => (
-					<Grid.Column key={idx} textAlign='center'>
-						<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
-						<br/ >
-						<Link to={`/?search=trait:${kk.short_name}`}>
-						<span style={{ fontWeight: 'bolder' }}>
-							{kk.short_name}
-						</span>
-						</Link>
-					</Grid.Column>
-					))}
-				</Grid>
+				<div style={{overflowX: 'auto'}}>
+					<Grid columns={isMobile ? 3 : 5} centered padded>
+						{constellation.keystones.map((kk, idx) => {
+							let archdata = ITEM_ARCHETYPES[kk.symbol];
+							return (<Grid.Column key={idx} textAlign='center'>
+								<div style={{...flexCol, gap: '0.5em', justifyContent: 'space-evenly'}}>
+									<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
+									<Link to={`/?search=trait:${archdata?.name || kk.short_name}`}>
+									<span style={{ fontWeight: 'bolder' }}>
+										{archdata?.name || kk.short_name}
+									</span>
+									</Link>
+								</div>
+							</Grid.Column>)
+						})}
+					</Grid>
+				</div>
 			</Segment>
 		);
 	}
@@ -108,17 +118,19 @@ type OptimalPolestarsProps = {
 };
 
 const OptimalPolestars = (props: OptimalPolestarsProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const { t, tfmt, ITEM_ARCHETYPES } = React.useContext(GlobalContext).localized;
 	const { constellation, optimalPolestars } = props;
 
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [paginationRows, setPaginationRows] = React.useState(10);
 
+	const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
+
 	const pagingOptions = [
-		{ key: '0', value: '10', text: '10' },
-		{ key: '1', value: '25', text: '25' },
-		{ key: '2', value: '50', text: '50' },
-		{ key: '3', value: '100', text: '100' }
+		{ key: '0', value: 10, text: '10' },
+		{ key: '1', value: 25, text: '25' },
+		{ key: '2', value: 50, text: '50' },
+		{ key: '3', value: 100, text: '100' }
 	];
 
 	const filterTraits = (polestar, trait) => {
@@ -143,13 +155,13 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 
 	return (
 		<Segment>
-			<Header as='h4'>Optimal Polestars for Crew Retrieval</Header>
-			<div>All the polestars that give the best chance of retrieving this crew</div>
+			<Header as='h4'>{t('polestars.optimal')}</Header>
+			<div>{t('polestars.best_chance_long')}</div>
 			<Table celled selectable striped collapsing unstackable compact='very'>
 				<Table.Header>
 					<Table.Row>
-						<Table.HeaderCell width={1}>Best Chance</Table.HeaderCell>
-						<Table.HeaderCell width={3} textAlign='center'>Polestar Combination</Table.HeaderCell>
+						<Table.HeaderCell width={1}>{t('polestars.best_chance_short')}</Table.HeaderCell>
+						<Table.HeaderCell width={3} textAlign='center'>{t('polestars.combo')}</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -160,12 +172,14 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 									{(1/optimal.count*100).toFixed()}%
 								</div>
 								{optimal.count > 1 && (
-								<div style={{ gridArea: 'description' }}>Shared with{' '}
-									{optimal.alts.map((alt) => (
-										<Link key={alt.symbol} to={`/crew/${alt.symbol}/`}>
-											{alt.name}
-										</Link>
-									)).reduce((prev, curr) => prev ? <>{prev}, {curr}</> : curr)}
+								<div style={{ gridArea: 'description' }}>
+									{tfmt('polestars.shared_with_crew', {
+										crew: optimal.alts.map((alt) => (
+											<Link key={alt.symbol} to={`/crew/${alt.symbol}/`}>
+												{alt.name}
+											</Link>
+										)).reduce((prev, curr) => prev ? <>{prev}, {curr}</> : curr)
+									})}
 								</div>
 								)}
 							</Table.Cell>
@@ -178,12 +192,13 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 				<Table.Footer>
 					<Table.Row>
 						<Table.HeaderCell colSpan={8}>
+							<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: '1em'}}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={paginationPage}
 								onPageChange={(event, { activePage }) => setPaginationPage(activePage as number)}
 							/>
-							<span style={{ paddingLeft: '2em' }}>
+							<span style={{ paddingLeft: isMobile ? undefined : '2em' }}>
 								{t('global.rows_per_page')}:{' '}
 								<Dropdown
 									inline
@@ -192,6 +207,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 									onChange={(event, { value }) => { setPaginationPage(1); setPaginationRows(value as number); }}
 								/>
 							</span>
+							</div>
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Footer>
@@ -203,7 +219,8 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 		const comboColumns = polestarCombo.polestars.map((trait, idx) => {
 			const polestar = crewPolestars.find((op) => filterTraits(op, trait));
 			// Catch when optimal combos include a polestar that isn't yet in DataCore's keystones list
-			const polestarName = polestar ? polestar.short_name : trait.slice(0, 1).toUpperCase()+trait.slice(1);
+			let archdata = polestar ? ITEM_ARCHETYPES[polestar.symbol] : undefined;
+			const polestarName = archdata?.name || (polestar ? polestar.short_name : trait.slice(0, 1).toUpperCase()+trait.slice(1));
 			const polestarFile = polestar ? polestar.icon.file : '/items_keystones_'+trait+'.png';
 			return (
 				<Grid.Column key={idx} textAlign='center' mobile={8} tablet={5} computer={4}>
