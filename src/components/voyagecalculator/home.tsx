@@ -35,6 +35,7 @@ import { VoyageStatsAccordion } from './stats/stats_accordion';
 import { refShips } from '../../utils/shiputils';
 import { DilemmaHelperAccordion } from './dilemmas/helper';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
+import { DilemmaReferenceAccordion } from './dilemmas/dilemmatable';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -102,6 +103,7 @@ const NonPlayerHome = () => {
 			</Header>
 			<p>{t('voyage.nonplayer.description')}</p>
 			<ConfigEditor presetConfigs={[]} updateConfig={setVoyageConfig} />
+			<DilemmaReferenceAccordion />
 		</React.Fragment>
 	);
 
@@ -232,6 +234,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				<HistoryMessage />
 				{!activeView && renderVoyagePicker()}
 				{activeView && renderActiveView()}
+				{!activeView && <DilemmaReferenceAccordion />}
 			</React.Fragment>
 		</HistoryContext.Provider>
 	);

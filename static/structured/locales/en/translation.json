@@ -1606,6 +1606,14 @@
         "starbase_level": "Starbase level",
         "x_y_crew": "{{x}} / {{y}} crew"
     },
+    "polestars": {
+        "best_chance_long": "All the polestars that give the best chance of retrieving this crew",
+        "best_chance_short": "Best Chance",
+        "combo": "Polestar Combination",
+        "crew_constellation": "{{crew}} Constellation",
+        "optimal": "Optimal Polestars for Crew Retrieval",
+        "shared_with_crew": "Shared with {{crew}}"
+    },
     "profile": {
         "charts_and_stats": "Charts & Stats",
         "crew": "{{menu.roster.crew}}",
@@ -2707,6 +2715,7 @@
             "click_here": "{{fleet.import.click_here}}",
             "heading": "You can access your voyage logs in a similar way to how you access your player data, currently."
         },
+        "reference": "Dilemma Reference",
         "title": "Voyage Dilemma Utility"
     }
 }
