@@ -137,7 +137,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
             padding: "0.5em 1em"
         } as React.CSSProperties;
 
-        const weightKeys = weighting ? Object.keys(weighting) : undefined;
+        const weightKeys = weighting ? Object.keys(weighting).filter(f => typeof weighting[f] === 'number') : undefined;
         if (!editable) weightKeys?.sort((a, b) => weighting![b] - weighting![a]);
         else weightKeys?.sort((a, b) => a.localeCompare(b));
         return (
