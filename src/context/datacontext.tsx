@@ -17,6 +17,7 @@ import { getItemWithBonus } from '../utils/itemutils';
 import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
+import { Dilemma } from '../model/voyage';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -41,6 +42,7 @@ export type ValidDemands =
 	'gauntlets' |
 	'items' |
 	'keystones' |
+	'maincast' |
 	'misc_stats' |
 	'missions' |
 	'missionsfull' |
@@ -74,6 +76,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	crew: [] as CrewMember[],
 	current_weighting: {},
+	dilemmas: [] as Dilemma[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
@@ -84,6 +87,7 @@ const defaultData = {
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
+	maincast: {},
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
 	objective_events: [] as ObjectiveEvent[],
@@ -152,6 +156,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'gauntlets',
 			'items',
 			'keystones',
+			'maincast',
 			'misc_stats',
 			'missions',
 			'missionsfull',
@@ -174,7 +179,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}

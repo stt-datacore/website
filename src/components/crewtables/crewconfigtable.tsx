@@ -9,10 +9,11 @@ import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverst
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
 import { IRosterCrew, RosterType, ICrewFilter } from './model';
-import { descriptionLabel } from './commonoptions';
+import { descriptionLabel, SpecialViews } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { OptionsPanelFlexRow } from '../stats/utils';
+import { CompletionState } from '../../model/player';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -25,6 +26,7 @@ type CrewConfigTableProps = {
 	lockableCrew?: LockedProspect[];
 	loading?: boolean;
 	extraSearchContent?: JSX.Element;
+	specialView?: SpecialViews;
 };
 
 export const CrewConfigTable = (props: CrewConfigTableProps) => {
@@ -32,7 +34,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const { t, tfmt } = globalContext.localized;
 	const { CREW_ARCHETYPES } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew, extraSearchContent } = props;
+	const { pageId, rosterType, initOptions, rosterCrew, crewFilters, lockableCrew, extraSearchContent, specialView } = props;
 
 	const [focusedCrew, setFocusedCrew] = React.useState<IRosterCrew | undefined | null>(undefined);
 
@@ -109,7 +111,11 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 		setCrew ??= (e) => { return; };
 
 		return (
-			<Table.Row key={idx} {...attributes}>
+			<Table.Row key={idx} {...attributes}
+				// style={{
+				// 	backgroundColor: specialView === 'as_immortalized' && crew.immortal === CompletionState.DisplayAsImmortalOwned ? 'darkgreen' : undefined
+				// }}
+				>
 				<Table.Cell className='sticky'>
 					<div
 						style={{
@@ -127,7 +133,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
 						</div>
-						<div style={{ gridArea: 'description' }}>{descriptionLabel(t, crew, showOwned)}</div>
+						<div style={{ gridArea: 'description' }}>{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>

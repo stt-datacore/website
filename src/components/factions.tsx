@@ -63,7 +63,7 @@ class FactionInfo extends PureComponent<ShuttleInfoProps, ShuttleInfoState> {
     }
 
     initData() {
-        if (this.inited) return;
+        //if (this.inited) return;
 
         if (!this.context.player.playerData) return;
         const { factions, shuttle_bays } = this.context.player.playerData.player.character;

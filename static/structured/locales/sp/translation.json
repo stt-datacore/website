@@ -27,6 +27,7 @@
         "trigger_always": "Activar siempre",
         "trigger_once": "Activar una vez",
         "trigger_once_desc": "Una vez que se active la alerta, se desactivará, pero podrás volver a activarla desde el modal de alerta.",
+        "watched_crew": "Alerta: ¡Se ha adquirido la tripulante vigilada '{{subject}}' ({{rarity}}/{{max_rarity}}*)!",
         "when_new_crew": "Alerta cuando se descubren copias de una tripulante sin propietario en el pozo de recompra.",
         "when_new_fuse": "Alerta cuando se descubre un fusible de una tripulación propia en el pozo de recompra."
     },
@@ -403,6 +404,11 @@
             "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente."
         }
     },
+    "crew_quipment": {
+        "active_quipment_skills": "Habilidades activas para los quipos",
+        "compatible_quipment": "Quipos compatibles",
+        "trait_limited": "Mostrar solo quipos vinculados a características"
+    },
     "crew_state": {
         "expires_in": "La tripulante caduca en {{time}}",
         "frozen": "Congelado",
@@ -541,8 +547,12 @@
         "select_phase": "Seleccione una fase",
         "skill_matrix": "Matriz de Habilidades",
         "skill_matrix_heading": "Esta matriz muestra tu mejor equipo para cada combinación de habilidades posible. Utilice esta matriz para identificar su mejor equipo para este evento. Toca una celda para ver otros miembros del equipo con esa combinación de habilidades.",
+        "specialist": {
+            "instructions": "Para utilizar el personal automático, seleccione una o más misiones tocando la columna de título y luego toque el botón de dotar automáticamente.",
+            "mission_running": "La misión está en marcha."
+        },
         "specialist_missions": "Misiones especializadas",
-        "staff_selected": "Equipar a los seleccionados",
+        "staff_selected": "Dotar automáticamente",
         "table": {
             "columns": {
                 "best": "Mejo",
@@ -1161,6 +1171,7 @@
         "filter_crew_by_rank": "Filtrar tripulación por rango",
         "filter_ship_grants": "Filtrar subvenciones para buques",
         "filter_ship_rarity": "Filtrar la rareza del buque",
+        "min_battle_stations": "Estaciones de batalla mínimas",
         "prioritize_rewards": "Priorizar recompensas",
         "roster_maintenance": "Mantenimiento de la lista",
         "select_crew": "Seleccionar tripulación",
@@ -1281,6 +1292,7 @@
         "equippable_by_rarity_traits": "Equipable hasta por tripulación {{rarity}} con las siguientes rasgos: {{traits}}",
         "equippable_by_traits": "Equipable por tripulación con los siguientes rasgos: {{traits}}",
         "faction_only": "Solo facción",
+        "hide_unneeded_items": "Ocultar artículos innecesarios",
         "is_used_to_build": "Se utiliza para construir estos",
         "item_sources": "Fuentes de artículo",
         "n_farmable": "{{n}} cultivables",
@@ -1294,6 +1306,9 @@
             "owned_or_buildable": "Mostrar equipo propio o construible"
         },
         "post_immortalization_advancement": "Avance posterior a la inmortalización",
+        "quick_select": {
+            "favorites": "Seleccionar toda los tripulantes favoritos"
+        },
         "recipe": "Receta",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
@@ -1382,7 +1397,8 @@
         "pvp_3": "datos de la división del comandante",
         "pvp_4": "datos de la división del capitán",
         "pvp_5": "datos de la división del almirante",
-        "quest_data": "datos de la misión"
+        "quest_data": "datos de la misión",
+        "voyage_log": "atos de registro de viaje"
     },
     "logic": {
         "AND": "AND",
@@ -1600,6 +1616,14 @@
         "starbase_level": "Nivel de base estelar",
         "x_y_crew": "{{x}} / {{y}} equipo"
     },
+    "polestars": {
+        "best_chance_long": "Todas las estrellas polares que ofrecen la mejor posibilidad de recuperar a este tripulante",
+        "best_chance_short": "La mejor oportunidad",
+        "combo": "Combinación de estrellas polares",
+        "crew_constellation": "Constelación para {{crew}}",
+        "optimal": "Estrellas polares óptimas para la recuperación de este tripulante",
+        "shared_with_crew": "En común con {{crew}}"
+    },
     "profile": {
         "charts_and_stats": "Gráficos y Estadísticas",
         "crew": "{{menu.roster.crew}}",
@@ -1638,6 +1662,7 @@
             "skill_order": "Orden de habilidades"
         },
         "mode_label": "Modo habilidad",
+        "quippable_traits": "Mostrar solo tripulación con quipos con características limitadas",
         "slot_label": "Modo de ranura",
         "slots": {
             "n_natural": "Quipar hasta {{n}} espacios naturales",
@@ -1804,6 +1829,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Tripulantes mínimos no únicos",
         "modes": {
             "mutual_polestar_calculator": "Calculadora mutua de estrellas polares",
             "mutual_polestar_calculator_desc": "Encuentra combinaciones que den las mismas posibilidades de recuperar a los no inmortales",
@@ -1993,6 +2019,9 @@
                 "exclude_ability": "Excluir los tripulantes con esta habilidad",
                 "power_depth": "Profundidad de potencia avanzada"
             },
+            "apply_boss_effects": "Aplicar mejoras en las cadenas de jefes",
+            "apply_buffs": "Aplicar mejoras a buques sin propietario",
+            "as_maxed": "Utilice las estadísticas máximas del buque",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} resultados aceptados) ({{time}})",
             "calculating_pct_ellipses": "Calculando ... ({{percent}}% completado)",
             "calculating_pct_ellipses_verbose": "Calculando ... ({{percent}}% completado) ({{progress}} / {{count}}) ({{accepted}} resultados aceptados)",
@@ -2031,6 +2060,7 @@
         "crit_rating": "Frecuencia de Crít",
         "cycle_time": "Uno ciclo",
         "depth_hr_warn": "* De forma predeterminada, la profundidad del nivel de potencia no se aplica a los tripulantes de reparación de casco.",
+        "dps": "DPS",
         "duration": "Duración",
         "equipment_bonus": "Bonificación de equipo",
         "evasion": "Evasión",
@@ -2064,6 +2094,11 @@
             "admiral": "División de almirante",
             "captain": "División de capitán",
             "commander": "División de comandante"
+        },
+        "roster": {
+            "all": "Todos los buques",
+            "owned": "Buques propios",
+            "unowned": "Buques sin propietario"
         },
         "shields": "Escudos",
         "ship": "buque",
@@ -2300,6 +2335,12 @@
             "description": "Considere solo a su propia tripulantes",
             "title": "Tripulación Propia"
         }
+    },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Ver todo como inmortalizado"
+        },
+        "title": "Vistas especiales"
     },
     "voyage": {
         "active": {
@@ -2675,5 +2716,16 @@
             "custom": "Viajes personalizados",
             "upcoming": "Próximos viajes"
         }
+    },
+    "voyage_log": {
+        "behold": "Reconocimiento",
+        "choice_x": "Opción {{x}}",
+        "choices": "Opciones",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Puedes acceder a tus registros de viaje de forma similar a como accedes a tus datos de jugador actualmente."
+        },
+        "reference": "Referencia de dilemas",
+        "title": "Utilidad del dilema del viaje"
     }
 }

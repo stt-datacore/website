@@ -298,8 +298,15 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (newFallbackMap) {
 			setFallbackMap(makeWebstringMap(newFallbackMap));
 		}
+		const wsmap = makeWebstringMap(webStringsJson);
 
-		setWebStringMap(makeWebstringMap(webStringsJson));
+		// Add some translation shortcuts to traits for ease of use with filters.
+		// TODO: At some point, we can rework the filtering strategy for these particular things.
+		translatedGameStrings.TRAIT_NAMES['maincast'] = wsmap['rank_names.scores.main_cast'];
+		["ds9", "dsc", "ent", "low", "original", "pic", "snw", "tas", "tng", "tos", "voy", "vst",]
+			.forEach(series => translatedGameStrings.TRAIT_NAMES[series] = wsmap[`series.${series}`]);
+
+		setWebStringMap(wsmap);
 		setGameStrings({...translatedGameStrings});
 		setEnglishStrings({...englishStrings});
 		setLanguage(newLanguage);

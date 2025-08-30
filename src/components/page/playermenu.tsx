@@ -105,7 +105,11 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			checkVisible: (data) => !!playerData,
 			customRender: (data) => {
 				if (alertConfig) {
-					return drawAlertModal(() => renderSubmenuItem(data, undefined, !props.vertical))
+					return (
+						<React.Fragment key={'submenu_alert_modal'}>
+							{drawAlertModal(() => renderSubmenuItem(data, undefined, !props.vertical))}
+						</React.Fragment>
+					)
 				}
 				return <Dropdown.Item key='menusettings' disabled>{t('alerts.name')}</Dropdown.Item>;
 			},
