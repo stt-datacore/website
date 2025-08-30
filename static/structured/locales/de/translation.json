@@ -1606,6 +1606,14 @@
         "starbase_level": "Sternenbasis-Level",
         "x_y_crew": "{{x}} / {{y}} Crew"
     },
+    "polestars": {
+        "best_chance_long": "Alle Polarsterne, die die beste Chance bieten, diese Besatzung zurückzuholen",
+        "best_chance_short": "Beste Chance",
+        "combo": "Polarsterne Kombination",
+        "crew_constellation": "Sternbild für {{crew}}",
+        "optimal": "Optimale Polarsterne für die Bergung der Besatzung",
+        "shared_with_crew": "Gemeinsam mit {{crew}}"
+    },
     "profile": {
         "charts_and_stats": "Diagramme und Statistiken",
         "crew": "{{menu.roster.crew}}",
@@ -1842,7 +1850,7 @@
             "add_prospective_polestars": "Potenzielle Polarsterne hinzufügen",
             "columns": {
                 "added": "Hinzugefügt",
-                "crate_count": "Konstellations-Chance",
+                "crate_count": "Sternbilds-Chance",
                 "crew_count": "Crew im Zeitportal",
                 "name": "{{retrieval.polestar}}",
                 "owned": "Im Besitz",
@@ -1853,7 +1861,7 @@
                 "already_owned": "Du besitzt bereits alle Polarsterne in der {{crate}}."
             },
             "definitions": {
-                "crate_count": "Ihre Chance, durch einen erfolgreichen Scan eine beliebige Konstellation mit dem Polarstern zu erhalten.",
+                "crate_count": "Ihre Chance, durch einen erfolgreichen Scan eine beliebige Sternbild mit dem Polarstern zu erhalten.",
                 "owned_best_odds": "Ihre beste Chance, durch einen erfolgreichen Scan den Polarstern zu erhalten.",
                 "scan_odds": "Ihre Gesamtchance, durch einen erfolgreichen Scan den Polarstern zu erhalten."
             },

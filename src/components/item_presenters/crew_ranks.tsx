@@ -1,6 +1,6 @@
 import { Link, navigate } from 'gatsby';
 import React from 'react';
-import { Accordion, Divider, Header, Icon, Segment, SemanticICONS, Statistic } from 'semantic-ui-react';
+import { Accordion, Divider, Header, Icon, Segment, SemanticICONS, SemanticWIDTHS, Statistic } from 'semantic-ui-react';
 
 import CONFIG from '../../components/CONFIG';
 import { StatLabel } from '../../components/statlabel';
@@ -10,6 +10,7 @@ import { PlayerCrew } from '../../model/player';
 import { gradeToColor, numberToGrade, prettyObtained, printPortalStatus } from '../../utils/crewutils';
 import { getCoolStats, translateSkills } from '../../utils/misc';
 import { SHIP_DEFENSE_COLOR, SHIP_OFFENSE_COLOR } from '../ship/utils';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 
 type CrewRankHighlightsProps = {
 	crew: CrewMember;
@@ -182,6 +183,8 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		let b = [] as JSX.Element[];
 		let o = [] as JSX.Element[];
 
+		const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
+		const widths: SemanticWIDTHS = isMobile ? 'two' : 'three';
 		const skillName = (shortName: string) => {
 			let ns = CONFIG?.SKILLS_SHORT_ENGLISH?.find(c => c.short === shortName)?.name;
 			if (ns) return CONFIG.SKILLS[ns];
@@ -267,7 +270,6 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				}
 			}
 		}
-
 		for (let rank in crew.ranks.scores) {
 			if (rank.endsWith('_rank')) {
 				let label = formatLabel(t(`rank_names.scores.${rank.replace('_rank', '')}`));
@@ -288,7 +290,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 			<React.Fragment>
 				<Segment>
 					<Header as="h5">{t('cool_stats.base_ranks')}</Header>
-					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
+					<Statistic.Group widths={b.length === 1 ? "one" : widths} size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{b}
 					</Statistic.Group>
 				</Segment>
@@ -305,22 +307,22 @@ export const CrewRanks = (props: CrewRanksProps) => {
 							<Divider />
 						</React.Fragment>
 					)}
-					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
+					<Statistic.Group widths={widths} size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{v}
 					</Statistic.Group>
 				</Segment>
 				<Segment>
 					<Header as="h5">{t('cool_stats.gauntlet_pair_ranks')}</Header>
-					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
+					<Statistic.Group widths={widths} size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{g}
 					</Statistic.Group>
 				</Segment>
-				<Segment>
+				{!myCrew?.length && <Segment>
 					<Header as="h5">{t('rank_names.datascore_ranks')}</Header>
-					<Statistic.Group widths="three" size={'mini'} style={{ paddingBottom: '0.5em' }}>
+					<Statistic.Group widths={widths} size={'mini'} style={{ paddingBottom: '0.5em' }}>
 						{o}
 					</Statistic.Group>
-				</Segment>
+				</Segment>}
 			</React.Fragment>
 		);
 	}

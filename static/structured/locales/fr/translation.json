@@ -1618,6 +1618,14 @@
         "starbase_level": "Niveau de base stellaire",
         "x_y_crew": "{{x}} / {{y}} équipiers"
     },
+    "polestars": {
+        "best_chance_long": "Toutes les étoiles polaires qui donnent les meilleures chances de récupérer cet équipier",
+        "best_chance_short": "Meilleure chance",
+        "combo": "Combinaison d'étoiles polaires",
+        "crew_constellation": "Constellation pour {{crew}}",
+        "optimal": "Étoiles polaires optimales pour la récupération de cet équipier",
+        "shared_with_crew": "En commun avec {{crew}}"
+    },
     "profile": {
         "charts_and_stats": "Graphiques et Statistiques",
         "crew": "{{menu.roster.crew}}",
