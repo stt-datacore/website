@@ -80,7 +80,7 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 			else if (crew.ranks.scores[rankKey] && typeof crew.ranks.scores[rankKey] === 'number') {
 				crrank = crew.ranks.scores[rankKey];
 			}
-			if (crrank && crrank <= dThreshold) {
+			if (crrank && crrank <= dThreshold && (crew.max_rarity !== 5 || !rankKey.includes("overall"))) {
 				if (score === 'ship') {
 					if (crew.ranks.scores.ship.kind === 'offense') {
 						stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crrank} (${t('rank_names.advantage.o')})`, rank: crrank, priority: 1 });
