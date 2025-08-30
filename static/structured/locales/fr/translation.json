@@ -2015,6 +2015,7 @@
             },
             "apply_boss_effects": "Appliquer les buffs des chaînes de boss",
             "apply_buffs": "Appliquer des buffs aux vaisseaux sans propriétaire",
+            "as_maxed": "Utiliser les statistiques maximales du vaisseau",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",

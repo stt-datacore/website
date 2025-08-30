@@ -2003,6 +2003,7 @@
             },
             "apply_boss_effects": "Apply boss chain buffs",
             "apply_buffs": "Apply buffs to unowned ships",
+            "as_maxed": "Use max ship stats",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
