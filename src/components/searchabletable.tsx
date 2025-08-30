@@ -510,15 +510,15 @@ export const SortDropDown = (props: SortDropdownProps) => {
 		config.forEach((col, i) => {
 			let skillText = "";
 			if (typeof col.title !== 'string' && col.column?.includes("_skill")) {
-				let parts = col.column.split(".").find(f => f.endsWith("_skill"))!
-				skillText = ` ${CONFIG.SKILLS[parts]}`;
+				let skill_part = col.column.split(".").find(f => f.endsWith("_skill"))
+				if (skill_part) skillText = ` ${CONFIG.SKILLS[skill_part]}`;
 			}
 			props.push({
 				key: `${col.column}_dropdown_column`,
 				text: skillText || col.title,
 				value: col.column,
 				content: (
-					<div style={{fontWeight: 'bold', display: 'flex', gap: '0.5em'}}>
+					<div style={{display: 'flex', gap: '0.5em'}}>
 						{col.title}{skillText}
 					</div>
 				)
@@ -532,7 +532,7 @@ export const SortDropDown = (props: SortDropdownProps) => {
 						value: pcol,
 						content: (
 							<div style={{marginLeft: '1em'}}>
-								<i>&mdash;&nbsp;{translatePseudocolumn(pcol, t)}</i>
+								&mdash;&nbsp;{translatePseudocolumn(pcol, t)}
 							</div>
 						)
 					});
