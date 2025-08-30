@@ -2717,6 +2717,7 @@
             "click_here": "{{fleet.import.click_here}}",
             "heading": "Puedes acceder a tus registros de viaje de forma similar a como accedes a tus datos de jugador actualmente."
         },
+        "reference": "Referencia de dilemas",
         "title": "Utilidad del dilema del viaje"
     }
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "semantic-ui-react";
+import { Accordion, Icon, Segment, SemanticICONS, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
 import { Filter } from "../../../model/game-elements";
@@ -17,8 +17,42 @@ export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
     crewTargetGroup?: string;
     shipTargetGroup?: string;
-    updateDilemma: (dil: Dilemma, choice: number, clear: boolean) => void;
+    updateDilemma?: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
+
+
+export const DilemmaReferenceAccordion = (props: DilemmaTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+
+    const [isActive, setIsActive] = React.useState<boolean>(false);
+	const { crewTargetGroup, shipTargetGroup, voyageLog, updateDilemma } = props;
+
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
+				{t('voyage_log.reference')}
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+						<DilemmaTable
+                            voyageLog={voyageLog}
+                            crewTargetGroup={crewTargetGroup}
+                            shipTargetGroup={shipTargetGroup}
+                            updateDilemma={updateDilemma}
+                            />
+					</Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
+	);
+};
+
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -215,7 +249,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                 cursor: !!row.narrative ? 'pointer' : undefined,
                                 backgroundColor: choiceBg
                             }}
-                            onClick={() => updateDilemma(row, i, row.selection === i)}
+                            onClick={() => updateDilemma ? updateDilemma(row, i, row.selection === i) : false}
                             >
                             {renderChoiceRewards(choice)}
                         </Table.Cell>
