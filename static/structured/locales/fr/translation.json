@@ -1696,7 +1696,7 @@
         "datascore_ranks": "Classements DataScore",
         "fbb_rank": "Boss",
         "gauntlet_rank": "Rang Gantelet",
-        "greatness_rank": "Rang de grandeur",
+        "greatness_rank": "Rang de Polyvalence",
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
         "scores": {
@@ -1706,7 +1706,7 @@
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
             "gauntlet_plus": "Gantelet+",
-            "greatness": "Grandeur",
+            "greatness": "Polyvalence",
             "main_cast": "Casting principal",
             "overall": "Global",
             "overall_grade": "Note générale",

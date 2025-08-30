@@ -353,6 +353,7 @@ export interface GreatnessDetails {
     name: string;
     rank: number;
     score: number;
+    rarity: number;
 }
 
 export interface RankScoring {

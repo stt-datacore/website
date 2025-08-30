@@ -1684,7 +1684,7 @@
         "datascore_ranks": "DataScore-Ranglisten",
         "fbb_rank": "Flottenboss",
         "gauntlet_rank": "Herausforderungsrang",
-        "greatness_rank": "Größenrang",
+        "greatness_rank": "Vielseitigkeitsrang",
         "quipment_score": "Rüstzeug Werte",
         "rank": "Rang",
         "scores": {
@@ -1694,7 +1694,7 @@
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
             "gauntlet_plus": "Herausforderung+",
-            "greatness": "Größe",
+            "greatness": "Vielseitigkeit",
             "main_cast": "Hauptbesetzung",
             "overall": "Gesamt",
             "overall_grade": "Gesamtnote",
