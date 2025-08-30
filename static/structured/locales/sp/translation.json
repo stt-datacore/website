@@ -397,6 +397,10 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 resultados encontrados. Pruebe diferentes opciones de búsqueda.",
+        "no_results_parts": {
+            "message": "Pruebe diferentes opciones de búsqueda.",
+            "title": "0 resultados encontrados."
+        },
         "optional_filters": "Filtros Opcionales",
         "search_by_name": "Buscar tripulantes por nombre",
         "select_crew": "Seleccionar {{crew}}",
