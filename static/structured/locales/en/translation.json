@@ -1684,7 +1684,7 @@
         "datascore_ranks": "DataScore Ranks",
         "fbb_rank": "Boss",
         "gauntlet_rank": "Gauntlet Rank",
-        "greatness_rank": "Greatness Rank",
+        "greatness_rank": "Versatility Rank",
         "quipment_score": "Quipment Score",
         "rank": "Rank",
         "scores": {
@@ -1694,7 +1694,7 @@
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
-            "greatness": "Greatness",
+            "greatness": "Versatility",
             "main_cast": "Main Cast",
             "overall": "Overall",
             "overall_grade": "Overall Grade",
