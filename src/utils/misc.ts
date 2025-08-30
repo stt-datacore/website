@@ -93,9 +93,9 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 					stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crrank}`, rank: crrank, priority: 2 });
 				}
 			}
-			else {
-				stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
-			}
+			// else {
+			// 	stats.push({ stat: `${t(`rank_names.scores.${score}`)} #${crew.ranks[rankKey]}`, rank: crew.ranks[rankKey], priority: 2 });
+			// }
 		}
 	});
 
