@@ -518,19 +518,24 @@ export const SortDropDown = (props: SortDropdownProps) => {
 		return props;
 	}, [config, column, pseudoColumn]);
 
+	const phtext = (() => {
+		if (!column && !!pseudoColumn) return translatePseudocolumn(pseudoColumn, t);
+		return undefined;
+	})();
 	return (
-		<div style={{ display: 'inline'}}>
+		<div style={{ display: 'flex', alignItems: 'center'}}>
 			<Dropdown
 				style={{marginRight: '0.5em'}}
 				clearable
 				selection
+				placeholder={phtext}
 				options={items}
-				value={pseudoColumn || column}
+				value={column ? (pseudoColumn || column) : undefined}
 				onChange={(e, { value }) => setColumn(value as string | undefined)}
 			/>
 			<Button
 				disabled={!column}
-				icon={`sort alphabet ${direction === 'ascending' ? 'descending' : 'ascending'}`}
+				icon={`sort alphabet ${direction === 'ascending' && column ? 'descending' : 'ascending'}`}
 				onClick={reverseDirection}
 			/>
 		</div>
