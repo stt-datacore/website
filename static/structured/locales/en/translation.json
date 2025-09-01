@@ -2384,7 +2384,7 @@
             "contestant_alt": "contestant",
             "contests_description": "Use this tool to plan your encounter contests. Tap a contest to see crew with viable skills for that contest.",
             "contests_header": "Contest Assignments",
-            "contests_n_count": "Contests (N)",
+            "contests_n_count": "Contests ({{n}})",
             "crit_chance": "Crit Chance",
             "encounter_helper_title": "Encounter helper",
             "importer": {
@@ -2400,7 +2400,7 @@
             "n_viable_crew": "Your voyage has {{n}} viable crew for this contest",
             "no_skill": "No Skill",
             "notes": {
-                "crit_icon": "represents a crew's number of potential crit traits.",
+                "crit_icon": "{{img}} represents a crew's number of potential crit traits.",
                 "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
                 "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
             },
