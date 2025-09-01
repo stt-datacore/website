@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps, SemanticICONS } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -71,11 +71,6 @@ export interface SearchableTableProps {
 	showPermalink?: boolean;
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
-
-	checkCaption?: string;
-	checkableValue?: boolean;
-	checkableEnabled?: boolean;
-	setCheckableValue?: (value?: boolean) => void;
 
 	toolCaption?: string;
 	dropDownChoices?: string[];
@@ -310,9 +305,9 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
 
-	const { toolCaption: caption, checkCaption, checkableEnabled, checkableValue, setCheckableValue } = props;
+	const { toolCaption: caption } = props;
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-	const rightContent = !!props.extraSearchContent && (!!props.showSortDropdown || !!props.setCheckableValue);
+	const rightContent = !!props.extraSearchContent && !!props.showSortDropdown;
 	return (
 		<div>
 			{!props.noSearch && <div style={{
@@ -356,6 +351,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					display: "flex",
 					flexDirection: isMobile ? "column" : "row",
 					justifyContent: "flex-end",
+					justifySelf: "flex-end",
 					alignItems: isMobile ? "flex-start" : "center",
 					marginLeft: isMobile ? undefined : '1em',
 					gap: isMobile ? '0.25em' : '0.5em'
@@ -412,24 +408,6 @@ export const SearchableTable = (props: SearchableTableProps) => {
 									}}
 								/>
 							</span>
-							{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
-						</div>
-					)}
-					{!!checkCaption && !!setCheckableValue && (
-						<div style={{
-							margin: "0.5em",
-							display: "flex",
-							flexDirection: "row",
-							alignItems: "center",
-							justifyContent: "center",
-							alignSelf: "flex-end",
-							height: "2em"
-						}}>
-							<Checkbox
-								onChange={(e, d) => setCheckableValue(d.checked)}
-								checked={checkableValue}
-								disabled={!checkableEnabled} />
-							<div style={{ margin: "0.5em" }} className="ui text">{checkCaption}</div>
 						</div>
 					)}
 				</div>
@@ -501,9 +479,6 @@ export const SortDropDown = (props: SortDropdownProps) => {
 	const { t } = globalContext.localized;
 	const { pseudoColumn, config, direction, setDirection, column, setColumn } = props;
 
-	const flexCol = OptionsPanelFlexColumn;
-	const flexRow = OptionsPanelFlexRow;
-
 	const items = React.useMemo(() => {
 		const props = [] as DropdownItemProps[];
 
@@ -541,19 +516,28 @@ export const SortDropDown = (props: SortDropdownProps) => {
 		});
 
 		return props;
-	}, [config]);
+	}, [config, column, pseudoColumn]);
 
+	const phtext = (() => {
+		if (!column && !!pseudoColumn) return translatePseudocolumn(pseudoColumn, t);
+		return undefined;
+	})();
 	return (
-		<div style={{ display: 'inline'}}>
+		<div style={{ display: 'flex', alignItems: 'center'}}>
 			<Dropdown
 				style={{marginRight: '0.5em'}}
 				clearable
 				selection
+				placeholder={phtext}
 				options={items}
-				value={pseudoColumn || column}
+				value={column ? (pseudoColumn || column) : undefined}
 				onChange={(e, { value }) => setColumn(value as string | undefined)}
 			/>
-			<Button icon={`sort alphabet ${direction === 'ascending' ? 'descending' : 'ascending'}`} onClick={reverseDirection} />
+			<Button
+				disabled={!column}
+				icon={`sort alphabet ${direction === 'ascending' && column ? 'descending' : 'ascending'}`}
+				onClick={reverseDirection}
+			/>
 		</div>
 	)
 
