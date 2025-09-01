@@ -37,7 +37,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const { t } = globalContext.localized;
 	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
 
-	const { playerData, buffConfig } = globalContext.player;
+	const { playerData, buffConfig, ephemeral } = globalContext.player;
 	const { rosterType, eventData, phaseIndex } = props;
 
 	const [skillFilter, setSkillFilter] = useStateWithStorage('eventplanner/skillFilter', [] as string[] | undefined);
@@ -165,8 +165,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const canBorrow = phaseType === 'shuttles'
 		&& eventData.seconds_to_start === 0
-		&& !!playerData?.player.character.crew_borrows?.length
-		&& playerData?.player.squad.rank !== 'LEADER';
+		&& playerData?.player.squad.rank !== 'LEADER'
+		&& !!ephemeral?.borrowedCrew.length;
 
 	// Always calculate new skill numbers from original, unaltered crew list
 	let rosterCrew = JSON.parse(JSON.stringify(props.rosterCrew)) as IEventScoredCrew[];
@@ -175,7 +175,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	if (showBonus) rosterCrew = rosterCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
 	if (!showFrozen) rosterCrew = rosterCrew.filter((c) => c.immortal <= 0);
 	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !isQuipped(c));
-	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.shared);
+	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.borrowed);
 	if (onlyIdleCrew) rosterCrew = rosterCrew.filter((c) => !c.active_status);
 
 	let bestCombos: IBestCombos = computeEventBest(

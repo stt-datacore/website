@@ -2,7 +2,7 @@ import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';
 import { EquipmentItem } from '../model/equipment';
-import { CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { BorrowedCrew, CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
 import { Ship } from '../model/ship';
 import { ShuttleAdventure } from '../model/shuttle';
 import { ShipTraitNames } from '../model/traits';
@@ -52,6 +52,7 @@ export interface IEphemeralData {
 	objectiveEventRoot: ObjectiveEventRoot;
 	galaxyCooldowns: GalaxyCrewCooldown[];
 	stimpack?: Stimpack;
+	borrowedCrew: BorrowedCrew[];
 };
 
 export interface ISessionStates {
@@ -126,7 +127,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		if (!input || (!all_ships.length) || !crew.length) return;
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
-		const activeCrew = [] as CompactCrew[];
+		const activeCrew: CompactCrew[] = [];
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({
@@ -167,7 +168,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				archetype_cache: {} as ArchetypeRoot20,
 				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot,
 				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
-				stimpack: input.player.character.stimpack
+				stimpack: input.player.character.stimpack,
+				borrowedCrew: [...input.player.character.crew_borrows ?? []]
 			});
 		}
 

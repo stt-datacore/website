@@ -175,8 +175,8 @@ export interface Character {
   crew: PlayerCrew[];
   unOwnedCrew?: PlayerCrew[];
   items: PlayerEquipmentItem[]
-  crew_borrows?: any[]
-  crew_shares?: any[]
+  crew_borrows?: BorrowedCrew[];
+  crew_shares?: { id: number }[];
   crew_limit: number
   crew_limit_increase_per_purchase?: number
   next_crew_limit_increase_cost?: NextCrewLimitIncreaseCost
@@ -653,6 +653,37 @@ export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillDa
   data: any;
 
   is_new?: boolean;
+}
+
+/**
+ * This is the model for crew imported directly from player data crew_borrows
+ */
+export interface BorrowedCrew {
+  id: number;
+  symbol: string;
+  name: string;
+  short_name: string;
+  archetype_id: number;
+  level: number;
+  max_level: number;
+  rarity: number;
+  max_rarity: number;
+  equipment_rank: number;
+  max_equipment_rank: number;
+  equipment_slots: EquipmentSlot[];
+  equipment: number[][] | number[];
+  icon: Icon;
+  portrait: Icon;
+  full_body: Icon;
+  voice_over: string | null;
+  traits: string[];
+  traits_hidden: string[];
+  /** Skills is equivalent to archetype base_skills (i.e. stats at current rarity, level, and equipment, but before buffs and quipment)  */
+  skills: BaseSkills;
+  ship_battle: ShipBonus;
+  active_status: number;
+  active_id: number;
+  active_index: number;
 }
 
 export interface GauntletPairScore {
