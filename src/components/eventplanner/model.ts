@@ -24,7 +24,7 @@ export interface IEventData extends IOrigEventData {
 };
 
 export interface IRosterCrew extends PlayerCrew {
-	shared?: boolean;
+	borrowed?: boolean;
 	statusIcon?: SemanticICONS;
 };
 

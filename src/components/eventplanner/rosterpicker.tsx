@@ -1,7 +1,7 @@
 import React from 'react';
 import { Step, Icon } from 'semantic-ui-react';
 
-import { CompletionState, PlayerCrew } from '../../model/player';
+import { BorrowedCrew, CompletionState, PlayerCrew } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
 
@@ -138,13 +138,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		// Add shared crew to roster
 		const store = TinyStore.getStore(`eventData/${playerData.player.dbid}`);
 
-		if (playerData.player.squad.rank !== 'LEADER' && !playerData.player.character.crew_borrows?.length) {
+		if (playerData.player.squad.rank !== 'LEADER' && !ephemeral?.borrowedCrew.length) {
 			if (ephemeral?.events?.length) {
-				let crewBorrow = store.getValue<CrewMember>(`crewBorrow/${ephemeral.events[0].id}`);
+				let crewBorrow = store.getValue<BorrowedCrew>(`crewBorrow/${ephemeral.events[0].id}`);
 				if (crewBorrow) {
 					const sharedCrew = { ...globalContext.core.crew.find(c => c.symbol === crewBorrow.symbol), ...crewBorrow } as IRosterCrew;
 					sharedCrew.id = rosterCrew.length + 1;
-					sharedCrew.shared = true;
+					sharedCrew.borrowed = true;
 					sharedCrew.statusIcon = 'share alternate';
 					sharedCrew.have = false;
 					if (buffConfig) applyCrewBuffs(sharedCrew, buffConfig);
@@ -160,13 +160,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		}
 		else {
 			store.clear();
-			playerData.player.character.crew_borrows?.forEach((crewBorrow, idx) => {
+			ephemeral?.borrowedCrew.forEach((crewBorrow, idx) => {
 				if (ephemeral?.events?.length) {
-					store.setValue<CrewMember>(`crewBorrow/${ephemeral.events[0].id}`, crewBorrow, true);
+					store.setValue<BorrowedCrew>(`crewBorrow/${ephemeral.events[0].id}`, crewBorrow, true);
 				}
 				const sharedCrew = { ...globalContext.core.crew.find(c => c.symbol === crewBorrow.symbol), ...crewBorrow } as IRosterCrew;
 				sharedCrew.id = rosterCrew.length + idx + 1;
-				sharedCrew.shared = true;
+				sharedCrew.borrowed = true;
 				sharedCrew.statusIcon = 'share alternate';
 				sharedCrew.have = false;
 				if (buffConfig) applyCrewBuffs(sharedCrew, buffConfig);
