@@ -2,7 +2,7 @@ import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';
 import { EquipmentItem } from '../model/equipment';
-import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
 import { Ship } from '../model/ship';
 import { ShuttleAdventure } from '../model/shuttle';
 import { ShipTraitNames } from '../model/traits';
@@ -15,6 +15,8 @@ import { TinyStore } from '../utils/tiny';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
 import { DataContext, DataProviderProperties } from './datacontext';
 
+export type GuildCache = { id: number, slabel: string };
+
 export interface PlayerContextData {
 	loaded: boolean;
 	showPlayerGlance: boolean,
@@ -25,6 +27,7 @@ export interface PlayerContextData {
 	setNewCrew: (value: PlayerCrew[] | undefined) => void;
 	newCrew?: PlayerCrew[];
 	reset?: () => void;
+	guildCache: GuildCache[];
 	playerData?: PlayerData;
 	ephemeral?: IEphemeralData;
 	strippedPlayerData?: PlayerData;
@@ -75,7 +78,8 @@ export const defaultPlayer = {
 	noGradeColors: true,
 	setNoGradeColors: () => false,
 	calculatedDemands: undefined,
-	setCalculatedDemands: () => false
+	setCalculatedDemands: () => false,
+	guildCache: []
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -88,6 +92,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 	const { crew, ship_schematics, all_ships } = coreData;
 
 	const { children } = props;
+
+	const [guildCache, setGuildCache] = useStateWithStorage<GuildCache[]>('guild_cache', [], { rememberForever: true, avoidSessionStorage: true });
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
@@ -181,6 +187,11 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
 		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported, quipment);
+
+		if (preparedProfileData.player.fleet?.id) {
+			syncGuildCache(preparedProfileData.player.fleet);
+		}
+
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {
@@ -234,7 +245,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		restoreHiddenAlerts,
 		setRestoreHiddenAlerts,
 		calculatedDemands,
-		setCalculatedDemands
+		setCalculatedDemands,
+		guildCache
 	} as PlayerContextData;
 
 	return (
@@ -247,5 +259,19 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		const newSessionStates = sessionStates ?? {} as ISessionStates;
 		newSessionStates[sessionKey] = sessionValue;
 		setSessionStates({...newSessionStates});
+	}
+
+	function syncGuildCache(fleet: Fleet) {
+		let g = guildCache.find(f => f.id === fleet.id);
+		if (g) {
+			g.slabel = fleet.slabel;
+		}
+		else {
+			guildCache.push({
+				id: fleet.id,
+				slabel: fleet.slabel
+			});
+		}
+		setGuildCache([...guildCache]);
 	}
 };

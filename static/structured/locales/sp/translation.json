@@ -781,6 +781,7 @@
             "dailies": "Diarios",
             "display_name": "{{global.name}}",
             "event_rank": "Rango de evento",
+            "fleet": "{{global.fleet}}",
             "last_active": "Último activo",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",

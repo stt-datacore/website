@@ -775,6 +775,7 @@
             "dailies": "Dailies",
             "display_name": "{{global.name}}",
             "event_rank": "Event Rank",
+            "fleet": "{{global.fleet}}",
             "last_active": "Last Active",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",

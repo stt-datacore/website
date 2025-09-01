@@ -775,6 +775,7 @@
             "dailies": "Tagesaufgaben",
             "display_name": "{{global.name}}",
             "event_rank": "Event-Rang",
+            "fleet": "{{global.fleet}}",
             "last_active": "Zuletzt aktiv",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
