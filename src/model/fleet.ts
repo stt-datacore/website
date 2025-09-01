@@ -4,10 +4,11 @@ import { CrewAvatar } from "./player"
 
 export interface FleetResponse {
     access_token: string
-    fleet: Fleet
+    fleet: FleetDetails
   }
-  export interface Fleet {
-    // id: number
+  export interface FleetDetails {
+    id: number
+    slabel: string;
     // name: string
     // enrollment: string
     // description: string
@@ -48,6 +49,8 @@ export interface FleetResponse {
     event_rank: number
     squadron_event_rank?: number;
     hash?: string;
+    fleet_id: number;
+    fleet: string;
   }
 
   export interface Squad {
@@ -56,6 +59,7 @@ export interface FleetResponse {
     cursize: number
     event_rank: number
     leader: number
+    rootguild: number;
   }
 
   export interface Leaderboard {

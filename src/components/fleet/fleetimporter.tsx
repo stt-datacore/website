@@ -4,11 +4,11 @@ import { GlobalContext } from "../../context/globalcontext";
 
 import { JsonInputForm } from "../base/jsoninputform";
 import { Notification } from "../page/notification";
-import { Fleet } from "../../model/fleet";
+import { FleetDetails } from "../../model/fleet";
 
 export interface FleetImporterProps {
-    fleet?: Fleet;
-    setFleet: (value?: Fleet) => void;
+    fleet?: FleetDetails;
+    setFleet: (value?: FleetDetails) => void;
     setError?: (value: string) => void;
     clearFleet: () => void;
     currentHasRemote?: boolean;
@@ -40,7 +40,7 @@ export const FleetImportComponent = (props: FleetImporterProps) => {
 
         </>)
 
-    function validateFleet(json: Fleet) {
+    function validateFleet(json: FleetDetails) {
         if (!json) {
             return ("No data");
         }
