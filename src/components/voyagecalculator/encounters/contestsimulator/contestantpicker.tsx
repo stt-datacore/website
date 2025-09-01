@@ -150,7 +150,12 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 				{` `}{t('voyage.contests.notes.scores')}
 				{traitPool && traitPool.length > 0 && (
 					<span>
-						{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />{` `}{t('voyage.contests.notes.crit_icon')}
+						{` `}
+						{tfmt('voyage.contests.notes.crit_icon', {
+							img: (
+								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+							)
+						})}
 					</span>
 				)}
 			</React.Fragment>

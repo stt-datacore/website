@@ -5,6 +5,7 @@ import {
 	Table
 } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../../../context/globalcontext';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 import { IContest, IContestSkill, IEncounter, IExpectedScore } from '../model';
 import { formatContestResult, getExpectedScore } from '../utils';
@@ -19,6 +20,7 @@ type ContestsTableProps = {
 };
 
 export const ContestsTable = (props: ContestsTableProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { encounter, championData, assignments } = props;
 
 	const contestIds: string[] = encounter.contests.map((contest, contestIndex) => makeContestId(contest, contestIndex));
@@ -28,49 +30,49 @@ export const ContestsTable = (props: ContestsTableProps) => {
 			<Header	/* Contest Assignments */
 				 as='h4'
 			>
-				Contest Assignments
+				{t('voyage.contests.contests_header')}
 			</Header>
-			<p>Use this tool to plan your encounter contests. Tap a contest to see crew with viable skills for that contest.</p>
+			<p>{t('voyage.contests.contests_description')}</p>
 			<Table celled selectable striped padded='very'>
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell	/* Contest */
 							textAlign='center'
 						>
-							Contest
+							{t('voyage.contests.contest')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Opponent */
 							textAlign='center'
 						>
-							Opponent
+							{t('global.opponent')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Crit Chance */
 							textAlign='center'
 						>
-							Crit Chance
+							{t('voyage.contests.crit_chance')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Assigned Crew */>
-							Assigned Crew
+							{t('voyage.contests.assigned_crew')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Skills */
 							textAlign='center'
 						>
-							Skills
+							{t('base.skills')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Crit Chance */
 							textAlign='center'
 						>
-							Crit Chance
+							{t('voyage.contests.crit_chance')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Average Score */
 							textAlign='center'
 						>
-							Average Score
+							{t('voyage.contests.avg_score')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Odds of Winning */
 							textAlign='center'
 						>
-							Odds of Winning
+							{t('voyage.contests.odds_of_winning')}
 						</Table.HeaderCell>
 					</Table.Row>
 				</Table.Header>
@@ -89,7 +91,11 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{contestIndex+1}/{encounter.contests.length}
 									{contest.critChance > 0 && (
 										<div>
-											<Label color='pink'>Boss</Label>
+											<Label	/* Boss */
+												color='pink'
+											>
+												{t('base.boss')}
+											</Label>
 										</div>
 									)}
 								</Table.Cell>
@@ -97,24 +103,24 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{renderSkills(contest.skills)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{contest.critChance}%
+									{t('global.n_%', { n: contest.critChance })}
 								</Table.Cell>
 								<Table.Cell>
 									{assignedContest && <CrewLabel crew={assignedContest.champion.crew} />}
-									{!assignedContest && <>(Unassigned)</>}
+									{!assignedContest && <>{t('global.unassigned')}</>}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest && renderChampionSkills(assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{assignedContest && <>{assignedContest.champion.critChance}%</>}
+									{assignedContest && <>{t('global.n_%', { n: assignedContest.champion.critChance })}</>}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{renderContest(contestIndex, assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest?.result && <>{formatContestResult(assignedContest.result)}</>}
-									{!assignedContest && <>0%</>}
+									{!assignedContest && <>{t('global.n_%', { n: 0 })}</>}
 								</Table.Cell>
 							</Table.Row>
 						);

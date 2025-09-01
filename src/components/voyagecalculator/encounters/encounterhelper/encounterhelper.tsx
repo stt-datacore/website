@@ -9,6 +9,7 @@ import {
 
 import { PlayerCrew, Voyage } from '../../../../model/player';
 import { VoyageRefreshData, VoyageRefreshEncounter } from '../../../../model/voyage';
+import { GlobalContext } from '../../../../context/globalcontext';
 
 import { IEncounter } from '../model';
 
@@ -22,18 +23,19 @@ type EncounterHelperProps = {
 };
 
 export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageConfig } = props;
 
 	const [isActive, setIsActive] = React.useState<boolean>(false);
 
 	return (
-		<Accordion>
+		<Accordion	/* Encounter helper */>
 			<Accordion.Title
 				active={isActive}
 				onClick={() => setIsActive(!isActive)}
 			>
 				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
-				Encounter helper
+				{t('voyage.contests.encounter_helper_title')}
 			</Accordion.Title>
 			<Accordion.Content active={isActive}>
 				{isActive && <EncounterHelper voyageConfig={voyageConfig} />}
@@ -87,6 +89,7 @@ type EncounterProps = {
 };
 
 const Encounter = (props: EncounterProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { voyageCrew, encounter } = props;
 
 	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
@@ -124,7 +127,7 @@ const Encounter = (props: EncounterProps) => {
 				}}
 			/>
 			<Button	/* Reset assignments */
-				content='Reset assignments'
+				content={t('voyage.contests.reset_assignments')}
 				onClick={() => setAssignments(getDefaultAssignments())}
 			/>
 			<div ref={championsAnchor} />
