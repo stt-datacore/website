@@ -56,6 +56,9 @@ export const DilemmaReferenceAccordion = (props: DilemmaTableProps) => {
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const { playerShips } = globalContext.player;
+    const { playerData } = globalContext.player
+    const playerCrew = playerData?.player.character.crew;
     const { dilemmas: dilemmaSource, crew, all_ships: ships } = globalContext.core;
     const { t } = globalContext.localized;
     const { voyageLog, crewTargetGroup, shipTargetGroup, updateDilemma } = props;
@@ -309,6 +312,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                     <AvatarView
                                         mode='ship'
                                         item={ship}
+                                        partialItem={true}
                                         size={32}
                                         targetGroup={shipTargetGroup}
                                         />
@@ -376,7 +380,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         let honorex = /(\d+)\s*:honor:/;
         let meritrex = /(\d+)\s*:merits:/;
         let chronrex = /(\d+)\s*:chrons:/;
-        let botCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
+        let voyCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
         let legend = [] as string[];
         dilemmas = JSON.parse(JSON.stringify(dilemmas));
 
@@ -422,8 +426,8 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                         if (rex.test(s)) {
                             let result = rex.exec(s);
                             if (result && result.length) {
-                                let crewname = result[1];
-                                let crew = botCrew.find(crew => crew.name === crewname);
+                                let reward_name = result[1];
+                                let crew = playerCrew?.find(crew => crew.name === reward_name) || voyCrew.find(crew => crew.name === reward_name);
                                 if (crew) {
                                     choice.parsed.crew = crew;
                                     if (!choice.parsed.behold) {
@@ -434,15 +438,12 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                     }
                                 }
                                 else {
-                                    let ship = allShips.find(ship => ship.name === crewname);
+                                    let ship = playerShips?.find(ship => ship.name === reward_name) || allShips.find(ship => ship.name === reward_name);
                                     if (ship) {
                                         choice.parsed.ship = ship;
                                         if (!choice.parsed.behold) {
                                             choice.parsed.behold = true;
                                         }
-                                        // if (choice.parsed.rarity < ship.rarity) {
-                                        //     choice.parsed.rarity = ship.rarity;
-                                        // }
                                         choice.parsed.schematics = choice.parsed.schematics || 500;
                                     }
                                 }
