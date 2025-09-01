@@ -9,6 +9,7 @@ import {
 
 import { BaseSkills } from '../../../../model/crew';
 import { PlayerCrew } from '../../../../model/player';
+import { GlobalContext } from '../../../../context/globalcontext';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 
 import CONFIG from '../../../CONFIG';
@@ -37,6 +38,7 @@ type ChampionsTableProps = {
 };
 
 export const ChampionsTable = (props: ChampionsTableProps) => {
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { voyageCrew, encounter, championData, assignments, setAssignments, targetSkills, setTargetSkills } = props;
 
 	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
@@ -45,20 +47,20 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		const columns: IDataTableColumn[] = [
 			{	/* Crew */
 				id: 'name',
-				title: 'Crew',
+				title: t('base.crew'),
 				sortField: { id: 'name', stringValue: true },
 				renderCell: (datum: IEssentialData) => renderCrewCell(datum as IChampionCrewData)
 			},
 			{	/* Starting Skills */
 				id: 'skills',
-				title: 'Starting Skills',
+				title: t('voyage.contests.starting_skills'),
 				align: 'center',
 				sortField: { id: 'best_proficiency', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => renderCrewSkills(datum as IChampionCrewData)
 			},
 			{	/* Crit Chance */
 				id: 'crit_chance',
-				title: 'Crit Chance',
+				title: t('voyage.contests.crit_chance'),
 				align: 'center',
 				sortField: { id: 'crit_chance', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => <>{(datum as IChampionCrewData).crit_chance}%</>
@@ -108,9 +110,11 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			<Header	/* Voyage Crew */
 				as='h4'
 			>
-				Voyage Crew
+				{t('voyage.contests.champions_header')}
 			</Header>
-			<p>Your crew's expected odds of winning each contest are listed below. Tap the odds to simulate that contest with higher confidence. Tap <Icon name='check circle outline' fitted /> to assign the crew to that contest.</p>
+			<p>
+				{tfmt('voyage.contests.champions_description', { icon: <Icon name='check circle outline' fitted /> })}
+			</p>
 			<Form>
 				<Form.Group inline>
 					<SkillToggler
@@ -120,7 +124,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 					/>
 					{targetSkills.length > 0 && (
 						<Button	/* Reset */
-							content='Reset'
+							content={t('global.reset')}
 							onClick={() => setTargetSkills([])}
 							compact
 						/>
@@ -189,7 +193,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		if (assignment.crew) {
 			return (
 				<span	/* CREW_NAME is assigned to this contest */
-					title={`${assignment.crew.name} is assigned to this contest`}
+					title={t('voyage.contests.assigned_to_crew', { crew: assignment.crew.name })}
 					style={{ display: 'inline-flex', alignItems: 'center', columnGap: '.5em' }}
 				>
 					<span>{skillIcons}</span>
@@ -204,7 +208,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		).length;
 		return (
 			<span	/* Your voyage has N viable crew for this contest */
-				title={`Your voyage has ${viableChampions} viable crew for this contest`}
+				title={t('voyage.contests.n_viable_crew', { n: viableChampions })}
 				style={{ display: 'inline-flex', alignItems: 'center', columnGap: '.5em' }}
 			>
 				<span>{skillIcons}</span>
@@ -223,7 +227,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 						color='blue'
 						style={{ marginTop: '1em' }}
 					>
-						Assigned to Contest {assignments[assignedContest].index + 1}
+						{t('voyage.contests.assigned_to_n', { n: assignments[assignedContest].index + 1 })}
 					</Label>
 				)}
 			</React.Fragment>
@@ -283,6 +287,7 @@ type ChampionContestCellProps = {
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { contest, assignments, assignCrew, setSimulatorTrigger } = props;
 
 	if (contest.champion_roll.min === 0)
@@ -309,13 +314,13 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						compact
 					>
 						<Button	/* Simulate contest */
-							title='Simulate contest'
+							title={t('voyage.contests.simulate_contest')}
 							onClick={() => setSimulatorTrigger(contest)}
 						>
 							{formatContestResult(contest.result)}
 						</Button>
 						<Button	/* Assign CHAMPION_NAME to this contest */
-							title={`Assign ${contest.champion.crew.name} to this contest`}
+							title={t('voyage.contests.assign_crew', { crew: contest.champion.crew.name })}
 							onClick={() => assignCrew(!crewIsAssignedHere ? contest : undefined, contest.champion.crew)}
 							icon
 						>
@@ -328,7 +333,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 			</div>
 			<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 				<span	/* CREW_NAME's average score for this contest */
-					title={`${contest.champion.crew.name}'s average score for this contest`}
+					title={t('voyage.contests.avg_of_crew', { crew: contest.champion.crew.name })}
 				>
 					{contest.result?.simulated?.a.average ?? contest.champion_roll.average}
 				</span>
@@ -341,7 +346,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					vs
 				</span>
 				<span	/* Opponent's average score for this contest */
-					title={`Opponent's average score for this contest`}
+					title={t('voyage.contests.avg_of_opponent')}
 				>
 					{contest.result?.simulated?.b.average ?? contest.challenger_roll.average}
 				</span>
