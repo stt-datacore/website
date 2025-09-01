@@ -386,9 +386,16 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 				else {
 					inputFleet.id = fleetId;
 				}
-				const gc = guildCache.find(f => f.id === inputFleet.id);
-				if (gc) inputFleet.slabel = gc.slabel;
-				else inputFleet.slabel = playerData.player?.fleet.slabel || "";
+
+				if (inputFleet.id === playerData?.player.fleet?.id) {
+					inputFleet.slabel = (playerData.player?.fleet?.slabel || "");
+				}
+				else {
+					const gc = guildCache.find(f => f.id === inputFleet.id);
+					if (gc) inputFleet.slabel = gc.slabel;
+					else inputFleet.slabel = inputFleet.id?.toString() || "";
+				}
+
 				const filtered = processedFleetData?.filter(f => f.id !== inputFleet.id || !f.id) ?? [];
 				inputFleet.members.forEach(m => {
 					m.fleet_id = inputFleet.id;
