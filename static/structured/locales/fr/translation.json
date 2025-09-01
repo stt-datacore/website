@@ -783,6 +783,7 @@
             "dailies": "Quotidiens",
             "display_name": "{{global.name}}",
             "event_rank": "Rang de l'événement",
+            "fleet": "{{global.fleet}}",
             "last_active": "Dernier actif",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
