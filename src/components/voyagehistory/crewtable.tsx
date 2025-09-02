@@ -194,8 +194,15 @@ export const CrewTable = () => {
 				<Table.Cell textAlign='center'>
 					{crew.assignments.length > 0 && formatTime(crew.average_estimate, t)}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => viewVoyage(crew.last_assignment.tracker_id)} style={{ cursor: 'pointer' }}>
-					{dtLastAssignment?.toLocaleDateString()}
+				<Table.Cell textAlign='center'>
+					{dtLastAssignment && (
+						<a
+							onClick={() => viewVoyage(crew.last_assignment.tracker_id)}
+							style={{ fontWeight: 'bold', cursor: 'pointer' }}
+						>
+							{dtLastAssignment.toLocaleDateString()}
+						</a>
+					)}
 				</Table.Cell>
 				{CONFIG.SKILLS_SHORT.map(skill => renderPercentCell(crew, skill.name))}
 			</Table.Row>
