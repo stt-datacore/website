@@ -44,6 +44,7 @@ export const VoyagesTable = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { SHIP_TRAIT_NAMES, t, tfmt } = globalContext.localized;
 	const { ephemeral } = globalContext.player;
+	const { confirm } = globalContext;
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
@@ -187,7 +188,6 @@ export const VoyagesTable = () => {
 					justifyContent: 'flex-start',
 					gap: '1em'
 				}}>
-					{!!row.tracker_id && <Icon name='trash' onClick={() => removeTrackedVoyage(row.tracker_id)} style={{cursor: 'pointer'}} />}
 					<div onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
 						{dtCreated.toLocaleDateString()}
 						{isRunning && <><br/>{t('voyage.running_voyage')}</>}
@@ -245,34 +245,45 @@ export const VoyagesTable = () => {
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
-		if (typeof window !== 'undefined') {
-			let result = window.confirm(t('voyage.history.warn_delete'));
-			if (!result) return;
-		}
-		if (syncState === SyncState.RemoteReady) {
-			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
-				if (success) {
-					removeVoyageFromHistory(history, trackerId);
-					setHistory({...history});
-					setActiveVoyage(undefined);
+
+		if (confirm) {
+			confirm({
+				message: t('voyage.history.warn_delete'),
+				title: t('global.delete'),
+				onClose: (result) => {
+					if (!result) return;
+					if (syncState === SyncState.RemoteReady) {
+						deleteTrackedData(dbid, trackerId).then((success: boolean) => {
+							if (success) {
+								removeVoyageFromHistory(history, trackerId);
+								setHistory({...history});
+								setActiveVoyage(undefined);
+							}
+							else {
+								throw('Failed removeTrackedVoyage -> deleteTrackedData');
+							}
+						}).catch(e => {
+							setMessageId('voyage.history_msg.failed_to_delete');
+							console.log(e);
+						});
+					}
+					else if (syncState === SyncState.LocalOnly) {
+						removeVoyageFromHistory(history, trackerId);
+						setHistory({...history});
+						setActiveVoyage(undefined);
+					}
+					else {
+						setMessageId('voyage.history_msg.invalid_sync_state');
+						console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
+					}
+
 				}
-				else {
-					throw('Failed removeTrackedVoyage -> deleteTrackedData');
-				}
-			}).catch(e => {
-				setMessageId('voyage.history_msg.failed_to_delete');
-				console.log(e);
-			});
+			})
 		}
-		else if (syncState === SyncState.LocalOnly) {
-			removeVoyageFromHistory(history, trackerId);
-			setHistory({...history});
-			setActiveVoyage(undefined);
-		}
-		else {
-			setMessageId('voyage.history_msg.invalid_sync_state');
-			console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
-		}
+		// if (typeof window !== 'undefined') {
+		// 	let result = window.confirm(t('voyage.history.warn_delete'));
+		// 	if (!result) return;
+		// }
 	}
 
 	function reducer(state: ITableState, action: ITableAction): ITableState {
