@@ -180,36 +180,32 @@ export const VoyagesTable = () => {
 		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
 		return (
 			<Table.Row key={row.tracker_id}>
-				<Table.Cell style={{
-					display: 'flex',
-					padding: '1em',
-					flexDirection: 'row',
-					alignItems: 'center',
-					justifyContent: 'flex-start',
-					gap: '1em'
-				}}>
-					<div onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell>
+					<a
+						onClick={() => setActiveVoyage(row)}
+						style={{ fontWeight: 'bold', cursor: 'pointer' }}
+					>
 						{dtCreated.toLocaleDateString()}
-						{isRunning && <><br/>{t('voyage.running_voyage')}</>}
-					</div>
+					</a>
+					{isRunning && <><br/>{t('voyage.running_voyage')}</>}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.secondary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{SHIP_TRAIT_NAMES[row.ship_trait] ?? row.ship_trait}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{row.max_hp}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					<b>{formatTime(row.estimate.median, t)}</b>
 					<br />({`${formatTime(row.estimate.minimum, t)} - ${formatTime(row.estimate.moonshot, t)}`})
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{renderLastEstimate(row.checkpoint)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
