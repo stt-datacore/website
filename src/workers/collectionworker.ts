@@ -157,10 +157,11 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
     });
 }
 
+type Relative = { name: string, needed: number };
 interface LocalCollectionInfo {
     name: string;
     crew: string[];
-    relatives: string[];
+    relatives: Relative[];
     needed: number;
 }
 
@@ -218,21 +219,24 @@ const CollectionOptimizer = {
                 for (let i = 0; i < c; i++) {
                     for (let j = 0; j < c; j++) {
                         if (i === j) continue;
-                        if (!crewcols[i].relatives.includes(crewcols[j].name)) {
-                            crewcols[i].relatives.push(crewcols[j].name);
+                        if (!crewcols[i].relatives.some(rel => rel.name === crewcols[j].name)) {
+                            crewcols[i].relatives.push({
+                                name: crewcols[j].name,
+                                needed: crewcols[j].needed
+                            });
                         }
                     }
                 }
             });
 
             const preFiltered = colInfo.map(c => {
-                c.relatives.sort();
+                //c.relatives = c.relatives.filter(f => f.needed <= c.needed);
+                c.relatives.sort((a, b) => b.needed - a.needed || a.name.localeCompare(b.name));
                 let col = workingCollections.find(f => f.name === c.name) as PlayerCollection;
                 let map = {
                     collection: col,
                     crew: c.crew.map(csym => workingCrew.find(f => f.symbol === csym) as PlayerCrew)
                 } as CollectionInfo;
-
                 map.crew = normalCollectionSort(map.crew, searchFilter, searches, favorites);
                 map.neededStars = neededStars(map.crew, map.collection.needed ?? 0);
                 map.collection.neededCost = starCost(
@@ -291,8 +295,8 @@ const CollectionOptimizer = {
             const linkScores = {} as { [key: string]: CollectionInfo[] };
 
             colInfo.forEach((ci) => {
-                ci.relatives.forEach((cirkey) => {
-                    let cirel = colInfo.find(c => c.name === cirkey);
+                ci.relatives.forEach((rel) => {
+                    let cirel = colInfo.find(c => c.name === rel.name);
                     if (cirel) {
                         let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew).filter(f => f.have);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
@@ -460,7 +464,7 @@ const CollectionOptimizer = {
                     const exact = [] as ColComboMap[];
                     const over = [] as ColComboMap[];
                     const under = [] as ColComboMap[];
-                    const cml = col.maps.length;
+                    // const cml = col.maps.length;
 
                     // for (let i = cml; i >= 1; i--) {
                     //     getPermutations(col.maps, i, undefined, true, undefined, (cols) => {
