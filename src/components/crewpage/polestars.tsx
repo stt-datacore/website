@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Segment, Header, Grid, Table, Pagination, Dropdown } from 'semantic-ui-react';
+import { Segment, Header, Grid, Table, Pagination, Dropdown, Checkbox, Icon, Button } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
 import { Constellation, ConstellationMap, Polestar, PolestarCombo, categorizeKeystones } from '../../model/game-elements';
@@ -8,6 +8,8 @@ import { GlobalContext } from '../../context/globalcontext';
 import { findPolestars } from '../../utils/retrieval';
 import { OptionsPanelFlexColumn } from '../stats/utils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { printISM } from '../retrieval/context';
+import { useStateWithStorage } from '../../utils/storage';
 
 type PolestarsProps = {
 	crew: CrewMember;
@@ -19,7 +21,7 @@ export const Polestars = (props: PolestarsProps) => {
 	const { ITEM_ARCHETYPES } = globalContext.localized;
 	const [constellation, setConstellation] = React.useState<ConstellationMap | undefined>(undefined);
 	const [optimalPolestars, setOptimalPolestars] = React.useState<PolestarCombo[]>([] as PolestarCombo[]);
-
+	const [showPrices, setShowPrices] = useStateWithStorage('polestars_show_prices', false);
 	const flexCol = OptionsPanelFlexColumn;
 	const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
 
@@ -62,7 +64,13 @@ export const Polestars = (props: PolestarsProps) => {
 	return (
 		<React.Fragment>
 			{renderConstellation()}
-			{<OptimalPolestars constellation={constellation} optimalPolestars={optimalPolestars} />}
+			{<OptimalPolestars
+				showPrices={showPrices}
+				setShowPrices={setShowPrices}
+				constellation={constellation}
+				optimalPolestars={optimalPolestars}
+
+			/>}
 		</React.Fragment>
 	);
 
@@ -113,16 +121,26 @@ export const Polestars = (props: PolestarsProps) => {
 };
 
 type OptimalPolestarsProps = {
+	showPrices: boolean;
+	setShowPrices: (value: boolean) => void;
 	constellation: ConstellationMap;
 	optimalPolestars: PolestarCombo[];
 };
 
 const OptimalPolestars = (props: OptimalPolestarsProps) => {
-	const { t, tfmt, ITEM_ARCHETYPES } = React.useContext(GlobalContext).localized;
-	const { constellation, optimalPolestars } = props;
+	const globalContext = React.useContext(GlobalContext);
+	const { t, tfmt, ITEM_ARCHETYPES } = globalContext.localized;
+	const { market, reloadMarket } = globalContext;
+	const { constellation, optimalPolestars, showPrices, setShowPrices } = props;
 
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [paginationRows, setPaginationRows] = React.useState(10);
+
+	React.useEffect(() => {
+		if (!Object.keys(market)?.length) {
+			reloadMarket();
+		}
+	}, [showPrices]);
 
 	const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
 
@@ -156,7 +174,21 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 	return (
 		<Segment>
 			<Header as='h4'>{t('polestars.optimal')}</Header>
-			<div>{t('polestars.best_chance_long')}</div>
+			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap'}}>
+				<div>{t('polestars.best_chance_long')}</div>
+				<div style={{display: 'flex', alignItems: 'center', gap: '0.5em', marginTop: '0.5em'}}>
+					<Checkbox label={t('retrieval.price.all')}
+						checked={showPrices}
+						onChange={(e, { checked }) => setShowPrices(!!checked)}
+					/>
+					<Button
+						disabled={!showPrices}
+						icon='refresh'
+						style={{cursor: 'pointer'}}
+						onClick={() => reloadMarket()}
+					/>
+				</div>
+			</div>
 			<Table celled selectable striped collapsing unstackable compact='very'>
 				<Table.Header>
 					<Table.Row>
@@ -226,6 +258,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 				<Grid.Column key={idx} textAlign='center' mobile={8} tablet={5} computer={4}>
 					<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestarFile.slice(1).replace(/\//g, '_')}`} />
 					<br />{polestarName}
+					{showPrices && <div style={{display: 'flex', justifyContent: 'center'}}>{printISM(market[polestar?.id ?? ""]?.low ?? 0)}</div>}
 				</Grid.Column>
 			);
 		});
