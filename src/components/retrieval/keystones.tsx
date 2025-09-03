@@ -20,9 +20,8 @@ export const RetrievalKeystones = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
-
+	const { market, reloadMarket } = globalContext;
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[] | undefined>(undefined);
-	const [market, setMarket] = React.useState<MarketAggregation>({});
 
 	React.useEffect(() => {
 		const allKeystones = JSON.parse(JSON.stringify(globalContext.core.keystones)) as IKeystone[];
@@ -68,17 +67,6 @@ export const RetrievalKeystones = () => {
 
 	return <ModePicker market={market} reloadMarket={reloadMarket} allKeystones={allKeystones} dbid={`${playerData?.player.dbid}`} />;
 
-	function reloadMarket() {
-		fetch('https://datacore.app/api/celestial-market')
-			.then((response) => response.json())
-			.then(market => {
-				setMarket(market);
-			})
-			.catch((e) => {
-				console.log(e);
-				if (!market) setMarket({});
-			});
-	}
 };
 
 const polestarTailorDefaults: IPolestarTailors = {
