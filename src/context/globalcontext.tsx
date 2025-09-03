@@ -6,6 +6,7 @@ import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore 
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { Button, Container, Input, Label, Message, Modal, Segment } from 'semantic-ui-react';
+import { MarketAggregation } from '../model/celestial';
 
 const DEBUG_MODE = false;
 
@@ -49,6 +50,8 @@ export interface IDefaultGlobal {
 	readyLocalizedCore: (demands: ValidDemands[], onReady: () => void) => void;
 	confirm: (props: ModalConfirmProps) => void;
 	prompt: (props: ModalPromptProps) => void;
+	market: MarketAggregation;
+	reloadMarket: () => void;
 };
 
 const defaultGlobal: IDefaultGlobal = {
@@ -57,9 +60,11 @@ const defaultGlobal: IDefaultGlobal = {
 	localized: DefaultLocalizedData,
     maxBuffs: undefined,
 	isMobile: false,
+	market: {},
 	readyLocalizedCore: () => {},
 	confirm: () => false,
-	prompt: () => false
+	prompt: () => false,
+	reloadMarket: () => false,
 };
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal);
@@ -77,6 +82,8 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 
 	const [promptModal, setPromptModal] = React.useState<GlobalDialogConfig | undefined>(undefined);
 	const [modalValue, setModalValue] = React.useState('');
+
+	const [market, setMarket] = React.useState<MarketAggregation>({});
 
 	React.useEffect(() => {
 		if (!localizationTrigger) return;
@@ -115,9 +122,11 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		localized,
         maxBuffs,
 		isMobile,
+		market,
 		readyLocalizedCore,
 		confirm,
-		prompt
+		prompt,
+		reloadMarket
 	};
 
 	return (
@@ -147,6 +156,18 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 				onReady
 			});
 		});
+	}
+
+	function reloadMarket() {
+		fetch('https://datacore.app/api/celestial-market')
+			.then((response) => response.json())
+			.then(market => {
+				setMarket(market);
+			})
+			.catch((e) => {
+				console.log(e);
+				if (!market) setMarket({});
+			});
 	}
 
 	function confirm(props: ModalConfirmProps) {
