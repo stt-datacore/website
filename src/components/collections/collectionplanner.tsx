@@ -21,10 +21,10 @@ export const CollectionPlanner = () => {
 
 	if (!playerData) return <CollectionsOverview />;
 
-	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
-	const myCrew = crewCopy(playerData.player.character.crew);
+	const allCrew = React.useMemo(() => JSON.parse(JSON.stringify(crew)) as PlayerCrew[], [crew]);
+	const myCrew = React.useMemo(() => crewCopy(playerData.player.character.crew), [playerData]);
 
-	const collectionCrew = [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
+	const collectionCrew = React.useMemo(() => [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
 		const crew = oneCrewCopy(allCrew.find(ac => ac.symbol == acs) as PlayerCrew) as PlayerCrew;
 		crew.highest_owned_rarity = 0;
 		crew.highest_owned_level = 0;
@@ -53,9 +53,9 @@ export const CollectionPlanner = () => {
 			crew.highest_owned_level = owned[0].level;
 		}
 		return crew;
-	});
+	}), [allCrew, myCrew]);
 
-	const playerCollections = allCollections.map(ac => {
+	const playerCollections = React.useMemo(() => allCollections.map(ac => {
 		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0, milestones: ac.milestones };
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
@@ -88,7 +88,7 @@ export const CollectionPlanner = () => {
 			if ((cc.highest_owned_rarity ?? 0) > 0) collection.owned++;
 		});
 		return collection;
-	});
+	}), [playerData, collectionCrew]);
 
 	return (
 		<CollectionFilterProvider pageId='collectionTool' playerCollections={playerCollections}>

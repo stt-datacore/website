@@ -109,12 +109,13 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	React.useEffect(() => {
 		if (typeof window !== 'undefined') {
-			if (initialized) {
-				runWorker();
-			}
-			else {
-				setRequestRun(true);
-			}
+			setRequestRun(true);
+			// if (initialized) {
+			// 	runWorker();
+			// }
+			// else {
+			// 	setRequestRun(true);
+			// }
 		}
 	}, [playerData, colContext]);
 
