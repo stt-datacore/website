@@ -239,7 +239,7 @@ export class IAmPicardHelper extends Helper {
 				// Add vpDetails prop here to allow for post-sorting by VP details
 				if (request.voyageConfig.voyage_type === 'encounter') {
 					const seconds: number = estimate.refills[0].result*60*60;
-					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
+					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses, request.voyageConfig.event_content?.encounter_times);
 				}
 				let finalResult: IResultProposal = {
 					estimate: estimate,

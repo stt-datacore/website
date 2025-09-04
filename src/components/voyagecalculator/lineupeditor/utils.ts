@@ -59,7 +59,7 @@ export function promiseEstimateFromConfig(voyageConfig: IProspectiveConfig, reso
 				voyageConfig.crew_slots.forEach(cs => {
 					if (cs.crew) bonuses.push(getCrewEventBonus(voyageConfig, cs.crew));
 				});
-				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
+				estimate.vpDetails = calcVoyageVP(seconds, bonuses, voyageConfig.event_content?.encounter_times);
 			}
 			resolve(estimate);
 		}
