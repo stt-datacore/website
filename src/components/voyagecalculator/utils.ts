@@ -7,6 +7,9 @@ export const DEFAULT_ENCOUNTER_TRAITS: string[] = [
 	'casual', 'explorer', 'hero', 'inspiring', 'investigator', 'marksman', 'playful', 'scoundrel'
 ];
 
+const DEFAULT_PASSIVE_CREW_BONUS: number = 0.3;
+const DEFAULT_PASSIVE_TRAIT_BONUS: number = 0.15;
+
 export const POPUP_DELAY = 500;
 
 export const voySkillScore = (sk: Skill) => sk.core + (sk.range_min + sk.range_max) / 2;
@@ -63,13 +66,13 @@ export function getCrewEventBonus(voyageConfig: IVoyageInputConfig, crew: Player
 		const content: IVoyageEventContent | undefined = voyageConfig.event_content;
 		if (content) {
 			if (content.featured_crews.includes(crew.symbol)) {
-				eventBonus = 0.3;
+				eventBonus = content.passive_bonus?.event_crew ?? DEFAULT_PASSIVE_CREW_BONUS;
 			}
 			else {
 				if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
 					return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
 				})) {
-					eventBonus = .15;
+					eventBonus = content.passive_bonus?.event_trait ?? DEFAULT_PASSIVE_TRAIT_BONUS;
 				}
 			}
 		}
