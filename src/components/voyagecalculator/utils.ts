@@ -7,8 +7,8 @@ export const DEFAULT_ENCOUNTER_TRAITS: string[] = [
 	'casual', 'explorer', 'hero', 'inspiring', 'investigator', 'marksman', 'playful', 'scoundrel'
 ];
 
-const DEFAULT_PASSIVE_CREW_BONUS: number = 0.3;
-const DEFAULT_PASSIVE_TRAIT_BONUS: number = 0.15;
+export const DEFAULT_PASSIVE_CREW_BONUS: number = 0.3;
+export const DEFAULT_PASSIVE_TRAIT_BONUS: number = 0.15;
 
 export const POPUP_DELAY = 500;
 

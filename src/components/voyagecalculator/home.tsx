@@ -25,7 +25,7 @@ import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { DEFAULT_ENCOUNTER_TRAITS } from './utils';
+import { DEFAULT_ENCOUNTER_TRAITS, DEFAULT_PASSIVE_CREW_BONUS, DEFAULT_PASSIVE_TRAIT_BONUS } from './utils';
 import { Calculator } from './calculator/calc_main';
 import { EncounterHelperAccordion } from './encounters/encounterhelper/encounterhelper';
 import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
@@ -295,6 +295,12 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				// Add encounter traits to voyage event content
 				voyageEventContent.encounter_traits = DEFAULT_ENCOUNTER_TRAITS; //guessEncounterTraits(voyageEvent, TRAIT_NAMES);
 				voyageEventContent.encounter_times = guessEncounterTimes(voyageEvent, 'minutes');
+
+				// Add passive bonuses to voyage event content (MVAM expects this to be set here)
+				voyageEventContent.passive_bonus = {
+					event_crew: DEFAULT_PASSIVE_CREW_BONUS,
+					event_trait: DEFAULT_PASSIVE_TRAIT_BONUS
+				};
 
 				// Hardcode changes for anomaly voyage events
 				if (voyageEvent.symbol === 'event_ve_ascendantwisdom') {
