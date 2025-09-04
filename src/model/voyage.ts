@@ -27,7 +27,11 @@ export interface IVoyageEventContent extends VoyageEncounterCommon {
 	primary_skill: string;
 	secondary_skill: string;
 	encounter_traits?: string[];
-    encounter_times?: number[];
+	encounter_times?: number[];
+	passive_bonus?: {
+		event_crew: number;
+		event_trait: number;
+	};
 };
 
 // Extends IVoyageInputConfig to include calculation result
