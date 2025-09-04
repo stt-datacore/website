@@ -295,6 +295,19 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				// Add encounter traits to voyage event content
 				voyageEventContent.encounter_traits = DEFAULT_ENCOUNTER_TRAITS; //guessEncounterTraits(voyageEvent, TRAIT_NAMES);
 				voyageEventContent.encounter_times = guessEncounterTimes(voyageEvent, 'minutes');
+
+				// Hardcode changes for anomaly voyage events
+				if (voyageEvent.symbol === 'event_ve_ascendantwisdom') {
+					// Per event rules:
+					// 	"Double passive Victory Points gain bonus for featured event crew and crew with featured event trait.
+					// 		60% bonus per crew up from 30%, 30% bonus per trait up from 15%"
+					voyageEventContent.passive_bonus = {
+						event_crew: 0.6,
+						event_trait: 0.3
+					};
+					// RampUpMap in voyagevp.ts may also need adjustment due to different encounter times
+				}
+
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
 					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);

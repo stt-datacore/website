@@ -1160,6 +1160,7 @@ export interface VoyageDescription {
   ship_trait: string
   crew_slots: CrewSlot[]
   potential_rewards: PotentialRewardDetails[]
+  crit_chances?: { [key: number]: number }
 }
 
 export interface VoyageSkills {
