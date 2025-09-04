@@ -29,7 +29,7 @@ import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } 
 import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
-import { CrewBuffModes } from './commonoptions';
+import { CrewBuffModes, SpecialViewMode, SpecialViews } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
 import { ObtainedFilter } from './filters/crewobtained';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
@@ -233,10 +233,13 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [showBase, setShowBase] = React.useState<boolean>(false);
 	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
+	const [specialView, setSpecialView] = useStateWithStorage<SpecialViews | undefined>('/rosterTable/specialView', undefined);
+
 	const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
 	const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
+	const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
@@ -357,6 +360,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			},
 			form: <QuipmentToolsFilter
 					//missions={continuum_missions}
+					traitsOnly={traitsOnly}
+					setTraitsOnly={setTraitsOnly}
 					questFilter={questFilter}
 					setQuestFilter={setQuestFilter}
 					immortalOnly={true}
@@ -443,6 +448,16 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					rosterCrew={rosterCrew}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
+				/>
+		},
+		{
+			id: 'special',
+			available: playerData && rosterType === 'myCrew',
+			form:
+				<SpecialViewMode
+					key='filter_mycrew_specialview'
+					specialView={specialView}
+					setSpecialView={setSpecialView}
 				/>
 		},
 		{
@@ -542,15 +557,25 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	React.useEffect(() => {
 		// Apply roster markups, i.e. add sortable fields to crew
 		const prepareCrew = async () => {
-			const preparedCrew = rosterCrew.slice();
-			preparedCrew.forEach(crew => {
+			const preparedCrew = rosterCrew.map(crew => {
+				crew = oneCrewCopy(crew);
 				if (crewMarkups.length > 0) {
 						crewMarkups.forEach(crewMarkup => {
 						crewMarkup.applyMarkup(crew);
 					});
 				}
+				if (!!playerData && specialView === 'as_immortalized' && rosterType === 'myCrew') {
+					if (!crew.immortal || !!crew.kwipment?.some(q => typeof q === 'number' ? !!q : !!q[1])) {
+						let refcrew = globalContext.core.crew.find(f => f.symbol === crew.symbol)!;
+						crew.base_skills = JSON.parse(JSON.stringify(refcrew.base_skills));
+						if (!crew.immortal) crew.immortal = CompletionState.DisplayAsImmortalOwned;
+						crew.rarity = crew.max_rarity;
+						crew.level = 100;
+						crew.skills = applyCrewBuffs(crew, buffMode === 'max' ? globalContext.maxBuffs! : globalContext.player.buffConfig!)!;
+					}
+				}
+				return crew;
 			});
-
 			if (view?.worker) {
 				setViewIsReady(false);
 				view.worker(preparedCrew).then((result) => {
@@ -564,17 +589,15 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			}
 		};
 		prepareCrew();
-	}, [rosterCrew, crewMarkups, slots, powerMode, rosterType, tableView]);
+	}, [rosterCrew, crewMarkups, slots, traitsOnly, powerMode, rosterType, tableView, specialView]);
 
 	React.useEffect(() => {
-
 		setDataPrepared({
 			rosterType,
 			rosterCount: preparedCrew ? preparedCrew.length : 0,
 			tableView,
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
-
 	}, [rosterType, preparedCrew, tableView, crewFilters]);
 
 	return (
@@ -632,6 +655,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers')}
 						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells alternativeLayout={altBaseLayout && rosterType !== 'offers'} tableType={props.tableType} crew={crew} pageId={pageId} />}
 						lockableCrew={lockableCrew}
+						specialView={specialView}
 						loading={isPreparing}
 					/>
 					{tableView === 'dc_ranks' && <WeightingInfoPopup saveConfig={() => false} isOpen={weightingOpen} setIsOpen={setWeightingOpen} />}

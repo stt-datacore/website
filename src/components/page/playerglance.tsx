@@ -62,7 +62,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { isMobile } = globalContext;
     const { playerData, ephemeral } = globalContext.player;
 
-    const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'normal', { rememberForever: true })
+    const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
     const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
     const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
 
@@ -95,7 +95,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             resources: [] as PlayerResource[],
             energy: { supplyKit: 0 } as AllEnergy
         }
-    }, [playerData, ephemeral]);
+    }, [playerData, ephemeral, costMode]);
 
     React.useEffect(() => {
         if (shuttleSeconds) {

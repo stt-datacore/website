@@ -19,7 +19,7 @@
         "hit": "Alerte : {{subject}} a été acquis !",
         "item_type": "{{item.columns.item_type}}",
         "name": "Alertes",
-        "new_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
+        "new_crew": "Alerte : l'équipier surveillé « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
         "remove": "Masquer",
         "show_previously_hidden": "Afficher les alertes précédemment masquées",
         "toggle_buyback_alerts": "Basculer les alertes de pool de rachat",
@@ -27,6 +27,7 @@
         "trigger_always": "Déclencher toujours",
         "trigger_once": "Déclencher une fois",
         "trigger_once_desc": "Une fois l'alerte déclenchée, elle sera désactivée, mais vous pourrez la réactiver depuis la fenêtre d'alerte.",
+        "watched_crew": "Alerte : le nouvel équipier « {{subject}} » ({{rarity}}/{{max_rarity}}*) a été acquis !",
         "when_new_crew": "Alerte lorsque copies d'un équipier non possédé sont découvertes dans le pool de rachat.",
         "when_new_fuse": "Alerte lorsqu'un fusible pour un équipage possédé est découvert dans le pool de rachat."
     },
@@ -34,6 +35,7 @@
         "all_crew": "Afficher tous l'équipiers",
         "best_pair": "Meilleure paire",
         "bigbook_tier": "Étage",
+        "boss": "{{rank_names.fbb_rank}}",
         "cab_power": "CAB",
         "cap_achiever": "Premier à Max",
         "collection": "Collection",
@@ -396,12 +398,21 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 résultat trouvé. Veuillez essayer différentes options de recherche.",
+        "no_results_parts": {
+            "message": "Veuillez essayer différentes options de recherche.",
+            "title": "0 résultat trouvé."
+        },
         "optional_filters": "Filtres Optionnels",
         "search_by_name": "Rechercher un équipier par nom",
         "select_crew": "Sélectionner {{crew}}",
         "tip": {
             "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement."
         }
+    },
+    "crew_quipment": {
+        "active_quipment_skills": "Compétences actives pour les quipements",
+        "compatible_quipment": "Quipements compatibles",
+        "trait_limited": "Afficher uniquement les quipements liés aux traits"
     },
     "crew_state": {
         "expires_in": "L'équipier expire dans {{time}}",
@@ -543,8 +554,12 @@
         "select_phase": "Sélectionnez une phase",
         "skill_matrix": "Matrice de Compétences",
         "skill_matrix_heading": "Cette matrice montre vos meilleurs équipiers pour chaque combinaison de compétences possible. Utilisez cette matrice pour identifier votre meilleur équipage pour cet événement. Appuyez sur une cellule pour voir les autres équipiers possédant cette combinaison de compétences.",
+        "specialist": {
+            "instructions": "Pour utiliser le personnel automatique, sélectionnez une ou plusieurs missions en appuyant sur la colonne de titre, puis appuyez sur le bouton de doter automatiquement.",
+            "mission_running": "La mission est en cours."
+        },
         "specialist_missions": "Missions spécialisées",
-        "staff_selected": "Équiper les sélectionnés",
+        "staff_selected": "Doter automatiquement",
         "table": {
             "columns": {
                 "best": "Meilleur",
@@ -769,6 +784,7 @@
             "dailies": "Quotidiens",
             "display_name": "{{global.name}}",
             "event_rank": "Rang de l'événement",
+            "fleet": "{{global.fleet}}",
             "last_active": "Dernier actif",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
@@ -941,6 +957,7 @@
         "any": "Quelconque",
         "apply_filters": "Appliquer des filtres",
         "approx": "Env.",
+        "assigned": "Assigned",
         "average": "Moyenne",
         "avg": "Moy.",
         "base": "Principle",
@@ -1054,6 +1071,7 @@
         "notes": "Remarques",
         "obtained": "Obtenu par",
         "officer": "Officier",
+        "opponent": "{{gauntlet.opponent_table.opponent}}",
         "optional": "Facultatif",
         "options": "Options",
         "or": "ou",
@@ -1163,6 +1181,7 @@
         "filter_crew_by_rank": "Filtrer l'équipage par rang",
         "filter_ship_grants": "Filtrer les subventions d'expédition",
         "filter_ship_rarity": "Filtrer la rareté des vaisseaux",
+        "min_battle_stations": "Stations de combat minimales",
         "prioritize_rewards": "Prioriser les récompenses",
         "roster_maintenance": "Entretien de la liste",
         "select_crew": "Sélectionnez l'équipage",
@@ -1283,6 +1302,7 @@
         "equippable_by_rarity_traits": "Peut être équipé jusqu'à un équipier {{rarity}} avec les traits suivants : {{traits}}",
         "equippable_by_traits": "Peut être équipé par les équipiers avec les traits suivantes : {{traits}}",
         "faction_only": "Factions uniquement",
+        "hide_unneeded_items": "Masquer les articles inutiles",
         "is_used_to_build": "Est utilisé pour construire ces",
         "item_sources": "Sources d'article",
         "n_farmable": "{{n}} cultivable",
@@ -1296,6 +1316,9 @@
             "owned_or_buildable": "Afficher les quipements possédées ou constructibles"
         },
         "post_immortalization_advancement": "Avancement après l'immortalisation",
+        "quick_select": {
+            "favorites": "Sélectionnez tous les équipiers favoris"
+        },
         "recipe": "Recette",
         "required_traits": "Traits Requises: {{traits}}",
         "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
@@ -1384,7 +1407,8 @@
         "pvp_3": "données de la division commandant",
         "pvp_4": "données de la division capitaine",
         "pvp_5": "données de la division amirale",
-        "quest_data": "données de quête"
+        "quest_data": "données de quête",
+        "voyage_log": "données du journal de voyage"
     },
     "logic": {
         "AND": "ET",
@@ -1602,6 +1626,14 @@
         "starbase_level": "Niveau de base stellaire",
         "x_y_crew": "{{x}} / {{y}} équipiers"
     },
+    "polestars": {
+        "best_chance_long": "Toutes les étoiles polaires qui donnent les meilleures chances de récupérer cet équipier",
+        "best_chance_short": "Meilleure chance",
+        "combo": "Combinaison d'étoiles polaires",
+        "crew_constellation": "Constellation pour {{crew}}",
+        "optimal": "Étoiles polaires optimales pour la récupération de cet équipier",
+        "shared_with_crew": "En commun avec {{crew}}"
+    },
     "profile": {
         "charts_and_stats": "Graphiques et Statistiques",
         "crew": "{{menu.roster.crew}}",
@@ -1640,6 +1672,7 @@
             "skill_order": "Ordre des compétences"
         },
         "mode_label": "Mode Compétences",
+        "quippable_traits": "Afficher uniquement l'équipage avec des quipements limités en traits",
         "slot_label": "Mode Emplacements",
         "slots": {
             "n_natural": "Quiper jusqu'à {{n}} emplacements naturels",
@@ -1806,6 +1839,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Nombre minimum des équipiers non uniques",
         "modes": {
             "mutual_polestar_calculator": "Calculateur étoiles polaires mutuels",
             "mutual_polestar_calculator_desc": "Trouvez des combos qui donnent des chances égales de récupérer les non-immortels",
@@ -1995,6 +2029,9 @@
                 "exclude_ability": "Exclure les équipiers avec cette compétence",
                 "power_depth": "Profondeur de puissance avancée"
             },
+            "apply_boss_effects": "Appliquer les buffs des chaînes de boss",
+            "apply_buffs": "Appliquer des buffs aux vaisseaux sans propriétaire",
+            "as_maxed": "Utiliser les statistiques maximales du vaisseau",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
@@ -2033,6 +2070,7 @@
         "crit_rating": "Chance du Crit",
         "cycle_time": "Un cycle",
         "depth_hr_warn": "* Par défaut, la profondeur du niveau de puissance ne s'applique pas à les équipiers de réparation de coque.",
+        "dps": "DPS",
         "duration": "Durée",
         "equipment_bonus": "Bonus d'équipement",
         "evasion": "Évasion",
@@ -2066,6 +2104,11 @@
             "admiral": "Division Amiral",
             "captain": "Division Capitaine",
             "commander": "Division Commandeur"
+        },
+        "roster": {
+            "all": "Tous les vaisseaux",
+            "owned": "Vaisseaux en propriété",
+            "unowned": "Vaisseaux sans propriétaire"
         },
         "shields": "Boucliers",
         "ship": "Vaisseau",
@@ -2303,6 +2346,12 @@
             "title": "Équipage Possédé"
         }
     },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Tout voir comme immortalisé"
+        },
+        "title": "Vues spéciales"
+    },
     "voyage": {
         "active": {
             "active_voyage_colon": "Voyage actif :"
@@ -2330,24 +2379,50 @@
             "title": "Captain Idol's Voyage Analysis Sheet"
         },
         "contests": {
+            "assign_crew": "Affecter {{crew}} à ce concours",
+            "assigned_crew": "Affecter l'équipage",
+            "assigned_to_crew": "{{crew}} est affecté à ce concours",
+            "assigned_to_n": "Affecté au Concours {{n}}",
             "avg": "{{global.avg}}",
-            "contest_simulator": "Simulateur de combat",
+            "avg_of_crew": "Score moyen de {{crew}} pour ce concours",
+            "avg_of_opponent": "Score moyen de l'adversaire pour ce concours",
+            "avg_score": "Score moyenne",
+            "champions_description": "Les chances de victoire de votre équipage pour chaque concours sont indiquées ci-dessous. Appuyez sur les chances pour simuler le concours avec plus de confiance. Appuyez sur {{icon}} pour assigner l'équipage à ce concours.",
+            "champions_header": "Équipage de voyage",
+            "contest": "Concours",
+            "contest_simulator": "Simulateur de concours",
             "contestant": "Combattant",
             "contestant_alt": "combattant",
+            "contests_description": "Utilisez cet outil pour planifier vos concours de rencontres. Appuyez sur un concours pour voir les membres d'équipage possédant les compétences nécessaires.",
+            "contests_header": "Affectations du concours",
+            "contests_n_count": "Concours ({{n}})",
             "crit_chance": "Chances de critique",
+            "encounter_helper_title": "Aide à la Rencontre",
+            "importer": {
+                "data_loaded": "Données de rencontre chargées !",
+                "data_required": "Données supplémentaires requises",
+                "description": "L'Aide à la Rencontre nécessite des données supplémentaires absentes de vos données de joueur. Vous pouvez accéder aux données requises et les importer en suivant les instructions ci-dessous.",
+                "follow_instructions": "Suivez les instructions ci-dessous pour mettre à jour vos données de rencontre.",
+                "progress_warning": "Cet outil ne permet pas de voir l'équipage utilisé pour les concours que vous avez déjà terminés en jeu. Vous devez attribuer manuellement l'équipage ayant réussi aux concours ci-dessous pour obtenir une représentation plus précise des compétences viables pour les concours restants.",
+                "tap_to_open": "Si les informations ci-dessous ne correspondent pas à votre rencontre dans le jeu, appuyez ici pour mettre à jour vos données de rencontre."
+            },
             "max": "{{global.max}}",
             "min": "{{global.min}}",
             "n_viable_crew": "Votre voyage a {{n}} d'équipiers viables pour ce concours",
             "no_skill": "Aucune compétence",
             "notes": {
-                "crit_icon": "represents a crew's number of potential crit traits.",
-                "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
-                "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
+                "crit_icon": "{{img}} représente le nombre de traits critiques potentiels d'un équipier.",
+                "scores": "Les scores sont la somme des compétences moyennes d'un équipier après 3 lancers par compétence de concours.",
+                "simulate_contestant": "Sélectionnez un candidat à simuler dans un concours de {{skills}}."
             },
-            "search_for_contestant": "Search for contestant",
-            "select_crit_chance": "Select crit chance",
-            "simulate_contest": "Simulate contest",
-            "wins": "Wins"
+            "odds_of_winning": "Chances de gagner",
+            "reset_assignments": "Réinitialiser les affectations",
+            "search_for_contestant": "Recherche d'un combattant",
+            "select_crit_chance": "Sélectionnez les chances de coup critique",
+            "simulate_contest": "Simuler un concours",
+            "starting_skills": "Compétences initiales",
+            "vp_multiplier": "Multiplicateur de PV",
+            "wins": "Victoires"
         },
         "crew_finder_hints": {
             "best_rank": {
@@ -2677,5 +2752,16 @@
             "custom": "Voyages personnalisés",
             "upcoming": "Voyages à venir"
         }
+    },
+    "voyage_log": {
+        "behold": "Choix",
+        "choice_x": "Choix {{x}}",
+        "choices": "Choix",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Vous pouvez accéder à vos journaux de voyage de la même manière que vous accédez actuellement à vos données de joueur."
+        },
+        "reference": "Référence aux dilemmes",
+        "title": "Utilité du dilemme du voyage"
     }
 }

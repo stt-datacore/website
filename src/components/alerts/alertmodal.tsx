@@ -3,9 +3,11 @@ import { Modal, Input, Button, Checkbox } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 import { OptionsBase } from '../base/optionsmodal_base';
 import { AlertModalProps, DefaultAlertConfig, IAlertConfig } from './model';
+import { CrewDropDown } from '../base/crewdropdown';
 
 export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const { crew } = globalContext.core;
     const { t, tfmt } = globalContext.localized;
     const { config, setConfig } = props;
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -17,12 +19,12 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     const [showCopied, setShowCopied] = React.useState(false);
     const [copies, setCopies] = React.useState('');
 
-    if (typeof window !== 'undefined' && document.location.search) {
-        let parm = new URLSearchParams();
-        if (parm.get("pmc")?.length) {
-            let value = parm.get("pmc");
-        }
-    }
+    // if (typeof window !== 'undefined' && document.location.search) {
+    //     let parm = new URLSearchParams();
+    //     if (parm.get("pmc")?.length) {
+    //         let value = parm.get("pmc");
+    //     }
+    // }
 
     React.useEffect(() => {
         setInnerSettings(JSON.parse(JSON.stringify(config)));
@@ -63,9 +65,10 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
             <Modal.Content scrolling>
                 <div style={{
                     display: 'grid',
-                    gridTemplateAreas: `'setting1 text1' 'setting2 text2' 'setting3 text3'`,
+                    gridTemplateAreas: `'setting1 text1' 'setting2 text2' 'setting3 text3' 'crew crew'`,
                     gridTemplateColumns: `3em auto`,
-                    gap: '1em'
+                    gap: '1em',
+                    height: '17em'
                 }}>
                     <div style={{gridArea: 'setting1', margin: 'auto'}}>
                         <Input style={{width: '3em'}} value={copies} onChange={(e, { value }) => setCopies(value)} />
@@ -91,10 +94,20 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
                     <div style={{gridArea: 'text3', cursor: 'pointer', margin: 'auto', marginLeft: 0}} onClick={() => setCurrent({ ...innerSettings, always_legendary: !innerSettings.always_legendary })}>
                         {t('alerts.always_alert_legendary')}
                     </div>
+                    <div style={{gridArea: 'crew'}}>
+                        <CrewDropDown
+                            upward
+                            fluid
+                            selection={getSelCrew()}
+                            setSelection={setSelCrew}
+                            pool={crew}
+                            multiple={true}
+                        />
+                    </div>
                 </div>
             </Modal.Content>
             <Modal.Actions>
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <div key={'alert_modal_actions'} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                         {/* <Button
                             style={{alignSelf: "flex-start"}}
@@ -149,6 +162,19 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
         innerSettings.alert_new = Number(copies)
         setConfig(innerSettings);
         closeModal();
+    }
+
+    function getSelCrew() {
+        return innerSettings.alert_crew.map(ac => crew.find(f => f.symbol === ac)?.id).filter(f => f !== undefined);
+    }
+
+    function setSelCrew(value?: number[]) {
+        if (!value?.length) {
+            setCurrent({ ...innerSettings, alert_crew: [] });
+        }
+        else {
+            setCurrent({ ...innerSettings, alert_crew: value.map(v => crew.find(f => f.id === v)!.symbol) });
+        }
     }
 };
 

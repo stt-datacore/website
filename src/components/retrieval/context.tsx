@@ -32,6 +32,28 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 	</div>
 }
 
+export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
+
+	return <div
+		title={t ? t('global.item_types.honor') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printHonor ? t('global.item_types.honor') : ''}</span>
+	</div>
+}
+
+export function printMerits(quantity: number, t?: TranslateMethod, printMerits?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/pe_currency_icon.png`;
+
+	return <div
+		title={t ? t('global.item_types.merits') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printMerits ? t('global.item_types.merits') : ''}</span>
+	</div>
+}
+
 export function printCredits(quantity: number, t?: TranslateMethod, printCredits?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`;
 

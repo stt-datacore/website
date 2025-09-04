@@ -2,7 +2,7 @@ import React from 'react';
 import { Header, Message, Icon, Table, Checkbox } from 'semantic-ui-react';
 import { Link } from 'gatsby';
 import { GlobalContext } from '../../context/globalcontext';
-import { Fleet, Member, ProfileData } from '../../model/fleet';
+import { FleetDetails, Member, ProfileData } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
 import { StaticFaction } from '../../model/shuttle';
 import { ColorName } from './colorname';
@@ -21,12 +21,12 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 type FleetInfoPageProps = {
 	fleet_id: number;
-	fleet_data: Fleet
+	fleet_data: FleetDetails
 };
 
 type FleetInfoPageState = {
 	fleet_id?: number;
-	fleet_data?: Fleet;
+	fleet_data?: FleetDetails;
 	errorMessage?: string;
 	errorTitle?: string;
 	factions?: StaticFaction[];
@@ -43,10 +43,10 @@ const rankOrder = ['LEADER', 'OFFICER', 'SQUADRON_LEADER', 'MEMBER'];
 export const FleetInfoPage = (props: FleetInfoPageProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { playerData } = globalContext.player;
+	const { playerData, guildCache } = globalContext.player;
 	const { fleet_data: inputFleetData, fleet_id: fleetId } = props;
 
-	const [processedFleetData, setProcessedFleetData] = React.useState<Fleet | undefined>(undefined);
+	const [processedFleetData, setProcessedFleetData] = React.useState<FleetDetails[] | undefined>(undefined);
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const [errorTitle, setErrorTitle] = React.useState('');
 	// const [factions, setFactions] = React.useState([] as StaticFaction[]);
@@ -61,44 +61,51 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		}
 	}, [inputFleetData]);
 
-	const { fleetData, memberIcons } = React.useMemo(() => {
-		if (processedFleetData) {
-			const fleetData = { ...processedFleetData, members: [...processedFleetData.members] };
-			const icons = {} as {[key:string]: string}
-			fleetData.members = fleetData.members.filter((member) => {
-				if (member.crew_avatar?.icon) {
-					icons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
-				}
-				else {
-					icons[member.dbid] = "crew_portraits_cm_empty_sm.png";
-				}
+	const { fleetData, members, memberIcons } = React.useMemo(() => {
+		const icons = {} as {[key:string]: string}
+		const members = [] as Member[];
 
-				if (!member.squadron_event_rank) {
-					let squad = inputFleetData.squads.find(f => f.id == member.squad_id);
-					if (squad) {
-						member.squadron_event_rank = squad.event_rank;
-						member.squad = squad.name;
+		if (processedFleetData) {
+			let fleets = processedFleetData.map(fleetData => {
+				fleetData = { ...fleetData, members: [...fleetData.members] };
+				fleetData.members = fleetData.members.filter((member) => {
+					if (member.crew_avatar?.icon) {
+						icons[member.dbid] = getIconPath(member.crew_avatar.icon, true);
 					}
 					else {
-						member.squad = '';
+						icons[member.dbid] = "crew_portraits_cm_empty_sm.png";
 					}
-				}
-				if (onlyOfficers && member.rank === 'MEMBER') {
-					return false;
-				}
-				if (onlyEvent && !member.event_rank) {
-					return false;
-				}
-				return true;
+
+					if (!member.squadron_event_rank) {
+						let squad = inputFleetData.squads.find(f => f.id == member.squad_id);
+						if (squad) {
+							member.squadron_event_rank = squad.event_rank;
+							member.squad = squad.name;
+						}
+						else {
+							member.squad = '';
+						}
+					}
+					if (onlyOfficers && member.rank === 'MEMBER') {
+						return false;
+					}
+					if (onlyEvent && !member.event_rank) {
+						return false;
+					}
+					members.push(member);
+					return true;
+				});
+				return fleetData;
 			});
-			return { fleetData, memberIcons: icons };
+
+			return { fleetData: fleets, members, memberIcons: icons };
 		}
-		return { fleetData: undefined, memberIcons: {} }
+		return { fleetData: undefined, members: [], memberIcons: {} }
 	}, [processedFleetData, onlyOfficers, onlyEvent]);
 
 	if (!playerData) return <></>;
 
-	if ((!fleetData || !fleetId) || errorMessage) {
+	if ((!fleetData?.length || !fleetId) || errorMessage) {
 		return (
 			<React.Fragment>
 				{!!errorMessage && (
@@ -143,6 +150,19 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		},
 		{ width: 1, column: 'event_rank', title: t('fleet.member_columns.event_rank') },
 		{ width: 1, column: 'squadron_event_rank', title: t('fleet.member_columns.squadron_event_rank') },
+		{
+			width: 1, column: 'fleet', title: t('fleet.member_columns.fleet'),
+			customCompare: (a: Member, b: Member) => {
+				let r = a.squad.localeCompare(b.squad);
+				if (r === 0) {
+					r = (rankOrder.indexOf(a.rank) - rankOrder.indexOf(b.rank));
+					if (r === 0) {
+						r = a.display_name.localeCompare(b.display_name);
+					}
+				}
+				return r;
+			}
+		},
 		{
 			width: 1, column: 'squad', title: t('fleet.member_columns.squadron'),
 			customCompare: (a: Member, b: Member) => {
@@ -196,14 +216,14 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		}}>
 			<div
 				className='ui button'
-				onClick={(e) => { if (fleetData?.members) _exportItems(fleetData.members, true) }}
+				onClick={(e) => { if (members?.length) _exportItems(members, true) }}
 				style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
 			>
 				<span style={{ margin: '0 2em 0 0' }}>{t('share_profile.export.export_clipboard')}</span><i className='clipboard icon' />
 			</div>
 			<div
 				className='ui button'
-				onClick={(e) => { if (fleetData?.members) _exportItems(fleetData.members, false) }}
+				onClick={(e) => { if (members?.length) _exportItems(members, false) }}
 				style={{ marginRight: "2em", display: 'inline', flexDirection: 'row', justifyContent: 'space-evenly', cursor: 'pointer' }}
 			>
 				<span style={{ margin: '0 2em 0 0' }}>{t('share_profile.export.export_csv')}</span><i className='download icon' />
@@ -225,7 +245,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 			<SearchableTable
 				hideExplanation={true}
 				id={'fleet_members'}
-				data={fleetData.members}
+				data={members}
 				config={tableData}
 				renderTableRow={(item, idx) => renderTableRow(item, idx!)}
 				filterRow={filterRow}
@@ -275,6 +295,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 			</Table.Cell>
 			<Table.Cell>{member.event_rank || ''}</Table.Cell>
 			<Table.Cell>{member.squadron_event_rank}</Table.Cell>
+			<Table.Cell><ColorName text={member.fleet} /></Table.Cell>
 			<Table.Cell><ColorName text={member.squad} /></Table.Cell>
 			<Table.Cell>{member.display_rank ?? member.rank}</Table.Cell>
 			<Table.Cell>
@@ -287,7 +308,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		</Table.Row>)
 	}
 
-	function prepareFleetData(fleet: Fleet) {
+	function prepareFleetData(fleet: FleetDetails) {
 		fleet = {...fleet, members: [...fleet.members] };
 		fleet.members = fleet.members.filter((member) => {
 
@@ -331,7 +352,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		return fleet;
 	}
 
-	function fetchRemoteDetails(inputFleet: Fleet) {
+	function fetchRemoteDetails(inputFleet: FleetDetails) {
 		const dbids = inputFleet?.members.map(m => m.dbid);
 		if (!inputFleet || !playerData || !dbids?.length) {
 			return;
@@ -359,7 +380,29 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 				//this.setState({ errorMessage: err });
 			})
 			.finally(() => {
-				setProcessedFleetData(prepareFleetData(inputFleet));
+				if (inputFleet?.squads?.length) {
+					inputFleet.id = inputFleet.squads[0].rootguild;
+				}
+				else {
+					inputFleet.id = fleetId;
+				}
+
+				if (inputFleet.id === playerData?.player.fleet?.id) {
+					inputFleet.slabel = (playerData.player?.fleet?.slabel || "");
+				}
+				else {
+					const gc = guildCache.find(f => f.id === inputFleet.id);
+					if (gc) inputFleet.slabel = gc.slabel;
+					else inputFleet.slabel = inputFleet.id?.toString() || "";
+				}
+
+				const filtered = processedFleetData?.filter(f => f.id !== inputFleet.id || !f.id) ?? [];
+				inputFleet.members.forEach(m => {
+					m.fleet_id = inputFleet.id;
+					m.fleet = inputFleet.slabel;
+				});
+				filtered.push(prepareFleetData(inputFleet));
+				setProcessedFleetData(filtered);
 			});
 	}
 

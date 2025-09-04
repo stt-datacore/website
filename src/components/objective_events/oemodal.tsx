@@ -27,7 +27,7 @@ export const OEModal = (props: OEModalProps) => {
     const { t } = globalContext.localized;
     const { isOpen, setIsOpen, data } = props;
     const { ephemeral, playerData } = globalContext.player;
-    const [activePane, setActivePane] = React.useState(0);
+    const [activePane, setActivePane] = React.useState(-1);
     const [toolActive, setToolActive] = useStateWithStorage(`oe_modal/tool_active`, true, { rememberForever: true });
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 

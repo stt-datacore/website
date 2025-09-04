@@ -25,7 +25,7 @@ import { CIVASMessage } from './civas';
 import { ConfigCard } from './configcard';
 import { ConfigEditor } from './configeditor';
 import { rosterizeMyCrew, RosterPicker } from './rosterpicker';
-import { DEFAULT_ENCOUNTER_TRAITS } from './utils';
+import { DEFAULT_ENCOUNTER_TRAITS, DEFAULT_PASSIVE_CREW_BONUS, DEFAULT_PASSIVE_TRAIT_BONUS } from './utils';
 import { Calculator } from './calculator/calc_main';
 import { EncounterHelperAccordion } from './encounters/encounterhelper/encounterhelper';
 import { LineupViewerAccordion } from './lineupviewer/lineup_accordion';
@@ -33,6 +33,9 @@ import { StatsRewardsAccordion } from './rewards/rewards_accordion';
 import { SkillCheckAccordion } from './skillcheck/accordion';
 import { VoyageStatsAccordion } from './stats/stats_accordion';
 import { refShips } from '../../utils/shiputils';
+import { DilemmaHelperAccordion } from './dilemmas/helper';
+import { ShipHoverStat } from '../hovering/shiphoverstat';
+import { DilemmaReferenceAccordion } from './dilemmas/dilemmatable';
 
 export const VoyageHome = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -67,7 +70,9 @@ const NonPlayerHome = () => {
 				setHistory: () => {},
 				syncState: SyncState.ReadOnly,
 				messageId: '',
-				setMessageId: () => {}
+				setMessageId: () => {},
+				historyInitState: InitState.Initializing,
+				setHistoryInitState: () => false
 			};
 			return (
 				<HistoryContext.Provider value={historyContext}>
@@ -98,6 +103,7 @@ const NonPlayerHome = () => {
 			</Header>
 			<p>{t('voyage.nonplayer.description')}</p>
 			<ConfigEditor presetConfigs={[]} updateConfig={setVoyageConfig} />
+			<DilemmaReferenceAccordion />
 		</React.Fragment>
 	);
 
@@ -214,7 +220,9 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		setHistory,
 		syncState: historySyncState,
 		messageId: historyMessageId,
-		setMessageId: setHistoryMessageId
+		setMessageId: setHistoryMessageId,
+		setHistoryInitState,
+		historyInitState
 	};
 
 	return (
@@ -226,6 +234,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				<HistoryMessage />
 				{!activeView && renderVoyagePicker()}
 				{activeView && renderActiveView()}
+				{!activeView && <DilemmaReferenceAccordion />}
 			</React.Fragment>
 		</HistoryContext.Provider>
 	);
@@ -286,6 +295,25 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				// Add encounter traits to voyage event content
 				voyageEventContent.encounter_traits = DEFAULT_ENCOUNTER_TRAITS; //guessEncounterTraits(voyageEvent, TRAIT_NAMES);
 				voyageEventContent.encounter_times = guessEncounterTimes(voyageEvent, 'minutes');
+
+				// Add passive bonuses to voyage event content (MVAM expects this to be set here)
+				voyageEventContent.passive_bonus = {
+					event_crew: DEFAULT_PASSIVE_CREW_BONUS,
+					event_trait: DEFAULT_PASSIVE_TRAIT_BONUS
+				};
+
+				// Hardcode changes for anomaly voyage events
+				if (voyageEvent.symbol === 'event_ve_ascendantwisdom') {
+					// Per event rules:
+					// 	"Double passive Victory Points gain bonus for featured event crew and crew with featured event trait.
+					// 		60% bonus per crew up from 30%, 30% bonus per trait up from 15%"
+					voyageEventContent.passive_bonus = {
+						event_crew: 0.6,
+						event_trait: 0.3
+					};
+					// RampUpMap in voyagevp.ts may also need adjustment due to different encounter times
+				}
+
 				// Include as a player config when voyage event phase is ongoing
 				if (voyageEvent.seconds_to_start === 0 && voyageEvent.seconds_to_end > 0) {
 					playerConfigs.push({...eventConfig, event_content: voyageEventContent} as IVoyageInputConfig);
@@ -625,6 +653,14 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 					roster={myCrew}
 					initialExpand={recalled}
 				/>
+				{voyage.voyage_type === 'dilemma' && (
+					<DilemmaHelperAccordion
+						voyage={voyage}
+						dbid={playerData?.player.dbid}
+						crewTargetGroup='voyageRewards_crew'
+						shipTargetGroup='voyageRewards_ship'
+						/>
+				)}
 				{voyage.voyage_type === 'encounter' && (
 					<EncounterHelperAccordion
 						voyageConfig={voyage}
@@ -634,6 +670,7 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 			<CIVASMessage voyageConfig={voyage} activeDetails={activeDetails} />
 			<CrewHoverStat targetGroup='voyageRewards_crew' />
 			<ItemHoverStat targetGroup='voyageRewards_item' />
+			<ShipHoverStat targetGroup='voyageRewards_ship' />
 		</React.Fragment>
 	);
 };
