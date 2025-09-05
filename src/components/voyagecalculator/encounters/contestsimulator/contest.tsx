@@ -7,7 +7,7 @@ import {
 
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
-import { IContestant, IContestResult } from '../model';
+import { IContestant, IContestResult, ISkillBoost } from '../model';
 import { formatContestResult, makeContestant, simulateContest } from '../utils';
 import { Contestant } from './contestant';
 import { ContestantPicker } from './contestantpicker';
@@ -37,6 +37,8 @@ export const Contest = (props: ContestProps) => {
 
 	const [contestantA, setContestantA] = React.useState<IContestant>(initContestant(props.a));
 	const [contestantB, setContestantB] = React.useState<IContestant>(initContestant(props.b));
+	const [boostA, setBoostA] = React.useState<ISkillBoost | undefined>(undefined);
+	const [boostB, setBoostB] = React.useState<ISkillBoost | undefined>(undefined);
 	const [contestResult, setContestResult] = React.useState<IContestResult | undefined>(undefined);
 	const [pickerTrigger, setPickerTrigger] = React.useState<IPickerTrigger | undefined>(undefined);
 
@@ -54,8 +56,10 @@ export const Contest = (props: ContestProps) => {
 					<Contestant
 						skills={skills}
 						contestant={contestantA}
+						boost={boostA}
 						wins={contestResult ? formatContestResult(contestResult) : <Icon loading name='spinner' />}
 						editContestant={(contestant: IContestant) => setContestantA(contestant)}
+						editBoost={(boost: ISkillBoost | undefined) => editBoost(boost, 'a')}
 						dismissContestant={aPool ? () => setContestantA(makeContestant(skills, traits ?? [])) : undefined}
 					/>
 					{aPool && (
@@ -71,8 +75,10 @@ export const Contest = (props: ContestProps) => {
 					<Contestant
 						skills={skills}
 						contestant={contestantB}
+						boost={boostB}
 						wins={contestResult ? formatContestResult(contestResult, true) : <Icon loading name='spinner' />}
 						editContestant={(contestant: IContestant) => setContestantB(contestant)}
+						editBoost={(boost: ISkillBoost | undefined) => editBoost(boost, 'b')}
 						dismissContestant={bPool ? () => setContestantB(makeContestant(skills, traits ?? [])) : undefined}
 					/>
 					{bPool && (
@@ -108,5 +114,24 @@ export const Contest = (props: ContestProps) => {
 			};
 		}
 		return makeContestant(skills, traits ?? []);
+	}
+
+	function editBoost(boost: ISkillBoost | undefined, applyTo: 'a' | 'b'): void {
+		// Boosts can only be applied to crew (i.e. not generic contestants)
+		const contestant: IContestant = applyTo === 'a' ? contestantA : contestantB;
+		if (!contestant.crew) return;
+
+		// Rebase skills from copy of crew in pool (base + endurable skills - applied boosts)
+		const pool: PlayerCrew[] | undefined = applyTo === 'a' ? aPool : bPool;
+		const poolCrew: PlayerCrew | undefined = pool?.find(crew => crew.id === contestant.crew?.id);
+		if (!poolCrew) return;
+
+		// Applying boosts will override manually-edited skills and crit chance
+		const boostedContestant: IContestant = makeContestant(skills, traits ?? [], poolCrew, boost);
+		const setContestant: (contestant: IContestant) => void = applyTo === 'a' ? setContestantA : setContestantB;
+		setContestant(boostedContestant);
+
+		const setBoost: (boost: ISkillBoost | undefined) => void = applyTo === 'a' ? setBoostA : setBoostB;
+		setBoost(boost);
 	}
 };
