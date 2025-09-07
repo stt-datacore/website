@@ -592,6 +592,32 @@
     "events_common": {
         "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
     },
+    "factions": {
+        "already_honored": "Schon Ehrenstatus",
+        "already_tanked": "Schon getankt",
+        "average_odds_dropdown": "Shuttles laufen mit einer durchschnittlichen Chance von {{dropdown}}",
+        "columns": {
+            "faction": "Fraktion",
+            "honored": "Ehrenstatus",
+            "reputation": "Ruf",
+            "shuttles_to_honored": "Shuttles bis Ehrenstatus",
+            "shuttles_to_tank": "Shuttles zum Tanken",
+            "time_needed": "Benötigte Zeit"
+        },
+        "n_shuttles_to_tank": "{{n}} Shuttles zum Tanken",
+        "n_successful_missions": "{{n}} erfolgreiche Missionen.",
+        "odds_note": "(Hinweis: Shuttles können nicht gestartet werden, wenn die Erfolgswahrscheinlichkeit unter 14 % liegt. Um getankt zu werden, muss die Wahrscheinlichkeit unter 60 % sein.)",
+        "reputation": {
+            "allied": "Verbündet",
+            "despised": "Verachtet",
+            "friendly": "Freundlich",
+            "honored": "Ehrenstatus",
+            "hostile": "Feindlich",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanken",
+        "tanking_explain": "{{tanking}} Shuttles heißt, sie absichtlich failen zu lassen, damit die Schwierigkeit und Dauer der Shuttle-Missionen runtergehen."
+    },
     "fbb": {
         "alert_no_solution": "Für diesen Knoten wurden keine möglichen Lösungen gefunden. Möglicherweise müssen Sie Ihre Filter ändern, Ihre gelösten Merkmale noch einmal überprüfen oder die Liste der versuchten Crew zurücksetzen.",
         "attempted": {

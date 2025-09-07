@@ -600,6 +600,32 @@
     "events_common": {
         "skirmish_guess_warning": "Cet événement contient un composant d'escarmouche, et une liste complète des équipages en vedette pourrait ne pas être disponible avant le début de cet événement."
     },
+    "factions": {
+        "already_honored": "Déjà Honoré",
+        "already_tanked": "Déjà tanké",
+        "average_odds_dropdown": "Navettes lancées avec une probabilité moyenne de {{dropdown}}",
+        "columns": {
+            "faction": "Faction",
+            "honored": "Honoré",
+            "reputation": "Réputation",
+            "shuttles_to_honored": "Navettes jusqu'à Honoré",
+            "shuttles_to_tank": "Navettes à tanker",
+            "time_needed": "Temps requis"
+        },
+        "n_shuttles_to_tank": "{{n}} navettes à tanker",
+        "n_successful_missions": "{{n}} missions réussies.",
+        "odds_note": "(Note : Les navettes ne peuvent pas être lancées avec une probabilité de succès inférieure à 14 %. Pour être tankées, elles doivent avoir une probabilité inférieure à 60 %.)",
+        "reputation": {
+            "allied": "Allié",
+            "despised": "Méprisé",
+            "friendly": "Amical",
+            "honored": "Honoré",
+            "hostile": "Hostile",
+            "neutral": "Neutre"
+        },
+        "tanking": "Tanker",
+        "tanking_explain": "{{tanking}} les navettes veut dire les faire échouer exprès pour que la difficulté et la durée des missions descendent."
+    },
     "fbb": {
         "alert_no_solution": "Aucune solution possible trouvée pour ce nodule. Vous devrez peut-être modifier vos filtres, revérifier vos traits résolus ou réinitialiser la liste des tentatives d'équipiers.",
         "attempted": {
