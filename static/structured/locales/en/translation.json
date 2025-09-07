@@ -592,6 +592,32 @@
     "events_common": {
         "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
     },
+    "factions": {
+        "already_honored": "Already honored",
+        "already_tanked": "Already tanked",
+        "average_odds_dropdown": "Running shuttles at average odds of {{dropdown}}",
+        "columns": {
+            "faction": "Faction",
+            "honored": "Honored",
+            "reputation": "Reputation",
+            "shuttles_to_honored": "Shuttles to Honored",
+            "shuttles_to_tank": "Shuttles to Tank",
+            "time_needed": "Time Needed"
+        },
+        "n_shuttles_to_tank": "{{n}} shuttles to tank.",
+        "n_successful_missions": "{{n}} successful missions.",
+        "odds_note": "(Note: Shuttles cannot be run with a probability of success less than 14%. Shuttles need a probability of less than 60% to be tanked.)",
+        "reputation": {
+            "allied": "Allied",
+            "despised": "Despised",
+            "friendly": "Friendly",
+            "honored": "Honored",
+            "hostile": "Hostile",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanking",
+        "tanking_explain": "{{tanking}} shuttles is the process of deliberately failing shuttles so that the difficulty and duration of shuttle missions go down."
+    },
     "fbb": {
         "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
         "attempted": {

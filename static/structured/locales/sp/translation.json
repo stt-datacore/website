@@ -598,6 +598,32 @@
     "events_common": {
         "skirmish_guess_warning": "Este evento contiene un componente de escaramuza y es posible que una lista completa del equipo destacado no esté disponible hasta después de que comience este evento"
     },
+    "factions": {
+        "already_honored": "Ya en Honrado",
+        "already_tanked": "Ya tanqueado",
+        "average_odds_dropdown": "Lanzaderas corriendo con una probabilidad media de {{dropdown}}",
+        "columns": {
+            "faction": "Facción",
+            "honored": "Honrado",
+            "reputation": "Reputación",
+            "shuttles_to_honored": "Lanzaderas hasta Honrado",
+            "shuttles_to_tank": "Lanzaderas para tanquear",
+            "time_needed": "Tiempo necesario"
+        },
+        "n_shuttles_to_tank": "{{n}} lanzaderas para tanquear",
+        "n_successful_missions": "{{n}} misiones exitosas.",
+        "odds_note": "(Nota: No se pueden lanzar lanzaderas con una probabilidad de éxito menor al 14 %. Para tanquear, la probabilidad debe ser menor al 60 %.)",
+        "reputation": {
+            "allied": "Aliado",
+            "despised": "Despreciado",
+            "friendly": "Amistoso",
+            "honored": "Honrado",
+            "hostile": "Hostil",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanquear",
+        "tanking_explain": "{{tanking}} lanzaderas es hacerlas fallar a propósito para que la dificultad y la duración de las misiones bajen."
+    },
     "fbb": {
         "alert_no_solution": "No se encontraron soluciones posibles para este nódulo. Es posible que necesites cambiar tus filtros, volver a verificar tus rasgos resueltos o restablecer la lista de tripulantes intentados.",
         "attempted": {
