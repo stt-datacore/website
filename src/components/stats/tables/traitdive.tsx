@@ -4,7 +4,7 @@ import { TraitStats } from "../model"
 import { GlobalContext } from "../../../context/globalcontext"
 import { CrewBaseCells, getBaseTableConfig } from "../../crewtables/views/base"
 import { CrewMember, Skill } from "../../../model/crew"
-import { Button, Item, Table } from "semantic-ui-react"
+import { Button, Card, Container, Item, Label, Segment, Table } from "semantic-ui-react"
 import { IRosterCrew } from "../../retrieval/model"
 import { omniSearchFilter } from "../../../utils/omnisearch"
 import { Filter } from "../../../model/game-elements"
@@ -15,6 +15,7 @@ import { PlayerBuffMode } from "../../../model/player"
 import { applyCrewBuffs, crewCopy, gradeToColor, skillAdd } from "../../../utils/crewutils"
 import { CrewConfigTable } from "../../crewtables/crewconfigtable"
 import CONFIG from "../../CONFIG"
+import { StatLabel } from "../../statlabel"
 
 
 
@@ -79,21 +80,20 @@ export const TraitDive = (props: TraitDiveProps) => {
 
     return <React.Fragment>
         <div style={{...flexCol, alignItems: 'stretch', gap: '1em'}}>
-
-        <div className="ui segment"
+        <Segment
             style={{
                 display: 'grid',
-                gridTemplateAreas: "'trait1 trait2 img' 'hidden1 hidden2 img' 'crew1 crew2 img' 'cols cols img'",
+                gridTemplateAreas: "'trait2 trait2 img' 'hidden1 hidden1 img' 'crew1 crew1 img' 'cols cols img'",
                 gridTemplateColumns: "7em auto auto"
             }}
         >
-            <span style={{gridArea: 'trait1'}}>{t('stat_trends.trait_columns.trait')}</span>
-            <span style={{fontSize: '1.5em', gridArea: 'trait2'}}>
-                <div style={{...flexCol, gap: '0.25em', alignItems: 'flex-start'}}>
+            <div style={{fontSize: '1.5em', gridArea: 'trait2'}}>
+                <div style={{...flexCol, gap: '0.25em', alignItems: 'flex-start', marginBottom: '0.5em'}}>
                     <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
-                        {!!info.icon && <img src={info.icon} style={{height: '32px'}} />}
+                        {!!info.icon && <img src={info.icon} style={{height: '48px', margin: 0, padding: 0}} />}
                         <span>{info.trait}</span>
                     </div>
+
                     {!!info.short_names &&
                         <div style={{...flexRow, justifyContent: 'flex-start', gap: '0.25em', fontStyle: 'italic', color: 'lightgreen'}}>
                             ({info.short_names.sort().join(", ")})
@@ -104,34 +104,24 @@ export const TraitDive = (props: TraitDiveProps) => {
                         {t(`series.${info.trait_raw}`)}
                     </div>
                     }
-                </div>
-            </span>
-            <div style={{gridArea: 'hidden1'}}>
-                {t('global.hidden')}
-            </div>
-            <div style={{gridArea: 'hidden2'}}>
-                {info.hidden ? t('global.yes') : t('global.no')}
-            </div>
-            <div style={{gridArea: 'crew1'}}>
-                {t('base.crew')}
-            </div>
-            <div style={{gridArea: 'crew2'}}>
-                {info.crew.length.toLocaleString()}
-            </div>
-            {!!info.grade && <div style={{gridArea: 'cols', marginTop: '1em'}}>
-                {tfmt('stat_trends.traits.potential_collection_score_n', {
-                    n: <span style={{color: gradeToColor(info.grade / 10)}}>
-                        {info.grade}
-                    </span>
-                })}
-            </div>}
-            {CONFIG.SERIES.includes(info.trait_raw) &&
+                    {CONFIG.SERIES.includes(info.trait_raw) &&
                     <img
-                        style={{ height: '4em', margin: '0.25em', gridArea: 'img', alignSelf: 'center'}}
+                        style={{ height: '4em', margin: '0.25em', gridArea: 'img', alignSelf: 'flex-start'}}
                         src={`${process.env.GATSBY_DATACORE_URL}/media/series/${info.trait_raw}.png`} />
                 }
+                </div>
+            </div>
+            <StatLabel  style={{gridArea: 'hidden1', padding: '0.5em'}} size="small" title={t('global.hidden')} value={info.hidden ? t('global.yes') : t('global.no')} />
+            <StatLabel  style={{gridArea: 'crew1', padding: '0.5em'}} size="small" title={t('base.crew')} value={info.crew.length.toLocaleString()} />
+            {!!info.grade && <StatLabel size="small" style={{gridArea: 'cols', padding: '0.5em'}}
+                title={tfmt('stat_trends.traits.potential_collection_score_n')}
+                value={<span style={{color: gradeToColor(info.grade / 10)}}>
+                        {info.grade}
+                    </span>}
+            />}
 
-        </div>
+
+        </Segment>
 
         <Button onClick={() => onClose()}>{t('global.close')}</Button>
         <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
