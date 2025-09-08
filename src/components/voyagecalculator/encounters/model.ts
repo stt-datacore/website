@@ -38,8 +38,3 @@ export interface ISimulatedResults {
 	a: IExpectedScore;
 	b: IExpectedScore;
 };
-
-export interface ISkillBoost {
-	skill: string;
-	rarity: number;
-};

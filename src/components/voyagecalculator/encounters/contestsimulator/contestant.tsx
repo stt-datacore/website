@@ -1,39 +1,32 @@
 import React from 'react';
 import {
-	Button,
 	Dropdown,
 	DropdownItemProps,
 	Grid,
 	Icon,
-	Label,
 	Message,
-	Popup,
 	Segment,
 	Statistic,
 	Table
 } from 'semantic-ui-react';
 
-import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { AvatarView } from '../../../item_presenters/avatarview';
-import CONFIG from '../../../CONFIG';
-import { IContestant, IContestSkill, IExpectedScore, ISkillBoost } from '../model';
-import { getExpectedScore, makeContestant, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from '../utils';
+import { IContestant, IContestSkill, IExpectedScore } from '../model';
+import { getExpectedScore } from '../utils';
 import { ProficiencyRangeInput } from '../common/rangeinput';
 
 type ContestantProps = {
 	skills: string[];
 	contestant: IContestant;
-	boost: ISkillBoost | undefined;
 	wins: string | JSX.Element;
 	editContestant: (contestant: IContestant) => void;
-	editBoost: (boost: ISkillBoost | undefined) => void;
 	dismissContestant?: () => void;
 };
 
 export const Contestant = (props: ContestantProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { skills, contestant, boost, wins, editContestant, editBoost, dismissContestant } = props;
+	const { skills, contestant, wins, editContestant, dismissContestant } = props;
 
 	const expectedRoll: IExpectedScore = getExpectedScore(contestant.skills);
 
@@ -122,14 +115,6 @@ export const Contestant = (props: ContestantProps) => {
 						<Statistic.Label>{t('voyage.contests.wins')}</Statistic.Label>
 					</Statistic>
 				</Statistic.Group>
-				{contestant.crew && (
-					<UnusedSkills
-						crew={contestant.crew}
-						skills={Object.keys(contestant.crew.skills).filter(skill => !skills.includes(skill))}
-						boost={boost}
-						editBoost={editBoost}
-					/>
-				)}
 			</Message>
 		</React.Fragment>
 	);
@@ -159,16 +144,6 @@ export const Contestant = (props: ContestantProps) => {
 								<>{t('voyage.contests.no_skill')}</>
 							)}
 						</Grid.Column>
-						{contestant.crew && (
-							<Grid.Column textAlign='center'>
-								<BoostPicker
-									skill={skill}
-									boost={boost}
-									editBoost={editBoost}
-									impact='now'
-								/>
-							</Grid.Column>
-						)}
 						<Grid.Column width={1} /* Hack to prevent grid from exceeding table width */ />
 					</Grid>
 				</Table.Cell>
@@ -183,135 +158,4 @@ export const Contestant = (props: ContestantProps) => {
 			editContestant({...contestant});
 		}
 	}
-};
-
-type UnusedSkillsProps = {
-	crew: PlayerCrew;
-	skills: string[];
-	boost: ISkillBoost | undefined;
-	editBoost: (boost: ISkillBoost | undefined) => void;
-};
-
-const UnusedSkills = (props: UnusedSkillsProps) => {
-	const { crew, skills, boost, editBoost } = props;
-
-	const contestant = React.useMemo<IContestant>(() => {
-		return makeContestant(skills, [], crew, boost);
-	}, [crew, boost]);
-
-	return (
-		<div style={{ marginTop: '1em', textAlign: 'center' }}>
-			<Label.Group style={{ marginBottom: '0' }}>
-				{contestant.skills.map(contestSkill => renderUnusedSkill(contestSkill))}
-			</Label.Group>
-		</div>
-	);
-
-	function renderUnusedSkill(contestSkill: IContestSkill): JSX.Element {
-		const min: number = Math.floor(contestSkill.range_min / 2);
-		const max: number = Math.floor(contestSkill.range_max / 2);
-		const average: number = min + Math.floor((max - min) / 2);
-		const title: string = `${crew.name}'s unused ${CONFIG.SKILLS[contestSkill.skill]} skill will boost later contests by +(${min}-${max}) per ${CONFIG.SKILLS[contestSkill.skill]} roll for an average total boost of +${average*3} per contest`;
-		return (
-			<Label key={contestSkill.skill} title={title}>
-				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
-					<span>
-						<img
-							src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${contestSkill.skill}.png`}
-							style={{ height: '1.1em', verticalAlign: 'middle' }}
-							className='invertibleIcon'
-						/>
-					</span>
-					<span>
-						+{average*3}
-					</span>
-					<span>
-						<BoostPicker
-							skill={contestSkill.skill}
-							boost={boost}
-							editBoost={editBoost}
-							impact='future'
-						/>
-					</span>
-				</div>
-			</Label>
-		);
-	}
-};
-
-type BoostPickerProps = {
-	skill: string;
-	boost: ISkillBoost | undefined;
-	editBoost: (boost: ISkillBoost | undefined) => void;
-	impact: 'now' | 'future';
-};
-
-const BoostPicker = (props: BoostPickerProps) => {
-	const { skill, boost, editBoost, impact } = props;
-
-	const [showPopup, setShowPopup] = React.useState<boolean>(false);
-
-	const options: DropdownItemProps[] = [];
-	for (let i = 0; i <= 5; i++) {
-		options.push({
-			key: `rarity-${i}`,
-			value: i,
-			text: `+(${MIN_RANGE_BOOSTS[i]}-${MAX_RANGE_BOOSTS[i]}) per roll`
-		});
-	}
-
-	return (
-		<Popup
-			trigger={(
-				<Button
-					title='Boost this skill'
-					color={boost?.skill === skill ? 'blue' : undefined}
-					size='small'
-				>
-					{boost?.skill !== skill && <Icon name='angle double up' fitted />}
-					{boost?.skill === skill && <>{boost.rarity}*</>}
-				</Button>
-			)}
-			on='click'
-			open={showPopup}
-			onOpen={() => setShowPopup(true)}
-			onClose={() => setShowPopup(false)}
-			position='top center'
-		>
-			<Popup.Header>
-				Select a boost level
-				<img
-					src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
-					style={{ height: '2em', float: 'right' }}
-					className='invertibleIcon'
-				/>
-				<div style={{ marginTop: '.5em', fontSize: '1rem', fontWeight: 'normal' }}>
-					{impact === 'now' && <>Using a boost here will improve the odds of winning this contest.</>}
-					{impact === 'future' && <>Using a boost here will improve the odds of winning later contests with this skill.</>}
-				</div>
-			</Popup.Header>
-			<Popup.Content>
-				<Button.Group>
-					<Button
-						title='No boost'
-						icon='ban'
-						onClick={() => {
-							if (boost?.skill === skill) editBoost(undefined);
-							setShowPopup(false);
-						}}
-					/>
-					{options.map(option => (
-						<Button
-							key={option.key}
-							title={option.text}
-							onClick={() => editBoost({ skill, rarity: option.value as number })}
-							color={boost?.skill === skill && boost?.rarity === option.value ? 'blue' : undefined}
-						>
-							{option.value}*
-						</Button>
-					))}
-				</Button.Group>
-			</Popup.Content>
-		</Popup>
-	);
 };

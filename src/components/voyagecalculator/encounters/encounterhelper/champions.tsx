@@ -7,7 +7,6 @@ import {
 	Label
 } from 'semantic-ui-react';
 
-import { BaseSkills } from '../../../../model/crew';
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { oneCrewCopy } from '../../../../utils/crewutils';
@@ -24,7 +23,8 @@ import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { ContestSimulatorModal } from '../contestsimulator/modal';
 
-import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, IUnusedSkills } from './championdata';
+import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, IUnusedSkills, assignCrewToContest } from './championdata';
+import { ContestOdds } from './oddsmodal';
 
 type ChampionsTableProps = {
 	id: string;
@@ -41,6 +41,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { voyageCrew, encounter, championData, assignments, setAssignments, targetSkills, setTargetSkills } = props;
 
+	const [contestTrigger, setContestTrigger] = React.useState<IChampionContest | undefined>(undefined);
 	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
 
 	const tableSetup = React.useMemo<IDataTableSetup>(() => {
@@ -86,7 +87,8 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 						<ChampionContestCell
 							contest={(datum as IChampionCrewData).contests[contestId]}
 							assignments={assignments}
-							assignCrew={assignCrewToContest}
+							assignCrew={assignCrew}
+							setContestTrigger={setContestTrigger}
 							setSimulatorTrigger={setSimulatorTrigger}
 						/>
 					)
@@ -136,6 +138,15 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				data={filteredData}
 				setup={tableSetup}
 			/>
+			{contestTrigger && (
+				<ContestOdds
+					voyageCrew={voyageCrew}
+					encounter={encounter}
+					assignments={assignments}
+					activeContest={contestTrigger}
+					cancelTrigger={() => setContestTrigger(undefined)}
+				/>
+			)}
 			{simulatorTrigger && (
 				<ChampionContestSimulator
 					voyageCrew={voyageCrew}
@@ -241,40 +252,8 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return <ProficiencyRanges skills={skills} sort />;
 	}
 
-	function assignCrewToContest(contest: IChampionContest | undefined, crew: PlayerCrew): void {
-		// Remove crew from existing assignment, if necessary
-		Object.keys(assignments).forEach(contestId => {
-			if (assignments[contestId].crew?.id === crew.id)
-				assignments[contestId].crew = undefined;
-		});
-		if (contest) assignments[contest.id].crew = crew;
-
-		const unusedSkills: IUnusedSkills = {
-			command_skill: { min: 0, max: 0 },
-			diplomacy_skill: { min: 0, max: 0 },
-			engineering_skill: { min: 0, max: 0 },
-			medicine_skill: { min: 0, max: 0 },
-			science_skill: { min: 0, max: 0 },
-			security_skill: { min: 0, max: 0 }
-		};
-
-		encounter.contests.forEach((contest, contestIndex) => {
-			const contestId: string = makeContestId(contest, contestIndex);
-			const assignment: IContestAssignment = assignments[contestId];
-			assignment.unusedSkills = JSON.parse(JSON.stringify(unusedSkills));
-			if (assignment.crew) {
-				const crewSkills: BaseSkills = assignment.crew.skills;
-				Object.keys(crewSkills).filter(skill =>
-					!contest.skills.map(cs => cs.skill).includes(skill)
-				).forEach(unusedSkill => {
-					const min: number = unusedSkills[unusedSkill].min + crewSkills[unusedSkill].range_min;
-					const max: number = unusedSkills[unusedSkill].max + crewSkills[unusedSkill].range_max;
-					unusedSkills[unusedSkill].min += Math.floor(min / 2);
-					unusedSkills[unusedSkill].max += Math.floor(max / 2);
-				});
-			}
-		});
-
+	function assignCrew(contest: IChampionContest | undefined, crew: PlayerCrew): void {
+		assignCrewToContest(encounter, assignments, contest, crew);
 		setAssignments({...assignments});
 	}
 };
@@ -283,25 +262,28 @@ type ChampionContestCellProps = {
 	contest: IChampionContest;
 	assignments: IContestAssignments;
 	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
+	setContestTrigger: (contest: IChampionContest) => void;
 	setSimulatorTrigger: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { contest, assignments, assignCrew, setSimulatorTrigger } = props;
+	const { contest, assignments, assignCrew, setContestTrigger, setSimulatorTrigger } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
 
-	const assignedContest: string | undefined = getAssignedContest(assignments, contest.champion.crew.id);
-
-	const crewIsAssigned: boolean = !!assignedContest;
-	const crewIsAssignedHere: boolean = assignedContest === contest.id;
 	const contestIsAssigned: boolean = !!assignments[contest.id].crew;
 
+	const assignedContest: string | undefined = getAssignedContest(assignments, contest.champion.crew.id);
+	const crewIsAssigned: boolean = !!assignedContest;
+	const crewIsAssignedHere: boolean = assignedContest === contest.id;
+	const crewIsAssignedPrior: boolean = !!assignedContest && assignments[assignedContest].index < contest.index;
+
 	const boostedSkills: number = Object.keys(assignments[contest.id].unusedSkills).filter(unusedSkill =>
-		assignments[contest.id].unusedSkills[unusedSkill].min > 0 &&
-			contest.skills.map(cs => cs.skill).includes(unusedSkill)
+		!crewIsAssignedPrior &&
+			assignments[contest.id].unusedSkills[unusedSkill].range_min > 0 &&
+				contest.skills.map(cs => cs.skill).includes(unusedSkill)
 	).length;
 
 	return (
@@ -313,9 +295,9 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						color={crewIsAssignedHere ? 'blue' : undefined}
 						compact
 					>
-						<Button	/* Simulate contest */
-							title={t('voyage.contests.simulate_contest')}
-							onClick={() => setSimulatorTrigger(contest)}
+						<Button	/* View contest odds */
+							title='View contest odds'
+							onClick={() => setContestTrigger(contest)}
 						>
 							{formatContestResult(contest.result)}
 						</Button>
@@ -331,7 +313,17 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					</Button.Group>
 				)}
 			</div>
-			<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+			<div
+				onClick={() => setSimulatorTrigger(contest)}
+				style={{
+					display: 'flex',
+					flexWrap: 'nowrap',
+					justifyContent: 'center',
+					alignItems: 'center',
+					columnGap: '.3em',
+					cursor: 'pointer'
+				}}
+			>
 				<span	/* CREW_NAME's average score for this contest */
 					title={t('voyage.contests.avg_of_crew', { crew: contest.champion.crew.name })}
 				>
@@ -363,7 +355,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		const skill: string = endurableSkill.skill;
 		const contests: number = endurableSkill.contests_boosted;
 		const average: number = endurableSkill.range_min + Math.floor((endurableSkill.range_max - endurableSkill.range_min) / 2);
-		const title: string = `If selected for this contest, ${contest.champion.crew.name}'s unused ${CONFIG.SKILLS[skill]} skill will boost ${contests} later contest${contests !== 1 ? 's' : ''} by +(${endurableSkill.range_min}-${endurableSkill.range_max}) per ${CONFIG.SKILLS[skill]} roll for an average total boost of +${average*3}${contests > 1 ? ' per contest' : ''}`;
+		const title: string = `If selected for this contest, ${contest.champion.crew.name} will contribute their unused ${CONFIG.SKILLS[skill]} skill to ${contests} later contest${contests !== 1 ? 's' : ''}. A minimum of +(${endurableSkill.range_min}-${endurableSkill.range_max}) will be added to each ${CONFIG.SKILLS[skill]} roll, resulting in an average value added of +${average*3}${contests > 1 ? ' per contest' : ''}`;
 		return (
 			<Label key={skill} title={title}>
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
@@ -379,7 +371,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					</span>
 					{crewIsAssignedHere && (
 						<span>
-							<Icon name='arrow alternate circle right' color='green' />
+							<Icon name='arrow alternate circle right' color='green' fitted />
 						</span>
 					)}
 				</div>
@@ -405,8 +397,8 @@ const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
 			const crew: PlayerCrew = oneCrewCopy(voyager) as PlayerCrew;
 			Object.keys(crew.skills).forEach(skill => {
 				if (contest.skills.map(cs => cs.skill).includes(skill)) {
-					crew.skills[skill].range_min += unusedSkills[skill].min;
-					crew.skills[skill].range_max += unusedSkills[skill].max;
+					crew.skills[skill].range_min += unusedSkills[skill].range_min;
+					crew.skills[skill].range_max += unusedSkills[skill].range_max;
 				}
 			});
 			return crew;

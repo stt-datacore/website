@@ -1,7 +1,12 @@
+import { BaseSkills } from '../../../../model/crew';
 import { PlayerCrew } from '../../../../model/player';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 import { IContest, IExpectedScore, IContestant, IContestSkill, IContestResult, IEncounter } from '../model';
 import { getCrewCritChance, getExpectedScore, makeContestant, simulateContest } from '../utils';
+
+export const MIN_RANGE_BOOSTS: number[] = [15, 20, 35, 50, 100, 150];
+export const MAX_RANGE_BOOSTS: number[] = [35, 50, 100, 150, 200, 250];
+export const CRIT_BOOSTS: number[] = [0, 0, 15, 25, 50, 75];
 
 export interface IChampionCrewData extends PlayerCrew {
 	best_proficiency: number;
@@ -44,15 +49,21 @@ export interface IContestAssignment {
 	index: number;
 	unusedSkills: IUnusedSkills;
 	crew?: PlayerCrew;
+	boost?: IChampionBoost;
+};
+
+export interface IChampionBoost {
+	type: string;	// voyage_crit_boost | command_skill, diplomacy_skill, etc
+	rarity: number;
 };
 
 export interface IUnusedSkills {
-	[key: string]: IUnusedSkill;
+	[key: string]: IRangeMinMax;
 };
 
-export interface IUnusedSkill {
-	min: number;
-	max: number;
+export interface IRangeMinMax {
+	range_min: number;
+	range_max: number;
 };
 
 export function makeContestId(contest: IContest, contestIndex: number): string {
@@ -92,13 +103,31 @@ export async function getChampionCrewData(
 			const skills: string[] = contest.skills.map(cs => cs.skill);
 			const champion: IChampion = makeContestant(skills, encounter.critTraits, crewData) as IChampion;
 
+			// Apply boosts before unusedSkill bonuses
+			const boost: IChampionBoost | undefined = assignments[contestId].boost;
+			if (boost?.type === 'voyage_crit_boost') {
+				champion.critChance += CRIT_BOOSTS[boost.rarity];
+			}
+			else if (boost) {
+				const boostedSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === boost.type);
+				if (boostedSkill) {
+					boostedSkill.range_min += MIN_RANGE_BOOSTS[boost.rarity];
+					boostedSkill.range_max += MAX_RANGE_BOOSTS[boost.rarity];
+				}
+			}
+
+			const crewIsAssignedPrior: boolean = !!Object.keys(assignments).find(assignment =>
+				assignments[assignment].index < contestIndex
+					&& assignments[assignment].crew?.id === crewData.id
+			);
+
 			const unusedSkills: IUnusedSkills = assignments[contestId].unusedSkills;
 			Object.keys(crewData.skills).forEach(skill => {
 				if (contest.skills.map(cs => cs.skill).includes(skill)) {
 					const championSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === skill);
 					if (championSkill) {
-						championSkill.range_min += unusedSkills[skill].min;
-						championSkill.range_max += unusedSkills[skill].max;
+						championSkill.range_min += (!crewIsAssignedPrior ? unusedSkills[skill].range_min : 0);
+						championSkill.range_max += (!crewIsAssignedPrior ? unusedSkills[skill].range_max : 0);
 					}
 				}
 			});
@@ -118,12 +147,12 @@ export async function getChampionCrewData(
 						postContestsBoosted++;
 				}
 				if (postContestsBoosted > 0) {
-					const min: number = unusedSkills[unusedSkill].min + crew.skills[unusedSkill].range_min;
-					const max: number = unusedSkills[unusedSkill].max + crew.skills[unusedSkill].range_max;
+					const rangeMin: number = crew.skills[unusedSkill].range_min + (!crewIsAssignedPrior ? unusedSkills[unusedSkill].range_min : 0);
+					const rangeMax: number = crew.skills[unusedSkill].range_max + (!crewIsAssignedPrior ? unusedSkills[unusedSkill].range_max : 0);
 					endurableSkills.push({
 						skill: unusedSkill,
-						range_min: Math.floor(min / 2),
-						range_max: Math.floor(max / 2),
+						range_min: Math.floor(rangeMin / 2),
+						range_max: Math.floor(rangeMax / 2),
 						contests_boosted: postContestsBoosted
 					});
 				}
@@ -176,4 +205,44 @@ export async function getChampionCrewData(
 		}
 	});
 	return data;
+}
+
+export function assignCrewToContest(
+	encounter: IEncounter,
+	assignments: IContestAssignments,
+	contest: IChampionContest | undefined,
+	crew: PlayerCrew
+): void {
+	// Remove crew from existing assignment, if necessary
+	Object.keys(assignments).forEach(contestId => {
+		if (assignments[contestId].crew?.id === crew.id)
+			assignments[contestId].crew = undefined;
+	});
+	if (contest) assignments[contest.id].crew = crew;
+
+	const unusedSkills: IUnusedSkills = {
+		command_skill: { range_min: 0, range_max: 0 },
+		diplomacy_skill: { range_min: 0, range_max: 0 },
+		engineering_skill: { range_min: 0, range_max: 0 },
+		medicine_skill: { range_min: 0, range_max: 0 },
+		science_skill: { range_min: 0, range_max: 0 },
+		security_skill: { range_min: 0, range_max: 0 }
+	};
+
+	encounter.contests.forEach((contest, contestIndex) => {
+		const contestId: string = makeContestId(contest, contestIndex);
+		const assignment: IContestAssignment = assignments[contestId];
+		assignment.unusedSkills = JSON.parse(JSON.stringify(unusedSkills));
+		if (assignment.crew) {
+			const crewSkills: BaseSkills = assignment.crew.skills;
+			Object.keys(crewSkills).filter(skill =>
+				!contest.skills.map(cs => cs.skill).includes(skill)
+			).forEach(unusedSkill => {
+				const rangeMin: number = unusedSkills[unusedSkill].range_min + crewSkills[unusedSkill].range_min;
+				const rangeMax: number = unusedSkills[unusedSkill].range_max + crewSkills[unusedSkill].range_max;
+				unusedSkills[unusedSkill].range_min += Math.floor(rangeMin / 2);
+				unusedSkills[unusedSkill].range_max += Math.floor(rangeMax / 2);
+			});
+		}
+	});
 }

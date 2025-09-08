@@ -106,7 +106,12 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	}).forEach(skill => {
 		columns.push({
 			id: skill,
-			title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+			title: (
+				<React.Fragment>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					{!skills.includes(skill) && <Icon name='arrow alternate circle right outline' fitted />}
+				</React.Fragment>
+			),
 			align: 'center',
 			sortField: {
 				id: `scored_${skill}`,
@@ -189,9 +194,13 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	function renderCrewProficiency(crew: PlayerCrew, skill: string): JSX.Element {
 		const crewSkill: Skill | undefined = crew.skills[skill];
 		if (!crewSkill) return <></>;
+		let min: number = crewSkill.range_min;
+		if (!skills.includes(skill)) min = Math.floor(min / 2);
+		let max: number = crewSkill.range_max;
+		if (!skills.includes(skill)) max = Math.floor(max / 2);
 		return (
 			<React.Fragment>
-				{crewSkill.range_min}-{crewSkill.range_max}
+				{min}-{max}
 			</React.Fragment>
 		);
 	}

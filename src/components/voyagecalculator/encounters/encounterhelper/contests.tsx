@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	Header,
+	Icon,
 	Label,
 	Table
 } from 'semantic-ui-react';
@@ -53,6 +54,11 @@ export const ContestsTable = (props: ContestsTableProps) => {
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Assigned Crew */>
 							{t('voyage.contests.assigned_crew')}
+						</Table.HeaderCell>
+						<Table.HeaderCell	/* Boost */
+							textAlign='center'
+						>
+							Boost
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Skills */
 							textAlign='center'
@@ -108,6 +114,9 @@ export const ContestsTable = (props: ContestsTableProps) => {
 								<Table.Cell>
 									{assignedContest && <CrewLabel crew={assignedContest.champion.crew} />}
 									{!assignedContest && <>{t('global.unassigned')}</>}
+								</Table.Cell>
+								<Table.Cell textAlign='center'>
+									{assignments[contestId].boost && (<Icon name='angle double up' />)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest && renderChampionSkills(assignedContest)}

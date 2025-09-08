@@ -147,12 +147,12 @@ const Encounter = (props: EncounterProps) => {
 	function getDefaultAssignments(): IContestAssignments {
 		const assignments: IContestAssignments = {};
 		const unusedSkills: IUnusedSkills = {
-			command_skill: { min: 0, max: 0 },
-			diplomacy_skill: { min: 0, max: 0 },
-			engineering_skill: { min: 0, max: 0 },
-			medicine_skill: { min: 0, max: 0 },
-			science_skill: { min: 0, max: 0 },
-			security_skill: { min: 0, max: 0 }
+			command_skill: { range_min: 0, range_max: 0 },
+			diplomacy_skill: { range_min: 0, range_max: 0 },
+			engineering_skill: { range_min: 0, range_max: 0 },
+			medicine_skill: { range_min: 0, range_max: 0 },
+			science_skill: { range_min: 0, range_max: 0 },
+			security_skill: { range_min: 0, range_max: 0 }
 		};
 		encounter.contests.forEach((contest, contestIndex) => {
 			const contestId: string = makeContestId(contest, contestIndex);

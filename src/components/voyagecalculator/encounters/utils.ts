@@ -1,9 +1,6 @@
 import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
-import { IContestant, IContestResult, IContestSkill, IExpectedScore, ISkillBoost } from './model';
-
-export const MIN_RANGE_BOOSTS: number[] = [15, 20, 35, 50, 100, 150];
-export const MAX_RANGE_BOOSTS: number[] = [35, 50, 100, 150, 200, 250];
+import { IContestant, IContestResult, IContestSkill, IExpectedScore } from './model';
 
 export function getCrewSkillsScore(crew: PlayerCrew, skills: string[]): number {
 	let score: number = 0;
@@ -30,19 +27,17 @@ export function crewIsShortSkilled(crew: PlayerCrew, skills: string[]): boolean 
 	return crewSkills.length < testSkills.length;
 }
 
-export function makeContestant(skills: string[], traits: string[], crew?: PlayerCrew, boost?: ISkillBoost | undefined): IContestant {
+export function makeContestant(skills: string[], traits: string[], crew?: PlayerCrew): IContestant {
 	const contestantSkills: IContestSkill[] = [];
 	skills.forEach(skill => {
 		let contestantSkill: IContestSkill | undefined;
 		// Crew might not have all contest skills
 		if (crew) {
 			if (crew.skills[skill]) {
-				const minBoost: number = boost?.skill === skill ? MIN_RANGE_BOOSTS[boost.rarity] : 0;
-				const maxBoost: number = boost?.skill === skill ? MAX_RANGE_BOOSTS[boost.rarity] : 0;
 				contestantSkill = {
 					skill,
-					range_min: crew.skills[skill].range_min + minBoost,
-					range_max: crew.skills[skill].range_max + maxBoost
+					range_min: crew.skills[skill].range_min,
+					range_max: crew.skills[skill].range_max
 				};
 			}
 		}
