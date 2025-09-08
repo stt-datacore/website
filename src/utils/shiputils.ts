@@ -231,10 +231,10 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
 	ref_ships = JSON.parse(JSON.stringify(ref_ships));
+	let unowned_id = -1;
 	ref_ships.map((refship) => {
 		let ship = {...refship, id: refship.archetype_id, levels: undefined } as Ship;
 
-		let unowned_id = -1;
 		let owned = ships.find((ship) => refship.symbol == ship.symbol);
 
 		let traits_named = ship.traits?.map(t => SHIP_TRAIT_NAMES[t])?.filter(f => !!f);
