@@ -12,9 +12,8 @@ import {
 
 import { PlayerCrew } from '../../../../model/player';
 import ItemDisplay from '../../../itemdisplay';
-import { CRIT_BOOSTS, IChampionBoost } from './championdata';
-import { MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
+import { CRIT_BOOSTS, IChampionBoost, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 
 type BoostPickerProps = {
 	assignedCrew: PlayerCrew;
@@ -125,7 +124,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 					{boostOptions.map(option => (
 						<Grid.Column
 							key={`${option.type}_${option.rarity}`}
-							onClick={() => onBoostSelected({ type: option.type, rarity: option.rarity })}
+							onClick={() => toggleBoost(option.type, option.rarity)}
 							style={{ cursor: 'pointer' }}
 						>
 							<div
@@ -175,6 +174,13 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
+	function toggleBoost(type: string, rarity: number): void {
+		if (assignedBoost?.type === type && assignedBoost?.rarity === rarity)
+			onBoostSelected(undefined);
+		else
+			onBoostSelected({ type, rarity });
+	}
+
 	function renderRelevantToggle(): JSX.Element {
 		return (
 			<Form style={{ textAlign: 'center' }}>
@@ -187,10 +193,10 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			</Form>
 		);
 	}
-
-	function getConsumableImg(type: string, rarity: number): string {
-		if (type === 'voyage_crit_boost')
-			return `${process.env.GATSBY_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
-		return `${process.env.GATSBY_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
-	}
 };
+
+export function getConsumableImg(type: string, rarity: number): string {
+	if (type === 'voyage_crit_boost')
+		return `${process.env.GATSBY_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
+	return `${process.env.GATSBY_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
+}

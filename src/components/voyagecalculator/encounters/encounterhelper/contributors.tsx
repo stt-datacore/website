@@ -6,16 +6,13 @@ import {
 
 import { GlobalContext } from '../../../../context/globalcontext';
 import { PlayerCrew } from '../../../../model/player';
-
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 
-import { IContest, IEncounter } from '../model';
-import { IChampionBoost, IRangeMinMax } from './championdata';
-import { MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
-
+import { IContest } from '../model';
+import { formatContestResult } from '../utils';
+import { EncounterContext } from './context';
 import { BoostPicker } from './boostpicker';
-
-import { IChampionContest, IContestAssignment, IContestAssignments, makeContestId } from './championdata';
+import { assignCrewToContest, IChampionBoost, IChampionContest, IContestAssignment, IContestAssignments, IRangeMinMax, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 
 interface IContributor {
 	index: number;
@@ -30,19 +27,18 @@ interface IContributorSkills {
 
 interface IContributorSkill {
 	value: number;
-	status: SkillStatus;
+	status: StatusNote;
 };
 
-enum SkillStatus {
+enum StatusNote {
 	Available,
-	Missing,
 	Inactive,
+	Wasted,
 	Exhausted,
 	Irrelevant
 };
 
 type ContributorsTableProps = {
-	encounter: IEncounter,
 	activeContest: IChampionContest,
 	assignments: IContestAssignments;
 	setAssignments: (assignments: IContestAssignments) => void;
@@ -50,9 +46,8 @@ type ContributorsTableProps = {
 
 export const ContributorsTable = (props: ContributorsTableProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { encounter, activeContest, assignments, setAssignments } = props;
-
-	const contestIds: string[] = encounter.contests.map((contest, contestIndex) => makeContestId(contest, contestIndex));
+	const { encounter, contestIds } = React.useContext(EncounterContext);
+	const { activeContest, assignments, setAssignments } = props;
 
 	const contributors = React.useMemo<IContributor[]>(() => {
 		return getContributors();
@@ -60,7 +55,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 
 	return (
 		<React.Fragment>
-			The crew assigned to this contest will contribute their full proficiency. Some crew assigned to prior contests may also contribute a fraction of their unused skills. The average values added to this contest by all contributing crew are listed below. Add boosts to increase these values. The odds of winning the contest will be updated accordingly.
+			The crew assigned to this contest will contribute their full proficiency. Some crew assigned to prior contests may also contribute a fraction of their unused skills. The average values added to this contest by all contributing crew are listed below. You can add boosts to increase any contribution, which may improve the odds of winning this contest.
 			<Table celled selectable striped>
 				<Table.Header>
 					<Table.Row>
@@ -110,7 +105,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 										<Table.Cell
 											key={contestSkill.skill}
 											textAlign='center'>
-												{renderAddedValue(contributor, contestSkill.skill)}
+												{renderContribution(contributor, contestSkill.skill)}
 										</Table.Cell>
 									))}
 								</Table.Row>
@@ -120,7 +115,10 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colSpan={3} />
+						<Table.HeaderCell colSpan={2} />
+						<Table.HeaderCell textAlign='center'>
+							<b>{activeContest.result && formatContestResult(activeContest.result)}</b>
+						</Table.HeaderCell>
 						{activeContest.skills.map(contestSkill => (
 							<Table.HeaderCell
 								key={contestSkill.skill}
@@ -153,44 +151,43 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 					if (!activeContest.champion.skills.map(cs => cs.skill).includes(skill)) {
 						skills[skill] = {
 							value: 0,
-							status: SkillStatus.Inactive
+							status: StatusNote.Wasted
 						};
 					}
 					// Crew cannot contribute exhausted skills
 					else if (!active && contestSkills.includes(skill)) {
 						skills[skill] = {
 							value: 0,
-							status: SkillStatus.Exhausted
+							status: StatusNote.Exhausted
 						};
 					}
 					else {
-						let rangeMin: number = crew.skills[skill].range_min;
-						let rangeMax: number = crew.skills[skill].range_max;
+						let crewRangeMin: number = crew.skills[skill].range_min;
+						let crewRangeMax: number = crew.skills[skill].range_max;
 						if (boost?.type === skill) {
-							rangeMin += MIN_RANGE_BOOSTS[boost.rarity];
-							rangeMax += MAX_RANGE_BOOSTS[boost.rarity];
+							crewRangeMin += MIN_RANGE_BOOSTS[boost.rarity];
+							crewRangeMax += MAX_RANGE_BOOSTS[boost.rarity];
 						}
+						let value: number = 0;
 						// If active contest, AVA is full crew proficiency
 						if (active) {
-							skills[skill] = {
-								value: Math.floor((rangeMin + rangeMax) / 2) * 3,
-								status: SkillStatus.Available
-							};
+							value = Math.floor((crewRangeMin + crewRangeMax) / 2) * 3;
 						}
 						// Otherwise, AVA is value of unused skill when used
 						else {
-							skills[skill] = {
-								value: getAddedValue(assignment.index + 1, skill, rangeMin, rangeMax),
-								status: SkillStatus.Available
-							};
+							value = getAddedValue(assignment.index + 1, skill, crewRangeMin, crewRangeMax);
 						}
+						skills[skill] = {
+							value,
+							status: StatusNote.Available
+						};
 					}
 				}
 				// Crew is missing active skill
 				else if (contestIndex === activeContest.index) {
 					skills[skill] = {
 						value: 0,
-						status: SkillStatus.Missing
+						status: StatusNote.Inactive
 					};
 				}
 			});
@@ -246,7 +243,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		const totalValue: number = Object.keys(contributor.skills)
 			.reduce((prev, curr) => prev + contributor.skills[curr].value, 0);
 		if (totalValue === 0) {
-			return renderNote(contributor, SkillStatus.Irrelevant);
+			return renderNote(contributor, StatusNote.Irrelevant);
 		}
 		const targetSkills: string[] = Object.keys(contributor.skills);
 		return (
@@ -262,16 +259,16 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderAddedValue(contributor: IContributor, skill: string): JSX.Element {
-		const skillValue: IContributorSkill | undefined = contributor.skills[skill];
-		if (!skillValue) return <></>;
-		if (skillValue.status === SkillStatus.Missing)
+	function renderContribution(contributor: IContributor, skill: string): JSX.Element {
+		const contributorSkill: IContributorSkill | undefined = contributor.skills[skill];
+		if (!contributorSkill) return <></>;
+		if (contributorSkill.status === StatusNote.Inactive)
 			return <>{t('voyage.contests.no_skill')}</>;
-		if (skillValue.status === SkillStatus.Inactive)
-			return renderNote(contributor, SkillStatus.Inactive);
-		if (skillValue.status === SkillStatus.Exhausted)
-			return renderNote(contributor, SkillStatus.Exhausted);
-		return <>+{contributor.skills[skill].value}</>;
+		if (contributorSkill.status === StatusNote.Exhausted)
+			return renderNote(contributor, StatusNote.Exhausted);
+		if (contributorSkill.status === StatusNote.Wasted)
+			return renderNote(contributor, StatusNote.Wasted);
+		return <>+{contributorSkill.value}</>;
 	}
 
 	function renderTotalValue(skill: string): JSX.Element {
@@ -280,22 +277,22 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		return <b>{total}</b>;
 	}
 
-	function renderNote(contributor: IContributor, skillStatus?: SkillStatus): JSX.Element {
+	function renderNote(contributor: IContributor, skillStatus?: StatusNote): JSX.Element {
 		const contestId: string = contestIds[contributor.index];
 		const assignedCrew: PlayerCrew | undefined = assignments[contestId].crew;
 		if (assignedCrew) {
 			let message: string = '';
 			switch (skillStatus) {
 				/* CREW has no relevant skills to contribute */
-				case SkillStatus.Irrelevant:
+				case StatusNote.Irrelevant:
 					message = `${assignedCrew.name} has no relevant skills to contribute`;
 					break;
 				/* CREW cannot contribute exhausted skills */
-				case SkillStatus.Exhausted:
+				case StatusNote.Exhausted:
 					message = `${assignedCrew.name} cannot contribute exhausted skills`;
 					break;
-				/* CREW cannot contribute exhausted skills */
-				case SkillStatus.Inactive:
+				/* CREW cannot contribute to inactive skills */
+				case StatusNote.Wasted:
 					message = `${assignedCrew.name} cannot contribute to inactive skills`;
 					break;
 			}
@@ -306,9 +303,14 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 	}
 
 	function editBoost(contributor: IContributor, boost: IChampionBoost | undefined): void {
-		const contestId: string = contestIds[contributor.index];
-		const assignment: IContestAssignment = assignments[contestId];
-		assignment.boost = boost;
+		if (!contributor.crew) return;
+		assignCrewToContest(
+			encounter,
+			assignments,
+			contestIds[contributor.index],
+			contributor.crew,
+			boost
+		);
 		setAssignments({...assignments});
 	}
 };

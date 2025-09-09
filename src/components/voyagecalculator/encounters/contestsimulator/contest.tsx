@@ -43,6 +43,11 @@ export const Contest = (props: ContestProps) => {
 
 	const [compactMode, setCompactMode] = React.useState<boolean>(!!props.compact);
 
+	// Listen to changes to champion from encounter helper simulator
+	React.useEffect(() => {
+		setContestantA(initContestant(props.a));
+	}, [props.a]);
+
 	React.useEffect(() => {
 		simulateContest(contestantA, contestantB, SIMULATIONS, PERCENTILE).then(result => {
 			setContestResult(result);

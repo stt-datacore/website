@@ -38,7 +38,8 @@ export interface IEndurableSkill extends IContestSkill {
 export interface IChampionContestResult extends IContestResult {
 	crewId: number;
 	contestId: string;
-	champion_average: number;
+	championAverage: number;
+	critChance: number;
 };
 
 export interface IContestAssignments {
@@ -116,10 +117,8 @@ export async function getChampionCrewData(
 				}
 			}
 
-			const crewIsAssignedPrior: boolean = !!Object.keys(assignments).find(assignment =>
-				assignments[assignment].index < contestIndex
-					&& assignments[assignment].crew?.id === crewData.id
-			);
+			const assignedContestId: string | undefined = getAssignedContest(assignments, crewData.id);
+			const crewIsAssignedPrior: boolean = !!assignedContestId && assignments[assignedContestId].index < contestIndex;
 
 			const unusedSkills: IUnusedSkills = assignments[contestId].unusedSkills;
 			Object.keys(crewData.skills).forEach(skill => {
@@ -158,12 +157,14 @@ export async function getChampionCrewData(
 				}
 			});
 
-			// Reuse previous contest data, if available and unchanged
+			// Reuse previous contest data, if available and rolls unchanged
 			//	Otherwise queue for simulation
 			let previousResult: IChampionContestResult | undefined;
 			const previousCrew: IChampionCrewData | undefined = previousCrewData?.find(previousCrew => previousCrew.id === crewData.id);
 			if (previousCrew) previousResult = previousCrew.contests[contestId]?.result;
-			const oddsNeeded: boolean = !previousResult || previousResult.champion_average !== championRoll.average;
+			const oddsNeeded: boolean = !previousResult
+				|| previousResult.championAverage !== championRoll.average
+				|| previousResult.critChance !== champion.critChance;
 			if (oddsNeeded) {
 				promises.push(
 					simulateContest(champion, challenger, 1000).then(result => {
@@ -171,7 +172,8 @@ export async function getChampionCrewData(
 							...result,
 							contestId,
 							crewId: champion.crew.id,
-							champion_average: championRoll.average
+							championAverage: championRoll.average,
+							critChance: champion.critChance
 						};
 					})
 				);
@@ -210,15 +212,21 @@ export async function getChampionCrewData(
 export function assignCrewToContest(
 	encounter: IEncounter,
 	assignments: IContestAssignments,
-	contest: IChampionContest | undefined,
-	crew: PlayerCrew
+	contestId: string | undefined,
+	crew: PlayerCrew,
+	boost?: IChampionBoost | undefined
 ): void {
 	// Remove crew from existing assignment, if necessary
 	Object.keys(assignments).forEach(contestId => {
-		if (assignments[contestId].crew?.id === crew.id)
+		if (assignments[contestId].crew?.id === crew.id) {
 			assignments[contestId].crew = undefined;
+			assignments[contestId].boost = undefined;
+		}
 	});
-	if (contest) assignments[contest.id].crew = crew;
+	if (contestId) {
+		assignments[contestId].crew = crew;
+		if (boost) assignments[contestId].boost = boost;
+	}
 
 	const unusedSkills: IUnusedSkills = {
 		command_skill: { range_min: 0, range_max: 0 },
@@ -238,11 +246,48 @@ export function assignCrewToContest(
 			Object.keys(crewSkills).filter(skill =>
 				!contest.skills.map(cs => cs.skill).includes(skill)
 			).forEach(unusedSkill => {
-				const rangeMin: number = unusedSkills[unusedSkill].range_min + crewSkills[unusedSkill].range_min;
-				const rangeMax: number = unusedSkills[unusedSkill].range_max + crewSkills[unusedSkill].range_max;
+				let crewRangeMin: number = crewSkills[unusedSkill].range_min;
+				let crewRangeMax: number = crewSkills[unusedSkill].range_max;
+				// Apply boosts before unusedSkill bonuses
+				const boost: IChampionBoost | undefined = assignments[contestId].boost;
+				if (boost?.type === unusedSkill) {
+					crewRangeMin += MIN_RANGE_BOOSTS[boost.rarity];
+					crewRangeMax += MAX_RANGE_BOOSTS[boost.rarity];
+				}
+				const rangeMin: number = unusedSkills[unusedSkill].range_min + crewRangeMin;
+				const rangeMax: number = unusedSkills[unusedSkill].range_max + crewRangeMax;
 				unusedSkills[unusedSkill].range_min += Math.floor(rangeMin / 2);
 				unusedSkills[unusedSkill].range_max += Math.floor(rangeMax / 2);
 			});
 		}
 	});
+}
+
+export function getDefaultAssignments(contests: IContest[]): IContestAssignments {
+	const assignments: IContestAssignments = {};
+	const unusedSkills: IUnusedSkills = {
+		command_skill: { range_min: 0, range_max: 0 },
+		diplomacy_skill: { range_min: 0, range_max: 0 },
+		engineering_skill: { range_min: 0, range_max: 0 },
+		medicine_skill: { range_min: 0, range_max: 0 },
+		science_skill: { range_min: 0, range_max: 0 },
+		security_skill: { range_min: 0, range_max: 0 }
+	};
+	contests.forEach((contest, contestIndex) => {
+		const contestId: string = makeContestId(contest, contestIndex);
+		assignments[contestId] = {
+			index: contestIndex,
+			unusedSkills
+		};
+	});
+	return assignments;
+}
+
+export function getAssignedContest(assignments: IContestAssignments, crewId: number): string | undefined {
+	let assignedContest: string | undefined;
+	Object.keys(assignments).forEach(contestId => {
+		if (assignments[contestId].crew?.id === crewId)
+			assignedContest = contestId;
+	});
+	return assignedContest;
 }

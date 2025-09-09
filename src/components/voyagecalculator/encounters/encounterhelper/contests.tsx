@@ -1,30 +1,29 @@
 import React from 'react';
 import {
 	Header,
-	Icon,
 	Label,
 	Table
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../../../context/globalcontext';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
-import { IContest, IContestSkill, IEncounter, IExpectedScore } from '../model';
+import ItemDisplay from '../../../itemdisplay';
+import CONFIG from '../../../CONFIG';
+
+import { IContest, IContestSkill, IExpectedScore } from '../model';
 import { formatContestResult, getExpectedScore } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
-import { IChampion, IChampionContest, IChampionCrewData, IContestAssignments, makeContestId } from './championdata';
+import { EncounterContext } from './context';
+import { getConsumableImg } from './boostpicker';
+import { IChampion, IChampionBoost, IChampionContest } from './championdata';
 
 type ContestsTableProps = {
-	encounter: IEncounter;
-	championData: IChampionCrewData[];
-	assignments: IContestAssignments;
 	setTargetSkills: (skills: string[]) => void;
 };
 
 export const ContestsTable = (props: ContestsTableProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { encounter, championData, assignments } = props;
-
-	const contestIds: string[] = encounter.contests.map((contest, contestIndex) => makeContestId(contest, contestIndex));
+	const { encounter, contestIds, championData, assignments } = React.useContext(EncounterContext);
 
 	return (
 		<React.Fragment>
@@ -115,8 +114,8 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{assignedContest && <CrewLabel crew={assignedContest.champion.crew} />}
 									{!assignedContest && <>{t('global.unassigned')}</>}
 								</Table.Cell>
-								<Table.Cell textAlign='center'>
-									{assignments[contestId].boost && (<Icon name='angle double up' />)}
+								<Table.Cell>
+									{renderBoost(assignments[contestId].boost)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest && renderChampionSkills(assignedContest)}
@@ -141,6 +140,28 @@ export const ContestsTable = (props: ContestsTableProps) => {
 
 	function renderSkills(skills: IContestSkill[]): JSX.Element {
 		return <ProficiencyRanges skills={skills} />;
+	}
+
+	function renderBoost(boost: IChampionBoost | undefined): JSX.Element {
+		if (!boost) return <></>;
+		let name: string = `${boost.rarity}*`;
+		if (boost.type === 'voyage_crit_boost')
+			name += ' CRIT';
+		else
+			name += ` ${CONFIG.SKILLS_SHORT.find(ss => ss.name === boost.type)?.short ?? ''}`;
+		return (
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+				<ItemDisplay
+					src={getConsumableImg(boost.type, boost.rarity)}
+					size={32}
+					rarity={boost.rarity}
+					maxRarity={boost.rarity}
+				/>
+				<span style={{ padding: '0 .5em', whiteSpace: 'nowrap' }}>
+					{name}
+				</span>
+			</div>
+		);
 	}
 
 	function renderChampionSkills(contest: IChampionContest): JSX.Element {

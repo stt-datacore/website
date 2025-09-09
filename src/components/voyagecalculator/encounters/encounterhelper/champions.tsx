@@ -9,7 +9,6 @@ import {
 
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
-
 import CONFIG from '../../../CONFIG';
 import { IDataTableColumn, IDataTableSetup, IEssentialData } from '../../../dataset_presenters/model';
 import { DataTable } from '../../../dataset_presenters/datatable';
@@ -17,27 +16,24 @@ import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 import { SkillToggler } from '../../../dataset_presenters/options/skilltoggler';
 import { AvatarView } from '../../../item_presenters/avatarview';
 
-import { IContestSkill, IEncounter } from '../model';
+import { IContestSkill } from '../model';
 import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
-
-import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, assignCrewToContest } from './championdata';
+import { EncounterContext } from './context';
+import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, assignCrewToContest, getAssignedContest } from './championdata';
 import { ChampionSimulator } from './simulator';
 
 type ChampionsTableProps = {
 	id: string;
-	voyageCrew: PlayerCrew[];
-	encounter: IEncounter;
-	championData: IChampionCrewData[];
-	assignments: IContestAssignments;
-	setAssignments: (assignments: IContestAssignments) => void;
 	targetSkills: string[];
 	setTargetSkills: (targetSkills: string[]) => void;
 };
 
 export const ChampionsTable = (props: ChampionsTableProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { voyageCrew, encounter, championData, assignments, setAssignments, targetSkills, setTargetSkills } = props;
+	const { voyageCrew, encounter, championData, assignments, setAssignments } = React.useContext(EncounterContext);
+
+	const { targetSkills, setTargetSkills } = props;
 
 	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
 
@@ -136,10 +132,8 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			/>
 			{simulatorTrigger && (
 				<ChampionSimulator
-					voyageCrew={voyageCrew}
-					encounter={encounter}
-					assignments={assignments}
 					activeContest={simulatorTrigger}
+					updateAssignments={updateAssignments}
 					cancelTrigger={() => setSimulatorTrigger(undefined)}
 				/>
 			)}
@@ -240,8 +234,12 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 	}
 
 	function assignCrew(contest: IChampionContest | undefined, crew: PlayerCrew): void {
-		assignCrewToContest(encounter, assignments, contest, crew);
+		assignCrewToContest(encounter, assignments, contest?.id, crew);
 		setAssignments({...assignments});
+	}
+
+	function updateAssignments(assignments: IContestAssignments): void {
+		setAssignments(assignments);
 	}
 };
 
@@ -363,12 +361,3 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		);
 	}
 };
-
-function getAssignedContest(assignments: IContestAssignments, crewId: number): string | undefined {
-	let assignedContest: string | undefined;
-	Object.keys(assignments).forEach(contestId => {
-		if (assignments[contestId].crew?.id === crewId)
-			assignedContest = contestId;
-	});
-	return assignedContest;
-}

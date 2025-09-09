@@ -12,8 +12,8 @@ import { VoyageRefreshData, VoyageRefreshEncounter } from '../../../../model/voy
 import { GlobalContext } from '../../../../context/globalcontext';
 
 import { IEncounter } from '../model';
-
-import { getChampionCrewData, IChampionCrewData, IContestAssignments, IUnusedSkills, makeContestId } from './championdata';
+import { EncounterContext, IEncounterContext } from './context';
+import { getChampionCrewData, getDefaultAssignments, IChampionCrewData, IContestAssignments, makeContestId } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
 import { EncounterImportComponent, getEncounterDataFromJson, serializeEncounter } from './encounterimporter';
@@ -93,11 +93,11 @@ const Encounter = (props: EncounterProps) => {
 	const { voyageCrew, encounter } = props;
 
 	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
-	const [assignments, setAssignments] = React.useState<IContestAssignments>(getDefaultAssignments());
+	const [assignments, setAssignments] = React.useState<IContestAssignments>(getDefaultAssignments(encounter.contests));
 	const [targetSkills, setTargetSkills] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
-		setAssignments(getDefaultAssignments());
+		setAssignments(getDefaultAssignments(encounter.contests));
 		setTargetSkills([]);
 	}, [encounter]);
 
@@ -107,17 +107,29 @@ const Encounter = (props: EncounterProps) => {
 		});
 	}, [voyageCrew, encounter, assignments]);
 
+	const contestIds = React.useMemo<string[]>(() => {
+		return encounter.contests.map((contest, contestIndex) =>
+			makeContestId(contest, contestIndex)
+		);
+	}, [encounter]);
+
 	// Scroll here when targeting skills from contests table
 	const championsAnchor = React.useRef<HTMLDivElement>(null);
 
 	if (!championData) return <></>;
 
+	const encounterData: IEncounterContext = {
+		voyageCrew,
+		encounter,
+		contestIds,
+		championData,
+		assignments,
+		setAssignments
+	};
+
 	return (
-		<React.Fragment>
+		<EncounterContext.Provider value={encounterData}>
 			<ContestsTable
-				encounter={encounter}
-				championData={championData}
-				assignments={assignments}
 				setTargetSkills={(skills: string[]) => {
 					setTargetSkills(skills);
 					if (!championsAnchor.current) return;
@@ -128,39 +140,14 @@ const Encounter = (props: EncounterProps) => {
 			/>
 			<Button	/* Reset assignments */
 				content={t('voyage.contests.reset_assignments')}
-				onClick={() => setAssignments(getDefaultAssignments())}
+				onClick={() => setAssignments(getDefaultAssignments(encounter.contests))}
 			/>
 			<div ref={championsAnchor} />
 			<ChampionsTable
 				id={`champions/${encounter.id}`}
-				voyageCrew={voyageCrew}
-				encounter={encounter}
-				championData={championData}
-				assignments={assignments}
-				setAssignments={setAssignments}
 				targetSkills={targetSkills}
 				setTargetSkills={setTargetSkills}
 			/>
-		</React.Fragment>
+		</EncounterContext.Provider>
 	);
-
-	function getDefaultAssignments(): IContestAssignments {
-		const assignments: IContestAssignments = {};
-		const unusedSkills: IUnusedSkills = {
-			command_skill: { range_min: 0, range_max: 0 },
-			diplomacy_skill: { range_min: 0, range_max: 0 },
-			engineering_skill: { range_min: 0, range_max: 0 },
-			medicine_skill: { range_min: 0, range_max: 0 },
-			science_skill: { range_min: 0, range_max: 0 },
-			security_skill: { range_min: 0, range_max: 0 }
-		};
-		encounter.contests.forEach((contest, contestIndex) => {
-			const contestId: string = makeContestId(contest, contestIndex);
-			assignments[contestId] = {
-				index: contestIndex,
-				unusedSkills
-			};
-		});
-		return assignments;
-	}
 };
