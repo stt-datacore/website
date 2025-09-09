@@ -610,6 +610,7 @@
             "shuttles_to_tank": "Lanzaderas para tanquear",
             "time_needed": "Tiempo necesario"
         },
+        "n_shuttles_per_day": "Lanzamiento de {{n}} lanzaderas por día.",
         "n_shuttles_to_tank": "{{n}} lanzaderas para tanquear",
         "n_successful_missions": "{{n}} misiones exitosas.",
         "odds_note": "(Nota: No se pueden lanzar lanzaderas con una probabilidad de éxito menor al 14 %. Para tanquear, la probabilidad debe ser menor al 60 %.)",

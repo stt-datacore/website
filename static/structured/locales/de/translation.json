@@ -604,6 +604,7 @@
             "shuttles_to_tank": "Shuttles zum Tanken",
             "time_needed": "Benötigte Zeit"
         },
+        "n_shuttles_per_day": "Start von {{n}} Shuttles pro Tag.",
         "n_shuttles_to_tank": "{{n}} Shuttles zum Tanken",
         "n_successful_missions": "{{n}} erfolgreiche Missionen.",
         "odds_note": "(Hinweis: Shuttles können nicht gestartet werden, wenn die Erfolgswahrscheinlichkeit unter 14 % liegt. Um getankt zu werden, muss die Wahrscheinlichkeit unter 60 % sein.)",
