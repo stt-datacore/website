@@ -4,6 +4,7 @@ import {
 	DropdownItemProps,
 	Grid,
 	Icon,
+	Label,
 	Message,
 	Segment,
 	Statistic,
@@ -22,11 +23,12 @@ type ContestantProps = {
 	wins: string | JSX.Element;
 	editContestant: (contestant: IContestant) => void;
 	dismissContestant?: () => void;
+	compact?: boolean;
 };
 
 export const Contestant = (props: ContestantProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { skills, contestant, wins, editContestant, dismissContestant } = props;
+	const { skills, contestant, wins, editContestant, dismissContestant, compact } = props;
 
 	const expectedRoll: IExpectedScore = getExpectedScore(contestant.skills);
 
@@ -52,50 +54,36 @@ export const Contestant = (props: ContestantProps) => {
 	return (
 		<React.Fragment>
 			<Message attached onDismiss={dismissContestant}>
-				<Message.Header style={{ textAlign: 'center' }}>
-					{contestant.crew?.name ?? t('voyage.contests.contestant')}
-				</Message.Header>
-				<div style={{ display: 'flex', justifyContent: 'center' }}>
-					{contestant.crew && (
-						<AvatarView
-							mode='crew'
-							size={96}
-							item={contestant.crew}
-							partialItem={true}
-						/>
-					)}
-					{!contestant.crew && (
-						<div style={{ display: 'flex', alignItems: 'center', height: '96px' }}>
-							<Icon name='user' size='huge' />
-						</div>
-					)}
-				</div>
+				{!compact && renderFullHeader()}
+				{compact && renderCompactHeader()}
 			</Message>
-			<Segment attached>
-				<Table striped compact>
-					<Table.Body>
-						{skills.map(skill => renderContestantSkill(skill))}
-						<Table.Row>
-							<Table.Cell	/* Crit Chance */>
-								<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-									<div>
-										{t('voyage.contests.crit_chance')}
+			{!compact && (
+				<Segment attached>
+					<Table striped compact>
+						<Table.Body>
+							{skills.map(skill => renderContestantSkill(skill))}
+							<Table.Row>
+								<Table.Cell	/* Crit Chance */>
+									<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+										<div>
+											{t('voyage.contests.crit_chance')}
+										</div>
+										<div>
+											<Dropdown	/* Select crit chance */
+												placeholder={t('voyage.contests.select_crit_chance')}
+												selection
+												options={critChanceOptions}
+												value={contestant.critChance}
+												onChange={(e, { value }) => editContestant({...contestant, critChance: value as number})}
+											/>
+										</div>
 									</div>
-									<div>
-										<Dropdown	/* Select crit chance */
-											placeholder={t('voyage.contests.select_crit_chance')}
-											selection
-											options={critChanceOptions}
-											value={contestant.critChance}
-											onChange={(e, { value }) => editContestant({...contestant, critChance: value as number})}
-										/>
-									</div>
-								</div>
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
-				</Table>
-			</Segment>
+								</Table.Cell>
+							</Table.Row>
+						</Table.Body>
+					</Table>
+				</Segment>
+			)}
 			<Message attached='bottom'>
 				<Statistic.Group size='mini' widths={4}>
 					<Statistic	/* Avg */>
@@ -118,6 +106,64 @@ export const Contestant = (props: ContestantProps) => {
 			</Message>
 		</React.Fragment>
 	);
+
+	function renderFullHeader(): JSX.Element {
+		return (
+			<React.Fragment>
+				<Message.Header style={{ textAlign: 'center' }}>
+					{contestant.crew?.name ?? t('voyage.contests.contestant')}
+				</Message.Header>
+				{renderAvatar()}
+			</React.Fragment>
+		);
+	}
+
+	function renderCompactHeader(): JSX.Element {
+		return (
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: '1em' }}>
+				<div>
+					{renderAvatar()}
+				</div>
+				<div style={{ textAlign: 'center' }}>
+					<Label.Group>
+						{skills.map(skill => renderContestantSkillLabel(skill))}
+						<Label>
+							<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+								<span>
+									<img
+										src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+										style={{ height: '1.1em', verticalAlign: 'middle' }}
+										className='invertibleIcon'
+									/>
+								</span>
+								<span>{contestant.critChance}%</span>
+							</div>
+						</Label>
+					</Label.Group>
+				</div>
+			</div>
+		);
+	}
+
+	function renderAvatar(): JSX.Element {
+		return (
+			<div style={{ display: 'flex', justifyContent: 'center' }}>
+				{contestant.crew && (
+					<AvatarView
+						mode='crew'
+						size={compact ? 64 : 96}
+						item={contestant.crew}
+						partialItem={true}
+					/>
+				)}
+				{!contestant.crew && (
+					<div style={{ display: 'flex', alignItems: 'center', height: `${compact ? '64' : '96'}px` }}>
+						<Icon name='user' size='huge' />
+					</div>
+				)}
+			</div>
+		);
+	}
 
 	function renderContestantSkill(skill: string): JSX.Element {
 		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
@@ -148,6 +194,31 @@ export const Contestant = (props: ContestantProps) => {
 					</Grid>
 				</Table.Cell>
 			</Table.Row>
+		);
+	}
+
+	function renderContestantSkillLabel(skill: string): JSX.Element {
+		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
+		return (
+			<Label key={skill}>
+				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+					<span>
+						<img
+							src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+							style={{ height: '1.1em', verticalAlign: 'middle' }}
+							className='invertibleIcon'
+						/>
+					</span>
+					<span>
+						{contestantSkill && (
+							<>{contestantSkill.range_min}-{contestantSkill.range_max}</>
+						)}
+						{!contestantSkill && (
+							<>{t('voyage.contests.no_skill')}</>
+						)}
+					</span>
+				</div>
+			</Label>
 		);
 	}
 

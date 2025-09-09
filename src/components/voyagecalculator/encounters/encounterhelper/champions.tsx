@@ -9,7 +9,6 @@ import {
 
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
-import { oneCrewCopy } from '../../../../utils/crewutils';
 
 import CONFIG from '../../../CONFIG';
 import { IDataTableColumn, IDataTableSetup, IEssentialData } from '../../../dataset_presenters/model';
@@ -21,10 +20,9 @@ import { AvatarView } from '../../../item_presenters/avatarview';
 import { IContestSkill, IEncounter } from '../model';
 import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
-import { ContestSimulatorModal } from '../contestsimulator/modal';
 
-import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, IUnusedSkills, assignCrewToContest } from './championdata';
-import { ContestOdds } from './oddsmodal';
+import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, assignCrewToContest } from './championdata';
+import { ChampionSimulator } from './simulator';
 
 type ChampionsTableProps = {
 	id: string;
@@ -41,7 +39,6 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { voyageCrew, encounter, championData, assignments, setAssignments, targetSkills, setTargetSkills } = props;
 
-	const [contestTrigger, setContestTrigger] = React.useState<IChampionContest | undefined>(undefined);
 	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
 
 	const tableSetup = React.useMemo<IDataTableSetup>(() => {
@@ -88,7 +85,6 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 							contest={(datum as IChampionCrewData).contests[contestId]}
 							assignments={assignments}
 							assignCrew={assignCrew}
-							setContestTrigger={setContestTrigger}
 							setSimulatorTrigger={setSimulatorTrigger}
 						/>
 					)
@@ -138,21 +134,12 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				data={filteredData}
 				setup={tableSetup}
 			/>
-			{contestTrigger && (
-				<ContestOdds
+			{simulatorTrigger && (
+				<ChampionSimulator
 					voyageCrew={voyageCrew}
 					encounter={encounter}
 					assignments={assignments}
-					activeContest={contestTrigger}
-					cancelTrigger={() => setContestTrigger(undefined)}
-				/>
-			)}
-			{simulatorTrigger && (
-				<ChampionContestSimulator
-					voyageCrew={voyageCrew}
-					critTraits={encounter.critTraits}
-					contest={simulatorTrigger}
-					assignments={assignments}
+					activeContest={simulatorTrigger}
 					cancelTrigger={() => setSimulatorTrigger(undefined)}
 				/>
 			)}
@@ -262,13 +249,12 @@ type ChampionContestCellProps = {
 	contest: IChampionContest;
 	assignments: IContestAssignments;
 	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
-	setContestTrigger: (contest: IChampionContest) => void;
 	setSimulatorTrigger: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { contest, assignments, assignCrew, setContestTrigger, setSimulatorTrigger } = props;
+	const { contest, assignments, assignCrew, setSimulatorTrigger } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
@@ -295,9 +281,9 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						color={crewIsAssignedHere ? 'blue' : undefined}
 						compact
 					>
-						<Button	/* View contest odds */
-							title='View contest odds'
-							onClick={() => setContestTrigger(contest)}
+						<Button	/* Simulate contest */
+							title={t('voyage.contests.simulate_contest')}
+							onClick={() => setSimulatorTrigger(contest)}
 						>
 							{formatContestResult(contest.result)}
 						</Button>
@@ -314,14 +300,12 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				)}
 			</div>
 			<div
-				onClick={() => setSimulatorTrigger(contest)}
 				style={{
 					display: 'flex',
 					flexWrap: 'nowrap',
 					justifyContent: 'center',
 					alignItems: 'center',
-					columnGap: '.3em',
-					cursor: 'pointer'
+					columnGap: '.3em'
 				}}
 			>
 				<span	/* CREW_NAME's average score for this contest */
@@ -378,44 +362,6 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 			</Label>
 		);
 	}
-};
-
-type ChampionContestSimulatorProps = {
-	voyageCrew: PlayerCrew[];
-	critTraits: string[];
-	contest: IChampionContest;
-	assignments: IContestAssignments;
-	cancelTrigger: () => void;
-};
-
-const ChampionContestSimulator = (props: ChampionContestSimulatorProps) => {
-	const { voyageCrew, critTraits, contest, assignments, cancelTrigger } = props;
-
-	const boostedPool = React.useMemo<PlayerCrew[]>(() => {
-		const unusedSkills: IUnusedSkills = assignments[contest.id].unusedSkills;
-		return voyageCrew.map(voyager => {
-			const crew: PlayerCrew = oneCrewCopy(voyager) as PlayerCrew;
-			Object.keys(crew.skills).forEach(skill => {
-				if (contest.skills.map(cs => cs.skill).includes(skill)) {
-					crew.skills[skill].range_min += unusedSkills[skill].range_min;
-					crew.skills[skill].range_max += unusedSkills[skill].range_max;
-				}
-			});
-			return crew;
-		});
-	}, [voyageCrew, contest, assignments]);
-
-	return (
-		<ContestSimulatorModal
-			id='champions/contestsimulator'
-			skills={contest.skills.map(cs => cs.skill)}
-			traits={critTraits}
-			a={contest.champion}
-			aPool={boostedPool}
-			b={contest.challenger}
-			dismissSimulator={cancelTrigger}
-		/>
-	);
 };
 
 function getAssignedContest(assignments: IContestAssignments, crewId: number): string | undefined {

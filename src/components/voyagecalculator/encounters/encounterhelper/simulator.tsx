@@ -13,7 +13,7 @@ import { Contest } from '../contestsimulator/contest';
 import { assignCrewToContest, IChampionContest, IContestAssignments } from './championdata';
 import { ContributorsTable } from './contributors';
 
-type ContestOddsProps = {
+type ChampionSimulatorProps = {
 	voyageCrew: PlayerCrew[];
 	encounter: IEncounter;
 	assignments: IContestAssignments;
@@ -21,7 +21,7 @@ type ContestOddsProps = {
 	cancelTrigger: () => void;
 };
 
-export const ContestOdds = (props: ContestOddsProps) => {
+export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { encounter, activeContest, cancelTrigger } = props;
 
@@ -44,8 +44,8 @@ export const ContestOdds = (props: ContestOddsProps) => {
 			onClose={cancelTrigger}
 			size='small'
 		>
-			<Modal.Header	/* Contest Odds */>
-				Contest Odds
+			<Modal.Header	/* Contest Simulator */>
+				{t('voyage.contests.contest_simulator')}
 			</Modal.Header>
 			<Modal.Content scrolling>
 				{renderContent()}
@@ -67,6 +67,7 @@ export const ContestOdds = (props: ContestOddsProps) => {
 					skills={activeContest.skills.map(cs => cs.skill)}
 					a={activeContest.champion}
 					b={activeContest.challenger}
+					compact={true}
 				/>
 				<Divider />
 				{pendingAssignments && (
@@ -74,6 +75,7 @@ export const ContestOdds = (props: ContestOddsProps) => {
 						encounter={encounter}
 						activeContest={activeContest}
 						assignments={pendingAssignments}
+						setAssignments={setPendingAssignments}
 					/>
 				)}
 			</React.Fragment>

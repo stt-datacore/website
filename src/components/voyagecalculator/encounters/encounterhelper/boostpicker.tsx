@@ -1,36 +1,58 @@
 import React from 'react';
 import {
 	Button,
+	Checkbox,
+	Form,
 	Grid,
 	Icon,
-	Popup
+	Message,
+	Popup,
+	Segment
 } from 'semantic-ui-react';
 
+import { PlayerCrew } from '../../../../model/player';
 import ItemDisplay from '../../../itemdisplay';
-import { IChampionBoost } from './championdata';
+import { CRIT_BOOSTS, IChampionBoost } from './championdata';
 import { MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
+import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 
 type BoostPickerProps = {
-	skills: string[];
-	activeBoost: IChampionBoost | undefined;
+	assignedCrew: PlayerCrew;
+	assignedBoost: IChampionBoost | undefined;
+	targetSkills: string[];
+	targetCrit: boolean;
 	onBoostSelected: (boost: IChampionBoost | undefined) => void;
-	impact: 'now' | 'future';
 };
 
 export const BoostPicker = (props: BoostPickerProps) => {
-	const { skills, activeBoost, onBoostSelected, impact } = props;
+	const { assignedCrew, assignedBoost, targetSkills, targetCrit, onBoostSelected } = props;
 
 	const [showPopup, setShowPopup] = React.useState<boolean>(false);
+	const [showRelevant, setShowRelevant] = React.useState<boolean>(true);
 
-	const options: IChampionBoost[] = [];
-	skills.forEach(skill => {
-		for (let i = 0; i <= 5; i++) {
-			options.push({
-				type: skill,
-				rarity: i
-			});
+	const boostOptions = React.useMemo<IChampionBoost[]>(() => {
+		const skills: string[] = Object.keys(assignedCrew.skills).filter(skill =>
+			!showRelevant || targetSkills.includes(skill)
+		);
+		const options: IChampionBoost[] = [];
+		skills.forEach(skill => {
+			for (let i = 0; i <= 5; i++) {
+				options.push({
+					type: skill,
+					rarity: i
+				});
+			}
+		});
+		if (!showRelevant || targetCrit) {
+			for (let i = 2; i <= 5; i++) {
+				options.push({
+					type: 'voyage_crit_boost',
+					rarity: i
+				});
+			}
 		}
-	});
+		return options;
+	}, [assignedCrew, showRelevant]);
 
 	return (
 		<Popup
@@ -39,33 +61,34 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			open={showPopup}
 			onOpen={() => setShowPopup(true)}
 			onClose={() => setShowPopup(false)}
-			position='top center'
+			position='left center'
 			wide
 		>
-			<Popup.Header>
-				<Button /* No boost */
-					title='No boost'
-					icon='ban'
-					floated='right'
-					onClick={() => {
-						onBoostSelected(undefined);
-						setShowPopup(false);
-					}}
-				/>
-				Select a boost
-				<div style={{ marginTop: '.5em', fontSize: '1rem', fontWeight: 'normal' }}>
-					{impact === 'now' && <>Using a boost here will improve the odds of winning this contest.</>}
-					{impact === 'future' && <>Using a boost here will improve the odds of winning later contests with this skill.</>}
-				</div>
-			</Popup.Header>
 			<Popup.Content>
-				{renderOptions()}
+				<Message
+					attached='top'
+					onDismiss={() => setShowPopup(false)}
+				>
+					<CrewLabel crew={assignedCrew} />
+				</Message>
+				<Segment
+					attached='bottom'
+					style={{
+						maxHeight: '200px',
+						overflowX: 'hidden',
+						overflowY: 'scroll',
+						padding: '1em'
+					}}
+				>
+					{boostOptions.length > 0 && renderBoosts()}
+					{boostOptions.length === 0 && renderRelevantToggle()}
+				</Segment>
 			</Popup.Content>
 		</Popup>
 	);
 
 	function renderTrigger(): JSX.Element {
-		if (!activeBoost || activeBoost.type !== skills[0]) {
+		if (!assignedBoost) {
 			return (
 				<Button /* Add a boost */
 					title='Add a boost'
@@ -80,56 +103,94 @@ export const BoostPicker = (props: BoostPickerProps) => {
 				style={{ cursor: 'pointer' }}
 			>
 				<ItemDisplay
-					src={getConsumableImg(activeBoost.type, activeBoost.rarity)}
+					src={getConsumableImg(assignedBoost.type, assignedBoost.rarity)}
 					size={32}
-					rarity={activeBoost.rarity}
-					maxRarity={activeBoost.rarity}
+					rarity={assignedBoost.rarity}
+					maxRarity={assignedBoost.rarity}
 				/>
 			</div>
 		);
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderBoosts(): JSX.Element {
 		return (
-			<Grid columns={4}>
-				{options.map(option => (
-					<Grid.Column
-						key={`${option.type}_${option.rarity}`}
-						onClick={() => onBoostSelected({ type: option.type, rarity: option.rarity })}
-						style={{ cursor: 'pointer' }}
-					>
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'column',
-								justifyContent: 'top',
-								alignItems: 'center',
-							}}
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					rowGap: '2em'
+				}}
+			>
+				<Grid columns={3}>
+					{boostOptions.map(option => (
+						<Grid.Column
+							key={`${option.type}_${option.rarity}`}
+							onClick={() => onBoostSelected({ type: option.type, rarity: option.rarity })}
+							style={{ cursor: 'pointer' }}
 						>
-							<div>
-								<ItemDisplay
-									src={getConsumableImg(option.type, option.rarity)}
-									size={48}
-									rarity={option.rarity}
-									maxRarity={option.rarity}
-								/>
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									justifyContent: 'top',
+									alignItems: 'center',
+								}}
+							>
+								<div>
+									<ItemDisplay
+										src={getConsumableImg(option.type, option.rarity)}
+										size={48}
+										rarity={option.rarity}
+										maxRarity={option.rarity}
+									/>
+								</div>
+								<div style={{ whiteSpace: 'nowrap' }}>
+									{assignedBoost?.type === option.type && assignedBoost?.rarity === option.rarity && (
+										<Icon name='check' color='blue' fitted />
+									)}
+									<small>
+										{option.type === 'voyage_crit_boost' && (
+											<>+{CRIT_BOOSTS[option.rarity]}%</>
+										)}
+										{option.type !== 'voyage_crit_boost' && (
+											<>+({MIN_RANGE_BOOSTS[option.rarity]}-{MAX_RANGE_BOOSTS[option.rarity]})</>
+										)}
+									</small>
+								</div>
 							</div>
-							<div style={{ whiteSpace: 'nowrap' }}>
-								{activeBoost?.type === option.type && activeBoost?.rarity === option.rarity && (
-									<Icon name='check' color='blue' fitted />
-								)}
-								<small>
-									+({MIN_RANGE_BOOSTS[option.rarity]}-{MAX_RANGE_BOOSTS[option.rarity]})
-								</small>
-							</div>
-						</div>
-					</Grid.Column>
-				))}
-			</Grid>
+						</Grid.Column>
+					))}
+				</Grid>
+				{renderRelevantToggle()}
+				<Button /* No boost */
+					icon='ban'
+					content='No boost'
+					onClick={() => {
+						onBoostSelected(undefined);
+						setShowPopup(false);
+					}}
+					fluid
+				/>
+			</div>
 		);
 	}
 
-	function getConsumableImg(skill: string, rarity: number): string {
-		return `${process.env.GATSBY_ASSETS_URL}items_consumables_${skill.replace('_skill', '')}_consumable_${rarity}.png`;
+	function renderRelevantToggle(): JSX.Element {
+		return (
+			<Form style={{ textAlign: 'center' }}>
+				<Form.Field
+					control={Checkbox}
+					label='Only show relevant boosts'
+					checked={showRelevant}
+					onChange={(e, {checked}) => setShowRelevant(checked as boolean)}
+				/>
+			</Form>
+		);
+	}
+
+	function getConsumableImg(type: string, rarity: number): string {
+		if (type === 'voyage_crit_boost')
+			return `${process.env.GATSBY_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
+		return `${process.env.GATSBY_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
 	}
 };
