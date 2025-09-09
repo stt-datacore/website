@@ -12,6 +12,7 @@ import { printChrons, printHonor, printMerits } from "../../retrieval/context";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { ReferenceShip, Ship } from "../../../model/ship";
+import { formatTime } from "../../../utils/voyageutils";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
@@ -70,6 +71,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     const [eligible, setEligble] = React.useState<DilemmaMultipartData[]>([]);
     const [inverse, setInverse] = React.useState<DilemmaMultipartData[]>([]);
+    const [maxRun, setMaxRun] = React.useState(0);
 
     React.useEffect(() => {
         const dilemmas = getDilemmaData(crew, ships, dilemmaSource, voyageLog?.voyage_narrative)
@@ -78,6 +80,12 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         setDilemmas(dilemmas);
         setEligble(eligible);
         setInverse(inverse);
+        if (dilemmas.some(d => d.narrative) && playerData) {
+            setMaxRun(2 * ((dilemmas.length - inverse.length) + 1));
+        }
+        else {
+            setMaxRun(0);
+        }
     }, [voyageLog, dilemmaSource, crew, ships]);
 
     const tableConfig: ITableConfigRow[] = [
@@ -142,6 +150,14 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 config={tableConfig}
                 filterRow={searchTable}
                 renderTableRow={renderTableRow}
+                extraSearchContent={<>
+                    {!!maxRun && <div style={{...flexRow, justifyContent: 'flex-end', flexGrow: 1, alignItems: 'center', gap: '0.5em'}}>
+                        <span>
+                            {t('hof.max_duration')}{t('global.colon')}
+                        </span>
+                        <span style={{fontSize: '1.25em', fontWeight: 'bold'}}>{formatTime(maxRun, t, false)}</span>
+                    </div>}
+                </>}
                 />
         </React.Fragment>
     )
