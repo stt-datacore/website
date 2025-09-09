@@ -50,7 +50,7 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
 
     function renderCopyPaste(): JSX.Element {
         const VOYAGELINK = `https://app.startrektimelines.com/voyage/refresh`;
-        let title = t(`json_types.voyage_log_data`)
+        let title = t(`json_types.voyage_log`)
         title = title.slice(0, 1).toUpperCase() + title.slice(1);
         return (
             <React.Fragment>
@@ -77,13 +77,13 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
                     content={
                         <div style={{cursor: 'pointer'}} onClick={(e) => setCollapsed(false)}>
                             <p>
-                                {t('json.existing.header', { data: t(`json_types.voyage_log_data`)})}
+                                {t('json.existing.header', { data: t(`json_types.voyage_log`)})}
                             </p>
                             <p>
                                 {t('json.existing.click_here')}
                             </p>
                             <p>
-                                <b><a onClick={() => setCollapsed(false)}>{t('json.existing.live_data', { data: t(`json_types.voyage_log_data`)})}</a></b>
+                                <b><a onClick={() => setCollapsed(false)}>{t('json.existing.live_data', { data: t(`json_types.voyage_log`)})}</a></b>
                             </p>
                             <p style={{textAlign: "right"}}>
                                 <b style={{fontSize:"0.8em"}}>(<a title={t('json.existing.clear')} onClick={() => clearVoyageLog()}>{t('json.existing.clear')}</a>)</b>
