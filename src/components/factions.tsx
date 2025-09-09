@@ -42,19 +42,18 @@ const FactionInfo = (props: ShuttleInfoProps) => {
     const { t: tg } = globalContext.localized;
 
     const { playerData } = globalContext.player;
-
+    const shuttleBays = playerData?.player.character.shuttle_bays || 1;
     const dbidPrefix = (() => {
         if (playerData?.player.dbid) return `${playerData.player.dbid}/`;
         else return '';
     })();
 
     const [successOdds, setSuccessOdds] = useStateWithStorage(`${dbidPrefix}factions/success_odds`, 14, { rememberForever: true });
-    const [shuttles, setShuttles] = useStateWithStorage<string | number | undefined>(`${dbidPrefix}factions/shuttles_per_day`, undefined, { rememberForever: true });
+    const [shuttles, setShuttles] = useStateWithStorage<string | number | undefined>(`${dbidPrefix}factions/shuttles_per_day`, shuttleBays * 8, { rememberForever: true });
 
-    const { data, shuttleBays } = React.useMemo(() => {
+    const { data } = React.useMemo(() => {
         if (!playerData) return { data: [], shuttleBays: 0 };
         let data = JSON.parse(JSON.stringify(playerData.player.character.factions)) as TankingFaction[];
-        let shuttleBays = playerData?.player.character.shuttle_bays || 1;
         data.forEach(faction => {
             let maxDaily = 8 * shuttleBays;
             let askDaily = maxDaily;
@@ -76,7 +75,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
             }
             faction.tank_time = hoursNeededToTank * (60 * 60 * 1000);
         });
-        return { data, shuttleBays };
+        return { data };
     }, [playerData, successOdds, shuttles]);
 
     React.useEffect(() => {
@@ -120,7 +119,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
                             <Input
                                 style={{maxWidth: '6em', margin: '0 0.5em' }}
                                 value={shuttles}
-                                error={Number.isNaN(Number(shuttles)) || !Number(shuttles)}
+                                error={!shuttles || Number.isNaN(Number(shuttles)) || !Number(shuttles)}
                                 onChange={(e) => {
                                     setShuttles(e.target.value as string | number);
                                 }}
