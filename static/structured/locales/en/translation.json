@@ -604,6 +604,7 @@
             "shuttles_to_tank": "Shuttles to Tank",
             "time_needed": "Time Needed"
         },
+        "n_shuttles_per_day": "Running {{n}} shuttles per day.",
         "n_shuttles_to_tank": "{{n}} shuttles to tank.",
         "n_successful_missions": "{{n}} successful missions.",
         "odds_note": "(Note: Shuttles cannot be run with a probability of success less than 14%. Shuttles need a probability of less than 60% to be tanked.)",
