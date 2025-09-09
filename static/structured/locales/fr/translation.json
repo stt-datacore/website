@@ -612,6 +612,7 @@
             "shuttles_to_tank": "Navettes à tanker",
             "time_needed": "Temps requis"
         },
+        "n_shuttles_per_day": "Lancement de {{n}} navettes par jour.",
         "n_shuttles_to_tank": "{{n}} navettes à tanker",
         "n_successful_missions": "{{n}} missions réussies.",
         "odds_note": "(Note : Les navettes ne peuvent pas être lancées avec une probabilité de succès inférieure à 14 %. Pour être tankées, elles doivent avoir une probabilité inférieure à 60 %.)",

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Table, Image, Dropdown } from 'semantic-ui-react'
+import { Table, Image, Dropdown, Input, Button } from 'semantic-ui-react'
 import { Faction } from '../model/player';
 import { GlobalContext } from '../context/globalcontext';
 //import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -7,6 +7,8 @@ import { ITableConfigRow, SearchableTable } from './searchabletable';
 import { Filter } from '../model/game-elements';
 import { formatTime } from '../utils/itemutils';
 import { omniSearchFilter } from '../utils/omnisearch';
+import { useStateWithStorage } from '../utils/storage';
+import { OptionsPanelFlexRow } from './stats/utils';
 
 type TankingFaction = Faction & { honor_shuttles: number, honor_time: number, tank_shuttles: number, tank_time: number };
 
@@ -40,25 +42,51 @@ const FactionInfo = (props: ShuttleInfoProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { useT } = globalContext.localized;
     const { t, tfmt } = useT('factions');
+    const { t: tg } = globalContext.localized;
+
     const { playerData } = globalContext.player;
-    const [successOdds, setSuccessOdds] = React.useState(14);
+
+    const dbidPrefix = (() => {
+        if (playerData?.player.dbid) return `${playerData.player.dbid}/`;
+        else return '';
+    })();
+
+    const [successOdds, setSuccessOdds] = useStateWithStorage(`${dbidPrefix}factions/success_odds`, 14, { rememberForever: true });
+    const [shuttles, setShuttles] = useStateWithStorage<string | number | undefined>(`${dbidPrefix}factions/shuttles_per_day`, undefined, { rememberForever: true });
 
     const { data, shuttleBays } = React.useMemo(() => {
-        if (!playerData) return { data: [], shuttleBays: 1 };
+        if (!playerData) return { data: [], shuttleBays: 0 };
         let data = JSON.parse(JSON.stringify(playerData.player.character.factions)) as TankingFaction[];
         let shuttleBays = playerData?.player.character.shuttle_bays || 1;
         data.forEach(faction => {
+            let maxDaily = 8 * shuttleBays;
+            let askDaily = maxDaily;
+            if (shuttles && !Number.isNaN(Number(shuttles))) askDaily = Number(shuttles);
+            if (!askDaily) askDaily = maxDaily;
+
             let shuttlesNeededToMaxRep = shuttlesToHonouredStatus(faction.reputation);
             let hoursNeededToMaxRep = Math.ceil(shuttlesNeededToMaxRep / shuttleBays) * 3;
             let shuttlesNeededToTank = Math.ceil(faction.completed_shuttle_adventures / expectedCSA(successOdds / 100));
-            let hoursNeededToTank = Math.ceil(shuttlesNeededToTank / shuttleBays) * 3;
+            let hoursNeededToTank = (Math.ceil(shuttlesNeededToTank / shuttleBays) * 3);
             faction.honor_shuttles = shuttlesNeededToMaxRep;
             faction.tank_shuttles = shuttlesNeededToTank;
+            if (askDaily !== maxDaily && shuttlesNeededToMaxRep > askDaily) {
+                hoursNeededToMaxRep = Math.min(hoursNeededToMaxRep * (maxDaily / askDaily), shuttlesNeededToMaxRep * askDaily * 3);
+            }
             faction.honor_time = hoursNeededToMaxRep * (60 * 60 * 1000);
+            if (askDaily !== maxDaily && shuttlesNeededToTank > askDaily) {
+                hoursNeededToTank = Math.min(hoursNeededToTank * (maxDaily / askDaily), shuttlesNeededToTank * askDaily * 3);
+            }
             faction.tank_time = hoursNeededToTank * (60 * 60 * 1000);
         });
         return { data, shuttleBays };
-    }, [playerData, successOdds]);
+    }, [playerData, successOdds, shuttles]);
+
+    React.useEffect(() => {
+        if (shuttleBays && !shuttles) {
+            setShuttles(shuttleBays * 8);
+        }
+    }, [shuttleBays]);
 
     const tableConfig = [
         { width: 2, title: t('columns.faction'), column: 'faction' },
@@ -87,6 +115,28 @@ const FactionInfo = (props: ShuttleInfoProps) => {
                         )
                     })}
                 </span>
+            </p>
+            <p>
+                <span>
+                    {tfmt('n_shuttles_per_day', {
+                        n: (<>
+                            <Input
+                                style={{maxWidth: '6em', margin: '0 0.5em' }}
+                                value={shuttles}
+                                error={Number.isNaN(Number(shuttles)) || !Number(shuttles)}
+                                onChange={(e) => {
+                                    setShuttles(e.target.value as string | number);
+                                }}
+                            />
+
+                            </>
+                        )
+                    })}
+                </span>
+                &nbsp;&nbsp;
+                <Button
+                    onClick={() => setShuttles(shuttleBays * 8)}
+                    size='tiny'>{tg('global.reset')}</Button>
             </p>
             <p>{t('odds_note')}</p>
             <SearchableTable
@@ -123,23 +173,23 @@ const FactionInfo = (props: ShuttleInfoProps) => {
 
         return (
             <Table.Row key={index}>
-                <Table.Cell><span><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />{faction.name}</span></Table.Cell>
+                <Table.Cell><div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', gap: '0.5em'}}><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />{faction.name}</div></Table.Cell>
                 <Table.Cell>{reputation(faction.reputation)}</Table.Cell>
                 <Table.Cell>
                     {faction.reputation < 980 && <p>{t('n_successful_missions', { n: faction.honor_shuttles })}</p>}
                     {faction.reputation >= 980 && <p>{t('already_honored')}</p>}
                 </Table.Cell>
                 <Table.Cell>
-                    {faction.reputation < 980 && <p>{formatTime(faction.honor_time, globalContext.localized.t)}</p>}
-                    {faction.reputation >= 980 && <p>{globalContext.localized.t('global.na')}</p>}
+                    {faction.reputation < 980 && <p>{formatTime(faction.honor_time, tg)}</p>}
+                    {faction.reputation >= 980 && <p>{tg('global.na')}</p>}
                 </Table.Cell>
                 <Table.Cell>
                     {faction.tank_shuttles > 0 && <p>{t('n_shuttles_to_tank', { n: faction.tank_shuttles })}</p>}
                     {faction.tank_shuttles == 0 && <p>{t('already_tanked')}</p>}
                 </Table.Cell>
                 <Table.Cell>
-                    {faction.tank_shuttles > 0 && <p>{formatTime(faction.tank_time, globalContext.localized.t)}</p>}
-                    {faction.tank_shuttles == 0 && <p>{globalContext.localized.t('global.na')}</p>}
+                    {faction.tank_shuttles > 0 && <p>{formatTime(faction.tank_time, tg)}</p>}
+                    {faction.tank_shuttles == 0 && <p>{tg('global.na')}</p>}
                 </Table.Cell>
             </Table.Row>
         );
