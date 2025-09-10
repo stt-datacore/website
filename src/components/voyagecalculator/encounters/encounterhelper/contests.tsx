@@ -7,14 +7,12 @@ import {
 
 import { GlobalContext } from '../../../../context/globalcontext';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
-import ItemDisplay from '../../../itemdisplay';
-import CONFIG from '../../../CONFIG';
 
 import { IContest, IContestSkill, IExpectedScore } from '../model';
 import { formatContestResult, getExpectedScore } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { EncounterContext } from './context';
-import { getConsumableImg } from './boostpicker';
+import { BoostLabel } from './boostpicker';
 import { IChampion, IChampionBoost, IChampionContest } from './championdata';
 
 type ContestsTableProps = {
@@ -144,24 +142,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 
 	function renderBoost(boost: IChampionBoost | undefined): JSX.Element {
 		if (!boost) return <></>;
-		let name: string = `${boost.rarity}*`;
-		if (boost.type === 'voyage_crit_boost')
-			name += ' CRIT';
-		else
-			name += ` ${CONFIG.SKILLS_SHORT.find(ss => ss.name === boost.type)?.short ?? ''}`;
-		return (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<ItemDisplay
-					src={getConsumableImg(boost.type, boost.rarity)}
-					size={32}
-					rarity={boost.rarity}
-					maxRarity={boost.rarity}
-				/>
-				<span style={{ padding: '0 .5em', whiteSpace: 'nowrap' }}>
-					{name}
-				</span>
-			</div>
-		);
+		return <BoostLabel boost={boost} />;
 	}
 
 	function renderChampionSkills(contest: IChampionContest): JSX.Element {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { InView } from 'react-intersection-observer';
 import {
 	Dropdown,
 	DropdownItemProps,
@@ -24,6 +25,7 @@ type ContestantProps = {
 	editContestant: (contestant: IContestant) => void;
 	dismissContestant?: () => void;
 	compact?: boolean;
+	onWinsViewChange?: (inView: boolean) => void;
 };
 
 export const Contestant = (props: ContestantProps) => {
@@ -99,6 +101,11 @@ export const Contestant = (props: ContestantProps) => {
 						<Statistic.Label>{t('voyage.contests.max')}</Statistic.Label>
 					</Statistic>
 					<Statistic	/* Wins */>
+						{props.onWinsViewChange && (
+							<InView
+								onChange={(inView, _entry) => props.onWinsViewChange!(inView)}
+							/>
+						)}
 						<Statistic.Value>{wins}</Statistic.Value>
 						<Statistic.Label>{t('voyage.contests.wins')}</Statistic.Label>
 					</Statistic>

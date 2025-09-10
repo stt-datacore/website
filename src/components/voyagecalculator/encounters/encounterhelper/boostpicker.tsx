@@ -13,6 +13,7 @@ import {
 import { PlayerCrew } from '../../../../model/player';
 import ItemDisplay from '../../../itemdisplay';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
+import CONFIG from '../../../CONFIG';
 import { CRIT_BOOSTS, IChampionBoost, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 
 type BoostPickerProps = {
@@ -49,6 +50,12 @@ export const BoostPicker = (props: BoostPickerProps) => {
 					rarity: i
 				});
 			}
+		}
+		if (showRelevant && assignedBoost && options.filter(option => option.type === assignedBoost.type).length === 0) {
+			options.unshift({
+				type: assignedBoost.type,
+				rarity: assignedBoost.rarity
+			});
 		}
 		return options;
 	}, [assignedCrew, showRelevant]);
@@ -101,12 +108,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 				title='Change boost'
 				style={{ cursor: 'pointer' }}
 			>
-				<ItemDisplay
-					src={getConsumableImg(assignedBoost.type, assignedBoost.rarity)}
-					size={32}
-					rarity={assignedBoost.rarity}
-					maxRarity={assignedBoost.rarity}
-				/>
+				<BoostLabel boost={assignedBoost} />
 			</div>
 		);
 	}
@@ -193,6 +195,32 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			</Form>
 		);
 	}
+};
+
+type BoostLabelProps = {
+	boost: IChampionBoost;
+};
+
+export const BoostLabel = (props: BoostLabelProps) => {
+	const { boost } = props;
+	let name: string = `${boost.rarity}*`;
+	if (boost.type === 'voyage_crit_boost')
+		name += ' CRIT';
+	else
+		name += ` ${CONFIG.SKILLS_SHORT.find(ss => ss.name === boost.type)?.short ?? ''}`;
+	return (
+		<div style={{ display: 'flex', alignItems: 'center' }}>
+			<ItemDisplay
+				src={getConsumableImg(boost.type, boost.rarity)}
+				size={32}
+				rarity={boost.rarity}
+				maxRarity={boost.rarity}
+			/>
+			<span style={{ padding: '0 .5em', whiteSpace: 'nowrap' }}>
+				{name}
+			</span>
+		</div>
+	);
 };
 
 export function getConsumableImg(type: string, rarity: number): string {

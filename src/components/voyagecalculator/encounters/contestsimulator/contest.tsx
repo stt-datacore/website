@@ -30,6 +30,8 @@ type ContestProps = {
 	b?: IContestant;
 	bPool?: PlayerCrew[];
 	compact?: boolean;
+	onResult?: (result: IContestResult) => void;
+	onWinsViewChange?: (inView: boolean) => void;
 };
 
 export const Contest = (props: ContestProps) => {
@@ -49,8 +51,11 @@ export const Contest = (props: ContestProps) => {
 	}, [props.a]);
 
 	React.useEffect(() => {
-		simulateContest(contestantA, contestantB, SIMULATIONS, PERCENTILE).then(result => {
+		// Run more simulations if contestants have high crit chances
+		const simCount: number = Math.floor(SIMULATIONS*(1+((contestantA.critChance+contestantB.critChance)/100)));
+		simulateContest(contestantA, contestantB, simCount, PERCENTILE).then(result => {
 			setContestResult(result);
+			if (props.onResult) props.onResult(result);
 		});
 		setContestResult(undefined);
 	}, [contestantA, contestantB]);
@@ -58,13 +63,8 @@ export const Contest = (props: ContestProps) => {
 	return (
 		<React.Fragment>
 			<div
-				style={{
-					// position: 'sticky',
-					// top: '-1em',
-					// zIndex: '1000'
-					cursor: compactMode ? 'pointer' : undefined
-				}}
-				onClick={() => setCompactMode(false)}
+				style={{ cursor: compactMode ? 'pointer' : undefined }}
+				onClick={compactMode ? () => setCompactMode(false) : undefined}
 			>
 				<Grid columns={2} centered stackable>
 					<Grid.Column>
@@ -75,6 +75,7 @@ export const Contest = (props: ContestProps) => {
 							editContestant={(contestant: IContestant) => setContestantA(contestant)}
 							dismissContestant={aPool ? () => setContestantA(makeContestant(skills, traits ?? [])) : undefined}
 							compact={compactMode}
+							onWinsViewChange={props.onWinsViewChange}
 						/>
 						{aPool && (
 							<Button	/* Search for contestant */
@@ -105,6 +106,14 @@ export const Contest = (props: ContestProps) => {
 					</Grid.Column>
 				</Grid>
 			</div>
+			{!compactMode && (
+				<div style={{ marginTop: '1em' }}>
+					Avg, Min, and Max are calculated without crit chance.
+					{contestResult?.simulated && (
+						<>{` `}Wins % is calculated from simulations with crit chance.</>
+					)}
+				</div>
+			)}
 			{pickerTrigger && (
 				<ContestantPicker
 					id={`${props.id}/contestantpicker`}
@@ -123,7 +132,7 @@ export const Contest = (props: ContestProps) => {
 		if (contestant) {
 			return {
 				crew: contestant.crew,
-				skills: JSON.parse(JSON.stringify(contestant.skills)),	// Prevent edits from bubbling up
+				skills: structuredClone(contestant.skills),	// Prevent edits from bubbling up
 				critChance: contestant.critChance
 			};
 		}

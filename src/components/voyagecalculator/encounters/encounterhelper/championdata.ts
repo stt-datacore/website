@@ -225,7 +225,7 @@ export function assignCrewToContest(
 	});
 	if (contestId) {
 		assignments[contestId].crew = crew;
-		if (boost) assignments[contestId].boost = boost;
+		assignments[contestId].boost = boost;
 	}
 
 	const unusedSkills: IUnusedSkills = {
@@ -240,7 +240,7 @@ export function assignCrewToContest(
 	encounter.contests.forEach((contest, contestIndex) => {
 		const contestId: string = makeContestId(contest, contestIndex);
 		const assignment: IContestAssignment = assignments[contestId];
-		assignment.unusedSkills = JSON.parse(JSON.stringify(unusedSkills));
+		assignment.unusedSkills = structuredClone(unusedSkills);
 		if (assignment.crew) {
 			const crewSkills: BaseSkills = assignment.crew.skills;
 			Object.keys(crewSkills).filter(skill =>

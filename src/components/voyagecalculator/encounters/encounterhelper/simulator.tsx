@@ -2,20 +2,20 @@ import React from 'react';
 import {
 	Button,
 	Divider,
-	Modal
+	Message,
+	Modal,
+	Statistic
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../../../context/globalcontext';
+import { AvatarView } from '../../../item_presenters/avatarview';
 
-import { IContestSkill, IExpectedScore } from '../model';
-import { getExpectedScore, makeContestant, simulateContest } from '../utils';
+import { IContestResult, IContestSkill, IExpectedScore } from '../model';
+import { formatContestResult, getExpectedScore, makeContestant } from '../utils';
 import { Contest } from '../contestsimulator/contest';
 import { EncounterContext } from './context';
-import { assignCrewToContest, CRIT_BOOSTS, getDefaultAssignments, IChampion, IChampionBoost, IChampionContest, IContestAssignment, IContestAssignments, IUnusedSkills, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
+import { assignCrewToContest, CRIT_BOOSTS, getDefaultAssignments, IChampion, IChampionBoost, IChampionContest, IChampionCrewData, IContestAssignment, IContestAssignments, IUnusedSkills, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 import { ContributorsTable } from './contributors';
-
-const SIMULATIONS: number = 20000;
-const PERCENTILE: number = 1;	// 1 for head-to-head simulations, <1 for sample simulations
 
 type ChampionSimulatorProps = {
 	activeContest: IChampionContest;
@@ -25,11 +25,14 @@ type ChampionSimulatorProps = {
 
 export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { encounter, contestIds, assignments } = React.useContext(EncounterContext);
+	const { encounter, contestIds, championData, assignments } = React.useContext(EncounterContext);
 	const { updateAssignments, cancelTrigger } = props;
 
 	const [pendingAssignments, setPendingAssignments] = React.useState<IContestAssignments>(getDefaultAssignments(encounter.contests));
 	const [activeContest, setActiveContest] = React.useState<IChampionContest | undefined>(undefined);
+	const [contestOdds, setContestOdds] = React.useState<{ [key: string]: number; }>({});
+	const [contestResult, setContestResult] = React.useState<IContestResult | undefined>(undefined);
+	const [showWinsBug, setShowWinsBug] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
 		// Make copy of assignments so we can test crew and boosts without saving
@@ -55,25 +58,32 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 			result: undefined
 		});
 		setPendingAssignments(pendingAssignments);
+
+		const contestOdds: { [key: string]: number; } = {};
+		Object.keys(pendingAssignments).forEach(contestId => {
+			contestOdds[contestId] = 0;
+			const assignment: IContestAssignment = assignments[contestId];
+			const crewId: number = assignment.crew?.id ?? 0;
+			const crewData: IChampionCrewData | undefined = championData.find(crewData =>
+				crewData.id === crewId
+			);
+			if (crewData) {
+				const championContest: IChampionContest = crewData.contests[contestId];
+				if (championContest.result) contestOdds[contestId] = championContest.result.oddsA;
+			}
+		});
+		setContestOdds(contestOdds);
 	}, [assignments, props.activeContest]);
 
 	React.useEffect(() => {
 		if (!activeContest) return;
 		const champion: IChampion = makeChampion(activeContest, pendingAssignments);
 		const championRoll: IExpectedScore = getExpectedScore(champion.skills);
-		simulateContest(champion, activeContest.challenger, SIMULATIONS, PERCENTILE).then(result => {
-			setActiveContest({
-				...activeContest,
-				champion,
-				champion_roll: championRoll,
-				result: {
-					...result,
-					contestId: activeContest.id,
-					crewId: champion.crew.id,
-					championAverage: championRoll.average,
-					critChance: champion.critChance
-				}
-			});
+		setActiveContest({
+			...activeContest,
+			champion,
+			champion_roll: championRoll,
+			result: undefined
 		});
 	}, [pendingAssignments]);
 
@@ -110,6 +120,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 				{t('voyage.contests.contest_simulator')}
 			</Modal.Header>
 			<Modal.Content scrolling>
+				{showWinsBug && renderBug()}
 				{renderContent()}
 			</Modal.Content>
 			<Modal.Actions>
@@ -140,16 +151,51 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 					a={activeContest.champion}
 					b={activeContest.challenger}
 					compact={true}
+					onResult={setContestResult}
+					onWinsViewChange={(inView) => setShowWinsBug(!inView)}
 				/>
 				<Divider />
 				{pendingAssignments && (
 					<ContributorsTable
 						activeContest={activeContest}
+						contestOdds={contestOdds}
 						assignments={pendingAssignments}
 						setAssignments={setPendingAssignments}
 					/>
 				)}
 			</React.Fragment>
+		);
+	}
+
+	function renderBug(): JSX.Element {
+		if (!contestResult) return <></>;
+		return (
+			<div style={{ position: 'absolute', top: '1em', right: '1em', zIndex: '100' }}>
+				<Message compact color='black'>
+					<div style={{ display: 'flex', alignItems: 'center', columnGap: '1em' }}>
+						<div>
+							{activeContest?.champion.crew && (
+								<AvatarView
+									mode='crew'
+									size={64}
+									item={activeContest.champion.crew}
+									partialItem={true}
+								/>
+							)}
+						</div>
+						<div>
+							<Statistic size='tiny'	/* Wins */>
+								<Statistic.Value>
+									{formatContestResult(contestResult)}
+								</Statistic.Value>
+								<Statistic.Label>
+									{t('voyage.contests.wins')}
+								</Statistic.Label>
+							</Statistic>
+						</div>
+					</div>
+				</Message>
+			</div>
 		);
 	}
 
