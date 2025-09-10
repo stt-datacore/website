@@ -62,7 +62,7 @@ const ProfilePageLoader = () => {
 
 	const profData: PlayerData | undefined = React.useMemo(() => {
 		if (!strippedPlayerData) return;
-		let profData = JSON.parse(JSON.stringify(strippedPlayerData)) as PlayerData;
+		let profData = structuredClone(strippedPlayerData) as PlayerData;
 		prepareProfileData('PROFILE_PROVIDER', coreCrew, profData, lastModified ?? new Date());
 		return profData;
 	}, [strippedPlayerData]);

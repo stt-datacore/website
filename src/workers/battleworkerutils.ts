@@ -420,9 +420,9 @@ export interface EffectData {
 
 export function applyEffects(ship: Ship, boss: Ship, effects: BossEffect[], copy = false): EffectData {
     if (copy) {
-        ship = JSON.parse(JSON.stringify(ship));
-        boss = JSON.parse(JSON.stringify(boss));
-        effects = JSON.parse(JSON.stringify(effects));
+        ship = structuredClone(ship);
+        boss = structuredClone(boss);
+        effects = structuredClone(effects);
     }
 
     let reflect = 0;
@@ -483,8 +483,8 @@ export function iterateBattle(
         let reflect = 0;
         let econf: EffectData | undefined = undefined;
         if (input_ship && opponent && fbb_mode && effects?.length) {
-            input_ship = JSON.parse(JSON.stringify(input_ship));
-            opponent = JSON.parse(JSON.stringify(opponent));
+            input_ship = structuredClone(input_ship);
+            opponent = structuredClone(opponent);
             econf = applyEffects(input_ship, opponent!, effects);
             reflect = econf.reflect;
         }
@@ -519,8 +519,8 @@ export function iterateBattle(
         crew.forEach(c => c?.action && c.id ? c.action.crew = c.id! : null);
         if (work_opponent) oppo_crew?.forEach(c => c.action.crew = c.id!);
 
-        let allactions = JSON.parse(JSON.stringify([...ship.actions ?? [], ...crew.filter(f => f).map(c => c.action)])) as ChargeAction[];
-        let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? JSON.parse(JSON.stringify([...(work_opponent?.actions ?? []), ...(oppo_crew?.map(c => c.action) ?? [])])) as ChargeAction[] : undefined;
+        let allactions = structuredClone([...ship.actions ?? [], ...crew.filter(f => f).map(c => c.action)]) as ChargeAction[];
+        let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? structuredClone([...(work_opponent?.actions ?? []), ...(oppo_crew?.map(c => c.action) ?? [])]) as ChargeAction[] : undefined;
 
         if (allactions && econf) {
             allactions.forEach((action) => {

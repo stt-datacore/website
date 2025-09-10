@@ -24,7 +24,7 @@ export const RetrievalKeystones = () => {
 	const [allKeystones, setAllKeystones] = React.useState<IKeystone[] | undefined>(undefined);
 
 	React.useEffect(() => {
-		const allKeystones = JSON.parse(JSON.stringify(globalContext.core.keystones)) as IKeystone[];
+		const allKeystones = structuredClone(globalContext.core.keystones) as IKeystone[];
 
 		// Count all possible constellations and zero out owned count
 		let totalCrates = 0, totalDrops = 0;
@@ -165,7 +165,7 @@ const KeystonesPlayer = (props: KeystonesPlayerProps) => {
 	const [autoWishes, setAutoWishes] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
-		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
+		const allKeystones = structuredClone(props.allKeystones) as IKeystone[];
 		allKeystones.forEach((keystone) => {
 			if (ITEM_ARCHETYPES[keystone.symbol]) {
 				keystone.name = ITEM_ARCHETYPES[keystone.symbol].name;
@@ -297,7 +297,7 @@ const KeystonesNonPlayer = (props: KeystonesNonPlayerProps) => {
 	const [wishlist, setWishlist] = React.useState<string[]>([]);
 
 	React.useEffect(() => {
-		const allKeystones = JSON.parse(JSON.stringify(props.allKeystones)) as IKeystone[];
+		const allKeystones = structuredClone(props.allKeystones) as IKeystone[];
 
 		// Zero out owned constellations
 		const constellations = allKeystones.filter(k => k.type !== 'keystone') as IConstellation[];

@@ -169,7 +169,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		&& !!ephemeral?.borrowedCrew.length;
 
 	// Always calculate new skill numbers from original, unaltered crew list
-	let rosterCrew = JSON.parse(JSON.stringify(props.rosterCrew)) as IEventScoredCrew[];
+	let rosterCrew = structuredClone(props.rosterCrew) as IEventScoredCrew[];
 
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) rosterCrew = rosterCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);

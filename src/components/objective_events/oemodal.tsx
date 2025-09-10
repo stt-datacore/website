@@ -147,7 +147,7 @@ export const OEModal = (props: OEModalProps) => {
 
     function parseOE(info: ObjectiveEvent | undefined) {
         if (!info) return;
-        info = JSON.parse(JSON.stringify(info)) as ObjectiveEvent;
+        info = structuredClone(info) as ObjectiveEvent;
         let curr = ephemeral?.objectiveEventRoot?.statuses?.find(f => f.id === info.id);
         if (curr) {
             info.objectives = curr.objectives;

@@ -21,7 +21,7 @@ export const CollectionPlanner = () => {
 
 	if (!playerData) return <CollectionsOverview />;
 
-	const allCrew = React.useMemo(() => JSON.parse(JSON.stringify(crew)) as PlayerCrew[], [crew]);
+	const allCrew = React.useMemo(() => structuredClone(crew) as PlayerCrew[], [crew]);
 	const myCrew = React.useMemo(() => crewCopy(playerData.player.character.crew), [playerData]);
 
 	const collectionCrew = React.useMemo(() => [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
@@ -59,7 +59,7 @@ export const CollectionPlanner = () => {
 		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0, milestones: ac.milestones };
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
-			if (pc) collection = { ...collection, ...JSON.parse(JSON.stringify(pc)) };
+			if (pc) collection = { ...collection, ...structuredClone(pc) };
 		}
 		collection.id = ac.id; // Use allCollections ids instead of ids in player data
 		collection.crew = ac.crew;
@@ -104,7 +104,7 @@ export const CollectionPlanner = () => {
 				existing.quantity += reward.quantity ?? 1;
 			}
 			else {
-				current.push(JSON.parse(JSON.stringify(reward)));
+				current.push(structuredClone(reward));
 			}
 		});
 	}
@@ -144,7 +144,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 				return true;
 			}
 		})
-		?.map(c => JSON.parse(JSON.stringify(c))) ?? [];
+		?.map(c => structuredClone(c)) ?? [];
 		if (mapFilter?.collectionsFilter?.length === 1) {
 			let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
 			if (idx >= 0) {
@@ -283,7 +283,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 
     function mergeTiers(col: PlayerCollection, startTier: number | 'n/a', endTier: number | 'n/a'): PlayerCollection {
-        let result = JSON.parse(JSON.stringify(col)) as PlayerCollection;
+        let result = structuredClone(col) as PlayerCollection;
 		if (startTier === 'n/a' || endTier === 'n/a') return col;
 
         let mergedRewards = {} as { [key: number]: Reward };
@@ -296,7 +296,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
                 m.rewards.forEach((reward) => {
                     if (!(reward.id in mergedRewards)) {
-                        mergedRewards[reward.id] = JSON.parse(JSON.stringify(reward));
+                        mergedRewards[reward.id] = structuredClone(reward);
                     }
                     else {
                         mergedRewards[reward.id].quantity += reward.quantity;
@@ -305,7 +305,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
                 m.buffs.forEach((buff) => {
                     if (!(buff.id in mergedBuffs)) {
-                        mergedBuffs[buff.id] = JSON.parse(JSON.stringify(buff));
+                        mergedBuffs[buff.id] = structuredClone(buff);
                     }
                     else {
                         mergedBuffs[buff.id].quantity ??= 1;

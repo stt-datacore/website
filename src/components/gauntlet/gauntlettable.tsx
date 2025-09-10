@@ -414,7 +414,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     function rosterizeCrew(data: PlayerCrew[]) {
         const prettyTraits = gauntlet?.prettyTraits;
 
-        var newarr = [...data]; // JSON.parse(JSON.stringify(data)) as PlayerCrew[];
+        var newarr = [...data]; // structuredClone(data) as PlayerCrew[];
 
         const dir = sortDirection === 'descending' ? -1 : 1;
         let key = sortKey;

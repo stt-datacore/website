@@ -399,7 +399,7 @@ export function isQuipped<T extends PlayerCrew>(crew: T) {
 
 export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
-	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
+	let templateCrew = structuredClone(origCrew) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
 
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
@@ -442,13 +442,13 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 
 	if (playerData?.player?.character) {
 		if (!crew.preview && playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
-			crew = JSON.parse(JSON.stringify(templateCrew));
+			crew = structuredClone(templateCrew);
 			crew.immortal = 1;
 		}
 		else {
 			let frozen = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id && !crew.preview);
 			if (frozen) {
-				crew = JSON.parse(JSON.stringify(templateCrew));
+				crew = structuredClone(templateCrew);
 				crew.immortal = frozen.quantity;
 				crew.q_bits = frozen.qbits ?? 0;
 			}
@@ -478,7 +478,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (!maxxed.maxowned || owned.rarity > maxxed.maxowned) maxxed.maxowned = owned.rarity;
 		if (!maxxed.maxlevel || owned.level > maxxed.maxlevel) maxxed.maxlevel = owned.level;
 		if (inroster.length > 1) {
-			crew = JSON.parse(JSON.stringify(templateCrew));
+			crew = structuredClone(templateCrew);
 		}
 		let workitem: PlayerCrew = owned;
 		crew.is_new = owned.is_new;
@@ -585,7 +585,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 				crew.action.bonus_amount -= (crew.max_rarity - rarity);
 				rarity--;
 			}
-			crew = oneCrewCopy({ ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) });
+			crew = oneCrewCopy({ ...structuredClone(crew), ...structuredClone(crew.skill_data[rarity]) });
 		}
 		if (!crew.have) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
@@ -683,7 +683,8 @@ export function getHighest<T extends PlayerCrew>(crew: T[]) {
  * @returns A deep copy an array of crew with Date objects ensured
  */
 export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
-	return (JSON.parse(JSON.stringify(crew)) as T[]).map(c => ({...c, date_added: new Date(c.date_added) }));
+	return structuredClone(crew);
+	//return (structuredClone(crew)) as T[]).map(c => ({...c, date_added: new Date(c.date_added) });
 }
 
 /**
@@ -692,9 +693,7 @@ export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
  * @returns A deep copy of a single crew with Date objects ensured
  */
 export function oneCrewCopy<T extends CrewMember>(crew: T): T {
-	let result = JSON.parse(JSON.stringify(crew)) as T;
-	crew.date_added = new Date(crew.date_added);
-	return result;
+	return structuredClone(crew);
 }
 
 export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) : CompactCrew {
@@ -708,12 +707,12 @@ export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) :
 	if (!exclude?.includes("max_level")) newcrew.max_level = crew.max_level;
 	if (!exclude?.includes("max_rarity")) newcrew.max_rarity = crew.max_rarity;
 	if (!exclude?.includes("rarity")) newcrew.rarity  = crew.rarity;
-	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? JSON.parse(JSON.stringify(crew.equipment)) : undefined;
+	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? structuredClone(crew.equipment) : [];
 	if (!exclude?.includes("skill_order")) newcrew.skill_order  = [ ...crew.skill_order ];
-	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? JSON.parse(JSON.stringify(crew.base_skills)) : undefined;
-	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? JSON.parse(JSON.stringify(crew.skills)) : undefined;
+	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? structuredClone(crew.base_skills) : undefined;
+	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? structuredClone(crew.skills) : undefined;
 	if (!exclude?.includes("favorite")) newcrew.favorite  = crew.favorite;
-	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? JSON.parse(JSON.stringify(crew.ship_battle)) : undefined;
+	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? structuredClone(crew.ship_battle) : undefined;
 	if (!exclude?.includes("active_status")) newcrew.active_status  = crew.active_status;
 	if (!exclude?.includes("active_id")) newcrew.active_id  = crew.active_id;
 	if (!exclude?.includes("active_index")) newcrew.active_index  = crew.active_index;
@@ -865,11 +864,11 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 
 		if (skills.length <= 2) {
 			if (skills.length === 1) {
-				skills.push(JSON.parse(JSON.stringify(emptySkill)));
+				skills.push(structuredClone(emptySkill));
 			}
 			pairs.push(skills);
-			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);
-			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);
+			pairs.push([structuredClone(emptySkill), structuredClone(emptySkill)]);
+			pairs.push([structuredClone(emptySkill), structuredClone(emptySkill)]);
 			return pairs;
 		}
 

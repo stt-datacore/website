@@ -53,7 +53,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
 
     const { data } = React.useMemo(() => {
         if (!playerData) return { data: [], shuttleBays: 0 };
-        let data = JSON.parse(JSON.stringify(playerData.player.character.factions)) as TankingFaction[];
+        let data = structuredClone(playerData.player.character.factions) as TankingFaction[];
         data.forEach(faction => {
             let maxDaily = 8 * shuttleBays;
             let askDaily = maxDaily;

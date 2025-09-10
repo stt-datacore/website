@@ -325,10 +325,10 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					let c = crew.length;
 					for (let i = 0; i < c; i++) {
 						if (!crew[i].immortal) {
-							const work_crew = JSON.parse(JSON.stringify(crew[i]));
+							const work_crew = oneCrewCopy(crew[i]);
 							const ref_crew = globalContext.core.crew.find(f => f.symbol === work_crew.symbol);
 							if (ref_crew) {
-								work_crew.base_skills = JSON.parse(JSON.stringify(ref_crew.base_skills));
+								work_crew.base_skills = structuredClone(ref_crew.base_skills);
 							}
 							crew[i] = work_crew;
 						}
@@ -567,7 +567,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				if (!!playerData && specialView === 'as_immortalized' && rosterType === 'myCrew') {
 					if (!crew.immortal || !!crew.kwipment?.some(q => typeof q === 'number' ? !!q : !!q[1])) {
 						let refcrew = globalContext.core.crew.find(f => f.symbol === crew.symbol)!;
-						crew.base_skills = JSON.parse(JSON.stringify(refcrew.base_skills));
+						crew.base_skills = structuredClone(refcrew.base_skills);
 						if (!crew.immortal) crew.immortal = CompletionState.DisplayAsImmortalOwned;
 						crew.rarity = crew.max_rarity;
 						crew.level = 100;

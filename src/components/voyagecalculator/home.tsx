@@ -375,7 +375,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		// Found running voyage in history; add new checkpoint to history
 		const trackedRunningVoyage: ITrackedVoyage | undefined = history.voyages.find(voyage => voyage.voyage_id === running.id);
 		if (trackedRunningVoyage) {
-			const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(trackedRunningVoyage));
+			const updatedVoyage: ITrackedVoyage = structuredClone(trackedRunningVoyage);
 			updatedVoyage.lootcrew = running.pending_rewards.loot.filter(f => f.type === 1).map(m => m.symbol);
 
 			return createCheckpoint(running).then(checkpoint => {
@@ -421,7 +421,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				return true;
 			}
 			return createCheckpoint(running).then(checkpoint => {
-				const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(lastTracked));
+				const updatedVoyage: ITrackedVoyage = structuredClone(lastTracked);
 				updatedVoyage.voyage_id = running.id;
 				updatedVoyage.created_at = Date.parse(running.created_at);
 				updatedVoyage.ship = globalContext.core.ships.find(s => s.id === running.ship_id)?.symbol ?? lastTracked.ship;

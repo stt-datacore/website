@@ -22,7 +22,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
 
     const { pageId } = props;
 
-    const { citeConfig, setCiteConfig } = citeContext;    
+    const { citeConfig, setCiteConfig } = citeContext;
     const { appliedProspects, setAppliedProspects } = citeContext;
 
     const [prospects, internalSetProspects] = useStateWithStorage<LockedProspect[]>(`${dbid}/${pageId}/cite_opt/locked_prospects`, [], { rememberForever: true });
@@ -66,7 +66,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
     </React.Fragment>
 
     function applyProspects() {
-        
+
         if (!prospects) {
             setProspects([]);
             return;
@@ -75,7 +75,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
             setProspects([]);
             return;
         }
-        
+
         const { crew } = globalContext.core;
         const { buffConfig } = globalContext.player;
 
@@ -86,7 +86,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
         prospects.forEach((p) => {
             let c = crew.find(f => f.symbol === p.symbol) as PlayerCrew;
             if (c) {
-                c = JSON.parse(JSON.stringify(c)) as PlayerCrew;
+                c = structuredClone(c) as PlayerCrew;
                 c.id = nid--;
                 c.date_added = new Date(c?.date_added);
                 c.level = 100;

@@ -586,7 +586,7 @@ export const initSearchableOptions = (location: any, search?: string) => {
 		// Always use URL parameters if found
 		if (urlParams?.has(option)) value = urlParams.get(option) ?? undefined;
 		// Otherwise check <Link state>
-		if (!value && linkState && linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (!value && linkState && linkState[option]) value = structuredClone(linkState[option]);
 		if (value) {
 			if (!initOptions) initOptions = {};
 			initOptions[option] = value;
@@ -607,7 +607,7 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 	// Otherwise check <Link state>
 	if (!value && location?.state) {
 		const linkState = location.state;
-		if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (linkState[option]) value = structuredClone(linkState[option]);
 	}
 	return (value ?? defaultValue) as T;
 };

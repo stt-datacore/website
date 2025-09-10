@@ -346,7 +346,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	}
 
 	function makeOpponentsFromPvpData(opponents: PvpOpponent[], ships: Ship[]) {
-		let fships = opponents.map(o => ships.find(s => s.symbol === o.symbol)).filter(f => f !== undefined).map(ship => JSON.parse(JSON.stringify(ship)) as Ship);
+		let fships = opponents.map(o => ships.find(s => s.symbol === o.symbol)).filter(f => f !== undefined).map(ship => structuredClone(ship) as Ship);
 		if (fships.length !== opponents.length) return ships;
 		const c = fships.length;
 		let bcrew = [] as CrewMember[];

@@ -108,7 +108,7 @@ export const MultiVectorAssault = (
 			const traitSlots: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 			const crewId: number = crew[i].id ?? i;
-			const crewSkills: BaseSkills = crew[i].skills ? JSON.parse(JSON.stringify(crew[i].skills)) : {};
+			const crewSkills: BaseSkills = crew[i].skills ? structuredClone(crew[i].skills) : {};
 
 			let eventTraitBonus: number = 0, eventCrewVP: number = 0, eventCrewFactor: number = 1, eventCritTraits: number = 0;
 			if (voyage.voyage_type === 'encounter' && voyage.event_content) {

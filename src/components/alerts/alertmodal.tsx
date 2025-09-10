@@ -27,7 +27,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     // }
 
     React.useEffect(() => {
-        setInnerSettings(JSON.parse(JSON.stringify(config)));
+        setInnerSettings(structuredClone(config));
     }, [config]);
 
     React.useEffect(() => {

@@ -261,7 +261,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		encounter.contests.forEach((contest, contestIndex) => {
 			const contestId: string = makeContestId(contest, contestIndex);
 			const assignment: IContestAssignment = assignments[contestId];
-			assignment.unusedSkills = JSON.parse(JSON.stringify(unusedSkills));
+			assignment.unusedSkills = structuredClone(unusedSkills);
 			if (assignment.crew) {
 				const crewSkills: BaseSkills = assignment.crew.skills;
 				Object.keys(crewSkills).filter(skill =>

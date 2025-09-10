@@ -128,13 +128,13 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                             return;
                         }
                         else {
-                            csource.items.push(JSON.parse(JSON.stringify(demand)));
+                            csource.items.push(structuredClone(demand));
                         }
                     }
                     else {
                         newsources.push({
                             source,
-                            items: [JSON.parse(JSON.stringify(demand))]
+                            items: [structuredClone(demand)]
                         });
                     }
                 });

@@ -403,7 +403,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				}
 			}
 
-			let scsave = data.ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: 0 })) as Ship));
+			let scsave = data.ship_schematics.map((sc => structuredClone({ ...sc.ship, level: 0 }) as Ship));
 			let c = scsave.length;
 			for (let i = 0; i < c; i++) {
 				let ship = scsave[i];

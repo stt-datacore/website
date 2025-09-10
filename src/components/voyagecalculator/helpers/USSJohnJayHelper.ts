@@ -53,7 +53,7 @@ export class USSJohnJayHelper extends Helper {
 				}
 			}
 		});
-		worker.postMessage(JSON.parse(JSON.stringify(USSJohnJayConfig)));
+		worker.postMessage(structuredClone(USSJohnJayConfig));
 		this.calcWorker = worker;
 	}
 

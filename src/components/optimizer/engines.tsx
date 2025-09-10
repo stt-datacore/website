@@ -53,7 +53,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
     const [settingsOpen, setSettingsOpen] = React.useState(false);
 
-    const playerData = globalContext.player.playerData ? JSON.parse(JSON.stringify(globalContext.player.playerData)) as PlayerData : undefined;
+    const playerData = globalContext.player.playerData ? structuredClone(globalContext.player.playerData) as PlayerData : undefined;
 
     if (playerData) {
         playerData.citeMode = citeConfig;
@@ -175,7 +175,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             result.crewToCite = result.crewToCite.map(c => ({...c,...playerData?.player.character.crew.find(fc => fc.name === c.name)!}));
             result.crewToTrain = result.crewToTrain.map(c => ({...c,...playerData?.player.character.crew.find(fc => fc.name === c.name)!}));
             let retrievable = result.crewToCite.filter(f => ({...f, ...playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length)}));
-            result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
+            result.crewToRetrieve = retrievable.map((r, i) => ({ ...structuredClone(r), pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: undefined });
         }
         setInitialized(true);

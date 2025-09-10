@@ -398,7 +398,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         let chronrex = /(\d+)\s*:chrons:/;
         let voyCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
         let legend = [] as string[];
-        dilemmas = JSON.parse(JSON.stringify(dilemmas));
+        dilemmas = structuredClone(dilemmas);
 
         for (let dilemma of dilemmas) {
             let crewurl = undefined as string | undefined;
