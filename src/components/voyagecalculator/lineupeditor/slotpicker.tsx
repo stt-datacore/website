@@ -62,7 +62,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	const [estimates, setEstimates] = React.useState<IAlternateSlotEstimate[]>([]);
 
 	React.useEffect(() => {
-		const crewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(prospectiveConfig.crew_slots));
+		const crewSlots: IProspectiveCrewSlot[] = structuredClone(prospectiveConfig.crew_slots);
 
 		// Unseat alternate crew from current seat first, if already seated
 		const currentSlot: IProspectiveCrewSlot | undefined = crewSlots.find(cs => cs.crew?.id === alternateCrew.id);
@@ -71,7 +71,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		const data: IAlternateSlotData[] = [];
 		prospectiveConfig.crew_slots.forEach((crewSlot, slotId) => {
 			if (crewSlot.crew?.id !== alternateCrew.id && Object.keys(alternateCrew.skills).includes(crewSlot.skill)) {
-				const altCrewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(crewSlots));
+				const altCrewSlots: IProspectiveCrewSlot[] = structuredClone(crewSlots);
 				altCrewSlots[slotId].crew = alternateCrew;
 				const altConfig: IProspectiveConfig = getConfigFromCrewSlots(altCrewSlots);
 				data.push({

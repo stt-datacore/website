@@ -47,7 +47,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 		let sn_var = undefined as Variant | undefined;
 		variantTraits.forEach(trait => {
 			const variantGroup = globalContext.core.crew.filter(ac => (ac.traits_hidden.indexOf(trait) >= 0 && !crewVariantIgnore.includes(ac.symbol)))
-				.map(cp => JSON.parse(JSON.stringify(cp)) as CrewMember);
+				.map(cp => structuredClone(cp) as CrewMember);
 
 			// Ignore variant group if crew is the only member of the group
 			if (variantGroup.length > 1) {
@@ -72,7 +72,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 					short_name !== 'Amanda' &&
 					short_name !== 'Q')
 			)
-			.map(cp => JSON.parse(JSON.stringify(cp)) as CrewMember)
+			.map(cp => structuredClone(cp) as CrewMember)
 			.filter(fc => !sn_var?.trait_variants.some(tv => tv.symbol === fc.symbol));
 
 			// Ignore variant group if crew is the only member of the group

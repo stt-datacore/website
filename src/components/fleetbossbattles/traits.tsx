@@ -38,7 +38,7 @@ const ChainTraits = (props: ChainTraitsProps) => {
 	);
 
 	function onNodeSolved(nodeIndex: number, traits: string[]): void {
-		const solves: Solve[] = JSON.parse(JSON.stringify(spotter.solves));
+		const solves: Solve[] = structuredClone(spotter.solves);
 		const solve: Solve | undefined = solves.find(solve => solve.node === nodeIndex);
 		if (solve) {
 			solve.traits = traits;

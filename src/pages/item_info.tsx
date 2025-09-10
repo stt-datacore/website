@@ -123,7 +123,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 							let owned = this.context.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
 							if (owned) {
 								crew_levels.push({
-									crew: { ...JSON.parse(JSON.stringify(crew)), ...owned, rarity: owned?.rarity ?? 0 },
+									crew: { ...structuredClone(crew), ...owned, rarity: owned?.rarity ?? 0 },
 									level: es.level,
 									owned: !!owned
 								});
@@ -132,7 +132,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						}
 
 						crew_levels.push({
-							crew: { ...JSON.parse(JSON.stringify(crew)), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 },
+							crew: { ...structuredClone(crew), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 },
 							level: es.level,
 							owned: false
 						});
@@ -200,7 +200,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 			let crew: IRosterCrew | undefined = undefined;
 			crew = crew_levels.find(f => f.crew.symbol === symbol)?.crew;
 			if (crew) {
-				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+				//if (crew) crew = structuredClone(crew) as IRosterCrew;
 				if (this.state.item_data?.item?.kwipment) {
 					const wb = getItemBonuses(this.state.item_data.item);
 					let bonuses = Object.keys(wb.bonuses).filter(f => crew.skill_order.includes(f)).map(m => wb.bonuses[m]);

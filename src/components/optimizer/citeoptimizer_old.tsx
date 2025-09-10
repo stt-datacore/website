@@ -139,7 +139,7 @@
 // 		prospects.forEach((p) => {
 // 			let c = crew.find(f => f.symbol === p.symbol) as PlayerCrew;
 // 			if (c) {
-// 				c = JSON.parse(JSON.stringify(c)) as PlayerCrew;
+// 				c = structuredClone(c) as PlayerCrew;
 // 				c.id = nid--;
 // 				c.date_added = new Date(c?.date_added);
 // 				c.level = 100;
@@ -281,7 +281,7 @@
 
 // 		if (!this.context.player.playerData) return;
 
-// 		let playerData = JSON.parse(JSON.stringify(this.context.player.playerData)) as PlayerData;
+// 		let playerData = structuredClone(this.context.player.playerData) as PlayerData;
 
 // 		if (this.state.appliedProspects?.length) {
 // 			playerData.player.character.crew = playerData.player.character.crew.concat(this.state.appliedProspects);
@@ -303,7 +303,7 @@
 // 			}
 // 			else {
 // 				let retrievable = result.crewToCite.filter(f => playerData.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
-// 				result.crewToRetrieve = retrievable.map((r, i) => ({ ...JSON.parse(JSON.stringify(r)), pickerId: i + 1 }));
+// 				result.crewToRetrieve = retrievable.map((r, i) => ({ ...structuredClone(r)), pickerId: i + 1 });
 // 				this.setState({ citeData: result });
 // 			}
 

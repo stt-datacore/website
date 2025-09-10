@@ -285,7 +285,7 @@ function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 	bonly ??= [];
 	intersect ??= [];
 	if (intersect.length) {
-		intersect = JSON.parse(JSON.stringify(intersect));
+		intersect = structuredClone(intersect);
 		for (let item of intersect) {
 			let bitem = b.demands.find(b2 => b2.symbol === item.symbol);
 			if (bitem) {

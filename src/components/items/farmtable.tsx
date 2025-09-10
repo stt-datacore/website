@@ -99,7 +99,7 @@ export const FarmTable = (props: FarmTableProps) => {
                 return r;
             });
 
-        const newList = (JSON.parse(JSON.stringify(sources)) as FarmSources[]).filter(item => {
+        const newList = (structuredClone(sources) as FarmSources[]).filter(item => {
             //if (item.source.type === 4) return false;
             if (excludedSourceTypes?.includes(item.source.type)) return false;
             item.items = item.items.filter(fitem => {

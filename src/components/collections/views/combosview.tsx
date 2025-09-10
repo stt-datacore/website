@@ -128,7 +128,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 								});
 								return <> </>
 							}
-							const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
+							const collection = structuredClone(col.collection) as PlayerCollection;
 							collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 							//collection.needed = comboCrew.length;
 							col.neededStars = neededStars(comboCrew);

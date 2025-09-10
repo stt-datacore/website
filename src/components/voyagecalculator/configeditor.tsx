@@ -51,7 +51,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 
 	const { presetConfigs, updateConfig } = props;
 
-	const [voyageConfig, setVoyageConfig] = useStateWithStorage<IVoyageInputConfig>('voyage/customConfig', JSON.parse(JSON.stringify(defaultConfig)));
+	const [voyageConfig, setVoyageConfig] = useStateWithStorage<IVoyageInputConfig>('voyage/customConfig', structuredClone(defaultConfig));
 
 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 	const [options, setOptions] = React.useState<IEditOptions | undefined>(undefined);
@@ -102,12 +102,12 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 
 	function loadPreset(voyageType: string): void {
 		if (voyageType === 'default') {
-			setVoyageConfig(JSON.parse(JSON.stringify(defaultConfig)));
+			setVoyageConfig(structuredClone(defaultConfig));
 			return;
 		}
 		const config: IVoyageInputConfig | undefined = presetConfigs.find(preset => preset.voyage_type === voyageType);
 		if (!config) return;
-		setVoyageConfig(JSON.parse(JSON.stringify(config)));
+		setVoyageConfig(structuredClone(config));
 	}
 
 	function closeAndApply(): void {

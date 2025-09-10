@@ -218,7 +218,7 @@ export class CrewPreparer {
                 item = dataIn as PlayerCrew;
             }
 
-            item = JSON.parse(JSON.stringify(item)) as PlayerCrew;
+            item = structuredClone(item) as PlayerCrew;
 
             if ((item.kwipment as number[])?.some((q: number) => !!q)) {
                 quips = (item.kwipment as number[]).map(q => items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
@@ -292,7 +292,7 @@ export class CrewPreparer {
                 }
             }
             else {
-                item = JSON.parse(JSON.stringify(item));
+                item = structuredClone(item);
                 getSkills(item).forEach(skill => {
                     let sb = item.base_skills[skill];
                     item[skill] = {
