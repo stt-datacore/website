@@ -122,7 +122,7 @@ export function makeTypeBuckets(in_stats: EventStats[]): { [key: string]: EventS
         savedStats[stat.instance_id] = stat;
     });
 
-    let stats = JSON.parse(JSON.stringify(in_stats)) as EventStats[];
+    let stats = structuredClone(in_stats) as EventStats[];
     stats.forEach((stat) => {
         stat.event_type = stat.event_type?.split('/').sort().join('/');
     });

@@ -103,7 +103,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		});
 
 		const rosterCrew = playerData.player.character.crew.map(crew => {
-			let crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+			let crewman = structuredClone(crew) as IRosterCrew;
 
 			// Re-attach active_status, id, index properties
 			crewman.active_status = 0;
@@ -181,7 +181,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		let crewmanId = 1;
 
 		const rosterCrew = globalContext.core.crew.map(crew => {
-			let crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+			let crewman = structuredClone(crew) as IRosterCrew;
 			crewman.id = crewmanId++;
 			CONFIG.SKILLS_SHORT.forEach((skill) => {
 				crewman[skill.name] = {

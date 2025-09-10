@@ -103,7 +103,7 @@ export const Contest = (props: ContestProps) => {
 		if (contestant) {
 			return {
 				crew: contestant.crew,
-				skills: JSON.parse(JSON.stringify(contestant.skills)),	// Prevent edits from bubbling up
+				skills: structuredClone(contestant.skills),	// Prevent edits from bubbling up
 				critChance: contestant.critChance
 			};
 		}

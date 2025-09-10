@@ -142,7 +142,7 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 let milestones = milestonesFromCurrent(col1);
                 for (let milestone of milestones) {
                     result = result.concat(getFilteredMilestoneRewards(milestone, mapFilter.rewardFilter).map(r => {
-                        r = JSON.parse(JSON.stringify(r));
+                        r = structuredClone(r);
                         r.data!.collection = col1.type_id!
                         return r;
                     }));
@@ -153,7 +153,7 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
             for (let col1 of colGroup) {
                 result = result.concat(getMilestoneRewards(milestonesFromCurrent(col1))
                     .map(r => {
-                        r = JSON.parse(JSON.stringify(r));
+                        r = structuredClone(r);
                         r.data!.collection = col1.type_id!
                         return r;
                     }))
@@ -167,7 +167,7 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 if (!col1) continue;
                 result = result.concat(getFilteredMilestoneRewards(col1.milestone, mapFilter.rewardFilter)
                 .map(r => {
-                    r = JSON.parse(JSON.stringify(r));
+                    r = structuredClone(r);
                     r.data!.collection = col1.type_id!
                     return r;
                 }));
@@ -178,7 +178,7 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 let afilter = getCollectionRewards([col1])
                     .filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''))
                     .map(r => {
-                        r = JSON.parse(JSON.stringify(r));
+                        r = structuredClone(r);
                         r.data!.collection = col1.type_id!
                         return r;
                     });
@@ -425,7 +425,7 @@ export function getAllStatBuffs(col: Collection) {
         return [];
     }
 
-    let buffs = JSON.parse(JSON.stringify(col.milestones)).map(c => c.buffs).flat() as MilestoneBuff[];
+    let buffs = structuredClone(col.milestones).map(c => c.buffs).flat() as MilestoneBuff[];
 
     buffs.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 
@@ -457,7 +457,7 @@ export function getAllCrewRewards(col: Collection) {
         return [];
     }
 
-    let rewards = JSON.parse(JSON.stringify(col.milestones)).map((c: Milestone) => c.rewards!).filter((f: Reward) => f.type === 1).flat() as Reward[];
+    let rewards = structuredClone(col.milestones).map((c: Milestone) => c.rewards!).filter((f: Reward) => f.type === 1).flat() as Reward[];
 
     rewards.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 

@@ -60,7 +60,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						methods = ['vp'];
 					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
-							output(JSON.parse(JSON.stringify(sorted)), false);
+							output(structuredClone(sorted), false);
 						});
 				});
 		})

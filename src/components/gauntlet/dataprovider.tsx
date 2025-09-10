@@ -225,7 +225,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
             if (!q) continue;
             let qparse = uniques[q.index];
             if (qparse) {
-                qparse = JSON.parse(JSON.stringify(qparse)) as Gauntlet;
+                qparse = structuredClone(qparse) as Gauntlet;
                 qparse.template = true;
                 pass2.push(qparse);
             }
