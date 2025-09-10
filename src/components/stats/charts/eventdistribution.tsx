@@ -361,7 +361,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
 
     function createEventTypeStats(by_series?: boolean) {
         if (!event_stats?.length) return [];
-        const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
+        const newStats = structuredClone(event_stats) as EventStats[];
         let buckets = makeTypeBuckets(newStats);
         let top = {} as { [key: string]: number };
         Object.entries(buckets).forEach(([type, bucket]) => {

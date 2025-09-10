@@ -181,7 +181,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
 
 		if (input.stripped !== true) {
-			setStripped({ ... JSON.parse(JSON.stringify(strippedData)), stripped: true });
+			setStripped({ ... structuredClone(strippedData), stripped: true });
 		}
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools
@@ -197,7 +197,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {
-			const all_ships = JSON.parse(JSON.stringify(coreData.all_ships));
+			const all_ships = structuredClone(coreData.all_ships);
 			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames, false, false, buffConfig);
 			setPlayerShips(mergedShips);
 		}

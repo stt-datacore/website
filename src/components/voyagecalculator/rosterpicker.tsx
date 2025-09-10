@@ -91,7 +91,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				return;
 			}
 			globalContext.core.crew.forEach(crew => {
-				const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+				const crewman: IVoyageCrew = structuredClone(crew) as IVoyageCrew;
 				crewman.id = crewman.archetype_id;
 
 				const buffedSkills = globalContext.maxBuffs ? applyCrewBuffs(crewman, globalContext.maxBuffs) : undefined;
@@ -118,7 +118,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			setRosterCrew([...rosterCrew]);
 
 			globalContext.core.ships.forEach(ship => {
-				const rosterShip = JSON.parse(JSON.stringify(ship));
+				const rosterShip = structuredClone(ship);
 				rosterShip.owned = true;
 				rosterShip.level = rosterShip.max_level;
 				rosterShip.antimatter += (50*rosterShip.max_level);
@@ -149,7 +149,7 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[],
 	let fakeDupeId: number = myCrew.reduce((prev, curr) => Math.min(prev, curr.id), 0) - 1;
 
 	myCrew.forEach(crew => {
-		const crewman: IVoyageCrew = JSON.parse(JSON.stringify(crew)) as IVoyageCrew;
+		const crewman: IVoyageCrew = structuredClone(crew) as IVoyageCrew;
 
 		// Voyage calculator looks for skills, range_min, range_max properties
 		crewman.skills = {};
@@ -177,7 +177,7 @@ export function rosterizeMyCrew(myCrew: PlayerCrew[], activeCrew: CompactCrew[],
 
 		// Add each frozen dupe as its own entry in roster
 		if (crew.immortal > 1) {
-			const dupeCrew: IVoyageCrew = JSON.parse(JSON.stringify(crewman)) as IVoyageCrew;
+			const dupeCrew: IVoyageCrew = structuredClone(crewman) as IVoyageCrew;
 			const frozenDupes: number = crew.immortal;
 			for (let i = 0; i < frozenDupes; i++) {
 				rosterCrew.push({
@@ -199,7 +199,7 @@ export function rosterizeMyShips(myShips: Ship[]): Ship[] {
 	const rosterShips = [] as Ship[];
 
 	myShips.forEach(ship => {
-		const rosterShip = JSON.parse(JSON.stringify(ship)) as Ship;
+		const rosterShip = structuredClone(ship) as Ship;
 		rosterShips.push(rosterShip);
 	});
 

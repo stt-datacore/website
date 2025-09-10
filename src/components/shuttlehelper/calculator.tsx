@@ -322,7 +322,7 @@ export const Calculator = () => {
 		});
 		if (seats.length === 0) return;
 
-		const scores: ICrewScore[] = JSON.parse(JSON.stringify(crewScores.ranked)) as ICrewScore[];
+		const scores: ICrewScore[] = structuredClone(crewScores.ranked) as ICrewScore[];
 		let iAssigned = 0;
 		while (scores.length > 0 && iAssigned < seats.length) {
 			const testScore: ICrewScore | undefined = scores.shift();

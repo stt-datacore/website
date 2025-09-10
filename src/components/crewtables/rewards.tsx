@@ -63,7 +63,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 			let found = tempItems.find(f => f.symbol === need.symbol);
 			if (found) {
 				items.push({
-					...JSON.parse(JSON.stringify(found)),
+					...structuredClone(found),
 					needed: need.quantity,
 					quantity: need.owned ?? 0
 				});

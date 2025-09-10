@@ -283,7 +283,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
             )?.skills;
             Object.keys(assoc ?? calcCrew.skills).forEach((skill) => {
                 if (assoc) {
-                    newskill[skill] = JSON.parse(JSON.stringify(assoc[skill]));
+                    newskill[skill] = structuredClone(assoc[skill]);
                 } else {
                     newskill[skill] = {
                         core: Math.round(calcCrew[skill].core),
