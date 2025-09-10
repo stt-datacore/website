@@ -457,7 +457,7 @@ export function getAllCrewRewards(col: Collection) {
         return [];
     }
 
-    let rewards = structuredClone(col.milestones).map((c: Milestone) => c.rewards!).filter((f: Reward) => f.type === 1).flat() as Reward[];
+    let rewards = structuredClone(col.milestones).map((c: Milestone) => c.rewards!).flat().filter((f: Reward) => f.type === 1) as Reward[];
 
     rewards.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 
