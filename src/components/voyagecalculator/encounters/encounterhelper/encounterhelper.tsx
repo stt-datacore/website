@@ -7,9 +7,11 @@ import {
 	SemanticICONS
 } from 'semantic-ui-react';
 
+import { EquipmentItem } from '../../../../model/equipment';
 import { PlayerCrew, Voyage } from '../../../../model/player';
 import { VoyageRefreshData, VoyageRefreshEncounter } from '../../../../model/voyage';
 import { GlobalContext } from '../../../../context/globalcontext';
+import { mergeItems } from '../../../../utils/itemutils';
 
 import { IEncounter } from '../model';
 import { EncounterContext, IEncounterContext } from './context';
@@ -46,6 +48,8 @@ export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
 };
 
 export const EncounterHelper = (props: EncounterHelperProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
 	const { voyageConfig } = props;
 
 	const [encounterData, setEncounterData] = React.useState<VoyageRefreshEncounter | undefined>(undefined);
@@ -59,6 +63,12 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 		return serializeEncounter(encounterData);
 	}, [encounterData]);
 
+	const inventory = React.useMemo<EquipmentItem[]>(() => {
+		if (!playerData) return [];
+		return mergeItems(playerData.player.character.items, globalContext.core.items)
+			.filter(item => item.type === 4 || item.type === 13);
+	}, [playerData]);
+
 	return (
 		<React.Fragment>
 			<EncounterImportComponent
@@ -71,6 +81,7 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 					<Encounter
 						voyageCrew={voyageCrew}
 						encounter={encounter}
+						inventory={inventory}
 					/>
 				</Segment>
 			)}
@@ -87,11 +98,12 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 type EncounterProps = {
 	voyageCrew: PlayerCrew[];
 	encounter: IEncounter;
+	inventory: EquipmentItem[];
 };
 
 const Encounter = (props: EncounterProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { voyageCrew, encounter } = props;
+	const { voyageCrew, encounter, inventory } = props;
 
 	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
 	const [assignments, setAssignments] = React.useState<IContestAssignments>(getDefaultAssignments(encounter.contests));
@@ -126,7 +138,8 @@ const Encounter = (props: EncounterProps) => {
 		contestIds,
 		championData,
 		assignments,
-		setAssignments
+		setAssignments,
+		inventory
 	};
 
 	return (

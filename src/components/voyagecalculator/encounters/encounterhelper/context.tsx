@@ -1,4 +1,5 @@
 import React from 'react';
+import { EquipmentItem } from '../../../../model/equipment';
 import { PlayerCrew } from '../../../../model/player';
 import { IEncounter } from '../model';
 import { IChampionCrewData, IContestAssignments } from './championdata';
@@ -10,6 +11,7 @@ export interface IEncounterContext {
 	championData: IChampionCrewData[];
 	assignments: IContestAssignments;
 	setAssignments: (assignments: IContestAssignments) => void;
+	inventory: EquipmentItem[];
 };
 
 export const EncounterContext = React.createContext<IEncounterContext>({} as IEncounterContext);

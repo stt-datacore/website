@@ -299,7 +299,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				</span>
 				{boostedSkills > 0 && (
 					<span>
-						<Icon name='arrow alternate circle up' color='green' fitted />
+						<Icon name='arrow circle up' color='green' fitted />
 					</span>
 				)}
 				<span>
@@ -339,7 +339,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					</span>
 					{crewIsAssignedHere && (
 						<span>
-							<Icon name='arrow alternate circle right' color='green' fitted />
+							<Icon name='arrow circle right' color='green' fitted />
 						</span>
 					)}
 				</div>

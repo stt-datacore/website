@@ -5,6 +5,7 @@ import {
 	Form,
 	Grid,
 	Icon,
+	Label,
 	Message,
 	Popup,
 	Segment
@@ -14,7 +15,8 @@ import { PlayerCrew } from '../../../../model/player';
 import ItemDisplay from '../../../itemdisplay';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 import CONFIG from '../../../CONFIG';
-import { CRIT_BOOSTS, IChampionBoost, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
+import { EncounterContext } from './context';
+import { IChampionBoost } from './championdata';
 
 type BoostPickerProps = {
 	assignedCrew: PlayerCrew;
@@ -27,6 +29,7 @@ type BoostPickerProps = {
 };
 
 export const BoostPicker = (props: BoostPickerProps) => {
+	const { inventory } = React.useContext(EncounterContext);
 	const { assignedCrew, assignedBoost, relevant, onBoostSelected } = props;
 
 	const [showPopup, setShowPopup] = React.useState<boolean>(false);
@@ -149,16 +152,12 @@ export const BoostPicker = (props: BoostPickerProps) => {
 								</div>
 								<div style={{ whiteSpace: 'nowrap' }}>
 									{assignedBoost?.type === option.type && assignedBoost?.rarity === option.rarity && (
-										<Icon name='check' color='blue' fitted />
+										<Icon name='check circle' color='blue' />
 									)}
-									<small>
-										{option.type === 'voyage_crit_boost' && (
-											<>+{CRIT_BOOSTS[option.rarity]}%</>
-										)}
-										{option.type !== 'voyage_crit_boost' && (
-											<>+({MIN_RANGE_BOOSTS[option.rarity]}-{MAX_RANGE_BOOSTS[option.rarity]})</>
-										)}
-									</small>
+									{getBoostShort(option)}
+								</div>
+								<div>
+									{renderQuantity(option)}
 								</div>
 							</div>
 						</Grid.Column>
@@ -175,6 +174,20 @@ export const BoostPicker = (props: BoostPickerProps) => {
 					fluid
 				/>
 			</div>
+		);
+	}
+
+	function renderQuantity(boost: IChampionBoost): JSX.Element {
+		let symbol: string = '';
+		if (boost.type === 'voyage_crit_boost')
+			symbol = `voyage_crit_boost_${boost.rarity}`;
+		else
+			symbol = `${boost.type.replace('_skill', '')}_bonus_${boost.rarity}_shuttle_consumable`;
+		const quantity: number = inventory.find(item => item.symbol === symbol)?.quantity ?? 0;
+		return (
+			<Label size='small'>
+				{quantity}
+			</Label>
 		);
 	}
 
@@ -205,11 +218,6 @@ type BoostLabelProps = {
 
 export const BoostLabel = (props: BoostLabelProps) => {
 	const { boost } = props;
-	let name: string = `${boost.rarity}*`;
-	if (boost.type === 'voyage_crit_boost')
-		name += ' CRIT';
-	else
-		name += ` ${CONFIG.SKILLS_SHORT.find(ss => ss.name === boost.type)?.short ?? ''}`;
 	return (
 		<div style={{ display: 'flex', alignItems: 'center' }}>
 			<ItemDisplay
@@ -219,11 +227,20 @@ export const BoostLabel = (props: BoostLabelProps) => {
 				maxRarity={boost.rarity}
 			/>
 			<span style={{ padding: '0 .5em', whiteSpace: 'nowrap' }}>
-				{name}
+				{getBoostShort(boost)}
 			</span>
 		</div>
 	);
 };
+
+function getBoostShort(boost: IChampionBoost): string {
+	let short: string = `${boost.rarity}*`;
+	if (boost.type === 'voyage_crit_boost')
+		short += ' CRIT';
+	else
+		short += ` ${CONFIG.SKILLS_SHORT.find(ss => ss.name === boost.type)?.short ?? ''}`;
+	return short;
+}
 
 export function getConsumableImg(type: string, rarity: number): string {
 	if (type === 'voyage_crit_boost')

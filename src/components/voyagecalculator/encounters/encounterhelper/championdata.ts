@@ -163,11 +163,9 @@ export async function getChampionCrewData(
 			const previousCrew: IChampionCrewData | undefined = previousCrewData?.find(previousCrew => previousCrew.id === crewData.id);
 			if (previousCrew) previousResult = previousCrew.contests[contestId]?.result;
 			const oddsNeeded: boolean = !previousResult || previousResult.id !== makeResultId(champion, challenger);
-			if (champion.crew.name === 'Pathfinder Uhura' && contestIndex === 4) console.log('oddsNeeded', oddsNeeded, champion.skills);
 			if (oddsNeeded) {
 				promises.push(
 					simulateContest(champion, challenger, 1000).then(result => {
-						if (champion.crew.name === 'Pathfinder Uhura' && contestIndex === 4) console.log('simresult', result);
 						return {
 							...result,
 							contestId,
