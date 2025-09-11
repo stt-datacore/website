@@ -19,20 +19,22 @@ import { CRIT_BOOSTS, IChampionBoost, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from 
 type BoostPickerProps = {
 	assignedCrew: PlayerCrew;
 	assignedBoost: IChampionBoost | undefined;
-	targetSkills: string[];
-	targetCrit: boolean;
+	relevant?: {
+		skills: string[];
+		crit: boolean;
+	};
 	onBoostSelected: (boost: IChampionBoost | undefined) => void;
 };
 
 export const BoostPicker = (props: BoostPickerProps) => {
-	const { assignedCrew, assignedBoost, targetSkills, targetCrit, onBoostSelected } = props;
+	const { assignedCrew, assignedBoost, relevant, onBoostSelected } = props;
 
 	const [showPopup, setShowPopup] = React.useState<boolean>(false);
-	const [showRelevant, setShowRelevant] = React.useState<boolean>(true);
+	const [showRelevant, setShowRelevant] = React.useState<boolean>(!!relevant);
 
 	const boostOptions = React.useMemo<IChampionBoost[]>(() => {
 		const skills: string[] = Object.keys(assignedCrew.skills).filter(skill =>
-			!showRelevant || targetSkills.includes(skill)
+			!showRelevant || (relevant?.skills.includes(skill))
 		);
 		const options: IChampionBoost[] = [];
 		skills.forEach(skill => {
@@ -43,7 +45,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 				});
 			}
 		});
-		if (!showRelevant || targetCrit) {
+		if (!showRelevant || relevant?.crit) {
 			for (let i = 2; i <= 5; i++) {
 				options.push({
 					type: 'voyage_crit_boost',
@@ -87,7 +89,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 					}}
 				>
 					{boostOptions.length > 0 && renderBoosts()}
-					{boostOptions.length === 0 && renderRelevantToggle()}
+					{relevant && boostOptions.length === 0 && renderRelevantToggle()}
 				</Segment>
 			</Popup.Content>
 		</Popup>
@@ -162,7 +164,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 						</Grid.Column>
 					))}
 				</Grid>
-				{renderRelevantToggle()}
+				{relevant && renderRelevantToggle()}
 				<Button /* No boost */
 					icon='ban'
 					content='No boost'
@@ -186,7 +188,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 	function renderRelevantToggle(): JSX.Element {
 		return (
 			<Form style={{ textAlign: 'center' }}>
-				<Form.Field
+				<Form.Field	/* Only show relevant boosts */
 					control={Checkbox}
 					label='Only show relevant boosts'
 					checked={showRelevant}

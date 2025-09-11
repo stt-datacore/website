@@ -2,7 +2,7 @@ import { BaseSkills } from '../../../../model/crew';
 import { PlayerCrew } from '../../../../model/player';
 import { oneCrewCopy } from '../../../../utils/crewutils';
 import { IContest, IExpectedScore, IContestant, IContestSkill, IContestResult, IEncounter } from '../model';
-import { getCrewCritChance, getExpectedScore, makeContestant, simulateContest } from '../utils';
+import { getCrewCritChance, getExpectedScore, makeContestant, makeResultId, simulateContest } from '../utils';
 
 export const MIN_RANGE_BOOSTS: number[] = [15, 20, 35, 50, 100, 150];
 export const MAX_RANGE_BOOSTS: number[] = [35, 50, 100, 150, 200, 250];
@@ -162,12 +162,12 @@ export async function getChampionCrewData(
 			let previousResult: IChampionContestResult | undefined;
 			const previousCrew: IChampionCrewData | undefined = previousCrewData?.find(previousCrew => previousCrew.id === crewData.id);
 			if (previousCrew) previousResult = previousCrew.contests[contestId]?.result;
-			const oddsNeeded: boolean = !previousResult
-				|| previousResult.championAverage !== championRoll.average
-				|| previousResult.critChance !== champion.critChance;
+			const oddsNeeded: boolean = !previousResult || previousResult.id !== makeResultId(champion, challenger);
+			if (champion.crew.name === 'Pathfinder Uhura' && contestIndex === 4) console.log('oddsNeeded', oddsNeeded, champion.skills);
 			if (oddsNeeded) {
 				promises.push(
 					simulateContest(champion, challenger, 1000).then(result => {
+						if (champion.crew.name === 'Pathfinder Uhura' && contestIndex === 4) console.log('simresult', result);
 						return {
 							...result,
 							contestId,

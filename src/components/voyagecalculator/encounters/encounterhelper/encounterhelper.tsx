@@ -13,10 +13,11 @@ import { GlobalContext } from '../../../../context/globalcontext';
 
 import { IEncounter } from '../model';
 import { EncounterContext, IEncounterContext } from './context';
-import { getChampionCrewData, getDefaultAssignments, IChampionCrewData, IContestAssignments, makeContestId } from './championdata';
+import { assignCrewToContest, getChampionCrewData, getDefaultAssignments, IChampionContest, IChampionContestResult, IChampionCrewData, IContestAssignment, IContestAssignments, makeContestId } from './championdata';
 import { ChampionsTable } from './champions';
 import { ContestsTable } from './contests';
 import { EncounterImportComponent, getEncounterDataFromJson, serializeEncounter } from './encounterimporter';
+import { ChampionSimulator } from './simulator';
 
 type EncounterHelperProps = {
 	voyageConfig: Voyage;
@@ -95,6 +96,7 @@ const Encounter = (props: EncounterProps) => {
 	const [championData, setChampionData] = React.useState<IChampionCrewData[] | undefined>(undefined);
 	const [assignments, setAssignments] = React.useState<IContestAssignments>(getDefaultAssignments(encounter.contests));
 	const [targetSkills, setTargetSkills] = React.useState<string[]>([]);
+	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
 
 	React.useEffect(() => {
 		setAssignments(getDefaultAssignments(encounter.contests));
@@ -137,17 +139,66 @@ const Encounter = (props: EncounterProps) => {
 						behavior: 'smooth'
 					});
 				}}
+				openSimulator={setSimulatorTrigger}
 			/>
 			<Button	/* Reset assignments */
 				content={t('voyage.contests.reset_assignments')}
 				onClick={() => setAssignments(getDefaultAssignments(encounter.contests))}
+				disabled={!Object.keys(assignments).some(contestId => assignments[contestId].crew)}
+			/>
+			<Button	/* Reset boosts */
+				content='Reset boosts'
+				onClick={resetBoosts}
+				disabled={!Object.keys(assignments).some(contestId => assignments[contestId].boost)}
 			/>
 			<div ref={championsAnchor} />
 			<ChampionsTable
 				id={`champions/${encounter.id}`}
 				targetSkills={targetSkills}
 				setTargetSkills={setTargetSkills}
+				openSimulator={setSimulatorTrigger}
 			/>
+			{simulatorTrigger && (
+				<ChampionSimulator
+					activeContest={simulatorTrigger}
+					updateData={updateData}
+					cancelTrigger={() => setSimulatorTrigger(undefined)}
+				/>
+			)}
 		</EncounterContext.Provider>
 	);
+
+	function updateData(result: IChampionContestResult, assignments?: IContestAssignments): void {
+		// Update assignments by request
+		if (assignments) setAssignments(assignments);
+		// Replace previous contest results with new simulation results
+		//	Do after updating assignments to avoid better results being replace by weaker results
+		if (championData) {
+			setTimeout(() => {
+				setChampionData(championData => {
+					if (!championData) return undefined;
+					const crewData: IChampionCrewData | undefined = championData.find(crewData =>
+						crewData.id === result.crewId
+					);
+					if (crewData) crewData.contests[result.contestId].result = result;
+					return [...championData];
+				});
+			}, 0);
+		}
+	}
+
+	function resetBoosts(): void {
+		Object.keys(assignments).forEach(contestId => {
+			const assignment: IContestAssignment = assignments[contestId];
+			if (assignment.crew) {
+				assignCrewToContest(
+					encounter,
+					assignments,
+					contestId,
+					assignment.crew
+				);
+			}
+		});
+		setAssignments({...assignments});
+	}
 };

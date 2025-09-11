@@ -6,22 +6,25 @@ import {
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../../../context/globalcontext';
+import { PlayerCrew } from '../../../../model/player';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 
 import { IContest, IContestSkill, IExpectedScore } from '../model';
 import { formatContestResult, getExpectedScore } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { EncounterContext } from './context';
-import { BoostLabel } from './boostpicker';
-import { IChampion, IChampionBoost, IChampionContest } from './championdata';
+import { BoostPicker } from './boostpicker';
+import { assignCrewToContest, IChampion, IChampionBoost, IChampionContest, IContestAssignment } from './championdata';
 
 type ContestsTableProps = {
 	setTargetSkills: (skills: string[]) => void;
+	openSimulator: (contest: IChampionContest) => void;
 };
 
 export const ContestsTable = (props: ContestsTableProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { encounter, contestIds, championData, assignments } = React.useContext(EncounterContext);
+	const { encounter, contestIds, championData, assignments, setAssignments } = React.useContext(EncounterContext);
+	const { openSimulator } = props;
 
 	return (
 		<React.Fragment>
@@ -86,10 +89,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 							crew.id === assignments[contestId].crew?.id
 						)?.contests[contestId];
 						return (
-							<Table.Row key={contestId}
-								onClick={() => props.setTargetSkills(contest.skills.map(cs => cs.skill))}
-								style={{ cursor: 'pointer' }}
-							>
+							<Table.Row key={contestId}>
 								<Table.Cell textAlign='center'>
 									{contestIndex+1}/{encounter.contests.length}
 									{contest.critChance > 0 && (
@@ -102,7 +102,12 @@ export const ContestsTable = (props: ContestsTableProps) => {
 										</div>
 									)}
 								</Table.Cell>
-								<Table.Cell textAlign='center'>
+								<Table.Cell	/* Find viable crew for this contest */
+									title='Find viable crew for this contest'
+									textAlign='center'
+									onClick={() => props.setTargetSkills(contest.skills.map(cs => cs.skill))}
+									style={{ cursor: 'pointer' }}
+								>
 									{renderSkills(contest.skills)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
@@ -113,7 +118,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{!assignedContest && <>{t('global.unassigned')}</>}
 								</Table.Cell>
 								<Table.Cell>
-									{renderBoost(assignments[contestId].boost)}
+									{renderBoost(assignments[contestId])}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
 									{assignedContest && renderChampionSkills(assignedContest)}
@@ -125,8 +130,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									{renderContest(contestIndex, assignedContest)}
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									{assignedContest?.result && <>{formatContestResult(assignedContest.result)}</>}
-									{!assignedContest && <>{t('global.n_%', { n: 0 })}</>}
+									{renderOdds(assignedContest)}
 								</Table.Cell>
 							</Table.Row>
 						);
@@ -140,14 +144,20 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		return <ProficiencyRanges skills={skills} />;
 	}
 
-	function renderBoost(boost: IChampionBoost | undefined): JSX.Element {
-		if (!boost) return <></>;
-		return <BoostLabel boost={boost} />;
+	function renderBoost(assignment: IContestAssignment): JSX.Element {
+		if (!assignment.crew) return <></>;
+		return (
+			<BoostPicker
+				assignedCrew={assignment.crew}
+				assignedBoost={assignment.boost}
+				onBoostSelected={(boost) => editBoost(assignment.index, assignment.crew, boost)}
+			/>
+		);
 	}
 
-	function renderChampionSkills(contest: IChampionContest): JSX.Element {
-		const champion: IChampion = contest.champion;
-		const contestSkills: IContestSkill[] = contest.skills.map(contestSkill => {
+	function renderChampionSkills(assignedContest: IChampionContest): JSX.Element {
+		const champion: IChampion = assignedContest.champion;
+		const contestSkills: IContestSkill[] = assignedContest.skills.map(contestSkill => {
 			const championSkill: IContestSkill | undefined = champion.skills.find(championSkill =>
 				championSkill.skill === contestSkill.skill
 			);
@@ -186,5 +196,31 @@ export const ContestsTable = (props: ContestsTableProps) => {
 				<span>{challengerRoll.average}</span>
 			</div>
 		);
+	}
+
+	function renderOdds(assignedContest: IChampionContest | undefined): JSX.Element {
+		if (!assignedContest) return <>{t('global.n_%', { n: 0 })}</>;
+		if (!assignedContest.result) return <></>;
+		return (
+			<div	/* Simulate contest */
+				title={t('voyage.contests.simulate_contest')}
+				style={{ cursor: 'pointer' }}
+				onClick={() => openSimulator(assignedContest)}
+			>
+				{formatContestResult(assignedContest.result)}
+			</div>
+		);
+	}
+
+	function editBoost(contestIndex: number, crew: PlayerCrew | undefined, boost: IChampionBoost | undefined): void {
+		if (!crew) return;
+		assignCrewToContest(
+			encounter,
+			assignments,
+			contestIds[contestIndex],
+			crew,
+			boost
+		);
+		setAssignments({...assignments});
 	}
 };

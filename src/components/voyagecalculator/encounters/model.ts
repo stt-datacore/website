@@ -30,6 +30,7 @@ export interface IExpectedScore {
 };
 
 export interface IContestResult {
+	id: string;
 	oddsA: number;
 	simulated?: ISimulatedResults;
 };

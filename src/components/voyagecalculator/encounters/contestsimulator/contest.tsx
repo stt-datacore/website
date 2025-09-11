@@ -8,7 +8,7 @@ import {
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { IContestant, IContestResult } from '../model';
-import { formatContestResult, makeContestant, simulateContest } from '../utils';
+import { formatContestResult, makeContestant, makeResultId, simulateContest } from '../utils';
 import { Contestant } from './contestant';
 import { ContestantPicker } from './contestantpicker';
 
@@ -41,9 +41,9 @@ export const Contest = (props: ContestProps) => {
 	const [contestantA, setContestantA] = React.useState<IContestant>(initContestant(props.a));
 	const [contestantB, setContestantB] = React.useState<IContestant>(initContestant(props.b));
 	const [contestResult, setContestResult] = React.useState<IContestResult | undefined>(undefined);
-	const [pickerTrigger, setPickerTrigger] = React.useState<IPickerTrigger | undefined>(undefined);
 
 	const [compactMode, setCompactMode] = React.useState<boolean>(!!props.compact);
+	const [pickerTrigger, setPickerTrigger] = React.useState<IPickerTrigger | undefined>(undefined);
 
 	// Listen to changes to champion from encounter helper simulator
 	React.useEffect(() => {
@@ -51,9 +51,11 @@ export const Contest = (props: ContestProps) => {
 	}, [props.a]);
 
 	React.useEffect(() => {
-		// Run more simulations if contestants have high crit chances
-		const simCount: number = Math.floor(SIMULATIONS*(1+((contestantA.critChance+contestantB.critChance)/100)));
-		simulateContest(contestantA, contestantB, simCount, PERCENTILE).then(result => {
+		// Don't run simulations again if contestant inputs haven't changed
+		const testId: string = makeResultId(contestantA, contestantB);
+		if (testId === contestResult?.id) return;
+
+		simulateContest(contestantA, contestantB, SIMULATIONS, PERCENTILE).then(result => {
 			setContestResult(result);
 			if (props.onResult) props.onResult(result);
 		});
@@ -108,10 +110,7 @@ export const Contest = (props: ContestProps) => {
 			</div>
 			{!compactMode && (
 				<div style={{ marginTop: '1em' }}>
-					Avg, Min, and Max are calculated without crit chance.
-					{contestResult?.simulated && (
-						<>{` `}Wins % is calculated from simulations with crit chance.</>
-					)}
+					The average scores listed here do not take crit chances into account, but the odds of winning do.
 				</div>
 			)}
 			{pickerTrigger && (

@@ -103,27 +103,25 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 				<Table.Body>
 					{contributors.map(contributor => {
 						return (
-							<React.Fragment>
-								<Table.Row key={contributor.index}>
-									<Table.Cell textAlign='center'>
-										{contributor.index + 1}
+							<Table.Row key={contributor.index}>
+								<Table.Cell textAlign='center'>
+									{contributor.index + 1}
+								</Table.Cell>
+								<Table.Cell>
+									{contributor.crew && <CrewLabel crew={contributor.crew} />}
+									{!contributor.crew && <>{t('global.unassigned')}</>}
+								</Table.Cell>
+								<Table.Cell>
+									{renderBoostPicker(contributor)}
+								</Table.Cell>
+								{activeContest.skills.map(contestSkill => (
+									<Table.Cell
+										key={contestSkill.skill}
+										textAlign='center'>
+											{renderContribution(contributor, contestSkill.skill)}
 									</Table.Cell>
-									<Table.Cell>
-										{contributor.crew && <CrewLabel crew={contributor.crew} />}
-										{!contributor.crew && <>{t('global.unassigned')}</>}
-									</Table.Cell>
-									<Table.Cell>
-										{renderBoostPicker(contributor)}
-									</Table.Cell>
-									{activeContest.skills.map(contestSkill => (
-										<Table.Cell
-											key={contestSkill.skill}
-											textAlign='center'>
-												{renderContribution(contributor, contestSkill.skill)}
-										</Table.Cell>
-									))}
-								</Table.Row>
-							</React.Fragment>
+								))}
+							</Table.Row>
 						);
 					})}
 				</Table.Body>
@@ -220,21 +218,23 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 			let effectiveness: Effectiveness = Effectiveness.Unassigned;
 			if (boost) {
 				effectiveness = Effectiveness.Effective;
-				// Boost would have no effect on active contest (i.e. odds of winning already 100%)
-				if (contestOdds[activeContest.id] === 1 && (boost.type === 'voyage_crit_boost' || targetSkills.includes(boost.type))) {
-					effectiveness = Effectiveness.Ineffective;
-				}
+				// Boost has no effect on active contest (i.e. odds of winning already 100%)
+				//	This doesn't work: the boost is declared "ineffective" when it's in fact used to get the odds to 100%
+				// if (contestOdds[activeContest.id] === 1 && (boost.type === 'voyage_crit_boost' || targetSkills.includes(boost.type))) {
+				// 	effectiveness = Effectiveness.Ineffective;
+				// }
 				// Crew is boosting a prior contest
-				else if (exhaustedSkills.includes(boost.type) && contestIndex !== activeContest.index) {
+				if (contestIndex !== activeContest.index && (boost.type === 'voyage_crit_boost' || exhaustedSkills.includes(boost.type))) {
 					effectiveness = Effectiveness.Past;
 				}
 				// Crew is (likely) boosting a future contest
-				else if (futureSkills.includes(boost.type)) {
+				else if (contestIndex !== activeContest.index && futureSkills.includes(boost.type)) {
 					effectiveness = Effectiveness.Future;
 				}
 			}
 			else {
 				// Boost would have no effect on active contest (i.e. odds of winning already 100%)
+				//	Note: this may not immediately catch a contest that just reached 100% after boosting a prior contest
 				if (contestOdds[activeContest.id] === 1) {
 					effectiveness = Effectiveness.Unneeded;
 				}
@@ -313,9 +313,9 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 						effectiveness = `${contributor.crew.name} is boosting a skill that is relevant to their own contest`
 						icon = 'minus circle';
 						break;
-					/* CREW is boosting a skill that may be relevant to a future contest */
+					/* CREW is boosting a skill that may be relevant to a later contest */
 					case Effectiveness.Future:
-						effectiveness = `${contributor.crew.name} is boosting a skill that may be relevant to a future contest`
+						effectiveness = `${contributor.crew.name} is boosting a skill that may be relevant to a later contest`
 						icon = 'minus circle';
 						break;
 					/* A boost here will have no effect on this contest */
@@ -328,7 +328,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 			}
 		}
 
-		const targetSkills: string[] = Object.keys(contributor.skills).filter(skill =>
+		const relevantSkills: string[] = Object.keys(contributor.skills).filter(skill =>
 			contributor.skills[skill].value > 0
 		);
 
@@ -337,8 +337,10 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 				<BoostPicker
 					assignedCrew={contributor.crew}
 					assignedBoost={contributor.boost}
-					targetSkills={targetSkills}
-					targetCrit={contributor.index === activeContest.index}
+					relevant={{
+						skills: relevantSkills,
+						crit: contributor.index === activeContest.index
+					}}
 					onBoostSelected={(boost) => editBoost(contributor, boost)}
 				/>
 				{notes.length > 0 && (

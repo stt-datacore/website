@@ -21,21 +21,18 @@ import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { EncounterContext } from './context';
 import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, assignCrewToContest, getAssignedContest } from './championdata';
-import { ChampionSimulator } from './simulator';
 
 type ChampionsTableProps = {
 	id: string;
 	targetSkills: string[];
 	setTargetSkills: (targetSkills: string[]) => void;
+	openSimulator: (contest: IChampionContest) => void;
 };
 
 export const ChampionsTable = (props: ChampionsTableProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { voyageCrew, encounter, championData, assignments, setAssignments } = React.useContext(EncounterContext);
-
-	const { targetSkills, setTargetSkills } = props;
-
-	const [simulatorTrigger, setSimulatorTrigger] = React.useState<IChampionContest | undefined>(undefined);
+	const { targetSkills, setTargetSkills, openSimulator } = props;
 
 	const tableSetup = React.useMemo<IDataTableSetup>(() => {
 		const columns: IDataTableColumn[] = [
@@ -81,7 +78,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 							contest={(datum as IChampionCrewData).contests[contestId]}
 							assignments={assignments}
 							assignCrew={assignCrew}
-							setSimulatorTrigger={setSimulatorTrigger}
+							openSimulator={openSimulator}
 						/>
 					)
 				}
@@ -130,13 +127,6 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				data={filteredData}
 				setup={tableSetup}
 			/>
-			{simulatorTrigger && (
-				<ChampionSimulator
-					activeContest={simulatorTrigger}
-					updateAssignments={updateAssignments}
-					cancelTrigger={() => setSimulatorTrigger(undefined)}
-				/>
-			)}
 		</React.Fragment>
 	);
 
@@ -237,22 +227,18 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		assignCrewToContest(encounter, assignments, contest?.id, crew);
 		setAssignments({...assignments});
 	}
-
-	function updateAssignments(assignments: IContestAssignments): void {
-		setAssignments(assignments);
-	}
 };
 
 type ChampionContestCellProps = {
 	contest: IChampionContest;
 	assignments: IContestAssignments;
 	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
-	setSimulatorTrigger: (contest: IChampionContest) => void;
+	openSimulator: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { contest, assignments, assignCrew, setSimulatorTrigger } = props;
+	const { contest, assignments, assignCrew, openSimulator } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
@@ -281,7 +267,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					>
 						<Button	/* Simulate contest */
 							title={t('voyage.contests.simulate_contest')}
-							onClick={() => setSimulatorTrigger(contest)}
+							onClick={() => openSimulator(contest)}
 						>
 							{formatContestResult(contest.result)}
 						</Button>

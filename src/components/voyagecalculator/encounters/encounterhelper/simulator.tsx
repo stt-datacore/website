@@ -8,30 +8,31 @@ import {
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../../../context/globalcontext';
+import { DataPickerLoading } from '../../../dataset_presenters/datapicker';
 import { AvatarView } from '../../../item_presenters/avatarview';
 
 import { IContestResult, IContestSkill, IExpectedScore } from '../model';
 import { formatContestResult, getExpectedScore, makeContestant } from '../utils';
 import { Contest } from '../contestsimulator/contest';
 import { EncounterContext } from './context';
-import { assignCrewToContest, CRIT_BOOSTS, getDefaultAssignments, IChampion, IChampionBoost, IChampionContest, IChampionCrewData, IContestAssignment, IContestAssignments, IUnusedSkills, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
+import { assignCrewToContest, CRIT_BOOSTS, getDefaultAssignments, IChampion, IChampionBoost, IChampionContest, IChampionContestResult, IChampionCrewData, IContestAssignment, IContestAssignments, IUnusedSkills, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 import { ContributorsTable } from './contributors';
 
 type ChampionSimulatorProps = {
 	activeContest: IChampionContest;
-	updateAssignments: (assignments: IContestAssignments) => void;
+	updateData: (result: IChampionContestResult, assignments?: IContestAssignments) => void;
 	cancelTrigger: () => void;
 };
 
 export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { encounter, contestIds, championData, assignments } = React.useContext(EncounterContext);
-	const { updateAssignments, cancelTrigger } = props;
+	const { updateData, cancelTrigger } = props;
 
 	const [pendingAssignments, setPendingAssignments] = React.useState<IContestAssignments>(getDefaultAssignments(encounter.contests));
 	const [activeContest, setActiveContest] = React.useState<IChampionContest | undefined>(undefined);
 	const [contestOdds, setContestOdds] = React.useState<{ [key: string]: number; }>({});
-	const [contestResult, setContestResult] = React.useState<IContestResult | undefined>(undefined);
+	const [championResult, setChampionResult] = React.useState<IChampionContestResult | undefined>(undefined);
 	const [showWinsBug, setShowWinsBug] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
@@ -91,29 +92,16 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 	// 	1) Crew assigned to active contest is different
 	//  2) Any assigned boost is different
 	const isDirty = React.useMemo<boolean>(() => {
-		const boostId = (assignments: IContestAssignments, contestId: string) => {
-			const assignment: IContestAssignment = assignments[contestId];
-			if (!assignment.boost) return '';
-			return `${assignment.boost.type}_${assignment.boost.rarity}`;
-		};
-		if (!activeContest) return false;
-		const currentId: number = assignments[activeContest.id].crew?.id ?? 0;
-		const pendingId: number = pendingAssignments[activeContest.id].crew?.id ?? 0;
-		if (currentId !== pendingId) return true;
-		let isDirty: boolean = false;
-		for (let i = 0; i <= activeContest.index; i++) {
-			isDirty = boostId(assignments, contestIds[i]) !== boostId(pendingAssignments, contestIds[i]);
-			if (isDirty) break;
-		}
-		return isDirty;
+		return hasPendingChanges();
 	}, [pendingAssignments, activeContest]);
 
-	if (!activeContest) return <></>;
+	if (!activeContest)
+		return <DataPickerLoading />;
 
 	return (
 		<Modal
 			open={true}
-			onClose={cancelTrigger}
+			onClose={() => closeModal(false)}
 			size='small'
 		>
 			<Modal.Header	/* Contest Simulator */>
@@ -125,16 +113,13 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 			</Modal.Content>
 			<Modal.Actions>
 				<Button	/* Close or Cancel */
-					content={isDirty ? 'Cancel' : t('global.close')}
-					onClick={cancelTrigger}
+					content={isDirty ? t('global.cancel') : t('global.close')}
+					onClick={() => closeModal(false)}
 				/>
 				{isDirty && (
 					<Button	/* Save */
-						content='Save'
-						onClick={() => {
-							updateAssignments(pendingAssignments);
-							cancelTrigger();
-						}}
+						content={t('global.save')}
+						onClick={() => closeModal(true)}
 					/>
 				)}
 			</Modal.Actions>
@@ -151,7 +136,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 					a={activeContest.champion}
 					b={activeContest.challenger}
 					compact={true}
-					onResult={setContestResult}
+					onResult={serializeResult}
 					onWinsViewChange={(inView) => setShowWinsBug(!inView)}
 				/>
 				<Divider />
@@ -168,7 +153,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 	}
 
 	function renderBug(): JSX.Element {
-		if (!contestResult) return <></>;
+		if (!championResult) return <></>;
 		return (
 			<div style={{ position: 'absolute', top: '1em', right: '1em', zIndex: '100' }}>
 				<Message compact color='black'>
@@ -186,7 +171,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 						<div>
 							<Statistic size='tiny'	/* Wins */>
 								<Statistic.Value>
-									{formatContestResult(contestResult)}
+									{formatContestResult(championResult)}
 								</Statistic.Value>
 								<Statistic.Label>
 									{t('voyage.contests.wins')}
@@ -222,5 +207,50 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 			}
 		});
 		return champion;
+	}
+
+	function hasPendingChanges(compareActiveCrew: boolean = true): boolean {
+		const boostId = (assignments: IContestAssignments, contestId: string) => {
+			const assignment: IContestAssignment = assignments[contestId];
+			if (!assignment.boost) return '';
+			return `${assignment.boost.type}_${assignment.boost.rarity}`;
+		};
+		if (!activeContest) return false;
+		if (compareActiveCrew) {
+			const currentId: number = assignments[activeContest.id].crew?.id ?? 0;
+			const pendingId: number = pendingAssignments[activeContest.id].crew?.id ?? 0;
+			if (currentId !== pendingId) return true;
+		}
+		let boostsAreDirty: boolean = false;
+		for (let i = 0; i <= activeContest.index; i++) {
+			boostsAreDirty = boostId(assignments, contestIds[i]) !== boostId(pendingAssignments, contestIds[i]);
+			if (boostsAreDirty) break;
+		}
+		return boostsAreDirty;
+	}
+
+	// Serialize contestResult as championContestResult
+	function serializeResult(result: IContestResult | undefined): void {
+		if (!activeContest || !result) return;
+		setChampionResult({
+			...result,
+			oddsA: result.oddsA,
+			crewId: activeContest.champion.crew.id,
+			contestId: activeContest.id,
+			championAverage: activeContest.champion_roll.average,
+			critChance: activeContest.champion.critChance
+		});
+	}
+
+	function closeModal(affirmative: boolean): void {
+		if (championResult) {
+			// Always update champion odds when saving assignments
+			if (affirmative)
+				updateData(championResult, pendingAssignments);
+			// Otherwise update champion odds only if no boosts have changed
+			else if (!hasPendingChanges(false))
+				updateData(championResult);
+		}
+		cancelTrigger();
 	}
 };
