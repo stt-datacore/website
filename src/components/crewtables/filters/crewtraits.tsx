@@ -31,6 +31,9 @@ export const CrewTraitsFilter = (props: CrewTraitsFilterProps) => {
 		if (traitFilter.includes('maincast') && cast.some(trait => crew.traits_hidden.includes(trait))) {
 			crew.markup.traits_matched!.push('maincast');
 		}
+		if (traitFilter.includes('notmaincast') && !cast.some(trait => crew.traits_hidden.includes(trait))) {
+			crew.markup.traits_matched!.push('notmaincast');
+		}
 	};
 	const filterByTrait = (crew: IRosterCrew) => {
 		if (!crew.markup || !crew.markup.traits_matched) return false;

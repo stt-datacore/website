@@ -63,6 +63,7 @@
         "n_to_next": "{{n}} au suivant",
         "never_in_portal": "Jamais dans le portail",
         "not_in_portal": "Pas dans le portail",
+        "not_maincast": "Pas le casting principal",
         "not_uniquely_retrievable": "Pas récupérable de manière unique",
         "not_yet_in_portal": "Pas encore dans le portail",
         "offer_cost": "Coût de l'offre",

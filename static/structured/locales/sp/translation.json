@@ -63,6 +63,7 @@
         "n_to_next": "{{n}} al próximo",
         "never_in_portal": "Nunca en el portal",
         "not_in_portal": "No en el portal",
+        "not_maincast": "No es el reparto principal",
         "not_uniquely_retrievable": "No se puede recuperar de forma única",
         "not_yet_in_portal": "Aún no en el portal",
         "offer_cost": "Costo de la Oferta",
