@@ -404,8 +404,13 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             let crewurl = undefined as string | undefined;
             let dil = 0;
             if (log) {
-                let n = log.find(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
-                if (n) {
+                let nidx = log.findIndex(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
+                if (nidx != -1) {
+                    let n = log[nidx];
+                    if (n.selection === undefined && log.length > (nidx + 2)) {
+                        let choiceIdx = getChoices(dilemma).findIndex(f => f.text.startsWith(log[nidx+2].text));
+                        if (choiceIdx != -1) n.selection = choiceIdx;
+                    }
                     dilemma.narrative = n;
                     if (n.selection !== undefined) dilemma.selection = n.selection;
                 }
