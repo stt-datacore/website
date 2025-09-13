@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider } from 'semantic-ui-react';
+import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider, Label } from 'semantic-ui-react';
 
-import { Skill } from '../../../model/crew';
+import { CrewMember, Skill } from '../../../model/crew';
 import { PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
@@ -12,6 +12,8 @@ import { useStateWithStorage } from '../../../utils/storage';
 import { IRosterCrew, ICrewMarkup, ICrewFilter, ICrewUtilityRanks } from '../../../components/crewtables/model';
 import { CrewBaseCells, getBaseTableConfig } from './base';
 import { getBernardsNumber } from '../../../utils/gauntlet';
+import { printPortalStatus } from '../../../utils/crewutils';
+import { categorizeCrewCollections } from '../../../utils/collectionutils';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
@@ -87,7 +89,8 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 					shuttle: thresholds.filter(key => ['B', 'S'].includes(key.slice(0, 1))).length,
 					gauntlet: thresholds.filter(key => key.slice(0, 1) === 'G').length,
 					voyage: thresholds.filter(key => key.slice(0, 1) === 'V').length
-				}
+				},
+				reasons_to_keep: reasonsToKeep(crew)
 			}
 		};
 	};
@@ -129,7 +132,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 					event_planner: <Link to='/eventplanner'>{t('menu.tools.event_planner')}</Link>,
 					gauntlets: <Link to='/gauntlets'>{t('menu.tools.gauntlet')}</Link>,
 					voyage_calculator: <Link to='/voyage'>{t('menu.tools.voyage_calculator')}</Link>,
-				})}				
+				})}
 			</p>
 			<Button content={t('crew_utility.customize_button')} onClick={() => setShowPane(!showPane)} />
 			{showPane &&
@@ -295,10 +298,40 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 
 		setRanks({...ranks});
 	}
+
+	function reasonsToKeep(crew: CrewMember) {
+		let reasons = [] as string[];
+		if (crew.ranks.scores.ship.overall_rank <= 50) {
+			reasons.push(t(`rank_names.scores.ship_ability`))
+		}
+		let nev = t('global.never');
+		let ps = printPortalStatus(crew, t, true, true);
+		if (ps.includes(nev)) {
+			ps = ps.replace(nev, '').trim();
+			reasons.push(`${t('base.never_in_portal')} ${ps}`);
+		}
+		let scores = Object.entries(crew.ranks.scores).filter(([key, value]) => key.includes("_rank") && value <= 50);
+		for (let s of scores) {
+			reasons.push(t(`rank_names.scores.${s[0]}`))
+		}
+		const { crew_rewards, stat_buffs, others, crew_rewards_score, stat_buffs_score, others_score } = categorizeCrewCollections(crew, globalContext.core.collections);
+
+		if (crew_rewards.length) {
+			reasons.push(t('collections.types.crew_rewarding'));
+		}
+		if (stat_buffs.length && stat_buffs.some(sb => sb.size <= 50)) {
+			reasons.push(t('collections.types.stat_boosting'));
+		}
+		if (others.length) {
+			reasons.push(t('collections.types.vanity'));
+		}
+		return reasons.filter(f => !!f).sort();
+	}
+
 };
 
 export const getCrewUtilityTableConfig = (t: TranslateMethod, include_base: boolean) => {
-	const tableConfig = [] as ITableConfigRow[];	
+	const tableConfig = [] as ITableConfigRow[];
 
 	if (include_base) {
 		let base = getBaseTableConfig('profileCrew', t);
@@ -312,6 +345,15 @@ export const getCrewUtilityTableConfig = (t: TranslateMethod, include_base: bool
 		{ width: 1, column: 'markup.crew_utility.counts.shuttle', title: include_base ? t('crew_utility.columns.s') : t('crew_utility.columns.shuttle_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
 		{ width: 1, column: 'markup.crew_utility.counts.gauntlet', title: include_base ? t('crew_utility.columns.g') : t('crew_utility.columns.gauntlet_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
 		{ width: 1, column: 'markup.crew_utility.counts.voyage', title: include_base ? t('crew_utility.columns.v') : t('crew_utility.columns.voyage_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
+		{
+			width: 1, column: 'markup.crew_utility.reasons_to_keep', title: include_base ? t('crew_utility.columns.r') : t('crew_utility.columns.reasons_to_keep'), reverse: true, tiebreakers: ['max_rarity'],
+			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+				let r = (a.markup?.crew_utility?.reasons_to_keep?.length ?? 0) - (b.markup?.crew_utility?.reasons_to_keep?.length ?? 0);
+				if (!r) r = a.markup?.crew_utility?.reasons_to_keep?.join().localeCompare(b.markup?.crew_utility?.reasons_to_keep?.join() || "") || 0;
+				if (!r) r = a.ranks.scores.overall - b.ranks.scores.overall;
+				return r;
+			}
+		},
 	)
 	return tableConfig;
 };
@@ -324,6 +366,7 @@ type CrewCellProps = {
 
 export const CrewUtilityCells = (props: CrewCellProps) => {
 	const { crew, showBase, pageId } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<React.Fragment>
 			{showBase && <CrewBaseCells crew={crew} pageId={pageId} tableType='profileCrew' />}
@@ -339,8 +382,24 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 			<Table.Cell textAlign='center'>
 				{renderUtilities(crew, ['V'])}
 			</Table.Cell>
+			<Table.Cell>
+				{renderReasonsToKeep(crew)}
+			</Table.Cell>
 		</React.Fragment>
 	);
+
+	function renderReasonsToKeep(crew: IRosterCrew) {
+		if (crew.immortal) return <>{t('global.na')}</>;
+		if (!crew.markup?.crew_utility?.reasons_to_keep?.length) return <>{t('global.none')}</>;
+		return crew.markup.crew_utility.reasons_to_keep.map((reason, idx) => {
+			let key = `${crew.symbol}_reason_${idx}`;
+			return (
+				<Label key={key} style={{margin: '0.5em 0', width: '100%'}}>
+					{reason}
+				</Label>
+			)
+		});
+	}
 
 	function renderUtilities(crew: IRosterCrew, options: string[]): JSX.Element {
 		if (!crew.markup || !crew.markup.crew_utility) return (<></>);

@@ -331,7 +331,12 @@
                 "title": "Fortschritt"
             }
         },
-        "progress_to_next": "Weiter zum nächsten"
+        "progress_to_next": "Weiter zum nächsten",
+        "types": {
+            "crew_rewarding": "Crew-Belohnungssammlungen",
+            "stat_boosting": "Stat-Boosting-Sammlungen",
+            "vanity": "Vanity-Sammlungen"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -437,6 +442,8 @@
         "columns": {
             "g": "H",
             "gauntlet_ranks": "Herausforderung-Ränge",
+            "r": "G",
+            "reasons_to_keep": "Gründe für die Beibehaltung",
             "s": "S",
             "shuttle_ranks": "Shuttle-Ränge",
             "u": "N",

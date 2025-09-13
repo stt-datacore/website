@@ -331,7 +331,12 @@
                 "title": "Progreso"
             }
         },
-        "progress_to_next": "Progreso a la siguiente"
+        "progress_to_next": "Progreso a la siguiente",
+        "types": {
+            "crew_rewarding": "Colecciones que recompensan a la tripulación",
+            "stat_boosting": "Colecciones que mejoran las estadísticas",
+            "vanity": "Colecciones de vanidad"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Considere los tripulantes en lanzaderas activas",
@@ -443,6 +448,8 @@
         "columns": {
             "g": "R",
             "gauntlet_ranks": "Rangos de Reto",
+            "r": "R",
+            "reasons_to_keep": "Razones para conservar",
             "s": "L",
             "shuttle_ranks": "Rangos de Lanzadera",
             "u": "U",
