@@ -331,7 +331,12 @@
                 "title": "Progrès"
             }
         },
-        "progress_to_next": "Progression vers la prochaine étape"
+        "progress_to_next": "Progression vers la prochaine étape",
+        "types": {
+            "crew_rewarding": "Collections récompensant l'équipage",
+            "stat_boosting": "Collections boostant les statistiques",
+            "vanity": "Collections boutique"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
@@ -445,6 +450,8 @@
         "columns": {
             "g": "G",
             "gauntlet_ranks": "Rangs de Gantelet",
+            "r": "R",
+            "reasons_to_keep": "Raisons de le garder",
             "s": "N",
             "shuttle_ranks": "Rangs de la Navette",
             "u": "U",
