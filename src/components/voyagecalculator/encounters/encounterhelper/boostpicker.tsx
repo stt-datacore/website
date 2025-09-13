@@ -2,6 +2,7 @@ import React from 'react';
 import {
 	Button,
 	Checkbox,
+	Divider,
 	Form,
 	Grid,
 	Icon,
@@ -12,6 +13,7 @@ import {
 } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../../../../model/player';
+import { GlobalContext } from '../../../../context/globalcontext';
 import ItemDisplay from '../../../itemdisplay';
 import { CrewLabel } from '../../../dataset_presenters/elements/crewlabel';
 import CONFIG from '../../../CONFIG';
@@ -29,6 +31,7 @@ type BoostPickerProps = {
 };
 
 export const BoostPicker = (props: BoostPickerProps) => {
+	const { t } = React.useContext(GlobalContext).localized;
 	const { inventory } = React.useContext(EncounterContext);
 	const { assignedCrew, assignedBoost, relevant, onBoostSelected } = props;
 
@@ -85,14 +88,23 @@ export const BoostPicker = (props: BoostPickerProps) => {
 				<Segment
 					attached='bottom'
 					style={{
-						maxHeight: '200px',
+						maxHeight: '225px',
 						overflowX: 'hidden',
 						overflowY: 'scroll',
 						padding: '1em'
 					}}
 				>
-					{boostOptions.length > 0 && renderBoosts()}
-					{relevant && boostOptions.length === 0 && renderRelevantToggle()}
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'column',
+							rowGap: '2em'
+						}}
+					>
+						{boostOptions.length > 0 && renderGroups()}
+						{renderRelevantToggle()}
+						{renderActions()}
+					</div>
 				</Segment>
 			</Popup.Content>
 		</Popup>
@@ -118,62 +130,72 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderBoosts(): JSX.Element {
+	function renderGroups(): JSX.Element {
+		const groups: string[] = [];
+		boostOptions.forEach(option => {
+			if (!groups.includes(option.type))
+				groups.push(option.type);
+		});
 		return (
-			<div
-				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					rowGap: '2em'
-				}}
-			>
-				<Grid columns={3}>
-					{boostOptions.map(option => (
-						<Grid.Column
-							key={`${option.type}_${option.rarity}`}
-							onClick={() => toggleBoost(option.type, option.rarity)}
-							style={{ cursor: 'pointer' }}
+			<React.Fragment>
+				{groups.map(group => (
+					<div key={group}>
+						{groups.length > 1 && (
+							<Divider horizontal>
+								<img
+									src={getTypeImg(group)}
+									style={{ height: '1.5em' }}
+									className='invertibleIcon'
+								/>
+							</Divider>
+						)}
+						{renderGroup(group)}
+					</div>
+				))}
+			</React.Fragment>
+		);
+	}
+
+	function renderGroup(type: string): JSX.Element {
+		const options: IChampionBoost[] = boostOptions.filter(option => option.type === type);
+		if (options.length === 0) return <></>;
+		return (
+			<Grid columns={3} centered doubling>
+				{options.map(option => (
+					<Grid.Column
+						key={`${option.type}_${option.rarity}`}
+						onClick={() => toggleBoost(option.type, option.rarity)}
+						style={{ cursor: 'pointer' }}
+					>
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+								justifyContent: 'top',
+								alignItems: 'center',
+							}}
 						>
-							<div
-								style={{
-									display: 'flex',
-									flexDirection: 'column',
-									justifyContent: 'top',
-									alignItems: 'center',
-								}}
-							>
-								<div>
-									<ItemDisplay
-										src={getConsumableImg(option.type, option.rarity)}
-										size={48}
-										rarity={option.rarity}
-										maxRarity={option.rarity}
-									/>
-								</div>
-								<div style={{ whiteSpace: 'nowrap' }}>
-									{assignedBoost?.type === option.type && assignedBoost?.rarity === option.rarity && (
-										<Icon name='check circle' color='blue' />
-									)}
-									{getBoostShort(option)}
-								</div>
-								<div>
-									{renderQuantity(option)}
-								</div>
+							<div>
+								<ItemDisplay
+									src={getConsumableImg(option.type, option.rarity)}
+									size={48}
+									rarity={option.rarity}
+									maxRarity={option.rarity}
+								/>
 							</div>
-						</Grid.Column>
-					))}
-				</Grid>
-				{relevant && renderRelevantToggle()}
-				<Button /* No boost */
-					icon='ban'
-					content='No boost'
-					onClick={() => {
-						onBoostSelected(undefined);
-						setShowPopup(false);
-					}}
-					fluid
-				/>
-			</div>
+							<div style={{ whiteSpace: 'nowrap' }}>
+								{assignedBoost?.type === option.type && assignedBoost?.rarity === option.rarity && (
+									<Icon name='check circle' color='blue' />
+								)}
+								{getBoostShort(option)}
+							</div>
+							<div>
+								{renderQuantity(option)}
+							</div>
+						</div>
+					</Grid.Column>
+				))}
+			</Grid>
 		);
 	}
 
@@ -185,7 +207,10 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			symbol = `${boost.type.replace('_skill', '')}_bonus_${boost.rarity}_shuttle_consumable`;
 		const quantity: number = inventory.find(item => item.symbol === symbol)?.quantity ?? 0;
 		return (
-			<Label size='small'>
+			<Label	/* N in inventory */
+				size='small'
+				title={`${quantity} in inventory`}
+			>
 				{quantity}
 			</Label>
 		);
@@ -208,6 +233,29 @@ export const BoostPicker = (props: BoostPickerProps) => {
 					onChange={(e, {checked}) => setShowRelevant(checked as boolean)}
 				/>
 			</Form>
+		);
+	}
+
+	function renderActions(): JSX.Element {
+		return (
+			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '1em' }}>
+				{assignedBoost && (
+					<Button /* No boost */
+						icon='ban'
+						content='No boost'
+						onClick={() => {
+							onBoostSelected(undefined);
+							setShowPopup(false);
+						}}
+						fluid
+					/>
+				)}
+				<Button	/* Close */
+					content={t('global.close')}
+					onClick={() => setShowPopup(false)}
+					fluid
+				/>
+			</div>
 		);
 	}
 };
@@ -242,7 +290,13 @@ function getBoostShort(boost: IChampionBoost): string {
 	return short;
 }
 
-export function getConsumableImg(type: string, rarity: number): string {
+function getTypeImg(type: string): string {
+	if (type === 'voyage_crit_boost')
+		return `${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`;
+	return `${process.env.GATSBY_ASSETS_URL}atlas/icon_${type}.png`;
+}
+
+function getConsumableImg(type: string, rarity: number): string {
 	if (type === 'voyage_crit_boost')
 		return `${process.env.GATSBY_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
 	return `${process.env.GATSBY_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;

@@ -20,7 +20,7 @@ import { IContestSkill } from '../model';
 import { formatContestResult } from '../utils';
 import { ProficiencyRanges } from '../common/ranges';
 import { EncounterContext } from './context';
-import { IChampionCrewData, IChampionContest, IEndurableSkill, makeContestId, IContestAssignments, IContestAssignment, assignCrewToContest, getAssignedContest } from './championdata';
+import { assignCrewToContest, getAssignedContest, IChampionCrewData, IChampionContest, IContestAssignments, IContestAssignment, IUnusedSkill } from './championdata';
 
 type ChampionsTableProps = {
 	id: string;
@@ -31,7 +31,7 @@ type ChampionsTableProps = {
 
 export const ChampionsTable = (props: ChampionsTableProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { voyageCrew, encounter, championData, assignments, setAssignments } = React.useContext(EncounterContext);
+	const { voyageCrew, encounter, contestIds, championData, assignments, setAssignments } = React.useContext(EncounterContext);
 	const { targetSkills, setTargetSkills, openSimulator } = props;
 
 	const tableSetup = React.useMemo<IDataTableSetup>(() => {
@@ -58,7 +58,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 			}
 		];
 		encounter.contests.forEach((contest, contestIndex) => {
-			const contestId: string = makeContestId(contest, contestIndex);
+			const contestId: string = contestIds[contestIndex];
 			columns.push(
 				{
 					id: `contests.${contestId}.odds`,
@@ -78,6 +78,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 							contest={(datum as IChampionCrewData).contests[contestId]}
 							assignments={assignments}
 							assignCrew={assignCrew}
+							targetSkills={targetSkills}
 							openSimulator={openSimulator}
 						/>
 					)
@@ -131,14 +132,13 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 	);
 
 	function championContestSort(a: IChampionContest, b: IChampionContest, sortDirection: 'ascending' | 'descending'): number {
-		const avgEndurable = (contest: IChampionContest) =>
-			contest.endurable_skills.reduce((prev, curr) => prev + ((curr.range_min + curr.range_max) / 2), 0);
+		const avgUnused = (contest: IChampionContest) =>
+			contest.unused_skills.reduce((prev, curr) => prev + ((curr.range_min + curr.range_max) / 2), 0);
 		if (a.odds === b.odds) {
-			if (a.odds === 1) {
-				const aEndurable: number = avgEndurable(a);
-				const bEndurable: number = avgEndurable(b);
-				return sortDirection === 'descending' ? bEndurable - aEndurable : aEndurable - bEndurable;
-			}
+			const aUnused: number = avgUnused(a);
+			const bUnused: number = avgUnused(b);
+			if (aUnused !== bUnused)
+				return sortDirection === 'descending' ? bUnused - aUnused : aUnused - bUnused;
 			const aRoll: number = a.champion_roll.average;
 			const bRoll: number = b.champion_roll.average;
 			return sortDirection === 'descending' ? bRoll - aRoll : aRoll - bRoll;
@@ -233,12 +233,13 @@ type ChampionContestCellProps = {
 	contest: IChampionContest;
 	assignments: IContestAssignments;
 	assignCrew: (contest: IChampionContest | undefined, crew: PlayerCrew) => void;
+	targetSkills: string[];
 	openSimulator: (contest: IChampionContest) => void;
 };
 
 const ChampionContestCell = (props: ChampionContestCellProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { contest, assignments, assignCrew, openSimulator } = props;
+	const { contest, assignments, assignCrew, targetSkills, openSimulator } = props;
 
 	if (contest.champion_roll.min === 0)
 		return <></>;
@@ -250,9 +251,9 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 	const crewIsAssignedHere: boolean = assignedContest === contest.id;
 	const crewIsAssignedPrior: boolean = !!assignedContest && assignments[assignedContest].index < contest.index;
 
-	const boostedSkills: number = Object.keys(assignments[contest.id].unusedSkills).filter(unusedSkill =>
+	const contributions: number = Object.keys(assignments[contest.id].residualSkills).filter(unusedSkill =>
 		!crewIsAssignedPrior &&
-			assignments[contest.id].unusedSkills[unusedSkill].range_min > 0 &&
+			assignments[contest.id].residualSkills[unusedSkill].range_min > 0 &&
 				contest.skills.map(cs => cs.skill).includes(unusedSkill)
 	).length;
 
@@ -297,7 +298,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				>
 					{contest.result?.simulated?.a.average ?? contest.champion_roll.average}
 				</span>
-				{boostedSkills > 0 && (
+				{contributions > 0 && (
 					<span>
 						<Icon name='arrow circle up' color='green' fitted />
 					</span>
@@ -311,21 +312,27 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 					{contest.result?.simulated?.b.average ?? contest.challenger_roll.average}
 				</span>
 			</div>
-			{contest.endurable_skills.length > 0 && (
+			{contest.unused_skills.length > 0 && (
 				<Label.Group>
-					{contest.endurable_skills.map(es => renderEndurableSkill(es))}
+					{contest.unused_skills.map(es => renderUnusedSkill(es))}
 				</Label.Group>
 			)}
 		</div>
 	);
 
-	function renderEndurableSkill(endurableSkill: IEndurableSkill): JSX.Element {
-		const skill: string = endurableSkill.skill;
-		const contests: number = endurableSkill.contests_boosted;
-		const average: number = endurableSkill.range_min + Math.floor((endurableSkill.range_max - endurableSkill.range_min) / 2);
-		const title: string = `If selected for this contest, ${contest.champion.crew.name} will contribute their unused ${CONFIG.SKILLS[skill]} skill to ${contests} later contest${contests !== 1 ? 's' : ''}. A minimum of +(${endurableSkill.range_min}-${endurableSkill.range_max}) will be added to each ${CONFIG.SKILLS[skill]} roll, resulting in an average value added of +${average*3}${contests > 1 ? ' per contest' : ''}`;
+	function renderUnusedSkill(unusedSkill: IUnusedSkill): JSX.Element {
+		const skill: string = unusedSkill.skill;
+		const relevance: number = unusedSkill.relevance;
+		const average: number = unusedSkill.range_min + Math.floor((unusedSkill.range_max - unusedSkill.range_min) / 2);
+		/* If assigned to this contest, CREW will contribute their unused SKILL skill to N later contest(s)
+			with an average value added of +AVERAGE (per contest).	*/
+		const title: string = `If assigned to this contest, ${contest.champion.crew.name} will contribute their unused ${CONFIG.SKILLS[skill]} skill to ${relevance} later contest(s) with an average value added of +${average*3} (per contest)`;
 		return (
-			<Label key={skill} title={title}>
+			<Label
+				key={skill}
+				title={title}
+				color={targetSkills.includes(skill) ? 'blue' : undefined}
+			>
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 					<span>
 						<img

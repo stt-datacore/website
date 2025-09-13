@@ -15,7 +15,7 @@ import { IContestResult, IContestSkill, IExpectedScore } from '../model';
 import { formatContestResult, getExpectedScore, makeContestant } from '../utils';
 import { Contest } from '../contestsimulator/contest';
 import { EncounterContext } from './context';
-import { assignCrewToContest, CRIT_BOOSTS, getDefaultAssignments, IChampion, IChampionBoost, IChampionContest, IChampionContestResult, IChampionCrewData, IContestAssignment, IContestAssignments, IUnusedSkills, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
+import { assignCrewToContest, CRIT_BOOSTS, getDefaultAssignments, IChampion, IChampionBoost, IChampionContest, IChampionContestResult, IChampionCrewData, IContestAssignment, IContestAssignments, IResidualSkills, MAX_RANGE_BOOSTS, MIN_RANGE_BOOSTS } from './championdata';
 import { ContributorsTable } from './contributors';
 
 type ChampionSimulatorProps = {
@@ -42,7 +42,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 			const assignment: IContestAssignment = assignments[contestId];
 			pendingAssignments[contestId].crew = assignment.crew;
 			pendingAssignments[contestId].boost = assignment.boost;
-			pendingAssignments[contestId].unusedSkills = assignment.unusedSkills;
+			pendingAssignments[contestId].residualSkills = assignment.residualSkills;
 		});
 
 		// Update assignments with (unboosted) crew to test, if not currently assigned to active contest
@@ -198,12 +198,12 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 				boostedSkill.range_max += MAX_RANGE_BOOSTS[boost.rarity];
 			}
 		}
-		const unusedSkills: IUnusedSkills = assignments[contest.id].unusedSkills;
+		const residualSkills: IResidualSkills = assignments[contest.id].residualSkills;
 		skills.forEach(skill => {
 			const championSkill: IContestSkill | undefined = champion.skills.find(cs => cs.skill === skill);
 			if (championSkill) {
-				championSkill.range_min += unusedSkills[skill].range_min;
-				championSkill.range_max += unusedSkills[skill].range_max;
+				championSkill.range_min += residualSkills[skill].range_min;
+				championSkill.range_max += residualSkills[skill].range_max;
 			}
 		});
 		return champion;

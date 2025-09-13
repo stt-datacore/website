@@ -21,7 +21,7 @@ interface IContributor {
 	boost?: IChampionBoost;
 	skills: IContributorSkills;
 	relevant: boolean;
-	effectiveness: Effectiveness;
+	impact: BoostImpact;
 };
 
 interface IContributorSkills {
@@ -40,14 +40,14 @@ enum SkillStatus {
 	Exhausted
 };
 
-enum Effectiveness {
+enum BoostImpact {
 	Unboosted,
 	Unneeded,
 	Ineffective,
-	RelevantSkill,
-	RelevantCrit,
+	Skill,
+	Crit,
 	Self,
-	Elsewhere
+	Others
 };
 
 type ContributorsTableProps = {
@@ -216,36 +216,36 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 				}
 			});
 
-			// Not relevant if crew has no relevant skills to contribute to active contest or no crew assigned
+			// Relevant if crew can contribute any skills to active contest
 			const relevant: boolean = contestIndex === activeContest.index || targetSkills.reduce((prev, curr) =>
 				prev + (skills[curr] ? skills[curr].value : 0)
 			, 0) > 0;
 
-			let effectiveness: Effectiveness = Effectiveness.Unboosted;
+			let impact: BoostImpact = BoostImpact.Unboosted;
 			if (boost) {
-				effectiveness = Effectiveness.Ineffective;
+				impact = BoostImpact.Ineffective;
 				// Crew is boosting crit chance of this contest
 				if (boost.type === 'voyage_crit_boost' && contestIndex === activeContest.index) {
-					effectiveness = Effectiveness.RelevantCrit;
+					impact = BoostImpact.Crit;
 				}
 				// Crew is boosting a relevant skill
 				else if (targetSkills.includes(boost.type) && (contestIndex === activeContest.index || !exhaustedSkills.includes(boost.type))) {
-					effectiveness = Effectiveness.RelevantSkill;
+					impact = BoostImpact.Skill;
 				}
 				// Crew is boosting their own contest
 				else if (boost.type === 'voyage_crit_boost' || exhaustedSkills.includes(boost.type)) {
-					effectiveness = Effectiveness.Self;
+					impact = BoostImpact.Self;
 				}
 				// Crew is (likely) boosting later contests
 				else if (!exhaustedSkills.includes(boost.type) && futureSkills.includes(boost.type)) {
-					effectiveness = Effectiveness.Elsewhere;
+					impact = BoostImpact.Others;
 				}
 			}
 			else {
 				// Boost would have no effect on active contest (i.e. odds of winning already 100%)
 				//	Note: this may not immediately catch a contest that just reached 100% after boosting a prior contest
 				if (contestOdds[activeContest.id] === 1) {
-					effectiveness = Effectiveness.Unneeded;
+					impact = BoostImpact.Unneeded;
 				}
 			}
 
@@ -255,7 +255,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 				boost,
 				skills,
 				relevant,
-				effectiveness
+				impact
 			};
 		});
 	}
@@ -273,14 +273,15 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		for (let i = index; i < encounter.contests.length; i++) {
 			const contest: IContest = encounter.contests[i];
 			const contestSkills: string[] = contest.skills.map(cs => cs.skill);
-			// If contest requires skill, AVA here is current residual
+			// Contest requires skill => AVA is current residual
 			if (contestSkills.includes(skill)) {
-				// Can only contribute if champion of active contest has skill
+				// Can only contribute if crew assigned to active contest has skill
 				if (Object.keys(activeContest.champion.crew.skills).includes(skill)) {
 					addedValues.push(residual);
 				}
 			}
-			// Otherwise update residual to 150% of current residual
+			// Skill is present but unused by crew assigned to contest =>
+			// 	Update residual to 150% of current residual
 			else {
 				const assignment: IContestAssignment = assignments[contestIds[i]];
 				if (assignment.crew?.skills[skill]) {
@@ -302,36 +303,34 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 
 		const notes: JSX.Element[] = [];
 		if (contributor.crew) {
-			let effectiveness: string = '';
+			let message: string = '';
 			let icon: SemanticICONS | undefined;
 			let color: SemanticCOLORS | undefined;
-			switch (contributor.effectiveness) {
-				/* Boost has no effect to any contest */
-				case Effectiveness.Ineffective:
-					effectiveness = `Boost has no effect to any contest`;
-					icon = 'exclamation triangle';
-					color = 'red';
-					break;
-				/* CREW is boosting a skill that is relevant to their own contest */
-				case Effectiveness.Self:
-					effectiveness = `${contributor.crew.name} is boosting a skill that is relevant to their own contest`
-					icon = 'arrow circle left';
-					color = 'yellow';
-					break;
-				/* CREW is boosting a skill that may be relevant to later contests */
-				case Effectiveness.Elsewhere:
-					effectiveness = `${contributor.crew.name} is boosting a skill that may be relevant to later contests`
-					icon = 'arrow circle right';
-					color = 'yellow';
-					break;
-				/* A boost here will have no effect on this contest */
-				case Effectiveness.Unneeded:
-					effectiveness = `A boost here will have no effect on this contest`;
-					icon = 'minus circle';
-					break;
+			/* Boost has no effect to any contest */
+			if (contributor.impact === BoostImpact.Ineffective) {
+				message = `Boost has no effect to any contest`;
+				icon = 'exclamation triangle';
+				color = 'red';
 			}
-			if (effectiveness !== '')
-				notes.push(makeIconNote(effectiveness, icon, color));
+			/* CREW is boosting a skill that is relevant to their own contest */
+			else if (contributor.impact === BoostImpact.Self) {
+				message = `${contributor.crew.name} is boosting a skill that is relevant to their own contest`
+				icon = 'arrow circle left';
+				color = 'yellow';
+			}
+			/* CREW is boosting an unused skill that may be relevant to later contests */
+			else if (contributor.impact === BoostImpact.Others) {
+				message = `${contributor.crew.name} is boosting an unused skill that may be relevant to later contests`
+				icon = 'arrow circle right';
+				color = 'yellow';
+			}
+			/* A boost here will have no effect on this contest */
+			else if (contributor.impact === BoostImpact.Unneeded && contributor.relevant) {
+				message = `A boost here will have no effect on this contest`;
+				icon = 'exclamation triangle';
+			}
+			if (message !== '')
+				notes.push(makeIconNote(message, icon, color));
 
 			/* CREW has no relevant skills to contribute to this contest */
 			if (!contributor.relevant) {
@@ -380,29 +379,30 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		const assignedCrew: PlayerCrew | undefined = assignments[contestId].crew;
 		if (!assignedCrew) return <></>;
 
-		let irrelevant: string = '';
+		let message: string = '';
 		switch (contributorSkill.status) {
 			/* No skill */
 			case SkillStatus.Inactive:
 				return <>{t('voyage.contests.no_skill')}</>;
 			/* CREW cannot contribute exhausted skills */
 			case SkillStatus.Exhausted:
-				irrelevant = `${assignedCrew.name} cannot contribute exhausted skills`;
+				message = `${assignedCrew.name} cannot contribute exhausted skills`;
 				break;
 			/* CREW cannot contribute to inactive skills */
 			case SkillStatus.Wasted:
-				irrelevant = `${assignedCrew.name} cannot contribute to inactive skills`;
+				message = `${assignedCrew.name} cannot contribute to inactive skills`;
 				break;
 		}
-		if (irrelevant !== '') return makeIconNote(irrelevant, 'minus circle');
+		if (message !== '') return makeIconNote(message, 'minus circle', undefined, true);
 
-		let effectiveness: JSX.Element | undefined;
+		let impact: JSX.Element | undefined;
 		/* CREW is boosting their contribution to this contest skill */
-		if (contributor.effectiveness === Effectiveness.RelevantSkill && contributor.boost?.type === skill) {
-			effectiveness = makeIconNote(
+		if (contributor.impact === BoostImpact.Skill && contributor.boost?.type === skill) {
+			impact = makeIconNote(
 				`${assignedCrew.name} is boosting their contribution to this contest skill`,
 				'arrow circle up',
-				'green'
+				'green',
+				true
 			);
 		}
 
@@ -416,10 +416,10 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 					columnGap: '.3em'
 				}}
 			>
-				<span>+{contributorSkill.value}</span>
-				{effectiveness && (
+				<span>{contributorSkill.value}</span>
+				{impact && (
 					<span>
-						{effectiveness}
+						{impact}
 					</span>
 				)}
 			</div>
@@ -429,21 +429,20 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 	function renderCritChance(): JSX.Element {
 		const isBoosted: boolean = assignments[activeContest.id].boost?.type === 'voyage_crit_boost';
 		return (
-			<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', columnGap: '.3em' }}>
-				<span>
-					<img
-						src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
-						style={{ height: '1.1em' }}
-						className='invertibleIcon'
-					/>
-				</span>
+			<div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', columnGap: '.3em' }}>
+				<img
+					src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+					style={{ height: '1.1em' }}
+					className='invertibleIcon'
+				/>
 				<span>{activeContest.champion.critChance}%</span>
 				{isBoosted && (
 					<span>
 						{makeIconNote(
 							`${activeContest.champion.crew.name} is boosting this contest's crit chance`,
 							'arrow circle up',
-							'green'
+							'green',
+							true
 						)}
 					</span>
 				)}
@@ -457,12 +456,13 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		return <b>{total}</b>;
 	}
 
-	function makeIconNote(message: string, icon?: SemanticICONS, color?: SemanticCOLORS): JSX.Element {
+	function makeIconNote(message: string, icon?: SemanticICONS, color?: SemanticCOLORS, fitted?: boolean): JSX.Element {
 		return (
 			<Icon
 				title={message}
 				name={icon ?? 'info circle'}
 				color={color ?? undefined}
+				fitted={fitted}
 			/>
 		);
 	}
