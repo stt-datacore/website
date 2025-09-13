@@ -11,6 +11,10 @@ const MutualPolestarWorker = {
             const { crew, comboSize, allPolestars, max_iterations } = options;
             const allowUnowned = options.allowUnowned ?? 0;
 
+            const min_rarity = options.min_rarity ?? 1;
+            const max_rarity = options.max_rarity ?? 5;
+            const non_unique = options.non_unique ?? 0;
+
             let wcn = BigInt(allPolestars.length);
             let bsn = BigInt(comboSize);
             let total_combos = getComboCountBig(wcn, bsn);
@@ -66,6 +70,10 @@ const MutualPolestarWorker = {
 
                 if (!fcrew.length) return false;
 
+                if (non_unique) {
+                    if (fcrew.filter(fc => !fc.unique).length < non_unique) return false;
+                }
+
                 const owned = [] as string[];
                 const unowned = [] as string[];
 
@@ -73,6 +81,8 @@ const MutualPolestarWorker = {
 
                 for (let i = 0; i < c; i++) {
                     let cr = fcrew[i];
+                    if (cr.max_rarity < min_rarity || cr.max_rarity > max_rarity) return false;
+
                     if (cr.disposition === 'exclude') {
                         return false;
                     }

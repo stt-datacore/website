@@ -158,7 +158,7 @@ const forDataCore = (input, output, chewable) => {
 					const sorter = new VoyagersSorted(lineups, estimates);
 					sorter.sort(datacoreSorter, methods, limit)
 						.then((sorted) => {
-							output(JSON.parse(JSON.stringify(sorted)), false);
+							output(structuredClone(sorted), false);
 						});
 				});
 		})
@@ -258,7 +258,7 @@ class Voyagers {
 			let rTraitSlots = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 			let crewId = this.crew[i].id ? this.crew[i].id : i;
-			let crewSkills = this.crew[i].skills ? JSON.parse(JSON.stringify(this.crew[i].skills)) : {};
+			let crewSkills = this.crew[i].skills ? structuredClone(this.crew[i].skills) : {};
 
 			let bGeneralist = true;
 			for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {

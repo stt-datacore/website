@@ -8,6 +8,7 @@ import { Mission } from "../model/missions";
 import { ObjectiveEvent } from "../model/player";
 import { BattleStations, ReferenceShip, Schematics, Ship } from "../model/ship";
 import { StaticFaction } from "../model/shuttle";
+import { Dilemma } from "../model/voyage";
 import { EventStats } from "../utils/event_stats";
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -20,6 +21,7 @@ export interface ICoreData {
 	continuum_missions: ContinuumMission[];
 	crew: CrewMember[];
 	current_weighting: CurrentWeighting;
+	dilemmas: Dilemma[];
 	episodes: Mission[];
 	event_instances: EventInstance[];
 	event_leaderboards: EventLeaderboard[];
@@ -30,6 +32,7 @@ export interface ICoreData {
 	gauntlets: Gauntlet[];
 	items: EquipmentItem[];
 	keystones: (KeystoneBase | Polestar | Constellation)[];
+	maincast: { [key:string]: string[] };
 	missions: Mission[];
 	missionsfull: Mission[];
 	objective_events: ObjectiveEvent[];

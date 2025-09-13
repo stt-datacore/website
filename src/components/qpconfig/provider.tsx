@@ -97,7 +97,7 @@ export const QPConfigProvider = (props: QPConfigProps) => {
 export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], buffConfig: BuffStatTable | undefined, params: IQPParams) {
 	const { voyageConfig, qpConfig } = params;
 
-	if (qpConfig.enabled && c.immortal === -1 && c.q_bits >= 100) {
+	if (qpConfig.enabled && c.immortal && c.immortal >= -1 && c.q_bits >= 100) {
 		if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
 			return c;
 		}
@@ -149,6 +149,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 				min: skill.range_min,
 				max: skill.range_max
 			}
+			newcopy.skills ??= {};
 			newcopy.skills[skill.skill] = {
 				...skill
 			}
@@ -181,7 +182,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 			newcopy.skills = applyCrewBuffs(newcopy, buffConfig)!
 		}
 		else {
-			newcopy.skills = JSON.parse(JSON.stringify(newcopy.base_skills));
+			newcopy.skills = structuredClone(newcopy.base_skills);
 		}
 		return newcopy;
 	}

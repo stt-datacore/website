@@ -107,7 +107,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 for (let eq of ceq) {
                     let ef = context.core.items.find(item => item.symbol === eq.symbol);
                     if (ef) {
-                        equip[i++] = (JSON.parse(JSON.stringify(ef)));
+                        equip[i++] = (structuredClone(ef));
                     }
                 }
             }
@@ -119,7 +119,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 if (eq) {
                     let ef = context.core.items.find(item => item.symbol === eq.symbol);
                     if (ef) {
-                        equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
+                        equip[i - startlevel] = (structuredClone(ef));
                         disabled[i - startlevel] = eq.level > crew.level;
                     }
                 }
@@ -164,7 +164,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             if (eq) {
                 let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
                 if (ef) {
-                    equip[i] = (JSON.parse(JSON.stringify(ef)));
+                    equip[i] = (structuredClone(ef));
                 }
             }
             else {
