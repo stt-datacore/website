@@ -117,7 +117,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			// 	setRequestRun(true);
 			// }
 		}
-	}, [playerData, colContext]);
+	}, [colContext]);
 
 	if (!playerData) return <></>;
 
