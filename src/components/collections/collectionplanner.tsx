@@ -104,7 +104,7 @@ export const CollectionPlanner = () => {
 				existing.quantity += reward.quantity ?? 1;
 			}
 			else {
-				current.push(structuredClone(reward));
+				current.push(structuredClone({...reward, quantity: reward.quantity ?? 0}));
 			}
 		});
 	}
