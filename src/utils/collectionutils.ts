@@ -1,4 +1,4 @@
-import { RewardsGridNeed } from "../model/crew";
+import { CrewMember, RewardsGridNeed } from "../model/crew";
 import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
 import { ItemArchetypeBase, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from "../model/player";
 import { getCollectionRewards, getMilestoneRewards } from "./itemutils";
@@ -484,3 +484,14 @@ export function getAllCrewRewards(col: Collection) {
     return output;
 }
 
+export function categorizeCrewCollections(crew: CrewMember, collections: Collection[]) {
+    let cols = collections.filter(f => crew.collection_ids.some(cid => `${cid}` == `${f.id}`));
+    let crew_rewards = cols.map(c => ({collection: c, rewards: getAllCrewRewards(c), size: c.crew?.length ?? 1})).filter(c => c.rewards.length);
+    let stat_buffs = cols.map(c => ({collection: c, rewards: getAllStatBuffs(c), size: c.crew?.length ?? 1})).filter(c => c.rewards.length);
+    let others = cols.filter(c => !crew_rewards.some(c2 => c == c2.collection) && !stat_buffs.some(c2 => c == c2.collection)).map(c => ({collection: c, rewards: [] as Reward[], size: c.crew?.length ?? 1}));
+    let crew_rewards_score = crew_rewards.map(cr => cr.rewards.length / (cr.size || 1)).reduce((p, n) => p + n, 0) / (crew_rewards.length || 1);
+    let stat_buffs_score = stat_buffs.map(sb => sb.rewards.length / (sb.size || 1)).reduce((p, n) => p + n, 0) / (stat_buffs.length || 1);
+    let others_score = others.map(ot => ot.rewards.length / (ot.size || 1)).reduce((p, n) => p + n, 0) / (others.length || 1);
+
+    return { crew_rewards, stat_buffs, others, crew_rewards_score, stat_buffs_score, others_score };
+}

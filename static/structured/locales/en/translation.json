@@ -331,7 +331,12 @@
                 "title": "Progress"
             }
         },
-        "progress_to_next": "Progress to next"
+        "progress_to_next": "Progress to next",
+        "types": {
+            "crew_rewarding": "Crew-rewarding collections",
+            "stat_boosting": "Stat-boosting collections",
+            "vanity": "Vanity collections"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Consider crew on active shuttles",
@@ -437,6 +442,8 @@
         "columns": {
             "g": "G",
             "gauntlet_ranks": "Gauntlet Ranks",
+            "r": "R",
+            "reasons_to_keep": "Reasons To Keep",
             "s": "S",
             "shuttle_ranks": "Shuttle Ranks",
             "u": "U",
