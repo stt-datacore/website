@@ -230,7 +230,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
 
-	const [showBase, setShowBase] = React.useState<boolean>(false);
+	const [showBase, setShowBase] = useStateWithStorage<boolean>(`crew_utility/show_base`, false, { rememberForever: true });
+	const [alwaysShowDataScore, setAlwaysShowDataScore] = useStateWithStorage<boolean>(`crew_utility/always_show_datascore`, false, { rememberForever: true });
 	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
 	const [specialView, setSpecialView] = useStateWithStorage<SpecialViews | undefined>('/rosterTable/specialView', undefined);
@@ -407,9 +408,11 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 					showBase={showBase}
 					setShowBase={setShowBase}
+					alwaysShowDataScore={alwaysShowDataScore}
+					setAlwaysShowDataScore={setAlwaysShowDataScore}
 				/>,
-			tableConfig: getCrewUtilityTableConfig(t, showBase),
-			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
+			tableConfig: getCrewUtilityTableConfig(t, showBase, alwaysShowDataScore),
+			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} alwaysShowDataScore={alwaysShowDataScore} crew={crew} />
 		},
 		{
 			id: 'qp_score',
