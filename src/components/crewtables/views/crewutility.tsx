@@ -3,7 +3,7 @@ import { Link } from 'gatsby';
 import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider, Label } from 'semantic-ui-react';
 
 import { CrewMember, Skill } from '../../../model/crew';
-import { PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
+import { CryoCollection, PlayerCollection, PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
 import { ITableConfigRow } from '../../../components/searchabletable';
@@ -67,12 +67,14 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const [showPane, setShowPane] = React.useState(false);
 
 	const crewReasons = React.useMemo(() => {
+		if (!playerData) return {};
+		const playerCols = playerData.player.character.cryo_collections.filter(f => f.milestone.rewards?.length);
 		const output = {} as {[key:string]: string[]}
 		for (let c of rosterCrew) {
-			output[c.id] = reasonsToKeep(c);
+			output[c.id] = reasonsToKeep(c, playerCols);
 		}
 		return output;
-	}, [rosterCrew]);
+	}, [rosterCrew, playerData]);
 
 	const addCrewUtility = (crew: IRosterCrew) => {
 		const myRanks = {} as ICrewUtilityRanks;
@@ -324,7 +326,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		setRanks({...ranks});
 	}
 
-	function reasonsToKeep(crew: CrewMember) {
+	function reasonsToKeep(crew: CrewMember, collections: CryoCollection[]) {
 		let reasons = [] as string[];
 		if (crew.ranks.scores.ship.overall_rank <= 50) {
 			reasons.push(t(`rank_names.scores.ship_ability`))
@@ -339,7 +341,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		for (let s of scores) {
 			reasons.push(t(`rank_names.scores.${s[0]}`))
 		}
-		const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, globalContext.core.collections);
+		const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, collections);
 		if (crew_rewards.length) {
 			reasons.push(t('collections.types.crew_rewarding'));
 		}
