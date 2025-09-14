@@ -1790,7 +1790,7 @@
             "title": "Himmelsmarkt",
             "top_n_polestars": "Top {{n}} Polarsterne",
             "unlisted": "Nicht Gelistet",
-            "updated": "Der Markt wird stündlich aktualisiert"
+            "updated": "Der Markt wird alle 5 Minuten aktualisiert."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",

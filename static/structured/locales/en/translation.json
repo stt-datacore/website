@@ -1790,7 +1790,7 @@
             "title": "Celestial Market",
             "top_n_polestars": "Top {{n}} polestars",
             "unlisted": "Unlisted",
-            "updated": "Market is updated hourly."
+            "updated": "Market is updated every 5 minutes."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",

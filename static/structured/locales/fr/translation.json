@@ -1802,7 +1802,7 @@
             "title": "Marché céleste",
             "top_n_polestars": "Les {{n}} meilleures étoiles polaires",
             "unlisted": "Non Répertorié",
-            "updated": "Le marché est mis à jour toutes les heures"
+            "updated": "Le marché est mis à jour toutes les 5 minutes."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
