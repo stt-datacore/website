@@ -230,8 +230,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
 
-	const [showBase, setShowBase] = useStateWithStorage<boolean>(`crew_utility/show_base`, false, { rememberForever: true });
-	const [alwaysShowDataScore, setAlwaysShowDataScore] = useStateWithStorage<boolean>(`crew_utility/always_show_datascore`, false, { rememberForever: true });
+	const [showBase, setShowBase] = React.useState<boolean>(false);
+	const [alwaysShowDataScore, setAlwaysShowDataScore] = React.useState<boolean>(false);
 	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
 	const [specialView, setSpecialView] = useStateWithStorage<SpecialViews | undefined>('/rosterTable/specialView', undefined);

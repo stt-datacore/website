@@ -485,7 +485,7 @@ export function getAllCrewRewards(col: Collection) {
 }
 
 export function categorizeCrewCollections(crew: CrewMember, collections: Collection[]) {
-    let cols = collections.filter(f => crew.collection_ids.some(cid => `${cid}` == `${f.id}`));
+    let cols = collections.filter(f => crew.collection_ids.some(cid => `${cid}` == `${f.id}` || `${cid}` == `${f.type_id}`));
     let crew_rewards = cols.map(c => ({collection: c, rewards: getAllCrewRewards(c), size: c.crew?.length ?? 1})).filter(c => c.rewards.length);
     let stat_buffs = cols.map(c => ({collection: c, rewards: getAllStatBuffs(c), size: c.crew?.length ?? 1})).filter(c => c.rewards.length);
     let others = cols.filter(c => !crew_rewards.some(c2 => c == c2.collection) && !stat_buffs.some(c2 => c == c2.collection)).map(c => ({collection: c, rewards: [] as Reward[], size: c.crew?.length ?? 1}));
