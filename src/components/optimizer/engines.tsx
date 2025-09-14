@@ -4,14 +4,17 @@ import { useStateWithStorage } from "../../utils/storage";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../../model/worker";
 import BetaTachyonSettingsPopup, {
     DefaultBetaTachyonSettings,
+    DefaultPresets,
+    NoPortalBiasSettings,
 } from "./btsettings";
-import { Segment, Dropdown, Checkbox } from "semantic-ui-react";
+import { Segment, Dropdown, Checkbox, DropdownItemProps } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CiteMode, PlayerData } from "../../model/player";
 import { UnifiedWorker } from "../../typings/worker";
 import { CiteOptContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
 import { WorkerContext } from "../../context/workercontext";
+import { BetaTachyonPresets } from "./btpresets";
 
 export type CiteEngine = "original" | "beta_tachyon_pulse";
 
@@ -26,6 +29,7 @@ export interface IEngineRunnerContext {
 export const EngineRunnerContext = React.createContext<IEngineRunnerContext>({});
 
 export const EngineRunner = (props: EngineRunnerProps) => {
+
     const globalContext = React.useContext(GlobalContext);
     const workerContext = React.useContext(WorkerContext);
 
@@ -35,10 +39,6 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     const { runWorker: internalRunWorker, cancel } = workerContext;
 
     const { pageId } = props;
-    const dbid = globalContext.player.playerData?.player.dbid ?? '';
-
-    const [currentConfig, setCurrentConfig] = useStateWithStorage(`${dbid}/${pageId}/bt_config`, DefaultBetaTachyonSettings, { rememberForever: true });
-
     const citeContext = React.useContext(CiteOptContext);
 
     const { t } = globalContext.localized;
@@ -48,12 +48,21 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     const { setResults } = citeContext;
 
     const { appliedProspects } = citeContext;
-
     const { showEV, rarities } = citeConfig;
+
+    const playerData = globalContext.player.playerData ? structuredClone(globalContext.player.playerData) as PlayerData : undefined;
+    const dbid = playerData?.player.dbid ?? '';
+
+    const [currentConfig, setCurrentConfig] = useStateWithStorage(`${dbid}/${pageId}/bt_config`, DefaultBetaTachyonSettings, { rememberForever: true });
+    const [presets, setPresets] = useStateWithStorage<BetaTachyonSettings[]>(`${dbid}/${pageId}/bt_settings_presets`, DefaultPresets, { rememberForever: true });
 
     const [settingsOpen, setSettingsOpen] = React.useState(false);
 
-    const playerData = globalContext.player.playerData ? structuredClone(globalContext.player.playerData) as PlayerData : undefined;
+    React.useEffect(() => {
+        if (presets?.length) {
+            checkPresets();
+        }
+    }, [presets]);
 
     if (playerData) {
         playerData.citeMode = citeConfig;
@@ -78,6 +87,21 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         },
     ];
 
+    const presetChoices = React.useMemo(() => {
+        let col = presets.map(p => {
+            return {
+                key: `${p.name}+preset`,
+                value: p.name,
+                text: p.name
+            } as DropdownItemProps;
+        });
+        // col.push({
+        //     key: `_new`,
+        //     value: `_new`,
+        //     text: t('global.new') + " ..."
+        // })
+        return col;
+    }, [presets]);
 
     React.useEffect(() => {
         if (!initialized) {
@@ -122,12 +146,13 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                         setTimeout(() => setEngine(value as CiteEngine));
                     }}
                 />
-
                 {engine === "beta_tachyon_pulse" && (
                     <>
                         <BetaTachyonSettingsPopup
                             isOpen={settingsOpen}
                             setIsOpen={setSettingsOpen}
+                            presets={presets}
+                            updatePresets={setPresets}
                             config={{
                                 current: currentConfig,
                                 setCurrent: (value) => {
@@ -136,6 +161,12 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                                 },
                                 defaultOptions: DefaultBetaTachyonSettings,
                             }}
+                        />
+                        <BetaTachyonPresets
+                            presets={presets}
+                            setPresets={setPresets}
+                            activeSettings={currentConfig}
+                            setActiveSettings={(settings) => setCurrentConfig(settings)}
                         />
                         <Checkbox
                             label={t('cite_opt.ev_show')}
@@ -150,13 +181,28 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                             setRarityFilter={(data) => {
                                 setResults(undefined);
                                 setCiteConfig({ ...citeConfig, rarities: data });
-
                             }}
                             />
                     </div>
                     </>
                 )}
+
             </div>
+            {engine === "beta_tachyon_pulse" && !!currentConfig?.name && (
+                <div>
+                    {t('global.preset')}{t('global.colon')}&nbsp;&nbsp;
+                    <Dropdown
+                        options={presetChoices}
+                        value={currentConfig.name}
+                        onChange={(e, { value }) => {
+                            let choice = presets.find(f => f.name === value);
+                            if (choice) {
+                                setCurrentConfig(choice);
+                            }
+                        }}
+                    />
+                </div>
+            )}
         </Segment>
         </React.Fragment>
     );
@@ -217,4 +263,15 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             });
 		}
 	}
+
+    function checkPresets(force?: boolean) {
+        let currkey = presets.map(p => p.name).join();
+        let newpre = DefaultPresets.concat(presets.filter(f => !DefaultPresets.some(d => d.name === f.name)));
+        let newkey = newpre.map(p => p.name).join();
+        if (force || currkey !== newkey) {
+            setPresets(newpre);
+            return true;
+        }
+        return false;
+    }
 };

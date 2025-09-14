@@ -1,10 +1,14 @@
 import React from 'react';
-import { Modal, Input, Button } from 'semantic-ui-react';
+import { Modal, Input, Button, Dropdown, DropdownItemProps } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
 import { BetaTachyonSettings } from '../../model/worker';
+import { BetaTachyonPresets } from './btpresets';
+import { TranslateMethod } from '../../model/player';
+import { useStateWithStorage } from '../../utils/storage';
 
 interface InternalSettings {
-    name?: string,
+    name: string,
+    is_custom: boolean | string,
     // Voyages Improved
     improved: number | string,
     // Base Power Score
@@ -44,6 +48,8 @@ export interface BetaTachyonSettingsConfig {
 }
 
 export interface BetaTachyonSettingsProps {
+    presets: BetaTachyonSettings[];
+    updatePresets: (value: BetaTachyonSettings[]) => void;
     config: BetaTachyonSettingsConfig;
 	renderTrigger?: () => JSX.Element;
 	setIsOpen: (value: boolean) => void;
@@ -80,7 +86,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
     return `${host}cite-opt?${params.toString()}`;
 }
 
-export function permalinkToSettings() {
+export function permalinkToSettings(t: TranslateMethod) {
     if (!globalThis.window) return undefined;
     let params = new URLSearchParams(globalThis.window.location.search);
     if (!params.size) return undefined;
@@ -112,12 +118,16 @@ export function permalinkToSettings() {
         }
     });
 
-    newConfig.name = params.get("name") ?? undefined;
+    newConfig.name = params.get("name") ?? t('global.default');
 
     return newConfig;
 }
 
 export const DefaultBetaTachyonSettings = {
+    // Name
+    name: 'Default',
+    // Is Custom
+    is_custom: false,
     // Magic number
     magic: 10,
     // Base Power Score
@@ -150,10 +160,44 @@ export const DefaultBetaTachyonSettings = {
     groupSparsity: 2,
 } as BetaTachyonSettings;
 
+export const NoPortalBiasSettings = {
+    // Name
+    name: 'No Portal Bias',
+    // Is Custom
+    is_custom: false,
+    magic: 10,
+    power: 3,
+    skillRare: 2,
+    score: 1,
+    triplet: 3,
+    rareness: 1,
+    citeEffort: 0.75,
+    antimatter: 0.1,
+    collections: 2,
+    portal: 0,
+    never: 0,
+    retrieval: 0,
+    quipment: 0.5,
+    improved: 1,
+    groupSparsity: 2,
+} as BetaTachyonSettings;
+
+export const DefaultPresets = [DefaultBetaTachyonSettings, NoPortalBiasSettings];
+
+export function createNewSettings(name: string, existing?: BetaTachyonSettings): BetaTachyonSettings {
+    return {
+        ...DefaultBetaTachyonSettings,
+        ...existing,
+        name,
+        is_custom: true
+    }
+}
+
 const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 	const context = React.useContext(GlobalContext);
     const { t, tfmt } = context.localized;
-	const { config } = props;
+    const { confirm } = context;
+	const { config, presets, updatePresets } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<Input>();
     const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... DefaultBetaTachyonSettings, ... config.current });
@@ -180,6 +224,22 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
     const setCurrent = (current: InternalSettings) => {
         setInnerSettings(current);
     }
+
+    const presetChoices = React.useMemo(() => {
+        let col = presets.map(p => {
+            return {
+                key: `${p.name}+preset`,
+                value: p.name,
+                text: p.name
+            } as DropdownItemProps;
+        });
+        col.push({
+            key: `_new`,
+            value: `_new`,
+            text: t('global.new') + " ..."
+        })
+        return col;
+    }, [presets]);
 
 	return (
 		<Modal
@@ -212,7 +272,14 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                         <Button style={{alignSelf: "flex-end"}} content={t('global.load_default_settings')} onClick={() => setCurrent(DefaultBetaTachyonSettings)} />
                     </div>
                     <div style={{ display: 'flex', gap: "0.5em", flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-                        {/* <BetaTachyonPresets activeSettings={innerSettingsToSettings()} setActiveSettings={setCurrent} /> */}
+                        <div style={{marginBottom: '1em'}}>
+                            <Dropdown
+                                options={presetChoices}
+                                value={innerSettings.name}
+                                placeholder={t('global.presets')}
+                                onChange={(e, { value }) => selectPreset(value as string)}
+                                />
+                        </div>
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
                             <Button
                                     style={{alignSelf: "flex-end"}}
@@ -220,7 +287,6 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                                     content={t('global.save')}
                                     onClick={() => confirmSelection()} />
                             <Button style={{alignSelf: "flex-end"}} content={t('global.cancel')} onClick={closeModal} />
-
                         </div>
                     </div>
                 </div>
@@ -250,7 +316,10 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
             textAlign: 'left',
             padding: "0.5em 1em"
         }
-
+        const nameStyle = {
+            ...inputStyle,
+            width: '200px'
+        }
         return (
             <div style={{
                 display: "flex",
@@ -262,10 +331,14 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                 maxHeight: '40em'
             }}>
                 {Object.keys(DefaultBetaTachyonSettings).map((key) => {
+                    let disabled = false;
+                    if (key === 'is_custom') return <></>;
+                    if (key === 'name' && !innerSettings['is_custom']) disabled = true;
                     return (<div style={rowStyle} key={`bt_setting_${key}`}>
                         <div style={textStyle}>{t(`cite_opt.btp.settings.${key}`)}:</div>
                         <Input
-                            style={inputStyle}
+                            disabled={disabled}
+                            style={key === 'name' ? nameStyle : inputStyle}
                             placeholder="Value"
                             value={innerSettings[key]}
                             onChange={(e, { value }) => setCurrent({ ... innerSettings, [key]: value })}>
@@ -300,8 +373,13 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		);
 	}
     function innerSettingsToSettings() {
+        let custom = innerSettings.is_custom?.toString()?.trim()?.toLowerCase();
+        let yes = t('global.yes').toLowerCase();
+        let no = t('global.no').toLowerCase();
+        let isCustom = custom === 'true' || custom === yes;
         return {
             name: innerSettings.name,
+            is_custom: isCustom,
             improved: Number.parseFloat(innerSettings.improved as string),
             power: Number.parseFloat(innerSettings.power as string),
             citeEffort: Number.parseFloat(innerSettings.citeEffort as string),
@@ -320,9 +398,46 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
         } as BetaTachyonSettings;
     }
 	function confirmSelection(): void {
+        if (innerSettings.is_custom) {
+            let preset = presets.find(f => f.name?.toLowerCase() === innerSettings?.name.toLowerCase());
+            if (!preset) {
+                updatePresets([...presets, innerSettingsToSettings()]);
+            }
+            else {
+                confirm({
+                    title: t('overwrite.title'),
+                    message: t('overwrite.prompt_x', { x: preset.name }),
+                    onClose: (confirm) => {
+                        if (confirm) {
+                            let presetIdx = presets.findIndex(f => f.name?.toLowerCase() === innerSettings?.name.toLowerCase());
+                            if (presetIdx != -1) {
+                                presets[presetIdx] = innerSettingsToSettings();
+                            }
+                            else {
+                                presets.push(innerSettingsToSettings());
+                            }
+                            updatePresets([...presets]);
+                            config.setCurrent(innerSettingsToSettings());
+                            setModalIsOpen(false);
+                        }
+                    }
+                });
+                return;
+            }
+        }
 		config.setCurrent(innerSettingsToSettings());
         setModalIsOpen(false);
 	}
+    function selectPreset(value: string) {
+        if (value === '_new') {
+            let newSettings = createNewSettings('New Preset', innerSettingsToSettings());
+            newSettings.is_custom = true;
+            setCurrent(newSettings);
+            return;
+        }
+        let settings = presets.find(f => f.name === value);
+        if (settings) setCurrent(settings);
+    }
 };
 
 

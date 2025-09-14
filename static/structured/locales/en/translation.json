@@ -161,7 +161,9 @@
                 "collections": "Stat-Boosting Collections Increased",
                 "groupSparsity": "Voyage Group Sparsity",
                 "improved": "Voyages Improved",
+                "is_custom": "Custom",
                 "magic": "Measure Limit (Magic number)",
+                "name": "{{global.name}}",
                 "never": "Never In Portal",
                 "portal": "Not In Portal",
                 "power": "Base Power Score",
@@ -487,6 +489,10 @@
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
+    },
+    "delete": {
+        "prompt_x": "Are you sure you wish to delete '{{x}}'?",
+        "title": "Delete"
     },
     "demands": {
         "demands": "Demands",
@@ -982,6 +988,7 @@
         "and": "and",
         "and_n_more_ellipses": "and {{n}} more ...",
         "any": "Any",
+        "apply": "Apply",
         "apply_filters": "Apply Filters",
         "approx": "Approx.",
         "assigned": "Assigned",
@@ -1014,6 +1021,7 @@
         "dismiss": "Dismiss",
         "download": "Download",
         "edit": "Edit",
+        "edit_presets": "Manage Presets",
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
@@ -1103,9 +1111,10 @@
         "or": "or",
         "pending_release": "Pending Release",
         "percentile": "Percentile",
-        "permalink": "permalink",
+        "permalink": "Permalink",
         "portal": "Portal",
         "portal_update": "Portal Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1621,6 +1630,10 @@
             "matches": "Matches",
             "trait": "Trait"
         }
+    },
+    "overwrite": {
+        "prompt_x": "Are you sure you wish to overwrite '{{x}}'?",
+        "title": "Overwrite"
     },
     "pages": {
         "crew_stats": "Crew Stats",

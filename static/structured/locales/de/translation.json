@@ -161,7 +161,9 @@
                 "collections": "Sammlungen verbessern erhöhte Statistiken",
                 "groupSparsity": "Reisegruppenknappheit",
                 "improved": "Verbesserte Reise",
+                "is_custom": "Maßgeschneidert",
                 "magic": "Maßgrenze (Magische Zahl)",
+                "name": "{{global.name}}",
                 "never": "Niemals im Portal",
                 "portal": "Nicht im Portal",
                 "power": "Basis-Leistungswert",
@@ -487,6 +489,10 @@
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
+    },
+    "delete": {
+        "prompt_x": "Möchten Sie „{{x}}“ wirklich löschen?",
+        "title": "Löschen"
     },
     "demands": {
         "demands": "Anforderungen",
@@ -982,6 +988,7 @@
         "and": "und",
         "and_n_more_ellipses": "und {{n}} weitere ...",
         "any": "Beliebig",
+        "apply": "Anwenden",
         "apply_filters": "Filter anwenden",
         "approx": "Ca.",
         "assigned": "Assigned",
@@ -1014,6 +1021,7 @@
         "dismiss": "Abweisen",
         "download": "Herunterladen",
         "edit": "Bearbeiten",
+        "edit_presets": "Voreinstellungen bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
         "episode": "Episode",
@@ -1106,6 +1114,7 @@
         "permalink": "Permalink",
         "portal": "Zeitportal",
         "portal_update": "Zeitportal-Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
@@ -1620,6 +1629,10 @@
             "matches": "Übereinstimmungen",
             "trait": "Merkmalen"
         }
+    },
+    "overwrite": {
+        "prompt_x": "Möchten Sie „{{x}}“ wirklich überschreiben?",
+        "title": "Überschreiben"
     },
     "pages": {
         "crew_stats": "Crew-Statistiken",
