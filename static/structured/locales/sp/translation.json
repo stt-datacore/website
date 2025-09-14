@@ -161,7 +161,9 @@
                 "collections": "Colecciones que mejoran las estadísticas",
                 "groupSparsity": "Escasez de grupos de viajes",
                 "improved": "Viajes mejorados",
+                "is_custom": "Personalizado",
                 "magic": "Límite de medida (número mágico)",
+                "name": "{{global.name}}",
                 "never": "Nunca en el portal",
                 "portal": "No en el portal",
                 "power": "Puntuación de potencia base",
@@ -493,6 +495,10 @@
         "ship": "Mostrar habilidades del buque",
         "view_big_book": "Ver {{crew}} en Big Book",
         "voyage": "Mostrar rangos de viaje"
+    },
+    "delete": {
+        "prompt_x": "¿Estás seguro de que deseas eliminar '{{x}}'?",
+        "title": "Eliminar"
     },
     "demands": {
         "demands": "Demandas",
@@ -988,6 +994,7 @@
         "and": "y",
         "and_n_more_ellipses": "y {{n}} más ...",
         "any": "Cualquier",
+        "apply": "Aplicar",
         "apply_filters": "Aplicar filtros",
         "approx": "Approx.",
         "assigned": "Assigned",
@@ -1020,6 +1027,7 @@
         "dismiss": "Descartar",
         "download": "Descargar",
         "edit": "Editar",
+        "edit_presets": "Editar ajustes preestablecidos",
         "enable": "Habilitar",
         "enabled": "Habilitado",
         "episode": "Episodio",
@@ -1111,9 +1119,10 @@
         "or": "o",
         "pending_release": "Pendiente de publicación",
         "percentile": "Percentil",
-        "permalink": "enlace permanente",
+        "permalink": "Enlace permanente",
         "portal": "Portal",
         "portal_update": "Actualización del portal",
+        "preset": "Preestablecido",
         "presets": "Preestablecidos",
         "quarter_short": "T",
         "quest": "Búsqueda",
@@ -1630,6 +1639,10 @@
             "matches": "Coincidencias",
             "trait": "rasgo"
         }
+    },
+    "overwrite": {
+        "prompt_x": "¿Estás seguro de que deseas sobrescribir '{{x}}'?",
+        "title": "Sobrescribir"
     },
     "pages": {
         "crew_stats": "Estadísticas de la tripulación",

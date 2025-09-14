@@ -161,7 +161,9 @@
                 "collections": "Collections améliorant les statistiques augmentées",
                 "groupSparsity": "Rareté des groupes de voyages",
                 "improved": "Voyages améliorés",
+                "is_custom": "Personnalisé",
                 "magic": "Limite de mesure (nombre magique)",
+                "name": "{{global.name}}",
                 "never": "Jamais dans le portail",
                 "portal": "Pas dans le portail",
                 "power": "Score de puissance de base",
@@ -495,6 +497,10 @@
         "ship": "Afficher les capacités du vaisseau",
         "view_big_book": "Voir {{crew}} sur Big Book",
         "voyage": "Afficher les rangs des voyages"
+    },
+    "delete": {
+        "prompt_x": "Êtes-vous sûr de vouloir supprimer '{{x}}' ?",
+        "title": "Supprimer"
     },
     "demands": {
         "demands": "Demandes",
@@ -990,6 +996,7 @@
         "and": "et",
         "and_n_more_ellipses": "et {{n}} de plus ...",
         "any": "Quelconque",
+        "apply": "Appliquer",
         "apply_filters": "Appliquer des filtres",
         "approx": "Env.",
         "assigned": "Assigned",
@@ -1022,6 +1029,7 @@
         "dismiss": "Rejeter",
         "download": "Télécharger",
         "edit": "Modifier",
+        "edit_presets": "Modifier les préréglages",
         "enable": "Activer",
         "enabled": "Activé",
         "episode": "Épisode",
@@ -1113,9 +1121,10 @@
         "or": "ou",
         "pending_release": "En attente de publication",
         "percentile": "Centile",
-        "permalink": "lien permanent",
+        "permalink": "Lien permanent",
         "portal": "Portail",
         "portal_update": "Mise à jour du portail",
+        "preset": "Prédéfinie",
         "presets": "Prédéfinies",
         "quarter_short": "T",
         "quest": "Quête",
@@ -1632,6 +1641,10 @@
             "matches": "Correspondances",
             "trait": "trait"
         }
+    },
+    "overwrite": {
+        "prompt_x": "Êtes-vous sûr de vouloir écraser « {{x}} » ?",
+        "title": "Écraser"
     },
     "pages": {
         "crew_stats": "Statistiques de l'équipage",
