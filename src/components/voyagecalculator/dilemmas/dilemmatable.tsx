@@ -13,6 +13,7 @@ import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { ReferenceShip, Ship } from "../../../model/ship";
 import { formatTime } from "../../../utils/voyageutils";
+import { navigate } from "gatsby";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
@@ -272,7 +273,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                             }}
                             onClick={() => updateDilemma ? updateDilemma(row, i, row.selection === i) : false}
                             >
-                            {renderChoiceRewards(choice, choiceVar)}
+                            {renderChoiceRewards(choice, choiceVar, row.narrative?.selection_data)}
                         </Table.Cell>
                     )
                 })}
@@ -281,7 +282,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         </>
     }
 
-    function renderChoiceRewards(choice: DilemmaChoice, choiceVar: string) {
+    function renderChoiceRewards(choice: DilemmaChoice, choiceVar: string, choiceObj?: any) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
         let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
 
@@ -289,7 +290,18 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             crewrewards = goldRewards;
         }
         let scheme = choice.parsed?.schematics;
-
+        const choiceClick = () => {
+            if (choiceObj) {
+                if ("max_rarity" in choiceObj) {
+                    let c = choiceObj as CrewMember;
+                    navigate(`/crew/${c.symbol}`);
+                }
+                else if ("attack" in choiceObj) {
+                    let s = choiceObj as Ship;
+                    navigate(`http://localhost:81/ship_info/?ship=${s.symbol}`);
+                }
+            }
+        }
         return (
             <div style={{...flexCol, gap: '1em', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                 <div style={{
@@ -299,7 +311,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     borderRadius: '0.75em',
                     fontWeight: 'bold',
                     width: '100%'}}>
-                        {formatChoiceText(choice, undefined, choiceVar)}
+                        {formatChoiceText(choice, choiceClick, choiceVar)}
                 </div>
                 {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
                 {!!choice.parsed?.chrons && printChrons(choice.parsed.chrons, t, true)}
@@ -402,17 +414,17 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         let chronrex = /(\d+)\s*:chrons:/;
         let voyCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
         let legend = [] as string[];
-        dilemmas = structuredClone(dilemmas);
+        dilemmas = structuredClone(dilemmas).slice();
         for (let dilemma of dilemmas) {
             let crewurl = undefined as string | undefined;
             let dil = 0;
             if (log) {
                 let nidx = log.findIndex(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
                 if (nidx != -1) {
-                    let n = structuredClone(log[nidx]);
+                    const n = structuredClone(log[nidx]);
                     if (n.selection === undefined && log.length > (nidx + 2)) {
                         let selvar = '';
-                        let choiceIdx = getChoices(dilemma).findIndex(f => {
+                        const choiceIdx = getChoices(dilemma).findIndex(f => {
                             let dtext = choiceRex(f.text);
                             let re = new RegExp(dtext);
                             if (re.test(log[nidx+2].text)) {
@@ -427,6 +439,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                         if (choiceIdx != -1) {
                             n.selection = choiceIdx;
                             selvar = selvar.replace(/\<[A-Za-z/]+\>/g, '');
+                            n.selection_data = globalContext.core.crew.find(f => f.name === selvar) || globalContext.core.all_ships.find(f => f.name === selvar);
                             n.selection_var = selvar;
                         }
                         if (!selvar) {
