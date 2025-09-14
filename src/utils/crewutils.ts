@@ -11,7 +11,7 @@ import { EquipmentItem } from '../model/equipment';
 import { TinyStore } from './tiny';
 
 const tiny = TinyStore.getStore(`global_playerSettings`);
-var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+export var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
 tiny.subscribe((key) => {
 	if (key === 'noGradeColors') {
 		gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
