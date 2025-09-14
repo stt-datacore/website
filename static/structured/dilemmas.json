@@ -253,7 +253,7 @@
 			]
 		},
 		"choiceC": {
-			"text": "Share the secret correspondences we received from the Ardanan's servant.  (Requires Choice B in **Class Act**)",
+			"text": "Share the secret correspondences we received from the Ardanan's servant. (Requires Choice B in **Class Act**)",
 			"reward": [
 				"60 :honor:",
 				"50 :chrons:",
@@ -909,7 +909,7 @@
 			"ship_schematic": 0
 		},
 		"choiceA": {
-			"text": "Debate the vedek (Choice A may lead to **The Voice of the Prophets**)",
+			"text": "Debate the vedek. (Choice A may lead to **The Voice of the Prophets**)",
 			"reward": [
 				"30 :honor:",
 				"30 :chrons:",
@@ -969,7 +969,7 @@
 			"ship_schematic": 0
 		},
 		"choiceA": {
-			"text": "Continue to help the colonist search for a cure",
+			"text": "Continue to help the colonists search for a cure.",
 			"reward": [
 				"100 :honor:",
 				"75 :chrons:",
@@ -985,7 +985,7 @@
 			]
 		},
 		"choiceC": {
-			"text": "Leave the colonists to find a cure on their own",
+			"text": "Leave the colonists to find a cure on their own.",
 			"reward": [
 				"100 :honor:",
 				"75 :chrons:",
