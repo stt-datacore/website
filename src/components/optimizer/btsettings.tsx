@@ -182,6 +182,7 @@ export const NoPortalBiasSettings = {
     groupSparsity: 2,
 } as BetaTachyonSettings;
 
+export const DefaultPresets = [DefaultBetaTachyonSettings, NoPortalBiasSettings];
 
 export function createNewSettings(name: string, existing?: BetaTachyonSettings): BetaTachyonSettings {
     return {

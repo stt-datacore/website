@@ -4,6 +4,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../../model/worker";
 import BetaTachyonSettingsPopup, {
     DefaultBetaTachyonSettings,
+    DefaultPresets,
     NoPortalBiasSettings,
 } from "./btsettings";
 import { Segment, Dropdown, Checkbox, DropdownItemProps } from "semantic-ui-react";
@@ -28,7 +29,7 @@ export interface IEngineRunnerContext {
 export const EngineRunnerContext = React.createContext<IEngineRunnerContext>({});
 
 export const EngineRunner = (props: EngineRunnerProps) => {
-    const DefaultPresets = [DefaultBetaTachyonSettings, NoPortalBiasSettings];
+
     const globalContext = React.useContext(GlobalContext);
     const workerContext = React.useContext(WorkerContext);
 

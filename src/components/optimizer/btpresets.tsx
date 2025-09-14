@@ -3,9 +3,10 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 
 import { GlobalContext } from '../../context/globalcontext';
 import { BetaTachyonSettings } from '../../model/worker';
-import { DefaultBetaTachyonSettings } from './btsettings';
+import { DefaultBetaTachyonSettings, DefaultPresets } from './btsettings';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { OptionsPanelFlexRow } from '../stats/utils';
+import { download, downloadData } from '../../utils/crewutils';
 
 type BetaTachyonPresetsProps = {
 	presets: BetaTachyonSettings[];
@@ -15,53 +16,23 @@ type BetaTachyonPresetsProps = {
 };
 
 export const BetaTachyonPresets = (props: BetaTachyonPresetsProps) => {
-	const globalContext = React.useContext(GlobalContext);
 	const { presets, setPresets, activeSettings: selectedPreset, setActiveSettings: setSelectedPreset } = props;
-
-	// const [presets, setPresets] = React.useState<BetaTachyonSettings[]>([] as BetaTachyonSettings[]);
-	// const [categories, setCategories] = React.useState<IPresetCategory[]>([] as IPresetCategory[]);
-	// const [selectedPreset, setSelectedPreset] = React.useState<BetaTachyonSettings | undefined>(undefined);
-
-	// if (!selectedPreset) return renderModal();
 
     React.useEffect(() => {
         renderPresets();
     }, [])
 
-	return renderModal();
-
-	// return (
-	// 	<Message icon onDismiss={clearPreset}>
-	// 		<Icon name='paint brush' color='blue' />
-	// 		<Message.Content>
-	// 			<Message.Header>
-	// 				{/* {selectedPreset.name} */}
-	// 			</Message.Header>
-	// 			{/* {selectedPreset.description} */}
-	// 			<div style={{ marginTop: '.5em' }}>
-	// 				{renderModal()}
-	// 			</div>
-	// 		</Message.Content>
-	// 	</Message>
-	// );
-
-	function renderModal(): JSX.Element {
-		return (
-			<BetaTachyonPresetPicker
-				presets={presets}
-				setPresets={setPresets}
-				selectedPreset={selectedPreset}
-				setSelectedPreset={setSelectedPreset}
-			/>
-		);
-	}
+	return (
+		<BetaTachyonPresetPicker
+			presets={presets}
+			setPresets={setPresets}
+			selectedPreset={selectedPreset}
+			setSelectedPreset={setSelectedPreset}
+		/>
+	);
 
 	function renderPresets(): void {
 		setPresets([...presets]);
-	}
-
-	function clearPreset(): void {
-		setSelectedPreset(DefaultBetaTachyonSettings);
 	}
 };
 
@@ -97,6 +68,7 @@ const BetaTachyonPresetPicker = (props: BetaTachyonPresetPickerProps) => {
 				{modalIsOpen && (
 					<PresetsTable
 						presets={presets}
+						setPresets={setPresets}
 						deletePreset={deletePreset}
 						selectedPreset={selectedPreset}
 						selectPreset={onPresetSelected}
@@ -149,6 +121,7 @@ const BetaTachyonPresetPicker = (props: BetaTachyonPresetPickerProps) => {
 
 type PresetsTableProps = {
 	presets: BetaTachyonSettings[];
+	setPresets: (value: BetaTachyonSettings[]) => void;
 	selectedPreset: BetaTachyonSettings;
 	selectPreset: (value: BetaTachyonSettings) => void;
 	deletePreset: (name: string) => void;
@@ -157,25 +130,18 @@ type PresetsTableProps = {
 const PresetsTable = (props: PresetsTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { presets, selectedPreset, selectPreset, deletePreset } = props;
+	const { presets, setPresets, selectedPreset, deletePreset } = props;
 
-	const [query, setQuery] = React.useState('');
-	const [highlightedPreset, setHighlightedPreset] = React.useState<BetaTachyonSettings | undefined>(undefined);
 	const [presetFilter, setPresetFilter] = React.useState<string>('none');
-	const [activeCategories, setActiveCategories] = React.useState<string[] | undefined>(undefined);
+	const [uploadFiles, setUploadFiles] = React.useState<FileList | undefined>(undefined);
+
+	const uploadRef = React.useRef<HTMLInputElement>(null);
 
 	const presetFilterOptions = [
 		{ key: 'none', value: '', text: 'Show all presets' },
 		{ key: 'built-in', value: 'built-in', text: 'Show only built-in presets' },
 		{ key: 'custom-only', value: 'custom-only', text: 'Show only custom presets' },
 	];
-
-	interface ICustomRow {
-		column: string;
-		title: string;
-		align: 'left' | 'center' | 'right' | undefined;
-		descendFirst?: boolean;
-	};
 
 	const tableConfig = [
 		{ width: 1, column: 'name', title: t('global.name') },
@@ -192,21 +158,42 @@ const PresetsTable = (props: PresetsTableProps) => {
 		});
 	}, [presets, presetFilter]);
 
+	const downloadEnabled = React.useMemo(() => {
+		return presets.some(p => p.is_custom);
+	}, [presets]);
+
+	React.useEffect(() => {
+		if (uploadFiles?.length) {
+			processUpload();
+		}
+	}, [uploadFiles]);
+
 	return (
 		<React.Fragment>
-			<Form>
-				<Form.Group inline style={{marginTop: "0.5em"}}>
-					<Form.Field
-						placeholder={t('global.presets')}
-						control={Dropdown}
-						clearable
-						selection
-						options={presetFilterOptions}
-						value={presetFilter}
-						onChange={(e, { value }) => setPresetFilter(value as string)}
-					/>
-				</Form.Group>
-			</Form>
+			<div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
+				<Dropdown
+					placeholder={t('global.presets')}
+					control={Dropdown}
+					clearable
+					selection
+					options={presetFilterOptions}
+					value={presetFilter}
+					onChange={(e, { value }) => setPresetFilter(value as string)}
+				/>
+				<div>
+					<input
+						type="file"
+						accept="text/json,application/json"
+						ref={uploadRef}
+						style={{display: 'none'}}
+						onChange={(e) => setUploadFiles(e.target.files || undefined)}
+						name="files"
+						id="upload_presets_file_input"
+						/>
+					<Button disabled={!downloadEnabled} icon='download' onClick={downloadPresets} ></Button>
+					<Button icon='upload' onClick={uploadPresets}></Button>
+				</div>
+			</div>
 			<SearchableTable
 				tableStyle={{width: '100%'}}
 				noSearch={true}
@@ -217,9 +204,37 @@ const PresetsTable = (props: PresetsTableProps) => {
 				/>
 		</React.Fragment>
 	);
+
 	function filterRow(row, filter, options) {
 		return true;
 	}
+
+	function downloadPresets() {
+		download('presets.json', JSON.stringify(presets.map(f => ({...f, name: f.is_custom ? f.name : `Copy of ${f.name}`})), null, 4));
+	}
+
+	function uploadPresets() {
+		uploadRef?.current?.click();
+	}
+
+	async function processUpload() {
+		if (!uploadFiles?.length) return;
+		try {
+			let file = uploadFiles.item(0)!;
+			let text = await file.text();
+			let json = JSON.parse(text) as BetaTachyonSettings[];
+			json = json.filter(f => f.is_custom && !DefaultPresets.some(d => d.name.toLowerCase().trim() === f.name.toLowerCase().trim()));
+			if (!json.length) return;
+			json = json.map(j => ({...j, name: j.name.trim() }));
+			let newpresets = presets.filter(f => !json.some(j => j.name.toLowerCase().trim() === f.name.toLowerCase().trim()));
+			newpresets = newpresets.concat(json).map(m => ({...m, name: m.name.trim() }));
+			newpresets = newpresets.filter((np, idx) => newpresets.findIndex((np2) => np.name.toLowerCase().trim() === np2.name.toLowerCase().trim()) === idx);
+			setPresets(newpresets);
+		}
+		catch {
+		}
+	}
+
 	function renderTableRow(row: BetaTachyonSettings): JSX.Element {
 		const isHighlighted = selectedPreset?.name === row.name;
 		const custom = row.is_custom ? t('global.yes') : t('global.no')
@@ -255,70 +270,6 @@ const PresetsTable = (props: PresetsTableProps) => {
 	}
 
 	function validatePreset(theme: BetaTachyonSettings): void {
-		setHighlightedPreset(undefined);
 		props.selectPreset(theme);
-	}
-
-	function reducer(state: any, action: any): any {
-		switch (action.type) {
-			case 'UPDATE_DATA':
-				const updatedData = action.data.slice();
-				sorter(updatedData, 'name', 'ascending');
-				return {
-					column: 'name',
-					data: updatedData,
-					direction: 'ascending'
-				};
-			case 'CHANGE_SORT':
-				let direction = action.descendFirst ? 'descending' : 'ascending';
-				// Reverse sort
-				if (state.column === action.column) {
-					direction = state.direction === 'ascending' ? 'descending' : 'ascending';
-				}
-				const data = state.data.slice();
-				sorter(data, action.column, direction);
-				return {
-					column: action.column,
-					data: data,
-					direction
-				};
-			default:
-				throw new Error();
-		}
-	}
-
-	function sorter(data: BetaTachyonSettings[], column: string, direction: string): void {
-		const sortBy = (comps: ((a: BetaTachyonSettings, b: BetaTachyonSettings) => number)[]) => {
-			data.sort((a, b) => {
-				const tests = comps.slice();
-				let test = 0;
-				while (tests.length > 0 && test === 0) {
-					let shtest = tests.shift();
-					test = shtest ? shtest(a, b) : 0;
-				}
-				return test;
-			});
-		};
-		const getValueFromPath = (obj: any, path: string) => {
-			return path.split('.').reduce((a, b) => (a || {b: 0})[b], obj);
-		};
-
-		const compareNumberColumn = (a: BetaTachyonSettings, b: BetaTachyonSettings) => {
-			if (direction === 'descending') return getValueFromPath(b, column) - getValueFromPath(a, column);
-			return getValueFromPath(a, column) - getValueFromPath(b, column);
-		};
-		const compareTextColumn = (a: BetaTachyonSettings, b: BetaTachyonSettings) => {
-			if (direction === 'descending') return getValueFromPath(b, column).localeCompare(getValueFromPath(a, column));
-			return getValueFromPath(a, column).localeCompare(getValueFromPath(b, column));
-		};
-		const compareName = (a: BetaTachyonSettings, b: BetaTachyonSettings) => a.name.localeCompare(b.name);
-
-		if (column === 'name') {
-			sortBy([compareTextColumn]);
-			return;
-		}
-
-		sortBy([compareNumberColumn, compareName]);
-		return;
 	}
 };
