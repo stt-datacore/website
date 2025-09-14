@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, Icon, Segment, SemanticICONS, Table } from "semantic-ui-react";
+import { Accordion, Icon, Rating, Segment, SemanticCOLORS, SemanticICONS, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
 import { Filter } from "../../../model/game-elements";
@@ -14,6 +14,7 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { ReferenceShip, Ship } from "../../../model/ship";
 import { formatTime } from "../../../utils/voyageutils";
 import { navigate } from "gatsby";
+import { gradeColorsDisabled, gradeToColor } from "../../../utils/crewutils";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
@@ -211,6 +212,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             bgColor = 'forestgreen';
         }
         const key = `${idx}_dilemma_${row.title}`;
+        const farsize = !!row.narrative ? '24px' : '0';
+        const gradesize = !gradeColorsDisabled ? '12px' : '0';
+        if (gradeColorsDisabled) bgColor = undefined;
         return <>
             <Table.Row key={key}>
                 <Table.Cell
@@ -220,15 +224,21 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 >
                     <div style={{
                         display: 'grid',
-                        gridTemplateAreas: `'left right'`,
-                        gridTemplateColumns: '12px auto',
+                        gridTemplateAreas: `'far left right' 'far rarity rarity'`,
+                        gridTemplateColumns: `${farsize} ${gradesize} auto`,
                         gap: '0.5em'
                     }}>
-                        <div style={{gridArea: 'left', height: "100%", width: "100%", backgroundColor: CONFIG.RARITIES[row.rarity!].color}}>
+                        {!!row.narrative && <div style={{gridArea: 'far', display: 'flex', justifyContent: 'center', alignItems:'center'}}>
+                            <><Icon name='check'/></>
+                        </div>}
+                        {!gradeColorsDisabled && <div style={{gridArea: 'left', height: "100%", width: "100%", backgroundColor: CONFIG.RARITIES[row.rarity!].color}}>
                             &nbsp;
-                        </div>
+                        </div>}
                         <div style={{gridArea: 'right'}}>
                             {row.title}
+                        </div>
+                        <div style={{gridArea: 'rarity'}}>
+                            <Rating rating={row.rarity} maxRating={row.rarity} icon="star" />
                         </div>
                     </div>
                 </Table.Cell>
@@ -248,20 +258,34 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 {choices.map((choice, i) => {
                     let choiceBg: string | undefined = undefined;
                     let choiceVar = '';
+                    let icon: SemanticICONS | undefined = undefined;
+                    let iconColor: SemanticCOLORS | undefined = undefined;
+
                     if (elig?.unlock === i) {
                         choiceBg = 'darkslateblue';
+                        icon = 'lock open';
                     }
                     if (row.narrative?.selection === i) {
                         choiceBg = 'royalblue';
+                        icon = 'check';
+                        iconColor = 'green';
                     }
                     if (row.narrative?.selection === undefined && row.multipart?.some(mp => mp.requiredChoices.includes(AlphaRef[i]))) {
                         choiceBg = 'mediumpurple';
+                        icon = 'star';
+                        iconColor = 'yellow'
                     }
                     if (inv?.unlock === i && elig?.unlock !== i) {
                         choiceBg = 'salmon';
+                        icon = 'lock';
+                        iconColor = 'orange';
                     }
                     if (row.selection === i) {
                         choiceVar = row.narrative?.selection_var || '';
+                    }
+                    if (gradeColorsDisabled){
+                        choiceBg = undefined;
+                        iconColor = undefined;
                     }
                     return (
                         <Table.Cell
@@ -273,7 +297,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                             }}
                             onClick={() => updateDilemma ? updateDilemma(row, i, row.selection === i) : false}
                             >
-                            {renderChoiceRewards(choice, choiceVar, row.narrative?.selection_data)}
+                            {renderChoice(choice, choiceVar, row.narrative?.selection_data, icon ? { name: icon, color: iconColor } : undefined)}
                         </Table.Cell>
                     )
                 })}
@@ -282,7 +306,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         </>
     }
 
-    function renderChoiceRewards(choice: DilemmaChoice, choiceVar: string, choiceObj?: any) {
+    function renderChoice(choice: DilemmaChoice, choiceVar: string, choiceObj?: any, icon?: { name: SemanticICONS, color?: SemanticCOLORS }) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
         let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
 
@@ -305,13 +329,25 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         return (
             <div style={{...flexCol, gap: '1em', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                 <div style={{
+                    display: 'grid',
+                    gridTemplateAreas: `'icon msg'`,
+                    gridTemplateColumns: `auto auto`,
+                    alignItems: 'center',
+                    gap: '0.5em',
                     backgroundColor: 'slategray',
                     border: '1px solid',
                     padding: '1em',
                     borderRadius: '0.75em',
                     fontWeight: 'bold',
                     width: '100%'}}>
-                        {formatChoiceText(choice, choiceClick, choiceVar)}
+                        {!!icon?.name &&
+                        <div style={{gridArea: 'icon'}}>
+                            <Icon name={icon.name} color={icon.color} />
+                        </div>
+                        }
+                        <div style={{gridArea: 'msg'}}>
+                            {formatChoiceText(choice, choiceClick, choiceVar)}
+                        </div>
                 </div>
                 {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
                 {!!choice.parsed?.chrons && printChrons(choice.parsed.chrons, t, true)}
