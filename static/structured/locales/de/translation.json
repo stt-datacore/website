@@ -1725,6 +1725,7 @@
             "offense": "Angriff (Genauigkeit/Schaden)",
             "select": "Wählen Sie einen Vorteil"
         },
+        "always_show_datascore": "DataScore immer anzeigen",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Stufe",
         "cab_grade": "CAB-Klasse",

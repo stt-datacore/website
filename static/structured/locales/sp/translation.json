@@ -1735,6 +1735,7 @@
             "offense": "Ofensa (Precisión/Daño)",
             "select": "Seleccione una ventaja"
         },
+        "always_show_datascore": "Mostrar siempre DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
         "cab_grade": "Grado CAB",

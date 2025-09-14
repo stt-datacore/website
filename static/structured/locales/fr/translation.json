@@ -1737,6 +1737,7 @@
             "offense": "Attaque (Précision/Dégâts)",
             "select": "Sélectionnez un avantage"
         },
+        "always_show_datascore": "Toujours afficher le DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Étage Big Book",
         "cab_grade": "Catégorie CAB",
