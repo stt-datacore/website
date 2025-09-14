@@ -1869,7 +1869,7 @@
             "title": "Mercado Celestial",
             "top_n_polestars": "Las {{n}} mejores estrellas polares",
             "unlisted": "No Listado",
-            "updated": "El mercado se actualiza cada hora."
+            "updated": "El mercado se actualiza cada 5 minutos."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
