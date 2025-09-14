@@ -21,7 +21,6 @@ export interface DilemmaTableProps {
     updateDilemma?: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
 
-
 export const DilemmaReferenceAccordion = (props: DilemmaTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
@@ -247,7 +246,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 </Table.Cell>
                 {choices.map((choice, i) => {
                     let choiceBg: string | undefined = undefined;
-
+                    let choiceVar = '';
                     if (elig?.unlock === i) {
                         choiceBg = 'darkslateblue';
                     }
@@ -260,6 +259,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     if (inv?.unlock === i && elig?.unlock !== i) {
                         choiceBg = 'salmon';
                     }
+                    if (row.selection === i) {
+                        choiceVar = row.narrative?.selection_var || '';
+                    }
                     return (
                         <Table.Cell
                             key={`${key}_choice_${choice.text}`}
@@ -270,7 +272,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                             }}
                             onClick={() => updateDilemma ? updateDilemma(row, i, row.selection === i) : false}
                             >
-                            {renderChoiceRewards(choice)}
+                            {renderChoiceRewards(choice, choiceVar)}
                         </Table.Cell>
                     )
                 })}
@@ -279,7 +281,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         </>
     }
 
-    function renderChoiceRewards(choice: DilemmaChoice) {
+    function renderChoiceRewards(choice: DilemmaChoice, choiceVar: string) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
         let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
 
@@ -297,7 +299,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                     borderRadius: '0.75em',
                     fontWeight: 'bold',
                     width: '100%'}}>
-                        {formatChoiceText(choice.text)}
+                        {formatChoiceText(choice, undefined, choiceVar)}
                 </div>
                 {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
                 {!!choice.parsed?.chrons && printChrons(choice.parsed.chrons, t, true)}
@@ -343,13 +345,15 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         )
     }
 
-    function formatChoiceText(text: string, click?: () => void) {
+    function formatChoiceText(choice: DilemmaChoice, click?: () => void, choiceVar?: string) {
+        let text = choice.text;
         let parts = text.split("**");
         if (parts.length === 1) return <>{text}</>;
         return parts.map((part, i) => {
             if ((i + 1) % 2 == 0) {
+                if (i > 2) choiceVar = '';
                 return (
-                    <b style={{cursor: click ? 'pointer' : undefined, color: 'darkslateblue'}} key={`${text}_${i}`} onClick={() => click ? click() : false}>{part}</b>
+                    <b style={{cursor: click ? 'pointer' : undefined, color: 'darkslateblue'}} key={`${text}_${i}`} onClick={() => click ? click() : false}>{choiceVar || part}</b>
                 )
             }
             else {
@@ -399,17 +403,35 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         let voyCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
         let legend = [] as string[];
         dilemmas = structuredClone(dilemmas);
-
         for (let dilemma of dilemmas) {
             let crewurl = undefined as string | undefined;
             let dil = 0;
             if (log) {
                 let nidx = log.findIndex(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
                 if (nidx != -1) {
-                    let n = log[nidx];
+                    let n = structuredClone(log[nidx]);
                     if (n.selection === undefined && log.length > (nidx + 2)) {
-                        let choiceIdx = getChoices(dilemma).findIndex(f => f.text.startsWith(log[nidx+2].text));
-                        if (choiceIdx != -1) n.selection = choiceIdx;
+                        let selvar = '';
+                        let choiceIdx = getChoices(dilemma).findIndex(f => {
+                            let dtext = choiceRex(f.text);
+                            let re = new RegExp(dtext);
+                            if (re.test(log[nidx+2].text)) {
+                                let res = re.exec(log[nidx+2].text);
+                                if (res && res.length && res.length >= 2) {
+                                    selvar = res[1];
+                                }
+                                return true;
+                            }
+                            return false;
+                        });
+                        if (choiceIdx != -1) {
+                            n.selection = choiceIdx;
+                            selvar = selvar.replace(/\<[A-Za-z/]+\>/g, '');
+                            n.selection_var = selvar;
+                        }
+                        if (!selvar) {
+                            delete n.selection_var;
+                        }
                     }
                     dilemma.narrative = n;
                     if (n.selection !== undefined) dilemma.selection = n.selection;
@@ -563,5 +585,8 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     }
 
+    function choiceRex(text: string) {
+        return text.split(".")[0].trim().replace(/\*\*(\w+) name\*\*/, "(.+)") + ".*";
+    }
 }
 

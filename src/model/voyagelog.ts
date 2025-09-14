@@ -44,6 +44,7 @@ export interface VoyageNarrative {
     skill_check?: SkillCheck
     rewards?: Rewards
     selection?: number;
+    selection_var?: string;
 }
 
 export interface SkillCheck {
