@@ -14,6 +14,7 @@ import { CrewBaseCells, getBaseTableConfig, renderMainDataScore } from './base';
 import { getBernardsNumber } from '../../../utils/gauntlet';
 import { printPortalStatus } from '../../../utils/crewutils';
 import { categorizeCrewCollections } from '../../../utils/collectionutils';
+import { Collection } from '../../../model/game-elements';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
@@ -69,9 +70,10 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const crewReasons = React.useMemo(() => {
 		if (!playerData) return {};
 		const playerCols = playerData.player.character.cryo_collections.filter(f => f.milestone.rewards?.length);
+		const cols = globalContext.core.collections.filter(f => playerCols.some(pc => `${pc.type_id}` == `${f.id}` || `${pc.type_id}` == `${f.type_id}`))
 		const output = {} as {[key:string]: string[]}
 		for (let c of rosterCrew) {
-			output[c.id] = reasonsToKeep(c, playerCols);
+			output[c.id] = reasonsToKeep(c, cols);
 		}
 		return output;
 	}, [rosterCrew, playerData]);
@@ -326,10 +328,10 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		setRanks({...ranks});
 	}
 
-	function reasonsToKeep(crew: CrewMember, collections: CryoCollection[]) {
+	function reasonsToKeep(crew: CrewMember, collections: Collection[]) {
 		let reasons = [] as string[];
 		if (crew.ranks.scores.ship.overall_rank <= 50) {
-			reasons.push(t(`rank_names.scores.ship_ability`))
+			reasons.push(t(`rank_names.scores.ship`))
 		}
 		let nev = t('global.never');
 		let ps = printPortalStatus(crew, t, true, true);
