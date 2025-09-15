@@ -5,32 +5,9 @@ import { PlayerContext, PlayerContextData, defaultPlayer } from './playercontext
 import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore } from './localizedcontext';
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
-import { Button, Container, Input, Label, Message, Modal, Segment } from 'semantic-ui-react';
 import { MarketAggregation } from '../model/celestial';
 
 const DEBUG_MODE = false;
-
-export type ModalConfirmProps = { message: string, title: string, affirmative?: string, negative?: string, onClose: (result: boolean) => void };
-export type ModalPromptProps = { message: string, title: string, affirmative?: string, negative?: string, onClose: (result: string | null) => void, currentValue?: string, validate?: (value?: string) => boolean | string };
-
-export interface GlobalDialogConfig {
-	mode: 'edit' | 'confirm';
-	title: string;
-	message: string;
-	affirmative: string;
-	negative: string;
-	onClose: (result: any) => void;
-}
-
-export interface PromptConfig extends GlobalDialogConfig {
-	currentValue: string;
-	onClose: (result: string | null) => void;
-	validate?: (result: string) => boolean | string;
-}
-
-export interface ConfirmConfig extends GlobalDialogConfig {
-	onClose: (result: boolean) => void;
-}
 
 interface GlobalProviderProperties {
 	children: JSX.Element;
@@ -49,8 +26,6 @@ export interface IDefaultGlobal {
 	data?: any;
 	isMobile: boolean;
 	readyLocalizedCore: (demands: ValidDemands[], onReady: () => void) => void;
-	confirm: (props: ModalConfirmProps) => void;
-	prompt: (props: ModalPromptProps) => void;
 	market: MarketAggregation;
 	reloadMarket: () => void;
 };
@@ -63,8 +38,6 @@ const defaultGlobal: IDefaultGlobal = {
 	isMobile: false,
 	market: {},
 	readyLocalizedCore: () => {},
-	confirm: () => false,
-	prompt: () => false,
 	reloadMarket: () => false,
 };
 
@@ -80,8 +53,6 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 	const [localizedPlayer, setLocalizedPlayer] = React.useState<PlayerContextData>(player);
 	const [localizationTrigger, setLocalizationTrigger] = React.useState<ILocalizationTrigger | undefined>(undefined);
 	const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH);
-
-	const [promptModal, setPromptModal] = React.useState<GlobalDialogConfig | undefined>(undefined);
 
 	const [market, setMarket] = React.useState<MarketAggregation>({});
 
@@ -124,8 +95,6 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		isMobile,
 		market,
 		readyLocalizedCore,
-		confirm,
-		prompt,
 		reloadMarket
 	};
 
@@ -134,7 +103,6 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 			<GlobalContext.Provider value={providerValue}>
 				{children}
 			</GlobalContext.Provider>
-			<PromptModal promptModal={promptModal} />
 		</React.Fragment>
 	);
 
@@ -161,116 +129,4 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 				if (!market) setMarket({});
 			});
 	}
-
-		function confirm(props: ModalConfirmProps) {
-		const { t } = localized;
-		const newProps = {
-			mode: 'confirm',
-			affirmative: t('global.yes'),
-			negative: t('global.no'),
-			...props,
-		} as ConfirmConfig;
-		setPromptModal(newProps);
-	}
-
-	function prompt(props: ModalPromptProps) {
-		const { t } = localized;
-		const newProps = {
-			mode: 'edit',
-			affirmative: t('global.yes'),
-			negative: t('global.no'),
-			currentValue: props.currentValue || '',
-			...props,
-		} as PromptConfig;
-		setPromptModal(newProps);
-	}
-
-	function PromptModal(props: { promptModal?: GlobalDialogConfig }) {
-		const { promptModal } = props;
-		const [modalValue, setModalValue] = React.useState((promptModal as PromptConfig)?.currentValue || '');
-		const [invalid, setInvalid] = React.useState('');
-
-		return (<>
-			{!!promptModal &&
-				<Modal
-					open={!!promptModal}
-					size="mini"
-					content={<>
-						{drawModalBody()}
-					</>}
-					/>
-			}
-		</>)
-
-		function modalAffirmative() {
-			if (promptModal) {
-				if (promptModal.mode === 'confirm') {
-					promptModal.onClose(true);
-				}
-				else {
-					let pc = promptModal as PromptConfig;
-					if (pc.validate) {
-						let res = pc.validate(modalValue);
-						if (res !== true) {
-							if (typeof res === 'string') {
-								setInvalid(res);
-							}
-							else {
-								setInvalid(localized.t('global.invalid_input'));
-							}
-							return;
-						}
-					}
-					promptModal.onClose(modalValue);
-				}
-			}
-			modalReset();
-		}
-
-		function modalNegative() {
-			if (promptModal)  {
-				if (promptModal.mode === 'confirm') {
-					promptModal.onClose(false);
-				}
-				else {
-					promptModal.onClose(null);
-				}
-			}
-			modalReset();
-		}
-
-		function modalReset() {
-			setPromptModal(undefined);
-			setInvalid('');
-			setModalValue('');
-		}
-
-		function drawModalBody() {
-			if (!promptModal) return <></>;
-
-			const editor = promptModal as PromptConfig;
-
-			return <Container style={{height: '100%'}}>
-				<Message>
-					<h3>
-						{promptModal?.title}
-					</h3>
-					<Message.Content>
-						{promptModal.message}
-						{editor.mode === 'edit' &&<>
-							<br/>
-							<Input error={!!invalid} style={{marginTop: '0.5em'}} fluid value={modalValue} onChange={(e, { value }) => setModalValue(value)} />
-							{!!invalid && <Label color='red'>{invalid}</Label>}
-							</>
-						}
-					</Message.Content>
-				</Message>
-				<div  style={{gap: '1em', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start', margin: '1em'}}>
-					<Button onClick={modalNegative}>{promptModal?.negative}</Button>
-					<Button onClick={modalAffirmative}>{promptModal?.affirmative}</Button>
-				</div>
-			</Container>
-		}
-	}
-
 };
