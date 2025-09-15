@@ -120,8 +120,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			globalContext.core.ships.forEach(ship => {
 				const rosterShip = structuredClone(ship);
 				rosterShip.owned = true;
-				rosterShip.level = rosterShip.max_level;
-				rosterShip.antimatter += (50*rosterShip.max_level);
+				rosterShip.level = rosterShip.max_level!;
+				rosterShip.antimatter += (50*rosterShip.max_level!);
 				rosterShips.push(rosterShip);
 			});
 			// Core ships is missing the default ship for some reason (1* Constellation Class), so manually add it here maxed

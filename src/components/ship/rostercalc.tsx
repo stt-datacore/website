@@ -974,7 +974,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 event_crew: ccrew ? structuredClone(ccrew) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
                 ship: prepareShip(ship),
-                crew: structuredClone(current ? crewStations : pfcrew),
+                crew: structuredClone(current ? crewStations : pfcrew) as CrewMember[],
                 battle_mode: battleMode,
                 power_depth: powerDepth,
                 min_rarity: minRarity,

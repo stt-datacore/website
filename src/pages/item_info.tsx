@@ -132,7 +132,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 						}
 
 						crew_levels.push({
-							crew: { ...structuredClone(crew), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 },
+							crew: { ...structuredClone(crew), immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
 							level: es.level,
 							owned: false
 						});
