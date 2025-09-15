@@ -52,7 +52,25 @@ export interface CrewSkill {
     skills: ComputedSkill[];
 }
 
-
+function coverages(crew: PlayerCrew[]) {
+    let coverages = {} as {[key:string]:number};
+    let addskill = skillSum;
+    crew.forEach(c => {
+        let sk = '';
+        c.skill_order.forEach(sk => {
+            coverages[sk] ??= 0;
+            coverages[sk] += addskill(c.base_skills[sk])
+        });
+        if (c.skill_order.length >= 2) {
+            let sk1 = c.skill_order[0];
+            let sk2 = c.skill_order[1];
+            let sk = [sk1, sk2].sort().join("/");
+            coverages[sk] ??= 0;
+            coverages[sk] += addskill(c.base_skills[sk1]) + addskill(c.base_skills[sk2]);
+        }
+    });
+    return coverages;
+}
 const BetaTachyon = {
 
     scanCrew: (config: BetaTachyonRunnerConfig) => {
