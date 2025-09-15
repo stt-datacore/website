@@ -15,6 +15,7 @@ import { PlayerCrew } from '../../model/player';
 import { useStateWithStorage } from '../../utils/storage';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
+import { PromptContext } from '../../context/promptcontext';
 
 interface ISelectOption {
 	key: string;
@@ -37,7 +38,8 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { confirm } = globalContext;
+	const promptContext = React.useContext(PromptContext);
+	const { confirm } = promptContext;
 	const { t, tfmt, useT } = globalContext.localized;
 	const { t: excluder } = useT('consider_crew.excluder');
 

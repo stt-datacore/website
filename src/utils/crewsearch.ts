@@ -69,7 +69,7 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 								matchesFilter(CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition], condition.value)));
 				} else if (condition.keyword === 'skill_order' || condition.keyword === 'order') {
 					let sko = crew.skill_order.map(v => skillToShort(v)).map(s => s!.toLowerCase());
-					let cond = /([a-z]+|\*)\/?([a-z]+|\*)?\/?([a-z]+|\*)?/.exec(condition.value);
+					let cond = /([a-z]+|\*)\/?([a-z]+|\*)?\/?([a-z]+|\*)?/.exec(condition.value.toLowerCase());
 					conditionResult = !!cond?.slice(1)
 						.filter(f => f !== undefined)
 						.every(

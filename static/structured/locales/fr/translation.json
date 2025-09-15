@@ -35,6 +35,7 @@
         "all_crew": "Afficher tous l'équipiers",
         "best_pair": "Meilleure paire",
         "bigbook_tier": "Étage",
+        "boss": "{{rank_names.fbb_rank}}",
         "cab_power": "CAB",
         "cap_achiever": "Premier à Max",
         "collection": "Collection",
@@ -62,6 +63,7 @@
         "n_to_next": "{{n}} au suivant",
         "never_in_portal": "Jamais dans le portail",
         "not_in_portal": "Pas dans le portail",
+        "not_maincast": "Pas le casting principal",
         "not_uniquely_retrievable": "Pas récupérable de manière unique",
         "not_yet_in_portal": "Pas encore dans le portail",
         "offer_cost": "Coût de l'offre",
@@ -159,7 +161,9 @@
                 "collections": "Collections améliorant les statistiques augmentées",
                 "groupSparsity": "Rareté des groupes de voyages",
                 "improved": "Voyages améliorés",
+                "is_custom": "Personnalisé",
                 "magic": "Limite de mesure (nombre magique)",
+                "name": "{{global.name}}",
                 "never": "Jamais dans le portail",
                 "portal": "Pas dans le portail",
                 "power": "Score de puissance de base",
@@ -329,7 +333,12 @@
                 "title": "Progrès"
             }
         },
-        "progress_to_next": "Progression vers la prochaine étape"
+        "progress_to_next": "Progression vers la prochaine étape",
+        "types": {
+            "crew_rewarding": "Collections récompensant l'équipage",
+            "stat_boosting": "Collections boostant les statistiques",
+            "vanity": "Collections boutique"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Considérez les équipiers sur les navettes actives",
@@ -397,6 +406,10 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 résultat trouvé. Veuillez essayer différentes options de recherche.",
+        "no_results_parts": {
+            "message": "Veuillez essayer différentes options de recherche.",
+            "title": "0 résultat trouvé."
+        },
         "optional_filters": "Filtres Optionnels",
         "search_by_name": "Rechercher un équipier par nom",
         "select_crew": "Sélectionner {{crew}}",
@@ -439,6 +452,8 @@
         "columns": {
             "g": "G",
             "gauntlet_ranks": "Rangs de Gantelet",
+            "r": "R",
+            "reasons_to_keep": "Raisons de le garder",
             "s": "N",
             "shuttle_ranks": "Rangs de la Navette",
             "u": "U",
@@ -482,6 +497,10 @@
         "ship": "Afficher les capacités du vaisseau",
         "view_big_book": "Voir {{crew}} sur Big Book",
         "voyage": "Afficher les rangs des voyages"
+    },
+    "delete": {
+        "prompt_x": "Êtes-vous sûr de vouloir supprimer '{{x}}' ?",
+        "title": "Supprimer"
     },
     "demands": {
         "demands": "Demandes",
@@ -594,6 +613,33 @@
     },
     "events_common": {
         "skirmish_guess_warning": "Cet événement contient un composant d'escarmouche, et une liste complète des équipages en vedette pourrait ne pas être disponible avant le début de cet événement."
+    },
+    "factions": {
+        "already_honored": "Déjà Honoré",
+        "already_tanked": "Déjà tanké",
+        "average_odds_dropdown": "Navettes lancées avec une probabilité moyenne de {{dropdown}}",
+        "columns": {
+            "faction": "Faction",
+            "honored": "Honoré",
+            "reputation": "Réputation",
+            "shuttles_to_honored": "Navettes jusqu'à Honoré",
+            "shuttles_to_tank": "Navettes à tanker",
+            "time_needed": "Temps requis"
+        },
+        "n_shuttles_per_day": "Lancement de {{n}} navettes par jour.",
+        "n_shuttles_to_tank": "{{n}} navettes à tanker",
+        "n_successful_missions": "{{n}} missions réussies.",
+        "odds_note": "(Note : Les navettes ne peuvent pas être lancées avec une probabilité de succès inférieure à 14 %. Pour être tankées, elles doivent avoir une probabilité inférieure à 60 %.)",
+        "reputation": {
+            "allied": "Allié",
+            "despised": "Méprisé",
+            "friendly": "Amical",
+            "honored": "Honoré",
+            "hostile": "Hostile",
+            "neutral": "Neutre"
+        },
+        "tanking": "Tanker",
+        "tanking_explain": "{{tanking}} les navettes veut dire les faire échouer exprès pour que la difficulté et la durée des missions descendent."
     },
     "fbb": {
         "alert_no_solution": "Aucune solution possible trouvée pour ce nodule. Vous devrez peut-être modifier vos filtres, revérifier vos traits résolus ou réinitialiser la liste des tentatives d'équipiers.",
@@ -779,6 +825,7 @@
             "dailies": "Quotidiens",
             "display_name": "{{global.name}}",
             "event_rank": "Rang de l'événement",
+            "fleet": "{{global.fleet}}",
             "last_active": "Dernier actif",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
@@ -949,8 +996,10 @@
         "and": "et",
         "and_n_more_ellipses": "et {{n}} de plus ...",
         "any": "Quelconque",
+        "apply": "Appliquer",
         "apply_filters": "Appliquer des filtres",
         "approx": "Env.",
+        "assigned": "Assigned",
         "average": "Moyenne",
         "avg": "Moy.",
         "base": "Principle",
@@ -969,6 +1018,7 @@
         "copy_permalink_clipboard": "Copier le lien permanent dans le presse-papiers",
         "cost": "Coût",
         "create": "Créer",
+        "create_new_x": "Créer un nouveau {{x}}",
         "date_end": "Date de fin",
         "date_start": "Date de début",
         "default": "Défaut",
@@ -979,7 +1029,10 @@
         "disabled": "Désactivé",
         "dismiss": "Rejeter",
         "download": "Télécharger",
+        "duplicate_input": "Saisie en double",
+        "duplicate_name": "Nom en double",
         "edit": "Modifier",
+        "edit_presets": "Modifier les préréglages",
         "enable": "Activer",
         "enabled": "Activé",
         "episode": "Épisode",
@@ -998,6 +1051,7 @@
         "ingredient_warning": "Vous n'avez pas les ingrédients pour fabriquer cet objet.",
         "ingredient_warning_all": "Vous n'avez pas les ingrédients pour fabriquer tous ces objets.",
         "initial_launch": "Sortie initiale du jeu",
+        "invalid_input": "Saisie invalide",
         "item_types": {
             "arena": "Arène",
             "arena_tickets": "Billets pour arène",
@@ -1040,6 +1094,7 @@
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
         "lose": "Perdre",
+        "map_position": "Position sur la carte",
         "max": "Max",
         "max_rarity": "Rareté max.",
         "member": "Membre",
@@ -1057,6 +1112,7 @@
         "new": "Nouveau",
         "new_f": "Nouvelle",
         "new_m": "Nouveau",
+        "new_name": "Nouveau nom",
         "no": "Non",
         "no_items_found": "Aucun élément trouvé",
         "no_search_results_found": "Aucun résultat trouvé. Veuillez essayer différentes options de recherche.",
@@ -1064,18 +1120,21 @@
         "notes": "Remarques",
         "obtained": "Obtenu par",
         "officer": "Officier",
+        "opponent": "{{gauntlet.opponent_table.opponent}}",
         "optional": "Facultatif",
         "options": "Options",
         "or": "ou",
         "pending_release": "En attente de publication",
         "percentile": "Centile",
-        "permalink": "lien permanent",
+        "permalink": "Lien permanent",
         "portal": "Portail",
         "portal_update": "Mise à jour du portail",
+        "preset": "Prédéfinie",
         "presets": "Prédéfinies",
         "quarter_short": "T",
         "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
+        "rename": "Renommer",
         "reserved": "Réservé",
         "reset": "Réinitialiser",
         "rows_per_page": "Lignes par page",
@@ -1589,6 +1648,10 @@
             "trait": "trait"
         }
     },
+    "overwrite": {
+        "prompt_x": "Êtes-vous sûr de vouloir écraser « {{x}} » ?",
+        "title": "Écraser"
+    },
     "pages": {
         "crew_stats": "Statistiques de l'équipage",
         "crew_view_modes": {
@@ -1617,6 +1680,14 @@
         "n_shuttles": "{{n}} navettes",
         "starbase_level": "Niveau de base stellaire",
         "x_y_crew": "{{x}} / {{y}} équipiers"
+    },
+    "polestars": {
+        "best_chance_long": "Toutes les étoiles polaires qui donnent les meilleures chances de récupérer cet équipier",
+        "best_chance_short": "Meilleure chance",
+        "combo": "Combinaison d'étoiles polaires",
+        "crew_constellation": "Constellation pour {{crew}}",
+        "optimal": "Étoiles polaires optimales pour la récupération de cet équipier",
+        "shared_with_crew": "En commun avec {{crew}}"
     },
     "profile": {
         "charts_and_stats": "Graphiques et Statistiques",
@@ -1685,6 +1756,7 @@
             "offense": "Attaque (Précision/Dégâts)",
             "select": "Sélectionnez un avantage"
         },
+        "always_show_datascore": "Toujours afficher le DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Étage Big Book",
         "cab_grade": "Catégorie CAB",
@@ -1696,6 +1768,7 @@
         "datascore_ranks": "Classements DataScore",
         "fbb_rank": "Boss",
         "gauntlet_rank": "Rang Gantelet",
+        "greatness_rank": "Rang de Polyvalence",
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
         "scores": {
@@ -1705,6 +1778,7 @@
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
             "gauntlet_plus": "Gantelet+",
+            "greatness": "Polyvalence",
             "main_cast": "Casting principal",
             "overall": "Global",
             "overall_grade": "Note générale",
@@ -1817,7 +1891,7 @@
             "title": "Marché céleste",
             "top_n_polestars": "Les {{n}} meilleures étoiles polaires",
             "unlisted": "Non Répertorié",
-            "updated": "Le marché est mis à jour toutes les heures"
+            "updated": "Le marché est mis à jour toutes les 5 minutes."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
@@ -2013,6 +2087,7 @@
             },
             "apply_boss_effects": "Appliquer les buffs des chaînes de boss",
             "apply_buffs": "Appliquer des buffs aux vaisseaux sans propriétaire",
+            "as_maxed": "Utiliser les statistiques maximales du vaisseau",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} résultats acceptés) ({{time}})",
             "calculating_pct_ellipses": "Calcul ... ({{percent}} % terminé)",
             "calculating_pct_ellipses_verbose": "Calcul ... ({{percent}} % terminé) ({{progress}} / {{count}}) ({{accepted}} résultats acceptés)",
@@ -2360,24 +2435,50 @@
             "title": "Captain Idol's Voyage Analysis Sheet"
         },
         "contests": {
+            "assign_crew": "Affecter {{crew}} à ce concours",
+            "assigned_crew": "Affecter l'équipage",
+            "assigned_to_crew": "{{crew}} est affecté à ce concours",
+            "assigned_to_n": "Affecté au Concours {{n}}",
             "avg": "{{global.avg}}",
-            "contest_simulator": "Simulateur de combat",
+            "avg_of_crew": "Score moyen de {{crew}} pour ce concours",
+            "avg_of_opponent": "Score moyen de l'adversaire pour ce concours",
+            "avg_score": "Score moyenne",
+            "champions_description": "Les chances de victoire de votre équipage pour chaque concours sont indiquées ci-dessous. Appuyez sur les chances pour simuler le concours avec plus de confiance. Appuyez sur {{icon}} pour assigner l'équipage à ce concours.",
+            "champions_header": "Équipage de voyage",
+            "contest": "Concours",
+            "contest_simulator": "Simulateur de concours",
             "contestant": "Combattant",
             "contestant_alt": "combattant",
+            "contests_description": "Utilisez cet outil pour planifier vos concours de rencontres. Appuyez sur un concours pour voir les membres d'équipage possédant les compétences nécessaires.",
+            "contests_header": "Affectations du concours",
+            "contests_n_count": "Concours ({{n}})",
             "crit_chance": "Chances de critique",
+            "encounter_helper_title": "Aide à la Rencontre",
+            "importer": {
+                "data_loaded": "Données de rencontre chargées !",
+                "data_required": "Données supplémentaires requises",
+                "description": "L'Aide à la Rencontre nécessite des données supplémentaires absentes de vos données de joueur. Vous pouvez accéder aux données requises et les importer en suivant les instructions ci-dessous.",
+                "follow_instructions": "Suivez les instructions ci-dessous pour mettre à jour vos données de rencontre.",
+                "progress_warning": "Cet outil ne permet pas de voir l'équipage utilisé pour les concours que vous avez déjà terminés en jeu. Vous devez attribuer manuellement l'équipage ayant réussi aux concours ci-dessous pour obtenir une représentation plus précise des compétences viables pour les concours restants.",
+                "tap_to_open": "Si les informations ci-dessous ne correspondent pas à votre rencontre dans le jeu, appuyez ici pour mettre à jour vos données de rencontre."
+            },
             "max": "{{global.max}}",
             "min": "{{global.min}}",
             "n_viable_crew": "Votre voyage a {{n}} d'équipiers viables pour ce concours",
             "no_skill": "Aucune compétence",
             "notes": {
-                "crit_icon": "represents a crew's number of potential crit traits.",
-                "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
-                "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
+                "crit_icon": "{{img}} représente le nombre de traits critiques potentiels d'un équipier.",
+                "scores": "Les scores sont la somme des compétences moyennes d'un équipier après 3 lancers par compétence de concours.",
+                "simulate_contestant": "Sélectionnez un candidat à simuler dans un concours de {{skills}}."
             },
-            "search_for_contestant": "Search for contestant",
-            "select_crit_chance": "Select crit chance",
-            "simulate_contest": "Simulate contest",
-            "wins": "Wins"
+            "odds_of_winning": "Chances de gagner",
+            "reset_assignments": "Réinitialiser les affectations",
+            "search_for_contestant": "Recherche d'un combattant",
+            "select_crit_chance": "Sélectionnez les chances de coup critique",
+            "simulate_contest": "Simuler un concours",
+            "starting_skills": "Compétences initiales",
+            "vp_multiplier": "Multiplicateur de PV",
+            "wins": "Victoires"
         },
         "crew_finder_hints": {
             "best_rank": {
@@ -2716,6 +2817,7 @@
             "click_here": "{{fleet.import.click_here}}",
             "heading": "Vous pouvez accéder à vos journaux de voyage de la même manière que vous accédez actuellement à vos données de joueur."
         },
+        "reference": "Référence aux dilemmes",
         "title": "Utilité du dilemme du voyage"
     }
 }

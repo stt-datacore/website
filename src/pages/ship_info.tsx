@@ -69,10 +69,12 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
     const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
+	const [asMaxed, setAsMaxed] = useStateWithStorage<boolean>(`ship_info/asMaxed`, false, { rememberForever: true });
 
 	const [useOpponents, setUseOpponents] = React.useState<BattleMode | false>(false);
 
 	const [activeTabIndex, setActiveTabIndex] = React.useState<number>(0);
+	const [oldMaxed, setOldMaxed] = React.useState(false);
 
 	React.useEffect(() => {
 		if (inputShip) {
@@ -88,8 +90,9 @@ const ShipViewer = (props: ShipViewerProps) => {
 	React.useEffect(() => {
 		const c = inputShip?.battle_stations?.length ?? 0;
 		if (inputShip && crewStations) {
-			if (ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs == ship.battle_stations![i].crew)) return;
+			if (asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs == ship.battle_stations![i].crew)) return;
 			setShip(setupShip(inputShip, crewStations));
+			setOldMaxed(asMaxed);
 		}
 	}, [crewStations]);
 
@@ -109,16 +112,35 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	React.useEffect(() => {
 		if (ships?.length && shipKey) {
-			let newship = ships.find(f => f.symbol === shipKey);
-			if (!!newship && !!inputShip && newship?.id === inputShip?.id) return;
-			if (newship) {
-				setInputShip(newship);
+			if (shipKey.startsWith("_")) {
+				setShipKey(shipKey.slice(1));
+				return;
+			}
+			let input_ship = ships.find(f => f.symbol === shipKey);
+			// if (!!newship && !!inputShip && newship?.id === inputShip?.id) return;
+			if (input_ship) {
+				if (input_ship.owned && asMaxed) {
+					let new_ship = mergeRefShips(context.core.all_ships.filter(f => f.symbol === input_ship.symbol), [], context.localized.SHIP_TRAIT_NAMES, false, false, context.player.buffConfig)[0];
+					new_ship.owned = true;
+					new_ship.id = input_ship.id;
+					new_ship.level = new_ship.max_level!;
+					new_ship.battle_stations = input_ship.battle_stations;
+					setInputShip(new_ship);
+				}
+				else {
+					setInputShip(input_ship);
+				}
 			}
 			else {
 				navigate("/ships");
 			}
 		}
 	}, [ships, shipKey]);
+
+	React.useEffect(() => {
+		let sk = shipKey;
+		setShipKey("_" + sk);
+	}, [asMaxed]);
 
 	const division = React.useMemo(() => {
 		if (ship) {
@@ -139,6 +161,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 			{!!inputShip && !!crew && <WorkerProvider>
 				<ShipMultiWorker>
 					<ShipRosterCalc
+						asMaxed={asMaxed}
 						opponentShip={opponentShip}
 						opponentStations={opponentStations}
 						useOpponents={useOpponents}
@@ -150,6 +173,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 						ignoreSkills={ignoreSkills}
 						onlyImmortal={onlyImmortal}
 						pageId={'shipInfo'}
+						setAsMaxed={setAsMaxed}
 						setConsiderFrozen={setConsiderFrozen}
 						setConsiderUnowned={setConsiderUnowned}
 						setCrewStations={setCrewStations}
@@ -179,6 +203,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 			</>}
 			{activeTabIndex === 0 &&
 			<ShipStaffingView
+				asMaxed={asMaxed}
 				considerFrozen={considerFrozen}
 				considerUnowned={considerUnowned}
 				crewStations={crewStations}
@@ -194,6 +219,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 			{activeTabIndex === 1 &&
 			<ShipStaffingView
+				asMaxed={false}
 				considerFrozen={considerFrozen}
 				considerUnowned={considerUnowned}
 				crewStations={opponentStations}

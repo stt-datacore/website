@@ -38,7 +38,7 @@ export const Worfle = () => {
 
 	const [userPrefs, setUserPrefs] = useStateWithStorage<IUserPrefs>(
 		'worfle/prefs',
-		JSON.parse(JSON.stringify(prefDefaults)),
+		structuredClone(prefDefaults),
 		{
 			rememberForever: true,
 			onInitialize: (_itemKey: string, userPrefs: IUserPrefs) => validateUserPrefs(userPrefs)
@@ -245,7 +245,7 @@ export const Worfle = () => {
 	}
 
 	function validateUserPrefs(userPrefs: IUserPrefs): void {
-		const validatedPrefs: IUserPrefs = JSON.parse(JSON.stringify(prefDefaults));
+		const validatedPrefs: IUserPrefs = structuredClone(prefDefaults);
 		Object.keys(prefDefaults).forEach(key => {
 			if (typeof userPrefs[key] === typeof prefDefaults[key])
 				validatedPrefs[key] = userPrefs[key];

@@ -157,10 +157,11 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
     });
 }
 
+type Relative = { name: string, needed: number };
 interface LocalCollectionInfo {
     name: string;
     crew: string[];
-    relatives: string[];
+    relatives: Relative[];
     needed: number;
 }
 
@@ -218,21 +219,24 @@ const CollectionOptimizer = {
                 for (let i = 0; i < c; i++) {
                     for (let j = 0; j < c; j++) {
                         if (i === j) continue;
-                        if (!crewcols[i].relatives.includes(crewcols[j].name)) {
-                            crewcols[i].relatives.push(crewcols[j].name);
+                        if (!crewcols[i].relatives.some(rel => rel.name === crewcols[j].name)) {
+                            crewcols[i].relatives.push({
+                                name: crewcols[j].name,
+                                needed: crewcols[j].needed
+                            });
                         }
                     }
                 }
             });
 
             const preFiltered = colInfo.map(c => {
-                c.relatives.sort();
+                //c.relatives = c.relatives.filter(f => f.needed <= c.needed);
+                c.relatives.sort((a, b) => b.needed - a.needed || a.name.localeCompare(b.name));
                 let col = workingCollections.find(f => f.name === c.name) as PlayerCollection;
                 let map = {
                     collection: col,
                     crew: c.crew.map(csym => workingCrew.find(f => f.symbol === csym) as PlayerCrew)
                 } as CollectionInfo;
-
                 map.crew = normalCollectionSort(map.crew, searchFilter, searches, favorites);
                 map.neededStars = neededStars(map.crew, map.collection.needed ?? 0);
                 map.collection.neededCost = starCost(
@@ -242,33 +246,33 @@ const CollectionOptimizer = {
 
                 return map;
             })
-                .sort((a, b) => {
-                    let acol = a.collection;
-                    let bcol = b.collection;
-                    let r = 0;
+            .sort((a, b) => {
+                let acol = a.collection;
+                let bcol = b.collection;
+                let r = 0;
 
-                    if (mapFilter?.rewardFilter) {
-                        r = compareRewards(mapFilter, [acol], [bcol], short);
-                        if (r) return r;
-                    }
+                if (mapFilter?.rewardFilter) {
+                    r = compareRewards(mapFilter, [acol], [bcol], short);
+                    if (r) return r;
+                }
 
-                    let amissing = acol.milestone.goal as number - acol.owned as number;
-                    let bmissing = bcol.milestone.goal as number - bcol.owned as number;
+                let amissing = acol.milestone.goal as number - acol.owned as number;
+                let bmissing = bcol.milestone.goal as number - bcol.owned as number;
 
-                    if (amissing < 0) amissing = 0;
-                    if (bmissing < 0) bmissing = 0;
+                if (amissing < 0) amissing = 0;
+                if (bmissing < 0) bmissing = 0;
 
-                    if (!r) r = amissing - bmissing;
-                    if (!r) r = (acol?.neededCost ?? 0) - (bcol?.neededCost ?? 0);
-                    if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
+                if (!r) r = amissing - bmissing;
+                if (!r) r = (acol?.neededCost ?? 0) - (bcol?.neededCost ?? 0);
+                if (!r) r = (acol?.needed ?? 0) - (bcol?.needed ?? 0);
 
-                    if (!r) {
-                        r = (bcol.milestone.goal as number) - (acol.milestone.goal as number);
-                    }
+                if (!r) {
+                    r = (bcol.milestone.goal as number) - (acol.milestone.goal as number);
+                }
 
-                    if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
-                    return r;
-                });
+                if (!r) r = acol?.name.localeCompare(bcol?.name ?? "") ?? 0;
+                return r;
+            });
 
             const colData = preFiltered.filter((x) => {
                 let bPass =
@@ -291,8 +295,8 @@ const CollectionOptimizer = {
             const linkScores = {} as { [key: string]: CollectionInfo[] };
 
             colInfo.forEach((ci) => {
-                ci.relatives.forEach((cirkey) => {
-                    let cirel = colInfo.find(c => c.name === cirkey);
+                ci.relatives.forEach((rel) => {
+                    let cirel = colInfo.find(c => c.name === rel.name);
                     if (cirel) {
                         let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew).filter(f => f.have);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
@@ -317,6 +321,37 @@ const CollectionOptimizer = {
                     }
                 });
             });
+
+            function sortCombos(combos: CollectionCombo[]) {
+                combos.sort((a, b) => {
+                        let acost = 0;
+                        let bcost = 0;
+
+                        if (a.comboCost?.length) {
+                            acost = a.comboCost[0];
+                        }
+                        else {
+                            acost = 0;
+                        }
+                        if (b.comboCost?.length) {
+                            bcost = b.comboCost[0];
+                        }
+                        else {
+                            bcost = 0;
+                        }
+                        let r = acost - bcost;
+
+                        if (!r && a.combos && b.combos) {
+                            r = a.combos[0].crew.length - b.combos[0].crew.length;
+                            if (!r) {
+                                let atotal = a.combos[0].crew.map(c => collectionCrew.find(f => f.symbol === c && !f.immortal)).map(cl => cl?.level ?? 0).reduce((p, n) => p + n, 0);
+                                let btotal = b.combos[0].crew.map(c => collectionCrew.find(f => f.symbol === c && !f.immortal)).map(cl => cl?.level ?? 0).reduce((p, n) => p + n, 0);
+                                r = btotal - atotal;
+                            }
+                        }
+                        return r;
+                    });
+            }
 
             const createOptimizerGroups = (colData: CollectionInfo[]) => {
                 const colCombos = Object.keys(linkScores)
@@ -429,7 +464,7 @@ const CollectionOptimizer = {
                     const exact = [] as ColComboMap[];
                     const over = [] as ColComboMap[];
                     const under = [] as ColComboMap[];
-                    const cml = col.maps.length;
+                    // const cml = col.maps.length;
 
                     // for (let i = cml; i >= 1; i--) {
                     //     getPermutations(col.maps, i, undefined, true, undefined, (cols) => {
@@ -677,20 +712,19 @@ const CollectionOptimizer = {
                     let comboname = combo.names.join(" / ");
                     let crew = getOptCrew(col, costMode, searches, comboname);
                     let grouped = crew.map(c => c.symbol).sort().join(",");
-                    let cm = {
+                    let cost = starCost(crew, undefined, costMode === 'sale');
+                    let cm: ComboCostMap = {
                         collection: col.collection.name,
                         combo: combo,
-                        cost: starCost(crew, undefined, costMode === 'sale'),
+                        cost,
+                        shadow_cost: cost,
                         crew: crew,
                         exact: combo.exact
                     };
-
                     seengroups[grouped] ??= cm;
-
                     if (combo.names.length > seengroups[grouped].combo.names.length) {
                         seengroups[grouped] = cm;
                     }
-
                 }
 
                 let cm = [] as ComboCostMap[];
@@ -732,34 +766,7 @@ const CollectionOptimizer = {
                         col.comboCost = map.map(m => m.cost);
                     });
 
-                    colCombos.sort((a, b) => {
-                        let acost = 0;
-                        let bcost = 0;
-
-                        if (a.comboCost?.length) {
-                            acost = a.comboCost[0];
-                        }
-                        else {
-                            acost = 0;
-                        }
-                        if (b.comboCost?.length) {
-                            bcost = b.comboCost[0];
-                        }
-                        else {
-                            bcost = 0;
-                        }
-                        let r = acost - bcost;
-
-                        if (!r && a.combos && b.combos) {
-                            r = a.combos[0].crew.length - b.combos[0].crew.length;
-                            if (!r) {
-                                let atotal = a.combos[0].crew.map(c => collectionCrew.find(f => f.symbol === c && !f.immortal)).map(cl => cl?.level ?? 0).reduce((p, n) => p + n, 0);
-                                let btotal = b.combos[0].crew.map(c => collectionCrew.find(f => f.symbol === c && !f.immortal)).map(cl => cl?.level ?? 0).reduce((p, n) => p + n, 0);
-                                r = btotal - atotal;
-                            }
-                        }
-                        return r;
-                    });
+                    sortCombos(colCombos);
                 }
                 else if (!filterProps.mapFilter.rewardFilter?.length) {
                     const honor = playerData.player.honor;
@@ -802,9 +809,11 @@ const CollectionOptimizer = {
                             newcombos.push(combo);
                             if (col.comboCost?.length) newcombocost.push(col.comboCost[x]);
                         }
-                        col.combos = newcombos;
-                        col.comboCost = newcombocost;
+                        x++;
                     }
+
+                    col.combos = newcombos;
+                    col.comboCost = newcombocost;
 
                     if (searches?.length) {
                         newcombos = [];
@@ -835,6 +844,8 @@ const CollectionOptimizer = {
 
                 return !!col.combos?.length;
             });
+
+            sortCombos(fc);
 
             resolve({
                 combos: fc,

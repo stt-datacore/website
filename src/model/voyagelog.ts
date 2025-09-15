@@ -1,4 +1,4 @@
-import { BaseSkills } from "./crew"
+import { BaseSkills, CrewMember } from "./crew"
 import { Icon } from "./game-elements"
 import { Ship, ShipAction } from "./ship"
 
@@ -44,6 +44,8 @@ export interface VoyageNarrative {
     skill_check?: SkillCheck
     rewards?: Rewards
     selection?: number;
+    selection_var?: string;
+    selection_data?: any;
 }
 
 export interface SkillCheck {

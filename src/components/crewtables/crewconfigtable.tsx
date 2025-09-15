@@ -63,6 +63,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	return (
 		<React.Fragment>
 			<SearchableTable
+				showSortDropdown
 				extraSearchContent={extraSearchContent}
 				defaultPaginationRows={props.initOptions?.rows}
 				id={`${pageId}/table_`}

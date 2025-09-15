@@ -60,7 +60,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 							<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
 								<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 								<br />{polestar.short_name}
-								{playerData && (
+								{(playerData || !!alwaysShowPrice) && (
 									<React.Fragment>
 										<br />{renderCount(polestar)}
 									</React.Fragment>

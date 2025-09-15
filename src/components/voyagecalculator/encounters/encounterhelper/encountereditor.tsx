@@ -31,7 +31,7 @@
 // 	const { traitPool } = props;
 
 // 	const [critTraits, setCritTraits] = React.useState<string[]>(props.encounter?.critTraits ?? []);
-// 	const [contests, setContests] = React.useState<IContest[]>(JSON.parse(JSON.stringify(props.encounter?.contests ?? [])));
+// 	const [contests, setContests] = React.useState<IContest[]>(structuredClone(props.encounter?.contests ?? []));
 
 // 	const [modalIsOpen, setModalIsOpen] = React.useState<boolean>(false);
 

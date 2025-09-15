@@ -93,6 +93,8 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 		options.sort((a, b) => {
 			if (a.key === 'maincast') return -1;
 			else if (b.key === 'maincast') return 1;
+			else if (a.key === 'notmaincast') return -1;
+			else if (b.key === 'notmaincast') return 1;
 			else if (CONFIG.SERIES.includes(a.key) && CONFIG.SERIES.includes(b.key)) {
 				return a.text.localeCompare(b.text);
 			}

@@ -108,7 +108,7 @@ export const MultiVectorAssault = (
 			const traitSlots: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 			const crewId: number = crew[i].id ?? i;
-			const crewSkills: BaseSkills = crew[i].skills ? JSON.parse(JSON.stringify(crew[i].skills)) : {};
+			const crewSkills: BaseSkills = crew[i].skills ? structuredClone(crew[i].skills) : {};
 
 			let eventTraitBonus: number = 0, eventCrewVP: number = 0, eventCrewFactor: number = 1, eventCritTraits: number = 0;
 			if (voyage.voyage_type === 'encounter' && voyage.event_content) {
@@ -206,17 +206,18 @@ export const MultiVectorAssault = (
 		}
 		return bonus;
 	}
-
+	// Default passive bonuses hardcoded here to 0.3 and 0.15
+	//	passive_bonus should always be preset in config.event_content
 	function getEncounterCrewVP(crew: IVoyageCrew, content: IVoyageEventContent): number {
 		let crewVP: number = 0;
 		if (content.featured_crews.includes(crew.symbol)) {
-			crewVP = 0.30;
+			crewVP = content.passive_bonus?.event_crew ?? 0.3;
 		}
 		else {
 			if (content.antimatter_bonus_crew_traits.some(bonusTrait => {
 				return crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait);
 			})) {
-				crewVP = 0.15;
+				crewVP = content.passive_bonus?.event_trait ?? 0.15;
 			}
 		}
 		return crewVP;
@@ -378,10 +379,12 @@ export const MultiVectorAssault = (
 			return b.traitValue - a.traitValue;
 		};
 		const favorVP = (a: IVoyagerScore, b: IVoyagerScore) => {
+			// Default passive crew bonus hardcoded here to 0.3
+			const PASSIVE_CREW_BONUS: number = voyage.event_content?.passive_bonus?.event_crew ?? 0.3;
 			if (options.strategy === 'featured-vp') {
 				if (a.eventScore !== b.eventScore) {
-					if (a.eventScore === 0.30) return -1;
-					if (b.eventScore === 0.30) return 1;
+					if (a.eventScore === PASSIVE_CREW_BONUS) return -1;
+					if (b.eventScore === PASSIVE_CREW_BONUS) return 1;
 				}
 				return b.score - a.score;
 			}

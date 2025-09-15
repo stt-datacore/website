@@ -160,7 +160,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 				<Table.Cell>
 					{renderMainDataScore(crew)}
 				</Table.Cell>
-				<Table.Cell>
+				<Table.Cell width={4}>
 					{tabledProgress && (
 						<table style={{ width: '100%' }}>
 							<tbody>{tabledProgress}</tbody>

@@ -26,6 +26,7 @@ export interface ComboCostMap {
     cost: number;
     crew: PlayerCrew[];
     exact: boolean;
+    shadow_cost: number;
 }
 
 export interface CollectionCombo {

@@ -205,7 +205,7 @@ export const RetrievalCrew = () => {
 			// Calculate retrievable, actionable states; highest owned rarities, levels
 			//	Retrievable = any player can retrieve crew
 			//	Actionable = user can retrieve with tailored polestars
-			const rosterCrew = JSON.parse(JSON.stringify(globalContext.core.crew)) as IRosterCrew[];
+			const rosterCrew = structuredClone(globalContext.core.crew) as IRosterCrew[];
 			rosterCrew.forEach(crew => {
 				crew.retrievable = RetrievableState.Viable;
 				crew.alt_source = '';

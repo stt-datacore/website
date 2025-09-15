@@ -233,7 +233,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	function createEventShip(ship: Ship) {
 		if (!event_ships) return ship;
-		ship = JSON.parse(JSON.stringify(ship));
+		ship = structuredClone(ship);
 		if (high_bonus?.includes(ship.symbol)) {
 			ship.antimatter += 500;
 		}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "semantic-ui-react";
+import { Accordion, Icon, Rating, Segment, SemanticCOLORS, SemanticICONS, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
 import { Filter } from "../../../model/game-elements";
@@ -12,16 +12,55 @@ import { printChrons, printHonor, printMerits } from "../../retrieval/context";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { ReferenceShip, Ship } from "../../../model/ship";
+import { formatTime } from "../../../utils/voyageutils";
+import { navigate } from "gatsby";
+import { gradeColorsDisabled, gradeToColor } from "../../../utils/crewutils";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
     crewTargetGroup?: string;
     shipTargetGroup?: string;
-    updateDilemma: (dil: Dilemma, choice: number, clear: boolean) => void;
+    updateDilemma?: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
+
+export const DilemmaReferenceAccordion = (props: DilemmaTableProps) => {
+	const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+
+    const [isActive, setIsActive] = React.useState<boolean>(false);
+	const { crewTargetGroup, shipTargetGroup, voyageLog, updateDilemma } = props;
+
+	return (
+		<Accordion>
+			<Accordion.Title
+				active={isActive}
+				onClick={() => setIsActive(!isActive)}
+			>
+				<Icon name={isActive ? 'caret down' : 'caret right' as SemanticICONS} />
+				{t('voyage_log.reference')}
+			</Accordion.Title>
+			<Accordion.Content active={isActive}>
+				{isActive && (
+					<Segment>
+						<DilemmaTable
+                            voyageLog={voyageLog}
+                            crewTargetGroup={crewTargetGroup}
+                            shipTargetGroup={shipTargetGroup}
+                            updateDilemma={updateDilemma}
+                            />
+					</Segment>
+				)}
+			</Accordion.Content>
+		</Accordion>
+	);
+};
+
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const { playerShips } = globalContext.player;
+    const { playerData } = globalContext.player
+    const playerCrew = playerData?.player.character.crew;
     const { dilemmas: dilemmaSource, crew, all_ships: ships } = globalContext.core;
     const { t } = globalContext.localized;
     const { voyageLog, crewTargetGroup, shipTargetGroup, updateDilemma } = props;
@@ -33,6 +72,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     const [eligible, setEligble] = React.useState<DilemmaMultipartData[]>([]);
     const [inverse, setInverse] = React.useState<DilemmaMultipartData[]>([]);
+    const [maxRun, setMaxRun] = React.useState(0);
 
     React.useEffect(() => {
         const dilemmas = getDilemmaData(crew, ships, dilemmaSource, voyageLog?.voyage_narrative)
@@ -41,6 +81,12 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         setDilemmas(dilemmas);
         setEligble(eligible);
         setInverse(inverse);
+        if (dilemmas.some(d => d.narrative) && playerData) {
+            setMaxRun(2 * ((dilemmas.length - inverse.length) + 1));
+        }
+        else {
+            setMaxRun(0);
+        }
     }, [voyageLog, dilemmaSource, crew, ships]);
 
     const tableConfig: ITableConfigRow[] = [
@@ -105,6 +151,14 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 config={tableConfig}
                 filterRow={searchTable}
                 renderTableRow={renderTableRow}
+                extraSearchContent={<>
+                    {!!maxRun && <div style={{...flexRow, justifyContent: 'flex-end', flexGrow: 1, alignItems: 'center', gap: '0.5em'}}>
+                        <span>
+                            {t('hof.max_duration')}{t('global.colon')}
+                        </span>
+                        <span style={{fontSize: '1.25em', fontWeight: 'bold'}}>{formatTime(maxRun, t, false)}</span>
+                    </div>}
+                </>}
                 />
         </React.Fragment>
     )
@@ -158,6 +212,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             bgColor = 'forestgreen';
         }
         const key = `${idx}_dilemma_${row.title}`;
+        const farsize = !!row.narrative ? '24px' : '0';
+        const gradesize = !gradeColorsDisabled ? '12px' : '0';
+        if (gradeColorsDisabled) bgColor = undefined;
         return <>
             <Table.Row key={key}>
                 <Table.Cell
@@ -167,15 +224,21 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 >
                     <div style={{
                         display: 'grid',
-                        gridTemplateAreas: `'left right'`,
-                        gridTemplateColumns: '12px auto',
+                        gridTemplateAreas: `'far left right' 'far rarity rarity'`,
+                        gridTemplateColumns: `${farsize} ${gradesize} auto`,
                         gap: '0.5em'
                     }}>
-                        <div style={{gridArea: 'left', height: "100%", width: "100%", backgroundColor: CONFIG.RARITIES[row.rarity!].color}}>
+                        {!!row.narrative && <div style={{gridArea: 'far', display: 'flex', justifyContent: 'center', alignItems:'center'}}>
+                            <><Icon name='check'/></>
+                        </div>}
+                        {!gradeColorsDisabled && <div style={{gridArea: 'left', height: "100%", width: "100%", backgroundColor: CONFIG.RARITIES[row.rarity!].color}}>
                             &nbsp;
-                        </div>
+                        </div>}
                         <div style={{gridArea: 'right'}}>
                             {row.title}
+                        </div>
+                        <div style={{gridArea: 'rarity'}}>
+                            <Rating rating={row.rarity} maxRating={row.rarity} icon="star" />
                         </div>
                     </div>
                 </Table.Cell>
@@ -194,18 +257,35 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 </Table.Cell>
                 {choices.map((choice, i) => {
                     let choiceBg: string | undefined = undefined;
+                    let choiceVar = '';
+                    let icon: SemanticICONS | undefined = undefined;
+                    let iconColor: SemanticCOLORS | undefined = undefined;
 
                     if (elig?.unlock === i) {
                         choiceBg = 'darkslateblue';
+                        icon = 'lock open';
                     }
                     if (row.narrative?.selection === i) {
                         choiceBg = 'royalblue';
+                        icon = 'check';
+                        iconColor = 'green';
                     }
                     if (row.narrative?.selection === undefined && row.multipart?.some(mp => mp.requiredChoices.includes(AlphaRef[i]))) {
                         choiceBg = 'mediumpurple';
+                        icon = 'star';
+                        iconColor = 'yellow'
                     }
                     if (inv?.unlock === i && elig?.unlock !== i) {
                         choiceBg = 'salmon';
+                        icon = 'lock';
+                        iconColor = 'orange';
+                    }
+                    if (row.selection === i) {
+                        choiceVar = row.narrative?.selection_var || '';
+                    }
+                    if (gradeColorsDisabled){
+                        choiceBg = undefined;
+                        iconColor = undefined;
                     }
                     return (
                         <Table.Cell
@@ -215,9 +295,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                 cursor: !!row.narrative ? 'pointer' : undefined,
                                 backgroundColor: choiceBg
                             }}
-                            onClick={() => updateDilemma(row, i, row.selection === i)}
+                            onClick={() => updateDilemma ? updateDilemma(row, i, row.selection === i) : false}
                             >
-                            {renderChoiceRewards(choice)}
+                            {renderChoice(choice, choiceVar, row.narrative?.selection_data, icon ? { name: icon, color: iconColor } : undefined)}
                         </Table.Cell>
                     )
                 })}
@@ -226,7 +306,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         </>
     }
 
-    function renderChoiceRewards(choice: DilemmaChoice) {
+    function renderChoice(choice: DilemmaChoice, choiceVar: string, choiceObj?: any, icon?: { name: SemanticICONS, color?: SemanticCOLORS }) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
         let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
 
@@ -234,17 +314,40 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
             crewrewards = goldRewards;
         }
         let scheme = choice.parsed?.schematics;
-
+        const choiceClick = () => {
+            if (choiceObj) {
+                if ("max_rarity" in choiceObj) {
+                    let c = choiceObj as CrewMember;
+                    navigate(`/crew/${c.symbol}`);
+                }
+                else if ("attack" in choiceObj) {
+                    let s = choiceObj as Ship;
+                    navigate(`http://localhost:81/ship_info/?ship=${s.symbol}`);
+                }
+            }
+        }
         return (
             <div style={{...flexCol, gap: '1em', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                 <div style={{
+                    display: 'grid',
+                    gridTemplateAreas: `'icon msg'`,
+                    gridTemplateColumns: `auto auto`,
+                    alignItems: 'center',
+                    gap: '0.5em',
                     backgroundColor: 'slategray',
                     border: '1px solid',
                     padding: '1em',
                     borderRadius: '0.75em',
                     fontWeight: 'bold',
                     width: '100%'}}>
-                        {formatChoiceText(choice.text)}
+                        {!!icon?.name &&
+                        <div style={{gridArea: 'icon'}}>
+                            <Icon name={icon.name} color={icon.color} />
+                        </div>
+                        }
+                        <div style={{gridArea: 'msg'}}>
+                            {formatChoiceText(choice, choiceClick, choiceVar)}
+                        </div>
                 </div>
                 {!!scheme && <div>{scheme} {t('global.item_types.ship_schematic')}</div>}
                 {!!choice.parsed?.chrons && printChrons(choice.parsed.chrons, t, true)}
@@ -275,6 +378,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                     <AvatarView
                                         mode='ship'
                                         item={ship}
+                                        partialItem={true}
                                         size={32}
                                         targetGroup={shipTargetGroup}
                                         />
@@ -289,13 +393,15 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         )
     }
 
-    function formatChoiceText(text: string, click?: () => void) {
+    function formatChoiceText(choice: DilemmaChoice, click?: () => void, choiceVar?: string) {
+        let text = choice.text;
         let parts = text.split("**");
         if (parts.length === 1) return <>{text}</>;
         return parts.map((part, i) => {
             if ((i + 1) % 2 == 0) {
+                if (i > 2) choiceVar = '';
                 return (
-                    <b style={{cursor: click ? 'pointer' : undefined, color: 'darkslateblue'}} key={`${text}_${i}`} onClick={() => click ? click() : false}>{part}</b>
+                    <b style={{cursor: click ? 'pointer' : undefined, color: 'darkslateblue'}} key={`${text}_${i}`} onClick={() => click ? click() : false}>{choiceVar || part}</b>
                 )
             }
             else {
@@ -342,16 +448,40 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         let honorex = /(\d+)\s*:honor:/;
         let meritrex = /(\d+)\s*:merits:/;
         let chronrex = /(\d+)\s*:chrons:/;
-        let botCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
+        let voyCrew = allCrew.filter(crew => crew.traits_hidden.includes("exclusive_voyage"));
         let legend = [] as string[];
-        dilemmas = JSON.parse(JSON.stringify(dilemmas));
-
+        dilemmas = structuredClone(dilemmas).slice();
         for (let dilemma of dilemmas) {
             let crewurl = undefined as string | undefined;
             let dil = 0;
             if (log) {
-                let n = log.find(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
-                if (n) {
+                let nidx = log.findIndex(f => f.text.replace("Dilemma: ", "").toLowerCase() === dilemma.title.toLowerCase());
+                if (nidx != -1) {
+                    const n = structuredClone(log[nidx]);
+                    if (n.selection === undefined && log.length > (nidx + 2)) {
+                        let selvar = '';
+                        const choiceIdx = getChoices(dilemma).findIndex(f => {
+                            let dtext = choiceRex(f.text);
+                            let re = new RegExp(dtext);
+                            if (re.test(log[nidx+2].text)) {
+                                let res = re.exec(log[nidx+2].text);
+                                if (res && res.length && res.length >= 2) {
+                                    selvar = res[1];
+                                }
+                                return true;
+                            }
+                            return false;
+                        });
+                        if (choiceIdx != -1) {
+                            n.selection = choiceIdx;
+                            selvar = selvar.replace(/\<[A-Za-z/]+\>/g, '');
+                            n.selection_data = globalContext.core.crew.find(f => f.name === selvar) || globalContext.core.all_ships.find(f => f.name === selvar);
+                            n.selection_var = selvar;
+                        }
+                        if (!selvar) {
+                            delete n.selection_var;
+                        }
+                    }
                     dilemma.narrative = n;
                     if (n.selection !== undefined) dilemma.selection = n.selection;
                 }
@@ -388,8 +518,8 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                         if (rex.test(s)) {
                             let result = rex.exec(s);
                             if (result && result.length) {
-                                let crewname = result[1];
-                                let crew = botCrew.find(crew => crew.name === crewname);
+                                let reward_name = result[1];
+                                let crew = playerCrew?.find(crew => crew.name === reward_name) || voyCrew.find(crew => crew.name === reward_name);
                                 if (crew) {
                                     choice.parsed.crew = crew;
                                     if (!choice.parsed.behold) {
@@ -400,15 +530,12 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                                     }
                                 }
                                 else {
-                                    let ship = allShips.find(ship => ship.name === crewname);
+                                    let ship = playerShips?.find(ship => ship.name === reward_name) || allShips.find(ship => ship.name === reward_name);
                                     if (ship) {
                                         choice.parsed.ship = ship;
                                         if (!choice.parsed.behold) {
                                             choice.parsed.behold = true;
                                         }
-                                        // if (choice.parsed.rarity < ship.rarity) {
-                                        //     choice.parsed.rarity = ship.rarity;
-                                        // }
                                         choice.parsed.schematics = choice.parsed.schematics || 500;
                                     }
                                 }
@@ -507,5 +634,8 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
 
     }
 
+    function choiceRex(text: string) {
+        return text.split(".")[0].trim().replace(/\*\*(\w+) name\*\*/, "(.+)") + ".*";
+    }
 }
 

@@ -248,7 +248,7 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 				}
 			});
 			if (isV2New)
-				newVoyages.push(JSON.parse(JSON.stringify(v2)));
+				newVoyages.push(structuredClone(v2));
 		});
 		return newVoyages;
 	}

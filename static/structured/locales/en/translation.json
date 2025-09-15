@@ -35,6 +35,7 @@
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
+        "boss": "{{rank_names.fbb_rank}}",
         "cab_power": "CAB",
         "cap_achiever": "First to Max",
         "collection": "Collection",
@@ -62,6 +63,7 @@
         "n_to_next": "{{n}} to next",
         "never_in_portal": "Never In Portal",
         "not_in_portal": "Not In Portal",
+        "not_maincast": "Not Main Cast",
         "not_uniquely_retrievable": "Not Uniquely Retrievable",
         "not_yet_in_portal": "Not yet in portal",
         "offer_cost": "Offer Cost",
@@ -159,7 +161,9 @@
                 "collections": "Stat-Boosting Collections Increased",
                 "groupSparsity": "Voyage Group Sparsity",
                 "improved": "Voyages Improved",
+                "is_custom": "Custom",
                 "magic": "Measure Limit (Magic number)",
+                "name": "{{global.name}}",
                 "never": "Never In Portal",
                 "portal": "Not In Portal",
                 "power": "Base Power Score",
@@ -329,7 +333,12 @@
                 "title": "Progress"
             }
         },
-        "progress_to_next": "Progress to next"
+        "progress_to_next": "Progress to next",
+        "types": {
+            "crew_rewarding": "Crew-rewarding collections",
+            "stat_boosting": "Stat-boosting collections",
+            "vanity": "Vanity collections"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Consider crew on active shuttles",
@@ -397,6 +406,10 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 results found. Please try different search options.",
+        "no_results_parts": {
+            "message": "Please try different search options.",
+            "title": "0 results found."
+        },
         "optional_filters": "Optional Filters",
         "search_by_name": "Search for crew by name",
         "select_crew": "Select {{crew}}",
@@ -431,6 +444,8 @@
         "columns": {
             "g": "G",
             "gauntlet_ranks": "Gauntlet Ranks",
+            "r": "R",
+            "reasons_to_keep": "Reasons To Keep",
             "s": "S",
             "shuttle_ranks": "Shuttle Ranks",
             "u": "U",
@@ -474,6 +489,10 @@
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
+    },
+    "delete": {
+        "prompt_x": "Are you sure you wish to delete '{{x}}'?",
+        "title": "Delete"
     },
     "demands": {
         "demands": "Demands",
@@ -586,6 +605,33 @@
     },
     "events_common": {
         "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
+    },
+    "factions": {
+        "already_honored": "Already honored",
+        "already_tanked": "Already tanked",
+        "average_odds_dropdown": "Running shuttles at average odds of {{dropdown}}",
+        "columns": {
+            "faction": "Faction",
+            "honored": "Honored",
+            "reputation": "Reputation",
+            "shuttles_to_honored": "Shuttles to Honored",
+            "shuttles_to_tank": "Shuttles to Tank",
+            "time_needed": "Time Needed"
+        },
+        "n_shuttles_per_day": "Running {{n}} shuttles per day.",
+        "n_shuttles_to_tank": "{{n}} shuttles to tank.",
+        "n_successful_missions": "{{n}} successful missions.",
+        "odds_note": "(Note: Shuttles cannot be run with a probability of success less than 14%. Shuttles need a probability of less than 60% to be tanked.)",
+        "reputation": {
+            "allied": "Allied",
+            "despised": "Despised",
+            "friendly": "Friendly",
+            "honored": "Honored",
+            "hostile": "Hostile",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanking",
+        "tanking_explain": "{{tanking}} shuttles is the process of deliberately failing shuttles so that the difficulty and duration of shuttle missions go down."
     },
     "fbb": {
         "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
@@ -771,6 +817,7 @@
             "dailies": "Dailies",
             "display_name": "{{global.name}}",
             "event_rank": "Event Rank",
+            "fleet": "{{global.fleet}}",
             "last_active": "Last Active",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
@@ -941,8 +988,10 @@
         "and": "and",
         "and_n_more_ellipses": "and {{n}} more ...",
         "any": "Any",
+        "apply": "Apply",
         "apply_filters": "Apply Filters",
         "approx": "Approx.",
+        "assigned": "Assigned",
         "average": "Average",
         "avg": "Avg",
         "base": "Base",
@@ -961,6 +1010,7 @@
         "copy_permalink_clipboard": "Copy permalink to clipboard",
         "cost": "Cost",
         "create": "Create",
+        "create_new_x": "Create New {{x}}",
         "date_end": "End Date",
         "date_start": "Start Date",
         "default": "Default",
@@ -971,7 +1021,10 @@
         "disabled": "Disabled",
         "dismiss": "Dismiss",
         "download": "Download",
+        "duplicate_input": "Duplicate input",
+        "duplicate_name": "Duplicate name",
         "edit": "Edit",
+        "edit_presets": "Manage Presets",
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
@@ -990,6 +1043,7 @@
         "ingredient_warning": "You do not have the ingredients to build this item.",
         "ingredient_warning_all": "You do not have the ingredients to build all of these items.",
         "initial_launch": "Initial Game Launch",
+        "invalid_input": "Invalid input",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena tickets",
@@ -1032,6 +1086,7 @@
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
         "lose": "Lose",
+        "map_position": "Map Position",
         "max": "Max",
         "max_rarity": "Max. rarity",
         "member": "Member",
@@ -1047,6 +1102,7 @@
         "name": "Name",
         "never": "Never",
         "new": "New",
+        "new_name": "New name",
         "no": "No",
         "no_items_found": "No items found",
         "no_search_results_found": "No results found. Please try different search options.",
@@ -1054,18 +1110,21 @@
         "notes": "Notes",
         "obtained": "Obtained",
         "officer": "Officer",
+        "opponent": "{{gauntlet.opponent_table.opponent}}",
         "optional": "Optional",
         "options": "Options",
         "or": "or",
         "pending_release": "Pending Release",
         "percentile": "Percentile",
-        "permalink": "permalink",
+        "permalink": "Permalink",
         "portal": "Portal",
         "portal_update": "Portal Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
+        "rename": "Rename",
         "reserved": "Reserved",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
@@ -1094,6 +1153,7 @@
         "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "toggle_layout": "Toggle layout",
         "type": "Type",
+        "unassigned": "Unassigned",
         "uncheck_all": "Uncheck all",
         "unselect_all": "Unselect All",
         "view_options": "View Options",
@@ -1577,6 +1637,10 @@
             "trait": "Trait"
         }
     },
+    "overwrite": {
+        "prompt_x": "Are you sure you wish to overwrite '{{x}}'?",
+        "title": "Overwrite"
+    },
     "pages": {
         "crew_stats": "Crew Stats",
         "crew_view_modes": {
@@ -1605,6 +1669,14 @@
         "n_shuttles": "{{n}} shuttles",
         "starbase_level": "Starbase level",
         "x_y_crew": "{{x}} / {{y}} crew"
+    },
+    "polestars": {
+        "best_chance_long": "All the polestars that give the best chance of retrieving this crew",
+        "best_chance_short": "Best Chance",
+        "combo": "Polestar Combination",
+        "crew_constellation": "{{crew}} Constellation",
+        "optimal": "Optimal Polestars for Crew Retrieval",
+        "shared_with_crew": "Shared with {{crew}}"
     },
     "profile": {
         "charts_and_stats": "Charts & Stats",
@@ -1673,6 +1745,7 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "always_show_datascore": "Always show DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
         "cab_grade": "CAB Grade",
@@ -1684,6 +1757,7 @@
         "datascore_ranks": "DataScore Ranks",
         "fbb_rank": "Boss",
         "gauntlet_rank": "Gauntlet Rank",
+        "greatness_rank": "Versatility Rank",
         "quipment_score": "Quipment Score",
         "rank": "Rank",
         "scores": {
@@ -1693,6 +1767,7 @@
             "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
+            "greatness": "Versatility",
             "main_cast": "Main Cast",
             "overall": "Overall",
             "overall_grade": "Overall Grade",
@@ -1805,7 +1880,7 @@
             "title": "Celestial Market",
             "top_n_polestars": "Top {{n}} polestars",
             "unlisted": "Unlisted",
-            "updated": "Market is updated hourly."
+            "updated": "Market is updated every 5 minutes."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
@@ -2001,6 +2076,7 @@
             },
             "apply_boss_effects": "Apply boss chain buffs",
             "apply_buffs": "Apply buffs to unowned ships",
+            "as_maxed": "Use max ship stats",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
@@ -2348,23 +2424,49 @@
             "title": "Captain Idol's Voyage Analysis Sheet"
         },
         "contests": {
+            "assign_crew": "Assign {{crew}} to this contest",
+            "assigned_crew": "Assigned Crew",
+            "assigned_to_crew": "{{crew}} is assigned to this contest",
+            "assigned_to_n": "Assigned to Contest {{n}}",
             "avg": "{{global.avg}}",
+            "avg_of_crew": "{{crew}}'s average score for this contest",
+            "avg_of_opponent": "Opponent's average score for this contest",
+            "avg_score": "Average Score",
+            "champions_description": "Your crew's expected odds of winning each contest are listed below. Tap the odds to simulate that contest with higher confidence. Tap {{icon}} to assign the crew to that contest.",
+            "champions_header": "Voyage Crew",
+            "contest": "Contest",
             "contest_simulator": "Contest Simulator",
             "contestant": "Contestant",
             "contestant_alt": "contestant",
+            "contests_description": "Use this tool to plan your encounter contests. Tap a contest to see crew with viable skills for that contest.",
+            "contests_header": "Contest Assignments",
+            "contests_n_count": "Contests ({{n}})",
             "crit_chance": "Crit Chance",
+            "encounter_helper_title": "Encounter helper",
+            "importer": {
+                "data_loaded": "Encounter Data Loaded!",
+                "data_required": "Additional Data Required",
+                "description": "The Encounter Helper requires additional data that is not present in your player data. You can access and import the required data by following the instructions below.",
+                "follow_instructions": "Follow the instructions below to update your encounter data.",
+                "progress_warning": "This tool is unable to see the crew used for any contests you have already completed in-game. You must manually assign successful crew to the contests below to get a more accurate representation of viable skills for the remaining contests.",
+                "tap_to_open": "If the information below does not match your encounter in-game, tap here to update your encounter data."
+            },
             "max": "{{global.max}}",
             "min": "{{global.min}}",
             "n_viable_crew": "Your voyage has {{n}} viable crew for this contest",
             "no_skill": "No Skill",
             "notes": {
-                "crit_icon": "represents a crew's number of potential crit traits.",
+                "crit_icon": "{{img}} represents a crew's number of potential crit traits.",
                 "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
                 "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
             },
+            "odds_of_winning": "Odds of Winning",
+            "reset_assignments": "Reset assignments",
             "search_for_contestant": "Search for contestant",
             "select_crit_chance": "Select crit chance",
             "simulate_contest": "Simulate contest",
+            "starting_skills": "Starting Skills",
+            "vp_multiplier": "VP Multiplier",
             "wins": "Wins"
         },
         "crew_finder_hints": {
@@ -2704,6 +2806,7 @@
             "click_here": "{{fleet.import.click_here}}",
             "heading": "You can access your voyage logs in a similar way to how you access your player data, currently."
         },
+        "reference": "Dilemma Reference",
         "title": "Voyage Dilemma Utility"
     }
 }
