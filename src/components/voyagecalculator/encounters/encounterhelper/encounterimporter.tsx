@@ -124,7 +124,7 @@ export function getEncounterDataFromJson(voyageRefresh: VoyageRefreshData[]): Vo
 }
 
 // Serialize IEncounter object from VoyageRefreshEncounter
-export function serializeEncounter(encounterData: VoyageRefreshEncounter): IEncounter | undefined {
+export function serializeEncounter(encounterData: VoyageRefreshEncounter, critChances: number[]): IEncounter | undefined {
 	let encounter: IEncounter | undefined;
 	const startingSkills: EncounterStartingSkills = encounterData.skills;
 	const incrementProf: number = encounterData.increment_prof;
@@ -145,6 +145,7 @@ export function serializeEncounter(encounterData: VoyageRefreshEncounter): IEnco
 		encounter = {
 			id: encounterData.id,
 			critTraits: traits,
+			critChances,
 			contests
 
 		};

@@ -8,7 +8,7 @@ import {
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { IContestant, IContestResult } from '../model';
-import { formatContestResult, makeContestant, makeResultId, simulateContest } from '../utils';
+import { DEFAULT_CRIT_CHANCES, formatContestResult, makeContestant, makeResultId, simulateContest } from '../utils';
 import { Contestant } from './contestant';
 import { ContestantPicker } from './contestantpicker';
 
@@ -25,6 +25,7 @@ type ContestProps = {
 	skills: string[];
 	traits?: string[];
 	traitPool?: string[];
+	critChances?: number[];
 	a?: IContestant;
 	aPool?: PlayerCrew[];
 	b?: IContestant;
@@ -36,7 +37,7 @@ type ContestProps = {
 
 export const Contest = (props: ContestProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { skills, traits, traitPool, aPool, bPool } = props;
+	const { skills, traits, traitPool, critChances, aPool, bPool } = props;
 
 	const [contestantA, setContestantA] = React.useState<IContestant>(initContestant(props.a));
 	const [contestantB, setContestantB] = React.useState<IContestant>(initContestant(props.b));
@@ -72,6 +73,7 @@ export const Contest = (props: ContestProps) => {
 					<Grid.Column>
 						<Contestant
 							skills={skills}
+							critChances={critChances ?? DEFAULT_CRIT_CHANCES}
 							contestant={contestantA}
 							wins={contestResult ? formatContestResult(contestResult) : <Icon loading name='spinner' />}
 							editContestant={(contestant: IContestant) => setContestantA(contestant)}
@@ -91,6 +93,7 @@ export const Contest = (props: ContestProps) => {
 					<Grid.Column>
 						<Contestant
 							skills={skills}
+							critChances={critChances ?? DEFAULT_CRIT_CHANCES}
 							contestant={contestantB}
 							wins={contestResult ? formatContestResult(contestResult, true) : <Icon loading name='spinner' />}
 							editContestant={(contestant: IContestant) => setContestantB(contestant)}
@@ -108,17 +111,13 @@ export const Contest = (props: ContestProps) => {
 					</Grid.Column>
 				</Grid>
 			</div>
-			{!compactMode && (
-				<div style={{ marginTop: '1em' }}>
-					The average scores listed here do not take crit chances into account, but the odds of winning do.
-				</div>
-			)}
 			{pickerTrigger && (
 				<ContestantPicker
 					id={`${props.id}/contestantpicker`}
 					skills={skills}
 					traits={traits}
 					traitPool={traitPool}
+					critChances={critChances ?? DEFAULT_CRIT_CHANCES}
 					crewPool={pickerTrigger.pool}
 					setContestant={pickerTrigger.setContestant}
 					dismissPicker={() => setPickerTrigger(undefined)}

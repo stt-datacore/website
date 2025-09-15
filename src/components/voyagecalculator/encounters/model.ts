@@ -4,6 +4,7 @@ export interface IEncounter {
 	id: number;
 	contests: IContest[];
 	critTraits: string[];
+	critChances: number[];
 };
 
 export interface IContest {

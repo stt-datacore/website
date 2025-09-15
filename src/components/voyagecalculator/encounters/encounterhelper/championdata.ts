@@ -94,7 +94,7 @@ export async function getChampionCrewData(
 			const max: number = crewData.skills[curr].range_max;
 			return max > prev ? max : prev;
 		}, 0);
-		crewData.crit_chance = getCrewCritChance(crewData, encounter.critTraits);
+		crewData.crit_chance = getCrewCritChance(crewData, encounter.critTraits, encounter.critChances);
 
 		crewData.contest_viability = 0;
 		crewData.contests = {};
@@ -102,7 +102,7 @@ export async function getChampionCrewData(
 			const contest: IContest = encounter.contests[contestIndex];
 			const contestId: string = contestIds[contestIndex];
 			const skills: string[] = contest.skills.map(cs => cs.skill);
-			const champion: IChampion = makeContestant(skills, encounter.critTraits, crewData) as IChampion;
+			const champion: IChampion = makeContestant(skills, encounter.critTraits, crewData, encounter.critChances) as IChampion;
 
 			// Apply boosts before residualSkill bonuses
 			const boost: IChampionBoost | undefined = assignments[contestId].boost;

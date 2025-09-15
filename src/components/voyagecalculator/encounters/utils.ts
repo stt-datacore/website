@@ -2,6 +2,8 @@ import { Skill } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
 import { IContestant, IContestResult, IContestSkill, IExpectedScore } from './model';
 
+export const DEFAULT_CRIT_CHANCES: number[] = [5, 25, 50, 75];
+
 export function getCrewSkillsScore(crew: PlayerCrew, skills: string[]): number {
 	let score: number = 0;
 	// Input skills may be the same, so distinct first
@@ -13,9 +15,9 @@ export function getCrewSkillsScore(crew: PlayerCrew, skills: string[]): number {
 	return score;
 }
 
-export function getCrewCritChance(crew: PlayerCrew, traits: string[]): number {
+export function getCrewCritChance(crew: PlayerCrew, traits: string[], critChances: number[]): number {
 	const critCount: number = traits.filter(trait => crew.traits.includes(trait)).length;
-	return [5, 25, 45, 65][critCount];
+	return critChances[critCount];
 }
 
 export function crewIsShortSkilled(crew: PlayerCrew, skills: string[]): boolean {
@@ -27,7 +29,8 @@ export function crewIsShortSkilled(crew: PlayerCrew, skills: string[]): boolean 
 	return crewSkills.length < testSkills.length;
 }
 
-export function makeContestant(skills: string[], traits: string[], crew?: PlayerCrew): IContestant {
+// If crew is defined here, critChances must also be defined!
+export function makeContestant(skills: string[], traits: string[], crew?: PlayerCrew, critChances?: number[]): IContestant {
 	const contestantSkills: IContestSkill[] = [];
 	skills.forEach(skill => {
 		let contestantSkill: IContestSkill | undefined;
@@ -54,7 +57,7 @@ export function makeContestant(skills: string[], traits: string[], crew?: Player
 	return {
 		crew,
 		skills: contestantSkills,
-		critChance: crew ? getCrewCritChance(crew, traits) : 0
+		critChance: crew ? getCrewCritChance(crew, traits, critChances!) : 0
 	};
 }
 

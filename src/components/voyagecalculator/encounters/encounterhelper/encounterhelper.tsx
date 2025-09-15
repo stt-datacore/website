@@ -8,12 +8,13 @@ import {
 } from 'semantic-ui-react';
 
 import { EquipmentItem } from '../../../../model/equipment';
-import { PlayerCrew, Voyage } from '../../../../model/player';
+import { PlayerCrew, Voyage, VoyageDescription } from '../../../../model/player';
 import { VoyageRefreshData, VoyageRefreshEncounter } from '../../../../model/voyage';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { mergeItems } from '../../../../utils/itemutils';
 
 import { IEncounter } from '../model';
+import { DEFAULT_CRIT_CHANCES } from '../utils';
 import { EncounterContext, IEncounterContext } from './context';
 import { assignCrewToContest, getChampionCrewData, getDefaultAssignments, IChampionContest, IChampionContestResult, IChampionCrewData, IContestAssignment, IContestAssignments, makeContestId } from './championdata';
 import { ChampionsTable } from './champions';
@@ -49,10 +50,21 @@ export const EncounterHelperAccordion = (props: EncounterHelperProps) => {
 
 export const EncounterHelper = (props: EncounterHelperProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { playerData } = globalContext.player;
+	const { playerData, ephemeral } = globalContext.player;
 	const { voyageConfig } = props;
 
 	const [encounterData, setEncounterData] = React.useState<VoyageRefreshEncounter | undefined>(undefined);
+
+	// Encounter crit_chances are only defined for pending voyages (i.e. type VoyageDescription),
+	//	so we have to manually attach them (or default crit chances) to serialized encounter data
+	const critChances = React.useMemo<number[]>(() => {
+		let critChances: number[] = DEFAULT_CRIT_CHANCES;
+		const description: VoyageDescription | undefined = ephemeral?.voyageDescriptions.find(voyage =>
+			voyage.voyage_type === 'encounter'
+		);
+		if (description?.crit_chances) critChances = Object.values(description.crit_chances);
+		return critChances;
+	}, [ephemeral]);
 
 	const voyageCrew = React.useMemo<PlayerCrew[]>(() => {
 		return voyageConfig.crew_slots.map(cs => cs.crew);
@@ -60,7 +72,7 @@ export const EncounterHelper = (props: EncounterHelperProps) => {
 
 	const encounter = React.useMemo<IEncounter | undefined>(() => {
 		if (!encounterData) return undefined;
-		return serializeEncounter(encounterData);
+		return serializeEncounter(encounterData, critChances);
 	}, [encounterData]);
 
 	const inventory = React.useMemo<EquipmentItem[]>(() => {

@@ -34,6 +34,7 @@ type ContestantPickerProps = {
 	skills: string[];
 	traits: string[] | undefined;
 	traitPool: string[] | undefined;
+	critChances: number[];
 	crewPool: PlayerCrew[];
 	setContestant: (contestant: IContestant) => void;
 	dismissPicker: () => void;
@@ -41,7 +42,7 @@ type ContestantPickerProps = {
 
 export const ContestantPicker = (props: ContestantPickerProps) => {
 	const { t, tfmt, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { skills, traits, traitPool, crewPool, setContestant, dismissPicker } = props;
+	const { skills, traits, traitPool, critChances, crewPool, setContestant, dismissPicker } = props;
 
 	const gridSetup: IDataGridSetup = {
 		renderGridColumn: (datum: IEssentialData) => <CrewPortrait crew={datum as PlayerCrew} />
@@ -54,7 +55,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 			Object.keys(CONFIG.SKILLS).forEach(skill => {
 				proficientCrew[`scored_${skill}`] = getCrewSkillsScore(proficientCrew, [skill]);
 			});
-			proficientCrew.crit_chance = traits && traits.length > 0 ? getCrewCritChance(proficientCrew, traits) : 0;
+			proficientCrew.crit_chance = traits && traits.length > 0 ? getCrewCritChance(proficientCrew, traits, critChances) : 0;
 			proficientCrew.crit_potential = (traitPool ?? []).filter(critTrait =>
 				proficientCrew.traits.includes(critTrait)
 			);
@@ -212,7 +213,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 				crew.id === selectedId
 			);
 			if (crew) {
-				setContestant(makeContestant(skills, traits ?? [], crew))
+				setContestant(makeContestant(skills, traits ?? [], crew, critChances))
 			}
 		}
 		dismissPicker();

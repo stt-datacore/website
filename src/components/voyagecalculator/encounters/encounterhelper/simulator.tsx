@@ -131,8 +131,9 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 		return (
 			<React.Fragment>
 				<Contest
-					id='contestodds/contest'
+					id='encounterhelper/contestsimulator/contest'
 					skills={activeContest.skills.map(cs => cs.skill)}
+					critChances={encounter.critChances}
 					a={activeContest.champion}
 					b={activeContest.challenger}
 					compact={true}
@@ -186,7 +187,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 
 	function makeChampion(contest: IChampionContest, assignments: IContestAssignments): IChampion {
 		const skills: string[] = contest.skills.map(cs => cs.skill);
-		const champion: IChampion = makeContestant(skills, encounter.critTraits, contest.champion.crew) as IChampion;
+		const champion: IChampion = makeContestant(skills, encounter.critTraits, contest.champion.crew, encounter.critChances) as IChampion;
 		const boost: IChampionBoost | undefined = assignments[contest.id].boost;
 		if (boost?.type === 'voyage_crit_boost') {
 			champion.critChance += CRIT_BOOSTS[boost.rarity];

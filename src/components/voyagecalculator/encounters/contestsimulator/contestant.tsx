@@ -20,6 +20,7 @@ import { ProficiencyRangeInput } from '../common/rangeinput';
 
 type ContestantProps = {
 	skills: string[];
+	critChances: number[];
 	contestant: IContestant;
 	wins: string | JSX.Element;
 	editContestant: (contestant: IContestant) => void;
@@ -30,18 +31,19 @@ type ContestantProps = {
 
 export const Contestant = (props: ContestantProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { skills, contestant, wins, editContestant, dismissContestant, compact } = props;
+	const { skills, critChances, contestant, wins, editContestant, dismissContestant, compact } = props;
 
 	const expectedRoll: IExpectedScore = getExpectedScore(contestant.skills);
 
 	const critChanceOptions = React.useMemo<DropdownItemProps[]>(() => {
-		const options: DropdownItemProps[] = [
-			{ key: '0%', value: 0, text: '0%' },
-			{ key: '5%', value: 5, text: '5%' },
-			{ key: '25%', value: 25, text: '25%' },
-			{ key: '50%', value: 50, text: '50%' },
-			{ key: '75%', value: 75, text: '75%' }
-		];
+		const options: DropdownItemProps[] = critChances.map(critChance => {
+			return {
+				key: `${critChance}%`,
+				value: critChance,
+				text: `${critChance}%`
+			};
+		});
+		options.push({ key: '0%', value: 0, text: '0%' });
 		if (!options.map(option => option.value).includes(contestant.critChance)) {
 			options.push({
 				key: `${contestant.critChance}%`,
@@ -51,7 +53,7 @@ export const Contestant = (props: ContestantProps) => {
 		}
 		options.sort((a, b) => (a.value as number) - (b.value as number));
 		return options;
-	}, [contestant.critChance]);
+	}, [critChances, contestant.critChance]);
 
 	return (
 		<React.Fragment>
