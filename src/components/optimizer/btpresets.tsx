@@ -3,7 +3,7 @@ import { Modal, Button, Form, Input, Dropdown, Table, Message, Icon } from 'sema
 
 import { GlobalContext } from '../../context/globalcontext';
 import { BetaTachyonSettings } from '../../model/worker';
-import { DefaultBetaTachyonSettings, DefaultPresets } from './btsettings';
+import { createNewSettings, DefaultBetaTachyonSettings, DefaultPresets, getNewSettingsName, mergePresets } from './btsettings';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { download, downloadData } from '../../utils/crewutils';
@@ -130,6 +130,7 @@ type PresetsTableProps = {
 const PresetsTable = (props: PresetsTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
+	const { prompt } = globalContext;
 	const { presets, setPresets, selectedPreset, deletePreset } = props;
 
 	const [presetFilter, setPresetFilter] = React.useState<string>('none');
@@ -190,12 +191,14 @@ const PresetsTable = (props: PresetsTableProps) => {
 						name="files"
 						id="upload_presets_file_input"
 						/>
+					<Button icon='add' onClick={createNew} />
 					<Button disabled={!downloadEnabled} icon='download' onClick={downloadPresets} ></Button>
 					<Button icon='upload' onClick={uploadPresets}></Button>
 				</div>
 			</div>
 			<SearchableTable
 				tableStyle={{width: '100%'}}
+				id={'bt_presets'}
 				noSearch={true}
 				data={data}
 				config={tableConfig}
@@ -210,11 +213,28 @@ const PresetsTable = (props: PresetsTableProps) => {
 	}
 
 	function downloadPresets() {
-		download('presets.json', JSON.stringify(presets.map(f => ({...f, name: f.is_custom ? f.name : `Copy of ${f.name}`})), null, 4));
+		download('presets.json', JSON.stringify(presets.map(f => ({...f, name: f.is_custom ? f.name : `Copy of ${f.name}`, is_custom: true })), null, 4));
 	}
 
 	function uploadPresets() {
 		uploadRef?.current?.click();
+	}
+
+	function createNew() {
+
+		prompt({
+			title: t('global.create_new_x', { x: t('global.preset')}),
+			message: t('global.new_name'),
+			affirmative: t('global.apply'),
+			negative: t('global.cancel'),
+			currentValue: 'New Settings',
+			onClose: (result) => {
+				if (result) {
+					let newpreset = createNewSettings(getNewSettingsName(presets, result), selectedPreset);
+					setPresets([...presets, newpreset]);
+				}
+			}
+		});
 	}
 
 	async function processUpload() {
@@ -225,11 +245,7 @@ const PresetsTable = (props: PresetsTableProps) => {
 			let json = JSON.parse(text) as BetaTachyonSettings[];
 			json = json.filter(f => f.is_custom && !DefaultPresets.some(d => d.name.toLowerCase().trim() === f.name.toLowerCase().trim()));
 			if (!json.length) return;
-			json = json.map(j => ({...j, name: j.name.trim() }));
-			let newpresets = presets.filter(f => !json.some(j => j.name.toLowerCase().trim() === f.name.toLowerCase().trim()));
-			newpresets = newpresets.concat(json).map(m => ({...m, name: m.name.trim() }));
-			newpresets = newpresets.filter((np, idx) => newpresets.findIndex((np2) => np.name.toLowerCase().trim() === np2.name.toLowerCase().trim()) === idx);
-			setPresets(newpresets);
+			setPresets(mergePresets(presets, json));
 		}
 		catch {
 		}
@@ -258,18 +274,51 @@ const PresetsTable = (props: PresetsTableProps) => {
 						>
 							<Icon name='selected radio' />&nbsp;{t('global.apply')}
 						</Button>
-						{!!row.is_custom && <Button
-							onClick={() => deletePreset(row.name)}
-							>
-							<Icon name='trash' />&nbsp;{t('global.delete')}
-						</Button>}
+						{!!row.is_custom && <>
+							<Button
+								onClick={() => renamePreset(row)}
+								>
+								<Icon name='pencil' />&nbsp;{t('global.rename')}
+							</Button>
+							<Button
+								onClick={() => deletePreset(row.name)}
+								>
+								<Icon name='trash' />&nbsp;{t('global.delete')}
+							</Button>
+						</>}
 					</div>
 				</Table.Cell>
 			</Table.Row>
 		);
 	}
 
-	function validatePreset(theme: BetaTachyonSettings): void {
-		props.selectPreset(theme);
+	function renamePreset(preset: BetaTachyonSettings) {
+		const { prompt } = globalContext;
+		prompt({
+			title: t('global.rename'),
+			message: t('global.new_name'),
+			affirmative: t('global.apply'),
+			negative: t('global.cancel'),
+			currentValue: preset.name,
+			onClose: (result) => {
+				if (!result) return;
+				preset.name = result;
+				setPresets([...presets]);
+			},
+			validate: (result) => {
+				if (preset.name === result) return true;
+				if (presets.some(p => p.name.toLowerCase().trim() === result?.toLowerCase().trim())) {
+					return t('global.duplicate_name');
+				}
+				else if (!result) {
+					return false;
+				}
+				return true;
+			}
+		})
+	}
+
+	function validatePreset(preset: BetaTachyonSettings): void {
+		props.selectPreset(preset);
 	}
 };

@@ -193,6 +193,30 @@ export function createNewSettings(name: string, existing?: BetaTachyonSettings):
     }
 }
 
+export function getNewSettingsName(presets: BetaTachyonSettings[], base = 'New Preset') {
+    base ??= 'New Preset';
+    let name = base.trim();
+    let x = 1;
+    while (presets.some(p => p.name.toLowerCase()?.trim() === name.toLowerCase())) {
+        name = `${base} (${x++})`;
+    }
+    return name;
+}
+
+export function mergePresets(presets: BetaTachyonSettings[], newpresets: BetaTachyonSettings[]) {
+    let merged = [...presets, ...newpresets];
+    merged = merged.filter(f => f.is_custom && !DefaultPresets.some(d => d.name.toLowerCase().trim() === f.name.toLowerCase().trim()));
+    for (let p of merged) {
+        p.name = p.name.trim();
+        let testmerge = merged.filter(m => m != p);
+        if (testmerge.some(m => m.name.toLowerCase().trim() === p.name.toLowerCase().trim())) {
+            p.name = getNewSettingsName(testmerge, p.name);
+        }
+    }
+    merged = merged.filter((m, idx) => merged.findIndex(m2 => m.name.toLowerCase() === m2.name.toLowerCase()) === idx);
+    return DefaultPresets.concat(merged);
+}
+
 const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 	const context = React.useContext(GlobalContext);
     const { t, tfmt } = context.localized;
@@ -428,17 +452,20 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		config.setCurrent(innerSettingsToSettings());
         setModalIsOpen(false);
 	}
+
     function selectPreset(value: string) {
         if (value === '_new') {
-            let newSettings = createNewSettings('New Preset', innerSettingsToSettings());
-            newSettings.is_custom = true;
-            setCurrent(newSettings);
-            return;
+            setCurrent(
+                createNewSettings(
+                    getNewSettingsName(presets), innerSettingsToSettings()
+                )
+            );
         }
-        let settings = presets.find(f => f.name === value);
-        if (settings) setCurrent(settings);
+        else {
+            let settings = presets.find(f => f.name === value);
+            if (settings) setCurrent(settings);
+        }
     }
 };
-
 
 export default BetaTachyonSettingsPopup;
