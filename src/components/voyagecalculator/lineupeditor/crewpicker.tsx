@@ -76,7 +76,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 
 	React.useEffect(() => {
 		const assignedCrewIds: number[] = prospectiveConfig.crew_slots.filter(cs => cs.crew).map(cs => cs.crew!.id);
-		const data: IAlternateCrewData[] = structuredClone(roster);
+		const data: IAlternateCrewData[] = structuredClone(roster) as IAlternateCrewData[];
 		data.forEach(crew => {
 			const assignedSlot: number = assignedCrewIds.indexOf(crew.id);
 			crew.assigned_slot = assignedSlot >= 0 ? assignedSlot : 100; // Unassigned crew get a high slot # for sorting purposes

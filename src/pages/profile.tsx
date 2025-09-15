@@ -218,7 +218,7 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 		{
 			key: 'view_profile_ships',
 			menuItem: t('profile.ships'),
-			render: () => playerData && <ShipTable pageId='profile' /> || <></>
+			render: () => playerData && <ShipTable mode='owned' pageId='profile' /> || <></>
 		},
 		{
 			key: 'view_profile_items',

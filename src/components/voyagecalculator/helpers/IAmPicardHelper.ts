@@ -31,7 +31,7 @@ export class IAmPicardHelper extends Helper {
 		this.perf.start = performance.now();
 		this.calcState = CalculatorState.InProgress;
 
-		const voyageConfig: IVoyageCalcConfig = structuredClone(request.voyageConfig);
+		const voyageConfig: IVoyageCalcConfig = structuredClone(request.voyageConfig) as IVoyageCalcConfig;
 
 		// For limited support of encounter voyages:
 		//	Set crew traits to first event bonus trait
