@@ -5,6 +5,7 @@ import { BetaTachyonSettings } from '../../model/worker';
 import { BetaTachyonPresets } from './btpresets';
 import { TranslateMethod } from '../../model/player';
 import { useStateWithStorage } from '../../utils/storage';
+import { PromptContext } from '../../context/promptcontext';
 
 interface InternalSettings {
     name: string,
@@ -218,9 +219,10 @@ export function mergePresets(presets: BetaTachyonSettings[], newpresets: BetaTac
 }
 
 const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
-	const context = React.useContext(GlobalContext);
-    const { t, tfmt } = context.localized;
-    const { confirm } = context;
+	const globalContext = React.useContext(GlobalContext);
+    const promptContext = React.useContext(PromptContext);
+    const { t, tfmt } = globalContext.localized;
+    const { confirm } = promptContext;
 	const { config, presets, updatePresets } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<Input>();
@@ -293,7 +295,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 
                             onClick={() => copyPermalink()} />
 
-                        <Button style={{alignSelf: "flex-end"}} content={t('global.load_default_settings')} onClick={() => setCurrent(DefaultBetaTachyonSettings)} />
+                        <Button disabled={!innerSettings.is_custom} style={{alignSelf: "flex-end"}} content={t('global.load_default_settings')} onClick={() => applyDefaults()} />
                     </div>
                     <div style={{ display: 'flex', gap: "0.5em", flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
                         <div style={{marginBottom: '1em'}}>
@@ -357,7 +359,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                 {Object.keys(DefaultBetaTachyonSettings).map((key) => {
                     let disabled = false;
                     if (key === 'is_custom') return <></>;
-                    if (key === 'name' && !innerSettings['is_custom']) disabled = true;
+                    if (!innerSettings['is_custom']) disabled = true;
                     return (<div style={rowStyle} key={`bt_setting_${key}`}>
                         <div style={textStyle}>{t(`cite_opt.btp.settings.${key}`)}:</div>
                         <Input
@@ -421,6 +423,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
             rareness: Number.parseFloat(innerSettings.rareness as string),
         } as BetaTachyonSettings;
     }
+
 	function confirmSelection(): void {
         if (innerSettings.is_custom) {
             let preset = presets.find(f => f.name?.toLowerCase() === innerSettings?.name.toLowerCase());
@@ -452,6 +455,14 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		config.setCurrent(innerSettingsToSettings());
         setModalIsOpen(false);
 	}
+
+    function applyDefaults() {
+        setCurrent({
+            ...DefaultBetaTachyonSettings,
+            name: innerSettings.name,
+            is_custom: true
+        });
+    }
 
     function selectPreset(value: string) {
         if (value === '_new') {

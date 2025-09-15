@@ -19,6 +19,7 @@ import CONFIG from '../CONFIG';
 import { HistoryContext } from './context';
 import { deleteTrackedData, postUnsynchronizedVoyages, removeVoyageFromHistory, SyncState } from './utils';
 import { VoyageModal } from './voyagemodal';
+import { PromptContext } from '../../context/promptcontext';
 
 interface ITableState {
 	data: ITrackedVoyage[];
@@ -42,9 +43,10 @@ interface ITableColumn {
 
 export const VoyagesTable = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const promptContext = React.useContext(PromptContext);
 	const { SHIP_TRAIT_NAMES, t, tfmt } = globalContext.localized;
 	const { ephemeral } = globalContext.player;
-	const { confirm } = globalContext;
+	const { confirm } = promptContext;
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);

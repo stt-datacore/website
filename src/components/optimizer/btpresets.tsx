@@ -7,6 +7,7 @@ import { createNewSettings, DefaultBetaTachyonSettings, DefaultPresets, getNewSe
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { download, downloadData } from '../../utils/crewutils';
+import { PromptContext } from '../../context/promptcontext';
 
 type BetaTachyonPresetsProps = {
 	presets: BetaTachyonSettings[];
@@ -44,9 +45,10 @@ type BetaTachyonPresetPickerProps = {
 };
 
 const BetaTachyonPresetPicker = (props: BetaTachyonPresetPickerProps) => {
-	const context = React.useContext(GlobalContext);
-    const { t, tfmt } = context.localized;
-	const { confirm } = context;
+	const globalContext = React.useContext(GlobalContext);
+	const promptContext = React.useContext(PromptContext);
+    const { t, tfmt } = globalContext.localized;
+	const { confirm } = promptContext;
     const { presets, selectedPreset, setSelectedPreset, setPresets } = props;
 
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -129,8 +131,9 @@ type PresetsTableProps = {
 
 const PresetsTable = (props: PresetsTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const promptContext = React.useContext(PromptContext);
 	const { t } = globalContext.localized;
-	const { prompt } = globalContext;
+	const { prompt } = promptContext;
 	const { presets, setPresets, selectedPreset, deletePreset } = props;
 
 	const [presetFilter, setPresetFilter] = React.useState<string>('none');
@@ -225,7 +228,7 @@ const PresetsTable = (props: PresetsTableProps) => {
 		prompt({
 			title: t('global.create_new_x', { x: t('global.preset')}),
 			message: t('global.new_name'),
-			affirmative: t('global.apply'),
+			affirmative: t('global.create'),
 			negative: t('global.cancel'),
 			currentValue: 'New Settings',
 			onClose: (result) => {
@@ -243,7 +246,18 @@ const PresetsTable = (props: PresetsTableProps) => {
 			let file = uploadFiles.item(0)!;
 			let text = await file.text();
 			let json = JSON.parse(text) as BetaTachyonSettings[];
-			json = json.filter(f => f.is_custom && !DefaultPresets.some(d => d.name.toLowerCase().trim() === f.name.toLowerCase().trim()));
+			json = json
+				.filter(f => f.is_custom && !DefaultPresets.some(d => d.name.toLowerCase().trim() === f.name.toLowerCase().trim()))
+				.map(item => {
+					item = {
+						// Make sure any new settings get added.
+						...DefaultBetaTachyonSettings,
+						...item,
+						is_custom: true
+					}
+					return item;
+				});
+
 			if (!json.length) return;
 			setPresets(mergePresets(presets, json));
 		}
@@ -293,7 +307,7 @@ const PresetsTable = (props: PresetsTableProps) => {
 	}
 
 	function renamePreset(preset: BetaTachyonSettings) {
-		const { prompt } = globalContext;
+		const { prompt } = promptContext;
 		prompt({
 			title: t('global.rename'),
 			message: t('global.new_name'),
