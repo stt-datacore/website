@@ -188,7 +188,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                 )}
 
             </div>
-            {engine === "beta_tachyon_pulse" && !!currentConfig?.name && (
+            {engine === "beta_tachyon_pulse" && (
                 <div>
                     {t('global.preset')}{t('global.colon')}&nbsp;&nbsp;
                     <Dropdown
