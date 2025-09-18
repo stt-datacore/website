@@ -397,7 +397,63 @@ export function isQuipped<T extends PlayerCrew>(crew: T) {
 	}
 }
 
-export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
+export type OneToManyMatch<T, U extends T> = {
+	token: T;
+	matches: U[];
+}
+
+/**
+ * Merge two lists of related objects where the second list can be related to the first list more than once.
+ * @param onelist The unique list.
+ * @param manylist The many match list.
+ * @param key Either a field name or a compare method
+ * @returns {OneToManyMatch<T, U>} Object array of relation maps of the two list.
+ */
+export function mergeListsOneToMany<T, U extends T>(onelist: T[], manylist: U[], key: (keyof T) | ((a: T, b: T) => number)): OneToManyMatch<T, U>[] {
+	if (!onelist.length) return [];
+	if (!manylist.length) return onelist.map(obj => ({ token: obj, matches: [] }));
+	let results = [] as OneToManyMatch<T, U>[];
+	let comp: ((a: T, b: T) => number);
+	if (typeof key === 'function') {
+		comp = key;
+	}
+	else {
+		if (typeof onelist[0][key] === 'string') {
+			comp = (a, b) => (a[key] as string || '').localeCompare(b[key] as string || '');
+		}
+		else {
+			comp = (a, b) => (a[key] as any) - (b[key] as any);
+		}
+	}
+
+	//let orgList = list1;
+
+	onelist = onelist.slice().sort(comp);
+	manylist = manylist.slice().sort(comp);
+
+	let c = onelist.length;
+	let d = manylist.length;
+	let j = 0;
+	for (let i = 0; i < c; i++) {
+		let res: OneToManyMatch<T, U> = {
+			token: onelist[i],
+			matches: []
+		}
+		while (j < d && comp(onelist[i], manylist[j]) === 0) {
+			res.matches.push(manylist[j++]);
+		}
+		results.push(res);
+	}
+	// results.sort((a, b) => {
+	// 	let ax = orgList.findIndex(fi => fi === a.token);
+	// 	let bx = orgList.findIndex(fi => fi === b.token);
+	// 	return ax - bx;
+	// });
+
+	return results;
+}
+
+export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, knownPlayerCrew?: PlayerCrew[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	let templateCrew = structuredClone(origCrew) as PlayerCrew;
 	let outputcrew = [] as PlayerCrew[];
@@ -467,7 +523,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		}
 	}
 
-	inroster = crew.preview ? [] : inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
+	inroster = crew.preview ? [] : knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
 
 	const maxxed = {
 		maxowned: crew.highest_owned_rarity as number | undefined,
@@ -634,12 +690,13 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
 	let cidx = -1;
-
-	for (let c of allcrew) {
+	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.symbol.localeCompare(b.symbol));
+	for (let tl of twolists) {
+		let c = tl.token;
 		// if (c.symbol === 'troi_ageofsail_crew') {
 		// 	console.log('break');
 		// }
-		for (let crew of prepareOne(c, playerData, buffConfig, undefined)) {
+		for (let crew of prepareOne(c, playerData, buffConfig, undefined, tl.matches)) {
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
