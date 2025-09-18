@@ -1221,6 +1221,7 @@
         "filter_by_series": "Filtrar por serie",
         "filter_by_ship_ability": "Filtrar por capacidad del buque",
         "filter_by_skill": "Filtrar por habilidad",
+        "filter_by_skill_order_ownership": "Filtrar por propiedad de las órdenes de habilidades",
         "filter_by_status": "Filtrar por estado",
         "filter_by_timeframe": "Filtrar por periodo de tiempo",
         "filter_by_trait": "Filtrar por rasgo",
@@ -2283,6 +2284,11 @@
                 "inactive": "Estándar. Las misiones y recomendaciones del transbordador NO serán guardadas por el ayudante del transbordador."
             }
         }
+    },
+    "skill_order_ownership": {
+        "notmax": "Mostrar solo órdenes de habilidad sin poseer o sin maximizar",
+        "underowned": "Mostrar solo órdenes de habilidad no maximizadas",
+        "unowned": "Mostrar solo órdenes de habilidad sin propietario"
     },
     "spinners": {
         "calculating": "Cálculo...",

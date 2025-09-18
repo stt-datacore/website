@@ -1223,6 +1223,7 @@
         "filter_by_series": "Filtrer par série",
         "filter_by_ship_ability": "Filtrer par la capacité du vaisseau",
         "filter_by_skill": "Filtrer par compétence",
+        "filter_by_skill_order_ownership": "Filtrer par propriété des commandes de compétences",
         "filter_by_status": "Filtrer par statut",
         "filter_by_timeframe": "Filtrer par période",
         "filter_by_trait": "Filtrer par trait",
@@ -2285,6 +2286,11 @@
                 "inactive": "Standard. Les missions et recommandations de la navette ne seront PAS enregistrées par l'assistant de la navette."
             }
         }
+    },
+    "skill_order_ownership": {
+        "notmax": "Afficher uniquement les ordres de compétences non possédés ou non maximisés",
+        "underowned": "Afficher uniquement les ordres de compétences non maximisés",
+        "unowned": "Afficher uniquement les commandes de compétences non détenues"
     },
     "spinners": {
         "calculating": "Calcul...",

@@ -1213,6 +1213,7 @@
         "filter_by_series": "Filtern nach Serie",
         "filter_by_ship_ability": "Filtern nach Schiffsfähigkeit",
         "filter_by_skill": "Filtern nach Fähigkeit",
+        "filter_by_skill_order_ownership": "Filtern nach Besitz der Fähigkeitsreihenfolge",
         "filter_by_status": "Filtern nach Status",
         "filter_by_timeframe": "Filtern nach Zeitraum",
         "filter_by_trait": "Filtern nach Merkmalen",
@@ -2273,6 +2274,11 @@
                 "inactive": "Standard. Shuttle-Missionen und Empfehlungen werden NICHT vom Shuttle-Helfer gespeichert."
             }
         }
+    },
+    "skill_order_ownership": {
+        "notmax": "Nur nicht im Besitz befindliche oder nicht maximierte Fertigkeitsaufträge anzeigen",
+        "underowned": "Nur nicht maximierte Fertigkeitsaufträge anzeigen",
+        "unowned": "Nur nicht besessene Fertigkeitsaufträge anzeigen"
     },
     "spinners": {
         "calculating": "Berechnung...",
