@@ -1214,6 +1214,7 @@
         "filter_by_series": "Filter by series",
         "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
+        "filter_by_skill_order_ownership": "Filter by skill order ownership",
         "filter_by_status": "Filter by status",
         "filter_by_timeframe": "Filter by timeframe",
         "filter_by_trait": "Filter by trait",
@@ -2274,6 +2275,11 @@
                 "inactive": "Standard. Shuttle missions and recommendations will NOT be saved by the shuttle helper."
             }
         }
+    },
+    "skill_order_ownership": {
+        "notmax": "Only show unowned or unmaxed skill orders",
+        "underowned": "Only unmaxed skill orders",
+        "unowned": "Only unowned skill orders"
     },
     "spinners": {
         "calculating": "Calculating...",

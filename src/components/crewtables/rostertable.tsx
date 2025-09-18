@@ -37,6 +37,7 @@ import WeightingInfoPopup from './weightinginfo';
 import { ReleaseDateFilter } from './filters/crewreleasedate';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { CrewSkillOrder } from './filters/crewskillorder';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -224,6 +225,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew, buffMode, setBuffMode } = tableContext;
 
 	const [preparedCrew, setPreparedCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
+	const [ownedSkills, setOwnedSkills] = React.useState<string[]>([]);
+	const [maxedSkills, setMaxedSkills] = React.useState<string[]>([]);
+
 	const [dataPrepared, setDataPrepared] = React.useState<IDataPrepared>({} as IDataPrepared);
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
@@ -486,6 +490,19 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				/>
 		},
 		{
+			id: 'skillorder_ownership',
+			available: (['offers', 'allCrew', 'buyBack'].includes(rosterType)),
+			form:
+				<CrewSkillOrder
+					key='filter_allcrew_skillorder_ownership'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+					ownedSkills={ownedSkills}
+					maxedSkills={maxedSkills}
+				/>
+		},
+		{
 			id: 'timeframe',
 			available: (['allCrew'].includes(rosterType)),
 			form:
@@ -579,6 +596,12 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				}
 				return crew;
 			});
+
+			const maxedSkills = [... new Set(preparedCrew.filter(f => f.have && f.any_immortal).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			setMaxedSkills(maxedSkills);
+			const ownedSkills = [... new Set(preparedCrew.filter(f => f.have).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			setOwnedSkills(ownedSkills);
+
 			if (view?.worker) {
 				setViewIsReady(false);
 				view.worker(preparedCrew).then((result) => {
