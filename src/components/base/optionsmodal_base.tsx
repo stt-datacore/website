@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Dropdown, Button, Icon } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 
-export type OptionValueType = boolean | number | string | (boolean | number | string)[];
+export type OptionValueType = undefined | boolean | number | string | (boolean | number | string)[];
 
 export interface OptionsBase {
     [key: string]: OptionValueType | undefined;
@@ -151,7 +151,12 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
         let newstate = { ... this.state };
 
         for(let group of this.optionGroups){
-            (newstate.options as OptionsBase)[group.key] = group.initialValue;
+			if (group.initialValue === undefined) {
+				delete (newstate.options as OptionsBase)[group.key];
+			}
+			else {
+            	(newstate.options as OptionsBase)[group.key] = group.initialValue;
+			}
         }
 
 		this.setState(newstate);
