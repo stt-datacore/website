@@ -455,8 +455,8 @@ export function mergeListsOneToMany<T, U extends T>(onelist: T[], manylist: U[],
 
 export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, knownPlayerCrew?: PlayerCrew[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
-	let templateCrew = structuredClone(origCrew) as PlayerCrew;
-	let outputcrew = [] as PlayerCrew[];
+	const templateCrew = structuredClone(origCrew) as PlayerCrew;
+	const outputcrew = [] as PlayerCrew[];
 
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
@@ -493,7 +493,6 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	}
 
 	let inroster = [] as PlayerCrew[];
-
 	let crew = templateCrew;
 
 	if (playerData?.player?.character) {
@@ -523,7 +522,12 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		}
 	}
 
-	inroster = crew.preview ? [] : knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
+	if (!crew.preview) {
+		inroster = (knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal === undefined || c.immortal <= 0) && c.archetype_id === crew.archetype_id) ?? []));
+	}
+	else {
+		inroster.length = 0;
+	}
 
 	const maxxed = {
 		maxowned: crew.highest_owned_rarity as number | undefined,
@@ -536,83 +540,88 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (inroster.length > 1) {
 			crew = structuredClone(templateCrew);
 		}
-		let workitem: PlayerCrew = owned;
+
+		crew.have = true;
+		crew.favorite = owned.favorite;
 		crew.is_new = owned.is_new;
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
 		crew.local_slots = owned.local_slots;
-		if (owned.cap_achiever) crew.cap_achiever = owned.cap_achiever;
+		crew.cap_achiever ??= owned.cap_achiever;
 
-		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
-		if (rarity !== 6) {
-			crew.rarity = workitem.rarity;
-			crew.base_skills = workitem.base_skills;
-			if (rarity === undefined) crew.level = workitem.level;
-			crew.equipment = workitem.equipment;
-			crew.q_bits = workitem.q_bits ?? 0;
-			crew.kwipment_slots = workitem.kwipment_slots;
+		if (owned.immortal && owned.immortal > 0) crew.immortal = owned.immortal;
+
+		if (rarity !== PREPARE_MAX_RARITY) {
+			crew.rarity = owned.rarity;
+			crew.base_skills = owned.base_skills;
+			if (rarity === undefined) crew.level = owned.level;
+			crew.equipment = owned.equipment;
+			crew.q_bits = owned.q_bits ?? 0;
+			crew.kwipment_slots = owned.kwipment_slots;
 			crew.kwipment = [0, 0, 0, 0];
 			crew.kwipment_expiration = [0, 0, 0, 0];
 
-			if (workitem.kwipment?.length) {
-				if (workitem.kwipment?.length && workitem.kwipment[0] && typeof workitem.kwipment[0] !== 'number') {
-					for (let nums of workitem.kwipment as number[][]) {
+			if (owned.kwipment?.length) {
+				if (owned.kwipment?.length && owned.kwipment[0] && typeof owned.kwipment[0] !== 'number') {
+					for (let nums of owned.kwipment as number[][]) {
 						crew.kwipment[nums[0]] = nums[1];
 					}
-					for (let nums of workitem.kwipment_expiration as number[][]) {
+					for (let nums of owned.kwipment_expiration as number[][]) {
 						crew.kwipment_expiration[nums[0]] = nums[1];
 					}
 				}
-				else if (workitem.kwipment?.length) {
-					crew.kwipment = workitem.kwipment;
-					crew.kwipment_expiration = workitem.kwipment_expiration;
+				else if (owned.kwipment?.length) {
+					crew.kwipment = owned.kwipment;
+					crew.kwipment_expiration = owned.kwipment_expiration;
 				}
 			}
 
-			if (workitem.ship_battle && rarity === undefined) crew.ship_battle = workitem.ship_battle;
+			if (owned.ship_battle && rarity === undefined) crew.ship_battle = owned.ship_battle;
 
 			if (typeof rarity === 'number') {
 				crew.action.bonus_amount -= (crew.max_rarity - rarity);
 			}
-			else if (workitem.action) {
-				crew.action.bonus_amount = workitem.action.bonus_amount;
+			else if (owned.action) {
+				crew.action.bonus_amount = owned.action.bonus_amount;
 			}
 		}
-
-		crew.have = true;
-		crew.favorite = workitem.favorite;
 
 		// Use skills directly from player data when possible
-		if (rarity && rarity >= 1 && rarity <= 5) {
+		if (rarity && rarity >= 1 && rarity <= crew.max_rarity) {
 			crew.rarity = rarity;
 			rarity--;
-			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
-			}
-			for (let skill of Object.keys(workitem.skill_data[rarity].base_skills)) {
 
-				crew[skill] = {
-					core: workitem.skill_data[rarity].base_skills[skill].core,
-					min: workitem.skill_data[rarity].base_skills[skill].range_min,
-					max: workitem.skill_data[rarity].base_skills[skill].range_max
-				} as ComputedSkill;
+			crew.base_skills = owned.skill_data[rarity].base_skills;
+
+			for (let skill in CONFIG.SKILLS) {
+				let data = owned.skill_data[rarity].base_skills[skill] as Skill | undefined;
+				if (data) {
+					crew[skill] = {
+						core: data.core,
+						min: data.range_min,
+						max: data.range_max
+					};
+				}
+				else {
+					crew[skill] = { core: 0, min: 0, max: 0 };
+				}
 			}
-			crew.base_skills = workitem.skill_data[rarity].base_skills;
 		}
-		else if (workitem.skills && rarity !== PREPARE_MAX_RARITY) {
+		else if (owned.skills && rarity !== PREPARE_MAX_RARITY) {
+			crew.skills = owned.skills;
 			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
+				if (skill in owned.skills) {
+					let data = owned.skills[skill];
+					crew[skill] = {
+						core: data.core,
+						min: data.range_min,
+						max: data.range_max
+					};
+				}
+				else {
+					crew[skill] = { core: 0, min: 0, max: 0 };
+				}
 			}
-
-			// Override computed buffs because of mismatch with game data
-			for (let skill in workitem.skills) {
-				crew[skill] = {
-					core: workitem.skills[skill].core,
-					min: workitem.skills[skill].range_min,
-					max: workitem.skills[skill].range_max
-				} as ComputedSkill;
-			}
-			crew.skills = workitem.skills;
 		}
 		// Otherwise apply buffs to base_skills
 		else if (buffConfig) {
@@ -632,24 +641,19 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (rarity && crew.equipment?.length !== 4) {
 			crew.equipment = [0, 1, 2, 3];
 		}
-		outputcrew.push(oneCrewCopy(crew));
+		outputcrew.push(crew);
 	}
 
 	if (!crew.have) {
-		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
-			if (rarity) {
-				crew.action.bonus_amount -= (crew.max_rarity - rarity);
-				rarity--;
-			}
-			crew = oneCrewCopy({ ...structuredClone(crew), ...structuredClone(crew.skill_data[rarity]) });
+		if ((crew.immortal === undefined || crew.immortal <= 0) && rarity && rarity < crew.max_rarity && rarity > 0) {
+			crew.action.bonus_amount -= (crew.max_rarity - rarity);
+			crew = oneCrewCopy(crew);
+			crew.rarity = rarity;
+			crew.base_skills = structuredClone(crew.skill_data[rarity - 1].base_skills);
 		}
-		if (!crew.have) {
-			if (buffConfig) applyCrewBuffs(crew, buffConfig);
-			crew.immortal = playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
-		}
-		if (rarity && !crew.equipment?.length) {
-			crew.equipment = [0, 1, 2, 3];
-		}
+		if (buffConfig) applyCrewBuffs(crew, buffConfig);
+		crew.immortal = playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+		crew.equipment ??= [0, 1, 2, 3];
 		outputcrew.push(crew);
 	}
 
@@ -657,11 +661,10 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		crew.immortal = playerData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 	}
 
-	outputcrew.forEach(f => {
+	for (let f of outputcrew) {
 		f.highest_owned_rarity = maxxed.maxowned;
 		f.highest_owned_level = maxxed.maxlevel;
-		//if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
-	});
+	}
 
 	return outputcrew;
 }
