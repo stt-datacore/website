@@ -13,7 +13,12 @@ import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { getIconPath } from "../../utils/assets";
 import { IEphemeralData } from "../../context/playercontext";
-import { formatRunTime, printShortDistance } from "../../utils/misc";
+import { colorToRGBA, formatRunTime, printShortDistance } from "../../utils/misc";
+
+export interface SaleData {
+    slot_sale: boolean;
+    honor_sale: boolean;
+}
 
 type AllEnergy = {
     money: number,
@@ -65,11 +70,13 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
     const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
     const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
+    const [saleData, setSaleData] = React.useState<SaleData | undefined>(undefined);
 
     React.useEffect(() => {
         setTimeout(() => {
             initShuttleTime();
-        })
+            getSales();
+        });
     }, [ephemeral]);
 
     const currentEvent = React.useMemo(() => {
@@ -87,8 +94,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     const { resources, energy } = React.useMemo(() => {
         if (playerData && ephemeral) {
-            const energy = getAllEnergy(playerData, ephemeral);
-            const resources = createResources(playerData, energy);
+            let energy = getAllEnergy(playerData, ephemeral);
+            let resources = createResources(playerData, energy);
             return { resources, energy };
         }
         return {
@@ -155,10 +162,49 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
                 {shuttleSeconds < 0 && <div style={{color: 'tomato', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
             </div>}
-            {!!supplyKit && <div style={{...flexRow, gap: '0.5em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
-                <img src={`${process.env.GATSBY_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
-                {t('global.supply_kit_active_n', { n: supplyKit })}
-            </div>}
+            <div style={{...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
+                {!!saleData?.honor_sale && (
+                    <div
+                        style={{
+                            ...flexRow,
+                            gap: '0.5em',
+                            borderRadius: '8px',
+                            border: '1px solid',
+                            borderColor: CONFIG.RARITIES[5].color,
+                            padding: '0.25em 0.75em',
+                            backgroundColor: colorToRGBA(CONFIG.RARITIES[5].color, 0.3)
+                        }}>
+                        <img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{height: '24px'}} />
+                        {t('sales.honor_sale')}
+                    </div>
+                )}
+                {!!saleData?.slot_sale && (
+                    <div
+                        style={{
+                            ...flexRow,
+                            gap: '0.5em',
+                            borderRadius: '8px',
+                            border: '1px solid',
+                            borderColor: CONFIG.RARITIES[4].color,
+                            padding: '0.25em 0.75em',
+                            backgroundColor: colorToRGBA(CONFIG.RARITIES[4].color, 0.3)
+                        }}>
+                        <img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '24px'}} />
+                        {t('sales.slot_sale')}
+                    </div>
+                )}
+                {!!supplyKit && (
+                    <div
+                        style={{
+                            ...flexRow,
+                            gap: '0.5em',
+                            margin: '0'
+                        }}>
+                        <img src={`${process.env.GATSBY_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
+                        {t('global.supply_kit_active_n', { n: supplyKit })}
+                    </div>
+                )}
+            </div>
             <div style={{
                 gridArea: 'v2',
                 display: 'flex',
@@ -174,7 +220,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     }
                     let click = res.click;
                     return (
-                        <div title={res.name} className={'ui label'} key={res.name} style={{ cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => click ? click(e) : 0}>
+                        <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.name}`} style={{ cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => click ? click(e) : 0}>
                             <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 {res.imageUrl && <Image size={'tiny'} avatar src={res.imageUrl} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />}
                             </div>
@@ -219,7 +265,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     function createResources(playerData: PlayerData, energy: AllEnergy) {
         let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
         let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
-        const {
+        let {
             money,
             premium_purchasable,
             honor,
@@ -243,7 +289,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
         const honorimg = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
 
-        const resources = [
+        let resources = [
             {
                 name: t('global.item_types.chronitons'),
                 quantity: chrons,
@@ -342,7 +388,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
             },
             customRender: (res) => {
-                return <div title={res.name} className={'ui label'} key={res.name} style={{ cursor: 'pointer', marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => res.click ? res.click(e) : 0}>
+                return <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.name}`} style={{ cursor: 'pointer', marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => res.click ? res.click(e) : 0}>
                     <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <Image size={'tiny'} avatar src={honorimg} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />
                         <Image size={'tiny'} avatar src={cite5img} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />
@@ -397,6 +443,27 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 60000) * 60;
         if (diff !== shuttleSeconds) {
             setShuttleSeconds(diff);
+        }
+    }
+
+    async function getSales() {
+        try {
+            const response = await fetch(`${process.env.GATSBY_DATACORE_URL}api/sales`);
+            if (response.ok) {
+                let sale = (await response.json()) as SaleData;
+                setSaleData(sale);
+                console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
+                setTimeout(() => {
+                    getSales();
+                }, 1800000);
+            }
+        }
+        catch (e: any) {
+            console.log(e);
+            console.log(`Fail to call DataCore API for '/api/sales'. will try again in 60 seconds.`);
+            setTimeout(() => {
+                getSales();
+            }, 60000);
         }
     }
 }

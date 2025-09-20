@@ -2015,6 +2015,12 @@
         },
         "title": "Resumen de la Lista"
     },
+    "sales": {
+        "active": "Descuentos activos",
+        "honor_sale": "Descuento de honor",
+        "slot_sale": "Descuento por espacio de tripulación",
+        "title": "Descuentos"
+    },
     "series": {
         "ds9": "Espacio profundo nueve",
         "dsc": "Discovery",
