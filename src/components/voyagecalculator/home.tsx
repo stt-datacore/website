@@ -659,6 +659,7 @@ const RunningVoyage = (props: RunningVoyageProps) => {
 						dbid={playerData?.player.dbid}
 						crewTargetGroup='voyageRewards_crew'
 						shipTargetGroup='voyageRewards_ship'
+						itemTargetGroup='voyageRewards_item'
 						/>
 				)}
 				{voyage.voyage_type === 'encounter' && (

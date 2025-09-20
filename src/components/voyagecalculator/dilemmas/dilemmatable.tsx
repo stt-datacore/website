@@ -4,10 +4,10 @@ import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
 import { Filter } from "../../../model/game-elements";
 import { AlphaRef, Dilemma, DilemmaChoice, DilemmaMultipartData } from "../../../model/voyage";
-import { NarrativeData, VoyageNarrative } from "../../../model/voyagelog";
+import { Loot, NarrativeData, VoyageNarrative } from "../../../model/voyagelog";
 import { omniSearchFilter } from "../../../utils/omnisearch";
 import CONFIG from "../../CONFIG";
-import { AvatarView } from "../../item_presenters/avatarview";
+import { AvatarView, AvatarViewMode } from "../../item_presenters/avatarview";
 import { printChrons, printHonor, printMerits } from "../../retrieval/context";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
@@ -15,11 +15,13 @@ import { ReferenceShip, Ship } from "../../../model/ship";
 import { formatTime } from "../../../utils/voyageutils";
 import { navigate } from "gatsby";
 import { gradeColorsDisabled, gradeToColor } from "../../../utils/crewutils";
+import { Reward } from "../../../model/player";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
     crewTargetGroup?: string;
     shipTargetGroup?: string;
+    itemTargetGroup?: string;
     updateDilemma?: (dil: Dilemma, choice: number, clear: boolean) => void;
 }
 
@@ -63,7 +65,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
     const playerCrew = playerData?.player.character.crew;
     const { dilemmas: dilemmaSource, crew, all_ships: ships } = globalContext.core;
     const { t } = globalContext.localized;
-    const { voyageLog, crewTargetGroup, shipTargetGroup, updateDilemma } = props;
+    const { voyageLog, crewTargetGroup, shipTargetGroup, itemTargetGroup, updateDilemma } = props;
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
     const goldRewards = crew.filter(f => f.traits_hidden.includes("exclusive_voyage") && f.max_rarity === 5);
@@ -255,32 +257,33 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                      !row.chances.ship_schematic &&
                       t('global.no')}
                 </Table.Cell>
-                {choices.map((choice, i) => {
+                {choices.map((choice, choiceIdx) => {
                     let choiceBg: string | undefined = undefined;
                     let choiceVar = '';
                     let icon: SemanticICONS | undefined = undefined;
                     let iconColor: SemanticCOLORS | undefined = undefined;
-
-                    if (elig?.unlock === i) {
+                    const selected = row.selection === choiceIdx;
+                    const locked = !!row.narrative?.selection_locked;
+                    if (elig?.unlock === choiceIdx) {
                         choiceBg = 'darkslateblue';
                         icon = 'lock open';
                     }
-                    if (row.narrative?.selection === i) {
+                    if (row.narrative?.selection === choiceIdx) {
                         choiceBg = 'royalblue';
                         icon = 'check';
                         iconColor = 'green';
                     }
-                    if (row.narrative?.selection === undefined && row.multipart?.some(mp => mp.requiredChoices.includes(AlphaRef[i]))) {
+                    if (row.narrative?.selection === undefined && row.multipart?.some(mp => mp.requiredChoices.includes(AlphaRef[choiceIdx]))) {
                         choiceBg = 'mediumpurple';
                         icon = 'star';
                         iconColor = 'yellow'
                     }
-                    if (inv?.unlock === i && elig?.unlock !== i) {
+                    if (inv?.unlock === choiceIdx && elig?.unlock !== choiceIdx) {
                         choiceBg = 'salmon';
                         icon = 'lock';
                         iconColor = 'orange';
                     }
-                    if (row.selection === i) {
+                    if (selected) {
                         choiceVar = row.narrative?.selection_var || '';
                     }
                     if (gradeColorsDisabled){
@@ -292,12 +295,12 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                             key={`${key}_choice_${choice.text}`}
                             className="top aligned"
                             style={{
-                                cursor: !!row.narrative ? 'pointer' : undefined,
+                                cursor: !!row.narrative && !locked ? 'pointer' : undefined,
                                 backgroundColor: choiceBg
                             }}
-                            onClick={() => updateDilemma ? updateDilemma(row, i, row.selection === i) : false}
+                            onClick={() => updateDilemma && !locked ? updateDilemma(row, choiceIdx, row.selection === choiceIdx) : false}
                             >
-                            {renderChoice(choice, choiceVar, row.narrative?.selection_data, icon ? { name: icon, color: iconColor } : undefined)}
+                            {renderChoice(choice, selected, choiceVar, row.narrative?.selection_data, row.narrative?.selection_rewards, icon ? { name: icon, color: iconColor } : undefined)}
                         </Table.Cell>
                     )
                 })}
@@ -306,22 +309,26 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         </>
     }
 
-    function renderChoice(choice: DilemmaChoice, choiceVar: string, choiceObj?: any, icon?: { name: SemanticICONS, color?: SemanticCOLORS }) {
+    function renderChoice(choice: DilemmaChoice, selected: boolean, choiceVar: string, selObj?: CrewMember | ReferenceShip, selLoot?: Loot[], icon?: { name: SemanticICONS, color?: SemanticCOLORS }) {
         let crewrewards = [choice.parsed?.crew].filter(f => f !== undefined);
         let shiprewards = [choice.parsed?.ship].filter(f => f !== undefined);
-
         if (choice.parsed?.rarity == 5 && !choice.parsed?.ship) {
             crewrewards = goldRewards;
         }
+        if (selLoot?.length) {
+            crewrewards = [].slice();
+            shiprewards = [].slice();
+        }
+        if (!selected) selLoot = undefined;
         let scheme = choice.parsed?.schematics;
         const choiceClick = () => {
-            if (choiceObj) {
-                if ("max_rarity" in choiceObj) {
-                    let c = choiceObj as CrewMember;
+            if (selObj) {
+                if ("max_rarity" in selObj) {
+                    let c = selObj as CrewMember;
                     navigate(`/crew/${c.symbol}`);
                 }
-                else if ("attack" in choiceObj) {
-                    let s = choiceObj as Ship;
+                else if ("attack" in selObj) {
+                    let s = selObj as ReferenceShip;
                     navigate(`http://localhost:81/ship_info/?ship=${s.symbol}`);
                 }
             }
@@ -354,6 +361,27 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 {!!choice.parsed?.merits && printMerits(choice.parsed.merits, t, true)}
                 {!!choice.parsed?.honor && printHonor(choice.parsed.honor, t, true)}
                 <div style={{...flexCol, alignItems: 'center', justifyContent: 'space-between', gap: '1em'}}>
+                    {!!selLoot?.length &&
+                    <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
+                        {selLoot.map(item => {
+                            let mode: AvatarViewMode = item.type === 1 ? 'crew' : item.type === 8 ? 'ship' : 'item';
+                            let target = undefined as string | undefined;
+                            if (mode === 'crew') target = crewTargetGroup;
+                            else if (mode === 'ship') target = shipTargetGroup;
+                            else target = itemTargetGroup;
+                            return (
+                                <div key={`${choice.text}_${item.symbol}`} style={{...flexRow, gap: '1em'}}>
+                                    <AvatarView
+                                        mode={mode}
+                                        item={item}
+                                        size={32}
+                                        targetGroup={target}
+                                        />
+                                    {item.name}
+                                </div>
+                            )
+                        })}
+                    </div>}
                     {!!crewrewards?.length &&
                     <div style={{...flexCol, alignItems: 'flex-start', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1em'}}>
                         {crewrewards.map(crew => {
@@ -387,7 +415,6 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                             )
                         })}
                     </div>}
-
                 </div>
             </div>
         )
@@ -474,9 +501,21 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                         });
                         if (choiceIdx != -1) {
                             n.selection = choiceIdx;
+                            n.selection_locked = true;
                             selvar = selvar.replace(/\<[A-Za-z/]+\>/g, '');
                             n.selection_data = globalContext.core.crew.find(f => f.name === selvar) || globalContext.core.all_ships.find(f => f.name === selvar);
                             n.selection_var = selvar;
+                            if (log.length > (nidx + 4)) {
+                                let rewardlog = log[nidx + 4];
+                                let rewardstr = rewardlog.text.split(":").reverse()[0].split(",").map(s => s.trim());
+                                let rewards = [] as any[];
+
+                                let items = globalContext.core.items.filter(f => rewardstr.includes(f.name)).map(i => ({...i, quantity: 1, full_name: i.name }) as Reward);
+                                let crew = globalContext.core.crew.filter(f => rewardstr.includes(f.name)).map(c => ({...c, quantity: 1, full_name: c.name, rarity: c.max_rarity, type: 1 }) as Reward);
+                                let ship = globalContext.core.ships.filter(f => rewardstr.some(r => r.includes(f.name!))).map(c => ({...c, quantity: 1, full_name: c.name, type: 8 }) as Reward);
+                                rewards = [...items, ...crew, ...ship] as Reward[];
+                                n.selection_rewards = rewards;
+                            }
                         }
                         if (!selvar) {
                             delete n.selection_var;
