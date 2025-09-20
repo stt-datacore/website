@@ -2017,6 +2017,12 @@
         },
         "title": "Résumé de la Liste"
     },
+    "sales": {
+        "active": "Remises actives",
+        "honor_sale": "Remise d'honneur",
+        "slot_sale": "Remise sur les emplacements d'équipage",
+        "title": "Remises"
+    },
     "series": {
         "ds9": "Deep Space Nine",
         "dsc": "Discovery",

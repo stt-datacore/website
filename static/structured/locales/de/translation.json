@@ -2005,6 +2005,12 @@
         },
         "title": "Kaderübersicht"
     },
+    "sales": {
+        "active": "Aktive Rabatte",
+        "honor_sale": "Ehrenrabatt",
+        "slot_sale": "Crewplätze Rabatt",
+        "title": "Rabatte"
+    },
     "series": {
         "ds9": "Deep Space Nine",
         "dsc": "Discovery",

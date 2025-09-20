@@ -2006,6 +2006,12 @@
         },
         "title": "Roster Summary"
     },
+    "sales": {
+        "active": "Active Sales",
+        "honor_sale": "Honor Sale",
+        "slot_sale": "Crew Slot Sale",
+        "title": "Sales"
+    },
     "series": {
         "ds9": "Deep Space Nine",
         "dsc": "Discovery",
