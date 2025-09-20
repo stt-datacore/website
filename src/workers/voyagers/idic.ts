@@ -91,7 +91,7 @@ export const InfiniteDiversity = (
 			const rTraitSlots: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 			const crewId: number = crew[i].id ?? i;
-			const crewSkills: BaseSkills = crew[i].skills ? JSON.parse(JSON.stringify(crew[i].skills)) : {};
+			const crewSkills: BaseSkills = crew[i].skills ? structuredClone(crew[i].skills) : {};
 
 			for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
 				const skillId: string = SKILL_IDS[iSkill];

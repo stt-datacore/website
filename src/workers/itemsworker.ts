@@ -88,7 +88,7 @@ const ItemsWorker = {
 						if (!binaryLocate(item.symbol, data) && items) {
 							item.equipment = binaryLocate(item.symbol, catalog) as EquipmentItem | undefined;
 							if (item.equipment && item.count){
-								let eq = JSON.parse(JSON.stringify(item.equipment)) as EquipmentItem;
+								let eq = structuredClone(item.equipment) as EquipmentItem;
 								eq.needed = item.count;
 								eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
 								eq.quantity = 0;

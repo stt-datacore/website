@@ -87,7 +87,7 @@ export function createQuipmentInventoryPool(mergedItems: EquipmentItem[], quipme
             if (!equipment[ing.symbol]) {
                 let eq = mergedItems.find(f => f.symbol === ing.symbol);
                 if (eq) {
-                    equipment[ing.symbol] = JSON.parse(JSON.stringify(eq));
+                    equipment[ing.symbol] = structuredClone(eq);
                     equipment[ing.symbol].needed = 0;
                 }
             }

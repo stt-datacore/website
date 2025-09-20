@@ -265,7 +265,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 
 	const [showPane, setShowPane] = React.useState(false);
 
-	const debasedCrew = JSON.parse(JSON.stringify(crew));
+	const debasedCrew = structuredClone(crew);
 
 	return (
 		<Accordion>
@@ -408,7 +408,7 @@ export const Skills = (props: SkillsProps) => {
 		if (skillData) skills = skillData.base_skills;
 	}
 
-	const debasedCrew = JSON.parse(JSON.stringify(crew));
+	const debasedCrew = structuredClone(crew);
 	debasedCrew.base_skills = skills;
 	Object.keys(debasedCrew.base_skills).map(skill => {
 		if (!debasedCrew.base_skills[skill])
