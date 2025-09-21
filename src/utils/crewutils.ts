@@ -2,7 +2,7 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData, TranslateMethod } from '../model/player';
+import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData, StoredImmortal, TranslateMethod } from '../model/player';
 import { BaseSkills, ComputedSkill, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
@@ -453,6 +453,145 @@ export function mergeListsOneToMany<T, U extends T>(onelist: T[], manylist: U[],
 	return results;
 }
 
+type OnePassType = {
+	crew: CrewMember,
+	player: PlayerCrew[],
+	immortals: number[],
+	stored: StoredImmortal[]
+}
+
+export function onePass(crew: CrewMember[], playerCrew: PlayerCrew[], immortals: number[], stored: StoredImmortal[]){
+	//let orgList = list1;
+	let results = [] as OnePassType[];
+	let onelist = crew.slice();
+	let manylist = playerCrew.slice();
+	immortals = immortals.slice();
+	stored = stored.slice();
+	onelist.sort((a, b) => a.archetype_id - b.archetype_id);
+	manylist.sort((a, b) => a.archetype_id - b.archetype_id);
+	immortals.sort((a, b) => a - b);
+	stored.sort((a, b) => a.id - b.id);
+	let c = onelist.length;
+	let d = manylist.length;
+	let e = immortals.length;
+	let f = stored.length;
+	let j = 0;
+	let k = 0;
+	let l = 0;
+	for (let i = 0; i < c; i++) {
+		if (onelist[i].symbol === 'janeway_kathryn_crew') {
+			console.log("here");
+		}
+
+		let res: OnePassType = {
+			crew: onelist[i],
+			player: [],
+			immortals: [],
+			stored: []
+		}
+		while (j < d && onelist[i].archetype_id == manylist[j].archetype_id) {
+			res.player.push(manylist[j++]);
+		}
+		while (k < e && onelist[i].archetype_id == immortals[k]) {
+			res.immortals.push(immortals[k++]);
+		}
+		while (l < f && onelist[i].archetype_id == stored[l].id) {
+			res.stored.push(stored[l++]);
+		}
+		results.push(res);
+	}
+	// results.sort((a, b) => {
+	// 	let ax = orgList.findIndex(fi => fi === a.token);
+	// 	let bx = orgList.findIndex(fi => fi === b.token);
+	// 	return ax - bx;
+	// });
+
+	return results;
+}
+
+function prepareOnePass(one: OnePassType, buffConfig?: BuffStatTable) {
+	const origCrew = one.crew;
+	const templateCrew = structuredClone({
+		...origCrew,
+		level: 100,
+		have: false,
+		equipment: [0, 1, 2, 3],
+		favorite: false,
+	}) as PlayerCrew;
+	const outputcrew = [] as PlayerCrew[];
+	templateCrew.action.cycle_time = templateCrew.action.cooldown + templateCrew.action.duration;
+
+	templateCrew.events ??= 0;
+	templateCrew.obtained ??= "Unknown";
+	templateCrew.q_bits = origCrew.q_bits ?? 0;
+	templateCrew.kwipment ??= [0, 0, 0, 0];
+	templateCrew.kwipment_expiration ??= [0, 0, 0, 0];
+	if (templateCrew.date_added) {
+		templateCrew.date_added = new Date(templateCrew.date_added);
+
+		if (templateCrew.preview) {
+			const nowdate = new Date();
+			if (nowdate.toLocaleDateString() === templateCrew.date_added.toLocaleDateString()) {
+				templateCrew.date_added.setDate(templateCrew.date_added.getDate() + 1);
+			}
+		}
+	}
+	let hl = 0;
+	let immo = false;
+	let hr = 0;
+	if (one.player.length || one.immortals.length || one.stored.length) {
+		templateCrew.have = true;
+		if (one.immortals.length || one.stored.length) {
+			immo = true;
+			hl = 100;
+			hr = templateCrew.max_rarity;
+			templateCrew.highest_owned_level = hl;
+			templateCrew.highest_owned_rarity = hr;
+			const newcrew = structuredClone(templateCrew);
+			newcrew.id = 0;
+			newcrew.level = 100;
+			newcrew.rarity = newcrew.max_rarity;
+			if (buffConfig) applyCrewBuffs(newcrew, buffConfig);
+			if (one.stored.length) {
+				newcrew.q_bits = one.stored[0].qbits;
+				newcrew.immortal = one.stored[0].quantity;
+			}
+			else {
+				newcrew.q_bits = 0;
+				newcrew.immortal = 1;
+			}
+			outputcrew.push(newcrew);
+		}
+		for (let p of one.player) {
+			const newcrew = structuredClone({...templateCrew, ... p, have: true }) as PlayerCrew;
+			if (newcrew.level > hl) hl = newcrew.level;
+			if (newcrew.rarity > hr) hr = newcrew.rarity;
+			if (buffConfig) applyCrewBuffs(newcrew, buffConfig);
+			if (isImmortal(newcrew)) {
+				immo = true;
+				if (buffConfig) newcrew.immortal = -1;
+				else newcrew.immortal = CompletionState.DisplayAsImmortalStatic;
+			}
+			else {
+				newcrew.immortal = 0;
+			}
+			outputcrew.push(newcrew);
+		}
+	}
+	if (templateCrew.have) {
+		for (let c of outputcrew) {
+			c.highest_owned_level = hl;
+			c.highest_owned_rarity = hr;
+		}
+	}
+	else {
+		templateCrew.immortal = buffConfig ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+		outputcrew.push(templateCrew);
+	}
+	return outputcrew;
+}
+
+
 export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, knownPlayerCrew?: PlayerCrew[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
 	const templateCrew = structuredClone(origCrew) as PlayerCrew;
@@ -693,19 +832,14 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
 	let cidx = -1;
-	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.symbol.localeCompare(b.symbol));
-	for (let tl of twolists) {
-		let c = tl.token;
-		// if (c.symbol === 'troi_ageofsail_crew') {
-		// 	console.log('break');
-		// }
-		for (let crew of prepareOne(c, playerData, buffConfig, undefined, tl.matches)) {
+
+	let combine = onePass(allcrew, playerData.player.character.crew, playerData.player.character.c_stored_immortals ?? [], playerData.player.character.stored_immortals);
+	for (let op of combine) {
+		for (let crew of prepareOnePass(op, buffConfig)) {
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
 				}
-				c["highest_owned_rarity"] = crew.highest_owned_rarity;
-				c["highest_owned_level"] = crew.highest_owned_level;
 				ownedCrew.push(crew);
 			}
 			else {
@@ -714,6 +848,27 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 			}
 		}
 	}
+	// let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.symbol.localeCompare(b.symbol));
+	// for (let tl of twolists) {
+	// 	let c = tl.token;
+	// 	// if (c.symbol === 'troi_ageofsail_crew') {
+	// 	// 	console.log('break');
+	// 	// }
+	// 	for (let crew of prepareOne(c, playerData, buffConfig, undefined, tl.matches)) {
+	// 		if (crew.have) {
+	// 			if (!crew.id) {
+	// 				crew.id = cidx--;
+	// 			}
+	// 			c["highest_owned_rarity"] = crew.highest_owned_rarity;
+	// 			c["highest_owned_level"] = crew.highest_owned_level;
+	// 			ownedCrew.push(crew);
+	// 		}
+	// 		else {
+	// 			crew.id = crew.archetype_id;
+	// 			unOwnedCrew.push(crew);
+	// 		}
+	// 	}
+	// }
 
 	playerData.stripped = false;
 	playerData.player.character.crew = ownedCrew;
