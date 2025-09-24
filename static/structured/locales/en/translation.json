@@ -1808,7 +1808,26 @@
     },
     "ranking_tools": {
         "current_weighting": "Current Weighting",
-        "show_weighting_details": "Show weighting details"
+        "show_weighting_details": "Show weighting details",
+        "weights": {
+            "base_plus": {
+                "quipment": "{{rank_names.scores.quipment}}",
+                "shuttleRank": "{{rank_names.scores.shuttle}}",
+                "title": "Base+ Weighting"
+            },
+            "gauntlet_plus": {
+                "crit": "{{rank_names.scores.crit}}",
+                "gauntlet": "{{rank_names.scores.gauntlet}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Gauntlet+ Weighting"
+            },
+            "voyage_plus": {
+                "am_seating": "{{rank_names.scores.am_seating}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Voyage+ Weighting",
+                "voyage": "{{rank_names.scores.voyage}}"
+            }
+        }
     },
     "retrieval": {
         "allow_unowned": "Allow unowned crew",

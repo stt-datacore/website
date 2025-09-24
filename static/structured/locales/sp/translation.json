@@ -1817,7 +1817,26 @@
     },
     "ranking_tools": {
         "current_weighting": "Ponderación actual",
-        "show_weighting_details": "Mostrar detalles de ponderación"
+        "show_weighting_details": "Mostrar detalles de ponderación",
+        "weights": {
+            "base_plus": {
+                "quipment": "{{rank_names.scores.quipment}}",
+                "shuttleRank": "{{rank_names.scores.shuttle}}",
+                "title": "Ponderación del Base+"
+            },
+            "gauntlet_plus": {
+                "crit": "{{rank_names.scores.crit}}",
+                "gauntlet": "{{rank_names.scores.gauntlet}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Ponderación del Reto+"
+            },
+            "voyage_plus": {
+                "am_seating": "{{rank_names.scores.am_seating}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Ponderación del Viaje+",
+                "voyage": "{{rank_names.scores.voyage}}"
+            }
+        }
     },
     "retrieval": {
         "allow_unowned": "Permitir tripulación sin propietario",
