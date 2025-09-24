@@ -256,7 +256,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
-
+	const [activeRarities, setActiveRarities] = React.useState([] as number[]);
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
 	const [rosterConfig, setRosterConfig] = React.useState<RosterConfig | undefined>({
 			slots,
@@ -310,8 +310,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			id: 'dc_ranks',
 			available: true,
 			optionText: t('crew_views.scoring'),
-			tableConfig: getDataCoreRanksTableConfig(globalContext.core.current_weighting, t),
-			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells weights={globalContext.core.current_weighting} crew={crew} />
+			tableConfig: getDataCoreRanksTableConfig(globalContext.core.current_weighting, t, activeRarities),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells rarityFilter={activeRarities} weights={globalContext.core.current_weighting} crew={crew} />
 		},
 		{
 			id: 'g_ranks',
@@ -643,6 +643,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						pageId={pageId}
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
+						notifySetFilter={setActiveRarities}
 					/>
 					<CrewTraitsFilter
 						pageId={pageId}

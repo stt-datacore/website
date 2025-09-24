@@ -66,21 +66,21 @@ const RankFields = [
     "velocity_rank",
 ]
 
-export const getDataCoreRanksTableConfig = (weights: CurrentWeighting, t: TranslateMethod) => {
+export const getDataCoreRanksTableConfig = (weights: CurrentWeighting, t: TranslateMethod, rarityFilter?: number[]) => {
 	const tableConfig = [] as ITableConfigRow[];
-
+    const rarity = rarityFilter?.length === 1 ? rarityFilter[0] : 5;
     let sorter = ScoreFields.slice(3).sort((a, b) => {
-        if (typeof weights[5][a] !== 'number' && typeof weights[5][b] !== 'number') {
+        if (typeof weights[rarity][a] !== 'number' && typeof weights[rarity][b] !== 'number') {
             return 0;
         }
-        else if (typeof weights[5][a] !== 'number') {
+        else if (typeof weights[rarity][a] !== 'number') {
             return 1;
         }
-        else if (typeof weights[5][b] !== 'number') {
+        else if (typeof weights[rarity][b] !== 'number') {
             return -1;
         }
-        if (weights[5][a] && weights[5][b]) {
-            return weights[5][b] - weights[5][a];
+        if (weights[rarity][a] && weights[rarity][b]) {
+            return weights[rarity][b] - weights[rarity][a];
         }
         return 0;
     });
@@ -116,10 +116,12 @@ export const getDataCoreRanksTableConfig = (weights: CurrentWeighting, t: Transl
 type CrewRankCellsProps = {
 	crew: IRosterCrew;
     weights: CurrentWeighting;
+    rarityFilter?: number[];
 };
 
 export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
-	const { crew, weights } = props;
+	const { crew, weights, rarityFilter } = props;
+    const rarity = rarityFilter?.length === 1 ? rarityFilter[0] : 5;
     const { t } = React.useContext(GlobalContext).localized;
     const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
@@ -128,17 +130,17 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
     const cabColor = gradeToColor(Number(crew.cab_ov) / 16) ?? undefined;
 
     let sortedFields = ScoreFields.slice(3).sort((a, b) => {
-        if (typeof weights[5][a] !== 'number' && typeof weights[5][b] !== 'number') {
+        if (typeof weights[rarity][a] !== 'number' && typeof weights[rarity][b] !== 'number') {
             return 0;
         }
-        else if (typeof weights[5][a] !== 'number') {
+        else if (typeof weights[rarity][a] !== 'number') {
             return 1;
         }
-        else if (typeof weights[5][b] !== 'number') {
+        else if (typeof weights[rarity][b] !== 'number') {
             return -1;
         }
-        if (weights[5][a] && weights[5][b]) {
-            return weights[5][b] - weights[5][a];
+        if (weights[rarity][a] && weights[rarity][b]) {
+            return weights[rarity][b] - weights[rarity][a];
         }
         return 0;
     });
