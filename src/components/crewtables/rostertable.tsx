@@ -310,8 +310,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			id: 'dc_ranks',
 			available: true,
 			optionText: t('crew_views.scoring'),
-			tableConfig: getDataCoreRanksTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
+			tableConfig: getDataCoreRanksTableConfig(globalContext.core.current_weighting, t),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells weights={globalContext.core.current_weighting} crew={crew} />
 		},
 		{
 			id: 'g_ranks',
