@@ -1,19 +1,18 @@
-import React from "react";
-import { GlobalContext } from "../../context/globalcontext";
 import { navigate } from "gatsby";
-import { Label, Image, Icon } from "semantic-ui-react";
-import { PlayerBadge } from "./playerbadge";
-import { ISM_ID, PlayerData, TranslateMethod } from "../../model/player";
-import { CiteInventory, getOwnedCites } from "../../utils/collectionutils";
-import CONFIG from "../CONFIG";
-import { mergeItems } from "../../utils/itemutils";
-import { useStateWithStorage } from "../../utils/storage";
-import { getChrons } from "../../utils/playerutils";
-import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
-import { OptionsPanelFlexRow } from "../stats/utils";
-import { getIconPath } from "../../utils/assets";
+import React from "react";
+import { Icon, Image, Label } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
 import { IEphemeralData } from "../../context/playercontext";
-import { colorToRGBA, formatRunTime, printShortDistance } from "../../utils/misc";
+import { ISM_ID, PlayerData, TranslateMethod } from "../../model/player";
+import { getIconPath } from "../../utils/assets";
+import { CiteInventory, getOwnedCites } from "../../utils/collectionutils";
+import { mergeItems } from "../../utils/itemutils";
+import { colorToRGBA, printShortDistance } from "../../utils/misc";
+import { getChrons } from "../../utils/playerutils";
+import { useStateWithStorage } from "../../utils/storage";
+import CONFIG from "../CONFIG";
+import { OptionsPanelFlexRow } from "../stats/utils";
+import { PlayerBadge } from "./playerbadge";
 
 export interface SaleData {
     slot_sale: boolean;
@@ -70,13 +69,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
     const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
     const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
-    const [saleData, setSaleData] = React.useState<SaleData | undefined>(undefined);
+    const [saleData, setSaleData] = useStateWithStorage<SaleData | undefined>('stt_sale_data', undefined, { rememberForever: true });
+    const [saleUpdate, setSaleUpdate] = useStateWithStorage<Date | undefined>('stt_sale_data_update', undefined, { rememberForever: true });
 
     React.useEffect(() => {
         setTimeout(() => {
             initShuttleTime();
             getSales();
-        });
+        }, 100);
     }, [ephemeral]);
 
     const currentEvent = React.useMemo(() => {
@@ -448,10 +448,16 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     async function getSales() {
         try {
+            if (saleUpdate && saleData) {
+                if (Date.now() - (new Date(saleUpdate)).getTime() < (60 * 1000 * 15)) {
+                    return;
+                }
+            }
             const response = await fetch(`${process.env.GATSBY_DATACORE_URL}api/sales`);
             if (response.ok) {
                 let sale = (await response.json()) as SaleData;
                 setSaleData(sale);
+                setSaleUpdate(new Date());
                 console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
                 setTimeout(() => {
                     getSales();
