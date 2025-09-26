@@ -65,7 +65,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
     }, [presets]);
 
     if (playerData) {
-        playerData.citeMode = citeConfig;
+        playerData.citeMode = citeConfig as CiteMode || undefined;
         if (appliedProspects?.length) {
             playerData.player.character.crew = playerData.player.character.crew.concat(appliedProspects);
         }
@@ -209,13 +209,13 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
     function workerResponse(message: { data: { result: any; }; }) {
         const result = message.data.result as CiteData;
-
         if (engine === 'beta_tachyon_pulse') {
             let skmap = {} as { [key: string]: SkillOrderRarity };
             result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
             let retrievable = result.crewToRetrieve.filter(f => playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length))
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...r, pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: skmap });
+            setCiteConfig({...citeConfig, checks: [] });
         }
         else {
             result.crewToCite = result.crewToCite.map(c => ({...c,...playerData?.player.character.crew.find(fc => fc.name === c.name)!}));
@@ -223,6 +223,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             let retrievable = result.crewToCite.filter(f => ({...f, ...playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length)}));
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...structuredClone(r), pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: undefined });
+            setCiteConfig({...citeConfig, checks: [] });
         }
         setInitialized(true);
     }
