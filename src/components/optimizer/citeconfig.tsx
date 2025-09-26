@@ -208,5 +208,4 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
             portal: undefined
         });
     }
-
 }
