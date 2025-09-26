@@ -204,7 +204,6 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
             secSkills: [],
             seatSkills: [],
             checks: [],
-            showEV: citeConfig.showEV,
             collections: [],
             portal: undefined
         });
