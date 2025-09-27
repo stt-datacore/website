@@ -275,11 +275,11 @@ function estimateChronitonCost(equipment: EquipmentItem | undefined): number {
 	return costCalc.sort()[0];
 }
 
-function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
+export function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 
-	let intersect = a.demands.filter(a1 => !!b.demands.find(b1 => b1.symbol === a1.symbol));
-	let aonly = a.demands.filter(a1 => !b.demands.find(b1 => b1.symbol === a1.symbol));
-	let bonly = b.demands.filter(b1 => !a.demands.find(a1 => a1.symbol === b1.symbol));
+	let intersect = a.demands?.filter(a1 => !!b.demands.find(b1 => b1.symbol === a1.symbol));
+	let aonly = a.demands?.filter(a1 => !b.demands.find(b1 => b1.symbol === a1.symbol));
+	let bonly = b.demands?.filter(b1 => !a.demands.find(a1 => a1.symbol === b1.symbol));
 
 	aonly ??= [];
 	bonly ??= [];
