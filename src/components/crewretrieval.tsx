@@ -81,7 +81,7 @@
 // 		return (<><Icon loading name='spinner' /> Loading...</>);
 // 	}
 // 	else if (!allKeystones) {
-// 		let ak = JSON.parse(JSON.stringify(pureData.keystones));
+// 		let ak = structuredClone(pureData.keystones);
 // 		ak.forEach(keystone => {
 // 			const owned = playerData?.forte_root.items.find(k => k.id === keystone.id);
 // 			keystone.quantity = owned ? owned.quantity : 0;
@@ -98,7 +98,7 @@
 // 	}
 
 // 	const ownedPolestars = allKeystones.filter(k => k.type == 'keystone' && (k.quantity ?? 0) > 0).map(obj => obj as Polestar);
-// 	const allCrew = JSON.parse(JSON.stringify(context.core.crew)) as PlayerCrew[];
+// 	const allCrew = structuredClone(context.core.crew) as PlayerCrew[];
 
 // 	// Calculate highest owned rarities
 // 	allCrew.forEach(ac => {
@@ -226,7 +226,7 @@
 
 // 	// Update polestar list on filter, prospect change
 // 	React.useEffect(() => {
-// 		let filtered = JSON.parse(JSON.stringify(ownedPolestars)) as Polestar[];
+// 		let filtered = structuredClone(ownedPolestars) as Polestar[];
 // 		filtered = filtered.filter((p) => disabledPolestars.indexOf(p.id) === -1);
 // 		addedPolestars.forEach((prospect) => {
 // 			let existing = filtered.find(polestar => polestar.symbol === prospect);
@@ -264,12 +264,12 @@
 // 		if (collection) {
 // 			retrievable = retrievable.filter((crew) => crew.collections.indexOf(collection) !== -1);
 // 		}
-// 		retrievable = JSON.parse(JSON.stringify(retrievable)) as PlayerCrew[];
+// 		retrievable = structuredClone(retrievable) as PlayerCrew[];
 // 		retrievable.forEach(ret => {
 // 			let mc = myCrew.find(m => m.symbol === ret.symbol);
 // 			if (mc) {
 // 				ret.level = mc.level;
-// 				ret.base_skills = JSON.parse(JSON.stringify(mc.base_skills)) as BaseSkills;
+// 				ret.base_skills = structuredClone(mc.base_skills) as BaseSkills;
 // 				ret.rarity = mc.rarity;
 // 				ret.max_rarity = mc.max_rarity;
 // 				ret.immortal = mc.immortal;
@@ -538,7 +538,7 @@
 // 	}
 
 // 	function calculateKeystoneOdds(): void {
-// 		const allkeystones = JSON.parse(JSON.stringify(props.allKeystones)) as KeystoneBase[];
+// 		const allkeystones = structuredClone(props.allKeystones) as KeystoneBase[];
 
 // 		const [constellations, keystones] = categorizeKeystones(allkeystones);
 
@@ -907,7 +907,7 @@
 // 	}
 
 // 	function renderNewRetrievals(polestar: Polestar): JSX.Element {
-// 		const ownedPlus = JSON.parse(JSON.stringify(ownedPolestars));
+// 		const ownedPlus = structuredClone(ownedPolestars);
 // 		ownedPlus.push({...polestar, quantity: 1});
 // 		const newRetrievables = getRetrievable(control, ownedPlus).filter(c => c.in_portal);
 

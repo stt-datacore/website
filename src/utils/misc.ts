@@ -174,6 +174,15 @@ export function printNCrew(n: number, t: TranslateMethod, total = false) {
 	});
 }
 
+export function colorToRGBA(color: string, alpha?: number) {
+	let re = /^(?:#)([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})$/;
+	let res = re.exec(color);
+	if (!res) return undefined;
+	let rgb = res.slice(1).map(n => Number.parseInt(n, 16));
+	alpha = alpha || 255;
+	//if (alpha < 1) alpha = Math.floor(alpha * 255);
+	return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`
+}
 
 /** Check if the device, itself, (not the resolution) is a mobile device */
 export const mobileCheck = function () {

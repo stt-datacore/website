@@ -11,6 +11,7 @@ type CombosGridProps = {
 	combos: IPolestar[][];
 	fuseIndex: number;
 	alwaysShowPrice?: boolean
+	alwaysSortByCost?: boolean
 };
 
 export const CombosGrid = (props: CombosGridProps) => {
@@ -18,30 +19,34 @@ export const CombosGrid = (props: CombosGridProps) => {
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { polestarTailors, market, allKeystones } = React.useContext(RetrievalContext);
-	const { alwaysShowPrice, fuseIndex } = props;
-
-	let combos = [...props.combos];
+	const { alwaysShowPrice, alwaysSortByCost, fuseIndex, combos } = props;
 
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
 
 	const [paginationPage, setPaginationPage] = React.useState<number>(1);
 
-	combos.forEach(combo => combo.sort((a, b) => a.name.localeCompare(b.name)));
-	if (!combos.every(cb => cb.some(ps => !ps.owned)) || !market) {
-		combos.sort(sortCombos);
-	}
-	else {
-		let psyms = combos.map(cb => cb.map(ps => ps.symbol));
-		let provided = combos.flat();
-		sortCombosByCost(psyms, allKeystones, market, true, 'ascending', (a, b) => {
-			let ap = a.map(am => provided.find(p => p.symbol === am)!);
-			let bp = b.map(am => provided.find(p => p.symbol === am)!);
-			return sortCombos(ap, bp);
-		});
-		combos = psyms.map(m => m.map(b => provided.find(f => f.symbol === b)!));
-	}
-	const data: IPolestar[][] = combos.slice();
+	const data = React.useMemo(() => {
+		let combos = [...props.combos];
+		combos.forEach(combo => combo.sort((a, b) => a.name.localeCompare(b.name)));
+
+		if ((!alwaysSortByCost && !combos.every(cb => cb.some(ps => !ps.owned))) || !market) {
+			combos.sort(sortCombos);
+		}
+		else {
+			let psyms = combos.map(cb => cb.map(ps => ps.symbol));
+			let provided = combos.flat();
+			sortCombosByCost(psyms, allKeystones, market, !alwaysSortByCost, 'ascending', (a, b) => {
+				let ap = a.map(am => provided.find(p => p.symbol === am)!);
+				let bp = b.map(am => provided.find(p => p.symbol === am)!);
+				return sortCombos(ap, bp);
+			});
+			combos = psyms.map(m => m.map(b => provided.find(f => f.symbol === b)!));
+		}
+		return combos;
+	}, [alwaysShowPrice, alwaysSortByCost, combos, market, allKeystones]);
+
+	//const data: IPolestar[][] = combos.slice();
 
 	// Pagination
 	const itemsPerPage = 10, itemsToShow = itemsPerPage*paginationPage;
@@ -55,7 +60,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 							<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
 								<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 								<br />{polestar.short_name}
-								{playerData && (
+								{(playerData || !!alwaysShowPrice) && (
 									<React.Fragment>
 										<br />{renderCount(polestar)}
 									</React.Fragment>

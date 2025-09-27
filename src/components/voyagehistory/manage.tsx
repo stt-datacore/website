@@ -11,7 +11,8 @@ import { IFullPayloadAssignment, ITrackedAssignment, ITrackedVoyage, IVoyageHist
 import { downloadData } from '../../utils/crewutils';
 
 import { HistoryContext } from './context';
-import { getTrackedData, mergeHistories, NEW_TRACKER_ID, postTrackedData, SyncState } from './utils';
+import { getTrackedData, InitState, mergeHistories, NEW_TRACKER_ID, postTrackedData, postTrackedDataBatch, repairRemoteHistory, SyncState } from './utils';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 const IMPORT_ONLY = false;
 
@@ -22,7 +23,7 @@ type ManageRemoteSyncProps = {
 };
 
 export const DataManagement = (props: ManageRemoteSyncProps) => {
-	const { syncState } = React.useContext(HistoryContext);
+	const { syncState, setHistoryInitState } = React.useContext(HistoryContext);
 
 	if (IMPORT_ONLY) {
 		return (
@@ -53,10 +54,12 @@ export const DataManagement = (props: ManageRemoteSyncProps) => {
 };
 
 const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
-	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
+	const { dbid, history, setHistory, syncState, setMessageId, setHistoryInitState } = React.useContext(HistoryContext);
 	const { postRemote, setPostRemote, setSyncState } = props;
+	const [syncMessage, setSyncMessage] = React.useState("");
 
 	let syncStatus: string = 'Disabled';
+	const flexRow = OptionsPanelFlexRow;
 	if (syncState === SyncState.RemoteReady) syncStatus = 'Enabled';
 
 	return (
@@ -72,12 +75,16 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 					<p>Voyage history is currently synchronizing with DataCore. You can view and update voyages on all devices with synchronization enabled.</p>
 				)}
 				<p>Describe remote sync and relevant data policies here.</p>
-				<div style={{ marginTop: '1em' }}>
+				<div style={{ ...flexRow, marginTop: '1em', gap: '1em' }}>
 					<Checkbox
 						label='Enable remote sync (experimental)'
 						checked={postRemote}
 						onClick={(e, data) => toggleRemoteSync(data.checked as boolean)}
 					/>
+					{!!syncMessage && <div>
+						{syncMessage}
+					</div>}
+					{!!postRemote && <Button onClick={() => repairVoyages()}>Repair Remote History</Button>}
 				</div>
 			</Message.Content>
 		</Message>
@@ -85,7 +92,10 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 
 	function toggleRemoteSync(requestEnable: boolean): void {
 		if (requestEnable) {
-			tryEnableSync();
+			setSyncMessage("Attempt to enable remote sync...");
+			setTimeout(() => {
+				tryEnableSync();
+			});
 		}
 		else {
 			// TODO: Delete all from remote?
@@ -93,27 +103,71 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 			setPostRemote(false);
 		}
 	}
-
+	function repairVoyages(): void {
+		repairRemoteHistory(dbid).then(() => {
+			setHistory({ voyages:[], crew: {} });
+			setHistoryInitState(InitState.VarsLoaded);
+		});
+	}
 	function tryEnableSync(): void {
 		getTrackedData(dbid).then(async (remoteHistory) => {
 			if (remoteHistory) {
 				const voyagesToPost: ITrackedVoyage[] = discoverVoyages(remoteHistory.voyages, history.voyages);
 				if (voyagesToPost.length > 0) {
-					let voyagesPosted: number = 0;
-					Promise.all(
-						voyagesToPost.map(voyageToSync => tryPostVoyage(voyageToSync))
-					).then(postedIds => {
-						voyagesPosted = postedIds.length;
-					});
-					if (voyagesPosted === 0)
-						throw('Failed tryEnableSync -> 0 voyages posted to remote sync!');
-					if (voyagesToPost.length > voyagesPosted)
-						console.warn('Warning: not all voyages posted to remote sync!');
+					console.log(`Posting batch voyages`);
+					if (voyagesToPost.length > 10) {
+						setTimeout(() => setSyncMessage(`You have ${voyagesToPost.length} missing from remote history. Attempting batch post...`));
+
+						const voyageGroups = [] as ITrackedVoyage[][];
+						const c = voyagesToPost.length;
+
+						let idx = 0;
+						let grp = -1;
+						for (let i = 0; i < c; i++) {
+							if (idx === 0) {
+								grp++;
+								voyageGroups.push([]);
+							}
+							voyageGroups[grp].push(voyagesToPost[i]);
+							idx++;
+							if (idx == 10) {
+								idx = 0;
+							}
+						}
+						setTimeout(async () => {
+							let voyagesPosted = 0;
+							let start = 1;
+							for (let voypost of voyageGroups) {
+								setSyncMessage(`Syncing ${start} to ${start + (voypost.length - 1)}...`);
+								await new Promise((resolve) => setTimeout(resolve));
+								voyagesPosted += await tryPostVoyageAll(voypost);
+							}
+							if (voyagesPosted === 0)
+								throw('Failed tryEnableSync -> 0 voyages posted to remote sync!');
+							if (voyagesToPost.length > voyagesPosted)
+								console.warn('Warning: not all voyages posted to remote sync!');
+							setSyncMessage("Voyages synced.");
+						});
+					}
+					else {
+						let voyagesPosted: number = await tryPostVoyageAll(voyagesToPost);
+						if (voyagesPosted === 0)
+							throw('Failed tryEnableSync -> 0 voyages posted to remote sync!');
+						if (voyagesToPost.length > voyagesPosted)
+							console.warn('Warning: not all voyages posted to remote sync!');
+					}
 				}
-				getTrackedData(dbid).then(async (remoteHistory) => {
-					if (!!remoteHistory) setHistory(remoteHistory);
-					setSyncState(SyncState.RemoteReady);
-					setPostRemote(true);
+				setTimeout(() => {
+					setSyncMessage("Syncing down from server...");
+				});
+				setTimeout(() => {
+					getTrackedData(dbid).then(async (remoteHistory) => {
+						if (!!remoteHistory) setHistory(remoteHistory);
+						setSyncState(SyncState.RemoteReady);
+						setPostRemote(true);
+
+					})
+					.finally(() => setSyncMessage(""));
 				});
 			}
 			else {
@@ -125,31 +179,64 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 		});
 	}
 
-	async function tryPostVoyage(trackableVoyage: ITrackedVoyage): Promise<number> {
-		const oldTrackerId: number = trackableVoyage.tracker_id;
-		trackableVoyage.tracker_id = NEW_TRACKER_ID;
-		const trackableCrew: IFullPayloadAssignment[] = [];
-		Object.keys(history.crew).forEach(crewSymbol => {
-			const assignment: ITrackedAssignment | undefined = history.crew[crewSymbol].find(assignment =>
-				assignment.tracker_id === oldTrackerId
-			);
-			if (assignment) {
-				trackableCrew.push({
-					...assignment,
-					crew: crewSymbol,
-					tracker_id: NEW_TRACKER_ID
-				});
-			}
+	// async function tryPostVoyage(trackableVoyage: ITrackedVoyage): Promise<number> {
+	// 	const oldTrackerId: number = trackableVoyage.tracker_id;
+	// 	trackableVoyage.tracker_id = NEW_TRACKER_ID;
+	// 	const trackableCrew: IFullPayloadAssignment[] = [];
+	// 	Object.keys(history.crew).forEach(crewSymbol => {
+	// 		const assignment: ITrackedAssignment | undefined = history.crew[crewSymbol].find(assignment =>
+	// 			assignment.tracker_id === oldTrackerId
+	// 		);
+	// 		if (assignment) {
+	// 			trackableCrew.push({
+	// 				...assignment,
+	// 				crew: crewSymbol,
+	// 				tracker_id: NEW_TRACKER_ID
+	// 			});
+	// 		}
+	// 	});
+	// 	return postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
+	// 		if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {
+	// 			return result.trackerId;
+	// 		}
+	// 		else {
+	// 			throw('Failed tryPostVoyage -> postTrackedData');
+	// 		}
+	// 	});
+	// }
+
+	async function tryPostVoyageAll(trackableVoyages: ITrackedVoyage[]): Promise<number> {
+		const trackableCrews: IFullPayloadAssignment[][] = [];
+		trackableVoyages.forEach((trackableVoyage, idx) => {
+			const oldTrackerId: number = trackableVoyage.tracker_id;
+			trackableVoyage.tracker_id = NEW_TRACKER_ID;
+			const trackableCrew: IFullPayloadAssignment[] = [];
+			trackableCrews.push(trackableCrew);
+
+			Object.keys(history.crew).forEach(crewSymbol => {
+				const assignment: ITrackedAssignment | undefined = history.crew[crewSymbol].find(assignment =>
+					assignment.tracker_id === oldTrackerId
+				);
+				if (assignment) {
+					trackableCrew.push({
+						...assignment,
+						crew: crewSymbol,
+						tracker_id: NEW_TRACKER_ID
+					});
+				}
+			});
 		});
-		return postTrackedData(dbid, trackableVoyage, trackableCrew).then(result => {
-			if (result.status < 300 && result.trackerId && result.inputId === NEW_TRACKER_ID) {
-				return result.trackerId;
+
+		return postTrackedDataBatch(dbid, trackableVoyages, trackableCrews).then(result => {
+			if (result.status < 300) {
+				return result.data.filter(f => !(f.status >= 300)).length;
 			}
 			else {
 				throw('Failed tryPostVoyage -> postTrackedData');
 			}
 		});
 	}
+
 
 	function discoverVoyages(hv1: ITrackedVoyage[], hv2: ITrackedVoyage[]): ITrackedVoyage[] {
 		const newVoyages: ITrackedVoyage[] = [];
@@ -161,7 +248,7 @@ const RemoteSyncOptions = (props: ManageRemoteSyncProps) => {
 				}
 			});
 			if (isV2New)
-				newVoyages.push(JSON.parse(JSON.stringify(v2)));
+				newVoyages.push(structuredClone(v2));
 		});
 		return newVoyages;
 	}
@@ -199,7 +286,7 @@ interface IManageButton {
 };
 
 const AdvancedOptions = () => {
-	const { history, syncState, setHistory } = React.useContext(HistoryContext);
+	const { history, syncState, setHistory, setHistoryInitState } = React.useContext(HistoryContext);
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const buttons: IManageButton[] = [
@@ -262,8 +349,9 @@ const AdvancedOptions = () => {
 				if (read?.length) {
 					try {
 						const importHistory = JSON.parse(read) as IVoyageHistory;
-						const newhistory = mergeHistories(importHistory, history);
+						const newhistory = mergeHistories(importHistory, history, true);
 						setHistory(newhistory);
+						setHistoryInitState(InitState.VarsLoaded);
 					}
 					catch {
 

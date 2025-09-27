@@ -34,7 +34,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	const crew = globalContext.core.crew;
 	const coreItems = React.useMemo(() => {
-		const coreItems = JSON.parse(JSON.stringify(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length)))) as EquipmentItem[];
+		const coreItems = structuredClone(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length))) as EquipmentItem[];
 		if (hasPlayer) {
 			coreItems.forEach((item) => {
 				item.quantity = globalContext.player.playerData?.player.character.items.find(i => i.symbol === item.symbol)?.quantity;

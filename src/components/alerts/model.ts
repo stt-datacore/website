@@ -23,7 +23,7 @@ export interface IAlertConfig {
 export const DefaultAlertConfig = {
     disableAlerts: false,
     alert_fuses: 1,
-    alert_new: 2,
+    alert_new: 1,
     always_legendary: true,
     alert_crew: [],
     alert_items: [],

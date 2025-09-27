@@ -14,6 +14,8 @@ type CrewTraitsFilterProps = {
 };
 
 export const CrewTraitsFilter = (props: CrewTraitsFilterProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { maincast } = globalContext.core;
 	const { crewMarkups, setCrewMarkups, crewFilters, setCrewFilters } = props;
 
 	const [traitFilter, setTraitFilter] = React.useState<string[]>([] as string[]);
@@ -21,10 +23,17 @@ export const CrewTraitsFilter = (props: CrewTraitsFilterProps) => {
 
 	const addTraitsMatched = (crew: IRosterCrew) => {
 		const markup = crew.markup ?? {};
+		const cast = Object.values(maincast).flat();
 		crew.markup = {
 			...markup,
 			traits_matched: traitFilter.filter(trait => crew.traits.includes(trait) || crew.traits_hidden.includes(trait))
 		};
+		if (traitFilter.includes('maincast') && cast.some(trait => crew.traits_hidden.includes(trait))) {
+			crew.markup.traits_matched!.push('maincast');
+		}
+		if (traitFilter.includes('notmaincast') && !cast.some(trait => crew.traits_hidden.includes(trait))) {
+			crew.markup.traits_matched!.push('notmaincast');
+		}
 	};
 	const filterByTrait = (crew: IRosterCrew) => {
 		if (!crew.markup || !crew.markup.traits_matched) return false;
@@ -72,7 +81,7 @@ export const CrewTraitMatchesCell = (props: CrewTraitMatchesCellProps) => {
 	if (!traitList) return (<Table.Cell />);
 	return (
 		<Table.Cell textAlign='center'>
-			{traitList.sort((a, b) => TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b])).map((trait, idx) => (
+			{traitList.sort((a, b) => (TRAIT_NAMES[a] || "").localeCompare(TRAIT_NAMES[b] || "")).map((trait, idx) => (
 				<Label key={idx}>
 					{crew.traits_hidden.includes(trait) ? t(`series.${trait}`) : TRAIT_NAMES[trait]}
 				</Label>

@@ -28,9 +28,9 @@ export const EncounterCard = (props: EncounterCardProps) => {
 	};
 
 	const cardGroups: ICardGroup[] = [
-		{
+		{	/* Contests (N) */
 			key: 'contests',
-			header: `Contests (${encounterData.contests_count})`,
+			header: t('voyage.contests.contests_n_count', { n: encounterData.contests_count }),
 			content: (
 				<Label.Group>
 					{encounterData.contests_data.map((contest, idx) => {
@@ -53,7 +53,7 @@ export const EncounterCard = (props: EncounterCardProps) => {
 				</Label.Group>
 			)
 		},
-		{
+		{	/* Encounter Traits */
 			key: 'crits',
 			header: t('voyage.encounter_traits'),
 			content: (
@@ -64,9 +64,9 @@ export const EncounterCard = (props: EncounterCardProps) => {
 				</Label.Group>
 			)
 		},
-		{
+		{	/* VP Multiplier */
 			key: 'multiplier',
-			header: 'VP Multiplier',
+			header: t('voyage.contests.vp_multiplier'),
 			content: <Label>x{encounterData.encounter_vp_multiplier}</Label>
 		}
 	];
@@ -91,7 +91,7 @@ export const EncounterCard = (props: EncounterCardProps) => {
 				{inProgress && (
 					<Message>
 						<Icon name='warning sign' />
-						This tool is unable to see the crew used for any contests you have already completed in-game. You must manually assign successful crew to the contests below to get a more accurate representation of viable skills for the remaining contests.
+						{t('voyage.contests.importer.progress_warning')}
 					</Message>
 				)}
 			</Card.Content>

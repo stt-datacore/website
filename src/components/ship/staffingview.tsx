@@ -23,6 +23,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat"
 
 export interface ShipStaffingProps {
     ship?: Ship;
+	asMaxed: boolean;
 	division: 3 | 4 | 5 | undefined;
     setShip: (value?: Ship) => void;
     considerFrozen: boolean;
@@ -41,6 +42,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const { t } = context.localized;
 	const {
         pageId: targetGroup,
+		asMaxed,
         ship,
         setShip,
         isOpponent,
@@ -58,7 +60,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const { playerShips, playerData } = context.player;
 	const { crew: coreCrew, all_ships: coreShips } = context.core;
 
-    const [ships, setShips] = React.useState<Ship[]>(loadShips());
+    const [ships, setShips] = React.useState<Ship[]>([]);
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
 
 	const [currentStation, setCurrentStation] = React.useState<number | undefined>(undefined);
@@ -67,8 +69,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	React.useEffect(() => {
-		setShips(loadShips());
-	}, [playerShips, coreShips, pvpData]);
+		setShips(loadShips(asMaxed));
+	}, [playerShips, coreShips, pvpData, asMaxed]);
 
 	React.useEffect(() => {
 		setCrew(getCrew());
@@ -316,11 +318,26 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		});
 	}
 
-	function loadShips() {
+	function loadShips(as_maxed?: boolean) {
 		if (!context) return [];
 
 		const all_ships = context.core.all_ships.slice();
-		let ships = mergeRefShips(all_ships, isOpponent ? [] : context.player.playerData?.player.character.ships ?? [], context.localized.SHIP_TRAIT_NAMES) ?? [];
+		let ships = mergeRefShips(all_ships, (isOpponent || !!as_maxed) ? [] : context.player.playerData?.player.character.ships ?? [], context.localized.SHIP_TRAIT_NAMES, isOpponent, false, context.player.buffConfig) ?? [];
+		if (as_maxed) {
+			let g = -1;
+			ships.forEach((ship) => {
+				let playShip = context.player.playerShips?.find((ps) => ship.symbol === ps.symbol);
+				if (playShip) {
+					ship.owned = true;
+					ship.id = playShip.id;
+				}
+				else {
+					ship.owned = false;
+					ship.id = ship.archetype_id || g;
+				}
+				g--;
+			});
+		}
 		if (isOpponent && division) ships = ships.filter(ship => getShipDivision(ship.rarity) === division - 2);
 		if (isOpponent && pvpData?.length && pvpData[0].pvp_opponents) {
 			ships = makeOpponentsFromPvpData(pvpData[0].pvp_opponents, ships);
@@ -329,7 +346,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	}
 
 	function makeOpponentsFromPvpData(opponents: PvpOpponent[], ships: Ship[]) {
-		let fships = opponents.map(o => ships.find(s => s.symbol === o.symbol)).filter(f => f !== undefined).map(ship => JSON.parse(JSON.stringify(ship)) as Ship);
+		let fships = opponents.map(o => ships.find(s => s.symbol === o.symbol)).filter(f => f !== undefined).map(ship => structuredClone(ship) as Ship);
 		if (fships.length !== opponents.length) return ships;
 		const c = fships.length;
 		let bcrew = [] as CrewMember[];
