@@ -32,6 +32,7 @@
         "when_new_fuse": "Alerta cuando se descubre un fusible de una tripulación propia en el pozo de recompra."
     },
     "base": {
+        "additional_event_appearances": "Apariciones adicionales en eventos",
         "all_crew": "Mostrar todos los tripulantes",
         "best_pair": "Mejor pareja",
         "bigbook_tier": "Piso",

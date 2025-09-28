@@ -32,6 +32,7 @@
         "when_new_fuse": "Alerte lorsqu'un fusible pour un équipage possédé est découvert dans le pool de rachat."
     },
     "base": {
+        "additional_event_appearances": "Apparitions supplémentaires dans des événements",
         "all_crew": "Afficher tous l'équipiers",
         "best_pair": "Meilleure paire",
         "bigbook_tier": "Étage",

@@ -86,8 +86,16 @@ export type CapAchievers = {
 	achievers: Achiever[]
 }
 
+export type EventWhere = 'threshold' | 'ranked';
+
+export interface AdditionalEvent {
+    instance_id: number,
+    where: EventWhere;
+}
+
 export interface ObtainedMetadata {
     event_instance_id?: number;
+    additional_events?: AdditionalEvent[];
 }
 
 /**

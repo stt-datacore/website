@@ -231,6 +231,8 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	const { t } = globalContext.localized;
 	const [modalOpen, setModalOpen] = React.useState(false);
 	const [crewEvent, setCrewEvent] = React.useState<EventInstance | undefined>(undefined);
+	const [addEvent, setAddEvent] = React.useState<EventInstance | undefined>(undefined);
+	const [accOpen, setAccOpen] = React.useState(false);
 
 	React.useEffect(() => {
 		resetCrewEvent();
@@ -279,13 +281,63 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 					</Modal.Content>
 				</Modal>
 			</>}
-
+			{!!crew.obtained_metadata?.additional_events?.length && (
+				<Accordion activeIndex={accOpen ? 0 : -1}>
+					<Accordion.Title onClick={() => setAccOpen(!accOpen)}>
+						<div style={{display: 'inline'}}>
+							<Icon name={accOpen ? 'triangle down' : 'triangle right'} />
+							<span>
+								{t('base.additional_event_appearances')}
+							</span>
+						</div>
+					</Accordion.Title>
+					<Accordion.Content active={accOpen}>
+						{crew.obtained_metadata.additional_events.map(add => {
+							let evtData = instances.find(f => f.instance_id === add.instance_id);
+							if (!evtData) return <></>;
+							return (
+								<React.Fragment key={`crew_additional_${add.instance_id}`}>
+									<div style={{
+											cursor: 'pointer',
+											margin: '0.25em 1em'
+										}}
+										onClick={() => {
+											setAddEvent(evtData);
+										}}
+									>
+										<u><b>{evtData.event_name}</b></u> ({t(`event_info.${add.where}_rewards`)}){evtData.rerun ? `&mdash;&nbsp;${t('global.rerun')}` : ''}
+									</div>
+								<Modal
+									open={addEvent === evtData}
+									size="large"
+									onClose={() => setAddEvent(undefined)}
+									closeIcon
+								>
+									<Modal.Header>
+										<EventModalHeader
+											instance={evtData}
+											/>
+									</Modal.Header>
+									<Modal.Content scrolling>
+										<EventInfoModal
+											instanceId={evtData.instance_id}
+											image={evtData.image}
+											hasDetails={evtData.event_details}
+											leaderboard={[]}
+										/>
+									</Modal.Content>
+								</Modal>
+							</React.Fragment>)
+						})}
+					</Accordion.Content>
+				</Accordion>
+			)}
 		</p>
 	);
 
 	function resetCrewEvent() {
 		let event: EventInstance | undefined = undefined;
-		if (crew.obtained === 'Event' && crew.obtained_metadata?.event_instance_id) {
+		if (['Event', 'Mega'].includes(crew.obtained) && crew.obtained_metadata?.event_instance_id) {
 			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
 		}
 		setCrewEvent(event);

@@ -117,7 +117,7 @@ export function EventInfoModal(props: EventInfoModalProps) {
 
 interface EventModalHeaderProps {
 	instance: EventInstance;
-	setInstance: (value: EventInstance) => void;
+	setInstance?: (value: EventInstance) => void;
 	flip?: boolean;
 }
 
@@ -151,34 +151,37 @@ export const EventModalHeader = (props: EventModalHeaderProps) => {
 				<span>{modalEventInstance.event_name}</span>
 				{!!modalEventInstance?.rerun && <Label color='brown'>{t('global.rerun')}</Label>}
 			</div>
-			{!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
-				<Popup
-					hoverable
-					trigger={<Button disabled={!prevEvent} onClick={clickPrev} icon='arrow left' />}
-					content={<div>{prevEvent?.event_name}</div>}
-				/>
-				<Popup
-					hoverable
-					trigger={<Button disabled={!nextEvent} onClick={clickNext} icon='arrow right' />}
-					content={<div>{nextEvent?.event_name}</div>}
-				/>
-			</div>}
-			{!!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
-				<Popup
-					hoverable
-					trigger={<Button disabled={!nextEvent} onClick={clickNext} icon='arrow left' />}
-					content={<div>{nextEvent?.event_name}</div>}
-				/>
-				<Popup
-					hoverable
-					trigger={<Button disabled={!prevEvent} onClick={clickPrev} icon='arrow right' />}
-					content={<div>{prevEvent?.event_name}</div>}
-				/>
-			</div>}
+			{!!setModalEventInstance && (<>
+				{!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!prevEvent} onClick={clickPrev} icon='arrow left' />}
+						content={<div>{prevEvent?.event_name}</div>}
+					/>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!nextEvent} onClick={clickNext} icon='arrow right' />}
+						content={<div>{nextEvent?.event_name}</div>}
+					/>
+				</div>}
+				{!!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!nextEvent} onClick={clickNext} icon='arrow left' />}
+						content={<div>{nextEvent?.event_name}</div>}
+					/>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!prevEvent} onClick={clickPrev} icon='arrow right' />}
+						content={<div>{prevEvent?.event_name}</div>}
+					/>
+				</div>}
+			</>)}
 		</div>
 	)
 
 	function clickNext() {
+		if (!setModalEventInstance) return;
 		let curr = event_instances.findIndex(e => e === modalEventInstance);
 		if (curr === -1) return;
 		if (curr < event_instances.length - 1) {
@@ -188,6 +191,7 @@ export const EventModalHeader = (props: EventModalHeaderProps) => {
 	}
 
 	function clickPrev() {
+		if (!setModalEventInstance) return;
 		let curr = event_instances.findIndex(e => e === modalEventInstance);
 		if (curr === -1) return;
 		if (curr > 0) {

@@ -32,6 +32,7 @@
         "when_new_fuse": "Alert when a fuse for an owned crew is discovered in the buy-back well."
     },
     "base": {
+        "additional_event_appearances": "Additional event appearances",
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",

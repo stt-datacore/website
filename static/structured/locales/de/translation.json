@@ -32,6 +32,7 @@
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
     "base": {
+        "additional_event_appearances": "Zusätzliche Auftritte im Ereignissen",
         "all_crew": "Die gesamte Crew anzeigen",
         "best_pair": "Bestes Paar",
         "bigbook_tier": "Stufe",
