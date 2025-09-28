@@ -43,6 +43,7 @@ type EventInstance = {
 	fixed_instance_id: number;
 	image: string;
 	instance_id: number;
+	rerun?: boolean;
 };
 
 type TypeTotals = {
@@ -143,14 +144,21 @@ const EventsPageComponent = () => {
 
 			{tab === 0 && (
 				<Grid stackable columns={3}>
-					{eventsData.map((eventInfo) => (
+					{eventsData.map((eventInfo, idx) => (
 						<Grid.Column key={eventInfo.instance_id}>
 							<div
 								style={{ cursor: "pointer" }}
 								onClick={() => setModalEventInstance(eventInfo)}
 							>
 								<Segment padded>
-									<Label attached="bottom">{eventInfo.event_name}</Label>
+									<Label attached="bottom" style={{display: 'inline-flex', alignItems: 'center'}}>
+										<span style={{flexGrow:1}}>
+											{eventInfo.event_name}
+										</span>
+										{!!eventInfo?.rerun && (
+											<Label size='mini' style={{justifySelf: 'flex-end'}} color='brown'>{t('global.rerun')}</Label>
+										)}
+									</Label>
 									<LazyImage
 										src={`${process.env.GATSBY_ASSETS_URL}${eventInfo.image}`}
 										size="large"

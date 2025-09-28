@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Image, Popup, Tab } from 'semantic-ui-react';
+import { Button, Container, Image, Label, Popup, Tab } from 'semantic-ui-react';
 
 import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
@@ -123,6 +123,7 @@ interface EventModalHeaderProps {
 
 export const EventModalHeader = (props: EventModalHeaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 	const { event_instances } = globalContext.core;
 	const [prevEvent, setPrevEvent] = React.useState<EventInstance | undefined>();
 	const [nextEvent, setNextEvent] = React.useState<EventInstance | undefined>();
@@ -146,8 +147,9 @@ export const EventModalHeader = (props: EventModalHeaderProps) => {
 
 	return (
 		<div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
-			<div>
-				{modalEventInstance.event_name}
+			<div style={{...OptionsPanelFlexRow, alignItems: 'center', gap: '0.5em'}}>
+				<span>{modalEventInstance.event_name}</span>
+				{!!modalEventInstance?.rerun && <Label color='brown'>{t('global.rerun')}</Label>}
 			</div>
 			{!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
 				<Popup
