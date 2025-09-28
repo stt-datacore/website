@@ -95,14 +95,18 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 						}
 					}
 					else {
-						phase = (gameEvent.content_types as any) as string;
+						if (typeof gameEvent.content_types === 'string') {
+							phase = (gameEvent.content_types as any) as string;
+						}
+						else if (gameEvent.content_types.length) {
+							phase = gameEvent.content_types[0];
+						}
 					}
 
 					// Event-type dependent exclusion modes
 					if (phase === 'galaxy' || phase === 'skirmish') {
 						activeEvent = '';
 						activeBonus = '';
-						activeEvent = '';
 					}
 					else if (phase === 'gather') {
 						activeBonus = 'matrix';
@@ -447,7 +451,7 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 
 	function renderCaption(crew: CrewMember | PlayerCrew): JSX.Element {
 		return <div style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
-			<CrewItemsView crew={crew} quipment={true} />
+			<CrewItemsView itemSize={24} crew={crew} quipment={true} />
 			<span>{crew.name}</span>
 		</div>
 	}

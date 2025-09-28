@@ -506,7 +506,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		},
 		{
 			id: 'skillorder_ownership',
-			available: (['offers', 'allCrew', 'buyBack'].includes(rosterType)),
+			available: (['offers', 'allCrew', 'buyBack'].includes(rosterType)) && !!playerData,
 			form:
 				<CrewSkillOrder
 					key='filter_allcrew_skillorder_ownership'

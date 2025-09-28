@@ -284,7 +284,7 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
-		justifyContent: 'space-evenly'
+		justifyContent: 'flex-start'
 	}}>
 		<ShipHoverStat targetGroup='event_featured_ships' />
 		{event.featured_ships.map((symbol) => {
@@ -293,7 +293,7 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 			else {
 				return (
 					<div style={{
-						display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+						display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
 						gap: '0.5em'
 					}}>
 						<AvatarView
@@ -325,11 +325,11 @@ const EventMega = (props: FeatureToolProps & { mega: CrewMember }) => {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
-		justifyContent: 'space-evenly'
+		justifyContent: 'flex-start'
 	}}>
 		<CrewHoverStat targetGroup='event_mega' />
 		<div style={{
-				display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+				display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
 				gap: '0.5em'
 			}}>
 
