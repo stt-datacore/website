@@ -231,6 +231,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	const { t } = globalContext.localized;
 	const [modalOpen, setModalOpen] = React.useState(false);
 	const [crewEvent, setCrewEvent] = React.useState<EventInstance | undefined>(undefined);
+	const [modalEvent, setModalEvent] = React.useState<EventInstance | undefined>(undefined);
 	const [addEvent, setAddEvent] = React.useState<EventInstance | undefined>(undefined);
 	const [accOpen, setAccOpen] = React.useState(false);
 
@@ -257,24 +258,27 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 					</span>
 				</div>
 			)}
-			{!!crewEvent && modalOpen && !disable_event_modal && <>
+			{!!modalEvent && modalOpen && !disable_event_modal && <>
 				<Modal
 					open
 					size="large"
-					onClose={() => setModalOpen(false)}
+					onClose={() => {
+						setModalOpen(false);
+						setModalEvent(crewEvent);
+					}}
 					closeIcon
 				>
 					<Modal.Header>
 						<EventModalHeader
-							instance={crewEvent}
-							setInstance={setCrewEvent}
+							instance={modalEvent}
+							setInstance={setModalEvent}
 							/>
 					</Modal.Header>
 					<Modal.Content scrolling>
 						<EventInfoModal
-							instanceId={crewEvent.instance_id}
-							image={crewEvent.image}
-							hasDetails={crewEvent.event_details}
+							instanceId={modalEvent.instance_id}
+							image={modalEvent.image}
+							hasDetails={modalEvent.event_details}
 							leaderboard={[]}
 						/>
 					</Modal.Content>
@@ -349,6 +353,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
 		}
 		setCrewEvent(event);
+		setModalEvent(event);
 	}
 
 	function eventToDate(instanceId: number) {
