@@ -86,6 +86,10 @@ export type CapAchievers = {
 	achievers: Achiever[]
 }
 
+export interface ObtainedMetadata {
+    event_instance_id?: number;
+}
+
 /**
  * The is the crew roster model from crew.json
  *
@@ -134,6 +138,7 @@ export interface CrewMember extends QuipmentScores {
     in_portal: boolean;
     date_added: Date;
     obtained: string;
+    obtained_metadata: ObtainedMetadata;
     markdownContent: string;
     markdownInfo: MarkdownInfo;
     unique_polestar_combos?: string[][];
