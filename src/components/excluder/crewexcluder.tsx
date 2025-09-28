@@ -96,6 +96,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					// Event-type dependent exclusion modes
 					if (phase === 'galaxy' || phase === 'skirmish') {
 						activeBonus = '';
+						activeEvent = '';
 					}
 					else if (phase === 'gather') {
 						activeBonus = 'matrix';
