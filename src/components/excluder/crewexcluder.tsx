@@ -102,6 +102,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 					if (phase === 'galaxy' || phase === 'skirmish') {
 						activeEvent = '';
 						activeBonus = '';
+						activeEvent = '';
 					}
 					else if (phase === 'gather') {
 						activeBonus = 'matrix';
