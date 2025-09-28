@@ -253,7 +253,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 						}}
 					>
 						<u><b>{crewEvent.event_name}</b></u>
-						&nbsp;({t(`event_info.${crew.obtained_metadata.where}_rewards`)})
+						&nbsp;({printWhere(crew)})
 					</span>
 				</div>
 			)}
@@ -336,6 +336,12 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 			)}
 		</p>
 	);
+
+	function printWhere(crew: CrewMember) {
+		let txt = t(`event_info.${crew.obtained_metadata.where}_rewards`)
+		if (!txt && crew.obtained === 'Mega') txt = t(`event_info.threshold_rewards`);
+		return txt;
+	}
 
 	function resetCrewEvent() {
 		let event: EventInstance | undefined = undefined;
