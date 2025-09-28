@@ -245,16 +245,15 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 				<div>
 					{t('obtained.long.Event{{:}}')}&nbsp;
 					<span style={{
-							fontWeight: 'bold',
-							cursor: 'pointer',
-							textDecoration: 'underline'
+							cursor: 'pointer'
 						}}
 						onClick={() => {
 							resetCrewEvent();
 							setModalOpen(true);
 						}}
 					>
-						{crewEvent.event_name}
+						<u><b>{crewEvent.event_name}</b></u>
+						&nbsp;({t(`event_info.${crew.obtained_metadata.where}_rewards`)})
 					</span>
 				</div>
 			)}
@@ -305,7 +304,10 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 											setAddEvent(evtData);
 										}}
 									>
-										<u><b>{evtData.event_name}</b></u> ({t(`event_info.${add.where}_rewards`)}){evtData.rerun ? `&mdash;&nbsp;${t('global.rerun')}` : ''}
+										~&nbsp;{eventToDate(evtData.instance_id).toLocaleDateString()}
+										&nbsp;&mdash;&nbsp;<u><b>{evtData.event_name}</b></u>
+										&nbsp;({t(`event_info.${add.where}_rewards`)})
+										{evtData.rerun ? <>&nbsp;&mdash;&nbsp;{t('global.rerun')}</> : ''}
 									</div>
 								<Modal
 									open={addEvent === evtData}
@@ -341,6 +343,15 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
 		}
 		setCrewEvent(event);
+	}
+
+	function eventToDate(instanceId: number) {
+		let num = instanceId;
+		let anchor_id = 458;
+		let anchor_date = new Date('2025-01-23T12:00:00')
+		if (num < 381) num++;
+		anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
+		return anchor_date;
 	}
 };
 
