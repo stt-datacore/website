@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic-ui-react';
+import { Segment, Accordion, Table, Rating, Icon, SemanticICONS, Modal, Label, Button } from 'semantic-ui-react';
 
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
@@ -13,6 +13,9 @@ import { OwnedLabel } from '../crewtables/commonoptions';
 import { CrewItemsView } from './crew_items';
 import { PlayerCrew } from '../../model/player';
 import { CollectionDisplay } from './presenter_utils';
+import { EventInfoModal, EventModalHeader } from '../event_info_modal';
+import { EventInstance } from '../../model/events';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 type ValidField =
 	'collections' |
@@ -221,15 +224,72 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 	return <></>;
 };
 
-const DateAdded = (props: { crew: CrewMember }) => {
-	const { crew } = props;
+const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) => {
+	const { crew, disable_event_modal } = props;
 	const globalContext = React.useContext(GlobalContext);
+	const instances = globalContext.core.event_instances;
 	const { t } = globalContext.localized;
+	const [modalOpen, setModalOpen] = React.useState(false);
+	const [crewEvent, setCrewEvent] = React.useState<EventInstance | undefined>(undefined);
+
+	React.useEffect(() => {
+		resetCrewEvent();
+	}, [crew]);
+
 	return (
 		<p>
 			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			{!!crewEvent && !disable_event_modal && (
+				<div>
+					{t('obtained.long.Event{{:}}')}&nbsp;
+					<span style={{
+							fontWeight: 'bold',
+							cursor: 'pointer',
+							textDecoration: 'underline'
+						}}
+						onClick={() => {
+							resetCrewEvent();
+							setModalOpen(true);
+						}}
+					>
+						{crewEvent.event_name}
+					</span>
+				</div>
+			)}
+			{!!crewEvent && modalOpen && !disable_event_modal && <>
+				<Modal
+					open
+					size="large"
+					onClose={() => setModalOpen(false)}
+					closeIcon
+				>
+					<Modal.Header>
+						<EventModalHeader
+							instance={crewEvent}
+							setInstance={setCrewEvent}
+							/>
+					</Modal.Header>
+					<Modal.Content scrolling>
+						<EventInfoModal
+							instanceId={crewEvent.instance_id}
+							image={crewEvent.image}
+							hasDetails={crewEvent.event_details}
+							leaderboard={[]}
+						/>
+					</Modal.Content>
+				</Modal>
+			</>}
+
 		</p>
 	);
+
+	function resetCrewEvent() {
+		let event: EventInstance | undefined = undefined;
+		if (crew.obtained === 'Event' && crew.obtained_metadata?.event_instance_id) {
+			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
+		}
+		setCrewEvent(event);
+	}
 };
 
 

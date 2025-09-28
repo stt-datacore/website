@@ -14,6 +14,7 @@ import {
 	Dropdown,
 	Pagination,
 	SemanticWIDTHS,
+	Button,
 } from "semantic-ui-react";
 
 import moment from "moment";
@@ -22,7 +23,7 @@ import 'moment/locale/de';
 import 'moment/locale/es';
 
 import LazyImage from "../components/lazyimage";
-import EventInfoModal from "../components/event_info_modal";
+import { EventInfoModal, EventModalHeader } from "../components/event_info_modal";
 import { EventLeaderboard } from "../model/events";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
@@ -33,6 +34,7 @@ import { AvatarView } from "../components/item_presenters/avatarview";
 import { CrewHoverStat } from "../components/hovering/crewhoverstat";
 import { useStateWithStorage } from "../utils/storage";
 import { gradeToColor } from "../utils/crewutils";
+import { OptionsPanelFlexRow } from "../components/stats/utils";
 
 type EventInstance = {
 	event_details?: boolean;
@@ -71,7 +73,7 @@ const EventsPage = () => {
 const EventsPageComponent = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { event_leaderboards, event_instances } = globalContext.core;
+	const { event_leaderboards, event_instances: event_instances } = globalContext.core;
 	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
 	const [leaderboardData, setLeaderboardData] = React.useState<{
 		[key: string]: EventLeaderboard;
@@ -168,7 +170,13 @@ const EventsPageComponent = () => {
 					onClose={() => setModalEventInstance(null)}
 					closeIcon
 				>
-					<Modal.Header>{modalEventInstance.event_name}</Modal.Header>
+					<Modal.Header>
+						<EventModalHeader
+							flip={true}
+							instance={modalEventInstance}
+							setInstance={setModalEventInstance}
+						/>
+					</Modal.Header>
 					<Modal.Content scrolling>
 						<EventInfoModal
 							instanceId={modalEventInstance.instance_id}
