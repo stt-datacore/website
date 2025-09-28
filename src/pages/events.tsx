@@ -162,6 +162,7 @@ const EventsPageComponent = () => {
 									<LazyImage
 										src={`${process.env.GATSBY_ASSETS_URL}${eventInfo.image}`}
 										size="large"
+										style={{maxHeight: '159px'}}
 										onError={(e) => (e.target.style.visibility = "hidden")}
 									/>
 								</Segment>
