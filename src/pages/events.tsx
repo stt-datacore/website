@@ -1,51 +1,37 @@
 import React from "react";
 import {
 	Container,
-	Header,
-	Message,
-	Segment,
-	Label,
-	Grid,
-	Modal,
-	Icon,
-	Step,
-	Table,
-	DropdownItemProps,
 	Dropdown,
+	DropdownItemProps,
+	Grid,
+	Header,
+	Label,
+	Message,
+	Modal,
 	Pagination,
+	Segment,
 	SemanticWIDTHS,
-	Button,
+	Step,
+	Table
 } from "semantic-ui-react";
 
 import moment from "moment";
-import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
+import 'moment/locale/fr';
 
-import LazyImage from "../components/lazyimage";
+import { useLocaleDate } from "../components/base/localedate";
 import { EventInfoModal, EventModalHeader } from "../components/event_info_modal";
-import { EventLeaderboard } from "../model/events";
+import { CrewHoverStat } from "../components/hovering/crewhoverstat";
+import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
+import { AvatarView } from "../components/item_presenters/avatarview";
+import LazyImage from "../components/lazyimage";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
-import { EventStats, makeTypeBuckets } from "../utils/event_stats";
-import { GauntletPane } from "../utils/gauntlet";
-import { AvatarView } from "../components/item_presenters/avatarview";
-import { CrewHoverStat } from "../components/hovering/crewhoverstat";
-import { useStateWithStorage } from "../utils/storage";
+import { EventInstance, EventLeaderboard } from "../model/events";
 import { gradeToColor } from "../utils/crewutils";
-import { OptionsPanelFlexRow } from "../components/stats/utils";
-import { useLocaleDate } from "../components/base/localedate";
-
-type EventInstance = {
-	event_details?: boolean;
-	event_id: number;
-	event_name: string;
-	fixed_instance_id: number;
-	image: string;
-	instance_id: number;
-	rerun?: boolean;
-};
+import { EventStats, makeTypeBuckets } from "../utils/event_stats";
+import { useStateWithStorage } from "../utils/storage";
 
 type TypeTotals = {
 	type: string,
@@ -166,7 +152,11 @@ const EventsPageComponent = () => {
 								<Segment padded>
 									<Label attached="bottom" style={{display: 'inline-flex', alignItems: 'center'}}>
 										<span style={{flexGrow:1}}>
-											{eventInfo.event_name}&nbsp;&mdash;&nbsp;{localeDate(eventToDate(eventInfo.fixed_instance_id), "MMM D, YYYY")}
+											{eventInfo.event_name}
+											&nbsp;&mdash;&nbsp;
+											{formatEventType(eventInfo.content_types)}
+											&nbsp;&mdash;&nbsp;
+											{localeDate(eventToDate(eventInfo.fixed_instance_id), "MMM D, YYYY")}
 										</span>
 										{!!eventInfo?.rerun && (
 											<Label size='mini' style={{justifySelf: 'flex-end'}} color='brown'>{t('global.rerun')}</Label>
