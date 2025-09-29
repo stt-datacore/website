@@ -729,9 +729,11 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					crew = structuredClone(crew);
 					let refcrew = globalContext.core.crew.find(f => f.symbol === crew.symbol)!;
 					crew.base_skills = structuredClone(refcrew.base_skills);
-					if (!crew.immortal) crew.immortal = CompletionState.DisplayAsImmortalOwned;
+					//if (!crew.immortal) crew.immortal = CompletionState.DisplayAsImmortalOwned;
 					crew.rarity = crew.max_rarity;
 					crew.level = 100;
+					crew.ship_battle = structuredClone(refcrew.ship_battle);
+					crew.action.bonus_amount = refcrew.action.bonus_amount;
 					crew.skills = applyCrewBuffs(crew, buffMode === 'max' ? globalContext.maxBuffs! : globalContext.player.buffConfig!)!;
 				}
 			}

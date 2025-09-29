@@ -393,6 +393,7 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 					</div>
 					<div style={{marginRight: "1em", width: window.innerWidth < 725 ? "auto" : "25em"}}>
 						<ShipPicker
+							clearable
 							filter={shipPickerFilter}
 							selectedShip={selectedShip}
 							pool={props.ships}
