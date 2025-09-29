@@ -234,7 +234,17 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	const [modalEvent, setModalEvent] = React.useState<EventInstance | undefined>(undefined);
 	const [addEvent, setAddEvent] = React.useState<EventInstance | undefined>(undefined);
 	const [accOpen, setAccOpen] = React.useState(false);
-
+	const disconts = React.useMemo(() => {
+		let z = instances[0].fixed_instance_id - 1;
+		let dc = [] as number[];
+		for (let i of instances.map(m => m.fixed_instance_id)) {
+			if (z !== i - 1) {
+				dc.push(i);
+			}
+			z = i;
+		}
+		return dc;
+	}, [instances]);
 	React.useEffect(() => {
 		resetCrewEvent();
 	}, [crew]);
@@ -308,7 +318,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 											setAddEvent(evtData);
 										}}
 									>
-										~&nbsp;{eventToDate(evtData.instance_id).toLocaleDateString()}
+										~&nbsp;{eventToDate(evtData.fixed_instance_id).toLocaleDateString()}
 										&nbsp;&mdash;&nbsp;<u><b>{evtData.event_name}</b></u>
 										&nbsp;({t(`event_info.${add.where}_rewards`)})
 										{evtData.rerun ? <>&nbsp;&mdash;&nbsp;{t('global.rerun')}</> : ''}
@@ -359,8 +369,9 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	function eventToDate(instanceId: number) {
 		let num = instanceId;
 		let anchor_id = 458;
-		let anchor_date = new Date('2025-01-23T12:00:00')
-		if (num < 381) num++;
+		let anchor_date = new Date('2025-01-23T12:00:00');
+		let fi = disconts.findLastIndex(x => x < instanceId);
+		num += fi - 1;
 		anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
 		return anchor_date;
 	}

@@ -35,6 +35,7 @@ import { CrewHoverStat } from "../components/hovering/crewhoverstat";
 import { useStateWithStorage } from "../utils/storage";
 import { gradeToColor } from "../utils/crewutils";
 import { OptionsPanelFlexRow } from "../components/stats/utils";
+import { useLocaleDate } from "../components/base/localedate";
 
 type EventInstance = {
 	event_details?: boolean;
@@ -82,8 +83,20 @@ const EventsPageComponent = () => {
 	const [loadingError, setLoadingError] = React.useState<any>(null);
 	const [modalEventInstance, setModalEventInstance] =
 		React.useState<EventInstance | null>(null);
-
+	const localeDate = useLocaleDate(globalContext.localized);
 	const [tab, setTab] = React.useState(0);
+
+	const disconts = React.useMemo(() => {
+		let z = event_instances[0].fixed_instance_id - 1;
+		let dc = [] as number[];
+		for (let i of event_instances.map(m => m.fixed_instance_id)) {
+			if (z !== i - 1) {
+				dc.push(i);
+			}
+			z = i;
+		}
+		return dc;
+	}, [event_instances]);
 
 	React.useEffect(() => {
 		function loadData() {
@@ -145,7 +158,7 @@ const EventsPageComponent = () => {
 			{tab === 0 && (
 				<Grid stackable columns={3}>
 					{eventsData.map((eventInfo, idx) => (
-						<Grid.Column key={eventInfo.instance_id}>
+						<Grid.Column key={`event_data_${eventInfo.instance_id}`}>
 							<div
 								style={{ cursor: "pointer" }}
 								onClick={() => setModalEventInstance(eventInfo)}
@@ -153,7 +166,7 @@ const EventsPageComponent = () => {
 								<Segment padded>
 									<Label attached="bottom" style={{display: 'inline-flex', alignItems: 'center'}}>
 										<span style={{flexGrow:1}}>
-											{eventInfo.event_name}
+											{eventInfo.event_name}&nbsp;&mdash;&nbsp;{localeDate(eventToDate(eventInfo.fixed_instance_id), "MMM D, YYYY")}
 										</span>
 										{!!eventInfo?.rerun && (
 											<Label size='mini' style={{justifySelf: 'flex-end'}} color='brown'>{t('global.rerun')}</Label>
@@ -203,6 +216,21 @@ const EventsPageComponent = () => {
 			<CrewHoverStat targetGroup="event_info_stats" />
 		</Container>
 	);
+
+	function eventToDate(instanceId: number) {
+		let num = instanceId;
+		let anchor_id = 458;
+		let anchor_date = new Date('2025-01-23T12:00:00');
+		let fi = disconts.findLastIndex(x => x < instanceId);
+		num += fi - 1;
+		anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
+		return anchor_date;
+	}
+
+	function formatEventType(types: string[]) {
+		types = [...new Set(types)];
+		return types.map(type => t(`event_type.${type}`)).join("/");
+	}
 };
 
 const EventStatsComponent = () => {

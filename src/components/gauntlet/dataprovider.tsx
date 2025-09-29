@@ -1,12 +1,10 @@
-import React from "react";
-import { Gauntlet, GauntletViewMode, Opponent, PairGroup } from "../../model/gauntlets";
-import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings, GauntletUserPrefs } from "../../utils/gauntlet";
-import { GlobalContext } from "../../context/globalcontext";
-import { useStateWithStorage } from "../../utils/storage";
 import moment from "moment";
-import { TinyStore } from "../../utils/tiny";
+import React from "react";
+import { GlobalContext } from "../../context/globalcontext";
+import { Gauntlet, GauntletViewMode, PairGroup } from "../../model/gauntlets";
 import { skillToShort } from "../../utils/crewutils";
-import { UnifiedWorker } from "../../typings/worker";
+import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings, GauntletUserPrefs } from "../../utils/gauntlet";
+import { TinyStore } from "../../utils/tiny";
 
 export interface IGauntletContext {
     config: GauntletUserPrefs;
