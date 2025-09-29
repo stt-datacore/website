@@ -1832,6 +1832,7 @@
         }
     },
     "retrieval": {
+        "alert_pending_crew": "This crew is currently not uniquely retrievable but a future portal update will change this status.",
         "allow_unowned": "Allow unowned crew",
         "assume_in_game_favorites": "Dynamically add in-game favorites to wishlist",
         "combo": "Combo",
@@ -1851,6 +1852,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Show all uniquely retrievable crew",
+            "show_expiring_crew": "Show expiring unique retrievals",
             "show_retrievable_crew": "Only show crew I can retrieve"
         },
         "description": "Find the best options for adding crew to your roster via crew retrieval.",
@@ -1962,6 +1964,7 @@
         "use_all_combos_below_to_retrieve": "Use ALL combos below to retrieve",
         "use_any_combo_below_to_retrieve": "Use any combo below to retrieve",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "This crew is currently uniquely retrievable but a future portal update will change this status.",
         "wishlist": {
             "add": "Add to wishlist.",
             "auto": "Crew is auto wishlisted.",

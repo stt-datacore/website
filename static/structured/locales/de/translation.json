@@ -1831,6 +1831,7 @@
         }
     },
     "retrieval": {
+        "alert_pending_crew": "Diese Crew ist derzeit nicht eindeutig abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "allow_unowned": "Unbesessene Crew zulassen",
         "assume_in_game_favorites": "Spielfavoriten dynamisch zur Wunschliste hinzufügen",
         "combo": "Combo",
@@ -1850,6 +1851,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Alle eindeutig abrufbaren Crewmitglieder anzeigen",
+            "show_expiring_crew": "Ablaufende eindeutige Abrufe anzeigen",
             "show_retrievable_crew": "Nur Crew anzeigen, die ich abrufen kann"
         },
         "description": "Finden Sie die besten Möglichkeiten, über die Crewabfrage Crewmitglieder zu Ihrer Liste hinzuzufügen.",
@@ -1961,6 +1963,7 @@
         "use_all_combos_below_to_retrieve": "Verwenden Sie ALLE Combos unten, um abzurufen",
         "use_any_combo_below_to_retrieve": "Verwenden Sie eine der folgenden Kombinationen, um abzurufen",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "Diese Crew ist derzeit nur einmal abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "wishlist": {
             "add": "Zur Wunschliste hinzufügen.",
             "auto": "Crew wird automatisch zur Wunschliste hinzugefügt.",

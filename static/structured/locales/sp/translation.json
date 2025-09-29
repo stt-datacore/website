@@ -1841,6 +1841,7 @@
         }
     },
     "retrieval": {
+        "alert_pending_crew": "Actualmente esta tripulante no se puede recuperar de forma única, pero una futura actualización del portal cambiará este estado.",
         "allow_unowned": "Permitir tripulación sin propietario",
         "assume_in_game_favorites": "Agregar dinámicamente los favoritos del juego a la lista de deseos",
         "combo": "Combo",
@@ -1860,6 +1861,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Mostrar toda la tripulación recuperable de forma única",
+            "show_expiring_crew": "Mostrar recuperaciones únicas que vencen",
             "show_retrievable_crew": "Solo el equipo de espectáculo que puedo recuperar"
         },
         "description": "Encuentre las mejores opciones para agregar tripulación a su lista a través de la recuperación de tripulación.",
@@ -1971,6 +1973,7 @@
         "use_all_combos_below_to_retrieve": "Utilice TODAS las combinaciones a continuación para recuperar",
         "use_any_combo_below_to_retrieve": "Utilice cualquier combinación a continuación para recuperar",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "Actualmente, esta tripulante solo se puede recuperar de forma única, pero una futura actualización del portal cambiará este estado.",
         "wishlist": {
             "add": "Añadir a la lista de deseos.",
             "auto": "El tripulante se añade automáticamente a la lista de deseos.",

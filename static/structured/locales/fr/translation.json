@@ -1843,6 +1843,7 @@
         }
     },
     "retrieval": {
+        "alert_pending_crew": "Cet équipage n'est actuellement pas récupérable de manière unique, mais une future mise à jour du portail modifiera ce statut.",
         "allow_unowned": "Autoriser l'équipage sans propriétaire",
         "assume_in_game_favorites": "Ajoutez dynamiquement les favoris du jeu à la liste de souhaits",
         "combo": "Combo",
@@ -1861,8 +1862,9 @@
         "cost": "Coût de récupération",
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
-            "show_all_uniquely_retrievable": "Afficher tous les membres d'équipage récupérables de manière unique",
-            "show_retrievable_crew": "Afficher uniquement l'équipage que je peux récupérer"
+            "show_all_uniquely_retrievable": "Afficher tous les équipiers récupérables de manière unique",
+            "show_expiring_crew": "Afficher les récupérations uniques expirant",
+            "show_retrievable_crew": "Afficher uniquement les équipiers que je peux récupérer"
         },
         "description": "Trouvez les meilleures options pour ajouter de l'équipage à votre liste via la récupération de l'équipage.",
         "energy": {
@@ -1973,6 +1975,7 @@
         "use_all_combos_below_to_retrieve": "Utilisez TOUS les combos ci-dessous pour récupérer",
         "use_any_combo_below_to_retrieve": "Utilisez n'importe quelle combinaison ci-dessous pour récupérer",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "Cet équipier est actuellement récupérable de manière unique, mais une future mise à jour du portail modifiera ce statut.",
         "wishlist": {
             "add": "Ajouter à la liste de souhaits.",
             "auto": "L'équipier est automatiquement ajouté à la liste de souhaits.",
