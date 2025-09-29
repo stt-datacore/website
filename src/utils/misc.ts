@@ -396,11 +396,13 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
  * @param check The method that performs an operation on each combination.
  * @returns If count_only is true, then nothing is returned. Otherwise the combinations are returned.
  */
-export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[], idx?: number) => U[] | false) {
+export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[], idx?: number) => U[] | false, break_on_false?: boolean) {
     var current_iter = 0n;
     const mmin = start_idx ?? 0n;
     const mmax = (count ?? 0n) + mmin;
+	let br = false;
     function p(t: T[], i: number) {
+		if (br) return;
         if (t.length === size) {
             if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
                 if (!check) {
@@ -413,16 +415,20 @@ export function getPermutations<T, U>(array: T[], size: number, count?: bigint, 
                             result.push(response);
                         }
                     }
+					else if (break_on_false) {
+						br = true;
+						return;
+					}
                 }
             }
             current_iter++;
             return;
         }
-        if (i + 1 > array.length) {
+        if (br || i + 1 > array.length) {
             return;
         }
 
-        if (mmax !== 0n && current_iter >= mmax) return;
+        if (br || (mmax !== 0n && current_iter >= mmax)) return;
         p([ ...t, array[i] ], i + 1);
         p(t, i + 1);
     }
