@@ -142,6 +142,7 @@ export interface CrewMember extends QuipmentScores {
     markdownContent: string;
     markdownInfo: MarkdownInfo;
     unique_polestar_combos?: string[][];
+    unique_polestar_combos_later?: string[][];
     constellation?: CrewConstellation;
     kwipment: number[][] | number[];
     kwipment_expiration: number[][] | number[];
