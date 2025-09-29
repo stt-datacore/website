@@ -117,26 +117,32 @@ export const CombosGrid = (props: CombosGridProps) => {
 	}
 
 	function renderCount(polestar: IPolestar): JSX.Element {
-		let color: SemanticCOLORS | undefined = undefined;
+		let labelColor: SemanticCOLORS | undefined = undefined;
+		let fontColor: SemanticCOLORS | undefined = undefined;
 
 		if (disabledPolestars.includes(polestar.id))
-			color = 'orange';
+			labelColor = 'orange';
 		else if (fuseIndex > polestar.owned && addedPolestars.filter(added => added === polestar.symbol).length > 0)
-			color = 'blue';
-		else if (polestar.owned === 0)
-			color = 'yellow';
+			labelColor = 'blue';
+		else if (polestar.owned === 0) {
+			labelColor = 'yellow';
+			fontColor = 'black';
+		}
 
 		return (
-			<>
-			<Label color={color}>
-				{polestar.owned}
-			</Label>
-			{!!market && (polestar.owned === 0 || alwaysShowPrice) &&
-				<div style={{margin: '0.25em', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0.25em'}}>
-					{printISM(market[polestar.id]?.low ?? 0)}
-					{t('global.n_available', { n: `${market[polestar.id].sell_count.toLocaleString()}`})}
-				</div>}
-			</>
+			<React.Fragment>
+				<Label color={labelColor}>
+					<span style={{ color: fontColor }}>
+						{polestar.owned}
+					</span>
+				</Label>
+				{!!market && (polestar.owned === 0 || alwaysShowPrice) && (
+					<div style={{margin: '0.25em', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0.25em'}}>
+						{printISM(market[polestar.id]?.low ?? 0)}
+						{t('global.n_available', { n: `${market[polestar.id].sell_count.toLocaleString()}`})}
+					</div>
+				)}
+			</React.Fragment>
 		);
 	}
 };

@@ -131,11 +131,18 @@ export const CombosModal = (props: CombosModalProps) => {
 	function renderTrigger(): JSX.Element {
 		if (playerData) {
 			if (crew.actionable === ActionableState.PostTailor)
-				return <Button compact color='blue'>{t('global.view_options')}</Button>;
+				return <Label as='a' color='blue'>{t('global.view_options')}</Label>;
 			else if (crew.actionable === ActionableState.PreTailor)
-				return <Button compact color='orange'>{t('retrieval.polestars_needed')}</Button>;
-			else if (crew.actionable === ActionableState.Viable)
-				return <Button compact color='yellow'>{t('retrieval.polestars_needed')}</Button>;
+				return <Label as='a' color='orange'>{t('retrieval.polestars_needed')}</Label>;
+			else if (crew.actionable === ActionableState.Viable) {
+				return (
+					<Label as='a' color='yellow'>
+						<span style={{ color: 'black' }}>
+							{t('retrieval.polestars_needed')}
+						</span>
+					</Label>
+				);
+			}
 		}
 		if (crew.retrievable === RetrievableState.Expiring) {
 			return <Button compact color='black' style={{...OptionsPanelFlexRow, gap: '0.25em'}}>
