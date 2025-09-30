@@ -230,7 +230,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 						newData.portal_log = result.json;
 						newData.portal_log?.forEach(log => log.date = new Date(log.date));
 						break;
-
+					case 'event_instances':
+						newData.event_instances = processEventInstances(result.json);
+						break;
 					default:
 						newData[result.demand] = result.json;
 						break;
@@ -348,6 +350,25 @@ export const DataProvider = (props: DataProviderProperties) => {
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
+	}
+
+	function processEventInstances(instances: EventInstance[]) {
+		const betas = instances.filter(f => f.event_name.includes("Event Beta") || f.event_name.includes("Event Test"));
+
+		function eventToDate(instanceId: number) {
+			let num = instanceId;
+			let anchor_id = 457;
+			let anchor_date = new Date('2025-01-23T12:00:00');
+			let b = betas.filter(f => f.instance_id < instanceId);
+			num -= b.length;
+			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
+			return anchor_date;
+		}
+
+		for (let inst of instances) {
+			inst.event_date = eventToDate(inst.instance_id);
+		}
+		return instances;
 	}
 
 	function processAllShips(all_ships: ReferenceShip[]) {

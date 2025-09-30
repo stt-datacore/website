@@ -72,18 +72,6 @@ const EventsPageComponent = () => {
 	const localeDate = useLocaleDate(globalContext.localized);
 	const [tab, setTab] = React.useState(0);
 
-	const disconts = React.useMemo(() => {
-		let z = event_instances[0].fixed_instance_id - 1;
-		let dc = [] as number[];
-		for (let i of event_instances.map(m => m.fixed_instance_id)) {
-			if (z !== i - 1) {
-				dc.push(i);
-			}
-			z = i;
-		}
-		return dc;
-	}, [event_instances]);
-
 	React.useEffect(() => {
 		function loadData() {
 			try {
@@ -153,10 +141,14 @@ const EventsPageComponent = () => {
 									<Label attached="bottom" style={{display: 'inline-flex', alignItems: 'center'}}>
 										<span style={{flexGrow:1}}>
 											{eventInfo.event_name}
-											&nbsp;&mdash;&nbsp;
-											{formatEventType(eventInfo.content_types)}
-											&nbsp;&mdash;&nbsp;
-											{localeDate(eventToDate(eventInfo.fixed_instance_id), "MMM D, YYYY")}
+											{!!eventInfo.event_date && (<>
+												&nbsp;&mdash;&nbsp;
+												{!!eventInfo.content_types?.length && (<>
+													{formatEventType(eventInfo.content_types)}
+													&nbsp;&mdash;&nbsp;
+												</>)}
+												{localeDate(eventInfo.event_date, "D MMM YYYY")}
+											</>)}
 										</span>
 										{!!eventInfo?.rerun && (
 											<Label size='mini' style={{justifySelf: 'flex-end'}} color='brown'>{t('global.rerun')}</Label>
@@ -206,16 +198,6 @@ const EventsPageComponent = () => {
 			<CrewHoverStat targetGroup="event_info_stats" />
 		</Container>
 	);
-
-	function eventToDate(instanceId: number) {
-		let num = instanceId;
-		let anchor_id = 458;
-		let anchor_date = new Date('2025-01-23T12:00:00');
-		let fi = disconts.findLastIndex(x => x < instanceId);
-		num += fi - 1;
-		anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
-		return anchor_date;
-	}
 
 	function formatEventType(types: string[]) {
 		types = [...new Set(types)];
