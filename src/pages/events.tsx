@@ -142,12 +142,14 @@ const EventsPageComponent = () => {
 										<span style={{flexGrow:1}}>
 											{eventInfo.event_name}
 											{!!eventInfo.event_date && (<>
-												&nbsp;&mdash;&nbsp;
 												{!!eventInfo.content_types?.length && (<>
-													{formatEventType(eventInfo.content_types)}
 													&nbsp;&mdash;&nbsp;
+													{formatEventType(eventInfo.content_types)}
 												</>)}
-												{localeDate(eventInfo.event_date, "D MMM YYYY")}
+												{!!eventInfo.event_date && (<>
+													&nbsp;&mdash;&nbsp;
+													{localeDate(eventInfo.event_date, "D MMM YYYY")}
+												</>)}
 											</>)}
 										</span>
 										{!!eventInfo?.rerun && (
