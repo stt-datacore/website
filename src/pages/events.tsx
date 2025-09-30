@@ -148,7 +148,7 @@ const EventsPageComponent = () => {
 												</>)}
 												{!!eventInfo.event_date && (<>
 													&nbsp;&mdash;&nbsp;
-													{localeDate(eventInfo.event_date, "D MMM YYYY")}
+													{eventInfo.event_date.toLocaleDateString()}
 												</>)}
 											</>)}
 										</span>
