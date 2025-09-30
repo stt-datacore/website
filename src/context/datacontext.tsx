@@ -353,21 +353,23 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 
 	function processEventInstances(instances: EventInstance[]) {
+		if (instances.length >= 2 && instances[instances.length - 1].fixed_instance_id === instances[instances.length - 2].fixed_instance_id) {
+			instances[instances.length - 1].fixed_instance_id++;
+		}
 		const betas = instances.filter(f => f.event_name.includes("Event Beta") || f.event_name.includes("Event Test"));
-
-		function eventToDate(instanceId: number) {
-			let num = instanceId;
-			if (num < 381) num++;
-			let anchor_id = 457;
-			let anchor_date = new Date('2025-01-23T12:00:00');
-			let b = betas.filter(f => f.instance_id < instanceId);
-			num -= b.length;
+		function eventToDate(finstid: number) {
+			let num = finstid;
+			if (num < 381) num--;
+			let anchor_id = 491;
+			let anchor_date = new Date('2025-10-02T16:00:00');
+			let b = betas.filter(f => f.fixed_instance_id >= finstid);
+			num += b.length;
 			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
 			return anchor_date;
 		}
 
 		for (let inst of instances) {
-			inst.event_date = eventToDate(inst.instance_id);
+			inst.event_date = eventToDate(inst.fixed_instance_id);
 		}
 		return instances;
 	}
