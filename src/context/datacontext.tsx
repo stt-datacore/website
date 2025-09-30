@@ -353,15 +353,35 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 
 	function processEventInstances(instances: EventInstance[]) {
-		if (instances.length >= 2 && instances[instances.length - 1].fixed_instance_id === instances[instances.length - 2].fixed_instance_id) {
-			instances[instances.length - 1].fixed_instance_id++;
+		let anchor_id = 490;
+		let fi = instances.findIndex(f => f.fixed_instance_id === anchor_id);
+		let z = anchor_id;
+		let name = '';
+		for (let i = fi; i >= 0; i--) {
+			instances[i].fixed_instance_id = z;
+			if (i > 0 && instances[i].event_name !== instances[i - 1].event_name) {
+				z--;
+			}
+		}
+		name = '';
+		z = anchor_id;
+		let c = instances.length;
+		for (let i = fi; i < c; i++) {
+			instances[i].fixed_instance_id = z;
+			if (i < c - 1 && instances[i].event_name !== instances[i + 1].event_name) {
+				z++;
+			}
+			name = instances[i].event_name;
 		}
 		const betas = instances.filter(f => f.event_name.includes("Event Beta") || f.event_name.includes("Event Test"));
 		function eventToDate(finstid: number) {
 			let num = finstid;
-			if (num < 381) num--;
-			let anchor_id = 491;
-			let anchor_date = new Date('2025-10-02T16:00:00');
+			let anchor_id = 490;
+			let anchor_date = new Date('2025-09-25T16:00:00');
+			//if (num < 405) num--;
+			//if (num < 381) num--;
+
+
 			let b = betas.filter(f => f.fixed_instance_id >= finstid);
 			num += b.length;
 			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
@@ -369,6 +389,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}
 
 		for (let inst of instances) {
+			if (inst.fixed_instance_id === 489) {
+				console.log("br");
+			}
 			inst.event_date = eventToDate(inst.fixed_instance_id);
 		}
 		return instances;
