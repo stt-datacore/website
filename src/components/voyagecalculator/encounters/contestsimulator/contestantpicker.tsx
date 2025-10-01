@@ -34,6 +34,7 @@ type ContestantPickerProps = {
 	skills: string[];
 	traits: string[] | undefined;
 	traitPool: string[] | undefined;
+	critChances: number[];
 	crewPool: PlayerCrew[];
 	setContestant: (contestant: IContestant) => void;
 	dismissPicker: () => void;
@@ -41,7 +42,7 @@ type ContestantPickerProps = {
 
 export const ContestantPicker = (props: ContestantPickerProps) => {
 	const { t, tfmt, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-	const { skills, traits, traitPool, crewPool, setContestant, dismissPicker } = props;
+	const { skills, traits, traitPool, critChances, crewPool, setContestant, dismissPicker } = props;
 
 	const gridSetup: IDataGridSetup = {
 		renderGridColumn: (datum: IEssentialData) => <CrewPortrait crew={datum as PlayerCrew} />
@@ -54,7 +55,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 			Object.keys(CONFIG.SKILLS).forEach(skill => {
 				proficientCrew[`scored_${skill}`] = getCrewSkillsScore(proficientCrew, [skill]);
 			});
-			proficientCrew.crit_chance = traits && traits.length > 0 ? getCrewCritChance(proficientCrew, traits) : 0;
+			proficientCrew.crit_chance = traits && traits.length > 0 ? getCrewCritChance(proficientCrew, traits, critChances) : 0;
 			proficientCrew.crit_potential = (traitPool ?? []).filter(critTrait =>
 				proficientCrew.traits.includes(critTrait)
 			);
@@ -106,7 +107,12 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	}).forEach(skill => {
 		columns.push({
 			id: skill,
-			title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+			title: (
+				<React.Fragment>
+					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					{!skills.includes(skill) && <Icon name='arrow alternate circle right outline' fitted />}
+				</React.Fragment>
+			),
 			align: 'center',
 			sortField: {
 				id: `scored_${skill}`,
@@ -189,9 +195,13 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 	function renderCrewProficiency(crew: PlayerCrew, skill: string): JSX.Element {
 		const crewSkill: Skill | undefined = crew.skills[skill];
 		if (!crewSkill) return <></>;
+		let min: number = crewSkill.range_min;
+		if (!skills.includes(skill)) min = Math.floor(min / 2);
+		let max: number = crewSkill.range_max;
+		if (!skills.includes(skill)) max = Math.floor(max / 2);
 		return (
 			<React.Fragment>
-				{crewSkill.range_min}-{crewSkill.range_max}
+				{min}-{max}
 			</React.Fragment>
 		);
 	}
@@ -203,7 +213,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 				crew.id === selectedId
 			);
 			if (crew) {
-				setContestant(makeContestant(skills, traits ?? [], crew))
+				setContestant(makeContestant(skills, traits ?? [], crew, critChances))
 			}
 		}
 		dismissPicker();

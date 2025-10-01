@@ -8,7 +8,7 @@ import {
 import { PlayerCrew } from '../../../../model/player';
 import { GlobalContext } from '../../../../context/globalcontext';
 import { IContestant, IContestResult } from '../model';
-import { formatContestResult, makeContestant, simulateContest } from '../utils';
+import { DEFAULT_CRIT_CHANCES, formatContestResult, makeContestant, makeResultId, simulateContest } from '../utils';
 import { Contestant } from './contestant';
 import { ContestantPicker } from './contestantpicker';
 
@@ -25,72 +25,99 @@ type ContestProps = {
 	skills: string[];
 	traits?: string[];
 	traitPool?: string[];
+	critChances?: number[];
 	a?: IContestant;
 	aPool?: PlayerCrew[];
 	b?: IContestant;
 	bPool?: PlayerCrew[];
+	compact?: boolean;
+	onResult?: (result: IContestResult) => void;
+	onWinsViewChange?: (inView: boolean) => void;
 };
 
 export const Contest = (props: ContestProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { skills, traits, traitPool, aPool, bPool } = props;
+	const { skills, traits, traitPool, critChances, aPool, bPool } = props;
 
 	const [contestantA, setContestantA] = React.useState<IContestant>(initContestant(props.a));
 	const [contestantB, setContestantB] = React.useState<IContestant>(initContestant(props.b));
 	const [contestResult, setContestResult] = React.useState<IContestResult | undefined>(undefined);
+
+	const [compactMode, setCompactMode] = React.useState<boolean>(!!props.compact);
 	const [pickerTrigger, setPickerTrigger] = React.useState<IPickerTrigger | undefined>(undefined);
 
+	// Listen to changes to champion from encounter helper simulator
 	React.useEffect(() => {
+		setContestantA(initContestant(props.a));
+	}, [props.a]);
+
+	React.useEffect(() => {
+		// Don't run simulations again if contestant inputs haven't changed
+		const testId: string = makeResultId(contestantA, contestantB);
+		if (testId === contestResult?.id) return;
+
 		simulateContest(contestantA, contestantB, SIMULATIONS, PERCENTILE).then(result => {
 			setContestResult(result);
+			if (props.onResult) props.onResult(result);
 		});
 		setContestResult(undefined);
 	}, [contestantA, contestantB]);
 
 	return (
 		<React.Fragment>
-			<Grid columns={2} centered stackable>
-				<Grid.Column>
-					<Contestant
-						skills={skills}
-						contestant={contestantA}
-						wins={contestResult ? formatContestResult(contestResult) : <Icon loading name='spinner' />}
-						editContestant={(contestant: IContestant) => setContestantA(contestant)}
-						dismissContestant={aPool ? () => setContestantA(makeContestant(skills, traits ?? [])) : undefined}
-					/>
-					{aPool && (
-						<Button	/* Search for contestant */
-							content={t('voyage.contests.search_for_contestant')}
-							icon='search'
-							fluid
-							onClick={() => setPickerTrigger({ pool: aPool, setContestant: setContestantA })}
+			<div
+				style={{ cursor: compactMode ? 'pointer' : undefined }}
+				onClick={compactMode ? () => setCompactMode(false) : undefined}
+			>
+				<Grid columns={2} centered stackable>
+					<Grid.Column>
+						<Contestant
+							skills={skills}
+							critChances={critChances ?? DEFAULT_CRIT_CHANCES}
+							contestant={contestantA}
+							wins={contestResult ? formatContestResult(contestResult) : <Icon loading name='spinner' />}
+							editContestant={(contestant: IContestant) => setContestantA(contestant)}
+							dismissContestant={aPool ? () => setContestantA(makeContestant(skills, traits ?? [])) : undefined}
+							compact={compactMode}
+							onWinsViewChange={props.onWinsViewChange}
 						/>
-					)}
-				</Grid.Column>
-				<Grid.Column>
-					<Contestant
-						skills={skills}
-						contestant={contestantB}
-						wins={contestResult ? formatContestResult(contestResult, true) : <Icon loading name='spinner' />}
-						editContestant={(contestant: IContestant) => setContestantB(contestant)}
-						dismissContestant={bPool ? () => setContestantB(makeContestant(skills, traits ?? [])) : undefined}
-					/>
-					{bPool && (
-						<Button	/* Search for contestant */
-							content={t('voyage.contests.search_for_contestant')}
-							icon='search'
-							fluid
-							onClick={() => setPickerTrigger({ pool: bPool, setContestant: setContestantB })}
+						{aPool && (
+							<Button	/* Search for contestant */
+								content={t('voyage.contests.search_for_contestant')}
+								icon='search'
+								fluid
+								onClick={() => setPickerTrigger({ pool: aPool, setContestant: setContestantA })}
+							/>
+						)}
+					</Grid.Column>
+					<Grid.Column>
+						<Contestant
+							skills={skills}
+							critChances={critChances ?? DEFAULT_CRIT_CHANCES}
+							contestant={contestantB}
+							wins={contestResult ? formatContestResult(contestResult, true) : <Icon loading name='spinner' />}
+							editContestant={(contestant: IContestant) => setContestantB(contestant)}
+							dismissContestant={bPool ? () => setContestantB(makeContestant(skills, traits ?? [])) : undefined}
+							compact={compactMode}
 						/>
-					)}
-				</Grid.Column>
-			</Grid>
+						{bPool && (
+							<Button	/* Search for contestant */
+								content={t('voyage.contests.search_for_contestant')}
+								icon='search'
+								fluid
+								onClick={() => setPickerTrigger({ pool: bPool, setContestant: setContestantB })}
+							/>
+						)}
+					</Grid.Column>
+				</Grid>
+			</div>
 			{pickerTrigger && (
 				<ContestantPicker
 					id={`${props.id}/contestantpicker`}
 					skills={skills}
 					traits={traits}
 					traitPool={traitPool}
+					critChances={critChances ?? DEFAULT_CRIT_CHANCES}
 					crewPool={pickerTrigger.pool}
 					setContestant={pickerTrigger.setContestant}
 					dismissPicker={() => setPickerTrigger(undefined)}
