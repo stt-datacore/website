@@ -381,7 +381,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 			//if (num < 405) num--;
 			//if (num < 381) num--;
 
-
 			let b = betas.filter(f => f.fixed_instance_id >= finstid);
 			num += b.length;
 			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
@@ -389,9 +388,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}
 
 		for (let inst of instances) {
-			if (inst.fixed_instance_id === 489) {
-				console.log("br");
-			}
 			inst.event_date = eventToDate(inst.fixed_instance_id);
 		}
 		return instances;
