@@ -356,6 +356,7 @@
             "event_skill_matrix_crew": "Crew innerhalb der Ereignisfertigkeitsmatrix",
             "featured_event_crew": "Vorgestellte Event-Crew",
             "note_current": "Aktuelle Ausschlüsse notieren",
+            "noted_exclusions": "Bekannte Ausschlüsse",
             "phase_type": "Phasentyp",
             "restore_notes": "Notierte Ausschlüsse abrufen",
             "search": "Suche nach auszuschließender Crew",

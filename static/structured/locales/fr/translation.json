@@ -356,6 +356,7 @@
             "event_skill_matrix_crew": "Équipiers dans la matrice de compétences de l'événement",
             "featured_event_crew": "Équipiers de l'événement en vedette",
             "note_current": "Notez les exclusions actuelles",
+            "noted_exclusions": "Exclusions notées",
             "phase_type": "Type de phase",
             "restore_notes": "Rappelez les exclusions notées",
             "search": "Rechercher des équipiers à exclure",

@@ -19,6 +19,7 @@ import { PromptContext } from '../../context/promptcontext';
 import { CrewMember } from '../../model/crew';
 import { CrewQuipment } from '../crewpage/crewquipment';
 import { CrewItemsView } from '../item_presenters/crew_items';
+import { NoteEditor } from './noteeditor';
 
 interface ISelectOption {
 	key: string;
@@ -45,7 +46,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const { confirm } = promptContext;
 	const { t, tfmt, useT } = globalContext.localized;
 	const { t: excluder } = useT('consider_crew.excluder');
-
+	const [notesOpen, setNotesOpen] = React.useState(false);
 	const { events: inputEvents, voyageConfig, pageId } = props;
 	const { ephemeral, playerData } = globalContext.player;
 
@@ -281,6 +282,30 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 										/>
 									}
 								/>
+
+							<Button
+								disabled={!notedExclusions?.length}
+								style={{float: 'right'}}
+								icon='pencil'
+								onClick={() => setNotesOpen(!notesOpen)}
+							/>
+
+							<NoteEditor
+								isOpen={notesOpen}
+								onClose={(result) => {
+									if (result) {
+										setNotedExclusions(result);
+									}
+									setNotesOpen(false);
+								}}
+								notes={notedExclusions}
+								setNotes={(result) => {
+									if (result) {
+										setNotedExclusions(result);
+									}
+								}}
+								/>
+
 						</Form.Field>
 
 					</Form.Group>

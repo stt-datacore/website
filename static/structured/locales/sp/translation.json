@@ -356,6 +356,7 @@
             "event_skill_matrix_crew": "Tripulantes de la matriz de habilidades del evento",
             "featured_event_crew": "Tripulantes destacados del evento",
             "note_current": "Anotar exclusiones actuales",
+            "noted_exclusions": "Exclusiones registradas",
             "phase_type": "Tipo de fase",
             "restore_notes": "Recuperar exclusiones anotadas",
             "search": "Búsqueda des tripulantes para excluir",

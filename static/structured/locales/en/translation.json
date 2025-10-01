@@ -356,6 +356,7 @@
             "event_skill_matrix_crew": "Event skill matrix crew",
             "featured_event_crew": "Featured event crew",
             "note_current": "Note current exclusions",
+            "noted_exclusions": "Noted Exclusions",
             "phase_type": "Phase type",
             "restore_notes": "Recall noted exclusions",
             "search": "Search for crew to exclude",
