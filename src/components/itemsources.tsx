@@ -48,7 +48,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 	}
 
 	private readonly setBrief = (name: 'dispute' | 'battle' | 'faction' | 'cadet', value: boolean) => {
-		const newstate = JSON.parse(JSON.stringify(this.state)) as ItemSourcesState;
+		const newstate = structuredClone(this.state) as ItemSourcesState;
 		newstate.briefs[name] = value;
 		this.tiny.setValue('whole_state', newstate);
 		window.setTimeout(() => {
@@ -74,7 +74,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		const briefSepFinal = <><br /></>;
 		const textDec = "";
 		let res = [] as JSX.Element[];
-		let eps = {};
+		let eps = {} as {[key:string]: JSX.Element};
 
 		if (this.context.core.episodes) {
 			this.context.core.episodes.forEach(e => {

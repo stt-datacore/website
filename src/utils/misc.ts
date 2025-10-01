@@ -174,6 +174,15 @@ export function printNCrew(n: number, t: TranslateMethod, total = false) {
 	});
 }
 
+export function colorToRGBA(color: string, alpha?: number) {
+	let re = /^(?:#)([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})$/;
+	let res = re.exec(color);
+	if (!res) return undefined;
+	let rgb = res.slice(1).map(n => Number.parseInt(n, 16));
+	alpha = alpha || 255;
+	//if (alpha < 1) alpha = Math.floor(alpha * 255);
+	return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`
+}
 
 /** Check if the device, itself, (not the resolution) is a mobile device */
 export const mobileCheck = function () {
@@ -387,11 +396,13 @@ export function formatRunTime(seconds: number, t: TranslateMethod) {
  * @param check The method that performs an operation on each combination.
  * @returns If count_only is true, then nothing is returned. Otherwise the combinations are returned.
  */
-export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[], idx?: number) => U[] | false) {
+export function getPermutations<T, U>(array: T[], size: number, count?: bigint, count_only?: boolean, start_idx?: bigint, check?: (set: T[], idx?: number) => U[] | false, break_on_false?: boolean) {
     var current_iter = 0n;
     const mmin = start_idx ?? 0n;
     const mmax = (count ?? 0n) + mmin;
+	let br = false;
     function p(t: T[], i: number) {
+		if (br) return;
         if (t.length === size) {
             if (current_iter >= mmin && (!mmax || current_iter < mmax)) {
                 if (!check) {
@@ -404,16 +415,20 @@ export function getPermutations<T, U>(array: T[], size: number, count?: bigint, 
                             result.push(response);
                         }
                     }
+					else if (break_on_false) {
+						br = true;
+						return;
+					}
                 }
             }
             current_iter++;
             return;
         }
-        if (i + 1 > array.length) {
+        if (br || i + 1 > array.length) {
             return;
         }
 
-        if (mmax !== 0n && current_iter >= mmax) return;
+        if (br || (mmax !== 0n && current_iter >= mmax)) return;
         p([ ...t, array[i] ], i + 1);
         p(t, i + 1);
     }

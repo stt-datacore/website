@@ -40,7 +40,13 @@ export const CombosPlanner = (props: CombosPlannerProps) => {
 	return (
 		<React.Fragment>
 			{tfmt('retrieval.combo_needs.unlock_retrieval_by_needed_polestars_fmt', {
-				needed_polestars: <Label color='yellow'>{t('retrieval.combo_needs.needed_polestars')}</Label>
+				needed_polestars: (
+					<Label color='yellow'>
+						<span style={{ color: 'black' }}>
+							{t('retrieval.combo_needs.needed_polestars')}
+						</span>
+					</Label>
+				)
 			})}
 			<UsefulPolestars usefulAloneIds={usefulAloneIds} usefulOtherIds={usefulOtherIds} />
 		</React.Fragment>

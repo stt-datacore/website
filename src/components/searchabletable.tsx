@@ -354,19 +354,12 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					justifySelf: "flex-end",
 					alignItems: isMobile ? "flex-start" : "center",
 					marginLeft: isMobile ? undefined : '1em',
-					gap: isMobile ? '0.25em' : '0.5em'
+					gap: isMobile ? '0.25em' : '0.5em',
+					flexGrow: 1
 				}}>
 					{!!props.extraSearchContent && <>{props.extraSearchContent}</>}
 					{!!props.showSortDropdown && (
-						<div style={{
-							//margin: "0.5em",
-							display: "flex",
-							flexDirection: "row",
-							alignItems: "center",
-							justifyContent: "flex-end",
-							alignSelf: "flex-end",
-							height: "2em"
-						}}>
+						<>
 							<span>
 								<SortDropDown
 									column={column}
@@ -378,7 +371,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 									/>
 							</span>
 							{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
-						</div>
+						</>
 					)}
 					{!!caption && !!props.dropDownChoices?.length && (
 						<div style={{
@@ -503,11 +496,11 @@ export const SortDropDown = (props: SortDropdownProps) => {
 				col.pseudocolumns.forEach(pcol => {
 					props.push({
 						key: `${col.column}_${pcol}_dropdown_pseudocolumn`,
-						text: translatePseudocolumn(pcol, t),
+						text: col.translatePseudocolumn ? col.translatePseudocolumn(pcol) : translatePseudocolumn(pcol, t),
 						value: pcol,
 						content: (
 							<div style={{marginLeft: '1em'}}>
-								&mdash;&nbsp;{translatePseudocolumn(pcol, t)}
+								&mdash;&nbsp;{col.translatePseudocolumn ? col.translatePseudocolumn(pcol) : translatePseudocolumn(pcol, t)}
 							</div>
 						)
 					});
@@ -523,7 +516,7 @@ export const SortDropDown = (props: SortDropdownProps) => {
 		return undefined;
 	})();
 	return (
-		<div style={{ display: 'flex', alignItems: 'center'}}>
+		<div style={{ display: 'flex', alignItems: 'center' }}>
 			<Dropdown
 				style={{marginRight: '0.5em'}}
 				clearable
@@ -593,7 +586,7 @@ export const initSearchableOptions = (location: any, search?: string) => {
 		// Always use URL parameters if found
 		if (urlParams?.has(option)) value = urlParams.get(option) ?? undefined;
 		// Otherwise check <Link state>
-		if (!value && linkState && linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (!value && linkState && linkState[option]) value = structuredClone(linkState[option]);
 		if (value) {
 			if (!initOptions) initOptions = {};
 			initOptions[option] = value;
@@ -614,7 +607,7 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 	// Otherwise check <Link state>
 	if (!value && location?.state) {
 		const linkState = location.state;
-		if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (linkState[option]) value = structuredClone(linkState[option]);
 	}
 	return (value ?? defaultValue) as T;
 };

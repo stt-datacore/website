@@ -1,22 +1,26 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider } from 'semantic-ui-react';
+import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider, Label } from 'semantic-ui-react';
 
-import { Skill } from '../../../model/crew';
-import { PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
+import { CrewMember, Skill } from '../../../model/crew';
+import { CryoCollection, PlayerCollection, PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import { useStateWithStorage } from '../../../utils/storage';
 
 import { IRosterCrew, ICrewMarkup, ICrewFilter, ICrewUtilityRanks } from '../../../components/crewtables/model';
-import { CrewBaseCells, getBaseTableConfig } from './base';
+import { CrewBaseCells, getBaseTableConfig, renderMainDataScore } from './base';
 import { getBernardsNumber } from '../../../utils/gauntlet';
+import { printPortalStatus } from '../../../utils/crewutils';
+import { categorizeCrewCollections } from '../../../utils/collectionutils';
+import { Collection } from '../../../model/game-elements';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
 	prefer_versatile: boolean;
 	include_base: boolean;
+	always_show_datascore: boolean;
 };
 
 interface IUtilityThresholds {
@@ -34,7 +38,8 @@ const defaultPrefs = {
 		voyage: 10
 	},
 	prefer_versatile: true,
-	include_base: false
+	include_base: false,
+	always_show_datascore: false,
 } as IUtilityUserPrefs;
 
 type CrewUtilityFormProps = {
@@ -46,19 +51,32 @@ type CrewUtilityFormProps = {
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
 	showBase: boolean;
 	setShowBase: (value: boolean) => void;
+	alwaysShowDataScore: boolean;
+	setAlwaysShowDataScore: (value: boolean) => void;
 };
 
 export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
-	const { rosterCrew, crewMarkups, setCrewMarkups, crewFilters, setCrewFilters, showBase, setShowBase } = props;
+	const { rosterCrew, crewMarkups, setCrewMarkups, crewFilters, setCrewFilters, showBase, setShowBase, alwaysShowDataScore, setAlwaysShowDataScore } = props;
 
 	const dbid = playerData?.player.dbid ?? '';
 
 	const [ranks, setRanks] = React.useState<PlayerUtilityRanks | undefined>(undefined);
 	const [userPrefs, setUserPrefs] = useStateWithStorage<IUtilityUserPrefs>(dbid+'/utility', defaultPrefs, { rememberForever: true });
 	const [showPane, setShowPane] = React.useState(false);
+
+	const crewReasons = React.useMemo(() => {
+		if (!playerData) return {};
+		const playerCols = playerData.player.character.cryo_collections.filter(f => f.milestone.rewards?.length);
+		const cols = globalContext.core.collections.filter(f => playerCols.some(pc => `${pc.type_id}` == `${f.id}` || `${pc.type_id}` == `${f.type_id}`))
+		const output = {} as {[key:string]: string[]}
+		for (let c of rosterCrew) {
+			output[c.id] = reasonsToKeep(c, cols);
+		}
+		return output;
+	}, [rosterCrew, playerData]);
 
 	const addCrewUtility = (crew: IRosterCrew) => {
 		const myRanks = {} as ICrewUtilityRanks;
@@ -87,7 +105,8 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 					shuttle: thresholds.filter(key => ['B', 'S'].includes(key.slice(0, 1))).length,
 					gauntlet: thresholds.filter(key => key.slice(0, 1) === 'G').length,
 					voyage: thresholds.filter(key => key.slice(0, 1) === 'V').length
-				}
+				},
+				reasons_to_keep: crewReasons[crew.id]
 			}
 		};
 	};
@@ -103,6 +122,9 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	React.useEffect(() => {
 		if (userPrefs.include_base !== showBase) {
 			setShowBase(userPrefs.include_base);
+		}
+		if (userPrefs.always_show_datascore !== alwaysShowDataScore) {
+			setAlwaysShowDataScore(userPrefs.always_show_datascore);
 		}
 	}, [userPrefs]);
 
@@ -129,12 +151,12 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 					event_planner: <Link to='/eventplanner'>{t('menu.tools.event_planner')}</Link>,
 					gauntlets: <Link to='/gauntlets'>{t('menu.tools.gauntlet')}</Link>,
 					voyage_calculator: <Link to='/voyage'>{t('menu.tools.voyage_calculator')}</Link>,
-				})}				
+				})}
 			</p>
 			<Button content={t('crew_utility.customize_button')} onClick={() => setShowPane(!showPane)} />
 			{showPane &&
 				<div style={{ margin: '1em 0' }}>
-					<p>{t('crew_utility.customize_header')}</p>
+					<p style={{textAlign: 'center'}}>{t('crew_utility.customize_header')}</p>
 					{renderThresholdForm()}
 				</div>
 			}
@@ -196,21 +218,31 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 						</Table.Row>
 					</Table.Body>
 				</Table>
-				<div style={{ marginTop: '1em' }}>
-					<Form.Field
-						control={Checkbox}
-						label={<label>{t('crew_utility.consider_three_skill_check')}</label>}
-						checked={userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile}
-						onChange={(e, { checked }) => setUserPrefs({...userPrefs, prefer_versatile: checked})}
-					/>
-				</div>
-				<div style={{ marginTop: '1em' }}>
-					<Form.Field
-						control={Checkbox}
-						label={<label>{t('crew_utility.include_base_ranks_check')}</label>}
-						checked={userPrefs.include_base ?? defaultPrefs.include_base}
-						onChange={(e, { checked }) => setUserPrefs({...userPrefs, include_base: checked})}
-					/>
+				<div style={{display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+					<div style={{ marginTop: '1em' }}>
+						<Form.Field
+							control={Checkbox}
+							label={<label>{t('crew_utility.consider_three_skill_check')}</label>}
+							checked={userPrefs.prefer_versatile ?? defaultPrefs.prefer_versatile}
+							onChange={(e, { checked }) => setUserPrefs({...userPrefs, prefer_versatile: checked})}
+						/>
+					</div>
+					<div style={{ marginTop: '1em' }}>
+						<Form.Field
+							control={Checkbox}
+							label={<label>{t('crew_utility.include_base_ranks_check')}</label>}
+							checked={userPrefs.include_base ?? defaultPrefs.include_base}
+							onChange={(e, { checked }) => setUserPrefs({...userPrefs, include_base: checked})}
+						/>
+					</div>
+					<div style={{ marginTop: '1em' }}>
+						<Form.Field
+							control={Checkbox}
+							label={<label>{t('rank_names.always_show_datascore')}</label>}
+							checked={userPrefs.always_show_datascore ?? defaultPrefs.always_show_datascore}
+							onChange={(e, { checked }) => setUserPrefs({...userPrefs, always_show_datascore: !!checked})}
+						/>
+					</div>
 				</div>
 			</Form>
 		)
@@ -295,10 +327,39 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 
 		setRanks({...ranks});
 	}
+
+	function reasonsToKeep(crew: CrewMember, collections: Collection[]) {
+		let reasons = [] as string[];
+		if (crew.ranks.scores.ship.overall_rank <= 50) {
+			reasons.push(t(`rank_names.scores.ship`))
+		}
+		let nev = t('global.never');
+		let ps = printPortalStatus(crew, t, true, true);
+		if (ps.includes(nev)) {
+			ps = ps.replace(nev, '').trim();
+			reasons.push(`${t('base.never_in_portal')} ${ps}`);
+		}
+		let scores = Object.entries(crew.ranks.scores).filter(([key, value]) => key.includes("_rank") && value <= 50);
+		for (let s of scores) {
+			reasons.push(t(`rank_names.scores.${s[0]}`))
+		}
+		const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, collections);
+		if (crew_rewards.length) {
+			reasons.push(t('collections.types.crew_rewarding'));
+		}
+		if (stat_buffs.length && stat_buffs.some(sb => sb.size <= 50)) {
+			reasons.push(t('collections.types.stat_boosting'));
+		}
+		if (others.length) {
+			reasons.push(t('collections.types.vanity'));
+		}
+		return reasons.filter(f => !!f).sort();
+	}
+
 };
 
-export const getCrewUtilityTableConfig = (t: TranslateMethod, include_base: boolean) => {
-	const tableConfig = [] as ITableConfigRow[];	
+export const getCrewUtilityTableConfig = (t: TranslateMethod, include_base: boolean, always_show_datascore: boolean) => {
+	const tableConfig = [] as ITableConfigRow[];
 
 	if (include_base) {
 		let base = getBaseTableConfig('profileCrew', t);
@@ -306,12 +367,36 @@ export const getCrewUtilityTableConfig = (t: TranslateMethod, include_base: bool
 			tableConfig.push(column);
 		}
 	}
+	else if (always_show_datascore) {
+		tableConfig.push(
+			{
+				width: 1, column: 'ranks.scores.overall', title: t('rank_names.datascore'), reverse: true,
+				customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+					if (a.ranks?.scores?.overall === undefined && b.ranks?.scores?.overall === undefined) return 0;
+					else if (a.ranks?.scores?.overall === undefined) return 1;
+					else if (b.ranks?.scores?.overall === undefined) return -1;
+					let r = a.ranks.scores.overall - b.ranks.scores.overall;
+					if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
+					return r;
+				}
+			},
+		);
+	}
 
 	tableConfig.push(
 		{ width: 1, column: 'markup.crew_utility.thresholds.length', title: include_base ? t('crew_utility.columns.u') : t('crew_utility.columns.utility'), reverse: true, tiebreakers: ['max_rarity'] },
 		{ width: 1, column: 'markup.crew_utility.counts.shuttle', title: include_base ? t('crew_utility.columns.s') : t('crew_utility.columns.shuttle_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
 		{ width: 1, column: 'markup.crew_utility.counts.gauntlet', title: include_base ? t('crew_utility.columns.g') : t('crew_utility.columns.gauntlet_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
 		{ width: 1, column: 'markup.crew_utility.counts.voyage', title: include_base ? t('crew_utility.columns.v') : t('crew_utility.columns.voyage_ranks'), reverse: true, tiebreakers: ['max_rarity'] },
+		{
+			width: 1, column: 'markup.crew_utility.reasons_to_keep', title: include_base ? t('crew_utility.columns.r') : t('crew_utility.columns.reasons_to_keep'), reverse: true, tiebreakers: ['max_rarity'],
+			customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+				let r = (a.markup?.crew_utility?.reasons_to_keep?.length ?? 0) - (b.markup?.crew_utility?.reasons_to_keep?.length ?? 0);
+				if (!r) r = a.markup?.crew_utility?.reasons_to_keep?.join().localeCompare(b.markup?.crew_utility?.reasons_to_keep?.join() || "") || 0;
+				if (!r) r = a.ranks.scores.overall - b.ranks.scores.overall;
+				return r;
+			}
+		},
 	)
 	return tableConfig;
 };
@@ -320,13 +405,20 @@ type CrewCellProps = {
 	pageId: string;
 	crew: IRosterCrew;
 	showBase: boolean;
+	alwaysShowDataScore: boolean;
 };
 
 export const CrewUtilityCells = (props: CrewCellProps) => {
-	const { crew, showBase, pageId } = props;
+	const { crew, showBase, pageId, alwaysShowDataScore } = props;
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<React.Fragment>
 			{showBase && <CrewBaseCells crew={crew} pageId={pageId} tableType='profileCrew' />}
+			{!showBase && alwaysShowDataScore &&
+			<Table.Cell>
+				{renderMainDataScore(crew)}
+			</Table.Cell>
+			}
 			<Table.Cell textAlign='center'>
 				<RanksModal crew={crew} />
 			</Table.Cell>
@@ -339,8 +431,24 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 			<Table.Cell textAlign='center'>
 				{renderUtilities(crew, ['V'])}
 			</Table.Cell>
+			<Table.Cell>
+				{renderReasonsToKeep(crew)}
+			</Table.Cell>
 		</React.Fragment>
 	);
+
+	function renderReasonsToKeep(crew: IRosterCrew) {
+		if (crew.immortal) return <>{t('global.na')}</>;
+		if (!crew.markup?.crew_utility?.reasons_to_keep?.length) return <>{t('global.none')}</>;
+		return crew.markup.crew_utility.reasons_to_keep.map((reason, idx) => {
+			let key = `${crew.symbol}_reason_${idx}`;
+			return (
+				<Label key={key} style={{margin: '0.5em 0', width: '100%'}}>
+					{reason}
+				</Label>
+			)
+		});
+	}
 
 	function renderUtilities(crew: IRosterCrew, options: string[]): JSX.Element {
 		if (!crew.markup || !crew.markup.crew_utility) return (<></>);

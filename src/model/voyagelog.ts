@@ -1,6 +1,6 @@
-import { BaseSkills } from "./crew"
+import { BaseSkills, CrewMember } from "./crew"
 import { Icon } from "./game-elements"
-import { Ship, ShipAction } from "./ship"
+import { ReferenceShip, Ship, ShipAction } from "./ship"
 
 export type VoyageLogRoot = [VoyageData, NarrativeData];
 
@@ -44,6 +44,10 @@ export interface VoyageNarrative {
     skill_check?: SkillCheck
     rewards?: Rewards
     selection?: number;
+    selection_locked?: boolean;
+    selection_var?: string;
+    selection_data?: CrewMember | ReferenceShip;
+    selection_rewards?: Loot[];
 }
 
 export interface SkillCheck {

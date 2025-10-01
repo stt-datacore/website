@@ -182,7 +182,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 			newcopy.skills = applyCrewBuffs(newcopy, buffConfig)!
 		}
 		else {
-			newcopy.skills = JSON.parse(JSON.stringify(newcopy.base_skills));
+			newcopy.skills = structuredClone(newcopy.base_skills);
 		}
 		return newcopy;
 	}

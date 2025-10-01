@@ -67,14 +67,14 @@ export const EventPicker = (props: EventPickerProps) => {
 	}, [events, eventIndex]);
 
 	React.useEffect(() => {
-		const rosterCrew: IRosterCrew[] = JSON.parse(JSON.stringify(props.rosterCrew)) as IRosterCrew[];
+		const rosterCrew: IRosterCrew[] = structuredClone(props.rosterCrew) as IRosterCrew[];
 		const lockable: LockedProspect[] = [];
 
 		if (rosterType === 'myCrew' && playerData && buffConfig) {
 			prospects.forEach((p) => {
 				const crew = globalContext.core.crew.find((c) => c.symbol === p.symbol);
 				if (crew) {
-					const prospect: IRosterCrew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+					const prospect: IRosterCrew = structuredClone(crew) as IRosterCrew;
 					prospect.id = rosterCrew.length + 1;
 					prospect.prospect = true;
 					prospect.statusIcon = 'add user';
@@ -284,7 +284,7 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
-		justifyContent: 'space-evenly'
+		justifyContent: 'flex-start'
 	}}>
 		<ShipHoverStat targetGroup='event_featured_ships' />
 		{event.featured_ships.map((symbol) => {
@@ -293,7 +293,7 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 			else {
 				return (
 					<div style={{
-						display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+						display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
 						gap: '0.5em'
 					}}>
 						<AvatarView
@@ -325,11 +325,11 @@ const EventMega = (props: FeatureToolProps & { mega: CrewMember }) => {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		alignItems: 'center',
-		justifyContent: 'space-evenly'
+		justifyContent: 'flex-start'
 	}}>
 		<CrewHoverStat targetGroup='event_mega' />
 		<div style={{
-				display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+				display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
 				gap: '0.5em'
 			}}>
 

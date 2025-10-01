@@ -27,6 +27,7 @@ export enum RetrievableState {
 	Viable = 1,		// Uniquely retrievable
 	NonUnique,		// In portal, but not uniquely retrievable
 	InFuture,		// Not yet in portal
+	Expiring,       // Will soon not be uniquely retrievable
 	Never			// Exclusive crew that will never be retrievable
 };
 

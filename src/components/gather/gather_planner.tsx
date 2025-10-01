@@ -92,7 +92,7 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
 
             let foundItems = adventures.map(ad => ad.demands.map(demand => {
                 let item = items.find(f => f.id?.toString() === demand.archetype_id.toString());
-                item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
+                item = structuredClone(item) as EquipmentItem;
                 item = mergeCache(item);
 
                 makeRecipeFromArchetypeCache(
@@ -122,13 +122,13 @@ export const GatherPlanner = (props: GatherPlannerProps) => {
                             fitem.needed += demand.needed ?? 0;
                         }
                         else {
-                            csource.items.push(JSON.parse(JSON.stringify(demand)));
+                            csource.items.push(structuredClone(demand));
                         }
                     }
                     else {
                         newsources.push({
                             source,
-                            items: [JSON.parse(JSON.stringify(demand))]
+                            items: [structuredClone(demand)]
                         });
                     }
                 });

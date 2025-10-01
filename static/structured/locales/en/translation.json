@@ -32,6 +32,7 @@
         "when_new_fuse": "Alert when a fuse for an owned crew is discovered in the buy-back well."
     },
     "base": {
+        "additional_event_appearances": "Additional event appearances",
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
@@ -63,6 +64,7 @@
         "n_to_next": "{{n}} to next",
         "never_in_portal": "Never In Portal",
         "not_in_portal": "Not In Portal",
+        "not_maincast": "Not Main Cast",
         "not_uniquely_retrievable": "Not Uniquely Retrievable",
         "not_yet_in_portal": "Not yet in portal",
         "offer_cost": "Offer Cost",
@@ -160,7 +162,9 @@
                 "collections": "Stat-Boosting Collections Increased",
                 "groupSparsity": "Voyage Group Sparsity",
                 "improved": "Voyages Improved",
+                "is_custom": "Custom",
                 "magic": "Measure Limit (Magic number)",
+                "name": "{{global.name}}",
                 "never": "Never In Portal",
                 "portal": "Not In Portal",
                 "power": "Base Power Score",
@@ -330,7 +334,12 @@
                 "title": "Progress"
             }
         },
-        "progress_to_next": "Progress to next"
+        "progress_to_next": "Progress to next",
+        "types": {
+            "crew_rewarding": "Crew-rewarding collections",
+            "stat_boosting": "Stat-boosting collections",
+            "vanity": "Vanity collections"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Consider crew on active shuttles",
@@ -436,6 +445,8 @@
         "columns": {
             "g": "G",
             "gauntlet_ranks": "Gauntlet Ranks",
+            "r": "R",
+            "reasons_to_keep": "Reasons To Keep",
             "s": "S",
             "shuttle_ranks": "Shuttle Ranks",
             "u": "U",
@@ -479,6 +490,10 @@
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
+    },
+    "delete": {
+        "prompt_x": "Are you sure you wish to delete '{{x}}'?",
+        "title": "Delete"
     },
     "demands": {
         "demands": "Demands",
@@ -591,6 +606,33 @@
     },
     "events_common": {
         "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
+    },
+    "factions": {
+        "already_honored": "Already honored",
+        "already_tanked": "Already tanked",
+        "average_odds_dropdown": "Running shuttles at average odds of {{dropdown}}",
+        "columns": {
+            "faction": "Faction",
+            "honored": "Honored",
+            "reputation": "Reputation",
+            "shuttles_to_honored": "Shuttles to Honored",
+            "shuttles_to_tank": "Shuttles to Tank",
+            "time_needed": "Time Needed"
+        },
+        "n_shuttles_per_day": "Running {{n}} shuttles per day.",
+        "n_shuttles_to_tank": "{{n}} shuttles to tank.",
+        "n_successful_missions": "{{n}} successful missions.",
+        "odds_note": "(Note: Shuttles cannot be run with a probability of success less than 14%. Shuttles need a probability of less than 60% to be tanked.)",
+        "reputation": {
+            "allied": "Allied",
+            "despised": "Despised",
+            "friendly": "Friendly",
+            "honored": "Honored",
+            "hostile": "Hostile",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanking",
+        "tanking_explain": "{{tanking}} shuttles is the process of deliberately failing shuttles so that the difficulty and duration of shuttle missions go down."
     },
     "fbb": {
         "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
@@ -947,6 +989,7 @@
         "and": "and",
         "and_n_more_ellipses": "and {{n}} more ...",
         "any": "Any",
+        "apply": "Apply",
         "apply_filters": "Apply Filters",
         "approx": "Approx.",
         "assigned": "Assigned",
@@ -968,6 +1011,7 @@
         "copy_permalink_clipboard": "Copy permalink to clipboard",
         "cost": "Cost",
         "create": "Create",
+        "create_new_x": "Create New {{x}}",
         "date_end": "End Date",
         "date_start": "Start Date",
         "default": "Default",
@@ -978,7 +1022,10 @@
         "disabled": "Disabled",
         "dismiss": "Dismiss",
         "download": "Download",
+        "duplicate_input": "Duplicate input",
+        "duplicate_name": "Duplicate name",
         "edit": "Edit",
+        "edit_presets": "Manage Presets",
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
@@ -997,6 +1044,7 @@
         "ingredient_warning": "You do not have the ingredients to build this item.",
         "ingredient_warning_all": "You do not have the ingredients to build all of these items.",
         "initial_launch": "Initial Game Launch",
+        "invalid_input": "Invalid input",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena tickets",
@@ -1039,6 +1087,7 @@
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
         "lose": "Lose",
+        "map_position": "Map Position",
         "max": "Max",
         "max_rarity": "Max. rarity",
         "member": "Member",
@@ -1054,6 +1103,7 @@
         "name": "Name",
         "never": "Never",
         "new": "New",
+        "new_name": "New name",
         "no": "No",
         "no_items_found": "No items found",
         "no_search_results_found": "No results found. Please try different search options.",
@@ -1067,13 +1117,16 @@
         "or": "or",
         "pending_release": "Pending Release",
         "percentile": "Percentile",
-        "permalink": "permalink",
+        "permalink": "Permalink",
         "portal": "Portal",
         "portal_update": "Portal Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
+        "rename": "Rename",
+        "rerun": "Rerun",
         "reserved": "Reserved",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
@@ -1163,6 +1216,7 @@
         "filter_by_series": "Filter by series",
         "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
+        "filter_by_skill_order_ownership": "Filter by skill order ownership",
         "filter_by_status": "Filter by status",
         "filter_by_timeframe": "Filter by timeframe",
         "filter_by_trait": "Filter by trait",
@@ -1586,6 +1640,10 @@
             "trait": "Trait"
         }
     },
+    "overwrite": {
+        "prompt_x": "Are you sure you wish to overwrite '{{x}}'?",
+        "title": "Overwrite"
+    },
     "pages": {
         "crew_stats": "Crew Stats",
         "crew_view_modes": {
@@ -1690,6 +1748,7 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "always_show_datascore": "Always show DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
         "cab_grade": "CAB Grade",
@@ -1751,9 +1810,29 @@
     },
     "ranking_tools": {
         "current_weighting": "Current Weighting",
-        "show_weighting_details": "Show weighting details"
+        "show_weighting_details": "Show weighting details",
+        "weights": {
+            "base_plus": {
+                "quipment": "{{rank_names.scores.quipment}}",
+                "shuttleRank": "{{rank_names.scores.shuttle}}",
+                "title": "Base+ Weighting"
+            },
+            "gauntlet_plus": {
+                "crit": "{{rank_names.scores.crit}}",
+                "gauntlet": "{{rank_names.scores.gauntlet}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Gauntlet+ Weighting"
+            },
+            "voyage_plus": {
+                "am_seating": "{{rank_names.scores.am_seating}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Voyage+ Weighting",
+                "voyage": "{{rank_names.scores.voyage}}"
+            }
+        }
     },
     "retrieval": {
+        "alert_pending_crew": "This crew is currently not uniquely retrievable but a future portal update will change this status.",
         "allow_unowned": "Allow unowned crew",
         "assume_in_game_favorites": "Dynamically add in-game favorites to wishlist",
         "combo": "Combo",
@@ -1773,6 +1852,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Show all uniquely retrievable crew",
+            "show_expiring_crew": "Show expiring unique retrievals",
             "show_retrievable_crew": "Only show crew I can retrieve"
         },
         "description": "Find the best options for adding crew to your roster via crew retrieval.",
@@ -1824,7 +1904,7 @@
             "title": "Celestial Market",
             "top_n_polestars": "Top {{n}} polestars",
             "unlisted": "Unlisted",
-            "updated": "Market is updated hourly."
+            "updated": "Market is updated every 5 minutes."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
@@ -1884,6 +1964,7 @@
         "use_all_combos_below_to_retrieve": "Use ALL combos below to retrieve",
         "use_any_combo_below_to_retrieve": "Use any combo below to retrieve",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "This crew is currently uniquely retrievable but a future portal update will change this status.",
         "wishlist": {
             "add": "Add to wishlist.",
             "auto": "Crew is auto wishlisted.",
@@ -1948,6 +2029,12 @@
             "three_skill_check": "Only consider 3-skill crew"
         },
         "title": "Roster Summary"
+    },
+    "sales": {
+        "active": "Active Sales",
+        "honor_sale": "Honor Sale",
+        "slot_sale": "Crew Slot Sale",
+        "title": "Sales"
     },
     "series": {
         "ds9": "Deep Space Nine",
@@ -2218,6 +2305,11 @@
                 "inactive": "Standard. Shuttle missions and recommendations will NOT be saved by the shuttle helper."
             }
         }
+    },
+    "skill_order_ownership": {
+        "notmax": "Only show unowned or unmaxed skill orders",
+        "underowned": "Only unmaxed skill orders",
+        "unowned": "Only unowned skill orders"
     },
     "spinners": {
         "calculating": "Calculating...",

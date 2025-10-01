@@ -1,21 +1,19 @@
-import React from "react";
-import { GauntletContext } from "./dataprovider";
-import { GlobalContext } from "../../context/globalcontext";
-import { Gauntlet, GauntletViewMode } from "../../model/gauntlets";
 import moment from "moment";
-import { Accordion, AccordionPanel, Button, Dropdown, Icon, Label, Message } from "semantic-ui-react";
-import { gradeToColor, skillToShort } from "../../utils/crewutils";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import ItemDisplay from "../itemdisplay";
+import React from "react";
+import { Accordion, Button, Dropdown, Icon, Label, Message } from "semantic-ui-react";
 import { randomCrew } from "../../context/datacontext";
+import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
+import { Gauntlet, GauntletViewMode } from "../../model/gauntlets";
 import { PlayerCrew } from "../../model/player";
-import { AvatarView, BasicItem } from "../item_presenters/avatarview";
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
+import { gradeToColor } from "../../utils/crewutils";
 import { getCrewCrit, getCritColor, printGauntlet } from "../../utils/gauntlet";
 import { useStateWithStorage } from "../../utils/storage";
-
-
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { AvatarView } from "../item_presenters/avatarview";
+import ItemDisplay from "../itemdisplay";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
+import { GauntletContext } from "./dataprovider";
 
 export interface GauntletHeaderProps {
     gauntlet: Gauntlet;

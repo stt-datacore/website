@@ -1,12 +1,10 @@
-import React from "react";
-import { Gauntlet, GauntletViewMode, Opponent, PairGroup } from "../../model/gauntlets";
-import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings, GauntletUserPrefs } from "../../utils/gauntlet";
-import { GlobalContext } from "../../context/globalcontext";
-import { useStateWithStorage } from "../../utils/storage";
 import moment from "moment";
-import { TinyStore } from "../../utils/tiny";
+import React from "react";
+import { GlobalContext } from "../../context/globalcontext";
+import { Gauntlet, GauntletViewMode, PairGroup } from "../../model/gauntlets";
 import { skillToShort } from "../../utils/crewutils";
-import { UnifiedWorker } from "../../typings/worker";
+import { DefaultAdvancedGauntletSettings, GauntletPane, GauntletSettings, GauntletUserPrefs } from "../../utils/gauntlet";
+import { TinyStore } from "../../utils/tiny";
 
 export interface IGauntletContext {
     config: GauntletUserPrefs;
@@ -225,7 +223,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
             if (!q) continue;
             let qparse = uniques[q.index];
             if (qparse) {
-                qparse = JSON.parse(JSON.stringify(qparse)) as Gauntlet;
+                qparse = structuredClone(qparse) as Gauntlet;
                 qparse.template = true;
                 pass2.push(qparse);
             }

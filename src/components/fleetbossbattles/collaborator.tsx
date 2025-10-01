@@ -431,7 +431,7 @@ export const Collaborator = (props: CollaboratorProps) => {
 					resolve(false);
 					return;
 				}
-				const newSim: Collaboration = JSON.parse(JSON.stringify(remoteSim));
+				const newSim: Collaboration = structuredClone(remoteSim);
 				newSim.solves = spotter.solves;
 				const newTrials: CrewTrial[] = [];
 				['attemptedCrew', 'pendingCrew'].forEach(trialType => {

@@ -358,9 +358,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             let boss = bossData?.boss_ship;
             if (boss) {
                 if (bossData?.combo?.active_effects?.length) {
-                    newconfig.effects = JSON.parse(JSON.stringify(bossData.combo.active_effects));
+                    newconfig.effects = structuredClone(bossData.combo.active_effects);
                 }
-                boss = JSON.parse(JSON.stringify(boss)) as BossShip;
+                boss = structuredClone(boss) as BossShip;
                 boss.rarity = rarity;
             }
             newconfig.opponent = boss;
@@ -971,10 +971,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
 
             const config: ShipWorkerConfig = {
-                event_crew: ccrew ? JSON.parse(JSON.stringify(ccrew)) : undefined,
+                event_crew: ccrew ? structuredClone(ccrew) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
                 ship: prepareShip(ship),
-                crew: JSON.parse(JSON.stringify(current ? crewStations : pfcrew)),
+                crew: structuredClone(current ? crewStations : pfcrew) as CrewMember[],
                 battle_mode: battleMode,
                 power_depth: powerDepth,
                 min_rarity: minRarity,
@@ -1002,7 +1002,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     function prepareShip(ship: Ship) {
         let isowned = globalContext.player.playerShips?.some(ps => ps.symbol === ship.symbol && ps.owned);
-        ship = JSON.parse(JSON.stringify(ship));
+        ship = structuredClone(ship);
 
         if (buffUnownedShips) {
             if (!isowned) {
@@ -1313,7 +1313,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     function createOpponent() {
         if (!opponentShip?.battle_stations?.length || !opponentStations?.length || !opponentStations.some(f => f)) return undefined;
 
-        const newShip = JSON.parse(JSON.stringify(opponentShip)) as Ship;
+        const newShip = structuredClone(opponentShip) as Ship;
         const c = newShip.battle_stations!.length;
         for (let i = 0; i < c; i++) {
             if (opponentStations[i]) {

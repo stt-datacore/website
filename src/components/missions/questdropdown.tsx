@@ -57,7 +57,7 @@ export const QuestDropDown = (props: QuestDropDownProps) => {
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
                         let quests = result.quests;
-                        result.quests[i].challenges = rq[quests[i].id].challenges ? JSON.parse(JSON.stringify(rq[quests[i].id].challenges)) : undefined;
+                        result.quests[i].challenges = rq[quests[i].id].challenges ? structuredClone(rq[quests[i].id].challenges) : undefined;
                         result.quests[i].challenges?.forEach(ch => {
                             ch.trait_bonuses = [];
                             ch.difficulty_by_mastery = [];

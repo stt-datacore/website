@@ -37,6 +37,7 @@ import WeightingInfoPopup from './weightinginfo';
 import { ReleaseDateFilter } from './filters/crewreleasedate';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { CrewSkillOrder } from './filters/crewskillorder';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -46,6 +47,15 @@ interface IRosterTableContext {
 	lockableCrew: LockedProspect[];
 	buffMode?: PlayerBuffMode;
 	setBuffMode: (value?: PlayerBuffMode) => void;
+};
+
+type RosterConfig = {
+	slots: number | undefined,
+	traitsOnly: boolean,
+	powerMode: PowerMode,
+	rosterType: RosterType,
+	tableView: TableView,
+	specialView: SpecialViews | undefined
 };
 
 const RosterTableContext = React.createContext<IRosterTableContext>({} as IRosterTableContext);
@@ -216,14 +226,16 @@ interface IDataPrepared {
 const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
-	const { topQuipmentScores: top, continuum_missions } = globalContext.core;
+	const { topQuipmentScores: top } = globalContext.core;
 	const tableContext = React.useContext(RosterTableContext);
 	const { pageId, rosterCrew, rosterType, initOptions, lockableCrew, buffMode, setBuffMode } = tableContext;
 
 	const [preparedCrew, setPreparedCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
+	const [ownedSkills, setOwnedSkills] = React.useState<string[]>([]);
+	const [maxedSkills, setMaxedSkills] = React.useState<string[]>([]);
+
 	const [dataPrepared, setDataPrepared] = React.useState<IDataPrepared>({} as IDataPrepared);
 	const [crewMarkups, setCrewMarkups] = React.useState<ICrewMarkup[]>([] as ICrewMarkup[]);
 	const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([] as ICrewFilter[]);
@@ -231,6 +243,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [viewIsReady, setViewIsReady] = React.useState<boolean | undefined>(undefined);
 
 	const [showBase, setShowBase] = React.useState<boolean>(false);
+	const [alwaysShowDataScore, setAlwaysShowDataScore] = React.useState<boolean>(false);
 	const [weightingOpen, setWeightingOpen] = React.useState<boolean>(false);
 
 	const [specialView, setSpecialView] = useStateWithStorage<SpecialViews | undefined>('/rosterTable/specialView', undefined);
@@ -243,11 +256,18 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
-
+	const [activeRarities, setActiveRarities] = React.useState([] as number[]);
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
+	const [rosterConfig, setRosterConfig] = React.useState<RosterConfig | undefined>({
+			slots,
+			traitsOnly,
+			powerMode,
+			rosterType,
+			tableView,
+			specialView
+		});
 
 	const quipment = getQuipmentAsItemWithBonus(globalContext.core.items);
-
 	const shipranks = globalContext.core.crew.some(c => c.ranks.scores.ship);
 
 	const getActiveBuffs = () => {
@@ -290,8 +310,8 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			id: 'dc_ranks',
 			available: true,
 			optionText: t('crew_views.scoring'),
-			tableConfig: getDataCoreRanksTableConfig(t),
-			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells crew={crew} />
+			tableConfig: getDataCoreRanksTableConfig(globalContext.core.current_weighting, t, activeRarities),
+			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells rarityFilter={activeRarities} weights={globalContext.core.current_weighting} crew={crew} />
 		},
 		{
 			id: 'g_ranks',
@@ -325,10 +345,10 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					let c = crew.length;
 					for (let i = 0; i < c; i++) {
 						if (!crew[i].immortal) {
-							const work_crew = JSON.parse(JSON.stringify(crew[i]));
+							const work_crew = oneCrewCopy(crew[i]);
 							const ref_crew = globalContext.core.crew.find(f => f.symbol === work_crew.symbol);
 							if (ref_crew) {
-								work_crew.base_skills = JSON.parse(JSON.stringify(ref_crew.base_skills));
+								work_crew.base_skills = structuredClone(ref_crew.base_skills);
 							}
 							crew[i] = work_crew;
 						}
@@ -407,9 +427,11 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					setCrewFilters={setCrewFilters}
 					showBase={showBase}
 					setShowBase={setShowBase}
+					alwaysShowDataScore={alwaysShowDataScore}
+					setAlwaysShowDataScore={setAlwaysShowDataScore}
 				/>,
-			tableConfig: getCrewUtilityTableConfig(t, showBase),
-			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} crew={crew} />
+			tableConfig: getCrewUtilityTableConfig(t, showBase, alwaysShowDataScore),
+			renderTableCells: (crew: IRosterCrew) => <CrewUtilityCells pageId={pageId} showBase={showBase} alwaysShowDataScore={alwaysShowDataScore} crew={crew} />
 		},
 		{
 			id: 'qp_score',
@@ -480,6 +502,19 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					pageId={pageId}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
+				/>
+		},
+		{
+			id: 'skillorder_ownership',
+			available: (['offers', 'allCrew', 'buyBack'].includes(rosterType)) && !!playerData,
+			form:
+				<CrewSkillOrder
+					key='filter_allcrew_skillorder_ownership'
+					pageId={pageId}
+					crewFilters={crewFilters}
+					setCrewFilters={setCrewFilters}
+					ownedSkills={ownedSkills}
+					maxedSkills={maxedSkills}
 				/>
 		},
 		{
@@ -556,40 +591,22 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	React.useEffect(() => {
 		// Apply roster markups, i.e. add sortable fields to crew
-		const prepareCrew = async () => {
-			const preparedCrew = rosterCrew.map(crew => {
-				crew = oneCrewCopy(crew);
-				if (crewMarkups.length > 0) {
-						crewMarkups.forEach(crewMarkup => {
-						crewMarkup.applyMarkup(crew);
-					});
-				}
-				if (!!playerData && specialView === 'as_immortalized' && rosterType === 'myCrew') {
-					if (!crew.immortal || !!crew.kwipment?.some(q => typeof q === 'number' ? !!q : !!q[1])) {
-						let refcrew = globalContext.core.crew.find(f => f.symbol === crew.symbol)!;
-						crew.base_skills = JSON.parse(JSON.stringify(refcrew.base_skills));
-						if (!crew.immortal) crew.immortal = CompletionState.DisplayAsImmortalOwned;
-						crew.rarity = crew.max_rarity;
-						crew.level = 100;
-						crew.skills = applyCrewBuffs(crew, buffMode === 'max' ? globalContext.maxBuffs! : globalContext.player.buffConfig!)!;
-					}
-				}
-				return crew;
-			});
-			if (view?.worker) {
-				setViewIsReady(false);
-				view.worker(preparedCrew).then((result) => {
-					setPreparedCrew(result);
-					setViewIsReady(true);
-				});
-			}
-			else {
-				setPreparedCrew([...preparedCrew]);
-				setViewIsReady(undefined);
-			}
-		};
 		prepareCrew();
-	}, [rosterCrew, crewMarkups, slots, traitsOnly, powerMode, rosterType, tableView, specialView]);
+	}, [rosterCrew, crewMarkups, rosterConfig]);
+
+	React.useEffect(() => {
+		const newConfig: RosterConfig = {
+			slots,
+			traitsOnly,
+			powerMode,
+			rosterType,
+			tableView,
+			specialView
+		};
+		if (!rosterConfig || Object.keys(newConfig).some(key => newConfig[key] != rosterConfig[key])) {
+			setRosterConfig(newConfig);
+		}
+	}, [slots, traitsOnly, powerMode, rosterType, tableView, specialView]);
 
 	React.useEffect(() => {
 		setDataPrepared({
@@ -599,6 +616,15 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			appliedFilters: crewFilters.map(crewFilter => crewFilter.id)
 		});
 	}, [rosterType, preparedCrew, tableView, crewFilters]);
+
+	React.useEffect(() => {
+		if (preparedCrew) {
+			const maxedSkills = [... new Set(preparedCrew.filter(f => f.have && f.any_immortal).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			setMaxedSkills(maxedSkills);
+			const ownedSkills = [... new Set(preparedCrew.filter(f => f.have).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			setOwnedSkills(ownedSkills);
+		}
+	}, [preparedCrew]);
 
 	return (
 		<React.Fragment>
@@ -617,6 +643,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						pageId={pageId}
 						crewFilters={crewFilters}
 						setCrewFilters={setCrewFilters}
+						notifySetFilter={setActiveRarities}
 					/>
 					<CrewTraitsFilter
 						pageId={pageId}
@@ -689,4 +716,39 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 		}
 		return defaultTable;
 	}
+
+	async function prepareCrew() {
+		const preparedCrew = rosterCrew.map(crew => {
+			if (crewMarkups.length > 0) {
+					crewMarkups.forEach(crewMarkup => {
+					crewMarkup.applyMarkup(crew);
+				});
+			}
+			if (!!playerData && specialView === 'as_immortalized' && rosterType === 'myCrew') {
+				if (!crew.immortal || !!crew.kwipment?.some(q => typeof q === 'number' ? !!q : !!q[1])) {
+					crew = structuredClone(crew);
+					let refcrew = globalContext.core.crew.find(f => f.symbol === crew.symbol)!;
+					crew.base_skills = structuredClone(refcrew.base_skills);
+					//if (!crew.immortal) crew.immortal = CompletionState.DisplayAsImmortalOwned;
+					crew.rarity = crew.max_rarity;
+					crew.level = 100;
+					crew.ship_battle = structuredClone(refcrew.ship_battle);
+					crew.action.bonus_amount = refcrew.action.bonus_amount;
+					crew.skills = applyCrewBuffs(crew, buffMode === 'max' ? globalContext.maxBuffs! : globalContext.player.buffConfig!)!;
+				}
+			}
+			return crew;
+		});
+		if (view?.worker) {
+			setViewIsReady(false);
+			view.worker(preparedCrew).then((result) => {
+				setPreparedCrew(result);
+				setViewIsReady(true);
+			});
+		}
+		else {
+			setPreparedCrew(preparedCrew);
+			setViewIsReady(undefined);
+		}
+	};
 };

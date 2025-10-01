@@ -8,13 +8,17 @@ import CrewPicker from '../crewpicker';
 import { IEventData, IEventScoredCrew } from '../eventplanner/model';
 import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
-import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
+import { crewCopy, isQuipped, oneCrewCopy } from '../../utils/crewutils';
 import CONFIG from '../CONFIG';
 import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
 import { PlayerCrew } from '../../model/player';
 import { useStateWithStorage } from '../../utils/storage';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
+import { PromptContext } from '../../context/promptcontext';
+import { CrewMember } from '../../model/crew';
+import { CrewQuipment } from '../crewpage/crewquipment';
+import { CrewItemsView } from '../item_presenters/crew_items';
 
 interface ISelectOption {
 	key: string;
@@ -37,7 +41,8 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { confirm } = globalContext;
+	const promptContext = React.useContext(PromptContext);
+	const { confirm } = promptContext;
 	const { t, tfmt, useT } = globalContext.localized;
 	const { t: excluder } = useT('consider_crew.excluder');
 
@@ -90,12 +95,23 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 						}
 					}
 					else {
-						phase = (gameEvent.content_types as any) as string;
+						if (typeof gameEvent.content_types === 'string') {
+							phase = (gameEvent.content_types as any) as string;
+						}
+						else if (gameEvent.content_types.length) {
+							phase = gameEvent.content_types[0];
+						}
 					}
-					if (phase === 'gather') {
+
+					// Event-type dependent exclusion modes
+					if (phase === 'galaxy' || phase === 'skirmish') {
+						activeEvent = '';
+						activeBonus = '';
+					}
+					else if (phase === 'gather') {
 						activeBonus = 'matrix';
 					}
-					else if (phase === 'shuttles' || phase === 'galaxy') {
+					else if (phase === 'shuttles') {
 						activeBonus = 'all';
 					}
 					else if (phase === 'voyage') {
@@ -428,9 +444,17 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 			handleSelect={(crew) => onCrewPick(crew as IVoyageCrew)}
 			options={options} setOptions={setOptions} defaultOptions={DEFAULT_EXCLUDER_OPTIONS}
 			pickerModal={ExcluderOptionsModal} renderTrigger={renderTrigger}
+			renderCrewCaption={renderCaption}
 			filterCrew={(data, searchFilter) => filterCrew(data as IVoyageCrew[], searchFilter)}
 		/>
 	);
+
+	function renderCaption(crew: CrewMember | PlayerCrew): JSX.Element {
+		return <div style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
+			<CrewItemsView itemSize={24} crew={crew} quipment={true} />
+			<span>{crew.name}</span>
+		</div>
+	}
 
 	function renderTrigger(): JSX.Element {
 		return (
@@ -446,7 +470,9 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 		data = data.filter(crew =>
 			true
 				&& (options.rarities.length === 0 || options.rarities.includes(crew.max_rarity))
+				&& ((options.quippedStatus === 1 && isQuipped(crew)) || (options.quippedStatus === 2 && !isQuipped(crew)) || (!options.quippedStatus))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
+				&& (!options.skill?.length || options.skill.includes(crew.skill_order[0]))
 		);
 		return data;
 	}
@@ -461,20 +487,38 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 
 interface IExcluderModalOptions extends OptionsBase {
 	rarities: number[];
+	quippedStatus: number | undefined;
+	skill: string[];
 };
 
 const DEFAULT_EXCLUDER_OPTIONS = {
-	rarities: []
+	rarities: [],
+	quippedStatus: undefined,
+	skill: []
 } as IExcluderModalOptions;
 
 class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
-	declare props: any;
+	//declare props: any;
 
 	protected getOptionGroups(): OptionGroup[] {
 		const { t } = this.context.localized;
+		ExcluderOptionsModal.quippedStatusOptions.length = 0;
+		ExcluderOptionsModal.quippedStatusOptions.push(
+			{
+				key: `quipped`,
+				value: 1,
+				text: t('options.roster_maintenance.quipped')
+			},
+			{
+				key: `quipped_hide`,
+				value: 2,
+				text: t('options.roster_maintenance.quipped_hide')
+			},
+		);
+
 		return [
 			{
 				title: t('hints.filter_by_rarity{{:}}'),
@@ -489,25 +533,66 @@ class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 					justifyContent: 'flex-start',
 					gap:'0.5em'
 				}
-			}]
+			},
+			{
+				title: t('hints.filter_by_quipped_status{{:}}'),
+				key: 'quippedStatus',
+				multi: false,
+				options: ExcluderOptionsModal.quippedStatusOptions,
+				initialValue: undefined,
+				placeholder: t('options.crew_status.none'),
+				containerStyle: {
+					marginTop: '0.5em',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-start',
+					justifyContent: 'flex-start',
+					gap:'0.5em'
+				}
+			},
+			{
+				title: t('hints.filter_by_skill{{:}}'),
+				key: 'skill',
+				multi: true,
+				options: ExcluderOptionsModal.skillOptions,
+				initialValue: [] as string[],
+				placeholder: t('options.crew_status.none'),
+				containerStyle: {
+					marginTop: '0.5em',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-start',
+					justifyContent: 'flex-start',
+					gap:'0.5em'
+				}
+			}];
 	}
 	protected getDefaultOptions(): IExcluderModalOptions {
 		return DEFAULT_EXCLUDER_OPTIONS;
 	}
 
 	static readonly rarityOptions = [] as ModalOption[];
+	static readonly quippedStatusOptions = [] as ModalOption[];
+	static readonly skillOptions = [] as ModalOption[];
 
 	constructor(props: OptionsModalProps<IExcluderModalOptions>) {
 		super(props);
 
+		ExcluderOptionsModal.rarityOptions.length = 0;
+		ExcluderOptionsModal.skillOptions.length = 0;
+
 		CONFIG.RARITIES.forEach((r, i) => {
 			if (i === 0) return;
-			ExcluderOptionsModal.rarityOptions.length = 0;
 			ExcluderOptionsModal.rarityOptions.push(
 				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
 			)
 		});
 
+		CONFIG.SKILLS_SHORT.forEach((data) => {
+			ExcluderOptionsModal.skillOptions.push(
+				{ key: `${data.name}`, value: data.name, text: `${data.short}` }
+			)
+		});
 
 		this.state = {
 			isDefault: false,
@@ -517,11 +602,17 @@ class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 		}
 	}
 
+	resetOptions(): void {
+		this.setState({ ... this.state, options: structuredClone(DEFAULT_EXCLUDER_OPTIONS) });
+	}
+
 	protected checkState(): boolean {
 		const { options } = this.state;
 
-		const isDefault = options.rarities.length === 0;
-		const isDirty = options.rarities.length !== this.props.options.rarities.length || !this.props.options.rarities.every(r => options.rarities.includes(r));
+		options.quippedStatus ??= 0;
+
+		const isDefault = options.rarities.length === 0 && options.quippedStatus === 0;
+		const isDirty = options.quippedStatus !== this.props.options.quippedStatus || options.rarities.join() !== this.props.options.rarities.join() || options.skill.join() !== this.props.options.skill.join()
 
 		if (this.state.isDefault !== isDefault || this.state.isDirty !== isDirty) {
 			this.setState({ ...this.state, isDefault, isDirty });

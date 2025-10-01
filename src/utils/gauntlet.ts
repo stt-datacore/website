@@ -232,7 +232,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 										...p
 									},
 									{
-										...JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
+										...structuredClone(EMPTY_SKILL) as Skill,
 										skill: srank.find(sr => sr !== p.skill) || ''
 									}
 									]
@@ -287,7 +287,7 @@ export function getPairGroups(crew: (PlayerCrew | CrewMember)[], gauntlet: Gaunt
 											...p
 										},
 										{
-											...JSON.parse(JSON.stringify(EMPTY_SKILL)) as Skill,
+											...structuredClone(EMPTY_SKILL) as Skill,
 											skill: srank.find(sr => sr !== p.skill) || ''
 										}
 										]
@@ -531,7 +531,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			const ocrew = op.crew_contest_data.crew[0];
 			const refcrew = context.core.crew.find((cf) => cf.symbol === ocrew.archetype_symbol);
 			if (refcrew) {
-				const fcrew = JSON.parse(JSON.stringify(refcrew)) as PlayerCrew;
+				const fcrew = structuredClone(refcrew) as PlayerCrew;
 				for (let skname of Object.keys(fcrew.base_skills)) {
 					const skill = fcrew.base_skills[skname] as Skill;
 					const opposkill = ocrew.skills.find((f) => f.skill === skname);
@@ -563,7 +563,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	if (gauntlet?.contest_data?.selected_crew?.length) {
 		for (let selcrew of gauntlet.contest_data.selected_crew) {
 			let crew = context.core.crew.find(f => f.symbol === selcrew.archetype_symbol)! as PlayerCrew;
-			crew = JSON.parse(JSON.stringify(crew));
+			crew = structuredClone(crew);
 
 			let fffe = workCrew.find(f => f.symbol === selcrew.archetype_symbol && f.immortal);
 
@@ -681,7 +681,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					inputCrew.pairs = getPlayerPairs(inputCrew);
 					return inputCrew;
 				}
-				let crew = !!inputCrew.isOpponent ? inputCrew : JSON.parse(JSON.stringify(inputCrew)) as PlayerCrew;
+				let crew = !!inputCrew.isOpponent ? inputCrew : structuredClone(inputCrew) as PlayerCrew;
 				if (!crew.isOpponent) {
 					if (!crew.have) {
 						if (!crew.id) {
@@ -779,7 +779,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 					let fcrew = allCrew.find(z => z.symbol === crew.symbol);
 					if (!fcrew) return crew;
 
-					crew.base_skills = JSON.parse(JSON.stringify(fcrew.base_skills));
+					crew.base_skills = structuredClone(fcrew.base_skills);
 					crew.rarity = crew.max_rarity;
 					crew.level = 100;
 					crew.equipment = [0, 1, 2, 3];

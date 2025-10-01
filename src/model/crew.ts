@@ -86,6 +86,19 @@ export type CapAchievers = {
 	achievers: Achiever[]
 }
 
+export type EventWhere = 'threshold' | 'ranked';
+
+export interface AdditionalEvent {
+    instance_id: number,
+    where: EventWhere;
+}
+
+export interface ObtainedMetadata {
+    event_instance_id?: number;
+    where?: EventWhere;
+    additional_events?: AdditionalEvent[];
+}
+
 /**
  * The is the crew roster model from crew.json
  *
@@ -134,9 +147,11 @@ export interface CrewMember extends QuipmentScores {
     in_portal: boolean;
     date_added: Date;
     obtained: string;
+    obtained_metadata: ObtainedMetadata;
     markdownContent: string;
     markdownInfo: MarkdownInfo;
     unique_polestar_combos?: string[][];
+    unique_polestar_combos_later?: string[][];
     constellation?: CrewConstellation;
     kwipment: number[][] | number[];
     kwipment_expiration: number[][] | number[];

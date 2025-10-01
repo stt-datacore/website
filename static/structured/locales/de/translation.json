@@ -32,6 +32,7 @@
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
     "base": {
+        "additional_event_appearances": "Zusätzliche Auftritte im Ereignissen",
         "all_crew": "Die gesamte Crew anzeigen",
         "best_pair": "Bestes Paar",
         "bigbook_tier": "Stufe",
@@ -63,6 +64,7 @@
         "n_to_next": "{{n}} zur nächsten",
         "never_in_portal": "Nie im Zeitportal",
         "not_in_portal": "Nicht im Zeitportal",
+        "not_maincast": "Nicht die Hauptbesetzung",
         "not_uniquely_retrievable": "Nicht eindeutig abrufbar",
         "not_yet_in_portal": "Noch nicht im Zeitportal",
         "offer_cost": "Angebotskosten",
@@ -160,7 +162,9 @@
                 "collections": "Sammlungen verbessern erhöhte Statistiken",
                 "groupSparsity": "Reisegruppenknappheit",
                 "improved": "Verbesserte Reise",
+                "is_custom": "Maßgeschneidert",
                 "magic": "Maßgrenze (Magische Zahl)",
+                "name": "{{global.name}}",
                 "never": "Niemals im Portal",
                 "portal": "Nicht im Portal",
                 "power": "Basis-Leistungswert",
@@ -330,7 +334,12 @@
                 "title": "Fortschritt"
             }
         },
-        "progress_to_next": "Weiter zum nächsten"
+        "progress_to_next": "Weiter zum nächsten",
+        "types": {
+            "crew_rewarding": "Crew-Belohnungssammlungen",
+            "stat_boosting": "Stat-Boosting-Sammlungen",
+            "vanity": "Vanity-Sammlungen"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -436,6 +445,8 @@
         "columns": {
             "g": "H",
             "gauntlet_ranks": "Herausforderung-Ränge",
+            "r": "G",
+            "reasons_to_keep": "Gründe für die Beibehaltung",
             "s": "S",
             "shuttle_ranks": "Shuttle-Ränge",
             "u": "N",
@@ -479,6 +490,10 @@
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
+    },
+    "delete": {
+        "prompt_x": "Möchten Sie „{{x}}“ wirklich löschen?",
+        "title": "Löschen"
     },
     "demands": {
         "demands": "Anforderungen",
@@ -591,6 +606,33 @@
     },
     "events_common": {
         "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
+    },
+    "factions": {
+        "already_honored": "Schon Ehrenstatus",
+        "already_tanked": "Schon getankt",
+        "average_odds_dropdown": "Shuttles laufen mit einer durchschnittlichen Chance von {{dropdown}}",
+        "columns": {
+            "faction": "Fraktion",
+            "honored": "Ehrenstatus",
+            "reputation": "Ruf",
+            "shuttles_to_honored": "Shuttles bis Ehrenstatus",
+            "shuttles_to_tank": "Shuttles zum Tanken",
+            "time_needed": "Benötigte Zeit"
+        },
+        "n_shuttles_per_day": "Start von {{n}} Shuttles pro Tag.",
+        "n_shuttles_to_tank": "{{n}} Shuttles zum Tanken",
+        "n_successful_missions": "{{n}} erfolgreiche Missionen.",
+        "odds_note": "(Hinweis: Shuttles können nicht gestartet werden, wenn die Erfolgswahrscheinlichkeit unter 14 % liegt. Um getankt zu werden, muss die Wahrscheinlichkeit unter 60 % sein.)",
+        "reputation": {
+            "allied": "Verbündet",
+            "despised": "Verachtet",
+            "friendly": "Freundlich",
+            "honored": "Ehrenstatus",
+            "hostile": "Feindlich",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanken",
+        "tanking_explain": "{{tanking}} Shuttles heißt, sie absichtlich failen zu lassen, damit die Schwierigkeit und Dauer der Shuttle-Missionen runtergehen."
     },
     "fbb": {
         "alert_no_solution": "Für diesen Knoten wurden keine möglichen Lösungen gefunden. Möglicherweise müssen Sie Ihre Filter ändern, Ihre gelösten Merkmale noch einmal überprüfen oder die Liste der versuchten Crew zurücksetzen.",
@@ -947,6 +989,7 @@
         "and": "und",
         "and_n_more_ellipses": "und {{n}} weitere ...",
         "any": "Beliebig",
+        "apply": "Anwenden",
         "apply_filters": "Filter anwenden",
         "approx": "Ca.",
         "assigned": "Assigned",
@@ -968,6 +1011,7 @@
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
         "cost": "Kosten",
         "create": "Erstellen",
+        "create_new_x": "Neues {{x}} erstellen",
         "date_end": "Enddatum",
         "date_start": "Startdatum",
         "default": "Standard",
@@ -978,7 +1022,10 @@
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",
         "download": "Herunterladen",
+        "duplicate_input": "Doppelte Eingabe",
+        "duplicate_name": "Doppelter Name",
         "edit": "Bearbeiten",
+        "edit_presets": "Voreinstellungen bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
         "episode": "Episode",
@@ -997,6 +1044,7 @@
         "ingredient_warning": "Sie haben nicht die Zutaten, um diesen Gegenstand herzustellen.",
         "ingredient_warning_all": "Sie haben nicht die Zutaten, um alle diese Gegenstände herzustellen.",
         "initial_launch": "Erstveröffentlichung des Spiels",
+        "invalid_input": "Ungültige Eingabe",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena Eintrittskarte",
@@ -1039,6 +1087,7 @@
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
         "lose": "Verlieren",
+        "map_position": "Kartenposition",
         "max": "Maximal",
         "max_rarity": "Max. Seltenheit",
         "member": "Mitglied",
@@ -1054,6 +1103,7 @@
         "name": "Namen",
         "never": "Niemals",
         "new": "Neu",
+        "new_name": "Neuer Name",
         "no": "Nein",
         "no_items_found": "Keine Elemente gefunden",
         "no_search_results_found": "Es wurden keine Ergebnisse gefunden. Versuchen Sie es mit anderen Suchoptionen.",
@@ -1070,10 +1120,13 @@
         "permalink": "Permalink",
         "portal": "Zeitportal",
         "portal_update": "Zeitportal-Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
+        "rename": "Umbenennen",
+        "rerun": "Wiederholung",
         "reserved": "Reserviert",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
@@ -1162,6 +1215,7 @@
         "filter_by_series": "Filtern nach Serie",
         "filter_by_ship_ability": "Filtern nach Schiffsfähigkeit",
         "filter_by_skill": "Filtern nach Fähigkeit",
+        "filter_by_skill_order_ownership": "Filtern nach Besitz der Fähigkeitsreihenfolge",
         "filter_by_status": "Filtern nach Status",
         "filter_by_timeframe": "Filtern nach Zeitraum",
         "filter_by_trait": "Filtern nach Merkmalen",
@@ -1585,6 +1639,10 @@
             "trait": "Merkmalen"
         }
     },
+    "overwrite": {
+        "prompt_x": "Möchten Sie „{{x}}“ wirklich überschreiben?",
+        "title": "Überschreiben"
+    },
     "pages": {
         "crew_stats": "Crew-Statistiken",
         "crew_view_modes": {
@@ -1689,6 +1747,7 @@
             "offense": "Angriff (Genauigkeit/Schaden)",
             "select": "Wählen Sie einen Vorteil"
         },
+        "always_show_datascore": "DataScore immer anzeigen",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Stufe",
         "cab_grade": "CAB-Klasse",
@@ -1750,9 +1809,29 @@
     },
     "ranking_tools": {
         "current_weighting": "Aktuelle Gewichtung",
-        "show_weighting_details": "Gewichtungsdetails anzeigen"
+        "show_weighting_details": "Gewichtungsdetails anzeigen",
+        "weights": {
+            "base_plus": {
+                "quipment": "{{rank_names.scores.quipment}}",
+                "shuttleRank": "{{rank_names.scores.shuttle}}",
+                "title": "Basis+ Gewichtung"
+            },
+            "gauntlet_plus": {
+                "crit": "{{rank_names.scores.crit}}",
+                "gauntlet": "{{rank_names.scores.gauntlet}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Herausforderung+ Gewichtung"
+            },
+            "voyage_plus": {
+                "am_seating": "{{rank_names.scores.am_seating}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Reise+ Gewichtung",
+                "voyage": "{{rank_names.scores.voyage}}"
+            }
+        }
     },
     "retrieval": {
+        "alert_pending_crew": "Diese Crew ist derzeit nicht eindeutig abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "allow_unowned": "Unbesessene Crew zulassen",
         "assume_in_game_favorites": "Spielfavoriten dynamisch zur Wunschliste hinzufügen",
         "combo": "Combo",
@@ -1772,6 +1851,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Alle eindeutig abrufbaren Crewmitglieder anzeigen",
+            "show_expiring_crew": "Ablaufende eindeutige Abrufe anzeigen",
             "show_retrievable_crew": "Nur Crew anzeigen, die ich abrufen kann"
         },
         "description": "Finden Sie die besten Möglichkeiten, über die Crewabfrage Crewmitglieder zu Ihrer Liste hinzuzufügen.",
@@ -1823,7 +1903,7 @@
             "title": "Himmelsmarkt",
             "top_n_polestars": "Top {{n}} Polarsterne",
             "unlisted": "Nicht Gelistet",
-            "updated": "Der Markt wird stündlich aktualisiert"
+            "updated": "Der Markt wird alle 5 Minuten aktualisiert."
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
@@ -1883,6 +1963,7 @@
         "use_all_combos_below_to_retrieve": "Verwenden Sie ALLE Combos unten, um abzurufen",
         "use_any_combo_below_to_retrieve": "Verwenden Sie eine der folgenden Kombinationen, um abzurufen",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "Diese Crew ist derzeit nur einmal abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "wishlist": {
             "add": "Zur Wunschliste hinzufügen.",
             "auto": "Crew wird automatisch zur Wunschliste hinzugefügt.",
@@ -1947,6 +2028,12 @@
             "three_skill_check": "Berücksichtigen Sie nur eine Crew mit drei Fähigkeiten"
         },
         "title": "Kaderübersicht"
+    },
+    "sales": {
+        "active": "Aktive Rabatte",
+        "honor_sale": "Ehrenrabatt",
+        "slot_sale": "Crewplätze Rabatt",
+        "title": "Rabatte"
     },
     "series": {
         "ds9": "Deep Space Nine",
@@ -2217,6 +2304,11 @@
                 "inactive": "Standard. Shuttle-Missionen und Empfehlungen werden NICHT vom Shuttle-Helfer gespeichert."
             }
         }
+    },
+    "skill_order_ownership": {
+        "notmax": "Nur nicht im Besitz befindliche oder nicht maximierte Fertigkeitsaufträge anzeigen",
+        "underowned": "Nur nicht maximierte Fertigkeitsaufträge anzeigen",
+        "unowned": "Nur nicht besessene Fertigkeitsaufträge anzeigen"
     },
     "spinners": {
         "calculating": "Berechnung...",

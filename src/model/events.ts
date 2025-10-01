@@ -42,6 +42,9 @@ export interface EventInstance {
   event_name: string
   image: string
   event_details?: boolean
+  rerun?: boolean,
+  content_types: string[];
+  event_date?: Date;
 }
 
 export interface EventScoring {

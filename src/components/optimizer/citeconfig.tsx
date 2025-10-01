@@ -1,10 +1,10 @@
 import React from "react";
-import { Segment, Input, Dropdown } from "semantic-ui-react";
+import { Segment, Input, Dropdown, Button, Icon } from "semantic-ui-react";
 import { PortalFilter } from "../crewtables/commonoptions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerCrew } from "../../model/player";
-import { CiteOptContext } from "./context";
+import { CiteOptContext, DefaultCiteConfig } from "./context";
 import CONFIG from "../CONFIG";
 import { CollectionDropDown } from "../collections/collectiondropdown";
 
@@ -20,7 +20,6 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
     if (!globalContext.player.playerData) return <></>;
 
     const { citeConfig, setCiteConfig, results } = citeContext;
-    const { collections: colFilter } = citeConfig;
 
     let proccrew: PlayerCrew[] | undefined = [...results?.citeData?.crewToCite ?? [], ...results?.citeData?.crewToTrain ?? [], ...results?.citeData?.crewToRetrieve ?? [] ];
 
@@ -66,7 +65,8 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
             count: t
         }
     });
-    return <React.Fragment>
+    return (
+        <React.Fragment>
             <Segment>
                 <h3>{t('global.filters')}</h3>
                 <div style={{
@@ -137,7 +137,9 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                 <div style={{
                     display: "flex",
                     flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row",
-                    marginTop: "0.5em"
+                    marginTop: "0.5em",
+                    alignItems: 'center',
+                    gap: '1em'
                 }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left"}}>
                         <CollectionDropDown
@@ -186,9 +188,24 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
 
                             />
                     </div>
+                    <div>
+                        <Button onClick={resetFilters}><Icon name='eraser' />&nbsp;{t('global.clear')}</Button>
+                    </div>
                 </div>
             </Segment>
+        </React.Fragment>
+    );
 
-    </React.Fragment>
-
+    function resetFilters() {
+        setCiteConfig({
+            ...citeConfig,
+            nameFilter: '',
+            priSkills: [],
+            secSkills: [],
+            seatSkills: [],
+            checks: [],
+            collections: [],
+            portal: undefined
+        });
+    }
 }
