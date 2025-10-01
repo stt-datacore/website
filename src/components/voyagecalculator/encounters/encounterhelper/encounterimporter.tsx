@@ -117,7 +117,7 @@ export function getEncounterDataFromJson(voyageRefresh: VoyageRefreshData[]): Vo
 	let encounterData: VoyageRefreshEncounter | undefined;
 	voyageRefresh.forEach(refresh => {
 		refresh.character?.voyage.forEach(voyage => {
-			if (voyage.encounter) encounterData = JSON.parse(JSON.stringify(voyage.encounter));
+			if (voyage.encounter) encounterData = structuredClone(voyage.encounter);
 		});
 	});
 	return encounterData;

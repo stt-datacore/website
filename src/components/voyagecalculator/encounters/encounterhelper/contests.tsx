@@ -33,7 +33,10 @@ export const ContestsTable = (props: ContestsTableProps) => {
 			>
 				{t('voyage.contests.contests_header')}
 			</Header>
-			<p>{t('voyage.contests.contests_description')}</p>
+			<p>
+				{/* {t('voyage.contests.contests_description')} */}
+				Use this tool to plan your encounter contests.
+			</p>
 			<Table celled selectable striped padded='very'>
 				<Table.Header>
 					<Table.Row>
