@@ -46,7 +46,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 		</React.Fragment>
 	);
 
-	function renderCrewBonusesTable(): JSX.Element {
+	function renderCrewBonusesTable(): React.JSX.Element {
 		return (
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
@@ -56,7 +56,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 		);
 	}
 
-	function renderAntimatterRow(): JSX.Element {
+	function renderAntimatterRow(): React.JSX.Element {
 		return (
 			<Table.Row key={`aggregate_antimatter_row`}>
 				<Table.Cell>{t('ship.antimatter')}</Table.Cell>
@@ -85,7 +85,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 		);
 	}
 
-	function renderAggregateTable(skills: string[]): JSX.Element {
+	function renderAggregateTable(skills: string[]): React.JSX.Element {
 		return (
 			<Table id={export_id} collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>

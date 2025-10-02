@@ -24,7 +24,7 @@ import { addCrewToHistory, addVoyageToHistory, createTrackableCrew, createCheckp
 type ConfigCardProps = {
 	configSource: 'player' | 'custom';
 	voyageConfig: IVoyageInputConfig;
-	renderToggle: () => JSX.Element;
+	renderToggle: () => React.JSX.Element;
 };
 
 export const ConfigCard = (props: ConfigCardProps) => {

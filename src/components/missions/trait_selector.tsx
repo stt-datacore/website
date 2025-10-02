@@ -13,7 +13,7 @@ export interface TraitSelectorProps {
     traits: string[];
     questId: number;
     preformatted?: boolean;
-    joinString?: string | JSX.Element;
+    joinString?: string | React.JSX.Element;
     selectedTraits: TraitSelection[];
     setSelectedTraits: (value: TraitSelection[]) => void;
     style?: React.CSSProperties;

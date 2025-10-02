@@ -33,7 +33,7 @@ export interface WeightingInfoProps {
     saveConfig?: (rarity: number, value: ConstituentWeights) => void,
     editable?: boolean;
     rarity?: number;
-    renderTrigger?: () => JSX.Element;
+    renderTrigger?: () => React.JSX.Element;
     setIsOpen: (value: boolean) => void;
     isOpen: boolean;
 };
@@ -194,7 +194,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
 
         )
     }
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.JSX.Element {
 
         const weightKeys = weighting ? Object.keys(weighting).filter(f => typeof weighting[f] === 'number') : undefined;
         if (!editable) weightKeys?.sort((a, b) => weighting![b] - weighting![a]);
@@ -242,7 +242,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.JSX.Element {
         return (
             <Button>
                 {t('ranking_tools.show_weighting_details')}

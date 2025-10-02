@@ -224,7 +224,7 @@ const CustomRules = (props: CustomRulesProps) => {
 		</Modal>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		return (
 			<span style={{ paddingLeft: '1em' }}>
 				<Button compact>

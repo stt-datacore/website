@@ -177,7 +177,7 @@ export const VoyagesTable = () => {
 		</React.Fragment>
 	);
 
-	function renderTableRow(row: ITrackedVoyage): JSX.Element {
+	function renderTableRow(row: ITrackedVoyage): React.JSX.Element {
 		const dtCreated: Date = new Date(row.created_at);
 		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
 		return (
@@ -223,7 +223,7 @@ export const VoyagesTable = () => {
 		setHistory({...history});
 	}
 
-	function renderLastEstimate(checkpoint: ITrackedCheckpoint): JSX.Element {
+	function renderLastEstimate(checkpoint: ITrackedCheckpoint): React.JSX.Element {
 		let estimateType: string = 'estimated';
 		if (['completed', 'recalled'].includes(checkpoint.state))
 			estimateType = 'recalled';

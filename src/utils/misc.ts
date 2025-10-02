@@ -11,7 +11,7 @@ export interface DropDownItem {
 	image: AvatarIcon;
 	text: string;
 	title?: string;
-	content?: JSX.Element;
+	content?: React.JSX.Element;
 }
 
 export function translateSkills(string: string, separator: string = '/'): string {

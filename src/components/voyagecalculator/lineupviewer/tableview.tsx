@@ -93,7 +93,7 @@ export const TableView = () => {
 		}
 	}
 
-	function renderShip(): JSX.Element {
+	function renderShip(): React.JSX.Element {
 		if (!ship) return <></>;
 		return (
 			<Table fixed selectable striped unstackable compact='very' className={`voyageLineup ${compact ? 'compactView' : ''}`}>
@@ -122,7 +122,7 @@ export const TableView = () => {
 		);
 	}
 
-	function renderSkillAssignments(index: number, for_export?: boolean): JSX.Element {
+	function renderSkillAssignments(index: number, for_export?: boolean): React.JSX.Element {
 		const seated = for_export ? assignments : assignments.slice(index, index + 2);
 		return (
 			<Table key={index} fixed selectable striped unstackable compact='very' className={`voyageLineup ${compact ? 'compactView' : ''}`}>
@@ -230,7 +230,7 @@ export const TableView = () => {
 		);
 	}
 
-	function renderTraitBonus(crew: PlayerCrew, trait: string, for_export?: boolean): JSX.Element {
+	function renderTraitBonus(crew: PlayerCrew, trait: string, for_export?: boolean): React.JSX.Element {
 		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
 		if (traitBonus === 0) return <></>;
 		let bonusText: string = '';
@@ -250,7 +250,7 @@ export const TableView = () => {
 		);
 	}
 
-	function renderVPBonus(crew: PlayerCrew, for_export?: boolean): JSX.Element {
+	function renderVPBonus(crew: PlayerCrew, for_export?: boolean): React.JSX.Element {
 		if (voyageConfig.voyage_type !== 'encounter') return <></>;
 		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;

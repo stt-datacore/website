@@ -290,7 +290,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
         }
     }
 
-    protected renderContent = (): JSX.Element => {
+    protected renderContent = (): React.JSX.Element => {
         if (this.checkBorder()) {
             if (isWindow) window.setTimeout(() => this.checkBorder(undefined, true));
         }

@@ -10,7 +10,7 @@ import { MarketAggregation } from '../model/celestial';
 const DEBUG_MODE = false;
 
 interface GlobalProviderProperties {
-	children: JSX.Element;
+	children: React.JSX.Element;
 };
 
 interface ILocalizationTrigger {

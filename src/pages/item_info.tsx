@@ -224,7 +224,7 @@ class ItemInfoComponent extends Component<ItemInfoComponentProps, ItemInfoCompon
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
 	}
 
-	renderTableCells = (row: IRosterCrew): JSX.Element => {
+	renderTableCells = (row: IRosterCrew): React.JSX.Element => {
 		if (this.state.item_data?.item?.kwipment) {
 			const item = this.state.item_data?.item;
 			const wb = getItemBonuses(item);

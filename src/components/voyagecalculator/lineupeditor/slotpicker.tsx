@@ -228,7 +228,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		}
 	}
 
-	function renderPreface(): JSX.Element {
+	function renderPreface(): React.JSX.Element {
 		const currentSlot: IProspectiveCrewSlot | undefined = prospectiveConfig.crew_slots.find(cs => cs.crew?.id === alternateCrew.id);
 		return (
 			<React.Fragment	/* Select a voyage seat. Any existing crew in that seat will be replaced by CREW, resulting in the listed changes to the prospective voyage. */>
@@ -242,7 +242,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderGridSlot(datum: IEssentialData): JSX.Element {
+	function renderGridSlot(datum: IEssentialData): React.JSX.Element {
 		return (
 			<GridAlternateSlot
 				alternateSlot={datum as IAlternateSlotData}
@@ -252,7 +252,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderSkillHeader(skill: string): JSX.Element {
+	function renderSkillHeader(skill: string): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
@@ -262,7 +262,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderSlotName(datum: IAlternateSlotData): JSX.Element {
+	function renderSlotName(datum: IAlternateSlotData): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<div style={{ fontWeight: 'bold' }}>
@@ -273,7 +273,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderCrewSwap(alternateCrew: PlayerCrew, slottedCrew: PlayerCrew | undefined): JSX.Element {
+	function renderCrewSwap(alternateCrew: PlayerCrew, slottedCrew: PlayerCrew | undefined): React.JSX.Element {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				{slottedCrew && <AvatarView mode='crew' item={slottedCrew} size={40} />}
@@ -284,7 +284,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderEstimate(datum: IAlternateSlotData): JSX.Element {
+	function renderEstimate(datum: IAlternateSlotData): React.JSX.Element {
 		if (!datum.estimate) return <Icon loading name='spinner' />;
 		return (
 			<React.Fragment>
@@ -304,8 +304,8 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 
 type GridAlternateSlotProps = {
 	alternateSlot: IAlternateSlotData;
-	renderCrewSwap: (slottedCrew: PlayerCrew | undefined) => JSX.Element;
-	renderEstimate: (datum: IAlternateSlotData) => JSX.Element;
+	renderCrewSwap: (slottedCrew: PlayerCrew | undefined) => React.JSX.Element;
+	renderEstimate: (datum: IAlternateSlotData) => React.JSX.Element;
 };
 
 const GridAlternateSlot = (props: GridAlternateSlotProps) => {
@@ -336,7 +336,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 		</React.Fragment>
 	);
 
-	function renderDiffsAsTable(): JSX.Element {
+	function renderDiffsAsTable(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<div style={{ overflowX: 'auto' }}>

@@ -299,7 +299,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                     <Accordion.Content active={featuredOpen}>
                         <>
                         {buckets.map((bucket, idx) => {
-                            let title = undefined as JSX.Element | undefined;
+                            let title = undefined as React.JSX.Element | undefined;
                             if (idx === 0) {
                                 title = <h2>{t('base.bigbook_tier')} {idx + 1}</h2>;
                             }

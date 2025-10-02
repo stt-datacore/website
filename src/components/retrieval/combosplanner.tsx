@@ -78,7 +78,7 @@ const UsefulPolestars = (props: UsefulPolestarsProps) => {
 		</React.Fragment>
 	);
 
-	function renderUsefulPolestars(): JSX.Element {
+	function renderUsefulPolestars(): React.JSX.Element {
 		return (
 			<div style={{ marginTop: '1em' }}>
 				{usefulAlone.length > 0 && (
@@ -109,7 +109,7 @@ const UsefulPolestars = (props: UsefulPolestarsProps) => {
 		);
 	}
 
-	function renderPolestarsInline(polestars: IPolestar[]): JSX.Element {
+	function renderPolestarsInline(polestars: IPolestar[]): React.JSX.Element {
 		if (polestars.length === 1)
 			return <Label>{polestars[0].short_name}</Label>;
 
@@ -126,7 +126,7 @@ const UsefulPolestars = (props: UsefulPolestarsProps) => {
 		);
 	}
 
-	function renderUsableConstellations(): JSX.Element {
+	function renderUsableConstellations(): React.JSX.Element {
 		const usablePolestars = allPolestars.filter(polestar => polestar.owned_crate_count > 0 &&
 			(usefulAloneIds.includes(polestar.id) || usefulOtherIds.includes(polestar.id)));
 		if (usablePolestars.length === 0) return <></>;

@@ -27,7 +27,7 @@ export interface OptionGroup {
     options?: ModalOption[];
     placeholder?: string;
     multi?: boolean;
-    renderContent?: () => JSX.Element;
+    renderContent?: () => React.JSX.Element;
     initialValue: OptionValueType;
     containerStyle?: React.CSSProperties;
 }
@@ -132,7 +132,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		);
 	}
 
-	renderTrigger(): JSX.Element {
+	renderTrigger(): React.JSX.Element {
 		const { isDefault } = this.state;
 		const { t } = this.context.localized;
 		return (

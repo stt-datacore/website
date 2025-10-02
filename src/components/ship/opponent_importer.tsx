@@ -55,7 +55,7 @@ export const OpponentImportComponent = (props: OpponentImporterProps) => {
         return 'Data does not appear to be PVP data';
     }
 
-    function renderCopyPaste(): JSX.Element {
+    function renderCopyPaste(): React.JSX.Element {
         const PLAYERLINK = `https://app.startrektimelines.com/pvp/opponents?division=${division}`;
         let title = t(`json_types.pvp_${division}`)
         title = title.slice(0, 1).toUpperCase() + title.slice(1);

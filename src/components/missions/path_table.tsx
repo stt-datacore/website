@@ -35,7 +35,7 @@ export const PathTable = (props: PathTableProps) => {
 
     const pathOpts = ["All"] as string[];
     const pathMap = {} as { [key: string]: string };
-    
+
     solverResults?.paths?.forEach((p) => {
         if (!p.path_expanded) {
             p.path_expanded = splitPath(p.path).map(p => quest?.challenges?.find(f => f.id === p)).filter(f => !!f) as MissionChallenge[];
@@ -45,7 +45,7 @@ export const PathTable = (props: PathTableProps) => {
             if (!pathOpts.includes(astr)) {
                 pathOpts.push(astr);
                 pathMap[astr] = p.path;
-            }    
+            }
         }
     });
 
@@ -76,15 +76,15 @@ export const PathTable = (props: PathTableProps) => {
         { width: 1, column: '', title: <>Paths <PowerExplanation /></> }
     ] as ITableConfigRow[]
 
-    function renderRow(data: PathGroup, idx: number): JSX.Element {
+    function renderRow(data: PathGroup, idx: number): React.JSX.Element {
 
         if (!quest) return <></>
-        
+
 		return (
 			<Table.Row key={data.path + data.mastery.toString() + data.crew.map(c => c.symbol).join(",")}>
 				<Table.Cell>
                     <PathCrewDisplay
-                        config={config} 
+                        config={config}
                         quest={quest}
                         compact={false}
                         pathGroup={data}
@@ -95,14 +95,14 @@ export const PathTable = (props: PathTableProps) => {
 			</Table.Row>
 		);
 	}
- 
+
     const filterRow = (data: PathGroup, filter: Filter[]) => {
         if (filter?.length && filter[0].textSegments?.length) {
             let seg = filter[0].textSegments[0];
             const fres = !seg.negated;
             let text = seg.text.toLocaleLowerCase();
 
-            if (data.crew.some((c) => c.name.toLocaleLowerCase().includes(text))) return fres;            
+            if (data.crew.some((c) => c.name.toLocaleLowerCase().includes(text))) return fres;
             if (data.path_expanded?.some(ch => ch.name.toLocaleLowerCase().includes(text) || ch.trait_bonuses?.some(tr => tr.trait.toLocaleLowerCase() === text))) return fres;
             return false;
             //return !fres;
@@ -110,12 +110,12 @@ export const PathTable = (props: PathTableProps) => {
         return true;
     }
 
-    
-    
+
+
 
     return (
         <React.Fragment>
-            
+
             {!props.targetGroup && <CrewHoverStat targetGroup={targetGroup} />}
             {!props.itemTargetGroup && <ItemHoverStat targetGroup={itemTargetGroup} />}
 

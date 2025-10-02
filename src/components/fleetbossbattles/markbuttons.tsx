@@ -47,7 +47,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 	if (node.solveStatus === SolveStatus.Unconfirmed)
 		traitData = suppressDuplicateTraits(traitData, traits);
 
-	const GroupSolveOptions = (): JSX.Element => {
+	const GroupSolveOptions = (): React.JSX.Element => {
 		const solveOptions: ISolveOption[] = comboRarity.filter(rarity =>
 			(firstTrait === '' || rarity.combo.includes(firstTrait)) && rarity.crew.length > 0
 		).sort((a, b) => b.crew.length - a.crew.length)
@@ -73,7 +73,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 		);
 	};
 
-	const GroupSolvePicker = (): JSX.Element => {
+	const GroupSolvePicker = (): React.JSX.Element => {
 		return (
 			<Modal
 				open={true}
@@ -122,7 +122,7 @@ export const MarkGroup = (props: MarkGroupProps) => {
 					traitData={props.solver.traits} solveNode={handleSingleTrait}
 					compact={true}
 				/>
-			)) as JSX.Element[]).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
+			)) as React.JSX.Element[]).reduce((prev, curr) => <>{prev} {curr}</>, <></>)}
 			{modalIsOpen && <GroupSolvePicker />}
 		</React.Fragment>
 	);
@@ -174,7 +174,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 		</React.Fragment>
 	);
 
-	function renderCard(): JSX.Element {
+	function renderCard(): React.JSX.Element {
 		// const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 
 		return (
@@ -215,7 +215,7 @@ export const MarkCrew = (props: MarkCrewProps) => {
 		);
 	}
 
-	function renderTrialButtons(): JSX.Element {
+	function renderTrialButtons(): React.JSX.Element {
 		return (
 			<Button.Group>
 				<Popup
@@ -302,7 +302,7 @@ const SolvePicker = (props: SolvePickerProps) => {
 		</Modal>
 	);
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.JSX.Element {
 		let traitId = 0;
 		const nodes = nodeMatches.map(node => {
 			const open = props.solver.nodes.find(n => n.index === node.index);
@@ -430,7 +430,7 @@ const TipsPopup = () => {
 		/>
 	);
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<p>Colors help visualize the rarity of each possible solution for this node:</p>
@@ -445,7 +445,7 @@ const TipsPopup = () => {
 		);
 	}
 
-	function renderLabel(rarity: number): JSX.Element {
+	function renderLabel(rarity: number): React.JSX.Element {
 		const rarityStyle = getStyleByRarity(rarity);
 		const rarityNumber = rarity > 5 ? '6+' : rarity;
 		return (

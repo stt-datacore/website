@@ -39,7 +39,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
 		let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;
 
-		let rarity = [] as JSX.Element[];
+		let rarity = [] as React.JSX.Element[];
 		if (!this.props.hideRarity) {
 			for (let i = 0; i < this.props.rarity; i++) {
 				rarity.push(<img key={i} src={star_reward} style={{ width: starSize + 'px' }} />);

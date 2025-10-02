@@ -108,7 +108,7 @@ const BetaTachyonPresetPicker = (props: BetaTachyonPresetPickerProps) => {
 		}
 	}
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		if (!selectedPreset) return <Button icon='paint brush' content={t('cite_opt.btp.settings_picker.button_text')} />;
 		return (
 			<Button floated='right' content={t('global.edit_presets')} />
@@ -265,7 +265,7 @@ const PresetsTable = (props: PresetsTableProps) => {
 		}
 	}
 
-	function renderTableRow(row: BetaTachyonSettings): JSX.Element {
+	function renderTableRow(row: BetaTachyonSettings): React.JSX.Element {
 		const isHighlighted = selectedPreset?.name === row.name;
 		const custom = row.is_custom ? t('global.yes') : t('global.no')
 		return (

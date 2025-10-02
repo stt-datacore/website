@@ -79,7 +79,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	}, [buffMode]);
 
 	const hasBuyBack = !!playerData?.buyback_well?.length;
-	const steps = [] as JSX.Element[];
+	const steps = [] as React.JSX.Element[];
 	const buyFuses = getFusesInBuybackWell();
 	const buyUnowned = getUnownedInBuybackWell();
 	const buyWatched = getWatchedInBuybackWell();
@@ -202,7 +202,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</>
 	);
 
-	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
+	function drawAlert(crew: PlayerCrew, message: string | React.JSX.Element, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
 		let one = false;
 		if (cols.length) {
 			for (let c of cols) {

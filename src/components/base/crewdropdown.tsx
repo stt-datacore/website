@@ -15,7 +15,7 @@ export interface CrewPickerProperties {
     fluid?: boolean;
     plain?: boolean;
     showRarity?: boolean;
-    custom?: (crew: PlayerCrew | CrewMember) => JSX.Element;
+    custom?: (crew: PlayerCrew | CrewMember) => React.JSX.Element;
     archetypeId?: boolean;
     upward?: boolean;
 }

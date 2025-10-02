@@ -12,7 +12,7 @@ export const DefaultOpts = ['crew', 'behold', 'gauntlet', 'voyage', 'fbb'] as st
 export const DefaultOptsMobile = ['crew', 'gauntlet', 'voyage', 'fbb'] as string[];
 
 export interface NavItem {
-	title?: string | JSX.Element,
+	title?: string | React.JSX.Element,
     textTitle?: string,
 	link?: string,
 	tooltip?: string,
@@ -22,7 +22,7 @@ export interface NavItem {
 	subMenu?: NavItem[];
 	checkVisible?: (data: NavItem) => boolean;
 	customAction?: (e: Event, data: NavItem) => void;
-	customRender?: (data: NavItem) => JSX.Element;
+	customRender?: (data: NavItem) => React.JSX.Element;
     sidebarRole?: 'item' | 'heading' | 'separator';
     optionKey?: string;
 }
@@ -143,7 +143,7 @@ function formatItem(page: NavItem, style?: React.CSSProperties) {
     )
 }
 
-export const createSubMenu = (title: string | JSX.Element | undefined, children: NavItem[], verticalLayout: boolean = false, page?: NavItem, recursed?: boolean) => {
+export const createSubMenu = (title: string | React.JSX.Element | undefined, children: NavItem[], verticalLayout: boolean = false, page?: NavItem, recursed?: boolean) => {
     //const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     const header = typeof title === 'string' ? undefined : title;
     const text = typeof title === 'string' ? title : undefined;

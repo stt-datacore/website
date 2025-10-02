@@ -20,7 +20,7 @@ export const GauntletPrefsPanel = () => {
 
     const maxBuffs = globalContext.maxBuffs;
 
-    const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: JSX.Element }[];
+    const availBuffs = [] as { key: string | number, value: string | number, text: string, content?: React.JSX.Element }[];
     const filterOptions = hasPlayer ? [
         { key: 'any', value: 'any', text: t('gauntlet.owned_status.any') },
         { key: 'maxall', value: 'maxall', text: t('gauntlet.owned_status.maxall') },

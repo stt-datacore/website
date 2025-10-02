@@ -107,8 +107,8 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
         const withActionBorder = (this.props as ShipSkillProps).withActionBorder ?? isShip;
         const { withActionIcons, grouped } = this.props;
 
-        const drawBullets = (actions: number): JSX.Element[] => {
-            let elems: JSX.Element[] = [];
+        const drawBullets = (actions: number): React.JSX.Element[] => {
+            let elems: React.JSX.Element[] = [];
             for (let i = 0; i < actions; i++) {
                 elems.push(
                     <img

@@ -75,7 +75,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 		</Modal>
 	);
 
-	function renderLineup(): JSX.Element {
+	function renderLineup(): React.JSX.Element {
 		const { t } = globalContext.localized;
 		// Maybe get this from player voyageData, if name is localized
 		const VOYAGE_SLOTS = {

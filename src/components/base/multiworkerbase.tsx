@@ -21,7 +21,7 @@ const DefaultMultiWorkerContextData = {
 export const MultiWorkerContext = React.createContext(DefaultMultiWorkerContextData);
 
 export interface MultiWorkerProps {
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState extends IMultiWorkerState, TRun extends IMultiWorkerConfig<TConfig, TItem>, TConfig extends WorkerConfigBase<TItem>, TItem> extends

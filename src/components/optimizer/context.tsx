@@ -71,7 +71,7 @@ export const CiteOptContext = React.createContext<ICitationOptimizerContext>(Def
 
 export interface CiteOptContextProps {
     pageId: string;
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {

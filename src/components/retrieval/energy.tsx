@@ -29,7 +29,7 @@ export const RetrievalEnergy = () => {
 	const qTarget = 900;
 	const qPerFullDay = (24*60*60)/(energy.regeneration?.seconds ?? defaultSeconds); // 48
 	const qPerBoost = 50;
-	let energyMessage = [] as JSX.Element[];
+	let energyMessage = [] as React.JSX.Element[];
 	energyMessage.push(tfmt('retrieval.energy.guaranteed_legendary'));
 	if (energy.quantity < qTarget) {
 		const regenerationTime = getSecondsRemaining(qTarget, energy.quantity);

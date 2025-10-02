@@ -103,7 +103,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		</Card>
 	);
 
-	function renderCrewVP(): JSX.Element {
+	function renderCrewVP(): React.JSX.Element {
 		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		return (
@@ -114,7 +114,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		);
 	}
 
-	function renderTraitBonus(): JSX.Element {
+	function renderTraitBonus(): React.JSX.Element {
 		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
 		if (traitBonus === 0) return <></>;
 		if (traitBonus === 25) {
@@ -133,7 +133,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		);
 	}
 
-	function renderCritTraitBonus(): JSX.Element {
+	function renderCritTraitBonus(): React.JSX.Element {
 		if (voyageConfig.voyage_type === 'encounter' && 'event_content' in voyageConfig) {
 			let traits = crew.traits.filter(f => voyageConfig.event_content?.encounter_traits?.includes(f));
 			if (traits?.length) {

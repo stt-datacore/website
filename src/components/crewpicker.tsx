@@ -13,7 +13,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	setOptions: (value: T) => void;
 	defaultOptions: T;
 
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.JSX.Element;
 	beforeOpen?: (data: any, options: T) => void;
 	pickerModal: typeof OptionsModal<T>;
 	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
@@ -22,7 +22,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	isOpen?: boolean;
 
 	hoverBoundingClient?: boolean;
-	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => JSX.Element | string;
+	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => React.JSX.Element | string;
 	contextData?: any;
 
 	locked?: boolean;
@@ -127,7 +127,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.JSX.Element {
 		return (
 			<Button fluid size='big' color='blue'>
 				<Icon name='zoom-in' />
@@ -136,7 +136,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		);
 	}
 
-	function renderGrid(): JSX.Element {
+	function renderGrid(): React.JSX.Element {
 		const { filterCrew, renderCrewCaption } = props;
 		if (!modalIsOpen) return (<></>);
 
@@ -320,7 +320,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 		);
 // 	}
 
-// 	protected renderTrigger(): JSX.Element {
+// 	protected renderTrigger(): React.JSX.Element {
 // 		const { isDefault } = this.state;
 
 // 		return (

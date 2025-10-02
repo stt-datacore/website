@@ -128,7 +128,7 @@ export const CombosModal = (props: CombosModalProps) => {
 		</Modal>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		if (playerData) {
 			if (crew.actionable === ActionableState.PostTailor)
 				return <Label as='a' color='blue'>{t('global.view_options')}</Label>;
@@ -152,7 +152,7 @@ export const CombosModal = (props: CombosModalProps) => {
 		return <Button compact>{t('global.view_options')}</Button>;
 	}
 
-	function renderSubhead(): JSX.Element {
+	function renderSubhead(): React.JSX.Element {
 		if (!uniqueCombos || uniqueCombos.length === 0) return <></>;
 
 		if (playerData) {
@@ -219,7 +219,7 @@ export const CombosModal = (props: CombosModalProps) => {
 		);
 	}
 
-	function renderWishlist(): JSX.Element {
+	function renderWishlist(): React.JSX.Element {
 		if (!playerData) return <></>;
 		const onWishlist = wishlist.includes(crew.symbol);
 		const autoWish = autoWishes.includes(crew.symbol) && !wishlist.includes(crew.symbol);
@@ -260,7 +260,7 @@ export const CombosModal = (props: CombosModalProps) => {
 		}
 	}
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.JSX.Element {
 		if (!modalIsOpen) return <></>;
 		if (!uniqueCombos) return <></>;
 
@@ -290,7 +290,7 @@ export const CombosModal = (props: CombosModalProps) => {
 				}
 			}
 
-			let preface: JSX.Element | undefined;
+			let preface: React.JSX.Element | undefined;
 			if (crew.actionable === ActionableState.PreTailor)
 				preface = <>You can retrieve this crew with your current polestar inventory, but you will need to use 1 or more <Label color='orange'>filtered polestars</Label></>;
 			else if (crew.actionable === ActionableState.PostTailor)

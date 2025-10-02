@@ -41,7 +41,7 @@ type SpecialistPickerProps = {
     cooldowns?: GalaxyCrewCooldown[];
     selection?: IRosterCrew;
     onClose: (selection: IRosterCrew | undefined, affirmative: boolean, position?: number) => void;
-    //renderTrigger?: (mission: SpecialistMission, crew: IRosterCrew) => JSX.Element;
+    //renderTrigger?: (mission: SpecialistMission, crew: IRosterCrew) => React.JSX.Element;
 }
 
 function SpecialistPickerModal(props: SpecialistPickerProps) {
@@ -340,7 +340,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             )
         });
 
-        const skillcontent = [] as JSX.Element[];
+        const skillcontent = [] as React.JSX.Element[];
 
         for (let img of skillimg) {
             skillcontent.push(img);
@@ -354,7 +354,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             </div>
         });
 
-        const traitcontent = [] as JSX.Element[];
+        const traitcontent = [] as React.JSX.Element[];
 
         for (let img of traitimg) {
             traitcontent.push(img);

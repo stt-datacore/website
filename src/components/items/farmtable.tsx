@@ -30,7 +30,7 @@ export interface FarmTableProps {
     excludedSourceTypes?: number[];
     textStyle?: React.CSSProperties;
     eventData?: IEventData;
-    renderExpanded?: (row: FarmSources) => JSX.Element;
+    renderExpanded?: (row: FarmSources) => React.JSX.Element;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
@@ -66,7 +66,7 @@ export const FarmTable = (props: FarmTableProps) => {
     const flexRow = OptionsPanelFlexRow;
 
     const eps = React.useMemo(() => {
-        let res = [] as JSX.Element[];
+        let res = [] as React.JSX.Element[];
         let eps = {} as {[key:string]: string};
 
         if (episodes) {

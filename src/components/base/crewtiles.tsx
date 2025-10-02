@@ -22,9 +22,9 @@ export interface CrewTilesProps {
     rich?: boolean;
     maxCrew?: number;
     ownHoverModalPositioning?: boolean;
-    extraMessage?: JSX.Element | string;
+    extraMessage?: React.JSX.Element | string;
     displayExtraMessage?: (crew: (PlayerCrew | CrewMember | CompactCrew)) => boolean;
-    title?: string | JSX.Element;
+    title?: string | React.JSX.Element;
     scrolling?: boolean;
 }
 

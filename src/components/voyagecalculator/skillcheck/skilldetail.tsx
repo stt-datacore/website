@@ -37,7 +37,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		field: string;
 		title: string;
 		adjustValue?: (value: number) => number;
-		renderValue?: (value: number) => JSX.Element;
+		renderValue?: (value: number) => React.JSX.Element;
 	};
 
 	const rows: ISkillDetailRow[] = [
@@ -127,14 +127,14 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		</React.Fragment>
 	);
 
-	function renderRowValue(row: ISkillDetailRow): JSX.Element {
+	function renderRowValue(row: ISkillDetailRow): React.JSX.Element {
 		let currentValue: number = currentData[row.field];
 		if (row.adjustValue) currentValue = row.adjustValue(currentValue);
 		if (row.renderValue) return <b>{row.renderValue(currentValue)}</b>;
 		return <b>{currentValue}</b>;
 	}
 
-	function renderProficiency(proficiencyMode: boolean): JSX.Element {
+	function renderProficiency(proficiencyMode: boolean): React.JSX.Element {
 		const currentValue: number = proficiencyMode ? currentData.best_minimum : currentData.best_proficiency;
 
 		// Voyage history does not have reliable proficiency values for individual crew, so return N/A
@@ -155,7 +155,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		);
 	}
 
-	function renderPairedSkills(): JSX.Element {
+	function renderPairedSkills(): React.JSX.Element {
 		interface IPairedSkill {
 			skill: string;
 			change?: 'gained' | 'lost';

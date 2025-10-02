@@ -177,11 +177,11 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		</Accordion>
 	);
 
-	function renderOtherRanks(): JSX.Element {
-		let v = [] as JSX.Element[];
-		let g = [] as JSX.Element[];
-		let b = [] as JSX.Element[];
-		let o = [] as JSX.Element[];
+	function renderOtherRanks(): React.JSX.Element {
+		let v = [] as React.JSX.Element[];
+		let g = [] as React.JSX.Element[];
+		let b = [] as React.JSX.Element[];
+		let o = [] as React.JSX.Element[];
 
 		const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
 		const widths: SemanticWIDTHS = isMobile ? 'two' : 'three';
@@ -202,7 +202,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 			: crew.ranks[rank].rank;
 
 		const formatLabel = (label: string) => {
-			let output: string | JSX.Element = '';
+			let output: string | React.JSX.Element = '';
 			if (label.length > 15) {
 				output = label.split(' ').reduce((p, n) => p ? <>{p} {n}</> : <>{n}</>, <></>)
 			}

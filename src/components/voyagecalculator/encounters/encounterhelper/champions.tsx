@@ -146,7 +146,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		return sortDirection === 'descending' ? b.odds - a.odds : a.odds - b.odds;
 	}
 
-	function renderContestColumnHeader(contestSkills: IContestSkill[], assignment: IContestAssignment): JSX.Element {
+	function renderContestColumnHeader(contestSkills: IContestSkill[], assignment: IContestAssignment): React.JSX.Element {
 		const renderSkillIcon = (skill: string) => {
 			return (
 				<img
@@ -156,7 +156,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				/>
 			);
 		};
-		const skillIcons: JSX.Element[] = contestSkills.map(cs => {
+		const skillIcons: React.JSX.Element[] = contestSkills.map(cs => {
 			if (targetSkills.includes(cs.skill)) {
 				return (
 					<Label key={cs.skill} circular color='blue'>
@@ -199,7 +199,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		);
 	}
 
-	function renderCrewCell(datum: IChampionCrewData): JSX.Element {
+	function renderCrewCell(datum: IChampionCrewData): React.JSX.Element {
 		const assignedContest: string | undefined = getAssignedContest(assignments, datum.id);
 		return (
 			<React.Fragment>
@@ -216,7 +216,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		);
 	}
 
-	function renderCrewSkills(crew: IChampionCrewData): JSX.Element {
+	function renderCrewSkills(crew: IChampionCrewData): React.JSX.Element {
 		const skills = Object.keys(crew.skills).map(skill => {
 			return {...crew.skills[skill], skill};
 		});
@@ -320,7 +320,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		</div>
 	);
 
-	function renderUnusedSkill(unusedSkill: IUnusedSkill): JSX.Element {
+	function renderUnusedSkill(unusedSkill: IUnusedSkill): React.JSX.Element {
 		const skill: string = unusedSkill.skill;
 		const relevance: number = unusedSkill.relevance;
 		const average: number = unusedSkill.range_min + Math.floor((unusedSkill.range_max - unusedSkill.range_min) / 2);

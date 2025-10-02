@@ -37,7 +37,7 @@ export interface EquipmentItem extends PlayerEquipmentItem {
   short_name?: string
   name_english?: string;
   flavor: string
-  flavorContext?: JSX.Element;
+  flavorContext?: React.JSX.Element;
   rarity: number
   imageUrl: string
   item_sources: EquipmentItemSource[]

@@ -52,7 +52,7 @@ const defaultFields = [
 
 export interface IFieldOverride {
 	field: ValidField;
-	override: (crew: CrewMember, compact?: boolean) => JSX.Element;
+	override: (crew: CrewMember, compact?: boolean) => React.JSX.Element;
 };
 
 export interface IFieldScale {
@@ -78,7 +78,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	const myCrew = playerData ? playerData.player.character.crew : undefined;
 
 	const fields = props.fields ?? defaultFields;
-	const elements = [] as JSX.Element[];
+	const elements = [] as React.JSX.Element[];
 	if (!crew.cap_achiever && myCrew) {
 		let fc = myCrew.find(f => f.symbol === crew.symbol);
 		if (fc?.cap_achiever) {
@@ -432,7 +432,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 		</Accordion>
 	);
 
-	function renderTableHeader(): JSX.Element {
+	function renderTableHeader(): React.JSX.Element {
 		const baseSkills = Object.entries(crew.base_skills)
 			.filter(skill => !!skill[1])
 			.sort((a, b) => b[1].core - a[1].core);
@@ -450,11 +450,11 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 		)
 	}
 
-	function renderSkillData(sk: SkillData): JSX.Element {
+	function renderSkillData(sk: SkillData): React.JSX.Element {
 		return renderTableRow(sk.rarity, sk.base_skills);
 	}
 
-	function renderTableRow(rarity: number, skills: BaseSkills): JSX.Element {
+	function renderTableRow(rarity: number, skills: BaseSkills): React.JSX.Element {
 		debasedCrew.base_skills = skills;
 		Object.keys(debasedCrew.base_skills).map(skill => {
 			if (!debasedCrew.base_skills[skill])

@@ -81,7 +81,7 @@ const CrewTable = (props: CrewTableProps) => {
 		</>
 	);
 
-	function renderTableRow(crew: BossCrew, _idx: number): JSX.Element {
+	function renderTableRow(crew: BossCrew, _idx: number): React.JSX.Element {
 		return (
 			<Table.Row key={crew.symbol}>
 				<Table.Cell>
@@ -136,7 +136,7 @@ const CrewTable = (props: CrewTableProps) => {
 		}
 	}
 
-	function descriptionLabel(crew: BossCrew): JSX.Element {
+	function descriptionLabel(crew: BossCrew): React.JSX.Element {
 		return (
 			<div>
 				{optimizer.prefs.spotter.onehand === 'flag' && crew.onehand_rule.compliant === 0 && <Label style={{ background: '#ddd', color: '#333' }}>{t('fbb.crew_lists.customize.options.one_hand_exception')}</Label>}
@@ -168,7 +168,7 @@ const CrewTable = (props: CrewTableProps) => {
 		return isOptimal;
 	}
 
-	function renderTraits(crew: BossCrew, index: number, traitRarity: TraitRarities): JSX.Element {
+	function renderTraits(crew: BossCrew, index: number, traitRarity: TraitRarities): React.JSX.Element {
 		const node = openNodes.find(open => open.index === index);
 		if (!node) return (<></>);
 

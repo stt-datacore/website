@@ -201,7 +201,7 @@ export const DailyGame = () => {
 		setStats({... stats});
 	}
 
-	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): JSX.Element {
+	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): React.JSX.Element {
 		return (
 			<DailyShare
 				gameTime={gameTime}
@@ -212,7 +212,7 @@ export const DailyGame = () => {
 		);
 	}
 
-	function renderStats(): JSX.Element {
+	function renderStats(): React.JSX.Element {
 		if (stats.plays === 0) return <></>;
 		if (!showStats)
 			return (
@@ -257,7 +257,7 @@ export const DailyGame = () => {
 		);
 	}
 
-	function renderResetTime(): JSX.Element {
+	function renderResetTime(): React.JSX.Element {
 		if (!showStats || solveState === SolveState.Unsolved) return <></>;
 
 		const formatTime = (seconds: number) => {

@@ -5,7 +5,7 @@ import { SlotHelperMiniTool } from "./slots_helper";
 
 export interface RegisteredOEMiniTool {
     key: string,
-    component: (props: { data: ObjectiveArchetype }) => JSX.Element;
+    component: (props: { data: ObjectiveArchetype }) => React.JSX.Element;
     player_required: boolean;
     archetypes: (string | RegExp)[];
 }

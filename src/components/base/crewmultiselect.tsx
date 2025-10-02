@@ -36,7 +36,7 @@ type CrewMultiPickerProps = {
     updateSelected: (crewSymbols: number[]) => void;
     selectionPosition?: 'before' | 'after';
     extraContentPosition?: 'before' | 'after';
-    renderExtraContent?: () => JSX.Element;
+    renderExtraContent?: () => React.JSX.Element;
 };
 
 export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
@@ -117,7 +117,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         </React.Fragment>
     );
 
-    function renderSelected(): JSX.Element {
+    function renderSelected(): React.JSX.Element {
         return (
             <React.Fragment>
                 {Array.from(selectedIds).map(selectedId => {
@@ -143,7 +143,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         return true;
     }
 
-    function renderOptions(): JSX.Element {
+    function renderOptions(): React.JSX.Element {
         return <></>;
         // return (
         //     <CrewPickerOptions
@@ -153,7 +153,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         // );
     }
 
-    function renderGridCrew(datum: IEssentialData, isSelected: boolean): JSX.Element {
+    function renderGridCrew(datum: IEssentialData, isSelected: boolean): React.JSX.Element {
         const crew: CrewMember | PlayerCrew = datum as CrewMember | PlayerCrew;
         const frozen = ("immortal" in crew && !!crew.immortal) && crew.immortal > 0;
         const highest_owned_rarity = ("highest_owned_rarity" in crew) ? (crew.highest_owned_rarity || 0) : undefined;

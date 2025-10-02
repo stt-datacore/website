@@ -284,7 +284,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             </div>
         });
 
-        const skillcontent = [] as JSX.Element[];
+        const skillcontent = [] as React.JSX.Element[];
 
         for (let img of skillimg) {
             if (skillcontent.length) skillcontent.push(<div style={{width: '24px'}}>{combo_txt}</div>);
@@ -299,7 +299,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
             </div>
         });
 
-        const traitcontent = [] as JSX.Element[];
+        const traitcontent = [] as React.JSX.Element[];
 
         for (let img of traitimg) {
             traitcontent.push(img);

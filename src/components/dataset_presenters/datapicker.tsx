@@ -24,16 +24,16 @@ type DataPickerProps = {
 	data: IEssentialData[];
 	closePicker: (selectedIds: Set<number>, affirmative: boolean) => void;
 	singleSelect?: boolean;
-	title?: string | JSX.Element;
+	title?: string | React.JSX.Element;
 	preFilteredIds?: Set<number>;
 	preSelectedIds?: Set<number>;
 	selection?: boolean;
 	closeOnChange?: boolean;
 	search?: boolean;
 	searchPlaceholder?: string;
-	renderOptions?: (dataPickerState: IDataPickerState) => JSX.Element;
-	renderPreface?: (dataPickerState: IDataPickerState) => JSX.Element;
-	renderActions?: (dataPickerState: IDataPickerState) => JSX.Element;
+	renderOptions?: (dataPickerState: IDataPickerState) => React.JSX.Element;
+	renderPreface?: (dataPickerState: IDataPickerState) => React.JSX.Element;
+	renderActions?: (dataPickerState: IDataPickerState) => React.JSX.Element;
 	gridSetup?: IDataGridSetup;
 	tableSetup?: IDataTableSetup;
 };
@@ -104,7 +104,7 @@ export const DataPicker = (props: DataPickerProps) => {
 			.indexOf(userQuery.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 	}
 
-	function renderModalHeader(): JSX.Element {
+	function renderModalHeader(): React.JSX.Element {
 		if (!props.search) return <>{props.title}</>;
 		return (
 			<Input	/* Search by name */
@@ -129,7 +129,7 @@ export const DataPicker = (props: DataPickerProps) => {
 		);
 	}
 
-	function renderModalContent(): JSX.Element {
+	function renderModalContent(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{props.renderOptions && showOptions && (
@@ -181,7 +181,7 @@ export const DataPicker = (props: DataPickerProps) => {
 		);
 	}
 
-	function renderModalActions(): JSX.Element {
+	function renderModalActions(): React.JSX.Element {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', columnGap: '1em' }}>

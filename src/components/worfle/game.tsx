@@ -41,7 +41,7 @@ type GameProps = {
 	solveState: number;
 	setSolveState: (solveState: number) => void;
 	onGameEnd?: (solveState: number) => void;
-	renderShare?: (evaluatedGuesses: IEvaluatedGuess[]) => JSX.Element;
+	renderShare?: (evaluatedGuesses: IEvaluatedGuess[]) => React.JSX.Element;
 };
 
 export const Game = (props: GameProps) => {

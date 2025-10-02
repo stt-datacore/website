@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 type ErrorBoundaryProps = {
-	children: JSX.Element;
+	children: React.JSX.Element;
 };
 
 type ErrorBoundaryState = {

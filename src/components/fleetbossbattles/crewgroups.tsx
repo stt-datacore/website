@@ -103,7 +103,7 @@ const NodeGroups = (props: NodeGroupsProps) => {
 		</div>
 	);
 
-	function renderTraits(): JSX.Element {
+	function renderTraits(): React.JSX.Element {
 		const traits: string[ ] = node.traitsKnown.concat(Array(node.hiddenLeft).fill('?'));
 		const formattedTraits = traits.map((trait, idx) => (
 			<span key={idx}>

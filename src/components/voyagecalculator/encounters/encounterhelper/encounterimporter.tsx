@@ -46,7 +46,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 		</React.Fragment>
 	);
 
-	function renderImportMessage(): JSX.Element {
+	function renderImportMessage(): React.JSX.Element {
 		return (
 			<p>
 				{t('voyage.contests.importer.description')}
@@ -54,7 +54,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 		);
 	}
 
-	function renderUpdateMessage(): JSX.Element {
+	function renderUpdateMessage(): React.JSX.Element {
 		return (
 			<p>
 				{collapsed && <>{t('voyage.contests.importer.tap_to_open')}</>}
@@ -63,7 +63,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 		);
 	}
 
-	function renderInputForm(): JSX.Element {
+	function renderInputForm(): React.JSX.Element {
 		const DATALINK: string = 'https://app.startrektimelines.com/voyage/refresh';
 		return (
 			<JsonInputForm

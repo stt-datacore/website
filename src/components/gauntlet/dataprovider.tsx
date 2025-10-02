@@ -62,7 +62,7 @@ const DefaultGauntletContext: IGauntletContext = {
 export const GauntletContext = React.createContext(DefaultGauntletContext);
 
 export interface GauntletContextProviderProps {
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export const GauntletDataProvider = (props: GauntletContextProviderProps) => {

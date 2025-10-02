@@ -80,7 +80,7 @@ export const DataMatrix = (props: DataMatrixProps) => {
 		</div>
 	);
 
-	function renderMatrixCell(rowId: string, columnId: string): JSX.Element {
+	function renderMatrixCell(rowId: string, columnId: string): React.JSX.Element {
 		let datum: IEssentialMatrixData | undefined = data.find(datum => datum.rowId === rowId && datum.columnId === columnId);
 		if (!datum && setup.permutate)
 			datum = data.find(datum => datum.rowId === columnId && datum.columnId === rowId);
@@ -88,7 +88,7 @@ export const DataMatrix = (props: DataMatrixProps) => {
 		return setup.renderCell ? setup.renderCell(datum, selectedIds.has(datum.id)) : renderDefaultCell(datum, selectedIds.has(datum.id));
 	}
 
-	function renderDefaultCell(datum: IEssentialMatrixData, isSelected: boolean): JSX.Element {
+	function renderDefaultCell(datum: IEssentialMatrixData, isSelected: boolean): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{isSelected && <Icon name='check' color='blue' />} {datum.name}

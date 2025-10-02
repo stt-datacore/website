@@ -23,7 +23,7 @@ export interface CrewPageOptions {
 	key: string;
 	text: string;
 	value: string;
-	content: JSX.Element;
+	content: React.JSX.Element;
 }
 
 type StaticCrewPageProps = {

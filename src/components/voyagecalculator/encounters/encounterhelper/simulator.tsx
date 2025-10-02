@@ -126,7 +126,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 		</Modal>
 	);
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.JSX.Element {
 		if (!activeContest) return <></>;
 		return (
 			<React.Fragment>
@@ -153,7 +153,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 		);
 	}
 
-	function renderBug(): JSX.Element {
+	function renderBug(): React.JSX.Element {
 		if (!championResult) return <></>;
 		return (
 			<div style={{ position: 'absolute', top: '1em', right: '1em', zIndex: '100' }}>

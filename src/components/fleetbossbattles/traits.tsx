@@ -86,9 +86,9 @@ const TraitsProgress = (props: TraitsProgressProps) => {
 		</div>
 	);
 
-	function renderRow(node: SolverNode, nodeIndex: number): JSX.Element {
+	function renderRow(node: SolverNode, nodeIndex: number): React.JSX.Element {
 		const { givenTraitIds, solve } = node;
-		let checkIcon: JSX.Element | undefined = undefined;
+		let checkIcon: React.JSX.Element | undefined = undefined;
 		if (node.solveStatus === SolveStatus.Infallible)
 			checkIcon = <Icon name='check' />;
 		else if (node.solveStatus === SolveStatus.Confirmed || (!spotterPrefs.confirmSolves && node.solveStatus === SolveStatus.Unconfirmed))

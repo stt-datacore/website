@@ -19,9 +19,9 @@ export interface NavigationSettingsConfig {
 }
 
 export interface NavigationSettingsProps {
-	
-    config: NavigationSettingsConfig;    
-	renderTrigger?: () => JSX.Element;
+
+    config: NavigationSettingsConfig;
+	renderTrigger?: () => React.JSX.Element;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 
@@ -29,14 +29,14 @@ export interface NavigationSettingsProps {
 
 const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProps) => {
 	const context = React.useContext(GlobalContext);
-	const { config } = props;    
+	const { config } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<Input>();
 
     const [workConf, setWorkConf] = React.useState(config);
 
     const menuItems = getAllOptions(config.menu);
-    
+
     const [showCopied, setShowCopied] = React.useState(false);
 
     if (typeof window !== 'undefined' && document.location.search) {
@@ -61,7 +61,7 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
         setWorkConf({ ... workConf, mobileCurrent: current });
     }
 
-    
+
     const setCurrent = (current: string[]) => {
         setWorkConf({ ... workConf, current: current });
     }
@@ -105,7 +105,7 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
 			<Modal.Actions>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
-                    <Button 
+                    <Button
                             style={{alignSelf: "flex-start"}}
                             content={`Permalink`}
                             icon='chain'
@@ -113,7 +113,7 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
                             {showCopied && <div style={{margin: "0 0.5em"}}>Link copied to clipboard!</div>}
                         </div>
                     <div>
-                        <Button 
+                        <Button
                                 style={{alignSelf: "flex-end"}}
                                 color='blue'
                                 content={`Save`}
@@ -122,11 +122,11 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
                     </div>
                 </div>
 			</Modal.Actions>
-		</Modal>		
+		</Modal>
 	);
 
-    function renderGrid(): JSX.Element {
-        
+    function renderGrid(): React.JSX.Element {
+
         const opts = [workConf.current, workConf.mobileCurrent];
         const maxes = [workConf.maxItems, workConf.maxItemsMobile];
         const titles = ['Menu Options', 'Mobile Menu Options'];
@@ -193,7 +193,7 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.JSX.Element {
 		return (
         <Button color='blue' fluid>
             Menu Options
@@ -201,7 +201,7 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
 		);
 	}
 
-	function confirmSelection(): void {		
+	function confirmSelection(): void {
 		config.setCurrent(workConf.current);
         config.setMobileCurrent(workConf.mobileCurrent);
         setModalIsOpen(false);

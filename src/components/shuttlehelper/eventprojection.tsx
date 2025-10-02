@@ -145,7 +145,7 @@ export const EventProjection = (props: EventProjectionProps) => {
 				</div>
 				<div style={{ textAlign: 'center' }}>
 					{eventState.endType === 'event' && t('shuttle_helper.event.finish_event_with_colon')}
-					{eventState.endType === 'faction phase' && t('shuttle_helper.event.finish_faction_with_colon')}					
+					{eventState.endType === 'faction phase' && t('shuttle_helper.event.finish_faction_with_colon')}
 					<div style={{ margin: '.5em 0', fontSize: '2em' }}>
 						<b>
 							{getProjection().toLocaleString()} {t('shuttle_helper.event.vp')}
@@ -206,8 +206,8 @@ export const EventProjection = (props: EventProjectionProps) => {
 		return projections.reduce((prev, curr) => prev + curr.estimatedVP, eventState.currentVP);
 	}
 
-	function renderNeeds(): JSX.Element {
-		const needs: JSX.Element[] = [];
+	function renderNeeds(): React.JSX.Element {
+		const needs: React.JSX.Element[] = [];
 
 		const rentals: number = projections.reduce((prev, curr) => prev + curr.rentals, 0);
 		if (rentals > 0) {
@@ -293,7 +293,7 @@ const Scheduler = (props: SchedulerProps) => {
 		</React.Fragment>
 	);
 
-	function renderSchedule(schedule: ISchedule, idx: number): JSX.Element {
+	function renderSchedule(schedule: ISchedule, idx: number): React.JSX.Element {
 		let unscheduledShuttles: number = scoredShuttles;
 		for (let i = 0; i < idx; i++) {
 			unscheduledShuttles -= schedules[i].shuttleCount;
@@ -353,7 +353,7 @@ type ScheduleRowProps = {
 const ScheduleRow = (props: ScheduleRowProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { schedule, setSchedule, maxShuttles, firstSchedule, deleteSchedule } = props;
-	
+
 	return (
 		<React.Fragment>
 			{!firstSchedule && <Divider horizontal>And</Divider>}
@@ -362,7 +362,7 @@ const ScheduleRow = (props: ScheduleRowProps) => {
 					count: renderCount(),
 					duration: renderDuration(),
 					rate: renderRate()
-				})}				
+				})}
 				{!firstSchedule && (
 					<span style={{ paddingLeft: '1em' }}>
 						<Button compact icon='x' onClick={deleteSchedule} />
@@ -372,7 +372,7 @@ const ScheduleRow = (props: ScheduleRowProps) => {
 		</React.Fragment>
 	);
 
-	function renderCount(): JSX.Element {
+	function renderCount(): React.JSX.Element {
 		const rateOptions: IDropdownOption[] = [];
 		for (let i = maxShuttles; i > 0; i--) {
 			rateOptions.push({
@@ -390,7 +390,7 @@ const ScheduleRow = (props: ScheduleRowProps) => {
 		);
 	}
 
-	function renderDuration(): JSX.Element {
+	function renderDuration(): React.JSX.Element {
 		const durationOptions: IDropdownOption[] = [
 			{ key: '30m', value: 30, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minute_class', { minutes: '30'})}</span> },
 			{ key: '60m', value: 60, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_minute_class', { minutes: '60'})}</span> },
@@ -410,7 +410,7 @@ const ScheduleRow = (props: ScheduleRowProps) => {
 		);
 	}
 
-	function renderRate(): JSX.Element {
+	function renderRate(): React.JSX.Element {
 		let regularityOptions: IDropdownOption[] = [
 			{ key: '3h', value: 180/180, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '3'})}</span> },
 			{ key: '3.5h', value: 180/210, text: <span style={{ whiteSpace: 'nowrap' }}>{t('duration.n_hours', { hours: '3.5'})}</span> },

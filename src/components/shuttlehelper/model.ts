@@ -66,7 +66,7 @@ export interface IShuttleScore {
 
 export interface ITableColumn {
 	id: string;
-	title: string | JSX.Element;
+	title: string | React.JSX.Element;
 	align?: 'left' | 'right' | 'center';
 	span?: number;
 	sortField?: ITableSortField;
@@ -97,5 +97,5 @@ export interface IActiveEdit {
 export interface IDropdownOption {
 	key: string | number;
 	value: string | number;
-	text: string | JSX.Element;
+	text: string | React.JSX.Element;
 };

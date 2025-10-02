@@ -179,7 +179,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 		</React.Fragment>
 	);
 
-	function renderMenuItem(name: string, analysis: string): JSX.Element {
+	function renderMenuItem(name: string, analysis: string): React.JSX.Element {
 		if (analysis !== '') {
 			return (
 				<Popup position='top center'

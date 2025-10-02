@@ -116,7 +116,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 		return a.name.localeCompare(b.name);
 	}
 
-	function renderCount(polestar: IPolestar): JSX.Element {
+	function renderCount(polestar: IPolestar): React.JSX.Element {
 		let labelColor: SemanticCOLORS | undefined = undefined;
 		let fontColor: SemanticCOLORS | undefined = undefined;
 

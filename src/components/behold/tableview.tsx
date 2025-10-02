@@ -76,7 +76,7 @@ export const TableView = (props: TableViewProps) => {
 		</div>
 	);
 
-	function renderTableRow(crew: CrewMember, idx: number): JSX.Element {
+	function renderTableRow(crew: CrewMember, idx: number): React.JSX.Element {
 		let bestGPair = '', bestGRank = 1000;
 		Object.keys(crew.ranks).forEach(key => {
 			if (key.slice(0, 1) === 'G') {

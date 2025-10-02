@@ -179,11 +179,11 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		}
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.JSX.Element {
 		return <GuessPickerOptions />;
 	}
 
-	function renderActions(): JSX.Element {
+	function renderActions(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{deductions.length > 0 && (
@@ -213,7 +213,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		return 1;
 	}
 
-	function renderGridCrew(crew: IRosterCrew): JSX.Element {
+	function renderGridCrew(crew: IRosterCrew): React.JSX.Element {
 		const isGuessed: boolean = !!evaluatedGuesses.find(evaluatedGuess => evaluatedGuess.crew.symbol === crew.symbol);
 		const isFavorited: boolean = userPrefs.favorites.includes(crew.symbol);
 		const isViable: boolean = rules.series.includes(crew.gamified_series)

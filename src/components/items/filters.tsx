@@ -54,7 +54,7 @@ export interface ItemsFilterProps {
     pageId: string;
     pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[];
     ownedItems: boolean;
-    children: JSX.Element;
+    children: React.JSX.Element;
     noRender?: boolean;
 }
 

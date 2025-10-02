@@ -130,7 +130,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         return false;
     }
 
-    protected renderContent = (): JSX.Element =>  {
+    protected renderContent = (): React.JSX.Element =>  {
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }

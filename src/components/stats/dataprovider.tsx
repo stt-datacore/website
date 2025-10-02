@@ -26,7 +26,7 @@ const defaultContextData = {
 
 export const StatsContext = React.createContext(defaultContextData);
 
-export const StatsDataProvider = (props: { children: JSX.Element }) => {
+export const StatsDataProvider = (props: { children: React.JSX.Element }) => {
     const { children } = props;
     const globalContext = React.useContext(GlobalContext);
     const { crew: globalCrew } = globalContext.core;

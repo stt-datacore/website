@@ -118,7 +118,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		</React.Fragment>
 	);
 
-	function renderAttempts(): JSX.Element {
+	function renderAttempts(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{Array.from(selectedIds).map(selectedId => {
@@ -160,7 +160,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		return (filter === '' || (crew.highest_owned_rarity > 0 && (filter === 'owned' || !crew.only_frozen)));
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.JSX.Element {
 		return (
 			<CrewPickerOptions
 				filters={filters}
@@ -169,7 +169,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		);
 	}
 
-	function renderGridCrew(datum: IEssentialData, isSelected: boolean): JSX.Element {
+	function renderGridCrew(datum: IEssentialData, isSelected: boolean): React.JSX.Element {
 		const crew: BossCrew = datum as BossCrew;
 		return (
 			<React.Fragment>

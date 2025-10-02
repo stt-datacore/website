@@ -195,19 +195,19 @@ type TableView =
 interface IToggleableFilter {
 	id: string;
 	available: boolean;
-	form: JSX.Element;
+	form: React.JSX.Element;
 };
 
 interface ITableView {
 	id: TableView;
 	available: boolean;
 	optionText: string;
-	form?: JSX.Element;
+	form?: React.JSX.Element;
 	tableConfig: ITableConfigRow[];
-	renderTableCells: (crew: IRosterCrew) => JSX.Element;
+	renderTableCells: (crew: IRosterCrew) => React.JSX.Element;
 	spinText?: string;
 	worker?: (crew: IRosterCrew[]) => Promise<IRosterCrew[]>;
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.JSX.Element;
 };
 
 interface ITableViewOption {

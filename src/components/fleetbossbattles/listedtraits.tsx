@@ -57,7 +57,7 @@ const NamedTrait = (props: NamedTraitProps) => {
 		</div>
 	);
 
-	function renderNeeded(): JSX.Element {
+	function renderNeeded(): React.JSX.Element {
 		return (
 			<div style={{
 				background: 'white',

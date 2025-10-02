@@ -24,7 +24,7 @@ export const EncounterCard = (props: EncounterCardProps) => {
 	interface ICardGroup {
 		key: string;
 		header: string;
-		content: string | JSX.Element;
+		content: string | React.JSX.Element;
 	};
 
 	const cardGroups: ICardGroup[] = [

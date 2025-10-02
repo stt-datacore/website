@@ -14,7 +14,7 @@ import { AlertContext, AlertProvider } from '../alerts/alertprovider';
 const DEBUG_MODE = false;
 
 export interface DataPageLayoutProps {
-	children: JSX.Element;
+	children: React.JSX.Element;
 
 	pageId?: string;
 
@@ -22,13 +22,13 @@ export interface DataPageLayoutProps {
 	 * Title of the page, for use in both datapage header, title, and meta tags
 	 */
 	pageTitle?: string;
-	pageTitleJSX?: JSX.Element;
+	pageTitleJSX?: React.JSX.Element;
 
 	/**
 	 * One or two-sentence description of the page, for use in both datapage header and meta tags
 	 */
 	pageDescription?: string;
-	pageDescriptionJSX?: JSX.Element;
+	pageDescriptionJSX?: React.JSX.Element;
 
 	/**
 	 * Default demands are crew, items, all_ships, all_buffs, and cadet
@@ -149,7 +149,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		</AlertProvider>
 	);
 
-	function renderContents(): JSX.Element {
+	function renderContents(): React.JSX.Element {
 		if (DEBUG_MODE) console.log("renderContents()");
 		return (
 			<React.Fragment>

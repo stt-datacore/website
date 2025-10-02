@@ -6,7 +6,7 @@ import { getComboCountBig } from "../../utils/misc";
 import { MultiWorkerBase } from "../base/multiworkerbase";
 
 export interface ShipMultiWorkerProps {
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export interface ShipMultiWorkerStatus extends IMultiWorkerStatus<ShipWorkerTransportItem> {

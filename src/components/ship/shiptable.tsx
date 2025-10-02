@@ -216,7 +216,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	function printUsage(ship: Ship) {
 		let usages = shipsInUse?.filter(f => f.ship.id === ship.id);
-		let texts = [] as JSX.Element[];
+		let texts = [] as React.JSX.Element[];
 		if (usages?.length) {
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {

@@ -20,7 +20,7 @@ export interface CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     quipment?: boolean;
-    printNA?: string | JSX.Element;
+    printNA?: string | React.JSX.Element;
     targetGroup?: string;
     locked?: boolean;
     vertical?: boolean;
@@ -245,7 +245,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
-    expiration?: string | JSX.Element;
+    expiration?: string | React.JSX.Element;
     vertical: boolean;
     itemSize?: number;
     mobileSize?: number;

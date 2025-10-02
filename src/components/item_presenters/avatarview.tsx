@@ -130,7 +130,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     } as React.CSSProperties;
 
     let src = props.src;
-    let rarity = [] as JSX.Element[];
+    let rarity = [] as React.JSX.Element[];
 
     if (mode === 'crew') {
         gen_item = prepareCrew(gen_item);
