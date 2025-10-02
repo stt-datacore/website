@@ -355,6 +355,8 @@
             "do_not_exclude_event_crew": "Crew des Ereignisses nicht ausschließen",
             "event_skill_matrix_crew": "Crew innerhalb der Ereignisfertigkeitsmatrix",
             "featured_event_crew": "Vorgestellte Event-Crew",
+            "highest_power": "Höchste Leistung",
+            "last_expiring": "Letztes Ablaufdatum",
             "note_current": "Aktuelle Ausschlüsse notieren",
             "noted_exclusions": "Bekannte Ausschlüsse",
             "phase_type": "Phasentyp",

@@ -355,6 +355,8 @@
             "do_not_exclude_event_crew": "No excluya a los tripulantes del evento",
             "event_skill_matrix_crew": "Tripulantes de la matriz de habilidades del evento",
             "featured_event_crew": "Tripulantes destacados del evento",
+            "highest_power": "Mayor potencia",
+            "last_expiring": "Último vencimiento",
             "note_current": "Anotar exclusiones actuales",
             "noted_exclusions": "Exclusiones registradas",
             "phase_type": "Tipo de fase",

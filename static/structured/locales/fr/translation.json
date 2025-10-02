@@ -355,6 +355,8 @@
             "do_not_exclude_event_crew": "N'excluez pas les équipiers d'événements",
             "event_skill_matrix_crew": "Équipiers dans la matrice de compétences de l'événement",
             "featured_event_crew": "Équipiers de l'événement en vedette",
+            "highest_power": "Puissance maximale",
+            "last_expiring": "Dernière expiration",
             "note_current": "Notez les exclusions actuelles",
             "noted_exclusions": "Exclusions notées",
             "phase_type": "Type de phase",

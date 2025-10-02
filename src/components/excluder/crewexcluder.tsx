@@ -305,6 +305,8 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								mode='add'
 								title={t('consider_crew.exclude_quipped')}
 								isOpen={quipOpen}
+								showHighest
+								showExpiring
 								currentSelection={quippedSelection}
 								onClose={(result) => {
 									if (result) {
