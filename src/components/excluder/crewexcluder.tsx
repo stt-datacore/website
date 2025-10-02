@@ -253,11 +253,16 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								)}
 							</Form.Group>
 						)}
-						<Form.Field>
+					</Form.Group>
+
+					<div style={{...OptionsPanelFlexRow, gap: '1em', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-start'}}>
 							<Button color='blue' onClick={(e) => excludeQuipped()}>{t('consider_crew.exclude_quipped')}</Button>
 							<Button color='blue' icon='pencil' onClick={openQuipEditor}
-
 								/>
+
+						</div>
+						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
 							<Popup
 								content={excluder('denote_current')}
 								trigger={
@@ -300,43 +305,43 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								onClick={() => setNotesOpen(!notesOpen)}
 							/>
 
-							<NoteEditor
-								mode='add'
-								title={t('consider_crew.exclude_quipped')}
-								isOpen={quipOpen}
-								showHighest
-								showExpiring
-								currentSelection={quippedSelection}
-								onClose={(result) => {
-									if (result) {
-										if (quippedSelection?.length) {
-											let osel = excludedCrewIds.filter(id => !quippedSelection.includes(id));
-											updateExclusions([...osel, ...result]);
-										}
-										else {
-											excludeQuipped(result);
-										}
-									}
-									setQuipOpen(false);
-								}}
-								crewIds={quipValues}
-								/>
+						</div>
+					</div>
 
-							<NoteEditor
-								mode='remove'
-								title={t('consider_crew.excluder.noted_exclusions')}
-								isOpen={notesOpen}
-								onClose={(result) => {
-									if (result) {
-										setNotedExclusions(result);
-									}
-									setNotesOpen(false);
-								}}
-								crewIds={notedExclusions}
-								/>
-						</Form.Field>
+					<NoteEditor
+						mode='add'
+						title={t('consider_crew.exclude_quipped')}
+						isOpen={quipOpen}
+						showHighest
+						showExpiring
+						currentSelection={quippedSelection}
+						onClose={(result) => {
+							if (result) {
+								if (quippedSelection?.length) {
+									let osel = excludedCrewIds.filter(id => !quippedSelection.includes(id));
+									updateExclusions([...osel, ...result]);
+								}
+								else {
+									excludeQuipped(result);
+								}
+							}
+							setQuipOpen(false);
+						}}
+						crewIds={quipValues}
+						/>
 
-					</Form.Group>
+					<NoteEditor
+						mode='remove'
+						title={t('consider_crew.excluder.noted_exclusions')}
+						isOpen={notesOpen}
+						onClose={(result) => {
+							if (result) {
+								setNotedExclusions(result);
+							}
+							setNotesOpen(false);
+						}}
+						crewIds={notedExclusions}
+						/>
 				</Message.Content>
 			</Message>
 			<Segment attached='bottom'>
