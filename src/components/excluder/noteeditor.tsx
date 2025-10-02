@@ -195,9 +195,14 @@ export const NoteEditor = (props: NoteEditorProps) => {
             if (!items.some(c => skillSum(c[skill]))) return;
             let cc = [...items];
             cc.sort((a, b) => {
+                if (!skillSum(a[skill])) return 1;
+                if (!skillSum(b[skill])) return -1;
                 return skillSum(b[skill]) - skillSum(a[skill])
             });
-            if (!eaches.includes(cc[0])) eaches.push(cc[0]);
+            let fin = cc.filter(n => !eaches.includes(n));
+            if (fin.length) {
+                if (!eaches.includes(fin[0])) eaches.push(fin[0]);
+            }
         });
         setSelection(eaches.map(c => c.id));
     }
@@ -213,7 +218,8 @@ export const NoteEditor = (props: NoteEditorProps) => {
 
                 return getCrewTime(b as PlayerCrew) - getCrewTime(a as PlayerCrew)
             });
-            let fin = cc.filter(n => !eaches.includes(n));
+            // Extra check for skills since skills are not the natural sort, here.
+            let fin = cc.filter(n => !eaches.includes(n) && highestSkill[n.id] === skill);
             if (fin.length) {
                 if (!eaches.includes(fin[0])) eaches.push(fin[0]);
             }
