@@ -1,6 +1,6 @@
 import React from "react";
 import { CrewMember } from "../../model/crew";
-import { Button, Checkbox, Container, Icon, Modal, Segment, Table } from "semantic-ui-react";
+import { Button, Checkbox, Container, Icon, Modal, Segment, SemanticICONS, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewItemsView } from "../item_presenters/crew_items";
@@ -9,6 +9,8 @@ import { PlayerCrew } from "../../model/player";
 
 
 export interface NoteEditorProps {
+    title: string | React.JSX.Element;
+    mode: 'add' | 'remove';
     notes: number[];
     setNotes: (value?: number[]) => void;
     isOpen: boolean;
@@ -20,11 +22,11 @@ export const NoteEditor = (props: NoteEditorProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const { notes: selection, setNotes, isOpen, onClose } = props;
+    const { notes, setNotes, isOpen, onClose, title, mode } = props;
 
-    const [trashed, setTrashed] = React.useState([] as (string | number)[]);
+    const [selection, setSelection] = React.useState([] as (string | number)[]);
 
-    const notes = React.useMemo(() => {
+    const items = React.useMemo(() => {
         let crew: (PlayerCrew | CrewMember)[] | undefined = undefined;
         if (!playerData) {
             crew = globalContext.core.crew;
@@ -32,24 +34,35 @@ export const NoteEditor = (props: NoteEditorProps) => {
         else {
             crew = playerData.player.character.crew;
         }
-        return selection.map(id => crew.find(cc => cc.id === id)).filter(f => f !== undefined);
-    }, [selection, playerData]);
+        return notes.map(id => crew.find(cc => cc.id === id)).filter(f => f !== undefined);
+    }, [notes, playerData]);
+
+    const iconName = React.useMemo(() => {
+        let v = undefined as SemanticICONS | undefined;
+        if (mode === 'remove') {
+            v = 'trash';
+        }
+        else {
+            v = 'add';
+        }
+        return v;
+    }, [mode]);
 
     return (<>
         <Modal open={isOpen} size='small'>
             <Modal.Header>
-                {t('excluder.noted_exclusions')}
+                {title}
             </Modal.Header>
             <Modal.Content>
                 <Container style={{overflowY: 'auto', maxHeight: '40em'}}>
                     <Table striped>
                         <Table.Body>
-                            {notes.map((item) => {
+                            {items.map((item) => {
                                 return (
                                     <Table.Row key={`note_exc_${item.symbol}`} style={{height:'2.5em'}}>
                                         <Table.Cell>
                                             <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
-                                                <Button icon='trash' color={trashed.includes(item.id) ? 'orange' : undefined}
+                                                <Button icon={iconName} color={selection.includes(item.id) ? mode ==='remove' ? 'orange' : 'green' : undefined}
                                                     onClick={() => toggleTrashed(item.id)}
                                                 />
                                             </div>
@@ -81,11 +94,11 @@ export const NoteEditor = (props: NoteEditorProps) => {
             <Modal.Actions>
                 <div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
                     <div style={{...OptionsPanelFlexRow, gap: '1em'}}>
-                        <Button onClick={() => setTrashed([].slice())}>
+                        <Button onClick={() => setSelection([].slice())}>
                             <Icon name='eraser' />&nbsp;
                             {t('global.reset')}
                         </Button>
-                        <Button onClick={() => setTrashed(notes.map(n => n.id))}>
+                        <Button onClick={() => setSelection(items.map(n => n.id))}>
                             <Icon name='world' />&nbsp;
                             {t('global.select_all')}
                         </Button>
@@ -101,7 +114,7 @@ export const NoteEditor = (props: NoteEditorProps) => {
     </>)
 
     function onSubmit() {
-        let newlist = notes.filter(f => !trashed.includes(f.id));
+        let newlist = items.filter(f => !selection.includes(f.id));
         onClose(newlist.map(i => i.id));
     }
 
@@ -110,12 +123,12 @@ export const NoteEditor = (props: NoteEditorProps) => {
     }
 
     function toggleTrashed(id: number) {
-        if (!trashed.includes(id)) {
-            trashed.push(id);
-            setTrashed([...trashed]);
+        if (!selection.includes(id)) {
+            selection.push(id);
+            setSelection([...selection]);
         }
         else {
-            setTrashed(trashed.filter(t => t !== id));
+            setSelection(selection.filter(t => t !== id));
         }
     }
 }

@@ -46,7 +46,11 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	const { confirm } = promptContext;
 	const { t, tfmt, useT } = globalContext.localized;
 	const { t: excluder } = useT('consider_crew.excluder');
+
 	const [notesOpen, setNotesOpen] = React.useState(false);
+	const [quipOpen, setQuipOpen] = React.useState(false);
+	const [quipValues, setQuipValues] = React.useState([] as number[]);
+
 	const { events: inputEvents, voyageConfig, pageId } = props;
 	const { ephemeral, playerData } = globalContext.player;
 
@@ -248,6 +252,9 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 						)}
 						<Form.Field>
 							<Button color='blue' onClick={(e) => excludeQuipped()}>{t('consider_crew.exclude_quipped')}</Button>
+							<Button color='blue' icon='pencil' onClick={openQuipEditor}
+
+								/>
 							<Popup
 								content={excluder('denote_current')}
 								trigger={
@@ -291,6 +298,26 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 							/>
 
 							<NoteEditor
+								mode='add'
+								title={t('consider_crew.exclude_quipped')}
+								isOpen={quipOpen}
+								onClose={(result) => {
+									if (result) {
+										excludeQuipped(result);
+									}
+									setQuipOpen(false);
+								}}
+								notes={notedExclusions}
+								setNotes={(result) => {
+									if (result) {
+										excludeQuipped(result);
+									}
+								}}
+								/>
+
+							<NoteEditor
+								mode='remove'
+								title={t('consider_crew.excluder.noted_exclusions')}
 								isOpen={notesOpen}
 								onClose={(result) => {
 									if (result) {
@@ -305,7 +332,6 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 									}
 								}}
 								/>
-
 						</Form.Field>
 
 					</Form.Group>
@@ -316,6 +342,12 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			</Segment>
 		</React.Fragment>
 	);
+
+	function openQuipEditor() {
+		const quipped = props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
+		setQuipValues(quipped);
+		setQuipOpen(true);
+	}
 
 	function renderExcludedCrew(): JSX.Element {
 		const visibleExcludedCrew = [] as IVoyageCrew[];
@@ -398,8 +430,8 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		updateExclusions([...excludedCrewIds]);
 	}
 
-	function excludeQuipped() {
-		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
+	function excludeQuipped(list?: number[]) {
+		const quipped = list || props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
 		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
 	}
 
