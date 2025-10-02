@@ -9,7 +9,7 @@ export interface PolestarWorkerResults extends IWorkerResults<IPolestarWorkerIte
 }
 
 export interface PolestarMultiWorkerProps {
-    children: JSX.Element;
+    children: React.JSX.Element;
     playerData: PlayerData;
 }
 

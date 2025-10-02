@@ -53,7 +53,7 @@ export const CollectionsContext = React.createContext<ICollectionsContext>(Defau
 export interface CollectionFiltersProviderProps {
     pageId: string;
     playerCollections: PlayerCollection[];
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) => {
     const { children, pageId } = props;

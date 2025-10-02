@@ -101,7 +101,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			/>}
 		</React.Fragment>)
 
-	function renderCrewRow(crew: PlayerCrew, idx: number): JSX.Element {
+	function renderCrewRow(crew: PlayerCrew, idx: number): React.JSX.Element {
 		const unmaxed = crew.unmaxedIds?.map(id => { return playerCollections.find(pc => pc.id === id) });
 		const tabledProgress = unmaxed?.sort((a, b) => (a?.needed ?? 0) - (b?.needed ?? 0)).map(collection => {
 			if (!collection) return <></>
@@ -209,7 +209,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 		return -r;
 	}
 
-	function descriptionLabel(crew: any): JSX.Element {
+	function descriptionLabel(crew: any): React.JSX.Element {
 		if (crew.immortal > 0) {
 			return (
 				<div>
@@ -242,7 +242,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			migroups[col.milestone.goal] = reward;
 		}
 
-		const mirender = [] as JSX.Element[];
+		const mirender = [] as React.JSX.Element[];
 		const flexRow = OptionsPanelFlexRow;
 		const flexCol = OptionsPanelFlexColumn;
 

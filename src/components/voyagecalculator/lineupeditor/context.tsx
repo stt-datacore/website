@@ -11,7 +11,7 @@ export interface IEditorContext {
 	getConfigFromCrewSlots: (crewSlots: IProspectiveCrewSlot[]) => IProspectiveConfig;
 	getRuntimeDiff: (altRuntime: number) => number;
 	seekAlternateCrew: (crewSlot?: IProspectiveCrewSlot) => void;
-	renderActions: () => JSX.Element;
+	renderActions: () => React.JSX.Element;
 	dismissEditor: () => void;
 };
 

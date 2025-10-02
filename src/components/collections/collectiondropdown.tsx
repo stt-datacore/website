@@ -12,7 +12,7 @@ export interface CollectionDropDownProps {
     selection?: number[];
     showMilestones?: boolean | 'auto';
     setSelection: (value?: number | number[]) => void;
-    customRender?: (collection: Collection | CryoCollection | PlayerCollection) => JSX.Element;
+    customRender?: (collection: Collection | CryoCollection | PlayerCollection) => React.JSX.Element;
 }
 
 export const CollectionDropDown = (props: CollectionDropDownProps) => {

@@ -42,7 +42,7 @@ export interface PlayerResource {
     imageUrl?: string;
     style?: React.CSSProperties;
     click?: (e: any) => void;
-    customRender?: (item: PlayerResource) => JSX.Element;
+    customRender?: (item: PlayerResource) => React.JSX.Element;
 }
 
 export interface PlayerGlanceProps {

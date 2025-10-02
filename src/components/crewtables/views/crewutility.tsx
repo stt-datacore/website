@@ -163,7 +163,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		</div>
 	);
 
-	function renderThresholdForm(): JSX.Element {
+	function renderThresholdForm(): React.JSX.Element {
 		return (
 			<Form style={{ textAlign: 'center' }}>
 				<Table collapsing style={{ margin: '0 auto' }}>
@@ -450,7 +450,7 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 		});
 	}
 
-	function renderUtilities(crew: IRosterCrew, options: string[]): JSX.Element {
+	function renderUtilities(crew: IRosterCrew, options: string[]): React.JSX.Element {
 		if (!crew.markup || !crew.markup.crew_utility) return (<></>);
 		const crewUtility = crew.markup.crew_utility;
 		const utilities = crewUtility.thresholds.filter(key => options.includes(key.slice(0, 1)))
@@ -547,11 +547,11 @@ const RanksModal = (props: RanksModalProps) => {
 	}
 
 	// Adaptation of renderOtherRanks from commoncrewdata.tsx
-	function renderRanks(): JSX.Element {
-		const v = [] as JSX.Element[];
-		const g = [] as JSX.Element[], g1 = [] as JSX.Element[];
-		const b = [] as JSX.Element[];
-		const s = [] as JSX.Element[];
+	function renderRanks(): React.JSX.Element {
+		const v = [] as React.JSX.Element[];
+		const g = [] as React.JSX.Element[], g1 = [] as React.JSX.Element[];
+		const b = [] as React.JSX.Element[];
+		const s = [] as React.JSX.Element[];
 
 		const skillName = short => {
 

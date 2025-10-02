@@ -119,7 +119,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 		return meetsAnyCondition;
 	}
 
-	function renderCollectionRow(collection: any, idx: number): JSX.Element {
+	function renderCollectionRow(collection: any, idx: number): React.JSX.Element {
 		const rewards = collection.totalRewards > 0 ? collection.milestone.buffs.concat(collection.milestone.rewards) : [];
 
 		return (

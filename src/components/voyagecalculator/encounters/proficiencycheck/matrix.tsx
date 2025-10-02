@@ -50,7 +50,7 @@ export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 		</React.Fragment>
 	);
 
-	function renderSkillHeader(skill: string): JSX.Element {
+	function renderSkillHeader(skill: string): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
@@ -60,7 +60,7 @@ export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 		);
 	}
 
-	function renderMatrixCell(datum: ISkillPairData): JSX.Element {
+	function renderMatrixCell(datum: ISkillPairData): React.JSX.Element {
 		if (datum.coverage.length === 0) return <></>;
 		const bestCrew: PlayerCrew = datum.coverage[0];
 		const imageUrlPortrait: string = bestCrew.imageUrlPortrait ?? `${bestCrew.portrait.file.substring(1).replace(/\//g, '_')}.png`;

@@ -19,7 +19,7 @@ export interface PairCardProps {
     onlyActiveRound?: boolean;
 }
 
-export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean, key?: string): JSX.Element => {
+export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: boolean, disabled?: boolean, key?: string): React.JSX.Element => {
     if (!pair?.length || !pair[0]?.skill) return <></>
 
     const disabledOpacity = 0.5;

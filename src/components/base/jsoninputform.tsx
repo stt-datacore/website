@@ -133,7 +133,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 		if (el) el.click();
 	}
 
-	function renderCopyPaste(): JSX.Element {
+	function renderCopyPaste(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<Header icon>
@@ -194,7 +194,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 		);
 	}
 
-	function renderUpload(): JSX.Element {
+	function renderUpload(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<Header icon>

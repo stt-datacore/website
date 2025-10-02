@@ -37,7 +37,7 @@ const defaultPrompt: IPromptContext = {
 export const PromptContext = React.createContext(defaultPrompt);
 
 interface PromptProviderProps {
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 export const PromptProvider = (props: PromptProviderProps) => {
     const context = React.useContext(GlobalContext);

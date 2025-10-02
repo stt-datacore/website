@@ -71,7 +71,7 @@ export const HintPickerModal = (props: HintPickerModalProps) => {
 		/>
 	);
 
-	function renderPreface(): JSX.Element {
+	function renderPreface(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				Based on your guesses, we know that the mystery crew must match all <Icon name='check' fitted /> traits and no <Icon name='ban' fitted /> traits shown below. Tap to select a trait. Double-tap to make a selection more quickly. The crew list will be narrowed down to crew who match all selected traits.
@@ -85,7 +85,7 @@ export const HintPickerModal = (props: HintPickerModalProps) => {
 		);
 	}
 
-	function renderActions(dataPickerState: IDataPickerState): JSX.Element {
+	function renderActions(dataPickerState: IDataPickerState): React.JSX.Element {
 		// Preset ids are all deductions that would be selected from pending groups
 		const presetIds: Set<number> = new Set<number>();
 		pendingGroups.forEach(group => {
@@ -165,7 +165,7 @@ export const HintPickerModal = (props: HintPickerModalProps) => {
 		return bPriority - aPriority;
 	}
 
-	function renderDeduction(option: IDeductionOption, isSelected: boolean): JSX.Element {
+	function renderDeduction(option: IDeductionOption, isSelected: boolean): React.JSX.Element {
 		const assertion: TAssertion | undefined = deductions.find(deduction =>
 			deduction.field === option.field && deduction.value === option.value
 		)!.assertion;

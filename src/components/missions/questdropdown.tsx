@@ -11,7 +11,7 @@ export interface QuestDropDownProps {
     multiple?: boolean;
     continuum?: boolean;
     setSelection: (value?: string | string[]) => void;
-    customRender?: (value: Quest) => JSX.Element;
+    customRender?: (value: Quest) => React.JSX.Element;
 }
 
 export const QuestDropDown = (props: QuestDropDownProps) => {

@@ -323,7 +323,7 @@ export class CrewPresenter extends React.Component<
         return newcrew ?? (inputCrew as PlayerCrew);
     }
 
-    render(): JSX.Element {
+    render(): React.JSX.Element {
         const {
             crew: inputCrew,
             touched,

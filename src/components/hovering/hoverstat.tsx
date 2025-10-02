@@ -54,7 +54,7 @@ export interface HoverStatTargetProps<T> {
     /**
      * The wrapped content
      */
-    children: JSX.Element;
+    children: React.JSX.Element;
 
     /**
      * The target group (required to bind)
@@ -190,7 +190,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
      *
      * _(Optionally, you can attach a children property to a HoverStatProps derived object and pass that through, here)_
      */
-    protected abstract renderContent(): JSX.Element;
+    protected abstract renderContent(): React.JSX.Element;
 
     constructor(props: TProps) {
         super(props);

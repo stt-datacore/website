@@ -9,7 +9,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 export interface AdvancedCrewPowerProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    renderTrigger?: (disabled?: boolean) => JSX.Element;
+    renderTrigger?: (disabled?: boolean) => React.JSX.Element;
     config: AdvancedCrewPowerConfig;
     disabled?: boolean;
 }
@@ -121,7 +121,7 @@ const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerP
         </Modal>
     );
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.JSX.Element {
 
         const rowStyle = {
             display: "flex",
@@ -257,7 +257,7 @@ const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerP
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.JSX.Element {
         return (
             <Button disabled={disabled}>
                 {t('ship.calc.advanced.power_depth')}

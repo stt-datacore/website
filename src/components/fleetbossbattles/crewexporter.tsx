@@ -360,12 +360,12 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		</div>
 	);
 
-	function renderPrefsForm(): JSX.Element {
+	function renderPrefsForm(): React.JSX.Element {
 		if (!isActive) return (<></>);
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					{t('fbb.crew_lists.customize.heading')}					
+					{t('fbb.crew_lists.customize.heading')}
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>

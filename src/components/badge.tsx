@@ -7,7 +7,7 @@ export interface BadgeProps {
     value?: number;
     color?: string;
     border?: string;
-    children?: JSX.Element;
+    children?: React.JSX.Element;
 }
 
 export class Badge extends React.Component<BadgeProps> {
@@ -19,7 +19,7 @@ export class Badge extends React.Component<BadgeProps> {
 
 
     componentDidMount(): void {
-        
+
     }
 
     render() {
@@ -43,8 +43,8 @@ export class Badge extends React.Component<BadgeProps> {
             <div className="ui" style={{
                 textAlign: "center",
                 position: "relative",
-                backgroundColor: usecolor,       
-                color: "darkgray",         
+                backgroundColor: usecolor,
+                color: "darkgray",
                 border,
                 top: "-0.5em",
                 right: "-3em",
@@ -54,11 +54,11 @@ export class Badge extends React.Component<BadgeProps> {
             }}>
                 {value}
             </div>
-            {children}    
+            {children}
         </div>)
     }
 
-    
+
 
 
 

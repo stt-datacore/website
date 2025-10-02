@@ -150,7 +150,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.JSX.Element {
         return (
             <Button>
                 {t('global.advanced_settings')}

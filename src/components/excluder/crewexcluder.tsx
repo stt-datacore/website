@@ -317,7 +317,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		</React.Fragment>
 	);
 
-	function renderExcludedCrew(): JSX.Element {
+	function renderExcludedCrew(): React.JSX.Element {
 		const visibleExcludedCrew = [] as IVoyageCrew[];
 		excludedCrewIds.forEach(crewId => {
 			const crew = props.preExcludedCrew.find(crew => crew.id === crewId);
@@ -379,7 +379,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		)
 	}
 
-	function renderCrewLabel(crew: IVoyageCrew): JSX.Element {
+	function renderCrewLabel(crew: IVoyageCrew): React.JSX.Element {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
 				<Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
@@ -474,14 +474,14 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 		/>
 	);
 
-	function renderCaption(crew: CrewMember | PlayerCrew): JSX.Element {
+	function renderCaption(crew: CrewMember | PlayerCrew): React.JSX.Element {
 		return <div style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
 			<CrewItemsView itemSize={24} crew={crew} quipment={true} />
 			<span>{crew.name}</span>
 		</div>
 	}
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		return (
 			<Button color='blue'>
 				<Icon name='zoom-in' />

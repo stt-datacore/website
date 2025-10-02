@@ -86,8 +86,8 @@ export const PolestarFilterModal = () => {
 		</Modal>
 	);
 
-	function createFilterCheckboxes(): JSX.Element[] {
-		const checkboxes: JSX.Element[] = [];
+	function createFilterCheckboxes(): React.JSX.Element[] {
+		const checkboxes: React.JSX.Element[] = [];
 		grouped.map((group) => {
 			if(group.polestars.length > 0) {
 				checkboxes.push(filterCheckboxGroupHeader(group.title));
@@ -99,7 +99,7 @@ export const PolestarFilterModal = () => {
 		return checkboxes;
 	}
 
-	function filterCheckbox(p: IPolestar): JSX.Element {
+	function filterCheckbox(p: IPolestar): React.JSX.Element {
 		return (
 			<Grid.Column key={p.id}>
 				<Checkbox
@@ -113,7 +113,7 @@ export const PolestarFilterModal = () => {
 		)
 	}
 
-	function filterCheckboxGroupHeader(title: string): JSX.Element {
+	function filterCheckboxGroupHeader(title: string): React.JSX.Element {
 		const group = grouped.find(group => group.title === title);
 		if (!group) return <></>;
 		const groupLink = <Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(title, group.anyDisabled)}>{group.anyDisabled ? t('global.check_all') : t('global.uncheck_all')}</Button>;

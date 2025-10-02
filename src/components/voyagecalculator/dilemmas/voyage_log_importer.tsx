@@ -48,7 +48,7 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
         return 'Data does not appear to be voyage log data';
     }
 
-    function renderCopyPaste(): JSX.Element {
+    function renderCopyPaste(): React.JSX.Element {
         const VOYAGELINK = `https://app.startrektimelines.com/voyage/refresh`;
         let title = t(`json_types.voyage_log`)
         title = title.slice(0, 1).toUpperCase() + title.slice(1);

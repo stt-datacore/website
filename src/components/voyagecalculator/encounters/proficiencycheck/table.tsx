@@ -113,7 +113,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		</React.Fragment>
 	);
 
-	function renderSkillHeader(skills: string[], crewCount: number): JSX.Element {
+	function renderSkillHeader(skills: string[], crewCount: number): React.JSX.Element {
 		return (
 			<span title={t('voyage.contests.n_viable_crew', { n: crewCount })}>
 				{skills.map(skill => (
@@ -124,14 +124,14 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		);
 	}
 
-	function renderCrewSkills(crew: IProficientCrew): JSX.Element {
+	function renderCrewSkills(crew: IProficientCrew): React.JSX.Element {
 		const skills = Object.keys(crew.skills).map(skill => {
 			return {...crew.skills[skill], skill};
 		});
 		return <ProficiencyRanges skills={skills} sort />;
 	}
 
-	function renderCritPotential(crew: IProficientCrew): JSX.Element {
+	function renderCritPotential(crew: IProficientCrew): React.JSX.Element {
 		if (crew.crit_potential.length === 0) return <></>;
 		const title: string = crew.crit_potential.map(critTrait => TRAIT_NAMES[critTrait]).join(', ');
 		return (
@@ -141,7 +141,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		);
 	}
 
-	function renderContestScore(crew: IProficientCrew, skillId: string): JSX.Element {
+	function renderContestScore(crew: IProficientCrew, skillId: string): React.JSX.Element {
 		const scoredSkill: IScoredSkill = crew.scored_skills[skillId];
 		if (scoredSkill.score === 0) return <></>;
 		return (

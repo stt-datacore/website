@@ -274,7 +274,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		</React.Fragment>
 	);
 
-	function renderTableRow(crew: IEventScoredCrew, idx: number, highlighted: boolean): JSX.Element {
+	function renderTableRow(crew: IEventScoredCrew, idx: number, highlighted: boolean): React.JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};
@@ -351,7 +351,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		);
 	}
 
-	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): JSX.Element {
+	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): React.JSX.Element {
 		return (
 			<div>
 				<div><Rating icon='star' rating={rosterType === 'myCrew' ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled /></div>
@@ -370,18 +370,18 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		);
 	}
 
-	function renderCustomLabel(crew: IEventScoredCrew, customColumn: string): JSX.Element {
+	function renderCustomLabel(crew: IEventScoredCrew, customColumn: string): React.JSX.Element {
 		const combo = customColumn.split('.')[1];
 		return <>{scoreLabel(crew.combos[combo])}</>;
 	}
 
-	function scoreLabel(score: number): JSX.Element {
+	function scoreLabel(score: number): React.JSX.Element {
 		if (!score || score === 0) return (<></>);
 		if (phaseType === 'gather') return (<>{`${calculateGalaxyChance(score)}%`}</>);
 		return (<>{Math.floor(score)}</>);
 	}
 
-	function renderSkillScore(crew: IEventScoredCrew, skill: string): JSX.Element {
+	function renderSkillScore(crew: IEventScoredCrew, skill: string): React.JSX.Element {
 		if (phaseType === 'voyage') {
 			return (
 				<React.Fragment>
@@ -527,7 +527,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	}
 
 
-	function renderCell(skillA: string, skillB: string, invisible: boolean, mobile: boolean) : JSX.Element {
+	function renderCell(skillA: string, skillB: string, invisible: boolean, mobile: boolean) : React.JSX.Element {
 		let key: string, best: IBestCombo;
 		if (skillA === skillB) {
 			key = skillA;

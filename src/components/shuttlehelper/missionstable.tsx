@@ -16,8 +16,8 @@ type MissionsTableProps = {
 	columns: ITableColumn[];
 	data: ITableData[];
 	defaultSort?: ITableSortField;
-	renderTableRow: (datum: ITableData) => JSX.Element;
-	renderTableFooter?: () => JSX.Element;
+	renderTableRow: (datum: ITableData) => React.JSX.Element;
+	renderTableFooter?: () => React.JSX.Element;
 };
 
 export const MissionsTable = (props: MissionsTableProps) => {

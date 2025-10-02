@@ -112,7 +112,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 		</React.Fragment>
 	);
 
-	function renderGroup(group: Variant, idx: number): JSX.Element {
+	function renderGroup(group: Variant, idx: number): React.JSX.Element {
 		return (
 			<Segment key={idx}>
 				<div style={{display:'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap'}}>

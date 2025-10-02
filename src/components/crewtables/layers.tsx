@@ -4,26 +4,26 @@ export interface DataField {
     title?: string;
     description?: string;
     type?: 'string' | 'number' | 'custom';
-    path?: string;    
+    path?: string;
     provideValue?: (item: any) => any;
 }
 
 export interface FilterLayerProps {
     ChildComponent?: typeof React.Component & FilterLayer;
-    children?: JSX.Element;
+    children?: React.JSX.Element;
     dataSource: any[];
     fields: DataField[];
 }
- 
+
 export interface FilterLayerState {
     currentData: any[];
 }
- 
+
 export abstract class FilterLayer extends React.Component<FilterLayerProps, FilterLayerState> {
     protected inited = false;
-    
+
     constructor(props: FilterLayerProps) {
-        super(props);        
+        super(props);
         this.state = {
             currentData: []
         }
@@ -31,8 +31,8 @@ export abstract class FilterLayer extends React.Component<FilterLayerProps, Filt
 
     abstract processData();
 
-    abstract renderFilters(): JSX.Element;
-    
+    abstract renderFilters(): React.JSX.Element;
+
     componentDidMount(): void {
         this.initData();
     }
@@ -46,9 +46,9 @@ export abstract class FilterLayer extends React.Component<FilterLayerProps, Filt
         this.inited = true;
     }
 
-    render() { 
+    render() {
         const { ChildComponent, fields, children } = this.props;
-        
+
         return (<div style={{display:"flex", flexDirection: "column", justifyContent:"center", alignItems:"center"}}>
             {this.renderFilters()}
             {ChildComponent && <ChildComponent fields={fields} dataSource={this.processData()} />}
@@ -56,4 +56,4 @@ export abstract class FilterLayer extends React.Component<FilterLayerProps, Filt
         </div>);
     }
 }
- 
+

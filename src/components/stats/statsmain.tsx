@@ -109,7 +109,7 @@ export const StatTrendsComponent = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const statsStyle: React.CSSProperties = { width: '100%', height: '3em', margin: 0 };
-    const skillDecors = [] as JSX.Element[];
+    const skillDecors = [] as React.JSX.Element[];
 
     let sst = '';
 
@@ -118,7 +118,7 @@ export const StatTrendsComponent = () => {
         fcs.forEach((skillKey) => {
             const preskill = skillKey.split(",").filter(f => f);
             if (skillKey.trim()) {
-                const newelem = [] as JSX.Element[];
+                const newelem = [] as React.JSX.Element[];
                 preskill.forEach((text, idx) => {
                     if (!text) return;
                     if (idx) newelem.push(<>&nbsp;/&nbsp;</>);

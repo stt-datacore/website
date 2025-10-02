@@ -123,7 +123,7 @@ export interface RarityOptions {
   key: string;
   value?: string | null | undefined;
   text: string;
-  content?: string | JSX.Element;
+  content?: string | React.JSX.Element;
 }
 
 

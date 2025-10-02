@@ -84,7 +84,7 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
         </Modal>
     );
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.JSX.Element {
 
         const rowStyle = {
             display: "flex",
@@ -249,7 +249,7 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.JSX.Element {
         return (
             <Button>
                 {t('global.advanced_settings')}

@@ -102,7 +102,7 @@ export const Assignments = (props: AssignmentsProps) => {
 		</React.Fragment>
 	);
 
-	function renderTableFooter(): JSX.Element {
+	function renderTableFooter(): React.JSX.Element {
 		return (
 			<Table.Row>
 				<Table.HeaderCell colSpan={columnCount}>
@@ -113,7 +113,7 @@ export const Assignments = (props: AssignmentsProps) => {
 		);
 	}
 
-	function renderTableRow(datum: ITableData): JSX.Element {
+	function renderTableRow(datum: ITableData): React.JSX.Element {
 		return (
 			<Table.Row key={datum.id}>
 				<Table.Cell textAlign='center'>
@@ -142,7 +142,7 @@ export const Assignments = (props: AssignmentsProps) => {
 		);
 	}
 
-	function renderSeatAssignment(shuttleId: string, seatNum: number, seat: ShuttleSeat): JSX.Element {
+	function renderSeatAssignment(shuttleId: string, seatNum: number, seat: ShuttleSeat): React.JSX.Element {
 		let assignedCrew: IRosterCrew | undefined = undefined;
 		const seated: ISeatAssignment | undefined = assigned.find(seat =>
 			seat.shuttleId === shuttleId && seat.seatNum === seatNum

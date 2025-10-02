@@ -13,7 +13,7 @@ export interface IEssentialMatrixData extends IEssentialData {
 export interface IDataGridSetup {
 	gridProps?: StrictGridProps;
 	columnProps?: StrictGridColumnProps;
-	renderGridColumn?: (datum: IEssentialData, isSelected: boolean) => JSX.Element;
+	renderGridColumn?: (datum: IEssentialData, isSelected: boolean) => React.JSX.Element;
 	defaultSort?: IDataSortField;
 };
 
@@ -26,23 +26,23 @@ export interface IDataTableSetup {
 
 export interface IDataTableColumn {
 	id: string;
-	title: string | JSX.Element;
+	title: string | React.JSX.Element;
 	align?: 'left' | 'right' | 'center';
 	sortField?: IDataSortField;
-	renderCell: (datum: IEssentialData, isSelected: boolean) => JSX.Element;
+	renderCell: (datum: IEssentialData, isSelected: boolean) => React.JSX.Element;
 };
 
 export interface IDataMatrixSetup {
 	tableProps?: StrictTableProps;
 	rows: IDataMatrixField[];
 	columns: IDataMatrixField[];
-	renderCell?: (datum: IEssentialMatrixData, isSelected: boolean) => JSX.Element;
+	renderCell?: (datum: IEssentialMatrixData, isSelected: boolean) => React.JSX.Element;
 	permutate?: boolean;	// Allow combos to be shown in permutation
 };
 
 export interface IDataMatrixField {
 	id: string;
-	title: string | JSX.Element;
+	title: string | React.JSX.Element;
 	align?: 'left' | 'right' | 'center';
 };
 

@@ -89,7 +89,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 		</Modal>
 	);
 
-	function renderTopLines(): JSX.Element {
+	function renderTopLines(): React.JSX.Element {
 		if (!prospectiveEstimate) return <></>;
 		return (
 			<React.Fragment>
@@ -150,7 +150,7 @@ interface IToplines {
 	title: string;
 	currentValue: number;
 	baselineValue: number;
-	renderValue?: (value: number) => JSX.Element;
+	renderValue?: (value: number) => React.JSX.Element;
 };
 
 type ToplinesComparedProps = {
@@ -308,7 +308,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		</React.Fragment>
 	);
 
-	function renderSimpleTable(crewSlots: IProspectiveCrewSlot[]): JSX.Element {
+	function renderSimpleTable(crewSlots: IProspectiveCrewSlot[]): React.JSX.Element {
 		return (
 			<Table selectable striped unstackable compact>
 				<Table.Body>
@@ -347,7 +347,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		);
 	}
 
-	function renderCrew(crewSlot: IProspectiveCrewSlot): JSX.Element {
+	function renderCrew(crewSlot: IProspectiveCrewSlot): React.JSX.Element {
 		const controlCrew: PlayerCrew | undefined = control?.config.crew_slots.find(cs => cs.symbol === crewSlot.symbol)?.crew;
 		const editedSlot: boolean = !crewSlot.crew || (!!controlCrew && controlCrew.id !== crewSlot.crew.id);
 		return (
@@ -369,7 +369,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		);
 	}
 
-	function renderBonus(crewSlot: IProspectiveCrewSlot): JSX.Element {
+	function renderBonus(crewSlot: IProspectiveCrewSlot): React.JSX.Element {
 		const controlCrew: PlayerCrew | undefined = control?.config.crew_slots.find(cs => cs.symbol === crewSlot.symbol)?.crew;
 		const controlBonus: number = controlCrew ? getCrewTraitBonus(prospectiveConfig, controlCrew, crewSlot.trait) : 0;
 
@@ -447,7 +447,7 @@ const ProspectiveProficiency = (props: ProspectiveProficiencyProps) => {
 	);
 };
 
-function renderAntimatter(value: number): JSX.Element {
+function renderAntimatter(value: number): React.JSX.Element {
 	return (
 		<React.Fragment>
 			{value} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
@@ -455,7 +455,7 @@ function renderAntimatter(value: number): JSX.Element {
 	);
 }
 
-function renderVP(value: number): JSX.Element {
+function renderVP(value: number): React.JSX.Element {
 	return (
 		<React.Fragment>
 			{value.toLocaleString()} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />

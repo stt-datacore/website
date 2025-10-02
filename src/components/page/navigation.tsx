@@ -15,7 +15,7 @@ import { AlertContext } from '../alerts/alertprovider';
 type NavigationProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
     sidebarTarget?: React.RefObject<HTMLElement>;
-    children: JSX.Element;
+    children: React.JSX.Element;
 };
 
 function printLang(lang?: SupportedLanguage) {
@@ -427,9 +427,9 @@ export const Navigation = (props: NavigationProps) => {
 		);
 	});
 
-	const sidebarItems = [] as JSX.Element[];
-	const menuItems = [] as JSX.Element[];
-	const rightItems = [] as JSX.Element[];
+	const sidebarItems = [] as React.JSX.Element[];
+	const menuItems = [] as React.JSX.Element[];
+	const rightItems = [] as React.JSX.Element[];
 
 	for (let page of pages) {
 		if (page.right) continue;

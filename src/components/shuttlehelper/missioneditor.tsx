@@ -42,7 +42,7 @@ export const MissionEditor = (props: MissionEditorProps) => {
 		</Modal>
 	);
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<Grid columns={2} divided stackable>

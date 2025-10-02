@@ -21,7 +21,7 @@ export interface CollectionsCrewCardProps {
     highlightClassName?: string;
 }
 
-const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
+const CollectionsCrewCard = (props: CollectionsCrewCardProps): React.JSX.Element => {
     const context = React.useContext(GlobalContext);
     const { t } = context.localized;
     const { highlightStyle, highlightIfNeeded, collection, crew, index, onClick } = props;

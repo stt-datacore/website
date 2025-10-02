@@ -223,7 +223,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		}
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.JSX.Element {
 		return (
 			<AlternatePickerOptions
 				filters={filters} setFilters={setFilters}
@@ -234,11 +234,11 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		);
 	}
 
-	function renderGridCrew(datum: IEssentialData): JSX.Element {
+	function renderGridCrew(datum: IEssentialData): React.JSX.Element {
 		return <CrewPortrait crew={datum as IAlternateCrewData} />;
 	}
 
-	function renderSkillHeader(skill: string): JSX.Element {
+	function renderSkillHeader(skill: string): React.JSX.Element {
 		const crewCount: number = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill)).length;
 		return (
 			<span title={t('voyage.editor.n_viable_crew', { n: crewCount })}>
@@ -250,9 +250,9 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		);
 	}
 
-	function renderReplacement(): JSX.Element {
+	function renderReplacement(): React.JSX.Element {
 		if (!targeting) return <></>;
-		const seat: JSX.Element = (
+		const seat: React.JSX.Element = (
 			<React.Fragment>
 				<img
 					src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`}
@@ -283,7 +283,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		);
 	}
 
-	function renderCrewAssignment(crew: IAlternateCrewData): JSX.Element {
+	function renderCrewAssignment(crew: IAlternateCrewData): React.JSX.Element {
 		if (crew.assigned_slot < 0 || crew.assigned_slot >= 12) return <></>;
 		const slottedSkills: string[] = [
 			'command_skill', 'diplomacy_skill', 'security_skill',
@@ -293,7 +293,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		return <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 	}
 
-	function renderCrewStatus(crew: IAlternateCrewData): JSX.Element {
+	function renderCrewStatus(crew: IAlternateCrewData): React.JSX.Element {
 		if (crew.immortal > 0) {
 			return (
 				<Icon	/* Unfreeze crew */

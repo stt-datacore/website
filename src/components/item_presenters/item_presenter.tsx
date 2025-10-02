@@ -141,7 +141,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         this.forceUpdate();
     }
 
-    render(): JSX.Element {
+    render(): React.JSX.Element {
         const { t, tfmt } = this.context.localized;
         const { item: item, touched, tabs, showIcon } = this.props;
         const { playerData } = this.context.player;

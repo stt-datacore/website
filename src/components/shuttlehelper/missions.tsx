@@ -102,7 +102,7 @@ export const Missions = () => {
 		</React.Fragment>
 	);
 
-	function renderTableFooter(): JSX.Element {
+	function renderTableFooter(): React.JSX.Element {
 		return (
 			<Table.Row>
 				<Table.HeaderCell colSpan={columnCount}>
@@ -113,7 +113,7 @@ export const Missions = () => {
 		);
 	}
 
-	function renderTableRow(datum: ITableData): JSX.Element {
+	function renderTableRow(datum: ITableData): React.JSX.Element {
 		return (
 			<Table.Row key={datum.id} style={{ cursor: 'pointer' }}
 				onClick={() => toggleMission(datum.id)}

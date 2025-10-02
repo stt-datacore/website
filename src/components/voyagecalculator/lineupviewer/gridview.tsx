@@ -42,7 +42,7 @@ export const GridView = () => {
 		</React.Fragment>
 	);
 
-	function renderShip(): JSX.Element {
+	function renderShip(): React.JSX.Element {
 		if (!ship) return (<></>);
 		return (
 			<Table celled selectable striped unstackable collapsing compact='very' style={{ margin: '0 auto 2em' }}>
@@ -77,7 +77,7 @@ export const GridView = () => {
 		);
 	}
 
-	function renderCards(): JSX.Element {
+	function renderCards(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{assignments.map((assignment, idx) => {
@@ -91,7 +91,7 @@ export const GridView = () => {
 		);
 	}
 
-	function renderIcons(): JSX.Element {
+	function renderIcons(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{assignments.map((assignment, idx) => {

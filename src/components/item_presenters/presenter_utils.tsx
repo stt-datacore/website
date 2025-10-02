@@ -84,7 +84,7 @@ export interface HoverSelectorConfig<T> {
     key: T;
     value: T;
     text?: string;
-    content?: JSX.Element;
+    content?: React.JSX.Element;
 }
 
 export interface BuffSelectorProps {
@@ -111,7 +111,7 @@ export function drawBuff(
     key: string | number,
     data: PlayerBuffMode,
     buffClick?: (value: PlayerBuffMode) => void
-): JSX.Element {
+): React.JSX.Element {
     const buffclick = (
         e: React.MouseEvent<HTMLElement, MouseEvent>,
         buff: PlayerBuffMode
@@ -189,7 +189,7 @@ export function drawImmo(
     immoed?: boolean,
     prospect?: boolean,
     gender?: "m" | "f" | ""
-): JSX.Element {
+): React.JSX.Element {
     const immoclick = (
         e: React.MouseEvent<HTMLElement, MouseEvent>,
         immo: PlayerImmortalMode

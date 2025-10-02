@@ -22,8 +22,8 @@ type VaultCrewProps = {
 	allCrew?: CrewMember[];
 };
 
-function formatCrewStats(crew: PlayerCrew, playerData?: PlayerData, allCrew?: CrewMember[], buffs?: BuffStatTable): JSX.Element {
-	let skills = [] as JSX.Element[];
+function formatCrewStats(crew: PlayerCrew, playerData?: PlayerData, allCrew?: CrewMember[], buffs?: BuffStatTable): React.JSX.Element {
+	let skills = [] as React.JSX.Element[];
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = crew[skillName];
 
@@ -65,7 +65,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			paddingRight: SZ(0.4) + 'em'
 		};
 
-		let rarity = [] as JSX.Element[];
+		let rarity = [] as React.JSX.Element[];
 		for (let i = 0; i < crew.rarity; i++) {
 			rarity.push(<img key={i} src={star_reward} style={iconStyle} />);
 		}
@@ -73,7 +73,7 @@ class VaultCrew extends PureComponent<VaultCrewProps> {
 			rarity.push(<img key={i} src={star_reward_inactive} style={iconStyle} />);
 		}
 
-		let skillicons = [] as JSX.Element[];
+		let skillicons = [] as React.JSX.Element[];
 		let skills_sorted: [string, Skill][] = Object.entries(crew.base_skills)
 			.sort((a, b) => (a[1] as Skill).core - (b[1] as Skill).core);
 		skills_sorted.forEach((s) => {

@@ -4,7 +4,7 @@ import { Icon, Popup } from "semantic-ui-react";
 const text = (
   <div style={{marginTop: "0.25em"}}>
     <p>Missions are divided into stages, presented from left to right.</p>
-    <p>Each stage consists of one or more challenges.</p>    
+    <p>Each stage consists of one or more challenges.</p>
     <p>Click on a challenge to select it.</p>
     <p>Selected challenges will be highlighted with a <Icon name='star' color='green' /> green star.</p>
     <p>Selecting challenges a second time will exclude them from consideration, and they will be highlighted with a <Icon name='ban' color='red' /> red ban.</p>
@@ -17,7 +17,7 @@ const text = (
 
 export interface MapExplanationProps {
     header?: string;
-    altContent?: JSX.Element;
+    altContent?: React.JSX.Element;
 }
 
 const MapExplanation = (props: MapExplanationProps) => (

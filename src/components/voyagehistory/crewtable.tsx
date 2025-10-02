@@ -163,7 +163,7 @@ export const CrewTable = () => {
 		</React.Fragment>
 	);
 
-	function renderTableRow(crew: ITrackedCrewMember): JSX.Element {
+	function renderTableRow(crew: ITrackedCrewMember): React.JSX.Element {
 		const dtLastAssignment = crew.assignments.length > 0 ? new Date(crew.last_assignment.created_at) : undefined;
 		return (
 			<Table.Row key={crew.symbol}>
@@ -209,7 +209,7 @@ export const CrewTable = () => {
 		);
 	}
 
-	function renderPercentCell(crew: ITrackedCrewMember, skillName: string): JSX.Element {
+	function renderPercentCell(crew: ITrackedCrewMember, skillName: string): React.JSX.Element {
 		const usage = crew.skill_assignments[skillName].usage;
 		if (usage === 0) return (<Table.Cell key={skillName} />);
 		return (

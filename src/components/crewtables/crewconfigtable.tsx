@@ -22,10 +22,10 @@ type CrewConfigTableProps = {
 	rosterCrew: IRosterCrew[];
 	crewFilters: ICrewFilter[];
 	tableConfig?: ITableConfigRow[];
-	renderTableCells?: (crew: IRosterCrew) => JSX.Element;
+	renderTableCells?: (crew: IRosterCrew) => React.JSX.Element;
 	lockableCrew?: LockedProspect[];
 	loading?: boolean;
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.JSX.Element;
 	specialView?: SpecialViews;
 };
 
@@ -104,7 +104,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: IRosterCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<IRosterCrew | null | undefined>> | undefined = undefined): JSX.Element {
+	function renderTableRow(crew: IRosterCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<IRosterCrew | null | undefined>> | undefined = undefined): React.JSX.Element {
 		const attributes = {
 			positive: highlighted
 		};

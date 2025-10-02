@@ -22,7 +22,7 @@ type ContestantProps = {
 	skills: string[];
 	critChances: number[];
 	contestant: IContestant;
-	wins: string | JSX.Element;
+	wins: string | React.JSX.Element;
 	editContestant: (contestant: IContestant) => void;
 	dismissContestant?: () => void;
 	compact?: boolean;
@@ -116,7 +116,7 @@ export const Contestant = (props: ContestantProps) => {
 		</React.Fragment>
 	);
 
-	function renderFullHeader(): JSX.Element {
+	function renderFullHeader(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<Message.Header style={{ textAlign: 'center' }}>
@@ -127,7 +127,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderCompactHeader(): JSX.Element {
+	function renderCompactHeader(): React.JSX.Element {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: '1em' }}>
 				<div>
@@ -154,7 +154,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderAvatar(): JSX.Element {
+	function renderAvatar(): React.JSX.Element {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'center' }}>
 				{contestant.crew && (
@@ -174,7 +174,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderContestantSkill(skill: string): JSX.Element {
+	function renderContestantSkill(skill: string): React.JSX.Element {
 		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
 
 		return (
@@ -206,7 +206,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderContestantSkillLabel(skill: string): JSX.Element {
+	function renderContestantSkillLabel(skill: string): React.JSX.Element {
 		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
 		return (
 			<Label key={skill}>

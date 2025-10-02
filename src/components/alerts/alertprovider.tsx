@@ -12,7 +12,7 @@ export interface IAlertContext {
     setConfig: (value: IAlertConfig) => void;
     alertOpen: boolean,
     setAlertOpen: (value: boolean) => void;
-    drawAlertModal: (renderTrigger?: () => JSX.Element) => JSX.Element;
+    drawAlertModal: (renderTrigger?: () => React.JSX.Element) => React.JSX.Element;
     restoreHiddenAlerts: boolean,
 	setRestoreHiddenAlerts: (value: boolean) => void
 }
@@ -30,7 +30,7 @@ const DefaultAlertContext = {
 export const AlertContext = React.createContext(DefaultAlertContext);
 
 export interface AlertProviderProps {
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export const AlertProvider = (props: AlertProviderProps) => {
@@ -77,7 +77,7 @@ export const AlertProvider = (props: AlertProviderProps) => {
         </AlertContext.Provider>
     </React.Fragment>
 
-    function drawAlertModal(renderTrigger?: () => JSX.Element) {
+    function drawAlertModal(renderTrigger?: () => React.JSX.Element) {
         return <AlertModal
                     config={config}
                     setConfig={setConfig}

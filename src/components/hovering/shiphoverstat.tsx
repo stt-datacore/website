@@ -167,7 +167,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
         this.tiny.setValue<boolean>('ship', value, true);
     }
 
-    protected renderContent = (): JSX.Element =>  {
+    protected renderContent = (): React.JSX.Element =>  {
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }

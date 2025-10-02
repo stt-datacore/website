@@ -49,7 +49,7 @@ export interface GauntletSettingsConfig {
 
 export interface GauntletSettingsProps {
 	config: GauntletSettingsConfig;
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.JSX.Element;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 };

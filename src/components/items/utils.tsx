@@ -89,7 +89,7 @@ export function printRequiredTraits(
     item: EquipmentItem,
     trait_names: { [key: string]: string },
     t?: TranslateMethod
-): JSX.Element {
+): React.JSX.Element {
     if (item.kwipment) {
         if (item.traits_requirement?.length) {
             let req = item.traits_requirement!;
@@ -150,7 +150,7 @@ export interface FlavorConfig {
 export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipmentItem, config: FlavorConfig) {
     const { localized, crew: inputCrew } = config;
     const { t, tfmt } = localized;
-    let output = [] as JSX.Element[];
+    let output = [] as React.JSX.Element[];
 
     let flavor = item.flavor ?? "";
     if (flavor.startsWith("Equippable by:")) {

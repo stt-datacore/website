@@ -33,7 +33,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
         { width: 2, column: 'challenge_key', title: 'Challenges' }
     ]
 
-    const renderTableCells = (row: IRosterCrew): JSX.Element => {
+    const renderTableCells = (row: IRosterCrew): React.JSX.Element => {
         let crew = row as IQuestCrew;
 
         crew.challenges ??= [];

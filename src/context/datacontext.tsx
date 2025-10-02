@@ -53,13 +53,13 @@ export type ValidDemands =
 	'skill_bufs';
 
 export interface DataProviderProperties {
-	children: JSX.Element;
+	children: React.JSX.Element;
 };
 
 export interface ICoreContext extends ICoreData {
 	ready: (demands: ValidDemands[], onReady: () => void) => void;
 	reset: () => boolean;
-	spin: (message?: string) => JSX.Element;
+	spin: (message?: string) => React.JSX.Element;
 };
 
 interface IDemandResult {

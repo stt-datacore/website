@@ -13,7 +13,7 @@ type PlayerMenuProps = {
 	navConfig?: NavigationSettingsConfig;
 };
 
-export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
+export const PlayerMenu = (props: PlayerMenuProps): React.JSX.Element => {
 	const globalContext = React.useContext(GlobalContext);
 	const alertContext = React.useContext(AlertContext);
 	const { setAlertOpen, config: alertConfig, drawAlertModal, setRestoreHiddenAlerts } = alertContext;

@@ -33,7 +33,7 @@ export const DefaultAlertConfig = {
 export interface AlertModalProps {
 	config: IAlertConfig;
     setConfig: (value: IAlertConfig) => void;
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.JSX.Element;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 };

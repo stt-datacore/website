@@ -19,7 +19,7 @@ export function drawTraits(traits: string[], TRAIT_NAMES: TraitNames, style?: Re
         </div>
     });
 
-    const traitcontent = [] as JSX.Element[];
+    const traitcontent = [] as React.JSX.Element[];
 
     for (let img of traitimg) {
         traitcontent.push(img);
@@ -55,7 +55,7 @@ export function drawSkills(skills: string[], t: TranslateMethod, combo?: 'and' |
         </div>
     });
 
-    const skillcontent = [] as JSX.Element[];
+    const skillcontent = [] as React.JSX.Element[];
 
     for (let img of skillimg) {
         if (skillcontent.length) skillcontent.push(<div style={{width: `${iconSize}px`}}>{combo_txt}</div>);

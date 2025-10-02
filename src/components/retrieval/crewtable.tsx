@@ -132,7 +132,7 @@ const CrewRow = (props: CrewRowProps) => {
 		</Table.Row>
 	);
 
-	function renderDefaultCells(): JSX.Element {
+	function renderDefaultCells(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				<Table.Cell textAlign='center'>
@@ -162,11 +162,11 @@ const CrewRow = (props: CrewRowProps) => {
 		);
 	}
 
-	function renderQuipment(crew: IRosterCrew): JSX.Element {
+	function renderQuipment(crew: IRosterCrew): React.JSX.Element {
 		return renderAnyDataScore(crew, 'quipment', t);
 	}
 
-	function renderRetrieval(crew: IRosterCrew): JSX.Element {
+	function renderRetrieval(crew: IRosterCrew): React.JSX.Element {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)

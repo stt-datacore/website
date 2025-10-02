@@ -143,7 +143,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		/>
 	);
 
-	function renderPreface(): JSX.Element {
+	function renderPreface(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{tfmt('voyage.contests.notes.simulate_contestant', {
@@ -168,7 +168,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderCrewLabel(crew: PlayerCrew): JSX.Element {
+	function renderCrewLabel(crew: PlayerCrew): React.JSX.Element {
 		return (
 			<div style={{ display: 'flex', alignItems: 'center' }}>
 				<CrewLabel crew={crew} />
@@ -177,12 +177,12 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderContestScore(crew: IProficientCrew): JSX.Element {
+	function renderContestScore(crew: IProficientCrew): React.JSX.Element {
 		if (crew.scored_contest === 0) return <></>;
 		return <>{crew.scored_contest}</>;
 	}
 
-	function renderCritPotential(crew: IProficientCrew): JSX.Element {
+	function renderCritPotential(crew: IProficientCrew): React.JSX.Element {
 		if (crew.crit_potential.length === 0) return <></>;
 		const title: string = crew.crit_potential.map(critTrait => TRAIT_NAMES[critTrait]).join(', ');
 		return (
@@ -192,7 +192,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderCrewProficiency(crew: PlayerCrew, skill: string): JSX.Element {
+	function renderCrewProficiency(crew: PlayerCrew, skill: string): React.JSX.Element {
 		const crewSkill: Skill | undefined = crew.skills[skill];
 		if (!crewSkill) return <></>;
 		let min: number = crewSkill.range_min;

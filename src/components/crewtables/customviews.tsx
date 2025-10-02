@@ -4,9 +4,9 @@ import { PlayerCrew } from "../../model/player";
 
 /**
  * Crew View Filter Panes to be enabled.
- * 
+ *
  * These values can be OR'd together.
- * 
+ *
  * Any false-y value will activate all available panes.
  */
 export enum CrewFilterPanes {
@@ -14,7 +14,7 @@ export enum CrewFilterPanes {
 	/** Show all Panes */
 	All = 0,
 
-	/** Show base stats */	
+	/** Show base stats */
 	BaseStats = 1,
 
 	/** Show ship stats */
@@ -33,14 +33,14 @@ export interface CrewTableCustomFilter {
 	title: string;
 }
 
-export interface FilterItemMethodConfig<T> { 
-	index: number, 
-	filterItem: (value: T) => boolean 
+export interface FilterItemMethodConfig<T> {
+	index: number,
+	filterItem: (value: T) => boolean
 }
 
 export interface CustomFilterProps<T> {
 	index: number;
-	setFilterItemMethod: (props: FilterItemMethodConfig<T>) => void;	
+	setFilterItemMethod: (props: FilterItemMethodConfig<T>) => void;
 }
 
 export abstract class CustomFilterComponentBase<TItem, TProps extends CustomFilterProps<TItem>> extends React.Component<TProps> {
@@ -52,7 +52,7 @@ export abstract class CustomFilterComponentBase<TItem, TProps extends CustomFilt
 		const { setFilterItemMethod, index: key } = this.props;
 		setFilterItemMethod({ index: key, filterItem: this.filterItem });
 	}
-	
+
 	protected abstract filterItem(item: TItem): boolean;
 }
 
@@ -68,7 +68,7 @@ export interface SearchableViewProps<T> {
     showFilterOptions?: boolean;
 	showPermalink?: boolean;
 	lockable?: any[];
-	zeroMessage?: (searchFilter: string) => JSX.Element;
+	zeroMessage?: (searchFilter: string) => React.JSX.Element;
 
 	toolCaption?: string;
 
@@ -92,7 +92,7 @@ const pagingOptions = [
 
 export enum SortDirection {
 	Ascending = 'ascending',
-	Descending = 'descending'	
+	Descending = 'descending'
 }
 
 export interface SortConfig {
@@ -103,7 +103,7 @@ export interface SortConfig {
 export interface ITableConfigRow {
 	width: number;
 	column?: string;
-	title: string | JSX.Element;
+	title: string | React.JSX.Element;
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
@@ -138,13 +138,13 @@ export class CustomSearchableViewBase<TItem, TProps extends SearchableViewProps<
             pagination_page: 1
         } as TState;
     }
-	
+
 	protected createStateAccessors<T>(name: string): [T, (value: T) => void] { return [
 		this.state[name],
 		(value: T) => this.setState((prevState) => { prevState[name] = value; return prevState; })
 	] };
 
-    
+
 
 
 

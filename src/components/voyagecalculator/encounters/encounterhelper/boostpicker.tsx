@@ -110,7 +110,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		</Popup>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		if (!assignedBoost) {
 			return (
 				<Button /* Add a boost */
@@ -130,7 +130,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderGroups(): JSX.Element {
+	function renderGroups(): React.JSX.Element {
 		const groups: string[] = [];
 		boostOptions.forEach(option => {
 			if (!groups.includes(option.type))
@@ -156,7 +156,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderGroup(type: string): JSX.Element {
+	function renderGroup(type: string): React.JSX.Element {
 		const options: IChampionBoost[] = boostOptions.filter(option => option.type === type);
 		if (options.length === 0) return <></>;
 		return (
@@ -199,7 +199,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderQuantity(boost: IChampionBoost): JSX.Element {
+	function renderQuantity(boost: IChampionBoost): React.JSX.Element {
 		let symbol: string = '';
 		if (boost.type === 'voyage_crit_boost')
 			symbol = `voyage_crit_boost_${boost.rarity}`;
@@ -223,7 +223,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			onBoostSelected({ type, rarity });
 	}
 
-	function renderRelevantToggle(): JSX.Element {
+	function renderRelevantToggle(): React.JSX.Element {
 		return (
 			<Form style={{ textAlign: 'center' }}>
 				<Form.Field	/* Only show relevant boosts */
@@ -236,7 +236,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderActions(): JSX.Element {
+	function renderActions(): React.JSX.Element {
 		return (
 			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '1em' }}>
 				{assignedBoost && (

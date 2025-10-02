@@ -73,7 +73,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         this.tiny.setValue<boolean>('ship', value, true);
     }
 
-    render(): JSX.Element {
+    render(): React.JSX.Element {
         const { ship: ship, touched, tabs, showIcon } = this.props;
         const { mobileWidth } = this.state;
         const { SHIP_TRAIT_NAMES } = this.context.localized;

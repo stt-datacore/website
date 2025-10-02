@@ -66,7 +66,7 @@ export interface QuipmentFilterProps {
     pageId: string;
     ownedItems: boolean;
     initCrew?: CrewMember;
-    children: JSX.Element;
+    children: React.JSX.Element;
     noRender?: boolean;
 }
 

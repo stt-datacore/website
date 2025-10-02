@@ -298,10 +298,10 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		return Math.floor((totalMin + totalMax) / 2) * 3;
 	}
 
-	function renderBoostPicker(contributor: IContributor): JSX.Element {
+	function renderBoostPicker(contributor: IContributor): React.JSX.Element {
 		if (!contributor.crew) return <></>;
 
-		const notes: JSX.Element[] = [];
+		const notes: React.JSX.Element[] = [];
 		if (contributor.crew) {
 			let message: string = '';
 			let icon: SemanticICONS | undefined;
@@ -371,7 +371,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderContribution(contributor: IContributor, skill: string): JSX.Element {
+	function renderContribution(contributor: IContributor, skill: string): React.JSX.Element {
 		const contributorSkill: IContributorSkill | undefined = contributor.skills[skill];
 		if (!contributorSkill) return <></>;
 
@@ -395,7 +395,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		}
 		if (message !== '') return makeIconNote(message, 'minus circle', undefined, true);
 
-		let impact: JSX.Element | undefined;
+		let impact: React.JSX.Element | undefined;
 		/* CREW is boosting their contribution to this contest skill */
 		if (contributor.impact === BoostImpact.Skill && contributor.boost?.type === skill) {
 			impact = makeIconNote(
@@ -426,7 +426,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderCritChance(): JSX.Element {
+	function renderCritChance(): React.JSX.Element {
 		const isBoosted: boolean = assignments[activeContest.id].boost?.type === 'voyage_crit_boost';
 		return (
 			<div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', columnGap: '.3em' }}>
@@ -450,13 +450,13 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderTotalValue(skill: string): JSX.Element {
+	function renderTotalValue(skill: string): React.JSX.Element {
 		const total: number = contributors.reduce((prev, curr) => prev + (curr.skills[skill] ? curr.skills[skill].value : 0), 0);
 		if (total === 0) return <></>;
 		return <b>{total}</b>;
 	}
 
-	function makeIconNote(message: string, icon?: SemanticICONS, color?: SemanticCOLORS, fitted?: boolean): JSX.Element {
+	function makeIconNote(message: string, icon?: SemanticICONS, color?: SemanticCOLORS, fitted?: boolean): React.JSX.Element {
 		return (
 			<Icon
 				title={message}

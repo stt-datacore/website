@@ -405,7 +405,7 @@
 // 		</Modal>
 // 	);
 
-// 	function filterCheckbox(p: Polestar): JSX.Element {
+// 	function filterCheckbox(p: Polestar): React.JSX.Element {
 // 		return (
 // 			<Grid.Column key={p.id}>
 // 				<Checkbox
@@ -419,7 +419,7 @@
 // 		)
 // 	}
 
-// 	function filterCheckboxGroupHeader(t: string): JSX.Element {
+// 	function filterCheckboxGroupHeader(t: string): React.JSX.Element {
 // 		let group = grouped.find(group => group.title === t);
 // 		let groupLink = (group ? (<Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(t, group?.anyDisabled ?? true)}>{group.anyDisabled ? 'Check' : 'Uncheck'} All</Button>) : (<></>));
 // 		return (
@@ -429,8 +429,8 @@
 // 		)
 // 	}
 
-// 	function createFilterCheckboxes(): JSX.Element[] {
-// 		const checkboxes = [] as JSX.Element[];
+// 	function createFilterCheckboxes(): React.JSX.Element[] {
+// 		const checkboxes = [] as React.JSX.Element[];
 // 		grouped.map((group) => {
 // 			if(group.polestars.length > 0) {
 // 				checkboxes.push(filterCheckboxGroupHeader(group.title));
@@ -522,7 +522,7 @@
 // 		</Modal>
 // 	);
 
-// 	function renderContent(): JSX.Element {
+// 	function renderContent(): React.JSX.Element {
 // 		if (!modalIsOpen) return (<></>);
 
 // 		if (!allKeystones || !allKeystones.length) {
@@ -585,7 +585,7 @@
 // 		setControl([...unretrievable]);
 // 	}
 
-// 	function renderPolestarFinder(): JSX.Element {
+// 	function renderPolestarFinder(): React.JSX.Element {
 // 		const polestarTable: ITableConfigRow[] = [
 // 			{ width: 2, column: 'name', title: 'Polestar' },
 // 			{ width: 1, column: 'crew_count', title: 'Crew in Portal', reverse: true },
@@ -688,7 +688,7 @@
 // 		return meetsAnyCondition;
 // 	}
 
-// 	function renderPolestarRow(polestar: Polestar, idx: number): JSX.Element {
+// 	function renderPolestarRow(polestar: Polestar, idx: number): React.JSX.Element {
 // 		return (
 // 			<Table.Row key={polestar.symbol}
 // 				style={{ cursor: activePolestar != polestar.symbol ? 'zoom-in' : 'zoom-out' }}
@@ -723,7 +723,7 @@
 // 		);
 // 	}
 
-// 	function renderCrewMessage(data: Polestar[]): JSX.Element {
+// 	function renderCrewMessage(data: Polestar[]): React.JSX.Element {
 // 		if (activeCrew == '') return (<></>);
 
 // 		const crew = allCrew.find(c => c.symbol === activeCrew);
@@ -796,14 +796,14 @@
 // 		);
 // 	}
 
-// 	function renderPolestarsInline(polestars: Polestar[]): JSX.Element[] {
+// 	function renderPolestarsInline(polestars: Polestar[]): React.JSX.Element[] {
 // 		var mp = polestars.map((p, pdx) => (
 // 				<span key={pdx} onClick={() => setActivePolestar(p.symbol) }>
 // 					<b>{p.short_name}</b>{pdx < polestars.length-1 ? ',' : ''}
 // 				</span>
 // 				));
 
-// 		let retval: JSX.Element[] = [];
+// 		let retval: React.JSX.Element[] = [];
 // 		let i = 0;
 // 		for (var cm of mp) {
 // 			if (i++) retval.push(<> </>);
@@ -813,7 +813,7 @@
 // 		return retval;
 // 	}
 
-// 	function renderConstellationMessage(data: Polestar[]): JSX.Element {
+// 	function renderConstellationMessage(data: Polestar[]): React.JSX.Element {
 // 		if (activeConstellation == '') return (<></>);
 
 // 		const constellation = allKeystones.find(k => k.symbol === activeConstellation) as Constellation | undefined;
@@ -830,7 +830,7 @@
 // 		);
 // 	}
 
-// 	function renderPolestarDetail(): JSX.Element {
+// 	function renderPolestarDetail(): React.JSX.Element {
 // 		const polestar = allKeystones.find(k => k.symbol === activePolestar) as Polestar ?? {} as Polestar;
 // 		polestar.loaned = addedPolestars.filter(added => added === polestar.symbol).length;
 
@@ -858,7 +858,7 @@
 // 		);
 // 	}
 
-// 	function renderPolestarsFromConstellation(constellation: Constellation, polestars: Polestar[]): JSX.Element {
+// 	function renderPolestarsFromConstellation(constellation: Constellation, polestars: Polestar[]): React.JSX.Element {
 // 		const clarify = activeCrew != '' ? 'a needed' : 'an unowned';
 
 // 		return (
@@ -880,7 +880,7 @@
 // 		);
 // 	}
 
-// 	function renderConstellationsWithPolestar(polestar: Polestar): JSX.Element {
+// 	function renderConstellationsWithPolestar(polestar: Polestar): React.JSX.Element {
 // 		const constellations = [] as Constellation[];
 // 		ownedConstellations.filter(k => k.keystones.includes(polestar.id))
 // 			.forEach(k => {
@@ -906,7 +906,7 @@
 // 		);
 // 	}
 
-// 	function renderNewRetrievals(polestar: Polestar): JSX.Element {
+// 	function renderNewRetrievals(polestar: Polestar): React.JSX.Element {
 // 		const ownedPlus = structuredClone(ownedPolestars);
 // 		ownedPlus.push({...polestar, quantity: 1});
 // 		const newRetrievables = getRetrievable(control, ownedPlus).filter(c => c.in_portal);
@@ -1068,7 +1068,7 @@
 // 	setAlgo: (value: string) => void;
 // };
 
-// const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
+// const AlgoExplain = (props: { comboCount?: number }): React.JSX.Element => {
 // 	const comboCount = props.comboCount;
 // 	let pt: number | undefined = undefined;
 // 	let st: string | undefined = undefined;
@@ -1132,7 +1132,7 @@
 
 
 
-// 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
+// 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): React.JSX.Element {
 // 		const buffConfig = dataContext.player.buffConfig;
 // 		const [comboCount, ] = getCombos(crew);
 
@@ -1239,7 +1239,7 @@
 // 		return result;
 // 	}
 
-// 	function showCombosForCrew(crew: CrewMember, algo: string): JSX.Element {
+// 	function showCombosForCrew(crew: CrewMember, algo: string): React.JSX.Element {
 // 		if (activeCrew !== crew.symbol) return (<></>);
 
 // 		let [comboCount, combos] = getCombos(crew, true);
@@ -1424,7 +1424,7 @@
 // 		return fuseGroups;
 // 	}
 
-// 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
+// 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): React.JSX.Element {
 // 		if (activeCollections !== crew.symbol || crew.collections.length == 0)
 // 			return (<b>{crew.collections.length}</b>);
 

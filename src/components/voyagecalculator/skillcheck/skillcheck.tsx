@@ -52,7 +52,7 @@ export const SkillCheck = (props: SkillCheckProps) => {
 		/>
 	);
 
-	function renderSkill(skillData: ISkillData): JSX.Element {
+	function renderSkill(skillData: ISkillData): React.JSX.Element {
 		const baselineSkillData: ISkillData | undefined = baselineData?.find(od =>
 			od.skill === skillData.skill
 		);

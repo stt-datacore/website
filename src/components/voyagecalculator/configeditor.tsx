@@ -115,11 +115,11 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 		updateConfig(voyageConfig);
 	}
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		return <Button color='blue' size='large' icon='pencil' content={t('voyage.custom_voyage_create')} />;
 	}
 
-	function renderEditor(): JSX.Element {
+	function renderEditor(): React.JSX.Element {
 		if (!options) {
 			// Renders a lot faster by using known voyage traits rather than calculate list from all possible traits
 			const knownShipTraits: string[] = [

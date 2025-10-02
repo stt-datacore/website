@@ -99,7 +99,7 @@ export const DataGrid = (props: DataGridProps) => {
 		</React.Fragment>
 	);
 
-	function renderDefaultGridColumn(datum: IEssentialData, isSelected: boolean): JSX.Element {
+	function renderDefaultGridColumn(datum: IEssentialData, isSelected: boolean): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{isSelected && <Icon name='check' color='blue' />} {datum.name}

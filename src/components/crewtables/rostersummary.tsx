@@ -52,7 +52,7 @@ const RosterSummary = (props: RosterSummaryProps) => {
 		</Modal>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.JSX.Element {
 		return (
 			<Button icon='calculator' content={t('roster_summary.title')} size='large' />
 		)
@@ -207,7 +207,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		</Table>
 	);
 
-	function renderPercentCell(value: number): JSX.Element {
+	function renderPercentCell(value: number): React.JSX.Element {
 		if (value === 1) return <Icon name='check' color='green' />;
 		return (
 			<React.Fragment>
@@ -216,7 +216,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		);
 	}
 
-	function renderImmortalCell(rarity: number, immortal: number): JSX.Element {
+	function renderImmortalCell(rarity: number, immortal: number): React.JSX.Element {
 		if (immortal === 0) return <></>;
 		return (
 			<React.Fragment>

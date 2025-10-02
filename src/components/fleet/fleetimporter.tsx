@@ -47,7 +47,7 @@ export const FleetImportComponent = (props: FleetImporterProps) => {
         return true;
     }
 
-    function renderCopyPaste(): JSX.Element {
+    function renderCopyPaste(): React.JSX.Element {
 
         const PLAYERLINK = 'https://app.startrektimelines.com/fleet/complete_member_info';
 

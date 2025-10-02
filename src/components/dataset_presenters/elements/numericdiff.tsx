@@ -11,7 +11,7 @@ type NumericDiffProps = {
 		showCurrentValue?: boolean;
 		showBaselineValue?: boolean;
 	};
-	customRender?: (value: number) => JSX.Element;
+	customRender?: (value: number) => React.JSX.Element;
 	showNoChange?: boolean;
 	justifyContent?: string;
 };

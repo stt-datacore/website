@@ -517,7 +517,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
     }
 }
 
-const PointComponent = (props: PointProps<DefaultBumpDatum, any>): JSX.Element => {
+const PointComponent = (props: PointProps<DefaultBumpDatum, any>): React.JSX.Element => {
     const crew = React.useContext(GlobalContext).core.crew;
     let cmarr = props.point.serie.data.data as GraphSeries[];
     let x = Number(props.point.id.split(".")[1]);

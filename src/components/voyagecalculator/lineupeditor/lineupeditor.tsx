@@ -136,7 +136,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 		return altRuntime - prospectiveEstimate.refills[0].result;
 	}
 
-	function renderActions(): JSX.Element {
+	function renderActions(): React.JSX.Element {
 		return (
 			<React.Fragment>
 				{activeView !== 'summary' && (

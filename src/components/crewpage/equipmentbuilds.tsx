@@ -15,7 +15,7 @@ interface IEquipmentOptions {
 	key: string;
 	text: string;
 	value: string;
-	content: JSX.Element;
+	content: React.JSX.Element;
 };
 
 type EquipmentBuildsProps = {
@@ -52,7 +52,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 		</React.Fragment>
 	);
 
-	function renderEquipment(crew: CrewMember): JSX.Element {
+	function renderEquipment(crew: CrewMember): React.JSX.Element {
 		let options = [] as IEquipmentOptions[];
 		crew.equipment_slots.forEach(es => {
 			const equipment = globalContext.core.items.find(item => item.symbol === es.symbol);
@@ -99,7 +99,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 		);
 	}
 
-	function renderEquipmentDetails(crew: CrewMember): JSX.Element {
+	function renderEquipmentDetails(crew: CrewMember): React.JSX.Element {
 		if (selectedEquipment === '') return <></>;
 
 		let es = crew.equipment_slots.find(es => es.symbol === selectedEquipment);

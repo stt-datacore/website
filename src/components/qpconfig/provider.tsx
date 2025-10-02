@@ -53,7 +53,7 @@ export const QPContext = React.createContext(DefaultQPContextData);
 
 interface QPConfigProps {
 	pageId: string;
-    children: JSX.Element
+    children: React.JSX.Element
 }
 
 export const QPConfigProvider = (props: QPConfigProps) => {

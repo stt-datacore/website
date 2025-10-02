@@ -8,7 +8,7 @@ type MissionCostProps = {
 	avg_cost?: number;
 	mastery: number;
 	chance_grade: number;
-	name: string | JSX.Element;
+	name: string | React.JSX.Element;
 	cadet?: boolean;
 	hideCost?: boolean;
 };

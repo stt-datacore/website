@@ -7,7 +7,7 @@ import { TranslateMethod } from '../../model/player';
 export const SHIP_OFFENSE_COLOR = 'lightcoral';
 export const SHIP_DEFENSE_COLOR = 'dodgerblue';
 
-export function formatShipScore(kind: string, score: number | undefined, t: TranslateMethod, divisor = 100, styles?: React.CSSProperties, separator?: string | JSX.Element) {
+export function formatShipScore(kind: string, score: number | undefined, t: TranslateMethod, divisor = 100, styles?: React.CSSProperties, separator?: string | React.JSX.Element) {
     if (!score) return <></>;
 
     const flexRow = OptionsPanelFlexRow;

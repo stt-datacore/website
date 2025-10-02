@@ -159,7 +159,7 @@ export interface VoyageStatsRewardTitleProps {
     rewards: Loot[] | Reward[]
 }
 
-export const VoyageStatsRewardsTitle = (props: VoyageStatsRewardTitleProps): JSX.Element => {
+export const VoyageStatsRewardsTitle = (props: VoyageStatsRewardTitleProps): React.JSX.Element => {
     const { roster, rewards } = props;
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt } = globalContext.localized;

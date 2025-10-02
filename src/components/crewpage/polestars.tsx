@@ -92,7 +92,7 @@ export const Polestars = (props: PolestarsProps) => {
 		return findPolestars(crew, globalContext.core.crew);
 	}
 
-	function renderConstellation(): JSX.Element {
+	function renderConstellation(): React.JSX.Element {
 		if (!constellation) return <></>;
 		return (
 			<Segment>
@@ -247,7 +247,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 		</Segment>
 	);
 
-	function renderComboGrid(polestarCombo: PolestarCombo): JSX.Element {
+	function renderComboGrid(polestarCombo: PolestarCombo): React.JSX.Element {
 		const comboColumns = polestarCombo.polestars.map((trait, idx) => {
 			const polestar = crewPolestars.find((op) => filterTraits(op, trait));
 			// Catch when optimal combos include a polestar that isn't yet in DataCore's keystones list
