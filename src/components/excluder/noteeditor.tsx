@@ -11,10 +11,10 @@ import { PlayerCrew } from "../../model/player";
 export interface NoteEditorProps {
     title: string | React.JSX.Element;
     mode: 'add' | 'remove';
-    notes: number[];
-    setNotes: (value?: number[]) => void;
+    crewIds: number[];
     isOpen: boolean;
     onClose: (results?: number[]) => void;
+    currentSelection?: number[];
 }
 
 export const NoteEditor = (props: NoteEditorProps) => {
@@ -22,9 +22,9 @@ export const NoteEditor = (props: NoteEditorProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const { notes, setNotes, isOpen, onClose, title, mode } = props;
+    const { crewIds, currentSelection, isOpen, onClose, title, mode } = props;
 
-    const [selection, setSelection] = React.useState([] as (string | number)[]);
+    const [selection, setSelection] = React.useState(currentSelection || []);
 
     const items = React.useMemo(() => {
         let crew: (PlayerCrew | CrewMember)[] | undefined = undefined;
@@ -34,8 +34,14 @@ export const NoteEditor = (props: NoteEditorProps) => {
         else {
             crew = playerData.player.character.crew;
         }
-        return notes.map(id => crew.find(cc => cc.id === id)).filter(f => f !== undefined);
-    }, [notes, playerData]);
+        return crewIds.map(id => crew.find(cc => cc.id === id)).filter(f => f !== undefined);
+    }, [crewIds, playerData]);
+
+    React.useEffect(() => {
+        if (currentSelection) {
+            setSelection(currentSelection);
+        }
+    }, [currentSelection]);
 
     const iconName = React.useMemo(() => {
         let v = undefined as SemanticICONS | undefined;
@@ -63,7 +69,7 @@ export const NoteEditor = (props: NoteEditorProps) => {
                                         <Table.Cell>
                                             <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
                                                 <Button icon={iconName} color={selection.includes(item.id) ? mode ==='remove' ? 'orange' : 'green' : undefined}
-                                                    onClick={() => toggleTrashed(item.id)}
+                                                    onClick={() => toggleSelected(item.id)}
                                                 />
                                             </div>
                                         </Table.Cell>
@@ -114,15 +120,21 @@ export const NoteEditor = (props: NoteEditorProps) => {
     </>)
 
     function onSubmit() {
-        let newlist = items.filter(f => !selection.includes(f.id));
-        onClose(newlist.map(i => i.id));
+        if (mode === 'add') {
+            let newlist = items.filter(f => selection.includes(f.id));
+            onClose(newlist.map(i => i.id));
+        }
+        else {
+            let newlist = items.filter(f => !selection.includes(f.id));
+            onClose(newlist.map(i => i.id));
+        }
     }
 
     function onCancel() {
         onClose(undefined);
     }
 
-    function toggleTrashed(id: number) {
+    function toggleSelected(id: number) {
         if (!selection.includes(id)) {
             selection.push(id);
             setSelection([...selection]);

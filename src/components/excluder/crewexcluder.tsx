@@ -171,6 +171,10 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		}
 	}, [selectedEvent, selectedBonus, phase, considerFrozen])
 
+	const quippedSelection = React.useMemo(() => {
+		return getQuippedSelection();
+	}, [excludedCrewIds]);
+
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
 		if (gameEvent.content_types.includes('shuttles') || gameEvent.content_types.includes('galaxy') || gameEvent.content_types.includes('gather') || gameEvent.content_types.includes('voyage')) {
@@ -301,18 +305,20 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								mode='add'
 								title={t('consider_crew.exclude_quipped')}
 								isOpen={quipOpen}
+								currentSelection={quippedSelection}
 								onClose={(result) => {
 									if (result) {
-										excludeQuipped(result);
+										if (quippedSelection?.length) {
+											let osel = excludedCrewIds.filter(id => !quippedSelection.includes(id));
+											updateExclusions([...osel, ...result]);
+										}
+										else {
+											excludeQuipped(result);
+										}
 									}
 									setQuipOpen(false);
 								}}
-								notes={notedExclusions}
-								setNotes={(result) => {
-									if (result) {
-										excludeQuipped(result);
-									}
-								}}
+								crewIds={quipValues}
 								/>
 
 							<NoteEditor
@@ -325,12 +331,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 									}
 									setNotesOpen(false);
 								}}
-								notes={notedExclusions}
-								setNotes={(result) => {
-									if (result) {
-										setNotedExclusions(result);
-									}
-								}}
+								crewIds={notedExclusions}
 								/>
 						</Form.Field>
 
@@ -347,6 +348,11 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		const quipped = props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
 		setQuipValues(quipped);
 		setQuipOpen(true);
+	}
+
+	function getQuippedSelection() {
+		const quipped = props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
+		return excludedCrewIds.filter(f => quipped.includes(f));
 	}
 
 	function renderExcludedCrew(): JSX.Element {
