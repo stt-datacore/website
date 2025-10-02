@@ -210,6 +210,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             }}>
             {equip.map((item, idx) => (
                     <CrewItemDisplay
+                        nonInteractive={props.nonInteractive}
                         key={`${crew.id}_${crew.symbol}_${idx}_${item.symbol}__crewEquipBox`}
                         context={context}
                         vertical={!!vertical}
