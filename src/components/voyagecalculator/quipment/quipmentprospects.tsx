@@ -171,7 +171,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     ing.needed! += item.needed!;
                 }
                 else {
-                    newingredients.push(JSON.parse(JSON.stringify(item)));
+                    newingredients.push(structuredClone(item));
                 }
             });
         });
@@ -464,7 +464,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
         Object.entries(counts).forEach(([symbol, count]) => {
             let item = quipment.find(f => f.symbol === symbol);
             if (!item?.recipe?.list?.length) return;
-            item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
+            item = structuredClone(item) as EquipmentItem;
             item.needed = count;
             newitems.push(item);
             const qpcounts = {} as {[key: string]: number }
@@ -474,7 +474,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 if (qi) {
                     qpcounts[qi.symbol] ??= 0;
                     qpcounts[qi.symbol] += (li.count * count);
-                    return JSON.parse(JSON.stringify(qi));
+                    return structuredClone(qi);
                 }
                 else return undefined;
             }).filter(i => i) as EquipmentItem[];

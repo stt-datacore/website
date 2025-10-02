@@ -17,6 +17,7 @@ import { CrewMember } from '../../model/crew';
 import { PlayerCrew } from '../../model/player';
 import { DataPicker } from '../dataset_presenters/datapicker';
 import { IDataGridSetup, IDataPickerState, IEssentialData } from '../dataset_presenters/model';
+import { CrewItemsView } from '../item_presenters/crew_items';
 
 // interface IPickerFilters {
 //     availability: string;
@@ -33,13 +34,15 @@ type CrewMultiPickerProps = {
     rosterCrew: (CrewMember | PlayerCrew)[];
     selectedCrew: number[];
     updateSelected: (crewSymbols: number[]) => void;
-
+    selectionPosition?: 'before' | 'after';
+    extraContentPosition?: 'before' | 'after';
+    renderExtraContent?: () => JSX.Element;
 };
 
 export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { selectedCrew, updateSelected } = props;
+    const { selectedCrew, updateSelected, selectionPosition, renderExtraContent, extraContentPosition } = props;
 
     const rosterCrew = props.rosterCrew;
 
@@ -64,8 +67,12 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
                 {t('hints.select_crew')}
             </Message>
             <Segment attached='bottom'>
+                {!!renderExtraContent && extraContentPosition !== 'after' &&
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
-                    {renderSelected()}
+                    {renderExtraContent()}
+                </div>}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
+                    {(selectionPosition !== 'after') && renderSelected()}
                     <Input	/* Search for crew by name */
                         iconPosition='left'
                         placeholder={t('crew_picker.search_by_name')}
@@ -74,7 +81,12 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
                         <input />
                         <Icon name='search' />
                     </Input>
+                    {(selectionPosition === 'after') && renderSelected()}
                 </div>
+                {!!renderExtraContent && extraContentPosition === 'after' &&
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5em', alignItems: 'center' }}>
+                    {renderExtraContent()}
+                </div>}
             </Segment>
             {/* {selectedCrew.length > 0 && (
                 <Popup
@@ -160,6 +172,8 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
                     {crew.name}
                 </div>
                 <div><Rating defaultRating={highest_owned_rarity === undefined ? crew.max_rarity : highest_owned_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
+                <div>{t('base.level')}{' '}{(crew as PlayerCrew).level ?? 'N/A'}</div>
+                <div><CrewItemsView itemSize={24} crew={crew} /></div>
             </React.Fragment>
         );
     }

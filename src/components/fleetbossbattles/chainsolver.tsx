@@ -154,7 +154,7 @@ export const ChainSolver = () => {
 					}
 				});
 				if (nodes.length > 0) {
-					const matchedCrew = JSON.parse(JSON.stringify(crew)) as BossCrew;
+					const matchedCrew = structuredClone(crew) as BossCrew;
 					matchedCrew.nodes = nodes;
 					matchedCrew.nodes_rarity = nodes.length;
 					matchedCrew.node_matches = matchesByNode;

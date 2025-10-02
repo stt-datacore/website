@@ -71,7 +71,7 @@ const RarityDepth = (props: RarityDepthProps) => {
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
 
 	React.useEffect(() => {
-		const myCrew = JSON.parse(JSON.stringify(props.myCrew));
+		const myCrew = structuredClone(props.myCrew);
 		const uniqueOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
 		const uniqueImmortal = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol && (mc.immortal > 0 || isImmortal(mc))).length > 0);
 		const anyOwnedCount = myCrew.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
@@ -288,7 +288,7 @@ const SkillDepth = (props: SkillDepthProps) => {
 	const [preferVersatile, setPreferVersatile] = React.useState(false);
 
 	React.useEffect(() => {
-		const myCrew = JSON.parse(JSON.stringify(props.myCrew)) as CompactCrew[];
+		const myCrew = structuredClone(props.myCrew) as CompactCrew[];
 		const myOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
 
 		const data = [] as SkillsSummary[];

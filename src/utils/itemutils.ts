@@ -53,7 +53,7 @@ export function mergeItems(player_items: PlayerEquipmentItem[], items: Equipment
 		items.forEach((item) => {
 			if (!data.some(d => d.symbol === item.symbol)) {
 				data.push(
-					JSON.parse(JSON.stringify(item))
+					structuredClone(item)
 				)
 			}
 		})

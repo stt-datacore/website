@@ -31,20 +31,24 @@ const RampUpMap: RampUpEntry[] = [
    ];
 
 
-export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
+export function calcVoyageVP(seconds: number, bonuses: number[], encounterTimes: number[] | undefined): VPDetails {
     const passiveMul = Math.ceil(bonuses.reduce((p, n) => (p) + (n * 100), 0) + 100) / 100;
-    const vpdetails = {
+    const vpdetails: VPDetails = {
         seconds,
         total_drops: 0,
         total_encounters: 0,
         total_opponents: 0,
         total_vp: 0,
         vp_per_min: 60 / 140
-    } as VPDetails;
+    };
 
     const droprate = 140;
 
-    const max = RampUpMap[RampUpMap.length - 1];
+	const rampUpMap: RampUpEntry[] = RampUpMap.slice().filter(ramp => {
+		return (!encounterTimes || encounterTimes.includes(ramp.start));
+	});
+
+    const max = rampUpMap[rampUpMap.length - 1];
     const minutes = seconds / 60;
 
     let multiplier = 0;
@@ -53,7 +57,7 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
 
     const win = (n: number, mul: number) => (10 * (mul * mul)) * n;
 
-    for (let entry of RampUpMap) {
+    for (let entry of rampUpMap) {
         if (entry.start > minutes) break;
         multiplier++;
         encounter += win(entry.challenges, multiplier);
@@ -82,9 +86,9 @@ export function calcVoyageVP(seconds: number, bonuses: number[]): VPDetails {
             passive += Math.floor(passiveMul * (max.passive + (cpasv * 7)));
         }
         else {
-            let fi = RampUpMap.findIndex(f => (f.start * 60) > sec) - 1;
+            let fi = rampUpMap.findIndex(f => (f.start * 60) > sec) - 1;
             if (fi < 0) continue;
-            let f = RampUpMap[fi];
+            let f = rampUpMap[fi];
             passive += Math.floor(passiveMul * f.passive);
         }
         vpdetails.total_drops++;

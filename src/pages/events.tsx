@@ -1,47 +1,37 @@
 import React from "react";
 import {
 	Container,
-	Header,
-	Message,
-	Segment,
-	Label,
-	Grid,
-	Modal,
-	Icon,
-	Step,
-	Table,
-	DropdownItemProps,
 	Dropdown,
+	DropdownItemProps,
+	Grid,
+	Header,
+	Label,
+	Message,
+	Modal,
 	Pagination,
+	Segment,
 	SemanticWIDTHS,
+	Step,
+	Table
 } from "semantic-ui-react";
 
 import moment from "moment";
-import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
+import 'moment/locale/fr';
 
+import { useLocaleDate } from "../components/base/localedate";
+import { EventInfoModal, EventModalHeader } from "../components/event_info_modal";
+import { CrewHoverStat } from "../components/hovering/crewhoverstat";
+import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
+import { AvatarView } from "../components/item_presenters/avatarview";
 import LazyImage from "../components/lazyimage";
-import EventInfoModal from "../components/event_info_modal";
-import { EventLeaderboard } from "../model/events";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
-import { EventStats, makeTypeBuckets } from "../utils/event_stats";
-import { GauntletPane } from "../utils/gauntlet";
-import { AvatarView } from "../components/item_presenters/avatarview";
-import { CrewHoverStat } from "../components/hovering/crewhoverstat";
-import { useStateWithStorage } from "../utils/storage";
+import { EventInstance, EventLeaderboard } from "../model/events";
 import { gradeToColor } from "../utils/crewutils";
-
-type EventInstance = {
-	event_details?: boolean;
-	event_id: number;
-	event_name: string;
-	fixed_instance_id: number;
-	image: string;
-	instance_id: number;
-};
+import { EventStats, makeTypeBuckets } from "../utils/event_stats";
+import { useStateWithStorage } from "../utils/storage";
 
 type TypeTotals = {
 	type: string,
@@ -71,7 +61,7 @@ const EventsPage = () => {
 const EventsPageComponent = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { event_leaderboards, event_instances } = globalContext.core;
+	const { event_leaderboards, event_instances: event_instances } = globalContext.core;
 	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
 	const [leaderboardData, setLeaderboardData] = React.useState<{
 		[key: string]: EventLeaderboard;
@@ -79,7 +69,7 @@ const EventsPageComponent = () => {
 	const [loadingError, setLoadingError] = React.useState<any>(null);
 	const [modalEventInstance, setModalEventInstance] =
 		React.useState<EventInstance | null>(null);
-
+	const localeDate = useLocaleDate(globalContext.localized);
 	const [tab, setTab] = React.useState(0);
 
 	React.useEffect(() => {
@@ -141,17 +131,35 @@ const EventsPageComponent = () => {
 
 			{tab === 0 && (
 				<Grid stackable columns={3}>
-					{eventsData.map((eventInfo) => (
-						<Grid.Column key={eventInfo.instance_id}>
+					{eventsData.map((eventInfo, idx) => (
+						<Grid.Column key={`event_data_${eventInfo.instance_id}`}>
 							<div
 								style={{ cursor: "pointer" }}
 								onClick={() => setModalEventInstance(eventInfo)}
 							>
 								<Segment padded>
-									<Label attached="bottom">{eventInfo.event_name}</Label>
+									<Label attached="bottom" style={{display: 'inline-flex', alignItems: 'center'}}>
+										<span style={{flexGrow:1}}>
+											{eventInfo.event_name}
+											{!!eventInfo.event_date && (<>
+												{!!eventInfo.content_types?.length && (<>
+													&nbsp;&mdash;&nbsp;
+													{formatEventType(eventInfo.content_types)}
+												</>)}
+												{!!eventInfo.event_date && (<>
+													&nbsp;&mdash;&nbsp;
+													{eventInfo.event_date.toLocaleDateString()}
+												</>)}
+											</>)}
+										</span>
+										{!!eventInfo?.rerun && (
+											<Label size='mini' style={{justifySelf: 'flex-end'}} color='brown'>{t('global.rerun')}</Label>
+										)}
+									</Label>
 									<LazyImage
 										src={`${process.env.GATSBY_ASSETS_URL}${eventInfo.image}`}
 										size="large"
+										style={{maxHeight: '159px'}}
 										onError={(e) => (e.target.style.visibility = "hidden")}
 									/>
 								</Segment>
@@ -168,7 +176,13 @@ const EventsPageComponent = () => {
 					onClose={() => setModalEventInstance(null)}
 					closeIcon
 				>
-					<Modal.Header>{modalEventInstance.event_name}</Modal.Header>
+					<Modal.Header>
+						<EventModalHeader
+							flip={true}
+							instance={modalEventInstance}
+							setInstance={setModalEventInstance}
+						/>
+					</Modal.Header>
 					<Modal.Content scrolling>
 						<EventInfoModal
 							instanceId={modalEventInstance.instance_id}
@@ -186,6 +200,11 @@ const EventsPageComponent = () => {
 			<CrewHoverStat targetGroup="event_info_stats" />
 		</Container>
 	);
+
+	function formatEventType(types: string[]) {
+		types = [...new Set(types)];
+		return types.map(type => t(`event_type.${type}`)).join("/");
+	}
 };
 
 const EventStatsComponent = () => {
@@ -223,7 +242,7 @@ const EventStatsComponent = () => {
 
 	React.useEffect(() => {
 		if (!event_stats?.length) return;
-		const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
+		const newStats = structuredClone(event_stats) as EventStats[];
 		const buckets = makeTypeBuckets(newStats);
 		let top = {} as { [key: string]: number };
 		Object.entries(buckets).forEach(([type, bucket]) => {
