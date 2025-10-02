@@ -11,6 +11,7 @@ import { skillSum } from "../../utils/crewutils";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { drawSkills } from "../specialist/utils";
+import { useStateWithStorage } from "../../utils/storage";
 
 
 export interface NoteEditorProps {
@@ -32,7 +33,8 @@ export const NoteEditor = (props: NoteEditorProps) => {
     const { crewIds, currentSelection, isOpen, onClose, title, mode, showHighest, showExpiring } = props;
 
     const [selection, setSelection] = React.useState(currentSelection || []);
-
+    // const [sortCol, setSortCol] = useStateWithStorage(`note_editor_${mode}/sort_col`, 'crew', { rememberForever: true });
+    // const [sortDir, setSortDir] = useStateWithStorage(`note_editor_${mode}/sort_dir`, -1, { rememberForever: true });
     const items = React.useMemo(() => {
         let crew: (PlayerCrew | CrewMember)[] | undefined = undefined;
         if (!playerData) {
