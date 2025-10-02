@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps, SemanticICONS } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps, SemanticICONS, Container } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -83,7 +83,7 @@ export interface SearchableTableProps {
 	defaultPaginationRows?: number;
 
 	lockTitle?: (obj: any) => string;
-
+	stickyHeader?: boolean;
 	showSortDropdown?: boolean;
 };
 
@@ -310,13 +310,16 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	const rightContent = !!props.extraSearchContent && !!props.showSortDropdown;
 	return (
 		<div>
-			{!props.noSearch && <div style={{
-				display: "flex",
+			{!props.noSearch && <Container className={props.stickyHeader ? 'ui segment' : undefined} style={{
+				position: props.stickyHeader ? 'sticky' : undefined,
+				top: props.stickyHeader ? 0 : undefined,
+ 				display: "flex",
 				flexDirection: isMobile ? "column" : "row",
 				alignItems: isMobile ? "flex-start" : "center",
 				justifyContent: isMobile ? "center" : "flex-start",
 				gap: isMobile ? '0.5em' : undefined,
-				flexWrap: 'wrap'
+				flexWrap: 'wrap',
+				zIndex: 1
 			}}>
 
 				<Input
@@ -404,7 +407,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						</div>
 					)}
 				</div>
-			</div>}
+			</Container>}
 
 			<div>
 				{props.lockable && <LockButtons lockTitle={props.lockTitle} lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}

@@ -7,11 +7,14 @@ import { CrewItemsView } from "../item_presenters/crew_items";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerCrew } from "../../model/player";
 import CONFIG from "../CONFIG";
-import { skillSum } from "../../utils/crewutils";
+import { getCrewQuipment, skillSum } from "../../utils/crewutils";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { drawSkills } from "../specialist/utils";
 import { useStateWithStorage } from "../../utils/storage";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { Filter } from "../../model/game-elements";
+import { omniSearchFilter } from "../../utils/omnisearch";
 
 
 export interface NoteEditorProps {
@@ -28,13 +31,14 @@ export interface NoteEditorProps {
 export const NoteEditor = (props: NoteEditorProps) => {
 
     const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
+    const { t, TRAIT_NAMES } = globalContext.localized;
     const { playerData } = globalContext.player;
     const { crewIds, currentSelection, isOpen, onClose, title, mode, showHighest, showExpiring } = props;
 
     const [selection, setSelection] = React.useState(currentSelection || []);
     // const [sortCol, setSortCol] = useStateWithStorage(`note_editor_${mode}/sort_col`, 'crew', { rememberForever: true });
     // const [sortDir, setSortDir] = useStateWithStorage(`note_editor_${mode}/sort_dir`, -1, { rememberForever: true });
+
     const items = React.useMemo(() => {
         let crew: (PlayerCrew | CrewMember)[] | undefined = undefined;
         if (!playerData) {
@@ -66,20 +70,67 @@ export const NoteEditor = (props: NoteEditorProps) => {
                 crewskills.sort((a, b) => skillSum(b) - skillSum(a));
                 result[item.id] = crewskills[0].skill;
             });
+            return result;
         }
-        return result;
+        return undefined;
     }, [items]);
 
     const iconName = React.useMemo(() => {
-        let v = undefined as SemanticICONS | undefined;
+        let icn = undefined as SemanticICONS | undefined;
         if (mode === 'remove') {
-            v = 'trash';
+            icn = 'trash';
         }
         else {
-            v = 'add';
+            icn = 'add';
         }
-        return v;
+        return icn;
     }, [mode]);
+
+    const skills = Object.keys(CONFIG.SKILLS);
+    const quipment = globalContext.core.items.filter(f => f.type === 14);
+
+    const tableConfig = [
+        { width: 1, column: 'selected' },
+    ] as ITableConfigRow[];
+
+    if (highestSkill) {
+        tableConfig.push(
+            {
+                width: 1, column: 'skill', title: t('base.skills'),
+                customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+                    return highestSkill[a.id]?.localeCompare(highestSkill[b.id] || '') || 0;
+                }
+            },
+        )
+    }
+    tableConfig.push(
+        { width: 4, column: 'name', title: t('base.crew') },
+        {
+            width: 3, column: 'quipment', title: t('base.quipment'),
+            pseudocolumns: ['quipment', 'highest_power', 'last_expiring'],
+            translatePseudocolumn: (field) => {
+                if (field === 'quipment') return t('base.quipment');
+                return t(`consider_crew.excluder.${field}`)
+            },
+            customCompare: (a: PlayerCrew, b: PlayerCrew, config) => {
+                let r = 0;
+                if (!r || config.field === 'quipment') {
+                    r = getCrewQuipment(a, quipment).length - getCrewQuipment(b, quipment).length;
+                    if (!r && highestSkill) r = highestSkill[a.id].localeCompare(highestSkill[b.id]);
+                }
+                if (!r || config.field === 'last_expiring') {
+                    r = (getCrewTime(b as PlayerCrew) - getCrewTime(a as PlayerCrew))
+                }
+                if (!r || config.field === 'highest_power') {
+                    r = (skillSum(skills.map(skill => a[skill])) - skillSum(skills.map(skill => b[skill])))
+                }
+                if (!r) {
+                    r = a.name.localeCompare(b.name);
+                }
+                return r;
+            }
+        },
+    );
 
     return (<>
         <Modal open={isOpen} size='small'>
@@ -88,45 +139,14 @@ export const NoteEditor = (props: NoteEditorProps) => {
             </Modal.Header>
             <Modal.Content>
                 <Container style={{overflowY: 'auto', maxHeight: '40em'}}>
-                    <Table striped>
-                        <Table.Body>
-                            {items.map((item) => {
-                                return (
-                                    <Table.Row key={`note_exc_${item.symbol}`} style={{height:'2.5em'}}>
-                                        <Table.Cell>
-                                            <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
-                                                <Button icon={iconName} color={selection.includes(item.id) ? mode ==='remove' ? 'orange' : 'green' : undefined}
-                                                    onClick={() => toggleSelected(item.id)}
-                                                />
-                                            </div>
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            {!!highestSkill[item.id] && <>{drawSkills([highestSkill[item.id]], t, undefined, false, undefined, 20)}</>}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
-                                            <AvatarView
-                                                mode='crew'
-                                                item={item}
-                                                partialItem={true}
-                                                targetGroup="notedhover"
-                                                size={48}
-                                                />
-                                            {item.name}
-                                            </div>
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <CrewItemsView itemSize={32}
-                                                targetGroup="notedhoveritems"
-                                                crew={item}
-                                                quipment={true}
-                                                />
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )
-                            })}
-                        </Table.Body>
-                    </Table>
+                    <SearchableTable
+                        stickyHeader
+                        showSortDropdown
+                        data={items}
+                        config={tableConfig}
+                        renderTableRow={renderTableRow}
+                        filterRow={filterTableRow}
+                        />
                 </Container>
                 <CrewHoverStat targetGroup="notedhover" modalPositioning />
                 <ItemHoverStat targetGroup="notedhoveritems" modalPositioning />
@@ -165,6 +185,65 @@ export const NoteEditor = (props: NoteEditorProps) => {
             </Modal.Actions>
         </Modal>
     </>)
+
+    function filterTableRow(item: PlayerCrew | CrewMember, filter: Filter[], filterType?: string) {
+        return omniSearchFilter(item, filter, filterType, [
+            'name',
+            {
+                field: 'traits',
+                customMatch: (value: string[], text) => {
+                    return value.map(trait => TRAIT_NAMES[trait]).some(str => str.toLowerCase().includes(text.toLowerCase()));
+                }
+            },
+            {
+                field: 'skill_order',
+                customMatch: (value: string[], text) => {
+                    let r = value.map(skill => CONFIG.SKILLS[skill]).some(str => str.toLowerCase().includes(text.toLowerCase()));
+                    if (!r) {
+                        r = value.map(skill => CONFIG.SKILLS_SHORT.find(ss => ss.name === skill)!.short).some(str => str.toLowerCase().includes(text.toLowerCase()));
+                    }
+                    return r;
+                }
+            }
+        ]);
+    }
+
+    function renderTableRow(item: PlayerCrew | CrewMember, idx?: number) {
+        return (
+            <Table.Row key={`note_exc_${item.symbol}`}>
+                <Table.Cell>
+                    <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+                        <Button icon={iconName} color={selection.includes(item.id) ? mode ==='remove' ? 'orange' : 'green' : undefined}
+                            onClick={() => toggleSelected(item.id)}
+                        />
+                    </div>
+                </Table.Cell>
+                {!!highestSkill && <Table.Cell>
+                    {!!highestSkill[item.id] && <>{drawSkills([highestSkill[item.id]], t, undefined, false, undefined, 20)}</>}
+                </Table.Cell>}
+                <Table.Cell>
+                    <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+                    <AvatarView
+                        mode='crew'
+                        item={item}
+                        partialItem={true}
+                        targetGroup="notedhover"
+                        size={48}
+                        />
+                    {item.name}
+                    </div>
+                </Table.Cell>
+                <Table.Cell >
+                    <CrewItemsView itemSize={32}
+                        gap={'0.75em'}
+                        targetGroup="notedhoveritems"
+                        crew={item}
+                        quipment={true}
+                        />
+                </Table.Cell>
+            </Table.Row>
+        )
+    }
 
     function onSubmit() {
         if (mode === 'add') {
@@ -221,7 +300,7 @@ export const NoteEditor = (props: NoteEditorProps) => {
                 return getCrewTime(b as PlayerCrew) - getCrewTime(a as PlayerCrew)
             });
             // Extra check for skills since skills are not the natural sort, here.
-            let fin = cc.filter(n => !eaches.includes(n) && highestSkill[n.id] === skill);
+            let fin = cc.filter(n => !eaches.includes(n) && highestSkill && highestSkill[n.id] === skill);
             if (fin.length) {
                 if (!eaches.includes(fin[0])) eaches.push(fin[0]);
             }

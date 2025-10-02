@@ -26,6 +26,7 @@ export interface CrewItemsViewProps {
     vertical?: boolean;
     alwaysHideProgress?: boolean;
     alwaysShowProgress?: boolean;
+    gap?: string;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -203,7 +204,8 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 justifyContent: "center",
                 alignItems: "center",
                 margin: 0,
-                padding: 0
+                padding: 0,
+                gap: props.gap
             }}>
             {equip.map((item, idx) => (
                     <CrewItemDisplay
