@@ -15,6 +15,7 @@ import { getRealCrewLevel } from '../../utils/equipment';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
+    nonInteractive?: boolean;
     flexDirection?: 'row' | 'column';
     mobileWidth?: number;
     itemSize?: number;
@@ -265,7 +266,7 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
     return (<div
-        onClick={(e) => !targetGroup && props.equipment?.symbol ? navigate("/item_info?symbol=" + props.equipment?.symbol) : null}
+        onClick={(e) => (!props.nonInteractive && !targetGroup && props.equipment?.symbol) ? navigate("/item_info?symbol=" + props.equipment?.symbol) : false}
         title={equipment?.name}
         style={{
         cursor: props.equipment?.symbol ? "pointer" : 'no-drop',

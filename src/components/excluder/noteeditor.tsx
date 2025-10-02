@@ -1,21 +1,19 @@
 import React from "react";
-import { ComputedSkill, CrewMember } from "../../model/crew";
-import { Button, Checkbox, Container, Icon, Modal, Popup, Segment, SemanticICONS, Table } from "semantic-ui-react";
+import { Button, Container, Icon, Modal, Popup, SemanticICONS, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { AvatarView } from "../item_presenters/avatarview";
-import { CrewItemsView } from "../item_presenters/crew_items";
-import { OptionsPanelFlexRow } from "../stats/utils";
+import { ComputedSkill, CrewMember } from "../../model/crew";
+import { Filter } from "../../model/game-elements";
 import { PlayerCrew } from "../../model/player";
-import CONFIG from "../CONFIG";
 import { getCrewQuipment, skillSum } from "../../utils/crewutils";
+import { omniSearchFilter } from "../../utils/omnisearch";
+import CONFIG from "../CONFIG";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
-import { drawSkills } from "../specialist/utils";
-import { useStateWithStorage } from "../../utils/storage";
+import { AvatarView } from "../item_presenters/avatarview";
+import { CrewItemsView } from "../item_presenters/crew_items";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { Filter } from "../../model/game-elements";
-import { omniSearchFilter } from "../../utils/omnisearch";
-
+import { drawSkills } from "../specialist/utils";
+import { OptionsPanelFlexRow } from "../stats/utils";
 
 export interface NoteEditorProps {
     title: string | React.JSX.Element;
@@ -234,7 +232,9 @@ export const NoteEditor = (props: NoteEditorProps) => {
                     </div>
                 </Table.Cell>
                 <Table.Cell >
-                    <CrewItemsView itemSize={32}
+                    <CrewItemsView
+                        itemSize={32}
+                        nonInteractive={true}
                         gap={'0.75em'}
                         targetGroup="notedhoveritems"
                         crew={item}

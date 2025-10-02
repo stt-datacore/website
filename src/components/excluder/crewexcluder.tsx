@@ -1,24 +1,23 @@
 import React from 'react';
-import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps, Popup } from 'semantic-ui-react';
+import { Button, Dropdown, DropdownItemProps, Form, Icon, Image, Label, Message, Popup, Segment } from 'semantic-ui-react';
 
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../base/optionsmodal_base';
+import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from '../base/optionsmodal_base';
 
-import CrewPicker from '../crewpicker';
-import { IEventData, IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
-import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
-import { crewCopy, isQuipped, oneCrewCopy } from '../../utils/crewutils';
-import CONFIG from '../CONFIG';
-import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
-import { PlayerCrew } from '../../model/player';
-import { useStateWithStorage } from '../../utils/storage';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
-import { AvatarView } from '../item_presenters/avatarview';
+import { GlobalContext } from '../../context/globalcontext';
 import { PromptContext } from '../../context/promptcontext';
 import { CrewMember } from '../../model/crew';
-import { CrewQuipment } from '../crewpage/crewquipment';
+import { PlayerCrew } from '../../model/player';
+import { isQuipped, oneCrewCopy } from '../../utils/crewutils';
+import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
+import { useStateWithStorage } from '../../utils/storage';
+import CONFIG from '../CONFIG';
+import CrewPicker from '../crewpicker';
+import { IEventData, IEventScoredCrew } from '../eventplanner/model';
+import { AvatarView } from '../item_presenters/avatarview';
 import { CrewItemsView } from '../item_presenters/crew_items';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
 import { NoteEditor } from './noteeditor';
 
 interface ISelectOption {
@@ -516,7 +515,7 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 
 	function renderCaption(crew: CrewMember | PlayerCrew): JSX.Element {
 		return <div style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
-			<CrewItemsView itemSize={24} crew={crew} quipment={true} />
+			<CrewItemsView nonInteractive={true} itemSize={24} crew={crew} quipment={true} />
 			<span>{crew.name}</span>
 		</div>
 	}
