@@ -355,6 +355,8 @@
             "do_not_exclude_event_crew": "Do not exclude event crew",
             "event_skill_matrix_crew": "Event skill matrix crew",
             "featured_event_crew": "Featured event crew",
+            "highest_power": "Highest power",
+            "last_expiring": "Last expiring",
             "note_current": "Note current exclusions",
             "noted_exclusions": "Noted Exclusions",
             "phase_type": "Phase type",
