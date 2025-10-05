@@ -1691,6 +1691,8 @@
             "shuttle_plus": "Base+",
             "skill_positions": "Skill Positions",
             "skill_rarity": "Skill Rarity",
+            "sko_absolute": "Absolute Skill-Order Power",
+            "sko_ambivalent": "Dual-Primary Skill-Order Power",
             "tertiary_rarity": "Tertiary Skill Rarity",
             "trait": "Traits",
             "variant": "Variant",
@@ -1700,6 +1702,8 @@
         },
         "scoring": "Rankings and Scores",
         "ship_rank": "Ship Rank",
+        "sko_absolute_rank": "Absolute Skill-Order Power Rank",
+        "sko_ambivalent_rank": "Dual-Primary Skill-Order Power Rank",
         "trait_rank": "Trait Rank",
         "tuvix": "Tuvix",
         "voyage_rank": "Voyage Rank"

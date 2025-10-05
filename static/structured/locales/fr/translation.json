@@ -1703,6 +1703,8 @@
             "shuttle_plus": "Base+",
             "skill_positions": "Postes de compétences",
             "skill_rarity": "Rareté de la compétence",
+            "sko_absolute": "Puissance absolu des compétences",
+            "sko_ambivalent": "Puissance double des compétences principales",
             "tertiary_rarity": "Rareté de la compétence tertiaire",
             "trait": "Traits",
             "variant": "Variante",
@@ -1712,6 +1714,8 @@
         },
         "scoring": "Classements et scores",
         "ship_rank": "Rang du vaisseau",
+        "sko_absolute_rank": "Classement de puissance absolu des compétences",
+        "sko_ambivalent_rank": "Classement de puissance double des compétences principales",
         "trait_rank": "Rang du trait",
         "tuvix": "Tuvix",
         "voyage_rank": "Rang Voyage"

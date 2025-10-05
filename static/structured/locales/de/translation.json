@@ -1691,6 +1691,8 @@
             "shuttle_plus": "Basis+",
             "skill_positions": "Kompetenzpositionen",
             "skill_rarity": "Seltenheit der Fertigkeit",
+            "sko_absolute": "Absolute Fertigkeitsreihenfolge-Stärke",
+            "sko_ambivalent": "Dual-Primärer Fertigkeitsreihenfolge-Stärke",
             "tertiary_rarity": "Seltenheit der tertiären Fertigkeit",
             "trait": "Eigenschaften",
             "variant": "Variante",
@@ -1700,6 +1702,8 @@
         },
         "scoring": "Ranglisten und Punktzahlen",
         "ship_rank": "Schiffsrang",
+        "sko_absolute_rank": "Absoluter Fertigkeitsreihenfolge-Stärkenrang",
+        "sko_ambivalent_rank": "Dual-Primärer Fertigkeitsreihenfolge-Stärkenrang",
         "trait_rank": "Eigenschaftsrang",
         "tuvix": "Tuvix",
         "voyage_rank": "Reiserang"
