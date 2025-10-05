@@ -31,9 +31,9 @@ const { t } = React.useContext(GlobalContext).localized;
         const skillkey = `${crew.skill_order.join()},${crew.max_rarity}`;
 		if (['unowned'].includes(skillOrderFilter) && !!ownedSkills?.length && (ownedSkills.includes(skillkey))) return false;
         if (['underowned'].includes(skillOrderFilter) && !!maxedSkills?.length && (!crew.have || maxedSkills.includes(skillkey))) return false;
-		if (['notmax'].includes(skillOrderFilter)) {
-            if (ownedSkills.includes(skillkey) && maxedSkills.includes(skillkey)) return false;
-            else return true;
+		if (['notmax'].includes(skillOrderFilter) && !!ownedSkills?.length && !!maxedSkills?.length) {
+            if (!ownedSkills.includes(skillkey) || !maxedSkills.includes(skillkey)) return true;
+            else return false;
         }
         return true;
 	};
