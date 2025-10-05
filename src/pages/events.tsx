@@ -167,7 +167,7 @@ const EventsPageComponent = () => {
 				</div>
 				<Grid stackable columns={3}>
 					{filteredList.map((eventInfo, idx) => (
-						<Grid.Column key={`event_data_${eventInfo.instance_id}`}>
+						<Grid.Column key={`event_data_${eventInfo.instance_id}${filter}`}>
 							<div
 								style={{ cursor: "pointer" }}
 								onClick={() => setModalEventInstance(eventInfo)}
