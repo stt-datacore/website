@@ -307,6 +307,8 @@ export interface ConstituentWeights {
     tertiary_rarity: number
     primary_rarity: number
     velocity: number
+    sko_absolute: number;
+    sko_ambivalent: number;
     gauntlet_plus_weights: GauntletPlusWeights;
     base_plus_weights: BasePlusWeights;
     voyage_plus_weights: VoyagePlusWeights;
@@ -407,6 +409,8 @@ export interface RankScoring {
     versatility_quipment_details: QuipmentDetails;
     power_quipment_details: QuipmentDetails;
     greatness_details: GreatnessDetails[];
+    sko_absolute: number;
+    sko_ambivalent: number;
 }
 
 export interface Ranks {
@@ -422,6 +426,8 @@ export interface Ranks {
     main_cast_rank: number;
     potential_cols_rank: number;
     primary_rarity_rank: number;
+    sko_absolute_rank: number;
+    sko_ambivalent_rank: number;
     quipment_rank: number;
     ship_rank: number;
     skill_positions_rank: number;

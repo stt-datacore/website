@@ -1796,6 +1796,8 @@
             "shuttle_plus": "Base+",
             "skill_positions": "Puestos de habilidad",
             "skill_rarity": "Rareza de la habilidad",
+            "sko_absolute": "Poder de Orden de Habilidad Absoluto",
+            "sko_ambivalent": "Poder de Orden de Habilidad Primario Dual",
             "tertiary_rarity": "Rareza de la habilidad terciaria",
             "trait": "Rasgos",
             "variant": "Variante",
@@ -1805,6 +1807,8 @@
         },
         "scoring": "Clasificaciones y puntuaciones",
         "ship_rank": "Rango del Buque",
+        "sko_absolute_rank": "Rango de Poder de Orden de Habilidad Absoluto",
+        "sko_ambivalent_rank": "Rango de Poder de Orden de Habilidad Primario Dual",
         "trait_rank": "Rango del rasgo",
         "tuvix": "Tuvix",
         "voyage_rank": "Rango de Viaje"
