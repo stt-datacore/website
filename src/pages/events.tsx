@@ -1,10 +1,13 @@
 import React from "react";
 import {
+	Button,
 	Container,
 	Dropdown,
 	DropdownItemProps,
 	Grid,
 	Header,
+	Icon,
+	Input,
 	Label,
 	Message,
 	Modal,
@@ -28,9 +31,9 @@ import { AvatarView } from "../components/item_presenters/avatarview";
 import LazyImage from "../components/lazyimage";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { EventInstance, EventLeaderboard } from "../model/events";
+import { EventInstance, EventLeaderboard, Leaderboard } from "../model/events";
 import { gradeToColor } from "../utils/crewutils";
-import { EventStats, makeTypeBuckets } from "../utils/event_stats";
+import { EventStats, getEventStats, makeTypeBuckets } from "../utils/event_stats";
 import { useStateWithStorage } from "../utils/storage";
 
 type TypeTotals = {
@@ -71,6 +74,9 @@ const EventsPageComponent = () => {
 		React.useState<EventInstance | null>(null);
 	const localeDate = useLocaleDate(globalContext.localized);
 	const [tab, setTab] = React.useState(0);
+	const [filter, setFilter] = React.useState('');
+
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	React.useEffect(() => {
 		function loadData() {
@@ -90,6 +96,20 @@ const EventsPageComponent = () => {
 
 		loadData();
 	}, []);
+
+	const filteredList = React.useMemo(() => {
+		if (!filter) return eventsData;
+		else {
+			let text = filter.toLowerCase().trim();
+			let filtered = eventsData.filter(evt => {
+				if (evt.event_name.toLowerCase().trim().includes(text)) return true;
+				let ct = evt.content_types?.map(ct => t(`event_types.${ct}`));
+				if (!!ct?.length && ct?.some(s => !!s && s.toLowerCase().includes(text))) return true;
+				return false;
+			});
+			return filtered;
+		}
+	}, [eventsData, filter]);
 
 	return (
 		<Container style={{ paddingTop: "4em", paddingBottom: "2em" }}>
@@ -129,9 +149,23 @@ const EventsPageComponent = () => {
 				</Step>
 			</Step.Group>
 
-			{tab === 0 && (
+			{tab === 0 && (<>
+				<div style={{margin: '1em 0'}}>
+					<Input
+						style={{ width: isMobile ? '100%' : '50%' }}
+						iconPosition="left"
+						placeholder={t('global.search_ellipses')}
+						value={filter}
+						onChange={(e, { value }) => setFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => setFilter('')} >
+							<Icon name='delete' />
+						</Button>
+					</Input>
+				</div>
 				<Grid stackable columns={3}>
-					{eventsData.map((eventInfo, idx) => (
+					{filteredList.map((eventInfo, idx) => (
 						<Grid.Column key={`event_data_${eventInfo.instance_id}`}>
 							<div
 								style={{ cursor: "pointer" }}
@@ -167,8 +201,11 @@ const EventsPageComponent = () => {
 						</Grid.Column>
 					))}
 				</Grid>
-			)}
-			{tab === 1 && <EventStatsComponent />}
+			</>)}
+			{tab === 1 && <EventStatsComponent
+				 search={filter}
+				 setSearch={setFilter}
+				 leaderboard={leaderboardData || {}} />}
 			{modalEventInstance !== null && (
 				<Modal
 					open
@@ -207,9 +244,16 @@ const EventsPageComponent = () => {
 	}
 };
 
-const EventStatsComponent = () => {
+type EventStatsProps = {
+	leaderboard: {[key:string]: EventLeaderboard };
+	search: string;
+	setSearch: (value: string) => void;
+}
+
+const EventStatsComponent = (props: EventStatsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { event_stats, event_instances } = globalContext.core;
+	const { leaderboard, search: filter, setSearch: setFilter } = props;
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
 	const [totalPages, setTotalPages] = React.useState(1);
@@ -218,9 +262,7 @@ const EventStatsComponent = () => {
 
 	const [compiledStats, setCompiledStats] = React.useState<EventStats[]>([]);
 
-	const [activePageResults, setActivePageResults] = React.useState<
-		EventStats[]
-	>([]);
+	const [activePageResults, setActivePageResults] = React.useState<EventStats[]>([]);
 
 	const [sortColumn, setSortColumn] = React.useState('');
 	const [sortDirection, setSortDirection] = React.useState<'ascending' | 'descending'>('ascending');
@@ -231,6 +273,8 @@ const EventStatsComponent = () => {
 	const [typeTotals, setTypeTotals] = React.useState([] as TypeTotals[]);
 	const [eventTypes, setEventTypes] = useStateWithStorage('event_stats/event_types', [] as string[]);
 	const [topPct, setTopPct] = React.useState<{[key:string]: number}>({});
+	//const [event_stats, setEventStats] = React.useState<EventStats[]>([]);
+
 	const switchDir = () => {
 		if (sortDirection === 'ascending') setSortDirection('descending');
 		else setSortDirection('ascending');
@@ -239,6 +283,28 @@ const EventStatsComponent = () => {
 	const pageStartIdx = (activePage - 1) * itemsPerPage;
 	const isMobile =
 		typeof window !== "undefined" && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+	// React.useEffect(() => {
+	// 	if (event_instances?.length && !!Object.keys(leaderboard)?.length) {
+	// 		const stats = structuredClone(globalContext.core.event_stats);
+
+	// 		for (let stat of stats) {
+	// 			if (leaderboard[stat.instance_id]) {
+	// 				let scores = leaderboard[stat.instance_id].leaderboard.map(l => l.score);
+	// 				scores.sort((a, b) => b - a);
+	// 				stat.max = scores[0];
+	// 				stat.min = scores[scores.length - 1];
+	// 				stat.median = scores[Math.floor(scores.length / 2)];
+	// 				stat.avg = Math.round((scores.reduce((p, n) => p + n, 0) / scores.length));
+	// 			}
+	// 		}
+	// 		setEventStats(stats);
+	// 	}
+	// 	else {
+	// 		setEventStats([]);
+	// 	}
+	// }, [leaderboard]);
+
 
 	React.useEffect(() => {
 		if (!event_stats?.length) return;
@@ -298,7 +364,13 @@ const EventStatsComponent = () => {
 		let newTypeFilter = [] as string[];
 		let totals = {} as { [key: string]: number };
 
+		let text = filter.toLowerCase().trim();
+
 		let filtered = compiledStats.sort((a, b) => a.instance_id - b.instance_id).filter((stat, idx) => {
+			if (text) {
+				if (stat.event_name.toLowerCase().trim().includes(text)) return true;
+				return false;
+			}
 			if (weeks) {
 				if (maxidx - idx > weeks) {
 					return false;
@@ -385,7 +457,7 @@ const EventStatsComponent = () => {
 		setActivePageResults(
 			filtered.slice(pageStartIdx, pageStartIdx + itemsPerPage)
 		);
-	}, [compiledStats, itemsPerPage, activePage, totalPages, sortColumn, sortDirection, typeFilter, weeks]);
+	}, [compiledStats, itemsPerPage, activePage, totalPages, sortColumn, sortDirection, typeFilter, weeks, filter]);
 
 	const pageSizes = [1, 5, 10, 20, 50, 100].map((size) => {
 		return {
@@ -435,6 +507,20 @@ const EventStatsComponent = () => {
 
 					</Grid.Row>
 				</Grid>
+			</div>
+			<div style={{margin: '1em 0'}}>
+				<Input
+					style={{ width: isMobile ? '100%' : '50%' }}
+					iconPosition="left"
+					placeholder={t('global.search_ellipses')}
+					value={filter}
+					onChange={(e, { value }) => setFilter(value)}>
+					<input />
+					<Icon name='search' />
+					<Button icon onClick={() => setFilter('')} >
+						<Icon name='delete' />
+					</Button>
+				</Input>
 			</div>
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
 				<EventTypeFilter availableTypes={eventTypes} type={typeFilter} setType={setTypeFilter} />
@@ -490,7 +576,7 @@ const EventStatsComponent = () => {
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colspan={8}>
+						<Table.HeaderCell colspan={9}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={activePage}
@@ -519,6 +605,9 @@ const EventStatsComponent = () => {
 		let url = '';
 		if (instance?.image) {
 			url = `${process.env.GATSBY_ASSETS_URL}${instance.image}`;
+		}
+		if (stat.event_name === 'The Darkest Timeline') {
+			console.log("here");
 		}
 		return <Table.Row key={`event_stats_${stat.event_name}_${idx}`}>
 			<Table.Cell width={5}>
