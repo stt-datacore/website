@@ -36,6 +36,8 @@ const ScoreFields = [
     "primary_rarity",
     "tertiary_rarity",
     "velocity",
+    "sko_absolute",
+    "sko_ambivalent"
 ]
 
 const RankFields = [
@@ -63,6 +65,8 @@ const RankFields = [
     "primary_rarity_rank",
     "tertiary_rarity_rank",
     "velocity_rank",
+    "sko_absolute_rank",
+    "sko_ambivalent_rank"
 ]
 
 export const getDataCoreRanksTableConfig = (t: TranslateMethod) => {
