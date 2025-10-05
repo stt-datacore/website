@@ -35,6 +35,7 @@ import { EventInstance, EventLeaderboard, Leaderboard } from "../model/events";
 import { gradeToColor } from "../utils/crewutils";
 import { EventStats, getEventStats, makeTypeBuckets } from "../utils/event_stats";
 import { useStateWithStorage } from "../utils/storage";
+import { CrewMember } from "../model/crew";
 
 type TypeTotals = {
 	type: string,
@@ -255,7 +256,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 	const { event_stats, event_instances } = globalContext.core;
 	const { leaderboard, search: filter, setSearch: setFilter } = props;
 	const { playerData } = globalContext.player;
-	const { t } = globalContext.localized;
+	const { t, TRAIT_NAMES } = globalContext.localized;
 	const [totalPages, setTotalPages] = React.useState(1);
 	const [itemsPerPage, setItemsPerPage] = React.useState(20);
 	const [activePage, setActivePage] = React.useState(1);
@@ -357,6 +358,22 @@ const EventStatsComponent = (props: EventStatsProps) => {
 		setCompiledStats(newStats);
 	}, [event_stats]);
 
+	const featuredTextMap = React.useMemo(() => {
+		let es = {} as {[key:string]: string[]};
+		for (let evt of event_stats) {
+			es[evt.instance_id] ??= [];
+			let cn = globalContext.core.crew.find(f => f.symbol === evt.crew);
+			if (cn) es[evt.instance_id].push(cn.name);
+			let add = evt.featured_crew?.map(fc => globalContext.core.crew.find(f => f.symbol === fc)?.name || '')?.filter(f => !!f) ?? [];
+			es[evt.instance_id] = es[evt.instance_id].concat(add);
+			add = evt.other_legendaries?.map(fc => globalContext.core.crew.find(f => f.symbol === fc)?.name || '')?.filter(f => !!f) ?? [];
+			es[evt.instance_id] = es[evt.instance_id].concat(add);
+			es[evt.instance_id] = es[evt.instance_id].concat(evt.bonus_traits?.map(bt => TRAIT_NAMES[bt] || '')?.filter(f => !!f) || []);
+			es[evt.instance_id] = es[evt.instance_id].map(m => m.toLowerCase());
+		}
+		return es;
+	}, [event_stats]);
+
 	React.useEffect(() => {
 		if (!compiledStats?.length) return;
 		let maxidx = compiledStats.length - 1;
@@ -367,16 +384,17 @@ const EventStatsComponent = (props: EventStatsProps) => {
 		let text = filter.toLowerCase().trim();
 
 		let filtered = compiledStats.sort((a, b) => a.instance_id - b.instance_id).filter((stat, idx) => {
-			if (text) {
-				if (stat.event_name.toLowerCase().trim().includes(text)) return true;
-				return false;
-			}
 			if (weeks) {
 				if (maxidx - idx > weeks) {
 					return false;
 				}
 			}
 			if (!eventTypes.includes(stat.sorted_event_type ?? stat.event_type)) eventTypes.push(stat.sorted_event_type ?? stat.event_type);
+			if (text) {
+				if (stat.event_name.toLowerCase().trim().includes(text)) return true;
+				if (featuredTextMap[stat.instance_id].some(key => key.includes(text))) return true;
+				return false;
+			}
 			return true;
 		});
 
@@ -508,6 +526,10 @@ const EventStatsComponent = (props: EventStatsProps) => {
 					</Grid.Row>
 				</Grid>
 			</div>
+			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
+				<EventTypeFilter availableTypes={eventTypes} type={typeFilter} setType={setTypeFilter} />
+				<TimeframeFilter timeframe={timeframe} setTimeframe={setTimeframe} setWeeks={setWeeks} />
+			</div>
 			<div style={{margin: '1em 0'}}>
 				<Input
 					style={{ width: isMobile ? '100%' : '50%' }}
@@ -521,10 +543,6 @@ const EventStatsComponent = (props: EventStatsProps) => {
 						<Icon name='delete' />
 					</Button>
 				</Input>
-			</div>
-			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em'}}>
-				<EventTypeFilter availableTypes={eventTypes} type={typeFilter} setType={setTypeFilter} />
-				<TimeframeFilter timeframe={timeframe} setTimeframe={setTimeframe} setWeeks={setWeeks} />
 			</div>
 			<Table striped sortable>
 				<Table.Header>
@@ -689,11 +707,12 @@ interface TimeframeFilterProps {
 	setWeeks?: (value?: number) => void;
 	customOptions?: CustomTimeFilterProps[];
 	customBefore?: boolean;
+	disabled?: boolean;
 }
 
 export const TimeframeFilter = (props: TimeframeFilterProps) => {
 
-	const { timeframe, setTimeframe, setWeeks, customBefore, customOptions } = props;
+	const { disabled, timeframe, setTimeframe, setWeeks, customBefore, customOptions } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const options = [
@@ -725,6 +744,7 @@ export const TimeframeFilter = (props: TimeframeFilterProps) => {
 	options.reverse();
 
 	return <Dropdown
+			disabled={disabled}
 			placeholder={t('hints.filter_by_timeframe')}
 			clearable
 			selection
@@ -749,11 +769,12 @@ interface EventTypeFilterProps {
 	type?: string[];
 	setType: (value?: string[]) => void;
 	availableTypes: string[];
+	disabled?: boolean;
 }
 
 const EventTypeFilter = (props: EventTypeFilterProps) => {
 
-	const { type, setType, availableTypes } = props;
+	const { type, setType, availableTypes, disabled } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const options = [] as DropdownItemProps[];
@@ -771,6 +792,7 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 	});
 
 	return <Dropdown
+			disabled={disabled}
 			placeholder={t('hints.filter_by_event_type')}
 			clearable
 			search
