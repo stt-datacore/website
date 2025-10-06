@@ -280,37 +280,37 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 	return (<>
 		<h4>{t('base.featured_ships')}</h4>
 		<div style={{
-		display: 'flex',
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		alignItems: 'center',
-		justifyContent: 'flex-start'
-	}}>
-		<ShipHoverStat targetGroup='event_featured_ships' />
-		{event.featured_ships.map((symbol) => {
-			const ship = (playerShips ?? all_ships).find(f => f.symbol === symbol);
-			if (!ship) return <></>;
-			else {
-				return (
-					<div style={{
-						display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-						gap: '0.5em'
-					}}>
-						<AvatarView
-							crewBackground='rich'
-							targetGroup='event_featured_ships'
-							key={`event_featured_ship_avatar_${symbol}`}
-							mode='ship'
-							item={ship}
-							size={72}
-						/>
-						<i>{ship.name}</i>
-					</div>)
-			}
-		})}
-
-
-	</div></>)
+			display: 'flex',
+			flexDirection: 'column',
+			flexWrap: 'wrap',
+			alignItems: 'flex-start',
+			justifyContent: 'flex-start',
+			gap: '1em'
+		}}>
+			<ShipHoverStat targetGroup='event_featured_ships' />
+			{event.featured_ships.map((symbol) => {
+				const ship = (playerShips ?? all_ships).find(f => f.symbol === symbol);
+				if (!ship) return <></>;
+				else {
+					return (
+						<div style={{
+							display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+							gap: '0.5em'
+						}}>
+							<AvatarView
+								crewBackground='rich'
+								targetGroup='event_featured_ships'
+								key={`event_featured_ship_avatar_${symbol}`}
+								mode='ship'
+								item={ship}
+								size={72}
+							/>
+							<i>{ship.name}</i>
+						</div>)
+				}
+			})}
+		</div>
+	</>)
 }
 
 const EventMega = (props: FeatureToolProps & { mega: CrewMember }) => {

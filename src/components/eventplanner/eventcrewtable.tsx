@@ -81,9 +81,38 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
 				{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
 				{ width: 1, column: 'bestSkill.score', title: t('event_planner.table.columns.best'), reverse: true },
-				{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
 			] as ITableConfigRow[];
 
+			if (eventData.activeContent?.content_type === 'voyage') {
+				results.push(
+					{
+						width: 1,
+						column: 'q_bits',
+						title: t('base.qp'),
+						reverse: true,
+						tiebreakers: ['crew.bonus'],
+						customCompare(a: IRosterCrew, b: IRosterCrew) {
+							let aslots = qbitsToSlots(a.q_bits);
+							let bslots = qbitsToSlots(b.q_bits);
+							let r = aslots - bslots;
+							if (!r) r = a.q_bits! - b.q_bits!;
+							if (!r) r = a.score! - b.score!;
+							if (!r) r = (a as any).bestSkill.score - (b as any).bestSkill.score;
+							return r;
+						}
+					},
+					{
+						width: 1,
+						column: 'ranks.gauntletRank',
+						title: t('rank_names.gauntlet_rank')
+					}
+				)
+			}
+			else {
+				results.push(
+					{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
+				)
+			}
 			CONFIG.SKILLS_SHORT.forEach((skill) => {
 				const title: string = eventData.activeContent?.primary_skill === skill.name ? priText : (eventData.activeContent?.secondary_skill === skill.name ? secText : '')
 				results.push({
@@ -114,27 +143,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	}, [eventData, phaseIndex]);
 
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
-
-	if (eventData.activeContent?.content_type === 'voyage') {
-		tableConfig.push(
-			{
-				width: 1,
-				column: 'q_bits',
-				title: t('base.qp'),
-				reverse: true,
-				tiebreakers: ['crew.bonus'],
-				customCompare(a: IRosterCrew, b: IRosterCrew) {
-					let aslots = qbitsToSlots(a.q_bits);
-					let bslots = qbitsToSlots(b.q_bits);
-					let r = aslots - bslots;
-					if (!r) r = a.q_bits! - b.q_bits!;
-					if (!r) r = a.score! - b.score!;
-					if (!r) r = (a as any).bestSkill.score - (b as any).bestSkill.score;
-					return r;
-				}
-			}
-		)
-	}
 
 	// Check for custom column (i.e. combo from crew matrix click)
 	let customColumn = '';
@@ -315,20 +323,27 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 							<b>{scoreLabel(crew.bestSkill.score)}</b>
 							<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 						</Table.Cell>
-						<Table.Cell textAlign='center'>
+						{eventData.activeContent?.content_type !== 'voyage' && <Table.Cell textAlign='center'>
 							{!!crew.bestPair.score && <>
 							<b>{scoreLabel(crew.bestPair.score)}</b>
 							<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
 							{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 							</>}
-						</Table.Cell>
-						{eventData.activeContent?.content_type === 'voyage' &&
-						<Table.Cell textAlign='center'>
-							<b>{(crew.q_bits)}</b>
-							<br />
-							{slots === 1 && t('base.one_slot')}
-							{slots !== 1 && t('base.n_slots', { n: `${slots}`})}
 						</Table.Cell>}
+						{eventData.activeContent?.content_type === 'voyage' && (<>
+							<Table.Cell textAlign='center'>
+								<b>{(crew.q_bits)}</b>
+								<br />
+								{slots === 1 && t('base.one_slot')}
+								{slots !== 1 && t('base.n_slots', { n: `${slots}`})}
+							</Table.Cell>
+							<Table.Cell textAlign='center'>
+								<b>#{crew.ranks.gauntletRank}</b>
+								<div style={{fontSize: '0.8em'}}>
+									{printExtraGauntlet(crew)}
+								</div>
+							</Table.Cell>
+						</>)}
 						{CONFIG.SKILLS_SHORT.map(skill =>
 							crew.base_skills[skill.name] ? (
 								<Table.Cell key={skill.name} textAlign='center'>
@@ -349,6 +364,20 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				)}
 			</Table.Row>
 		);
+	}
+
+	function printExtraGauntlet(crew: IRosterCrew) {
+		let granks = Object.entries(crew.ranks).filter(([key, value]) => key.slice(0, 2) === 'G_');
+		let strs = [] as React.JSX.Element[];
+		granks.sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]));
+		for (let rank of granks) {
+			if (rank[1] <= 25) {
+				let skills = rank[0].slice(2).split("_").map(short => CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === short)!.name).map(skill => CONFIG.SKILLS_SHORT.find(f => f.name === skill)!.short).join("/");
+				strs.push(<>{`#${rank[1]} ${skills}`}</>);
+			}
+		}
+		if (!strs.length) return <></>;
+		else return strs.reduce((p, n) => (p !== undefined ? <>{p}<br/>{n}</> : n) as React.JSX.Element, undefined as React.JSX.Element | undefined);
 	}
 
 	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): JSX.Element {
