@@ -62,6 +62,8 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 	};
 	Object.keys(crew.ranks.scores).forEach((score) => {
 		if (score.endsWith("_rank")) return;
+		if (score === 'sko_absolute') return;
+		if (score === 'sko_ambivalent') return;
 		if (['fbb', 'arena'].includes(score) && minglescore[score] <= dThreshold) {
 			const rankKey = `${score}`;
 			if (crew.ranks.scores.ship.kind === 'offense') {
