@@ -551,6 +551,8 @@ export function computeEventBest(
 	showPotential?: boolean,
 	) {
 
+	const encounterTraits = ["inspiring", "explorer", "scoundrel", "casual", "playful", "hero", "marksman", "investigator"];
+
 	let bestCombos: IBestCombos = {};
 	const zeroCombos: IEventCombos = {};
 
@@ -660,6 +662,9 @@ export function computeEventBest(
 		crew.combos = combos;
 		crew.bestPair = bestPair;
 		crew.bestSkill = bestSkill;
+		if (eventData.content_types.includes('voyage')) {
+			crew.encounter_traits = crew.traits.filter(trait => encounterTraits.includes(trait));
+		}
 	});
 
 	return bestCombos;

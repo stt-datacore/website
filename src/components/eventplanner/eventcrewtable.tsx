@@ -110,6 +110,24 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					},
 					{
 						width: 1,
+						column: 'traits',
+						title: t('base.traits'),
+						customCompare: (a: IEventScoredCrew, b: IEventScoredCrew, config) => {
+							let al = a.encounter_traits?.length ?? 0;
+							let bl = b.encounter_traits?.length ?? 0;
+							let r = al - bl;
+							if (!r) r = bonusCol.customCompare!(a, b, config);
+							if (!r) {
+								let astr = a.encounter_traits?.map(trait => globalContext.localized.TRAIT_NAMES[trait]).join(",") || "";
+								let bstr = b.encounter_traits?.map(trait => globalContext.localized.TRAIT_NAMES[trait]).join(",") || "";
+								r = astr.localeCompare(bstr);
+							}
+							return r;
+						},
+						reverse: true
+					},
+					{
+						width: 1,
 						column: 'ranks.gauntletRank',
 						title: t('rank_names.gauntlet_rank')
 					}
@@ -344,6 +362,9 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 								{slots === 1 && t('base.one_slot')}
 								{slots !== 1 && t('base.n_slots', { n: `${slots}`})}
 							</Table.Cell>
+							<Table.Cell>
+								{printEncounterTraits(crew)}
+							</Table.Cell>
 							<Table.Cell textAlign='center'>
 								<b>#{crew.ranks.gauntletRank}</b>
 								<div style={{fontSize: '0.8em'}}>
@@ -373,7 +394,20 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		);
 	}
 
-	function printExtraGauntlet(crew: IRosterCrew) {
+	function printEncounterTraits(crew: IEventScoredCrew) {
+		if (!crew.encounter_traits?.length) return <></>
+		let named = crew.encounter_traits?.map(ec => globalContext.localized.TRAIT_NAMES[ec]);
+		named.sort();
+		return (<>
+			{named.map((txt) => {
+				return (<div key={`${crew.id}_${txt}_trait`}>
+					{txt}
+				</div>)
+			})}
+		</>);
+	}
+
+	function printExtraGauntlet(crew: IEventScoredCrew) {
 		let granks = Object.entries(crew.ranks).filter(([key, value]) => key.slice(0, 2) === 'G_');
 		let strs = [] as React.JSX.Element[];
 		granks.sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]));
@@ -384,7 +418,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			}
 		}
 		if (!strs.length) return <></>;
-		else return strs.reduce((p, n) => (p !== undefined ? <>{p}<br/>{n}</> : n) as React.JSX.Element, undefined as React.JSX.Element | undefined);
+		else return strs.reduce((p, n) => (p !== undefined ? <>{p}<br/>{n}</> : n) as React.JSX.Element, undefined as React.JSX.Element | undefined) || <></>;
 	}
 
 	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): JSX.Element {

@@ -32,6 +32,7 @@ export interface IEventScoredCrew extends IRosterCrew {
 	combos: IEventCombos;
 	bestSkill: IEventSkill;
 	bestPair: IEventPair;
+	encounter_traits?: string[];
 };
 
 export interface IEventCombos {
