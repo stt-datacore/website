@@ -207,7 +207,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 				</div>
 			</Table.Cell>}
 			{(tableType === 'offers' || alternativeLayout) && <>
-				<Table.Cell textAlign='center' width={1}>
+				<Table.Cell textAlign='left' width={1}>
 					{crew.skill_order.map(skill => {
 						return <div key={`crew_${crew.symbol}_sko_${skill}`}>
 							<CrewStat data={crew[skill] as any} skill_name={skill} scale={0.8} />
@@ -263,6 +263,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 	function getExpiration(offer: OfferCrew) {
 		return ((new Date((offer.seconds_remain! * 1000) + Date.now()).toLocaleDateString()));
 	}
+
 	function renderOffers(crew: IRosterCrew) {
 		const labelStyle: React.CSSProperties = {
 			display: 'flex',

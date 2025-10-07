@@ -84,6 +84,12 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			] as ITableConfigRow[];
 
 			if (eventData.activeContent?.content_type === 'voyage') {
+				const bonusCol = results.find(f => f.column === 'bonus')!;
+				bonusCol.customCompare = (a: IRosterCrew, b: IRosterCrew) => {
+					let r = a.bonus - b.bonus;
+					if (!r) r = b.ranks.gauntletRank - a.ranks.gauntletRank;
+					return r;
+				}
 				results.push(
 					{
 						width: 1,
@@ -91,12 +97,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						title: t('base.qp'),
 						reverse: true,
 						tiebreakers: ['crew.bonus'],
-						customCompare(a: IRosterCrew, b: IRosterCrew) {
+						customCompare(a: IRosterCrew, b: IRosterCrew, config) {
 							let aslots = qbitsToSlots(a.q_bits);
 							let bslots = qbitsToSlots(b.q_bits);
 							let r = aslots - bslots;
 							if (!r) r = a.q_bits! - b.q_bits!;
-							if (!r) r = a.score! - b.score!;
+							if (!r) r = bonusCol.customCompare!(a, b, config);
+							if (!r && a.score !== undefined && b.score !== undefined) r = a.score - b.score;
 							if (!r) r = (a as any).bestSkill.score - (b as any).bestSkill.score;
 							return r;
 						}
