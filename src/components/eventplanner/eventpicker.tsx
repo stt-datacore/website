@@ -293,7 +293,9 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 				if (!ship) return <></>;
 				else {
 					return (
-						<div style={{
+						<div
+							key={`event_featured_ship_${ship.symbol}_${event.name}`}
+							style={{
 							display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
 							gap: '0.5em'
 						}}>
