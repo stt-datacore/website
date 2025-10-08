@@ -97,7 +97,7 @@ export const QPConfigProvider = (props: QPConfigProps) => {
 export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], buffConfig: BuffStatTable | undefined, params: IQPParams) {
 	const { voyageConfig, qpConfig } = params;
 
-	if (qpConfig.enabled && c.immortal && c.immortal >= -1 && c.q_bits >= 100) {
+	if (qpConfig.enabled && c.immortal && c.q_bits >= 100) {
 		if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
 			return c;
 		}
@@ -168,13 +168,12 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 			});
 		}
 
-
 		while (newcopy.kwipment.length < 4) newcopy.kwipment.push(0);
 		newcopy.kwipment_expiration = [0, 0, 0, 0];
 		newcopy.kwipment_prospects = true;
 		return newcopy;
 	}
-	else if (qpConfig.remove && c.q_bits >= 100 && c.immortal === -1) {
+	else if (qpConfig.remove && c.q_bits >= 100) {
 		let newcopy = oneCrewCopy(c);
 		newcopy.kwipment = [0, 0, 0, 0];
 		newcopy.kwipment_expiration = [0, 0, 0, 0];
