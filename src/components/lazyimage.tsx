@@ -1,3 +1,4 @@
+import React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Image, ImageProps, Loader } from 'semantic-ui-react';
 
