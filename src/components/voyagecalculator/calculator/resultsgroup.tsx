@@ -69,10 +69,10 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 	// In-game voyage crew picker ignores frozen crew, active shuttlers, and active voyagers
 	//	Must be based on non-QP full roster for crew finder to sort properly
 	const idleRoster = React.useMemo<IVoyageCrew[]>(() => {
-		return fullRoster.filter(
+		return calculatorContext.crew.filter(
 			c => c.immortal <= 0 && c.active_status !== 2 && c.active_status !== 3
 		);
-	}, [fullRoster]);
+	}, [calculatorContext.crew]);
 
 	const analyses = React.useMemo<string[]>(() => {
 		const analyses: string[] = [];
