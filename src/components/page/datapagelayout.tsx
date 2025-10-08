@@ -136,11 +136,11 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 									{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
 								</React.Fragment>
 							)}
-							<PlayerHeader
+							{!!isReady && <PlayerHeader
 								promptType={playerPromptType ?? 'none'}
 								activePanel={playerPanel}
 								setActivePanel={setPlayerPanel}
-							/>
+							/>}
 							{renderContents()}
 						</div>
 					</MainContent>

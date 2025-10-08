@@ -499,6 +499,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (!crew.preview && playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
 			crew = structuredClone(templateCrew);
 			crew.immortal = 1;
+			crew.id = 0;
 		}
 		else {
 			let frozen = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id && !crew.preview);
@@ -506,6 +507,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 				crew = structuredClone(templateCrew);
 				crew.immortal = frozen.quantity;
 				crew.q_bits = frozen.qbits ?? 0;
+				crew.id = 0;
 			}
 		}
 

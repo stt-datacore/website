@@ -150,7 +150,9 @@ const EventsPageComponent = () => {
 				</Step>
 			</Step.Group>
 
-			{tab === 0 && (<>
+			<div style={{
+				display: tab === 0 ? undefined : 'none'
+			}}>
 				<div style={{margin: '1em 0'}}>
 					<Input
 						style={{ width: isMobile ? '100%' : '50%' }}
@@ -202,11 +204,16 @@ const EventsPageComponent = () => {
 						</Grid.Column>
 					))}
 				</Grid>
-			</>)}
-			{tab === 1 && <EventStatsComponent
+			</div>
+
+			<div style={{
+				display: tab === 1 ? undefined : 'none'
+			}}>
+				<EventStatsComponent
 				 search={filter}
 				 setSearch={setFilter}
-				 leaderboard={leaderboardData || {}} />}
+				 leaderboard={leaderboardData || {}} />
+			</div>
 			{modalEventInstance !== null && (
 				<Modal
 					open
