@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { Image, Loader, ImageProps } from 'semantic-ui-react';
+import { Image, ImageProps, Loader } from 'semantic-ui-react';
 
 const LazyImage = (props: ImageProps) => {
     props.size ??= 'medium';
     const { size } = props;
 
-    const { ref, inView, entry } = useInView({
+    const { ref, inView } = useInView({
         /* Optional options */
         threshold: 0,
     });
