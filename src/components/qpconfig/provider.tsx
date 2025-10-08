@@ -96,7 +96,6 @@ export const QPConfigProvider = (props: QPConfigProps) => {
 
 export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], buffConfig: BuffStatTable | undefined, params: IQPParams) {
 	const { voyageConfig, qpConfig } = params;
-
 	if (qpConfig.enabled && c.immortal && c.q_bits >= 100) {
 		if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
 			return c;
@@ -130,13 +129,13 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 
 		let useQuipment: QuippedPower | undefined = undefined;
 		if (qpConfig.mode === 'all') {
-			useQuipment = newcopy.best_quipment_3!;
+			useQuipment = newcopy.best_quipment_3 || newcopy.best_quipment_1_2 || newcopy.best_quipment;
 		}
 		else if (qpConfig.mode === 'best') {
-			useQuipment = newcopy.best_quipment!;
+			useQuipment = newcopy.best_quipment;
 		}
 		else if (qpConfig.mode === 'best_2') {
-			useQuipment = newcopy.best_quipment_1_2!;
+			useQuipment = newcopy.best_quipment_1_2 || newcopy.best_quipment;
 		}
 
 		if (!useQuipment) return c;

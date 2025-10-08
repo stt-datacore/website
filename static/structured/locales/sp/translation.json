@@ -1608,10 +1608,10 @@
             "voyager": "Mostrar solo tripulantes en viajes en funcionamiento"
         },
         "event_status": {
-            "bonus": "Only show event crew",
-            "bonus_hide": "Hide event crew",
-            "featured": "Only show featured crew",
-            "featured_hide": "Hide featured crew"
+            "bonus": "Mostrar solo el equipo del evento",
+            "bonus_hide": "Ocultar el equipo del evento",
+            "featured": "Mostrar solo el equipo destacado",
+            "featured_hide": "Ocultar el equipo destacado"
         },
         "portal_status": {
             "none": "{{options.roster_maintenance.none}}",
