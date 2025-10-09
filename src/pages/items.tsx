@@ -72,7 +72,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 	}, [globalContext.core.items, globalContext.core.crew]);
 
 	const quipment = React.useMemo(() => {
-		if (!coreItems?.length || !keystones?.length) return;
+		if (!coreItems?.length || !keystones?.length) return [];
 		const quipment = structuredClone(coreItems.filter(f => f.type === 14));
 		const { quips } = getItemDateEstimates(globalContext.core, t);
 		for (let q of quipment) {
