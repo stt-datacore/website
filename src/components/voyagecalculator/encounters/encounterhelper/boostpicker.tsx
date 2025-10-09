@@ -102,7 +102,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 						}}
 					>
 						{boostOptions.length > 0 && renderGroups()}
-						{renderRelevantToggle()}
+						{relevant && renderRelevantToggle()}
 						{renderActions()}
 					</div>
 				</Segment>
