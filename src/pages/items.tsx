@@ -33,7 +33,8 @@ const ItemsPage = (props: ItemsPageProps) => {
 		}
 	}, [globalContext]);
 
-	const crew = globalContext.core.crew;
+	const { crew, keystones } = globalContext.core;
+
 	const coreItems = React.useMemo(() => {
 		const coreItems = structuredClone(globalContext.core.items.filter(item => item.type !== 14 || (!!item.max_rarity_requirement || !!item.traits_requirement?.length))) as EquipmentItem[];
 		if (hasPlayer) {
@@ -71,6 +72,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 	}, [globalContext.core.items, globalContext.core.crew]);
 
 	const quipment = React.useMemo(() => {
+		if (!coreItems?.length || !keystones?.length) return;
 		const quipment = structuredClone(coreItems.filter(f => f.type === 14));
 		const { quips } = getItemDateEstimates(globalContext.core, t);
 		for (let q of quipment) {
@@ -85,7 +87,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 			}
 		}
 		return quipment;
-	}, [coreItems]);
+	}, [coreItems, keystones]);
 	const quipCust = [] as CustomFieldDef[];
 
 	quipCust.push(
@@ -149,7 +151,8 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	return (
 
-		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
+		<DataPageLayout playerPromptType='recommend' pageTitle={t('menu.roster.items')}
+			demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'keystones']}>
 			<React.Fragment>
 
 				<Step.Group fluid widths={hasPlayer ? 4 : 2}>
