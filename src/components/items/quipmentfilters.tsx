@@ -279,8 +279,8 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
 
     return <React.Fragment>
         {!noRender && <div className={'ui segment'} style={{ ...flexCol, alignItems: 'flex-start' }}>
-            {!!playerData && <div style={{ ...flexRow, alignItems: 'flex-start', gap: '1em' }}>
-                <div style={{...flexCol, alignItems: 'flex-start'}}>
+            <div style={{ ...flexRow, alignItems: 'flex-start', gap: '1em' }}>
+                {!!playerData && <div style={{...flexCol, alignItems: 'flex-start'}}>
                     <span>{t("hints.filter_by_owned_status")}</span>
                     <Dropdown
                         placeholder={t("hints.filter_by_owned_status")}
@@ -291,7 +291,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                             setOwnedOption(value as OwnedOption || 'all')
                         }
                     />
-                </div>
+                </div>}
                 <div style={{...flexCol, alignItems: 'flex-start'}}>
                     <span>{t("hints.filter_by_rarity")}</span>
                     <Dropdown
@@ -337,7 +337,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                         }
                     />
                 </div>
-            </div>}
+            </div>
             <div style={{ ...flexRow }}>
                 {selectorOpen && <DataPicker
                     id={`${pageId}/quipment_crew_picker`}

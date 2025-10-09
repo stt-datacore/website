@@ -227,11 +227,11 @@ export function getItemBonuses(item: EquipmentItem | EquipmentItem): ItemBonusIn
     };
 }
 
-export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: EquipmentItem[]): EquipmentItem[] {
-	return quipment.filter((item) => isQuipmentMatch(crew, item));
+export function getPossibleQuipment<T extends CrewMember>(crew: T, quipment: EquipmentItem[], exact?: boolean): EquipmentItem[] {
+	return quipment.filter((item) => isQuipmentMatch(crew, item, exact));
 }
 
-export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem): boolean {
+export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentItem, exact?: boolean): boolean {
 	if (item.kwipment) {
 		if (!item.max_rarity_requirement) return false;
 		const bonus = getItemBonuses(item);
@@ -248,7 +248,13 @@ export function isQuipmentMatch<T extends CrewMember>(crew: T, item: EquipmentIt
 			}
 		}
 
-		rr &&= Object.keys(bonus.bonuses).some(skill => skill in crew.base_skills);
+		if (exact) {
+			rr &&= Object.keys(bonus.bonuses).every(skill => skill in crew.base_skills);
+		}
+		else {
+			rr &&= Object.keys(bonus.bonuses).some(skill => skill in crew.base_skills);
+		}
+
 		return rr;
 	}
 

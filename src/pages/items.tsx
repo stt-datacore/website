@@ -12,11 +12,15 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { GlobalContext } from '../context/globalcontext';
 import { WorkerProvider } from '../context/workercontext';
 import { EquipmentItem } from '../model/equipment';
-import { binaryLocate, formatDuration } from '../utils/itemutils';
+import { binaryLocate, formatDuration, getPossibleQuipment } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import { approxDate, getItemDateEstimates } from '../components/stats/itemdateutils';
+import { CrewMember } from '../model/crew';
+import { getCrewQuipment } from '../utils/crewutils';
 
 export interface ItemsPageProps { }
+
+type QuipmentCrewInfo = EquipmentItem & { eligible_crew: CrewMember[], exact_eligible_crew: CrewMember[] };
 
 const ItemsPage = (props: ItemsPageProps) => {
 
@@ -72,10 +76,29 @@ const ItemsPage = (props: ItemsPageProps) => {
 	}, [globalContext.core.items, globalContext.core.crew]);
 
 	const quipment = React.useMemo(() => {
-		if (!coreItems?.length || !keystones?.length) return [];
-		const quipment = structuredClone(coreItems.filter(f => f.type === 14));
+		if (!coreItems?.length || !keystones?.length || !crew?.length) return [];
+		const quipment = structuredClone(coreItems.filter(f => f.type === 14)) as QuipmentCrewInfo[];
 		const { quips } = getItemDateEstimates(globalContext.core, t);
+		const { crewQuips, exactQuips } = (() => {
+			const res = {} as {[key:string]: string[] };
+			const eres = {} as {[key:string]: string[] };
+			for (let c of crew) {
+				let anyquip = getPossibleQuipment(c, quipment);
+				let exquip = getPossibleQuipment(c, quipment, true);
+				for (let item of anyquip) {
+					res[item.symbol] ??= [];
+					res[item.symbol].push(c.symbol);
+				}
+				for (let item of exquip) {
+					eres[item.symbol] ??= [];
+					eres[item.symbol].push(c.symbol);
+				}
+			}
+			return { crewQuips: res, exactQuips: eres };
+		})();
 		for (let q of quipment) {
+			q.eligible_crew = crewQuips[q.symbol]?.map(symbol => crew.find(fc => fc.symbol === symbol)!) || [];
+			q.exact_eligible_crew = exactQuips[q.symbol]?.map(symbol => crew.find(fc => fc.symbol === symbol)!) || [];
 			let d = quips[q.symbol];
 			if (d && !q.discovered) {
 				q.discovered = d;
@@ -87,7 +110,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 			}
 		}
 		return quipment;
-	}, [coreItems, keystones]);
+	}, [coreItems, keystones, crew]);
 	const quipCust = [] as CustomFieldDef[];
 
 	quipCust.push(
@@ -128,6 +151,25 @@ const ItemsPage = (props: ItemsPageProps) => {
 			},
 			customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.discovered?.getTime() ?? 0) - (b.discovered?.getTime() ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
 			reverse: true
+		},
+		{
+			field: 'eligible_crew',
+			text: t('base.crew'),
+			customCompare: (a: QuipmentCrewInfo, b: QuipmentCrewInfo) => {
+				return a.exact_eligible_crew.length - b.exact_eligible_crew.length || a.eligible_crew.length - b.eligible_crew.length;
+			},
+			reverse: true,
+			format: (value: CrewMember[], context: QuipmentCrewInfo) => {
+				return (<>
+					<div>
+						{value.length}
+					</div>
+					{context.exact_eligible_crew.length !== context.eligible_crew.length &&
+					<span style={{fontSize: '0.8em', fontStyle: 'italic', opacity: '0.8', color: 'lightblue'}}>
+						{t('global.exact{{:}}')}&nbsp;{context.exact_eligible_crew.length}
+					</span>}
+				</>)
+			}
 		}
 	);
 
@@ -249,6 +291,10 @@ const ItemsPage = (props: ItemsPageProps) => {
 			</React.Fragment>
 		</DataPageLayout>
 	);
+
+	function raritySum(crew: CrewMember[]) {
+		return crew.map(c => c.max_rarity).reduce((p, n) => p + n, 0);
+	}
 };
 
 
