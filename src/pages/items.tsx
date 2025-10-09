@@ -14,6 +14,7 @@ import { WorkerProvider } from '../context/workercontext';
 import { EquipmentItem } from '../model/equipment';
 import { binaryLocate, formatDuration } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
+import { approxDate, getItemDateEstimates } from '../components/stats/itemdateutils';
 
 export interface ItemsPageProps { }
 
@@ -70,17 +71,32 @@ const ItemsPage = (props: ItemsPageProps) => {
 	}, [globalContext.core.items, globalContext.core.crew]);
 
 	const quipment = React.useMemo(() => {
-		return coreItems.filter(f => f.type === 14);
+		const quipment = structuredClone(coreItems.filter(f => f.type === 14));
+		const { quips } = getItemDateEstimates(globalContext.core, t);
+		for (let q of quipment) {
+			let d = quips[q.symbol];
+			if (d && !q.discovered) {
+				q.discovered = d;
+				q.disc_estimated = true;
+			}
+			else if (typeof q.discovered === 'string') {
+				q.discovered = new Date(q.discovered);
+				q.disc_estimated = false;
+			}
+		}
+		return quipment;
 	}, [coreItems]);
 	const quipCust = [] as CustomFieldDef[];
 
-	quipCust.push({
-		field: 'duration',
-		text: t('items.columns.duration'),
-		format: (value: number) => formatDuration(value, t),
-		customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.duration ?? 0) - (b.duration ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
-		reverse: true
-	});
+	quipCust.push(
+		{
+			field: 'duration',
+			text: t('items.columns.duration'),
+			format: (value: number) => formatDuration(value, t),
+			customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.duration ?? 0) - (b.duration ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
+			reverse: true
+		}
+	);
 
 	if (hasPlayer) {
 		quipCust.push({
@@ -89,6 +105,29 @@ const ItemsPage = (props: ItemsPageProps) => {
 			format: (value: number) => value ? (value.toLocaleString()) : t('crew_state.unowned')
 		});
 	}
+
+	quipCust.push(
+		{
+			field: 'discovered',
+			text: t('base.release_date'),
+			format: (value: Date | undefined, context: EquipmentItem) => {
+				if (!value) return '';
+				if (context.disc_estimated) {
+					return (<>
+						<div>{approxDate(value, t)}</div>
+						<span style={{fontSize: '0.8em', fontStyle: 'italic', opacity: '0.8', color: 'lightblue'}}>
+							{value?.toLocaleDateString() || ''}
+						</span>
+					</>);
+				}
+				else {
+					return value.toLocaleDateString();
+				}
+			},
+			customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.discovered?.getTime() ?? 0) - (b.discovered?.getTime() ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
+			reverse: true
+		}
+	);
 
 	// // Don't delete!!!! This is to preview crew quipment
 	// if (globalContext.core?.crew?.length) {

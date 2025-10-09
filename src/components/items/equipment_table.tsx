@@ -264,7 +264,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                 customFields.map((field) => (
                     <Table.Cell key={"custom_" + field.field + "_value"}>
                         {field.format
-                            ? field.format(item[field.field])
+                            ? field.format(item[field.field], item)
                             : item[field.field]}
                     </Table.Cell>
                 ))}
