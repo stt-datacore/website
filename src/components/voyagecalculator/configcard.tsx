@@ -239,24 +239,26 @@ const EncounterBonuses = (props: EncounterBonusesProps) => {
 
 	return (
 		<Table basic='very' collapsing compact='very'>
-			{groups.map(group => (
-				<Table.Row key={group.key}>
-					<Table.Cell>
-						<Header as='h5'>
-							{group.header}{t('global.colon')}
-						</Header>
-					</Table.Cell>
-					<Table.Cell>
-						<Label.Group>
-							{group.bonuses.sort(sortLabels).map(bonus =>
-								<Label key={bonus.key} style={getStyleByRarity(bonus.rarity)}>
-									{bonus.content}
-								</Label>
-							)}
-						</Label.Group>
-					</Table.Cell>
-				</Table.Row>
-			))}
+			<Table.Body>
+				{groups.map(group => (
+					<Table.Row key={group.key}>
+						<Table.Cell>
+							<Header as='h5'>
+								{group.header}{t('global.colon')}
+							</Header>
+						</Table.Cell>
+						<Table.Cell>
+							<Label.Group>
+								{group.bonuses.sort(sortLabels).map(bonus =>
+									<Label key={bonus.key} style={getStyleByRarity(bonus.rarity)}>
+										{bonus.content}
+									</Label>
+								)}
+							</Label.Group>
+						</Table.Cell>
+					</Table.Row>
+				))}
+			</Table.Body>
 		</Table>
 	);
 

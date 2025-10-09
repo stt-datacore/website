@@ -504,6 +504,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 					presetConfigs={playerConfigs.concat(upcomingConfigs)}
 					updateConfig={loadCustomConfig}
 				/>
+				{playerConfigs.map(config => renderRecreateButton(config))}
 
 				<Header	/* Voyage History */
 					as='h3'
@@ -528,6 +529,21 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				config: voyageConfig
 			});
 		}
+	}
+
+	function renderRecreateButton(voyageConfig: IVoyageInputConfig): JSX.Element {
+		const runningVoyage: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
+		if (!runningVoyage) return <span key={voyageConfig.voyage_type}></span>;
+		return (
+			<Button	/* Re-create [TYPE] voyage */
+				key={voyageConfig.voyage_type}
+				size='large'
+				color='blue'
+				icon={'users'}
+				content={`Re-create ${voyageConfig.voyage_type} voyage`}
+				onClick={() => loadCustomConfig(voyageConfig)}
+			/>
+		);
 	}
 
 	function renderViewButton(voyageConfig: IVoyageInputConfig, configSource: 'player' | 'custom' = 'player'): JSX.Element {
