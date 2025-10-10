@@ -12,6 +12,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { getEventData, getRecentEvents, guessEncounterTimes } from '../../utils/events';
 import { useStateWithStorage } from '../../utils/storage';
 
+import CONFIG from '../CONFIG';
 import { IEventData } from '../eventplanner/model';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
@@ -534,6 +535,13 @@ const PlayerHome = (props: PlayerHomeProps) => {
 	function renderRecreateButton(voyageConfig: IVoyageInputConfig): JSX.Element {
 		const runningVoyage: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
 		if (!runningVoyage) return <span key={voyageConfig.voyage_type}></span>;
+
+		// Re-sort crew slot order of running voyages to match expected input order
+		const config: IVoyageInputConfig = structuredClone(voyageConfig);
+		config.crew_slots.sort((s1, s2) =>
+			CONFIG.VOYAGE_CREW_SLOTS.indexOf(s1.symbol) - CONFIG.VOYAGE_CREW_SLOTS.indexOf(s2.symbol)
+		);
+
 		return (
 			<Button	/* Re-create [TYPE] voyage */
 				key={voyageConfig.voyage_type}
@@ -541,7 +549,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				color='blue'
 				icon={'users'}
 				content={`Re-create ${voyageConfig.voyage_type} voyage`}
-				onClick={() => loadCustomConfig(voyageConfig)}
+				onClick={() => setActiveView({ source: 'custom', config })}
 			/>
 		);
 	}
