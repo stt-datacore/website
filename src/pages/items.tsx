@@ -345,7 +345,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 						{value.map(src => {
 							let count = src.rewards;
 							return (<div key={`qp_${item.symbol}_${src.quest}+${src.mastery}`} style={{fontSize: '0.9em', margin: '0.25em 0'}}>
-							  	{src.index+1}. {src.quest} ({masteries[src.mastery]}) {!!count && <>({count}x)</>}
+							  	{src.index+1}. {src.quest} ({masteries[src.mastery]}) {!!count && <>(x{count})</>}
 							</div>)
 						})}
 					</>)
