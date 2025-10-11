@@ -77,6 +77,7 @@ export interface EquipmentItemSource {
   cadet_symbol?: string;
   map_position?: string;
   continuum?: boolean;
+  quantity?: number;
 }
 
 export interface EquipmentRecipe {
