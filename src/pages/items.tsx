@@ -13,7 +13,7 @@ import { approxDate, getItemDateEstimates } from '../components/stats/itemdateut
 import { GlobalContext } from '../context/globalcontext';
 import { WorkerProvider } from '../context/workercontext';
 import { CrewMember } from '../model/crew';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { EquipmentBonuses, EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { binaryLocate, formatDuration, getPossibleQuipment } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import { ContinuumMission } from '../model/continuum';
@@ -23,7 +23,7 @@ export interface ItemsPageProps { }
 
 type QBitSource = { quest: string, index: number, mastery: number, rewards: number };
 
-type QBitInfo = EquipmentItem & { qbit_sources: QBitSource[] };
+//type QBitInfo = EquipmentItem & { qbit_sources: QBitSource[] };
 type QuipmentCrewInfo = EquipmentItem & { eligible_crew: CrewMember[], exact_eligible_crew: CrewMember[] };
 
 
@@ -243,54 +243,54 @@ const ItemsPage = (props: ItemsPageProps) => {
 			.then((result: ContinuumMission) => result));
 
 		if (!mission) return undefined;
-		// Merge quests with loot
+		// // Merge quests with loot
 
-		const qbit_sources = {} as {[key:string]: QBitSource[]};
-		let q = 0;
-		for (let quest of mission.quests!) {
-			for (let m = 0; m < 3; m++) {
-				let qrew = quest.mastery_levels![m].jackpots?.map(j => j.reward).flat() ?? [];
-				for (let r of qrew) {
-					if (r.symbol === 'research_security_compon') {
-						let l = 0;
-					}
-					qbit_sources[r.symbol!] ??= [];
-					let curr = qbit_sources[r.symbol!].find(s => s.quest === quest!.name && s.mastery === m);
-					if (!curr) {
-						curr = {
-							quest: quest.name!,
-							index: q,
-							mastery: m,
-							rewards: r.quantity
-						};
-						qbit_sources[r.symbol!].push(curr);
-					}
-					else {
-						curr.rewards += r.quantity;
-					}
-				}
-			}
+		// const qbit_sources = {} as {[key:string]: QBitSource[]};
+		// let q = 0;
+		// for (let quest of mission.quests!) {
+		// 	for (let m = 0; m < 3; m++) {
+		// 		let qrew = quest.mastery_levels![m].jackpots?.map(j => j.reward).flat() ?? [];
+		// 		for (let r of qrew) {
+		// 			if (r.symbol === 'research_security_compon') {
+		// 				let l = 0;
+		// 			}
+		// 			qbit_sources[r.symbol!] ??= [];
+		// 			let curr = qbit_sources[r.symbol!].find(s => s.quest === quest!.name && s.mastery === m);
+		// 			if (!curr) {
+		// 				curr = {
+		// 					quest: quest.name!,
+		// 					index: q,
+		// 					mastery: m,
+		// 					rewards: r.quantity
+		// 				};
+		// 				qbit_sources[r.symbol!].push(curr);
+		// 			}
+		// 			else {
+		// 				curr.rewards += r.quantity;
+		// 			}
+		// 		}
+		// 	}
 
-			q++;
-		}
+		// 	q++;
+		// }
 
-		for (let item of qbits) {
-			item.qbit_sources = qbit_sources[item.symbol] || [];
-			item.qbit_sources.sort((a, b) => {
-				let r = 0;
-				r = a.index - b.index;
-				if (!r) r = a.mastery - b.mastery;
-				if (!r) r = a.quest.localeCompare(b.quest);
-				return r;
-			});
-		}
+		// for (let item of qbits) {
+		// 	item.qbit_sources = qbit_sources[item.symbol] || [];
+		// 	item.qbit_sources.sort((a, b) => {
+		// 		let r = 0;
+		// 		r = a.index - b.index;
+		// 		if (!r) r = a.mastery - b.mastery;
+		// 		if (!r) r = a.quest.localeCompare(b.quest);
+		// 		return r;
+		// 	});
+		// }
 		setCachedMission(mission);
 		return qbits;
 	}
 
 	function generateQBitItems() {
 		if (!coreItems?.length || !keystones?.length || !continuum_missions?.length) return [];
-		const qbits = structuredClone(coreItems.filter(f => f.type === 15)).filter(e => !(e.name.startsWith("General") && e.name.endsWith("Component"))) as QBitInfo[];
+		const qbits = structuredClone(coreItems.filter(f => f.type === 15)).filter(e => !(e.name.startsWith("General") && e.name.endsWith("Component")));
 		return qbits;
 	}
 
@@ -337,20 +337,21 @@ const ItemsPage = (props: ItemsPageProps) => {
 		const qbitCust = [] as CustomFieldDef[];
 		qbitCust.push(
 			{
-				field: 'qbit_sources',
+				field: 'item_sources',
 				width: 2,
 				text: t('items.item_sources'),
-				format: (value: QBitSource[], item: EquipmentItem) => {
+				format: (value: EquipmentItemSource[], item: EquipmentItem) => {
 					return (<>
 						{value.map(src => {
-							let count = src.rewards;
-							return (<div key={`qp_${item.symbol}_${src.quest}+${src.mastery}`} style={{fontSize: '0.9em', margin: '0.25em 0'}}>
-							  	{src.index+1}. {src.quest} ({masteries[src.mastery]}) {!!count && <>(x{count})</>}
+							let count = src.quantity!;
+							let idx = cachedMission?.quests?.findIndex(q => q.name === src.name) || -1;
+							return (<div key={`qp_${item.symbol}_${src.name}+${src.mastery}`} style={{fontSize: '0.9em', margin: '0.25em 0'}}>
+							  	{idx+1}. {src.name} ({masteries[src.mastery!]}) {!!count && <>(x{count})</>}
 							</div>)
 						})}
 					</>)
 				},
-				customCompare: (a: QBitInfo, b: QBitInfo) => ((a.qbit_sources.length ?? 0) - (b.qbit_sources.length ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
+				customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.item_sources.length ?? 0) - (b.item_sources.length ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
 				reverse: true
 			}
 		);
