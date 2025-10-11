@@ -259,8 +259,15 @@ const ItemsPage = (props: ItemsPageProps) => {
 					};
 					for (let r of ch.rewards) {
 						qbit_sources[r.symbol!] ??= [];
-						if (!qbit_sources[r.symbol!].some(s => s.quest === ch.quest && s.mastery === ch.mastery)) {
+						let curr = qbit_sources[r.symbol!].find(s => s.quest === ch.quest && s.mastery === ch.mastery);
+						if (!curr) {
 							qbit_sources[r.symbol!].push(ch);
+						}
+						else {
+							curr.rewards.forEach(r => {
+								let r2 = ch.rewards.find(f => f.symbol === r.symbol);
+								if (r2?.quantity) r.quantity += r2.quantity;
+							});
 						}
 					}
 				}
