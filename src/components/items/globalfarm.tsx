@@ -230,6 +230,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                             <AvatarView
                                 mode='crew'
                                 item={crew}
+                                id={crew.id}
                                 size={64}
                                 targetGroup="global_farm_crew"
                             />

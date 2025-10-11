@@ -395,6 +395,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                     <div style={{ ...flexRow }}>
                         <AvatarView
                             mode='crew'
+                            id={crew.id}
                             item={crew}
                             size={48}
                         />
