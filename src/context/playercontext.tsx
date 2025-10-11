@@ -90,7 +90,7 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics, all_ships } = coreData;
+	const { crew, all_ships } = coreData;
 
 	const { children } = props;
 
@@ -204,7 +204,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics]);
+	}, [input, crew, all_ships]);
 
 	const reset = (): void => {
 		setStripped(undefined);

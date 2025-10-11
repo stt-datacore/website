@@ -21,7 +21,7 @@ const TestPage = () => {
 const TestComponent = () => {
     const globalContext = React.useContext(GlobalContext);
 
-    const { items, crew, ship_schematics } = globalContext.core;
+    const { items, crew, all_ships } = globalContext.core;
 
     const [custVis, setCustVis] = React.useState(undefined as BasicItem | undefined);
     const [nav, setNav] = React.useState(false);
@@ -38,17 +38,17 @@ const TestComponent = () => {
     React.useEffect(() => {
         let itemidx = Math.floor(Math.random() * (items.length - 1));
         let crewidx = Math.floor(Math.random() * (crew.length - 1));
-        let shipidx = Math.floor(Math.random() * (ship_schematics.length - 1));
+        let shipidx = Math.floor(Math.random() * (all_ships.length - 1));
         setItemIdx(itemidx);
         setCrewIdx(crewidx);
         setShipIdx(shipidx);
-    }, [fresh, items, ship_schematics, crew]);
+    }, [fresh, items, all_ships, crew]);
 
     if (itemIdx < 0 || shipIdx < 0 || crewIdx < 0) return <></>
 
     const item = items[itemIdx];
     const crewmember = crew[crewIdx];
-    const ship = ship_schematics[shipIdx].ship;
+    const ship = all_ships[shipIdx];
 
     stuff = [item, crewmember, ship];
     let groups = ['test_item', 'test_crew', 'test_ship'];
