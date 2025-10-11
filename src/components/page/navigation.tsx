@@ -415,7 +415,7 @@ export const Navigation = (props: NavigationProps) => {
 						localStorage.setItem("hahaDone", "1");
 					}
 
-					document.location = document.location;
+					document.location = document.location as any;
 				}
 			}
 		})

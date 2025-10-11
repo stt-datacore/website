@@ -2,7 +2,7 @@ import React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Image, ImageProps, Loader } from 'semantic-ui-react';
 
-const LazyImage = (props: ImageProps) => {
+export const LazyImage = (props: ImageProps) => {
     props.size ??= 'medium';
     const { size } = props;
 
@@ -19,4 +19,3 @@ const LazyImage = (props: ImageProps) => {
     );
 }
 
-export default LazyImage;

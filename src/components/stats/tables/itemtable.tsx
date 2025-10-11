@@ -262,7 +262,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
                     }
                     {expanded === item.symbol && !!item.more_traits &&
                         <Table.Row>
-                            <Table.Cell colspan={2}>
+                            <Table.Cell colSpan={2}>
                                 {t('global.and_n_more_ellipses', { n: item.more_traits })}
                             </Table.Cell>
                         </Table.Row>

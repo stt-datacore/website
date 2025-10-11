@@ -18,24 +18,17 @@ import {
 	Table
 } from "semantic-ui-react";
 
-import moment from "moment";
-import 'moment/locale/de';
-import 'moment/locale/es';
-import 'moment/locale/fr';
-
-import { useLocaleDate } from "../components/base/localedate";
 import { EventInfoModal, EventModalHeader } from "../components/event_info_modal";
 import { CrewHoverStat } from "../components/hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
 import { AvatarView } from "../components/item_presenters/avatarview";
-import LazyImage from "../components/lazyimage";
+import { LazyImage } from "../components/lazyimage";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { EventInstance, EventLeaderboard, Leaderboard } from "../model/events";
+import { EventInstance, EventLeaderboard } from "../model/events";
 import { gradeToColor } from "../utils/crewutils";
-import { EventStats, getEventStats, makeTypeBuckets } from "../utils/event_stats";
+import { EventStats, makeTypeBuckets } from "../utils/event_stats";
 import { useStateWithStorage } from "../utils/storage";
-import { CrewMember } from "../model/crew";
 
 type TypeTotals = {
 	type: string,
@@ -46,12 +39,6 @@ const EventsPage = () => {
 	return (
 		<DataPageLayout
 			demands={[
-				"crew",
-				"cadet",
-				"all_buffs",
-				"items",
-				"all_ships",
-				"ship_schematics",
 				"event_instances",
 				"event_stats",
 				"event_leaderboards",
@@ -62,40 +49,35 @@ const EventsPage = () => {
 	);
 };
 
-const EventsPageComponent = () => {
+type EventsPageComponentProps = {
+}
+
+const EventsPageComponent = (props: EventsPageComponentProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const { event_leaderboards, event_instances } = globalContext.core;
+
+	const { isMobile } = globalContext;
 	const { t } = globalContext.localized;
-	const { event_leaderboards, event_instances: event_instances } = globalContext.core;
 	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
-	const [leaderboardData, setLeaderboardData] = React.useState<{
-		[key: string]: EventLeaderboard;
-	} | null>(null);
+	const [leaderboardData, setLeaderboardData] = React.useState<{ [key: string]: EventLeaderboard } | null>(null);
 	const [loadingError, setLoadingError] = React.useState<any>(null);
-	const [modalEventInstance, setModalEventInstance] =
-		React.useState<EventInstance | null>(null);
-	const localeDate = useLocaleDate(globalContext.localized);
+	const [modalEventInstance, setModalEventInstance] = React.useState<EventInstance | null>(null);
 	const [tab, setTab] = React.useState(0);
 	const [filter, setFilter] = React.useState('');
 
-	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-
 	React.useEffect(() => {
-		function loadData() {
-			try {
-				const eventDataList = [...event_instances];
-				setEventsData(eventDataList.reverse());
-				const leaderboardDataList = event_leaderboards;
-				const keyedLeaderboard = {} as { [key: string]: EventLeaderboard };
-				leaderboardDataList.forEach(
-					(entry) => (keyedLeaderboard[entry.instance_id] = entry)
-				);
-				setLeaderboardData(keyedLeaderboard);
-			} catch (e) {
-				setLoadingError(e);
-			}
+		try {
+			const eventDataList = [...event_instances];
+			setEventsData(eventDataList.reverse());
+			const leaderboardDataList = event_leaderboards;
+			const keyedLeaderboard = {} as { [key: string]: EventLeaderboard };
+			leaderboardDataList.forEach(
+				(entry) => (keyedLeaderboard[entry.instance_id] = entry)
+			);
+			setLeaderboardData(keyedLeaderboard);
+		} catch (e) {
+			setLoadingError(e);
 		}
-
-		loadData();
 	}, []);
 
 	const filteredList = React.useMemo(() => {
@@ -185,7 +167,7 @@ const EventsPageComponent = () => {
 												</>)}
 												{!!eventInfo.event_date && (<>
 													&nbsp;&mdash;&nbsp;
-													{eventInfo.event_date.toLocaleDateString()}
+													{(new Date(eventInfo.event_date)).toLocaleDateString()}
 												</>)}
 											</>)}
 										</span>
@@ -647,9 +629,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 					{!!url && <img src={url} style={{height: '96px'}} />}
 					{stat.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>
 						{stat.guessed && "~ "}
-						{moment(stat.discovered)
-							.locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
-							.format("MMM D, YYYY")}
+						{stat.discovered && (new Date(stat.discovered)).toLocaleDateString() || ''}
 					</p>}
 					{[stat.crew, ...stat.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);

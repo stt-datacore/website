@@ -108,11 +108,20 @@ export const defaultCore = {
 
 export const DataContext = React.createContext<ICoreContext>(defaultCore as ICoreContext);
 
+type SyncConfig = {
+	token: string,
+	timestamp: string,
+}
+
+const defaultSyncConfig = {
+	token: v4().replace(/-/g, ''),
+	timestamp: (new Date('2016-01-01T00:00:00Z')).toISOString()
+}
+
 export const DataProvider = (props: DataProviderProperties) => {
 	const { children } = props;
 	const [tsAck, setTsAck] = React.useState(false);
-	const [syncToken, setSyncToken] = useStateWithStorage<string | null>('sync_token', null, { rememberForever: true });
-	const [syncTimestamp, setSyncTimestamp] = useStateWithStorage<string | null>('sync_timestamp', null, { rememberForever: true });
+	const [syncConfig, setSyncConfig] = useStateWithStorage<SyncConfig>('sync_config', defaultSyncConfig, { rememberForever: true });
 	const [isReadying, setIsReadying] = React.useState(false);
 	const [wantFresh, setWantFresh] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
@@ -120,12 +129,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 	React.useEffect(() => {
 		(async () => {
 			let ts = await getSyncTimestamp();
-			if (ts !== syncTimestamp) {
-				setSyncToken(v4().replace(/-/g, ''));
-				setSyncTimestamp(ts);
-				setWantFresh(true);
+			if (ts && ts !== syncConfig.timestamp) {
+				setSyncConfig({ token: v4().replace(/-/g, ''), timestamp: ts });
 			}
-			setTsAck(true);
+			setTimeout(() => setTsAck(true));
 		})();
 	}, []);
 
@@ -134,7 +141,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return (<span><Icon loading name='spinner' /> {message}</span>);
 	};
 
-	if (!tsAck) return spin();
+	if (!tsAck || !syncConfig) return spin();
+
+	const { token: syncToken } = syncConfig;
 
 	const providerValue = {
 		...data,
