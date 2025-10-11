@@ -12,7 +12,7 @@ const TestPage = () => {
     return <>
         <DataPageLayout
             pageTitle='test'
-            demands={['items', 'crew', 'all_ships', 'ship_schematics']}>
+            demands={['items', 'crew', 'all_ships']}>
             <TestComponent />
         </DataPageLayout>
     </>
