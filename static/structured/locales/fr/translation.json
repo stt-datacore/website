@@ -1536,7 +1536,8 @@
     "mission_type": {
         "type_0": "Quête de conflit",
         "type_2": "Bataille de navires",
-        "type_4": "Défi des cadets"
+        "type_4": "Défi des cadets",
+        "type_5": "Mission du continuum"
     },
     "missions": {
         "continuum_mission_map": "Carte de mission du continuum",

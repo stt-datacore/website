@@ -1525,7 +1525,8 @@
     "mission_type": {
         "type_0": "Conflict Quest",
         "type_2": "Ship Battle",
-        "type_4": "Cadet Challenge"
+        "type_4": "Cadet Challenge",
+        "type_5": "Continuum Mission"
     },
     "missions": {
         "continuum_mission_map": "Continuum Mission Map",

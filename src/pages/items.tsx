@@ -232,7 +232,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	async function buildQBits() {
 		if (!continuum_missions?.length) return undefined;
-		const qbits = generateQBitItems().map(item => ({...item, item_sources: [] as EquipmentItemSource[] }));
+		const qbits = generateQBitItems();
 		if (!qbits?.length) return undefined;
 
 		const missionId = continuum_missions[continuum_missions.length - 1].id;
@@ -344,7 +344,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 					return (<>
 						{value.map(src => {
 							let count = src.quantity!;
-							let idx = cachedMission?.quests?.findIndex(q => q.name === src.name) || -1;
+							let idx = cachedMission?.quests?.findIndex(q => q.name === src.name) ?? -1;
 							return (<div key={`qp_${item.symbol}_${src.name}+${src.mastery}`} style={{fontSize: '0.9em', margin: '0.25em 0'}}>
 							  	{idx+1}. {src.name} ({masteries[src.mastery!]}) {!!count && <>(x{count})</>}
 							</div>)

@@ -24,6 +24,7 @@ import { CompletionState, PlayerCrew } from '../model/player';
 import { skillSum } from '../utils/crewutils';
 import { formatDuration, getItemBonuses, getQuipmentCrew } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
+import { ContinuumMission } from '../model/continuum';
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
 
@@ -40,7 +41,7 @@ interface ItemInfoComponentProps {
 
 const ItemInfoPage = () => {
 	return (
-		<DataPageLayout demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet']}>
+		<DataPageLayout demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'continuum_missions']}>
 			<ItemInfo />
 		</DataPageLayout>
 
@@ -61,6 +62,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { items } = globalContext.core;
+	const [cachedMission, setCachedMission] = useStateWithStorage<ContinuumMission | undefined>(`item/cached_continuum_mission`, undefined);
 
 	const isQp = React.useMemo(() =>
 		!!itemData?.item?.kwipment,
@@ -401,7 +403,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 			{!!(item.item_sources.length > 0) && (
 				<div>
 					<Header as="h3">{t('items.item_sources')}:</Header>
-					<ItemSources item_sources={item.item_sources} />
+					<ItemSources item_sources={item.item_sources} continuum_mission={cachedMission} />
 					<br />
 				</div>
 			)}

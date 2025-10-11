@@ -269,15 +269,15 @@ export const DataProvider = (props: DataProviderProperties) => {
 			});
 
 			// Post-process interdependent demands
-			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
-				postProcessCadetItems(newData);
-			}
+			// if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
+			// 	postProcessCadetItems(newData);
+			// }
 			if (unsatisfied.includes('items') && unsatisfied.includes('crew') && unsatisfied.includes('all_buffs')) {
-				postProcessQuipmentScores(newData.crew, newData.items);
+				//postProcessQuipmentScores(newData.crew, newData.items);
 				//calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
-			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
+			if (unsatisfied.includes('ship_schematics') && (unsatisfied.includes('battle_stations') || unsatisfied.includes('all_ships'))) {
 				postProcessShipBattleStations(newData);
 			}
 
@@ -468,7 +468,28 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 
 	function postProcessShipBattleStations(data: ICoreData): void {
-		if (data.battle_stations.length && data.ship_schematics.length) {
+		if (data.all_ships.length && data.ship_schematics.length) {
+			for (let sch of data.ship_schematics) {
+				let battle = data.all_ships.find(b => b.symbol === sch.ship.symbol);
+				if (battle) {
+					sch.ship.battle_stations = battle.battle_stations;
+				}
+			}
+
+			let scsave = data.ship_schematics.map((sc => structuredClone({ ...sc.ship, level: 0 }) as Ship));
+			let c = scsave.length;
+			for (let i = 0; i < c; i++) {
+				let ship = scsave[i];
+				if (ship.levels) {
+					let n = highestLevel(ship);
+					if (ship.max_level && n === ship.max_level + 1 && ship.levels[`${n}`].hull) {
+						scsave[i] = { ...ship, ...ship.levels[`${n}`] };
+					}
+				}
+			}
+			//data.ships = scsave;
+		}
+		else if (data.battle_stations.length && data.ship_schematics.length) {
 			for (let sch of data.ship_schematics) {
 				let battle = data.battle_stations.find(b => b.symbol === sch.ship.symbol);
 				if (battle) {
@@ -489,6 +510,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			}
 			//data.ships = scsave;
 		}
+
 	}
 
 	function postProcessCadetItems(data: ICoreData): void {

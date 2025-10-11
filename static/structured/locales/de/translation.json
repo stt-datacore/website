@@ -1524,7 +1524,8 @@
     "mission_type": {
         "type_0": "Konfliktquest",
         "type_2": "Schiffsschlacht",
-        "type_4": "Kadettenherausforderung"
+        "type_4": "Kadettenherausforderung",
+        "type_5": "Kontinuumsmission"
     },
     "missions": {
         "continuum_mission_map": "Kontinuumsmissionskarte",

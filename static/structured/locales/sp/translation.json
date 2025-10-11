@@ -1534,7 +1534,8 @@
     "mission_type": {
         "type_0": "Misión de conflicto",
         "type_2": "Batalla de buque",
-        "type_4": "Desafío cadete"
+        "type_4": "Desafío cadete",
+        "type_5": "Misión continuo"
     },
     "missions": {
         "continuum_mission_map": "Mapa de misión continuo",
