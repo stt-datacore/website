@@ -29,7 +29,7 @@ export interface IItemsFilterContext {
     setItemSourceFilter: (value?: number[]) => void;
     masteryFilter?: number[];
     setMasteryFilter: (value?: number[]) => void;
-    filterItems: (items: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[];
+    filterItems: (items: (EquipmentItem | PlayerEquipmentItem)[]) => (EquipmentItem | PlayerEquipmentItem)[];
     configureFilters: (pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) => void;
 }
 
