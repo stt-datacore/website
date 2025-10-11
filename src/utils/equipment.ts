@@ -275,17 +275,17 @@ function estimateChronitonCost(equipment: EquipmentItem | undefined): number {
 	return costCalc.sort()[0];
 }
 
-function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
+export function mergeDemands(a: ICrewDemands, b: ICrewDemands): ICrewDemands {
 
-	let intersect = a.demands.filter(a1 => !!b.demands.find(b1 => b1.symbol === a1.symbol));
-	let aonly = a.demands.filter(a1 => !b.demands.find(b1 => b1.symbol === a1.symbol));
-	let bonly = b.demands.filter(b1 => !a.demands.find(a1 => a1.symbol === b1.symbol));
+	let intersect = a.demands?.filter(a1 => !!b.demands.find(b1 => b1.symbol === a1.symbol));
+	let aonly = a.demands?.filter(a1 => !b.demands.find(b1 => b1.symbol === a1.symbol));
+	let bonly = b.demands?.filter(b1 => !a.demands.find(a1 => a1.symbol === b1.symbol));
 
 	aonly ??= [];
 	bonly ??= [];
 	intersect ??= [];
 	if (intersect.length) {
-		intersect = JSON.parse(JSON.stringify(intersect));
+		intersect = structuredClone(intersect);
 		for (let item of intersect) {
 			let bitem = b.demands.find(b2 => b2.symbol === item.symbol);
 			if (bitem) {

@@ -135,7 +135,7 @@ export const VoyageModal = (props: VoyageModalProps) => {
 	}
 
 	function noteRevival(isRevived: boolean): void {
-		const updatedVoyage: ITrackedVoyage = JSON.parse(JSON.stringify(voyage));
+		const updatedVoyage: ITrackedVoyage = structuredClone(voyage);
 		updatedVoyage.revivals = isRevived ? 1 : 0;
 		if (syncState === SyncState.RemoteReady) {
 			postVoyage(dbid, updatedVoyage).then(result => {

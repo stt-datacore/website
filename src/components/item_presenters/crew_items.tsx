@@ -15,6 +15,7 @@ import { getRealCrewLevel } from '../../utils/equipment';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
+    nonInteractive?: boolean;
     flexDirection?: 'row' | 'column';
     mobileWidth?: number;
     itemSize?: number;
@@ -26,6 +27,7 @@ export interface CrewItemsViewProps {
     vertical?: boolean;
     alwaysHideProgress?: boolean;
     alwaysShowProgress?: boolean;
+    gap?: string;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -107,7 +109,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 for (let eq of ceq) {
                     let ef = context.core.items.find(item => item.symbol === eq.symbol);
                     if (ef) {
-                        equip[i++] = (JSON.parse(JSON.stringify(ef)));
+                        equip[i++] = (structuredClone(ef));
                     }
                 }
             }
@@ -119,7 +121,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 if (eq) {
                     let ef = context.core.items.find(item => item.symbol === eq.symbol);
                     if (ef) {
-                        equip[i - startlevel] = (JSON.parse(JSON.stringify(ef)));
+                        equip[i - startlevel] = (structuredClone(ef));
                         disabled[i - startlevel] = eq.level > crew.level;
                     }
                 }
@@ -164,7 +166,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             if (eq) {
                 let ef = context.core.items.find(item => item?.kwipment_id?.toString() === eq?.toString());
                 if (ef) {
-                    equip[i] = (JSON.parse(JSON.stringify(ef)));
+                    equip[i] = (structuredClone(ef));
                 }
             }
             else {
@@ -203,10 +205,12 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                 justifyContent: "center",
                 alignItems: "center",
                 margin: 0,
-                padding: 0
+                padding: 0,
+                gap: props.gap
             }}>
             {equip.map((item, idx) => (
                     <CrewItemDisplay
+                        nonInteractive={props.nonInteractive}
                         key={`${crew.id}_${crew.symbol}_${idx}_${item.symbol}__crewEquipBox`}
                         context={context}
                         vertical={!!vertical}
@@ -263,7 +267,7 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
     return (<div
-        onClick={(e) => !targetGroup && props.equipment?.symbol ? navigate("/item_info?symbol=" + props.equipment?.symbol) : null}
+        onClick={(e) => (!props.nonInteractive && !targetGroup && props.equipment?.symbol) ? navigate("/item_info?symbol=" + props.equipment?.symbol) : false}
         title={equipment?.name}
         style={{
         cursor: props.equipment?.symbol ? "pointer" : 'no-drop',

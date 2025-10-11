@@ -9,6 +9,7 @@ import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
 import { ShipTraitNames } from "../model/traits";
+import { BuffStatTable } from "./voyageutils";
 
 export const OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
 export const DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
@@ -142,7 +143,7 @@ export function filterBy(ships: Ship[], filter?: ShipPickerFilter, clone?: boole
 
 	if (!filter) {
 		if (clone) {
-			return JSON.parse(JSON.stringify(shipOut)) as Ship[];
+			return structuredClone(shipOut) as Ship[];
 		}
 		else {
 			return shipOut;
@@ -174,7 +175,7 @@ export function filterBy(ships: Ship[], filter?: ShipPickerFilter, clone?: boole
 	}
 
 	if (clone) {
-		return JSON.parse(JSON.stringify(shipOut)) as Ship[];
+		return structuredClone(shipOut) as Ship[];
 	}
 	else {
 		return shipOut;
@@ -186,7 +187,7 @@ export function exportShips(ships: Ship[]): string {
 }
 
 export function levelToLevelStats(level: ShipLevel): ShipLevelStats {
-  let obj = JSON.parse(JSON.stringify(level)) as ShipLevel & ShipLevelStats;
+  let obj = structuredClone(level) as ShipLevel & ShipLevelStats;
   obj.dps = obj.attack * obj.attacks_per_second;
   obj.next_schematics = obj.schematic_gain_cost_next_level;
   obj.accuracy_power = obj.accuracy;
@@ -203,7 +204,7 @@ export function allLevelsToLevelStats(levels: ShipLevel[]): ShipLevels {
 
 	for (let level of levels) {
 		let l = level.level;
-		let obj = JSON.parse(JSON.stringify(level)) as ShipLevel & ShipLevelStats;
+		let obj = structuredClone(level) as ShipLevel & ShipLevelStats;
 		obj.dps = obj.attack * obj.attacks_per_second;
 		obj.next_schematics = obj.schematic_gain_cost_next_level;
 		obj.accuracy_power = obj.accuracy;
@@ -226,15 +227,14 @@ export function highestLevel(ship: Ship) {
 	return highest;
 }
 
-export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false, player_direct = false): Ship[] {
+export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TRAIT_NAMES: ShipTraitNames, max_buffs = false, player_direct = false, playerBuffs?: BuffStatTable): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
-	ref_ships = JSON.parse(JSON.stringify(ref_ships));
+	ref_ships = structuredClone(ref_ships);
+	let unowned_id = -1;
 	ref_ships.map((refship) => {
-
 		let ship = {...refship, id: refship.archetype_id, levels: undefined } as Ship;
 
-		let unowned_id = -1;
 		let owned = ships.find((ship) => refship.symbol == ship.symbol);
 
 		let traits_named = ship.traits?.map(t => SHIP_TRAIT_NAMES[t])?.filter(f => !!f);
@@ -244,26 +244,34 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 			ship = { ...ship, ... owned, level: player_direct ? owned.level : owned.level + 1 };
 
 			if (owned.actions) {
-				ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
+				ship.actions = structuredClone(owned.actions) as ShipAction[];
 			}
 			ship.immortal = owned.level >= ship.max_level! ? -1 : 0;
 			ship.owned = true;
+			ship.buffed = true;
 
 		} else {
 			ship.owned = false;
-			delete (ship as any).level;
-
-			ship.accuracy *= power;
-			ship.attack *= power;
-			ship.evasion *= power;
-			ship.hull *= power;
-			ship.shields *= power;
+			ship.level = 0;
 			ship.id = unowned_id--;
-			ship.level ??= 0;
+
+			if (playerBuffs) {
+				buffShip(ship, playerBuffs);
+				ship.buffed = true;
+			}
+			else {
+				ship.antimatter *= power;
+				ship.accuracy *= power;
+				ship.attack *= power;
+				ship.evasion *= power;
+				ship.hull *= power;
+				ship.shields *= power;
+				ship.buffed = power != 1;
+			}
 		}
 
 		ship.max_level = refship.max_level + 1;
-
+		ship.dps = Math.ceil(ship.attacks_per_second * ship.attack);
 		ship.traits_named = traits_named;
 		newShips.push(ship);
 		return ship;
@@ -282,13 +290,24 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 	});
 
 	return newShips;
+}
 
+export function buffShip(ship: Ship, buffs: BuffStatTable) {
+	if (ship.buffed) return;
+	Object.keys(buffs).forEach((buff) => {
+		if (!buff.startsWith("ship_")) return;
+		buff = buff.replace("ship_", "");
+		if (ship[buff] && typeof ship[buff] === 'number') {
+			ship[buff] = Math.round(ship[buff] * (1 + buffs[`ship_${buff}`].percent_increase));
+		}
+	});
+	ship.buffed = true;
 }
 
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buffs = false): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
-	ship_schematics = JSON.parse(JSON.stringify(ship_schematics));
+	ship_schematics = structuredClone(ship_schematics);
 	ship_schematics.forEach((schematic) => {
 		let unowned_id = -1;
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
@@ -316,7 +335,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
 			}
 
 			if (owned.actions) {
-				schematic.ship.actions = JSON.parse(JSON.stringify(owned.actions)) as ShipAction[];
+				schematic.ship.actions = structuredClone(owned.actions) as ShipAction[];
 			}
 			schematic.ship.immortal = owned.level >= schematic.ship.max_level! ? -1 : 0;
 			schematic.ship.owned = true;
@@ -474,7 +493,10 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 					break;
 			}
 			if (!pvp_division) return;
-			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+
+			ship = structuredClone(ship) as Ship;
+			ship.dps = Math.ceil(ship.attacks_per_second * ship.attack);
+
 			if (setupToSlots(division.setup, ship)) {
 				results.push({
 					ship,
@@ -494,7 +516,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 		if (ship) {
 			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
 			if (!battle_mode) return;
-			ship = JSON.parse(JSON.stringify(ship)) as Ship;
+			ship = structuredClone(ship) as Ship;
 			if (setupToSlots(fbb.setup, ship)) {
 				results.push({
 					ship,
@@ -508,7 +530,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 	return results;
 }
 
-export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false): Ship | undefined {
+export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | undefined)[], pushAction = true, ignoreSeats = false, readBattleStations = false, ignorePassives = false, precopied = false): Ship | undefined {
 	if (ship.predefined) return ship;
 	if (readBattleStations && !crewStations?.length && ship.battle_stations?.some(bs => bs.crew)) {
 		crewStations = ship.battle_stations.map(bs => bs.crew);
@@ -522,7 +544,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 	let new_bs = ship.battle_stations.map(m => ({...m, crew: undefined } as BattleStation));
 	let old_bs = ship.battle_stations;
 
-	let newship = JSON.parse(JSON.stringify({...ship, battle_stations: new_bs })) as Ship;
+	let newship = precopied ? {...ship, battle_stations: new_bs } : structuredClone({...ship, battle_stations: new_bs }) as Ship;
 
 	newship.battle_stations = new_bs.map((bs, idx) => {
 		bs.crew = old_bs[idx].crew;

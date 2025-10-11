@@ -61,6 +61,10 @@ export interface EquipmentItem extends PlayerEquipmentItem {
   isReward?: boolean;
   kwipment?: boolean;
   kwipment_id?: number | string;
+  discovered?: Date;
+
+  /** Used internally */
+  disc_estimated?: boolean;
 }
 
 export interface EquipmentItemSource {

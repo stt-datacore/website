@@ -17,6 +17,9 @@ import { getItemWithBonus } from '../utils/itemutils';
 import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
+import { Dilemma } from '../model/voyage';
+import { v4 } from 'uuid';
+import { useStateWithStorage } from '../utils/storage';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -41,6 +44,7 @@ export type ValidDemands =
 	'gauntlets' |
 	'items' |
 	'keystones' |
+	'maincast' |
 	'misc_stats' |
 	'missions' |
 	'missionsfull' |
@@ -74,6 +78,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	crew: [] as CrewMember[],
 	current_weighting: {},
+	dilemmas: [] as Dilemma[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
@@ -84,6 +89,7 @@ const defaultData = {
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
+	maincast: {},
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
 	objective_events: [] as ObjectiveEvent[],
@@ -102,16 +108,42 @@ export const defaultCore = {
 
 export const DataContext = React.createContext<ICoreContext>(defaultCore as ICoreContext);
 
+type SyncConfig = {
+	token: string,
+	timestamp: string,
+}
+
+const defaultSyncConfig = {
+	token: v4().replace(/-/g, ''),
+	timestamp: (new Date('2016-01-01T00:00:00Z')).toISOString()
+}
+
 export const DataProvider = (props: DataProviderProperties) => {
 	const { children } = props;
-
+	const [tsAck, setTsAck] = React.useState(false);
+	const [syncConfig, setSyncConfig] = useStateWithStorage<SyncConfig>('sync_config', defaultSyncConfig, { rememberForever: true });
 	const [isReadying, setIsReadying] = React.useState(false);
+	const [wantFresh, setWantFresh] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
+
+	React.useEffect(() => {
+		(async () => {
+			let ts = await getSyncTimestamp();
+			if (ts && ts !== syncConfig.timestamp) {
+				setSyncConfig({ token: v4().replace(/-/g, ''), timestamp: ts });
+			}
+			setTimeout(() => setTsAck(true));
+		})();
+	}, []);
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
 		return (<span><Icon loading name='spinner' /> {message}</span>);
 	};
+
+	if (!tsAck || !syncConfig) return spin();
+
+	const { token: syncToken } = syncConfig;
 
 	const providerValue = {
 		...data,
@@ -152,6 +184,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'gauntlets',
 			'items',
 			'keystones',
+			'maincast',
 			'misc_stats',
 			'missions',
 			'missionsfull',
@@ -174,7 +207,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (wantFresh || data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -196,6 +229,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		Promise.all(unsatisfied.map(async (demand) => {
 			let url = `/structured/${demand}.json`;
 			if (demand === 'cadet') url = '/structured/cadet.txt';
+			if (syncToken) url += `?_st=${syncToken}`;
 			const response = await fetch(url);
 			const json = await response.json();
 			return { demand, json } as IDemandResult;
@@ -225,7 +259,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 						newData.portal_log = result.json;
 						newData.portal_log?.forEach(log => log.date = new Date(log.date));
 						break;
-
+					case 'event_instances':
+						newData.event_instances = processEventInstances(result.json);
+						break;
 					default:
 						newData[result.demand] = result.json;
 						break;
@@ -251,6 +287,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}).finally(() => {
 			// Alert page that processing is done (successfully or otherwise)
 			setIsReadying(false);
+			if (wantFresh) setWantFresh(false);
 			onReady();
 		});
 	}
@@ -345,6 +382,47 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return true;
 	}
 
+	function processEventInstances(instances: EventInstance[]) {
+		let anchor_id = 490;
+		let fi = instances.findIndex(f => f.fixed_instance_id === anchor_id);
+		let z = anchor_id;
+		let name = '';
+		for (let i = fi; i >= 0; i--) {
+			instances[i].fixed_instance_id = z;
+			if (i > 0 && instances[i].event_name !== instances[i - 1].event_name) {
+				z--;
+			}
+		}
+		name = '';
+		z = anchor_id;
+		let c = instances.length;
+		for (let i = fi; i < c; i++) {
+			instances[i].fixed_instance_id = z;
+			if (i < c - 1 && instances[i].event_name !== instances[i + 1].event_name) {
+				z++;
+			}
+			name = instances[i].event_name;
+		}
+		const betas = instances.filter(f => f.event_name.includes("Event Beta") || f.event_name.includes("Event Test"));
+		function eventToDate(finstid: number) {
+			let num = finstid;
+			let anchor_id = 490;
+			let anchor_date = new Date('2025-09-25T16:00:00');
+			//if (num < 405) num--;
+			//if (num < 381) num--;
+
+			let b = betas.filter(f => f.fixed_instance_id >= finstid);
+			num += b.length;
+			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
+			return anchor_date;
+		}
+
+		for (let inst of instances) {
+			inst.event_date = eventToDate(inst.fixed_instance_id);
+		}
+		return instances;
+	}
+
 	function processAllShips(all_ships: ReferenceShip[]) {
 		for (let ship of all_ships) {
 			ship.id = ship.archetype_id;
@@ -398,7 +476,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 				}
 			}
 
-			let scsave = data.ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: 0 })) as Ship));
+			let scsave = data.ship_schematics.map((sc => structuredClone({ ...sc.ship, level: 0 }) as Ship));
 			let c = scsave.length;
 			for (let i = 0; i < c; i++) {
 				let ship = scsave[i];
@@ -493,7 +571,20 @@ export const DataProvider = (props: DataProviderProperties) => {
 			return "Event/Pack/Giveaway";
 		}
 	}
-
+	async function getSyncTimestamp() {
+		let rnd = v4().replace(/-/g, '');
+		try {
+			const response = await fetch(`/structured/sync_timestamp.txt?_ax=${rnd}`);
+			if (response.ok) {
+				const txt = (await response.text()).replace('\n', '');
+				return txt;
+			}
+		}
+		catch (e) {
+			console.log(e);
+		}
+		return null;
+	}
 };
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {

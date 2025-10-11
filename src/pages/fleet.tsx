@@ -7,7 +7,7 @@ import { PlayerBossBattle } from '../components/fleetbossbattles/player';
 import { NonPlayerBossBattle } from '../components/fleetbossbattles/nonplayer';
 import { FleetInfoPage } from '../components/fleet/fleet_info';
 import { FleetImportComponent } from '../components/fleet/fleetimporter';
-import { Fleet, Member } from '../model/fleet';
+import { FleetDetails, Member } from '../model/fleet';
 import { useStateWithStorage } from '../utils/storage';
 import { ColorName } from '../components/fleet/colorname';
 
@@ -15,7 +15,7 @@ const FleetPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
 	const { t } = globalContext.localized;
-	const [fleet, setFleet] = useStateWithStorage<Fleet | undefined>('fleet_info', undefined);
+	const [fleet, setFleet] = useStateWithStorage<FleetDetails | undefined>('fleet_info', undefined);
 
 	const dbid = playerData?.player.dbid ?? '';
 	const guild = playerData?.player.fleet?.id ?? 0;

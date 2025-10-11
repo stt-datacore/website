@@ -23,7 +23,7 @@ export const SkillColors = {
 }
 
 
-export const SpecialCols = {
+export const HiddenTraitCols = {
     original: 34,
     dsc: 20,
     ent: 66,
@@ -40,7 +40,6 @@ export const SpecialCols = {
     crew_max_rarity_1: 14,
     niners: 29
 };
-
 
 export function getRGBSkillColors() {
     const output = { ... SkillColors };
@@ -391,15 +390,6 @@ export function skillsToNames(skills: string[] | BaseSkills, short = true) {
     }
 }
 
-export function approxDate(d: Date, t: TranslateMethod) {
-    if (d.getTime() === GameEpoch.getTime()) return t('global.initial_launch')
-    let m = (d.getUTCMonth() + 1);
-    if (m <= 3) return `${t('global.approx')} ${t('global.quarter_short')}1 ${d.getUTCFullYear()}`;
-    if (m <= 6) return `${t('global.approx')} ${t('global.quarter_short')}2 ${d.getUTCFullYear()}`;
-    if (m <= 9) return `${t('global.approx')} ${t('global.quarter_short')}3 ${d.getUTCFullYear()}`;
-    return `${t('global.approx')} ${t('global.quarter_short')}4 ${d.getUTCFullYear()}`;
-}
-
 export function getSkillOrderDebutData(data: CrewMember[]): SkillOrderDebut[] {
     const epochData = {} as { [key: string]: SkillOrderDebut[] }
 
@@ -735,10 +725,10 @@ export function potentialCols(crew: CrewMember[], cols: Collection[], TRAIT_NAME
         let traits1 = c.traits.filter((trait) => {
             let col = cols.find(f => f.description?.includes(">" + (TRAIT_NAMES[trait]) + "<"))
             if (col) return false;
-            if (SpecialCols[trait]) return false;
+            if (HiddenTraitCols[trait]) return false;
             return true;
         });
-        let traits2 = c.traits_hidden.filter((trait) => !SpecialCols[trait] && !vt.includes(trait))
+        let traits2 = c.traits_hidden.filter((trait) => !HiddenTraitCols[trait] && !vt.includes(trait))
         return traits1.concat(traits2);
     }).flat().sort();
     const tr = {} as {[key:string]:number};
