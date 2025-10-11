@@ -18,6 +18,8 @@ import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
 import { Dilemma } from '../model/voyage';
+import { v4 } from 'uuid';
+import { useStateWithStorage } from '../utils/storage';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -108,14 +110,31 @@ export const DataContext = React.createContext<ICoreContext>(defaultCore as ICor
 
 export const DataProvider = (props: DataProviderProperties) => {
 	const { children } = props;
-
+	const [tsAck, setTsAck] = React.useState(false);
+	const [syncToken, setSyncToken] = useStateWithStorage<string | null>('sync_token', null, { rememberForever: true });
+	const [syncTimestamp, setSyncTimestamp] = useStateWithStorage<string | null>('sync_timestamp', null, { rememberForever: true });
 	const [isReadying, setIsReadying] = React.useState(false);
+	const [wantFresh, setWantFresh] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
+
+	React.useEffect(() => {
+		(async () => {
+			let ts = await getSyncTimestamp();
+			if (ts !== syncTimestamp) {
+				setSyncToken(v4().replace(/-/g, ''));
+				setSyncTimestamp(ts);
+				setWantFresh(true);
+			}
+			setTsAck(true);
+		})();
+	}, []);
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
 		return (<span><Icon loading name='spinner' /> {message}</span>);
 	};
+
+	if (!tsAck) return spin();
 
 	const providerValue = {
 		...data,
@@ -179,7 +198,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (wantFresh || data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -201,6 +220,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		Promise.all(unsatisfied.map(async (demand) => {
 			let url = `/structured/${demand}.json`;
 			if (demand === 'cadet') url = '/structured/cadet.txt';
+			if (syncToken) url += `?_st=${syncToken}`;
 			const response = await fetch(url);
 			const json = await response.json();
 			return { demand, json } as IDemandResult;
@@ -258,6 +278,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}).finally(() => {
 			// Alert page that processing is done (successfully or otherwise)
 			setIsReadying(false);
+			if (wantFresh) setWantFresh(false);
 			onReady();
 		});
 	}
@@ -541,7 +562,20 @@ export const DataProvider = (props: DataProviderProperties) => {
 			return "Event/Pack/Giveaway";
 		}
 	}
-
+	async function getSyncTimestamp() {
+		let rnd = v4().replace(/-/g, '');
+		try {
+			const response = await fetch(`/structured/sync_timestamp.txt?_ax=${rnd}`);
+			if (response.ok) {
+				const txt = (await response.text()).replace('\n', '');
+				return txt;
+			}
+		}
+		catch (e) {
+			console.log(e);
+		}
+		return null;
+	}
 };
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {
