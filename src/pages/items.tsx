@@ -21,7 +21,7 @@ import { MissionReward } from '../model/missions';
 
 export interface ItemsPageProps { }
 
-type QBitSource = { quest: string, index: number, mastery: number, rewards: MissionReward[] };
+type QBitSource = { quest: string, index: number, mastery: number, rewards: number };
 
 type QBitInfo = EquipmentItem & { qbit_sources: QBitSource[] };
 type QuipmentCrewInfo = EquipmentItem & { eligible_crew: CrewMember[], exact_eligible_crew: CrewMember[] };
@@ -50,7 +50,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	const coreItems = React.useMemo(() => {
 		return generateCoreItems();
-	}, [globalContext.core.items, globalContext.core.crew]);
+	}, [globalContext.core.items, globalContext.core.crew, playerData]);
 
 	const quipment = React.useMemo(() => {
 		return generateQuipmentItems();
@@ -248,30 +248,29 @@ const ItemsPage = (props: ItemsPageProps) => {
 		const qbit_sources = {} as {[key:string]: QBitSource[]};
 		let q = 0;
 		for (let quest of mission.quests!) {
-			let challenges = quest.challenges!.map(ch => ch.name);
-			challenges.map((challenge, idx) => {
-				for (let m = 0; m < 3; m++) {
-					let ch = {
-						quest: quest.name!,
-						index: q,
-						mastery: m,
-						rewards: quest.mastery_levels![m].jackpots![idx].reward
-					};
-					for (let r of ch.rewards) {
-						qbit_sources[r.symbol!] ??= [];
-						let curr = qbit_sources[r.symbol!].find(s => s.quest === ch.quest && s.mastery === ch.mastery);
-						if (!curr) {
-							qbit_sources[r.symbol!].push(ch);
-						}
-						else {
-							curr.rewards.forEach(r => {
-								let r2 = ch.rewards.find(f => f.symbol === r.symbol);
-								if (r2?.quantity) r.quantity += r2.quantity;
-							});
-						}
+			for (let m = 0; m < 3; m++) {
+				let qrew = quest.mastery_levels![m].jackpots?.map(j => j.reward).flat() ?? [];
+				for (let r of qrew) {
+					if (r.symbol === 'research_security_compon') {
+						let l = 0;
+					}
+					qbit_sources[r.symbol!] ??= [];
+					let curr = qbit_sources[r.symbol!].find(s => s.quest === quest!.name && s.mastery === m);
+					if (!curr) {
+						curr = {
+							quest: quest.name!,
+							index: q,
+							mastery: m,
+							rewards: r.quantity
+						};
+						qbit_sources[r.symbol!].push(curr);
+					}
+					else {
+						curr.rewards += r.quantity;
 					}
 				}
-			});
+			}
+
 			q++;
 		}
 
@@ -328,6 +327,8 @@ const ItemsPage = (props: ItemsPageProps) => {
 				q.discovered = new Date(q.discovered);
 				q.disc_estimated = false;
 			}
+			let pitem = playerData?.player.character.items.find(f => f.symbol === q.symbol);
+			if (pitem) q.quantity = pitem.quantity;
 		}
 		return quipment;
 	}
@@ -342,7 +343,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 				format: (value: QBitSource[], item: EquipmentItem) => {
 					return (<>
 						{value.map(src => {
-							let count = src.rewards.find(f => f.symbol === item.symbol)?.quantity;
+							let count = src.rewards;
 							return (<div key={`qp_${item.symbol}_${src.quest}+${src.mastery}`} style={{fontSize: '0.9em', margin: '0.25em 0'}}>
 							  	{src.index+1}. {src.quest} ({masteries[src.mastery]}) {!!count && <>({count}x)</>}
 							</div>)
