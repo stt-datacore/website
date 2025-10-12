@@ -37,6 +37,11 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
 	React.useEffect(() => {
+		setFullInput('');
+		setDisplayedInput('');
+	}, []);
+
+	React.useEffect(() => {
 		if (inputData) {
 			setValidInput(inputData);
 			setInputData(undefined);
