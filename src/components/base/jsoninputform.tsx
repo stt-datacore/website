@@ -36,10 +36,16 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 	const [loadState, setLoadState] = React.useState(0);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
+	/** DO NOT DELETE
+	 * This is a fix for mobile platforms that forces a second render.
+	 * For whatever reason, copy/paste does not work on the first go-round.
+	 * This appears to successfully "kick the machine"
+	 */
 	React.useEffect(() => {
 		setFullInput('');
 		setDisplayedInput('');
 	}, []);
+	/** DO NOT DELETE */
 
 	React.useEffect(() => {
 		if (inputData) {
