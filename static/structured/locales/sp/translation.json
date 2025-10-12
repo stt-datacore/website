@@ -1361,6 +1361,8 @@
         "faction_only": "Solo facción",
         "hide_unneeded_items": "Ocultar artículos innecesarios",
         "is_used_to_build": "Se utiliza para construir estos",
+        "item_information": "Información del artículo",
+        "item_load_error": "Error al cargar los datos del artículo",
         "item_sources": "Fuentes de artículo",
         "n_farmable": "{{n}} cultivables",
         "n_needed": "{{n}} necesario",

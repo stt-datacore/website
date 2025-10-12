@@ -1351,6 +1351,8 @@
         "faction_only": "Nur Fraktion",
         "hide_unneeded_items": "Nicht benötigte Artikel ausblenden",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
+        "item_information": "Artikelinformationen",
+        "item_load_error": "Fehler beim Laden der Artikeldaten",
         "item_sources": "Artikelquellen",
         "n_farmable": "{{n}} landwirtschaftliche",
         "n_needed": "{{n}} benötigt",

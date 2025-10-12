@@ -51,10 +51,8 @@ const ItemInfoPage = () => {
 const ItemInfo = (props: ItemInfoComponentProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { setHeader } = props;
-	//const tiny = TinyStore.getStore('item_info');
 	const [itemData, setItemData] = React.useState<EquipmentItemData>();
 	const [errorMessage, setErrorMessage] = React.useState<string>('');
-	//	const [items, setItems] = React.useState<EquipmentItem[]>([]);
 	const [owned, setOwned] = useStateWithStorage<boolean>(`item_info/owned`, false, { rememberForever: true });
 	const [symbol, setSymbol] = React.useState<string | undefined>();
 	const [inited, setInited] = React.useState(false);
@@ -119,25 +117,24 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 			}
 			else {
 				if (item.kwipment) {
-					const kwipment_levels = getQuipmentCrew(item, globalContext.core.crew)
-						.map(crew => {
-							if (globalContext.player.playerData) {
-								let owned = globalContext.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
-								if (owned) {
-									return {
-										crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
-										level: 100,
-										owned: !!owned
-									}
+					const kwipment_levels = getQuipmentCrew(item, globalContext.core.crew).map(crew => {
+						if (globalContext.player.playerData) {
+							let owned = globalContext.player.playerData?.player.character.crew.find(fcrew => fcrew.symbol === crew.symbol);
+							if (owned) {
+								return {
+									crew: { ...crew as PlayerCrew, ...owned, rarity: owned?.rarity ?? 0 },
+									level: 100,
+									owned: !!owned
 								}
 							}
+						}
 
-							return {
-								crew: { ...crew, immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
-								level: 100,
-								owned: false
-							}
-						});
+						return {
+							crew: { ...crew, immortal: CompletionState.DisplayAsImmortalStatic, rarity: 0 } as PlayerCrew,
+							level: 100,
+							owned: false
+						}
+					});
 					setItemData({ item, crew_levels: kwipment_levels, builds });
 				}
 				else {
@@ -157,16 +154,16 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 	if (itemData === undefined || !!errorMessage) {
 		return (
 			<>
-				<Header as="h3">Item information</Header>
+				<Header as="h3">{t('items.item_information')}</Header>
 				{!!errorMessage && (
 					<Message negative>
-						<Message.Header>Unable to load item information</Message.Header>
+						<Message.Header>{t('items.item_load_error')}</Message.Header>
 						<pre>{errorMessage.toString()}</pre>
 					</Message>
 				)}
 				{!errorMessage && (
 					<div>
-						<Icon loading name="spinner" /> Loading...
+						<Icon loading name="spinner" /> {t('global.loading_ellipses')}
 					</div>
 				)}
 			</>
@@ -433,7 +430,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 						crewFilters={[]}
 						pageId='item_info'
 						rosterCrew={makeCrewFlavors(itemData.crew_levels)}
-						rosterType='allCrew'
+						rosterType={!!playerData ? 'myCrew' : 'allCrew'}
 					/>
 					<br />
 				</div>
@@ -544,7 +541,6 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 			let crew: IRosterCrew | undefined = undefined;
 			crew = crew_levels.find(f => f.crew.symbol === symbol)?.crew;
 			if (crew) {
-				//if (crew) crew = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
 				if (itemData?.item?.kwipment) {
 					const wb = getItemBonuses(itemData.item);
 					let bonuses = Object.keys(wb.bonuses).filter(f => crew.skill_order.includes(f)).map(m => wb.bonuses[m]);

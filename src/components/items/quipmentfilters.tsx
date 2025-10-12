@@ -311,51 +311,6 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                     />
                 </div>}
                 <div style={{...flexCol, alignItems: 'flex-start'}}>
-                    <span>{t("hints.filter_by_rarity")}</span>
-                    <Dropdown
-                        placeholder={t("hints.filter_by_rarity")}
-                        multiple
-                        clearable
-                        selection
-                        scrolling
-                        options={itemRarityOpts}
-                        value={rarityOptions}
-                        onChange={(e, { value }) =>
-                            setRarityOptions(value as number[] | undefined)
-                        }
-                    />
-                </div>
-                <div style={{...flexCol, alignItems: 'flex-start'}}>
-                    <span>{t("hints.filter_by_trait")}</span>
-                    <Dropdown
-                        placeholder={t("hints.filter_by_trait")}
-                        multiple
-                        clearable
-                        selection
-                        scrolling
-                        options={traitFilterOpts}
-                        value={traitOptions || []}
-                        onChange={(e, { value }) =>
-                            setTraitOptions(value as string[] | undefined)
-                        }
-                    />
-                </div>
-                <div style={{...flexCol, alignItems: 'flex-start'}}>
-                    <span>{t("hints.filter_by_skill")}</span>
-                    <Dropdown
-                        placeholder={t("hints.filter_by_skill")}
-                        multiple
-                        selection
-                        clearable
-                        scrolling
-                        options={skillmap}
-                        value={skillOptions || []}
-                        onChange={(e, { value }) =>
-                            setSkillOptions(value as string[] | undefined)
-                        }
-                    />
-                </div>
-                <div style={{...flexCol, alignItems: 'flex-start'}}>
                     <span>{t("collections.options.mode.title")}</span>
                     <Dropdown
                         selection
@@ -366,6 +321,53 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                         }
                     />
                 </div>
+                {mode === 'quipment' && (<>
+                    <div style={{...flexCol, alignItems: 'flex-start'}}>
+                        <span>{t("hints.filter_by_rarity")}</span>
+                        <Dropdown
+                            placeholder={t("hints.filter_by_rarity")}
+                            multiple
+                            clearable
+                            selection
+                            scrolling
+                            options={itemRarityOpts}
+                            value={rarityOptions}
+                            onChange={(e, { value }) =>
+                                setRarityOptions(value as number[] | undefined)
+                            }
+                        />
+                    </div>
+                    <div style={{...flexCol, alignItems: 'flex-start'}}>
+                        <span>{t("hints.filter_by_trait")}</span>
+                        <Dropdown
+                            placeholder={t("hints.filter_by_trait")}
+                            multiple
+                            clearable
+                            selection
+                            scrolling
+                            options={traitFilterOpts}
+                            value={traitOptions || []}
+                            onChange={(e, { value }) =>
+                                setTraitOptions(value as string[] | undefined)
+                            }
+                        />
+                    </div>
+                    <div style={{...flexCol, alignItems: 'flex-start'}}>
+                        <span>{t("hints.filter_by_skill")}</span>
+                        <Dropdown
+                            placeholder={t("hints.filter_by_skill")}
+                            multiple
+                            selection
+                            clearable
+                            scrolling
+                            options={skillmap}
+                            value={skillOptions || []}
+                            onChange={(e, { value }) =>
+                                setSkillOptions(value as string[] | undefined)
+                            }
+                        />
+                    </div>
+                </>)}
             </div>
             <div style={{ ...flexRow }}>
                 {selectorOpen && <DataPicker
@@ -496,6 +498,12 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
 
     function filterItems(data: EquipmentItem[]) {
         return data.filter((f) => {
+            if (mode === 'qbit') {
+                if (ownedOption !== 'all' && f.type === 15 && playerData) {
+                    if (!playerData.player.character.items.some(i => i.symbol === f.symbol && i.quantity)) return false;
+                }
+                return true;
+            }
             if (ownedOption !== "all" && f.type === 14 && playerData) {
                 let g = f as EquipmentItem;
                 if (!g.demands?.some((d) => d.have)) {

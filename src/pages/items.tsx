@@ -18,6 +18,8 @@ import { binaryLocate, formatDuration, getPossibleQuipment } from '../utils/item
 import { useStateWithStorage } from '../utils/storage';
 import { ContinuumMission } from '../model/continuum';
 import { MissionReward } from '../model/missions';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../components/stats/utils';
+import { AvatarView } from '../components/item_presenters/avatarview';
 
 export interface ItemsPageProps { }
 
@@ -58,7 +60,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 
 	React.useEffect(() => {
 		buildQBits().then(res => setQBits(res || []));
-	}, [coreItems, keystones, continuum_missions]);
+	}, [coreItems, keystones, continuum_missions, quipment]);
 
 	const quipCust = getQuipmentColumnConfig();
 	const qbitCust = getQBitColumnConfig();
@@ -157,29 +159,23 @@ const ItemsPage = (props: ItemsPageProps) => {
 					>
 					<>
 						<QuipmentTable
+							mode={mode}
 							noRender={activeTabIndex !== 2 || mode !== 'quipment'}
-							items={quipment}
+							items={qbits.concat(quipment)}
 							ownedItems={false}
 							ownedCrew={hasPlayer}
 							pageId={'quipment'}
 							customFields={quipCust}
 							/>
-						<ItemsFilterProvider
+						<QuipmentTable
+							mode={mode}
 							noRender={activeTabIndex !== 2 || mode !== 'qbit'}
-							pool={coreItems}
+							items={qbits.concat(quipment)}
 							ownedItems={false}
-							pageId={'core'}
-						>
-							<EquipmentTable
-								pageId={'core'}
-								noRender={activeTabIndex !== 2 || mode !== 'qbit'}
-								items={qbits}
-								ownedColumns={['quantity']}
-								customFields={qbitCust}
-								hideOwnedColumns={!playerData}
-								types={[15]}
+							ownedCrew={hasPlayer}
+							pageId={'quipment'}
+							customFields={qbitCust}
 							/>
-						</ItemsFilterProvider>
 					</>
 				</QuipmentFilterProvider>
 
@@ -190,8 +186,27 @@ const ItemsPage = (props: ItemsPageProps) => {
 		</DataPageLayout>
 	);
 
-	function raritySum(crew: CrewMember[]) {
-		return crew.map(c => c.max_rarity).reduce((p, n) => p + n, 0);
+	function renderCraftables(symbol: string) {
+		const craftables = quipment.filter(f => f.recipe?.list?.some(l => l.symbol === symbol));
+
+		return (
+			<div style={{...OptionsPanelFlexRow, gap: '0.5em', flexWrap: 'wrap', margin: '0.5em 0' }}>
+				{craftables.map((item) => {
+
+					let key = `craft_from_${symbol}::${item.symbol}::${item.quantity || 0}`;
+					return (
+						<div key={key} style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
+							<AvatarView
+								targetGroup='core_items_hover'
+								mode='item'
+								item={item}
+								size={32}
+								/>
+						</div>
+					)
+				})}
+			</div>
+		)
 	}
 
 	function generateCoreItems() {
@@ -243,47 +258,6 @@ const ItemsPage = (props: ItemsPageProps) => {
 			.then((result: ContinuumMission) => result));
 
 		if (!mission) return undefined;
-		// // Merge quests with loot
-
-		// const qbit_sources = {} as {[key:string]: QBitSource[]};
-		// let q = 0;
-		// for (let quest of mission.quests!) {
-		// 	for (let m = 0; m < 3; m++) {
-		// 		let qrew = quest.mastery_levels![m].jackpots?.map(j => j.reward).flat() ?? [];
-		// 		for (let r of qrew) {
-		// 			if (r.symbol === 'research_security_compon') {
-		// 				let l = 0;
-		// 			}
-		// 			qbit_sources[r.symbol!] ??= [];
-		// 			let curr = qbit_sources[r.symbol!].find(s => s.quest === quest!.name && s.mastery === m);
-		// 			if (!curr) {
-		// 				curr = {
-		// 					quest: quest.name!,
-		// 					index: q,
-		// 					mastery: m,
-		// 					rewards: r.quantity
-		// 				};
-		// 				qbit_sources[r.symbol!].push(curr);
-		// 			}
-		// 			else {
-		// 				curr.rewards += r.quantity;
-		// 			}
-		// 		}
-		// 	}
-
-		// 	q++;
-		// }
-
-		// for (let item of qbits) {
-		// 	item.qbit_sources = qbit_sources[item.symbol] || [];
-		// 	item.qbit_sources.sort((a, b) => {
-		// 		let r = 0;
-		// 		r = a.index - b.index;
-		// 		if (!r) r = a.mastery - b.mastery;
-		// 		if (!r) r = a.quest.localeCompare(b.quest);
-		// 		return r;
-		// 	});
-		// }
 		setCachedMission(mission);
 		return qbits;
 	}
@@ -353,7 +327,16 @@ const ItemsPage = (props: ItemsPageProps) => {
 				},
 				customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.item_sources.length ?? 0) - (b.item_sources.length ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
 				reverse: true
-			}
+			},
+			// {
+			// 	field: 'demands',
+			// 	width: 2,
+			// 	text: t('demands.demands'),
+			// 	format: (value: any, item: EquipmentItem) => {
+			// 		if (item.symbol === 'continuum_energy_compon') return <></>
+			// 		return renderCraftables(item.symbol);
+			// 	}
+			// }
 		);
 		return qbitCust;
 	}
@@ -425,22 +408,4 @@ const ItemsPage = (props: ItemsPageProps) => {
 };
 
 export default ItemsPage;
-
-// // Don't delete!!!! This is to preview crew quipment
-// if (globalContext.core?.crew?.length) {
-// 	let crnew = oneCrewCopy(globalContext.core.crew.find(f => f.symbol === 'vash_qless_crew')!);
-// 	crnew!.traits = ["human", "federation", "exoarchaeology", "civilian", "romantic", "crafty", "smuggler", "merchant", "casual", "playful"]
-// 	crnew!.skill_order = ['science_skill', 'diplomacy_skill', 'medicine_skill']
-// 	crnew!.base_skills.medicine_skill = crnew!.base_skills.command_skill;
-// 	delete crnew!.base_skills.command_skill;
-// 	let crewquip = getPossibleQuipment(crnew as PlayerCrew, globalContext.core.items.filter(f => f.type === 14));
-// 	let text = '';
-// 	if (crewquip?.length) {
-// 		crewquip.forEach(item => {
-// 			let bonus = getItemWithBonus(item);
-// 			text += (`${item.name}\n    ${bonus.bonusInfo.bonusText.join('\n    ')}\n`)
-// 		})
-// 		console.log(text);
-// 	}
-// }
 

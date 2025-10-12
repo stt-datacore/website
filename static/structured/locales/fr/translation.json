@@ -1363,6 +1363,8 @@
         "faction_only": "Factions uniquement",
         "hide_unneeded_items": "Masquer les articles inutiles",
         "is_used_to_build": "Est utilisé pour construire ces",
+        "item_information": "Informations sur l'article",
+        "item_load_error": "Erreur lors du chargement des données d'article",
         "item_sources": "Sources d'article",
         "n_farmable": "{{n}} cultivable",
         "n_needed": "{{n}} nécessaires",

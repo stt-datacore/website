@@ -1,9 +1,10 @@
 import { navigate } from 'gatsby';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { v4 } from 'uuid';
 import { ContinuumMission } from '../model/continuum';
 import { Achiever, CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { EventInstance, EventLeaderboard } from '../model/events';
 import { Collection, KeystoneBase, PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
 import { Gauntlet } from '../model/gauntlets';
@@ -11,15 +12,12 @@ import { Mission } from '../model/missions';
 import { ObjectiveEvent } from '../model/player';
 import { BattleStations, ReferenceShip, Schematics, Ship } from '../model/ship';
 import { StaticFaction } from '../model/shuttle';
-import { calcQuipmentScore } from '../utils/equipment';
+import { Dilemma } from '../model/voyage';
 import { EventStats } from '../utils/event_stats';
-import { getItemWithBonus } from '../utils/itemutils';
 import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
+import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
-import { Dilemma } from '../model/voyage';
-import { v4 } from 'uuid';
-import { useStateWithStorage } from '../utils/storage';
 
 const DC_DEBUGGING: boolean = false;
 

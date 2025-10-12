@@ -1352,6 +1352,8 @@
         "faction_only": "Faction Only",
         "hide_unneeded_items": "Hide unneeded items",
         "is_used_to_build": "Is used to build these",
+        "item_information": "Item Information",
+        "item_load_error": "Error loading item data",
         "item_sources": "Item sources",
         "n_farmable": "{{n}} farmable",
         "n_needed": "{{n}} needed",
