@@ -40,4 +40,5 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	topQuipmentScores: QuipmentScores[];
+	sync_time: Date;
 };

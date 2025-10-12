@@ -97,6 +97,7 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	topQuipmentScores: [] as QuipmentScores[],
+	sync_time: new Date()
 } as ICoreData;
 
 export const defaultCore = {
@@ -123,7 +124,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 	const [tsAck, setTsAck] = React.useState(false);
 	const [syncConfig, setSyncConfig] = useStateWithStorage<SyncConfig>('sync_config', defaultSyncConfig, { rememberForever: true });
 	const [isReadying, setIsReadying] = React.useState(false);
-	const [wantFresh, setWantFresh] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
 
 	React.useEffect(() => {
@@ -147,6 +147,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	const providerValue = {
 		...data,
+		sync_time: new Date(syncConfig.timestamp),
 		ready,
 		reset,
 		spin,
@@ -207,7 +208,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (wantFresh || data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -269,15 +270,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 			});
 
 			// Post-process interdependent demands
-			// if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
-			// 	postProcessCadetItems(newData);
-			// }
 			if (unsatisfied.includes('items') && unsatisfied.includes('crew') && unsatisfied.includes('all_buffs')) {
-				//postProcessQuipmentScores(newData.crew, newData.items);
-				//calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
-			if (unsatisfied.includes('ship_schematics') && (unsatisfied.includes('battle_stations') || unsatisfied.includes('all_ships'))) {
+
+			if (unsatisfied.includes('ship_schematics') &&
+				(unsatisfied.includes('battle_stations') || unsatisfied.includes('all_ships'))) {
 				postProcessShipBattleStations(newData);
 			}
 
@@ -287,7 +285,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		}).finally(() => {
 			// Alert page that processing is done (successfully or otherwise)
 			setIsReadying(false);
-			if (wantFresh) setWantFresh(false);
 			onReady();
 		});
 	}
@@ -408,9 +405,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 			let num = finstid;
 			let anchor_id = 490;
 			let anchor_date = new Date('2025-09-25T16:00:00');
-			//if (num < 405) num--;
-			//if (num < 381) num--;
-
 			let b = betas.filter(f => f.fixed_instance_id >= finstid);
 			num += b.length;
 			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
@@ -426,7 +420,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 	function processAllShips(all_ships: ReferenceShip[]) {
 		for (let ship of all_ships) {
 			ship.id = ship.archetype_id;
-			//ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
 		}
 		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels), id: ship.id || ship.archetype_id }));
 		return all_ships;
@@ -443,13 +436,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		});
 
 		return result;
-	}
-
-	function postProcessQuipmentScores(crew: CrewMember[], items: EquipmentItem[]) {
-		const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
-		crew.forEach(crew => {
-			calcQuipmentScore(crew, quipment);
-		});
 	}
 
 	function processGauntlets(result: Gauntlet[] | undefined): Gauntlet[] {
@@ -487,7 +473,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 					}
 				}
 			}
-			//data.ships = scsave;
 		}
 		else if (data.battle_stations.length && data.ship_schematics.length) {
 			for (let sch of data.ship_schematics) {
@@ -508,91 +493,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 					}
 				}
 			}
-			//data.ships = scsave;
-		}
-
-	}
-
-	function postProcessCadetItems(data: ICoreData): void {
-		const cadetforitem = data.cadet?.filter(f => f.cadet);
-		if (DC_DEBUGGING) console.log("Finding cadet mission farm sources for items ...");
-
-		if (cadetforitem?.length) {
-			for(const item of data.items) {
-				for (let ep of cadetforitem) {
-					let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
-					if (quests?.length) {
-						for (let quest of quests) {
-							if (quest.mastery_levels?.length) {
-								let x = 0;
-								for (let ml of quest.mastery_levels) {
-									if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
-										let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
-										mx = (1/mx) * 1.80;
-										let qitem = {
-											type: 4,
-											mastery: x,
-											name: quest.name,
-											energy_quotient: 1,
-											chance_grade: 5 * mx,
-											mission_symbol: quest.symbol,
-											cost: 1,
-											avg_cost: 1/mx,
-											cadet_mission: ep.episode_title,
-											cadet_symbol: ep.symbol
-										} as EquipmentItemSource;
-										if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
-											item.item_sources.push(qitem);
-										}
-									}
-									x++;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (DC_DEBUGGING) console.log("Done with cadet missions.");
-	}
-
-
-	function getObtained(data: CrewMember) {
-		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
-			return "HonorHall";
-		}
-		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
-			return "Gauntlet";
-		}
-		else if (data.traits_hidden.includes("exclusive_voyage")) {
-			return "Voyage";
-		}
-		else if (data.traits_hidden.includes("exclusive_collection")) {
-			return "Collection";
-		}
-		else if (data.traits_hidden.includes("exclusive_bridge")) {
-			return "BossBattle";
-		}
-		else if (data.traits_hidden.includes("exclusive_fusion")) {
-			return "Fuse";
-		}
-		else if (data.traits_hidden.includes("exclusive_achievement")) {
-			return "Achievement";
-		}
-		else if (data.symbol === "tuvok_mirror_crew") {
-			return "Faction";
-		}
-		else if (data.symbol === "boimler_evsuit_crew") {
-			return "WebStore";
-		}
-		else if (data.symbol === "quinn_crew") {
-			return "Missions";
-		}
-		else {
-			return "Event/Pack/Giveaway";
 		}
 	}
+
 	async function getSyncTimestamp() {
 		let rnd = v4().replace(/-/g, '');
 		try {
