@@ -58,7 +58,6 @@ export const PortalUpdateTable = () => {
     }, [update, portalLog]);
 
     const flexCol = OptionsPanelFlexColumn;
-    const flexRow = OptionsPanelFlexRow;
 
     return (<div style={{...flexCol, margin: '1em 0', gap: '1em', alignItems: 'flex-start'}}>
         <div style={{...flexCol, alignItems: 'flex-start'}}>
