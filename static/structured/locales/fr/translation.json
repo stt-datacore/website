@@ -2381,6 +2381,7 @@
             "quantity": "{{global.quantity}}"
         },
         "last_release": "Dernière publication",
+        "last_sync_timestamp": "Horodatage de la dernière sync",
         "new_high": "Nouveau Élevé",
         "new_highs_only": "Afficher uniquement les nouveaux élevés",
         "released_duration": "Débuté {{duration}}",

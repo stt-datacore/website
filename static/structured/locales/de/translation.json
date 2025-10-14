@@ -2369,6 +2369,7 @@
             "quantity": "{{global.quantity}}"
         },
         "last_release": "Letzte Veröffentlichung",
+        "last_sync_timestamp": "Zeitstempel der letzten Sync",
         "new_high": "Neuer Highscore",
         "new_highs_only": "Nur neue Highscores anzeigen",
         "released_duration": "Debüt {{duration}}",
