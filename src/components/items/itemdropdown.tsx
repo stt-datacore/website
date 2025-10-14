@@ -42,6 +42,7 @@ export const ItemDropDown = (props: ItemDropDownProps) => {
 				placeholder={t('hints.select_items')}
 				clearable
 				selection
+                search
                 fluid={fluid}
 				multiple={true}
 				options={itemOptions}

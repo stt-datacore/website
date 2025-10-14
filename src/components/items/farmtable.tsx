@@ -189,12 +189,10 @@ export const FarmTable = (props: FarmTableProps) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            margin: '0.25em',
-            marginBottom: '1em',
+            margin: '0.25em 0.25em 1em 0',
             gap: '0.5em'
         }}>
 
-            {t('global.search')}{": "}
             <ItemDropDown style={{ width: '24em' }} items={distinctItems}
                 icons={true}
                 selectedSymbols={selectedItems}
