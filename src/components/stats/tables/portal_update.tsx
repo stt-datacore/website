@@ -53,7 +53,8 @@ export const PortalUpdateTable = () => {
         return portalLog.filter(f => f.portal_batch_id === update).map(pl => crew.find(c => c.symbol === pl.symbol)! as IRosterCrew)
             .map(c => {
                 return CrewPreparer.prepareCrewMember(c, buffMode || 'none', 'shown_full', globalContext, false)[0];
-            }) as PlayerCrew[];
+            })
+            .filter(c => !!c?.ranks?.scores) as PlayerCrew[];
     }, [update, portalLog]);
 
     const flexCol = OptionsPanelFlexColumn;
