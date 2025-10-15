@@ -135,6 +135,9 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                         enableLabels={true}
                         //labelsFilter={n=>1===n.node.depth}
                         labelsSkipRadius={40}
+                        tooltip={(data) => {
+                            return renderTooltip(data);
+                        }}
                         labelTextColor={{
                             from: 'color',
                             modifiers: [
@@ -181,12 +184,21 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
         </div>
     );
 
-    function getSkillOrderTitle(key: string) {
+    function getSkillOrderTitle(key: string, className?: string, style?: React.CSSProperties) {
         let shorts = key.split("/").map(short => short.trim());
         let skills = shorts.map(short => CONFIG.SKILLS_SHORT.find(sk => sk.short === short)!.name);
+        if (className === undefined) className = 'ui label';
 
         return (
-            <div className="ui label" style={{...flexRow, display: 'inline-flex', padding: '1em', alignItems: 'center', justifyContent: 'center', gap: '3'}}>
+            <div className={className} style={{
+                ...flexRow,
+                display: 'inline-flex',
+                padding: '1em',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '3',
+                ...style
+            }}>
                 {skills.map((skill, i) => {
                     let icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`;
                     let name = `${shorts[i]}`;
@@ -203,6 +215,55 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                 })}
             </div>
         )
+    }
+
+    function renderTooltip(data: ComputedDatum<CircleData>) {
+
+        if (data.data.name.toLowerCase().includes('datacore')) {
+            return (
+                <div
+                    className='ui segment'
+                    key={`tooltip_${data.data.name}`}
+                    style={{
+                        display: 'grid',
+                        gridTemplateAreas: `'skills' 'stats2'`,
+                        textAlign: 'center'
+                    }}
+                >
+                    <div style={{gridArea: 'skills'}}>
+                        {data.data.name}
+                    </div>
+                    <div style={{gridArea: 'stats2'}}>
+                        {t('base.crew{{:}}')} {data.formattedValue}
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div
+                    className='ui segment'
+                    key={`tooltip_${data.data.name}`}
+                    style={{
+                        display: 'grid',
+                        gridTemplateAreas: `'skills' 'stats1' 'stats2' 'stats3'`,
+                        textAlign: 'center',
+                        gap: '0.5em 1em'
+                    }}
+                >
+                    {getSkillOrderTitle(data.data.name, '', { gridArea: 'skills' })}
+                    <div style={{gridArea: 'stats1'}}>
+                        {data.formattedValue}
+                    </div>
+                    <div style={{gridArea: 'stats2'}}>
+                        {t('base.crew{{:}}')} {data.data.crew.length.toLocaleString()}
+                    </div>
+                    {data.value !== data.data.crew.length && <div style={{gridArea: 'stats3'}}>
+                        {t('stat_trends.trait_columns.total_crew{{:}}')} {data.value}
+                    </div>}
+                </div>
+            )
+        }
     }
 
     function buildCircleData() {
