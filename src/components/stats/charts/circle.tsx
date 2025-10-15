@@ -267,7 +267,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
     }
 
     function buildCircleData() {
-        const workcrew = statFilterCrew(filterConfig, crew);
+        const workcrew = useFilters ? statFilterCrew(filterConfig, crew) : crew;
         const circleData = {
             name: 'STT Datacore',
             children: [],
