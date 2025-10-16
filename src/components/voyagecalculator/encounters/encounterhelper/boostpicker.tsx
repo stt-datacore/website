@@ -114,7 +114,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		if (!assignedBoost) {
 			return (
 				<Button /* Add a boost */
-					title='Add a boost'
+					title={t('boosts.add_boost')}
 					icon='plus'
 					size='small'
 				/>
@@ -122,7 +122,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		}
 		return (
 			<div /* Change boost */
-				title='Change boost'
+				title={t('boosts.change_boost')}
 				style={{ cursor: 'pointer' }}
 			>
 				<BoostLabel boost={assignedBoost} />
@@ -207,9 +207,9 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			symbol = `${boost.type.replace('_skill', '')}_bonus_${boost.rarity}_shuttle_consumable`;
 		const quantity: number = inventory.find(item => item.symbol === symbol)?.quantity ?? 0;
 		return (
-			<Label	/* N in inventory */
+			<Label	/* N owned */
 				size='small'
-				title={`${quantity} in inventory`}
+				title={t('items.n_owned', { n: quantity })}
 			>
 				{quantity}
 			</Label>
@@ -228,7 +228,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			<Form style={{ textAlign: 'center' }}>
 				<Form.Field	/* Only show relevant boosts */
 					control={Checkbox}
-					label='Only show relevant boosts'
+					label={t('voyage.contests.show_relevant_boosts')}
 					checked={showRelevant}
 					onChange={(e, {checked}) => setShowRelevant(checked as boolean)}
 				/>
@@ -242,7 +242,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 				{assignedBoost && (
 					<Button /* No boost */
 						icon='ban'
-						content='No boost'
+						content={t('boosts.no_boost')}
 						onClick={() => {
 							onBoostSelected(undefined);
 							setShowPopup(false);

@@ -144,6 +144,13 @@
             }
         }
     },
+    "boosts": {
+        "add_boost": "Add a boost",
+        "boost": "{{ship.boost}}",
+        "boosts": "{{ship.boosts}}",
+        "change_boost": "Change boost",
+        "no_boost": "No boost"
+    },
     "buffs": {
         "max_buffs": "Effets maximum",
         "max_quipment_buffs_best": "Effets maximum de quipement (meilleur quipement)",
@@ -2500,6 +2507,14 @@
             "avg_of_crew": "Score moyen de {{crew}} pour ce concours",
             "avg_of_opponent": "Score moyen de l'adversaire pour ce concours",
             "avg_score": "Score moyenne",
+            "boost_impact" : {
+                "crit": "{{crew}} is boosting this contest's crit chance",
+                "ineffective": "Boost has no effect to any contest",
+                "others": "{{crew}} is boosting an unused skill that may be relevant to later contests",
+                "self": "{{crew}} is boosting a skill that is relevant to their own contest",
+                "skill": "{{crew}} is boosting their contribution to this contest skill",
+                "unneeded": "A boost here will have no effect on this contest"
+            },
             "champions_description": "Les chances de victoire de votre équipage pour chaque concours sont indiquées ci-dessous. Appuyez sur les chances pour simuler le concours avec plus de confiance. Appuyez sur {{icon}} pour assigner l'équipage à ce concours.",
             "champions_header": "Équipage de voyage",
             "contest": "Concours",
@@ -2509,13 +2524,21 @@
             "contests_description": "Utilisez cet outil pour planifier vos concours de rencontres. Appuyez sur un concours pour voir les membres d'équipage possédant les compétences nécessaires.",
             "contests_header": "Affectations du concours",
             "contests_n_count": "Concours ({{n}})",
+            "contributors_description": "The crew assigned to this contest will contribute their full proficiency. Some crew assigned to prior contests may also contribute a fraction of their unused skills. The average values added to this contest by all contributing crew are listed below. You can add boosts to increase any contribution, which may improve the odds of winning this contest.",
+            "crew_exhausted": "{{crew}} cannot contribute exhausted skills",
+            "crew_irrelevant": "{{crew}} has no relevant skills to contribute to this contest",
+            "crew_wasted": "{{crew}} cannot contribute to inactive skills",
             "crit_chance": "Chances de critique",
             "encounter_helper_title": "Aide à la Rencontre",
+            "find_viable_crew": "Find viable crew for this contest",
             "importer": {
                 "data_loaded": "Données de rencontre chargées !",
                 "data_required": "Données supplémentaires requises",
                 "description": "L'Aide à la Rencontre nécessite des données supplémentaires absentes de vos données de joueur. Vous pouvez accéder aux données requises et les importer en suivant les instructions ci-dessous.",
                 "follow_instructions": "Suivez les instructions ci-dessous pour mettre à jour vos données de rencontre.",
+                "json_early": "No encounter data found. Please try again when your voyage has reached an encounter.",
+                "json_invalid": "The imported data is not valid. Please confirm the voyage data link is correct and try again.",
+                "json_undefined": "No data",
                 "progress_warning": "Cet outil ne permet pas de voir l'équipage utilisé pour les concours que vous avez déjà terminés en jeu. Vous devez attribuer manuellement l'équipage ayant réussi aux concours ci-dessous pour obtenir une représentation plus précise des compétences viables pour les concours restants.",
                 "tap_to_open": "Si les informations ci-dessous ne correspondent pas à votre rencontre dans le jeu, appuyez ici pour mettre à jour vos données de rencontre."
             },
@@ -2530,10 +2553,13 @@
             },
             "odds_of_winning": "Chances de gagner",
             "reset_assignments": "Réinitialiser les affectations",
+            "reset_boosts": "Reset boosts",
             "search_for_contestant": "Recherche d'un combattant",
             "select_crit_chance": "Sélectionnez les chances de coup critique",
+            "show_relevant_boosts": "Only show relevant boosts",
             "simulate_contest": "Simuler un concours",
             "starting_skills": "Compétences initiales",
+            "unused_skill": "If assigned to this contest, {{crew}} will contribute their unused {{skill}} skill to {{n}} later contest(s) with an average value added of +{{avg}} (per contest).",
             "vp_multiplier": "Multiplicateur de PV",
             "wins": "Victoires"
         },
@@ -2756,6 +2782,8 @@
             "voyage_prefs": "Préférence de compétence de voyage",
             "voyage_prefs_explain": "Si une préférence de compétence de voyage est sélectionnée, l'ordre des compétences de l'équipage est trié de sorte que les compétences correspondantes viennent en premier."
         },
+        "recreate_dilemma": "Re-create dilemma voyage",
+        "recreate_encounter": "Re-create encounter voyage",
         "results": {
             "actions": {
                 "abort": "Abandonner",

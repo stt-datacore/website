@@ -91,7 +91,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 	}
 
 	function validateJson(json: VoyageRefreshData[]): true | string {
-		if (!json) return ('No data');
+		if (!json) return t('voyage.contests.importer.json_undefined');
 
 		let encounterData: VoyageRefreshEncounter | undefined;
 
@@ -100,12 +100,12 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 		}
 		catch (e) {	/* The imported data is not valid. Please confirm the voyage data link is correct and try again. */
 			console.log(e);
-			return 'The imported data is not valid. Please confirm the voyage data link is correct and try again.';
+			return t('voyage.contests.importer.json_invalid');
 		}
 
 		if (!encounterData) {
 			/* No encounter data found. Please try again when your voyage has reached an encounter. */
-			return 'No encounter data found. Please try again when your voyage has reached an encounter.';
+			return t('voyage.contests.importer.json_early');
 		}
 
 		return true;

@@ -75,7 +75,7 @@ export const Contest = (props: ContestProps) => {
 							skills={skills}
 							critChances={critChances ?? DEFAULT_CRIT_CHANCES}
 							contestant={contestantA}
-							wins={contestResult ? formatContestResult(contestResult) : <Icon loading name='spinner' />}
+							wins={contestResult ? formatContestResult(contestResult, false, t) : <Icon loading name='spinner' />}
 							editContestant={(contestant: IContestant) => setContestantA(contestant)}
 							dismissContestant={aPool ? () => setContestantA(makeContestant(skills, traits ?? [])) : undefined}
 							compact={compactMode}
@@ -95,7 +95,7 @@ export const Contest = (props: ContestProps) => {
 							skills={skills}
 							critChances={critChances ?? DEFAULT_CRIT_CHANCES}
 							contestant={contestantB}
-							wins={contestResult ? formatContestResult(contestResult, true) : <Icon loading name='spinner' />}
+							wins={contestResult ? formatContestResult(contestResult, true, t) : <Icon loading name='spinner' />}
 							editContestant={(contestant: IContestant) => setContestantB(contestant)}
 							dismissContestant={bPool ? () => setContestantB(makeContestant(skills, traits ?? [])) : undefined}
 							compact={compactMode}

@@ -75,18 +75,20 @@ export const EncounterCard = (props: EncounterCardProps) => {
 		<Card fluid>
 			<Card.Content>
 				<Table basic='very' collapsing compact='very'>
-					{cardGroups.map(group => (
-						<Table.Row key={group.key}>
-							<Table.Cell>
-								<Header as='h5'>
-									{group.header}{t('global.colon')}
-								</Header>
-							</Table.Cell>
-							<Table.Cell>
-								{group.content}
-							</Table.Cell>
-						</Table.Row>
-					))}
+					<Table.Body>
+						{cardGroups.map(group => (
+							<Table.Row key={group.key}>
+								<Table.Cell>
+									<Header as='h5'>
+										{group.header}{t('global.colon')}
+									</Header>
+								</Table.Cell>
+								<Table.Cell>
+									{group.content}
+								</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
 				</Table>
 				{inProgress && (
 					<Message>

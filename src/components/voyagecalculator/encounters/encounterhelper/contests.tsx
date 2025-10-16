@@ -34,8 +34,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 				{t('voyage.contests.contests_header')}
 			</Header>
 			<p>
-				{/* {t('voyage.contests.contests_description')} */}
-				Use this tool to plan your encounter contests.
+				{t('voyage.contests.contests_description')}
 			</p>
 			<Table celled selectable striped padded='very'>
 				<Table.Header>
@@ -61,7 +60,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 						<Table.HeaderCell	/* Boost */
 							textAlign='center'
 						>
-							Boost
+							{t('boosts.boost')}
 						</Table.HeaderCell>
 						<Table.HeaderCell	/* Skills */
 							textAlign='center'
@@ -106,7 +105,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 									)}
 								</Table.Cell>
 								<Table.Cell	/* Find viable crew for this contest */
-									title='Find viable crew for this contest'
+									title={t('voyage.contests.find_viable_crew')}
 									textAlign='center'
 									onClick={() => props.setTargetSkills(contest.skills.map(cs => cs.skill))}
 									style={{ cursor: 'pointer' }}
@@ -210,7 +209,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 				style={{ cursor: 'pointer' }}
 				onClick={() => openSimulator(assignedContest)}
 			>
-				{formatContestResult(assignedContest.result)}
+				{formatContestResult(assignedContest.result, false, t)}
 			</div>
 		);
 	}

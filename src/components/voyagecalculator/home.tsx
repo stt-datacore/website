@@ -548,7 +548,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 				size='large'
 				color='blue'
 				icon={'users'}
-				content={`Re-create ${voyageConfig.voyage_type} voyage`}
+				content={t(`voyage.recreate_${voyageConfig.voyage_type}`)}
 				onClick={() => setActiveView({ source: 'custom', config })}
 			/>
 		);

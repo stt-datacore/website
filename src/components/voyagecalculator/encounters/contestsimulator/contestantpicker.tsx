@@ -85,7 +85,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 				title: t('voyage.contests.crit_chance'),
 				align: 'center',
 				sortField: { id: 'crit_chance', firstSort: 'descending' },
-				renderCell: (datum: IEssentialData) => <>{(datum as IProficientCrew).crit_chance}%</>
+				renderCell: (datum: IEssentialData) => <>{t('global.n_%', { n: (datum as IProficientCrew).crit_chance })}</>
 			}
 		);
 	}

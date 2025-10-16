@@ -270,7 +270,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 							title={t('voyage.contests.simulate_contest')}
 							onClick={() => openSimulator(contest)}
 						>
-							{formatContestResult(contest.result)}
+							{formatContestResult(contest.result, false, t)}
 						</Button>
 						<Button	/* Assign CHAMPION_NAME to this contest */
 							title={t('voyage.contests.assign_crew', { crew: contest.champion.crew.name })}
@@ -326,7 +326,15 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 		const average: number = unusedSkill.range_min + Math.floor((unusedSkill.range_max - unusedSkill.range_min) / 2);
 		/* If assigned to this contest, CREW will contribute their unused SKILL skill to N later contest(s)
 			with an average value added of +AVERAGE (per contest).	*/
-		const title: string = `If assigned to this contest, ${contest.champion.crew.name} will contribute their unused ${CONFIG.SKILLS[skill]} skill to ${relevance} later contest(s) with an average value added of +${average*3} (per contest)`;
+		const title: string = t(
+			'voyage.contests.unused_skill',
+			{
+				crew: contest.champion.crew.name,
+				skill: CONFIG.SKILLS[skill],
+				n: relevance,
+				avg: average * 3
+			}
+		);
 		return (
 			<Label
 				key={skill}

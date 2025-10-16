@@ -1,5 +1,5 @@
 import { Skill } from '../../../model/crew';
-import { PlayerCrew } from '../../../model/player';
+import { PlayerCrew, TranslateMethod } from '../../../model/player';
 import { IContestant, IContestResult, IContestSkill, IExpectedScore } from './model';
 
 export const DEFAULT_CRIT_CHANCES: number[] = [5, 25, 50, 75];
@@ -200,11 +200,11 @@ export function makeResultId(a: IContestant, b: IContestant): string {
 	}).join(';');
 }
 
-export function formatContestResult(result: IContestResult, invert: boolean = false): string {
+export function formatContestResult(result: IContestResult, invert: boolean = false, t: TranslateMethod): string {
 	const odds: number = invert ? parseFloat((1 - result.oddsA).toFixed(3)) : result.oddsA;	// Handle floating point imprecision on invert
-	if (odds === 1) return '100%';	// No significant digit
-	if (odds === 0) return '0%';	// No significant digit
-	if (odds === 0.999) return '>99.9%';
-	if (odds === 0.001) return '<0.1%';
-	return `${(odds*100).toFixed(1)}%`;
+	if (odds === 1) return t('global.n_%', { n: 100 });	// No significant digit
+	if (odds === 0) return t('global.n_%', { n: 0 });	// No significant digit
+	if (odds === 0.999) return `>${t('global.n_%', { n: 99.9 })}`;
+	if (odds === 0.001) return `<${t('global.n_%', { n: 0.1 })}`;
+	return t('global.n_%', { n: (odds*100).toFixed(1) });
 }

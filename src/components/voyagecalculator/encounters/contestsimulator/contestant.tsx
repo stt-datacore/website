@@ -40,15 +40,15 @@ export const Contestant = (props: ContestantProps) => {
 			return {
 				key: `${critChance}%`,
 				value: critChance,
-				text: `${critChance}%`
+				text: t('global.n_%', { n: critChance })
 			};
 		});
-		options.push({ key: '0%', value: 0, text: '0%' });
+		options.push({ key: '0%', value: 0, text: t('global.n_%', { n: 0 }) });
 		if (!options.map(option => option.value).includes(contestant.critChance)) {
 			options.push({
 				key: `${contestant.critChance}%`,
 				value: contestant.critChance,
-				text: `${contestant.critChance}%`
+				text: t('global.n_%', { n: contestant.critChance })
 			});
 		}
 		options.sort((a, b) => (a.value as number) - (b.value as number));
@@ -145,7 +145,9 @@ export const Contestant = (props: ContestantProps) => {
 										className='invertibleIcon'
 									/>
 								</span>
-								<span>{contestant.critChance}%</span>
+								<span>
+									{t('global.n_%', { n: contestant.critChance })}
+								</span>
 							</div>
 						</Label>
 					</Label.Group>

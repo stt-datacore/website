@@ -172,7 +172,7 @@ export const ChampionSimulator = (props: ChampionSimulatorProps) => {
 						<div>
 							<Statistic size='tiny'	/* Wins */>
 								<Statistic.Value>
-									{formatContestResult(championResult)}
+									{formatContestResult(championResult, false, t)}
 								</Statistic.Value>
 								<Statistic.Label>
 									{t('voyage.contests.wins')}

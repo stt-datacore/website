@@ -172,7 +172,7 @@ const Encounter = (props: EncounterProps) => {
 				disabled={!Object.keys(assignments).some(contestId => assignments[contestId].crew)}
 			/>
 			<Button	/* Reset boosts */
-				content='Reset boosts'
+				content={t('voyage.contests.reset_boosts')}
 				onClick={resetBoosts}
 				disabled={!Object.keys(assignments).some(contestId => assignments[contestId].boost)}
 			/>

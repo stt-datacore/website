@@ -144,6 +144,13 @@
             }
         }
     },
+    "boosts": {
+        "add_boost": "Add a boost",
+        "boost": "{{ship.boost}}",
+        "boosts": "{{ship.boosts}}",
+        "change_boost": "Change boost",
+        "no_boost": "No boost"
+    },
     "buffs": {
         "max_buffs": "Max buffs",
         "max_quipment_buffs_best": "Max Quipment Buffs (Best Quipment)",
@@ -2489,22 +2496,38 @@
             "avg_of_crew": "{{crew}}'s average score for this contest",
             "avg_of_opponent": "Opponent's average score for this contest",
             "avg_score": "Average Score",
+            "boost_impact" : {
+                "crit": "{{crew}} is boosting this contest's crit chance",
+                "ineffective": "Boost has no effect to any contest",
+                "others": "{{crew}} is boosting an unused skill that may be relevant to later contests",
+                "self": "{{crew}} is boosting a skill that is relevant to their own contest",
+                "skill": "{{crew}} is boosting their contribution to this contest skill",
+                "unneeded": "A boost here will have no effect on this contest"
+            },
             "champions_description": "Your crew's expected odds of winning each contest are listed below. Tap the odds to simulate that contest with higher confidence. Tap {{icon}} to assign the crew to that contest.",
             "champions_header": "Voyage Crew",
             "contest": "Contest",
             "contest_simulator": "Contest Simulator",
             "contestant": "Contestant",
             "contestant_alt": "contestant",
-            "contests_description": "Use this tool to plan your encounter contests. Tap a contest to see crew with viable skills for that contest.",
+            "contests_description": "Use this tool to plan your encounter contests.",
             "contests_header": "Contest Assignments",
             "contests_n_count": "Contests ({{n}})",
+            "contributors_description": "The crew assigned to this contest will contribute their full proficiency. Some crew assigned to prior contests may also contribute a fraction of their unused skills. The average values added to this contest by all contributing crew are listed below. You can add boosts to increase any contribution, which may improve the odds of winning this contest.",
+            "crew_exhausted": "{{crew}} cannot contribute exhausted skills",
+            "crew_irrelevant": "{{crew}} has no relevant skills to contribute to this contest",
+            "crew_wasted": "{{crew}} cannot contribute to inactive skills",
             "crit_chance": "Crit Chance",
             "encounter_helper_title": "Encounter helper",
+            "find_viable_crew": "Find viable crew for this contest",
             "importer": {
                 "data_loaded": "Encounter Data Loaded!",
                 "data_required": "Additional Data Required",
                 "description": "The Encounter Helper requires additional data that is not present in your player data. You can access and import the required data by following the instructions below.",
                 "follow_instructions": "Follow the instructions below to update your encounter data.",
+                "json_early": "No encounter data found. Please try again when your voyage has reached an encounter.",
+                "json_invalid": "The imported data is not valid. Please confirm the voyage data link is correct and try again.",
+                "json_undefined": "No data",
                 "progress_warning": "This tool is unable to see the crew used for any contests you have already completed in-game. You must manually assign successful crew to the contests below to get a more accurate representation of viable skills for the remaining contests.",
                 "tap_to_open": "If the information below does not match your encounter in-game, tap here to update your encounter data."
             },
@@ -2519,10 +2542,13 @@
             },
             "odds_of_winning": "Odds of Winning",
             "reset_assignments": "Reset assignments",
+            "reset_boosts": "Reset boosts",
             "search_for_contestant": "Search for contestant",
             "select_crit_chance": "Select crit chance",
+            "show_relevant_boosts": "Only show relevant boosts",
             "simulate_contest": "Simulate contest",
             "starting_skills": "Starting Skills",
+            "unused_skill": "If assigned to this contest, {{crew}} will contribute their unused {{skill}} skill to {{n}} later contest(s) with an average value added of +{{avg}} (per contest).",
             "vp_multiplier": "VP Multiplier",
             "wins": "Wins"
         },
@@ -2745,6 +2771,8 @@
             "voyage_prefs": "Voyage Skill Preference",
             "voyage_prefs_explain": "If a voyage skill preference is selected the crew's skill order is sorted so that matching skills come first."
         },
+        "recreate_dilemma": "Re-create dilemma voyage",
+        "recreate_encounter": "Re-create encounter voyage",
         "results": {
             "actions": {
                 "abort": "Abort",
