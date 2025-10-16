@@ -34,7 +34,7 @@ type CrewThemesProps = {
 
 export const CrewThemes = (props: CrewThemesProps) => {
 	const globalContext = React.useContext(GlobalContext);
-
+	const { t } = globalContext.localized;
 	const [themes, setThemes] = React.useState<IThemeOption[]>([] as IThemeOption[]);
 	const [categories, setCategories] = React.useState<IThemeCategory[]>([] as IThemeCategory[]);
 	const [selectedTheme, setSelectedTheme] = React.useState<IThemeOption | undefined>(undefined);
@@ -145,14 +145,18 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			name: string;
 		};
 		([
-			{ key: 'tos', name: 'The Original Series' },
-			{ key: 'tas', name: 'The Animated Series' },
-			{ key: 'tng', name: 'The Next Generation' },
-			{ key: 'ds9', name: 'Deep Space Nine' },
-			{ key: 'voy', name: 'Voyager' },
-			{ key: 'pic', name: 'Picard' },
-			{ key: 'low', name: 'Lower Decks' },
-			{ key: 'snw', name: 'Strange New Worlds' },
+			{ key: 'tos', name: t('series.tos') },
+			{ key: 'tas', name: t('series.tas') },
+			{ key: 'tng', name: t('series.tng') },
+			{ key: 'ds9', name: t('series.ds9') },
+			{ key: 'voy', name: t('series.voy') },
+			{ key: 'ent', name: t('series.ent') },
+			{ key: 'dsc', name: t('series.dsc') },
+			{ key: 'pic', name: t('series.pic') },
+			{ key: 'low', name: t('series.low') },
+			{ key: 'snw', name: t('series.snw') },
+			{ key: 'vst', name: t('series.vst') },
+			{ key: 'sfa', name: t('series.sfa') },
 		] as ISeriesOption[]).forEach(series => {
 			const crewIds = props.rosterCrew.filter(crew => crew.traits_hidden.includes(series.key)).map(crew => crew.id);
 			const eligibleIds = preExcludedCrew.filter(crew => crewIds.includes(crew.id));

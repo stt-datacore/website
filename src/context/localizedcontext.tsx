@@ -306,7 +306,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		translatedGameStrings.TRAIT_NAMES['maincast'] = wsmap['rank_names.scores.main_cast'];
 		translatedGameStrings.TRAIT_NAMES['notmaincast'] = wsmap['base.not_maincast'];
 		// TODO: Not main cast
-		["ds9", "dsc", "ent", "low", "original", "pic", "snw", "tas", "tng", "tos", "voy", "vst",]
+		["ds9", "dsc", "ent", "low", "original", "pic", "snw", "tas", "tng", "tos", "voy", "vst", "sfa"]
 			.forEach(series => translatedGameStrings.TRAIT_NAMES[series] = wsmap[`series.${series}`]);
 
 		setWebStringMap(wsmap);

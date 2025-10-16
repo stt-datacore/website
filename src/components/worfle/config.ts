@@ -20,6 +20,7 @@ export const SERIES_ERAS: { series: string, title: string, era: string }[] = [
 	{ series: 'low', title: 'Lower Decks', era: 'estream' },
 	{ series: 'snw', title: 'Strange New Worlds', era: 'estream' },
 	{ series: 'vst', title: 'Very Short Treks', era: 'estream' },
+	// { series: 'sfa', title: 'Starfleet Academy', era: 'estream' },
 	// Misc
 	{ series: 'original', title: 'Timelines Originals', era: 'eori' },
 ];
