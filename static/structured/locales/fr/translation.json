@@ -2066,6 +2066,7 @@
         "low": "Lower Decks",
         "original": "Timelines Originals",
         "pic": "Picard",
+        "sfa": "Starfleet Academy",
         "snw": "Strange New Worlds",
         "tas": "La série animée",
         "tng": "La Nouvelle Génération",
@@ -2354,6 +2355,13 @@
             "velocity": "Vitesse"
         },
         "description": "Étudiez les statistiques sur les tendances de la puissance de l'équipage au fil du temps.",
+        "events": {
+            "event": "Équipiers de récompenses d'événements",
+            "mega": "{{obtained.long.Mega}}",
+            "traits": "{{base.featured_traits}}",
+            "type": "{{event_stats.event_type}}",
+            "variants": "{{base.variants}}"
+        },
         "exact_skill_order_only": "Afficher uniquement les progressions exactes de l'ordre des compétences (pas de correspondances partielles)",
         "graphs": {
             "circle": "Cercles de compétences",

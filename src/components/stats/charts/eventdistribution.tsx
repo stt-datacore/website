@@ -33,18 +33,17 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
     const { t, TRAIT_NAMES } = globalContext.localized;
 
     const [type, setType] = useStateWithStorage<EventDistributionType>('stattrends/distribution_type', 'event');
-    //const [seriesFilter, setSeriesFilter] = useStateWithStorage<string[]>('stattrends/even_distribution/series', []);
-    const seriesFilter = [] as string[];
     const { event_stats, crew, event_scoring } = globalContext.core;
 
     const eventChoices = [
-        { key: 'event', value: 'event', text: t('obtained.long.Event') },
-        { key: 'mega', value: 'mega', text: t('obtained.long.Mega') },
-        { key: 'traits', value: 'traits', text: t('base.featured_traits') },
-        { key: 'variants', value: 'variants', text: t('base.variants') },
-        { key: 'type', value: 'type', text: t('event_stats.event_type') },
-        { key: 'type_series', value: 'type_series', text: t('event_stats.event_type') + " + " + t('base.series') },
+        { key: 'event', value: 'event', text: t('stat_trends.events.event') },
+        { key: 'mega', value: 'mega', text: t('stat_trends.events.mega') },
+        { key: 'traits', value: 'traits', text: t('stat_trends.events.traits') },
+        { key: 'variants', value: 'variants', text: t('stat_trends.events.variants') },
+        { key: 'type', value: 'type', text: t('stat_trends.events.type') },
+        { key: 'type_series', value: 'type_series', text: t('stat_trends.events.type') + " + " + t('base.series') },
     ];
+
 
     const flexCol = OptionsPanelFlexColumn;
     const flexRow = OptionsPanelFlexRow;
@@ -60,6 +59,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'low', value: 'low', text: t('series.low') },
         { key: 'snw', value: 'snw', text: t('series.snw') },
         { key: 'vst', value: 'vst', text: t('series.vst') },
+        { key: 'sfa', value: 'sfa', text: t('series.sfa') },
         { key: 'original', value: 'original', text: t('series.original') },
     ];
 
@@ -70,7 +70,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         else if (type === 'type') return createEventTypeStats();
         else if (type === 'type_series') return createEventTypeStats(true);
         else return createSeriesMegaStats();
-    }, [type, seriesFilter]);
+    }, [type]);
 
     return (
         <div style={{ ...flexCol, alignItems: 'flex-start' }}>
@@ -82,15 +82,6 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                     setType(value as any);
                 }}
             />
-            {/* <Dropdown
-                selection
-                options={seriesOptions}
-                value={seriesFilter}
-                multiple
-                onChange={(e, { value }) => {
-                    setSeriesFilter(value as any);
-                }}
-            /> */}
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em' }}>
                 <div style={{ height: '50vw', width: '70vw', border: '2px solid #666', borderRadius: '12px' }}>
@@ -187,11 +178,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                 let ntc = crew.filter(fc => fc.traits.includes(trait) || fc.traits_hidden.includes(trait)).map(cc => cc.symbol);
                 traits[trait].crew = [...new Set([...traits[trait].crew ?? [], ...ntc ?? []])];
         }
-        if (seriesFilter?.length) {
-            Object.values(traits).forEach(entry => {
-                entry.crew = entry.crew.map(c => crew.find(f => f.symbol === c)!).filter(cf => seriesFilter.some(trait => cf.traits_hidden.includes(trait))).map(cf => cf.symbol);
-            });
-        }
+
         const seriesStats = [] as PieSeriesType[];
         let totals = 0;
 
@@ -247,11 +234,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                 });
             }
         }
-        if (seriesFilter?.length) {
-            Object.values(series).forEach(entry => {
-                entry.crew = entry.crew.map(c => crew.find(f => f.symbol === c)!).filter(cf => seriesFilter.some(trait => cf.traits_hidden.includes(trait))).map(cf => cf.symbol);
-            });
-        }
+
         const seriesStats = [] as PieSeriesType[];
         let totals = 0;
 
@@ -297,11 +280,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                 if (!series[ser].events.includes(evt.instance_id)) series[ser].events.push(evt.instance_id);
             }
         });
-        if (seriesFilter?.length) {
-            Object.values(series).forEach(entry => {
-                entry.crew = entry.crew.map(c => crew.find(f => f.symbol === c)!).filter(cf => seriesFilter.some(trait => cf.traits_hidden.includes(trait))).map(cf => cf.symbol);
-            });
-        }
+
         const seriesStats = [] as PieSeriesType[];
         let totals = 0;
 
@@ -358,12 +337,6 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                     }
                 });
             }
-        }
-
-        if (seriesFilter?.length) {
-            Object.values(variants).forEach(entry => {
-                entry.crew = entry.crew.map(c => crew.find(f => f.symbol === c)!).filter(cf => seriesFilter.some(trait => cf.traits_hidden.includes(trait))).map(cf => cf.symbol);
-            });
         }
 
         const seriesStats = [] as PieSeriesType[];
@@ -454,15 +427,6 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         Object.entries(buckets).forEach(([key, bucket]) => {
             bucket.sort((a, b) => b.discovered!.getTime() - a.discovered!.getTime());
             let ev = globalContext.core.event_instances.find(f => f.instance_id === bucket[0].instance_id);
-            if (seriesFilter?.length) {
-                bucket = bucket.filter(b => {
-                    let cf = crew.find(cs => cs.symbol === b.crew);
-                    if (cf) {
-                        if (!seriesFilter.some(trait => cf.traits_hidden.includes(trait))) return false;
-                    }
-                    return true;
-                });
-            }
             seriesStats.push({
                 label: key.split("/").map(p => t(`event_type.${p}`) || t(`series.${p}`)).join("/"),
                 events: bucket.length,

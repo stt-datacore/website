@@ -2055,6 +2055,7 @@
         "low": "Lower Decks",
         "original": "Timelines Originals",
         "pic": "Picard",
+        "sfa": "Starfleet Academy",
         "snw": "Strange New Worlds",
         "tas": "The Animated Series",
         "tng": "The Next Generation",
@@ -2343,6 +2344,13 @@
             "velocity": "Velocity"
         },
         "description": "Study statistics about crew power trending over time.",
+        "events": {
+            "event": "Event Reward Crew",
+            "mega": "{{obtained.long.Mega}}",
+            "traits": "{{base.featured_traits}}",
+            "type": "{{event_stats.event_type}}",
+            "variants": "{{base.variants}}"
+        },
         "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
         "graphs": {
             "circle": "Skill Circles",
