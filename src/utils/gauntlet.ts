@@ -61,6 +61,7 @@ export interface FilterProps {
 	skillPairs?: string[];
 }
 
+export type GauntletBucketType = { name?: string, crit: number, key: string, count: number };
 
 export const crit65 = 2;
 export const crit45 = 1.85;
@@ -960,8 +961,38 @@ export function getCrewCrit(crew: PlayerCrew | CrewMember | GauntletContestCrew,
 	}
 }
 
+export function getElevatedBuckets(crew: PlayerCrew, gauntlets: Gauntlet[], TRAIT_NAMES?: TraitNames) {
+	if (!gauntlets) return [];
+	const keybucket = {} as { [key:string]: GauntletBucketType };
+	const addtobucket = (b_gauntlet: Gauntlet, crit: number) => {
+		// No crit
+		if (crit < 25) return;
+
+		const key = makeGauntletKey(b_gauntlet);
+		let name = TRAIT_NAMES ? printGauntlet(b_gauntlet, TRAIT_NAMES) : undefined;
+		keybucket[key] ??= {
+			crit,
+			key,
+			count: 0,
+			name
+		};
+		keybucket[key].count++;
+	}
+	const critted = gauntlets.filter(f => f.contest_data && f.contest_data.traits.some(t => crew.traits.includes(t)));
+	for (let g of critted) {
+		addtobucket(g, getCrewCrit(crew, g));
+	}
+	return Object.values(keybucket).sort((a, b) => b.crit - a.crit || b.count - a.count || a.key.localeCompare(b.key));
+}
+
 export function printGauntlet(gauntlet: Gauntlet, TRAIT_NAMES: TraitNames) {
-	return (gauntlet.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""));
+	return (gauntlet.contest_data?.traits?.map(t => TRAIT_NAMES[t] || t).join("/") + "/" + skillToShort(gauntlet.contest_data?.featured_skill ?? ""));
+}
+
+export function makeGauntletKey(gauntlet: Gauntlet) {
+		if (!gauntlet.contest_data?.traits) return '';
+		let traits = gauntlet.contest_data.traits.slice(); //.sort();
+		return `${gauntlet.contest_data.featured_skill}/${traits.join("/")}`;
 }
 
 export function getCritColor(crit: number) {
