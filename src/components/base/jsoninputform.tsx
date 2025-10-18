@@ -36,6 +36,17 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 	const [loadState, setLoadState] = React.useState(0);
 	const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
 
+	/** DO NOT DELETE
+	 * This is a fix for mobile platforms that forces a second render.
+	 * For whatever reason, copy/paste does not work on the first go-round.
+	 * This appears to successfully "kick the machine"
+	 */
+	React.useEffect(() => {
+		setFullInput('');
+		setDisplayedInput('');
+	}, []);
+	/** DO NOT DELETE */
+
 	React.useEffect(() => {
 		if (inputData) {
 			setValidInput(inputData);
@@ -103,7 +114,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 							</Grid.Column>
 						</Grid.Row>
 						<Grid.Row>
-							<Grid.Column width={1}>
+							<Grid.Column>
 								{renderUpload()}
 							</Grid.Column>
 						</Grid.Row>
@@ -144,7 +155,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{tfmt('json.copy_and_paste.description_1', {
 						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
-								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}} tabIndex={0}>
 									{caption}
 								</span>
 					})}
@@ -205,7 +216,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					{tfmt('json.copy_and_paste.description_1', {
 						'data': !postValues ? <a href={DATALINK} target='_blank' style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
 									{caption}
-								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}}>
+								</a> : <span onClick={postClick} style={{cursor:'pointer', fontWeight: 'bold', color: '#4183C4'}} tabIndex={0}>
 									{caption}
 								</span>
 					})}
@@ -283,7 +294,14 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 			if (data.match(/^bplist00/)) {
 				// Find where the JSON begins and ends, and extract just that from the larger string.
 				if (data.includes("</pre>")) {
-					data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('</pre>'));
+					// JSON object (e.g. player data) if it starts with {
+					if (data.indexOf('>{') >= 0) {
+						data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('</pre>'));
+					}
+					// JSON array (e.g. voyage refresh data) if it starts with [
+					else if (data.indexOf('>[') >= 0) {
+						data = data.substring(data.indexOf('>[') + 1, data.lastIndexOf('</pre>'));
+					}
 				}
 				else {
 					data = data.substring(data.indexOf('>{') + 1, data.lastIndexOf('}') + 1);

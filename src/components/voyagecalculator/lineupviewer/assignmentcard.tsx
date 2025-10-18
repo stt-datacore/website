@@ -48,6 +48,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 			}
 			<div style={{ margin: '0 auto' }}>
 				<AvatarView
+					id={crew.id}
 					mode='crew'
 					crewBackground='rich'
 					targetGroup='voyageLineupHover'

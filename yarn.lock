@@ -4108,9 +4108,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001646, caniuse-lite@^1.0.30001688:
-  version "1.0.30001696"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001696.tgz#00c30a2fc11e3c98c25e5125418752af3ae2f49f"
-  integrity sha512-pDCPkvzfa39ehJtJ+OwGT/2yvT2SbjfHhiIW2LWOAcMQ7BzwxT/XuyUp4OTOd0XFWA6BKw0JalnBHgSi5DGJBQ==
+  version "1.0.30001736"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001736.tgz"
+  integrity sha512-ImpN5gLEY8gWeqfLUyEF4b7mYWcYoR2Si1VhnrbM4JizRFmfGaAQ12PhNykq6nvI4XvKLrsp8Xde74D5phJOSw==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -10390,10 +10390,10 @@ react-helmet@^6.1.0:
     react-fast-compare "^3.1.1"
     react-side-effect "^2.1.0"
 
-react-intersection-observer@^9.8.2:
-  version "9.15.1"
-  resolved "https://registry.yarnpkg.com/react-intersection-observer/-/react-intersection-observer-9.15.1.tgz#5866b6fdfef24be9f288b74b35b773f63d90c3eb"
-  integrity sha512-vGrqYEVWXfH+AGu241uzfUpNK4HAdhCkSAyFdkMb9VWWXs6mxzBLpWCxEy9YcnDNY2g9eO6z7qUtTBdA9hc8pA==
+react-intersection-observer@^9.16.0:
+  version "9.16.0"
+  resolved "https://registry.yarnpkg.com/react-intersection-observer/-/react-intersection-observer-9.16.0.tgz#7376d54edc47293300961010844d53b273ee0fb9"
+  integrity sha512-w9nJSEp+DrW9KmQmeWHQyfaP6b03v+TdXynaoA964Wxt7mdR3An11z4NNCQgL4gKSK7y1ver2Fq+JKH6CWEzUA==
 
 react-is@^16.13.1, react-is@^16.6.3, react-is@^16.7.0:
   version "16.13.1"

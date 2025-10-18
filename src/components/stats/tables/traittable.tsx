@@ -2,7 +2,8 @@ import React from "react"
 import { GlobalContext } from "../../../context/globalcontext"
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { Checkbox, Table } from "semantic-ui-react";
-import { approxDate, computePotentialColScores, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, SpecialCols } from "../utils";
+import { computePotentialColScores, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, HiddenTraitCols } from "../utils";
+import { approxDate } from "../itemdateutils";
 import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
@@ -16,12 +17,15 @@ import { TraitStats } from "../model";
 import { TraitDive } from "./traitdive";
 import { renderMainDataScore } from "../../crewtables/views/base";
 import CONFIG from "../../CONFIG";
+import { EquipmentItem } from "../../../model/equipment";
+import { ICoreData } from "../../../context/coremodel";
+import { colSpecialDate, getItemDateEstimates } from "../itemdateutils";
 
 export const TraitStatsTable = () => {
 
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt, TRAIT_NAMES, COLLECTIONS } = globalContext.localized;
-    const { crew, collections, keystones } = globalContext.core;
+    const { crew, collections, keystones, items } = globalContext.core;
     const [stats, setStats] = React.useState<TraitStats[]>([]);
     const [excludeLaunch, setExcludeLaunch] = useStateWithStorage<boolean>('stat_trends/traits/exclude_launch', false, { rememberForever: true });
     const [showHidden, setShowHidden] = useStateWithStorage<boolean>('stat_trends/traits/show_hidden', false, { rememberForever: true });
@@ -40,82 +44,15 @@ export const TraitStatsTable = () => {
         computePotentialColScores(crew, collections, TRAIT_NAMES),
     [crew, collections, TRAIT_NAMES]);
 
-    const calcReleaseVague = (min: number, max: number) => {
-        let d = new Date(GameEpoch);
-        let dn = ((max - min) / 4) + 91;
-        d.setDate(d.getDate() + dn);
-        return d;
-    }
-
-    const calcRelease = (number: number, items: { id: number, date: Date }[]) => {
-        let n = -1;
-        let nidx = -1;
-        let i = 0;
-        for (let item of items) {
-            if (item.id > number) break;
-            let z = number - item.id;
-            if (z >= 0 && (n === -1 || z < n)) {
-                n = z;
-                nidx = i;
-            }
-            i++;
-        }
-        if (n < 0 || nidx < 0) return new Date(GameEpoch);
-        let d = new Date(items[nidx].date);
-        d.setHours(d.getHours() - ((number - n) / 40));
-        return d;
-    }
-
-    const colSpecialDate = (c: string) => {
-        let reg = /^([a-z]+)(\d+)$/;
-        if (reg.test(c)) {
-            let res = reg.exec(c);
-            if (res && res[2].length === 4) {
-                return new Date(`${res[1]} ${res[2]}`);
-            }
-        }
-        return null;
-    }
-
     React.useEffect(() => {
         if (!crew?.length) return;
-        let work = [...crew];
-        work.sort((a, b) => a.date_added.getTime() - b.date_added.getTime() || a.archetype_id - b.archetype_id || (a.name_english || a.name).localeCompare(b.name_english ?? b.name));
-        let crewitems = crew.map(c => {
-            let symbol = c.equipment_slots.findLast(f => f.level >= 99)?.symbol ?? '';
-            let item = globalContext.core.items.find(f => f.symbol === symbol);
-            if (item) {
-                return {
-                    id: Number(item.id),
-                    date: c.date_added
-                }
-            }
-            else return {
-                id: 0,
-                date: new Date()
-            }
-        }).filter(f => f.id).sort((a, b) => a.id - b.id);
 
-        let workstones = [...keystones];
-        workstones.sort((a, b) => a.id - b.id);
+        const { work, stoneicons, stones } = getItemDateEstimates(globalContext.core, t);
 
-        const stones = {} as { [key: string]: Date }
-        const stoneicons = {} as { [key: string]: string }
         const ntraits = [] as string[];
         const htraits = [] as string[];
-        const min = workstones[0].id;
-        workstones.forEach((ks) => {
-            if (ks.symbol.endsWith("_crate")) return;
-            let t = ks.symbol.replace("_keystone", "");
-            let d = calcReleaseVague(min, ks.id);
-            if (d.getUTCFullYear() >= 2022) d = calcRelease(ks.id, crewitems);
-            if (d.getUTCFullYear() === 2016) d = new Date(GameEpoch);
-            stones[t] = d;
-            stoneicons[t] = getIconPath(ks.icon);
-        });
 
         const vtsn = {} as { [key: string]: string[] };
-
         work.forEach((c) => {
             const variants = getVariantTraits(c);
             if (showVariantTraits) {
@@ -187,9 +124,9 @@ export const TraitStatsTable = () => {
                     grade: potrec?.count,
                     highest_datascore: dscrew
                 };
-                if (!hidden || SpecialCols[trait]) {
-                    if (SpecialCols[trait]) {
-                        let col = collections.find(f => f.id == SpecialCols[trait]);
+                if (!hidden || HiddenTraitCols[trait]) {
+                    if (HiddenTraitCols[trait]) {
+                        let col = collections.find(f => f.id == HiddenTraitCols[trait]);
                         if (col) {
                             newtrait.collection = COLLECTIONS[`cc-${col.type_id}`]?.name ?? col.name
                         }

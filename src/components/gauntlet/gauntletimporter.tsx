@@ -1,7 +1,7 @@
 import React from "react";
 
 import { GlobalContext } from "../../context/globalcontext";
-import { Gauntlet, GauntletRoot } from "../../model/gauntlets";
+import { GauntletRoot } from "../../model/gauntlets";
 import { JsonInputForm } from "../base/jsoninputform";
 import { Notification } from "../page/notification";
 

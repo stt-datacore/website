@@ -31,7 +31,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 	React.useEffect(() => {
 		if (options.state !== OptionsState.Uninitialized) {
 			setOptions({ ... options, state: OptionsState.Uninitialized });
-		}		
+		}
 	}, [pool]);
 
 	if (pool.length == 0) return (<></>);

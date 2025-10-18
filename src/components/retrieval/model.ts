@@ -1,4 +1,4 @@
-import { KeystoneBase, PolestarFilter } from '../../model/game-elements';
+import { KeystoneBase, PolestarFilter } from "../../model/keystone";
 import { PlayerCrew } from '../../model/player';
 
 // Keystone (i.e. constellations AND polestars) with quantity owned
@@ -27,6 +27,7 @@ export enum RetrievableState {
 	Viable = 1,		// Uniquely retrievable
 	NonUnique,		// In portal, but not uniquely retrievable
 	InFuture,		// Not yet in portal
+	Expiring,       // Will soon not be uniquely retrievable
 	Never			// Exclusive crew that will never be retrievable
 };
 

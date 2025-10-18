@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps } from 'semantic-ui-react';
+import { Table, Input, Pagination, Dropdown, Popup, Icon, Button, Message, Checkbox, DropdownItemProps, SemanticICONS, Container } from 'semantic-ui-react';
 import { isMobile } from 'react-device-detect';
 
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
@@ -13,6 +13,8 @@ import { translatePseudocolumn } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
 import CONFIG from './CONFIG';
 import { TranslateMethod } from '../model/player';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from './stats/utils';
+import { DEFAULT_MOBILE_WIDTH } from './hovering/hoverstat';
 
 export function getFilterTypeOptions(t: TranslateMethod) {
 	return [
@@ -70,11 +72,6 @@ export interface SearchableTableProps {
 	lockable?: any[];
 	zeroMessage?: (searchFilter: string) => JSX.Element;
 
-	checkCaption?: string;
-	checkableValue?: boolean;
-	checkableEnabled?: boolean;
-	setCheckableValue?: (value?: boolean) => void;
-
 	toolCaption?: string;
 	dropDownChoices?: string[];
 	dropDownValue?: string;
@@ -86,6 +83,8 @@ export interface SearchableTableProps {
 	defaultPaginationRows?: number;
 
 	lockTitle?: (obj: any) => string;
+	stickyHeader?: boolean;
+	showSortDropdown?: boolean;
 };
 
 export const SearchableTable = (props: SearchableTableProps) => {
@@ -306,20 +305,25 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	if (activePage > totalPages) activePage = totalPages;
 	data = data.slice(pagination_rows * (activePage - 1), pagination_rows * activePage);
 
-	const { toolCaption: caption, checkCaption, checkableEnabled, checkableValue, setCheckableValue } = props;
-
+	const { toolCaption: caption } = props;
+	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+	const rightContent = !!props.extraSearchContent && !!props.showSortDropdown;
 	return (
 		<div>
-			{!props.noSearch && <div style={{
-				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-				justifyContent: "flex-start",
-				flexWrap: 'wrap'
+			{!props.noSearch && <Container className={props.stickyHeader ? 'ui segment' : undefined} style={{
+				position: props.stickyHeader ? 'sticky' : undefined,
+				top: props.stickyHeader ? 0 : undefined,
+ 				display: "flex",
+				flexDirection: isMobile ? "column" : "row",
+				alignItems: isMobile ? "flex-start" : "center",
+				justifyContent: isMobile ? "center" : "flex-start",
+				gap: isMobile ? '0.5em' : undefined,
+				flexWrap: 'wrap',
+				zIndex: 1
 			}}>
 
 				<Input
-					style={{ width: isMobile ? '100%' : '50%' }}
+					style={{ width: isMobile ? '100%' : (rightContent ? undefined : '50%'), flexGrow: rightContent ? 1 : undefined  }}
 					iconPosition="left"
 					placeholder={t('global.search_ellipses')}
 					value={searchFilter}
@@ -332,7 +336,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				</Input>
 
 				{props.showFilterOptions && (
-					<span style={{ paddingLeft: '2em' }}>
+					<span style={{ paddingLeft: isMobile ? undefined : '2em' }}>
 						<Dropdown inline
 							options={getFilterTypeOptions(t)}
 							value={filterType}
@@ -345,14 +349,34 @@ export const SearchableTable = (props: SearchableTableProps) => {
 					header={'Advanced search'}
 					content={props.explanation ? props.explanation : renderDefaultExplanation()}
 				/>}
-				{!!props.extraSearchContent && <>{props.extraSearchContent}</>}
+
 				<div style={{
 					display: "flex",
-					flexDirection: "row",
+					flexDirection: isMobile ? "column" : "row",
 					justifyContent: "flex-end",
-					alignItems: "center"
+					justifySelf: "flex-end",
+					alignItems: isMobile ? "flex-start" : "center",
+					marginLeft: isMobile ? undefined : '1em',
+					gap: isMobile ? '0.25em' : '0.5em',
+					flexGrow: 1
 				}}>
-					{caption && props.dropDownChoices?.length && (
+					{!!props.extraSearchContent && <>{props.extraSearchContent}</>}
+					{!!props.showSortDropdown && (
+						<>
+							<span>
+								<SortDropDown
+									column={column}
+									setColumn={setColumn}
+									direction={direction}
+									setDirection={setDirection}
+									config={props.config}
+									pseudoColumn={sortColumn}
+									/>
+							</span>
+							{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
+						</>
+					)}
+					{!!caption && !!props.dropDownChoices?.length && (
 						<div style={{
 							margin: "0.5em",
 							display: "flex",
@@ -362,7 +386,6 @@ export const SearchableTable = (props: SearchableTableProps) => {
 							alignSelf: "flex-end",
 							height: "2em"
 						}}>
-
 							<span style={{ paddingLeft: '2em' }}>
 								<Dropdown inline
 									placeholder={caption}
@@ -381,28 +404,10 @@ export const SearchableTable = (props: SearchableTableProps) => {
 									}}
 								/>
 							</span>
-							{/* <div style={{margin: "0.5em"}} className="ui text">{caption}</div> */}
-						</div>
-					)}
-					{!!checkCaption && !!setCheckableValue && (
-						<div style={{
-							margin: "0.5em",
-							display: "flex",
-							flexDirection: "row",
-							alignItems: "center",
-							justifyContent: "center",
-							alignSelf: "flex-end",
-							height: "2em"
-						}}>
-							<Checkbox
-								onChange={(e, d) => setCheckableValue(d.checked)}
-								checked={checkableValue}
-								disabled={!checkableEnabled} />
-							<div style={{ margin: "0.5em" }} className="ui text">{checkCaption}</div>
 						</div>
 					)}
 				</div>
-			</div>}
+			</Container>}
 
 			<div>
 				{props.lockable && <LockButtons lockTitle={props.lockTitle} lockable={props.lockable} activeLock={activeLock} setLock={onLockableClick} />}
@@ -456,6 +461,92 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	);
 };
 
+type SortDropdownProps = {
+	config: ITableConfigRow[]
+	direction: SortDirection | 'ascending' | 'descending' | undefined;
+	setDirection: (value: SortDirection | 'ascending' | 'descending' | undefined) => void;
+	column?: string;
+	setColumn: (value?: string) => void;
+	pseudoColumn?: string
+}
+
+export const SortDropDown = (props: SortDropdownProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { pseudoColumn, config, direction, setDirection, column, setColumn } = props;
+
+	const items = React.useMemo(() => {
+		const props = [] as DropdownItemProps[];
+
+		config.forEach((col, i) => {
+			let skillText = "";
+			if (typeof col.title !== 'string' && col.column?.includes("_skill")) {
+				let skill_part = col.column.split(".").find(f => f.endsWith("_skill"))
+				if (skill_part) skillText = ` ${CONFIG.SKILLS[skill_part]}`;
+			}
+			props.push({
+				key: `${col.column}_dropdown_column`,
+				text: skillText || col.title,
+				value: col.column,
+				content: (
+					<div style={{display: 'flex', gap: '0.5em'}}>
+						{col.title}{skillText}
+					</div>
+				)
+			});
+
+			if (col.pseudocolumns) {
+				col.pseudocolumns.forEach(pcol => {
+					props.push({
+						key: `${col.column}_${pcol}_dropdown_pseudocolumn`,
+						text: col.translatePseudocolumn ? col.translatePseudocolumn(pcol) : translatePseudocolumn(pcol, t),
+						value: pcol,
+						content: (
+							<div style={{marginLeft: '1em'}}>
+								&mdash;&nbsp;{col.translatePseudocolumn ? col.translatePseudocolumn(pcol) : translatePseudocolumn(pcol, t)}
+							</div>
+						)
+					});
+				});
+			}
+		});
+
+		return props;
+	}, [config, column, pseudoColumn]);
+
+	const phtext = (() => {
+		if (!column && !!pseudoColumn) return translatePseudocolumn(pseudoColumn, t);
+		return undefined;
+	})();
+	return (
+		<div style={{ display: 'flex', alignItems: 'center' }}>
+			<Dropdown
+				style={{marginRight: '0.5em'}}
+				clearable
+				selection
+				placeholder={phtext}
+				options={items}
+				value={column ? (pseudoColumn || column) : undefined}
+				onChange={(e, { value }) => setColumn(value as string | undefined)}
+			/>
+			<Button
+				disabled={!column}
+				icon={`sort alphabet ${direction === 'ascending' && column ? 'descending' : 'ascending'}`}
+				onClick={reverseDirection}
+			/>
+		</div>
+	)
+
+	function reverseDirection() {
+		if (direction === 'descending') {
+			setDirection('ascending');
+		}
+		else {
+			setDirection('descending');
+		}
+	}
+}
+
 type LockButtonsProps = {
 	lockable: any[];
 	activeLock: any;
@@ -498,7 +589,7 @@ export const initSearchableOptions = (location: any, search?: string) => {
 		// Always use URL parameters if found
 		if (urlParams?.has(option)) value = urlParams.get(option) ?? undefined;
 		// Otherwise check <Link state>
-		if (!value && linkState && linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (!value && linkState && linkState[option]) value = structuredClone(linkState[option]);
 		if (value) {
 			if (!initOptions) initOptions = {};
 			initOptions[option] = value;
@@ -519,7 +610,7 @@ export function initCustomOption<T>(location: any, option: string, defaultValue:
 	// Otherwise check <Link state>
 	if (!value && location?.state) {
 		const linkState = location.state;
-		if (linkState[option]) value = JSON.parse(JSON.stringify(linkState[option]));
+		if (linkState[option]) value = structuredClone(linkState[option]);
 	}
 	return (value ?? defaultValue) as T;
 };
@@ -563,12 +654,13 @@ export const prettyCrewColumnTitle = (column: string) => {
 };
 
 function renderDefaultZeroMessage(): JSX.Element {
+	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<Message icon>
 			<Icon name='search' />
 			<Message.Content>
-				<Message.Header>0 results found</Message.Header>
-				Please try different search options.
+				<Message.Header>{t('crew_picker.no_results_parts.title')}</Message.Header>
+				{t('crew_picker.no_results_parts.message')}
 			</Message.Content>
 		</Message>
 	);

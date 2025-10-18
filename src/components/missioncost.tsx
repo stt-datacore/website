@@ -8,8 +8,9 @@ type MissionCostProps = {
 	avg_cost?: number;
 	mastery: number;
 	chance_grade: number;
-	name: string;
+	name: string | JSX.Element;
 	cadet?: boolean;
+	continuum?: boolean;
 	hideCost?: boolean;
 };
 
@@ -17,7 +18,7 @@ class MissionCost extends PureComponent<MissionCostProps> {
 	render() {
 		const is_known = this.props.cost > 0;
 		const has_avg = this.props.avg_cost && this.props.avg_cost > 0;
-		const { cadet } = this.props;
+		const { cadet, continuum } = this.props;
 
 		// TODO: name should be a Link to /missions/${mission_symbol}/
 		return (
@@ -30,8 +31,9 @@ class MissionCost extends PureComponent<MissionCostProps> {
 					<span>
 						{' ('}
 						<span style={{ display: 'inline-block' }}>
-							{!cadet && <img title={"Chronitons"} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />}
-							{cadet && <img title={"Cadet challenge ticket"} src={`${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`} height={14} />}
+							{!cadet && !continuum && <img title={"Chronitons"} src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />}
+							{!!cadet && <img title={"Cadet challenge ticket"} src={`${process.env.GATSBY_ASSETS_URL}atlas/cadet_icon.png`} height={14} />}
+							{!!continuum && <img title={"Cadet challenge ticket"} src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} height={14} />}
 						</span>
 
 						{` ${this.props.cost}${has_avg ? `; avg. ${this.props.avg_cost?.toFixed(2)}` : ''})`}

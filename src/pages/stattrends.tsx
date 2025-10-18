@@ -7,6 +7,7 @@ import { StatsDataProvider } from "../components/stats/dataprovider";
 const StatTrends = () => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
+    const { sync_time } = globalContext.core;
 
     return (
         <DataPageLayout
@@ -14,9 +15,14 @@ const StatTrends = () => {
                 pageTitle={t('stat_trends.title')}
                 pageDescription={t('stat_trends.description')}
             >
-            <StatsDataProvider>
-                <StatTrendsComponent />
-            </StatsDataProvider>
+            <React.Fragment>
+                <div style={{fontSize: '1em', margin: '1em 0'}}>
+                    {t('stat_trends.last_sync_timestamp{{:}}')}&nbsp;<b>{sync_time.toLocaleString()}</b>
+                </div>
+                <StatsDataProvider>
+                    <StatTrendsComponent />
+                </StatsDataProvider>
+            </React.Fragment>
         </DataPageLayout>)
 }
 

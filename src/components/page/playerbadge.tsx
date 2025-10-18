@@ -12,21 +12,25 @@ export interface PlayerBadgeProps {
 
 export const PlayerBadge = (props: PlayerBadgeProps) => {
     const { playerData, style, t, openPlayerPanel } = props;
+
+    const { crewLimit, unfrozen, immortal, avatar } = React.useMemo(() => {
+
+        let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
+            ? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
+            : 'crew_portraits_cm_empty_sm.png'}`;
+
+        if (portrait.includes("crew_portraits") && !portrait.endsWith("_sm.png")) {
+            portrait = portrait.replace("_icon.png", "_sm.png");
+        }
+
+        const crewLimit = playerData?.player.character.crew_limit || 0;
+        const unfrozen = playerData?.player.character.crew.filter(f => f.immortal == 0 || f.immortal == -1).length || 0;
+        const immortal = playerData?.player.character.crew.filter(f => f.immortal).reduce((p, n) => p + Math.abs(n.immortal!), 0) || 0;
+
+        return { crewLimit, unfrozen, immortal, avatar: portrait };
+    }, [playerData]);
+
     if (!playerData) return <></>;
-
-    let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
-        ? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
-        : 'crew_portraits_cm_empty_sm.png'}`;
-
-    if (portrait.includes("crew_portraits") && !portrait.endsWith("_sm.png")) {
-        portrait = portrait.replace("_icon.png", "_sm.png");
-    }
-
-    const crewLimit = playerData.player.character.crew_limit;
-    const unfrozen = playerData.player.character.crew.filter(f => !f.immortal || f.immortal < 0).length;
-    const immortal = playerData.player.character.crew.filter(f => f.immortal).reduce((p, n) => p + Math.abs(n.immortal!), 0);
-
-    const avatar = portrait;
 
     return <Item.Group style={{...style, cursor: openPlayerPanel ? 'pointer' : undefined }} onClick={() => openPlayerPanel ? openPlayerPanel() : null}>
         <Item>

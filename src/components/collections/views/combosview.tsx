@@ -6,7 +6,7 @@ import { GlobalContext } from '../../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
 import { useStateWithStorage } from '../../../utils/storage';
 import CollectionsCrewCard from '../cards/crewcard';
-import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collectionfilter';
+import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collections';
 import { findColGroupsCrew, getOptCols, getOwnedCites, neededStars, starCost } from '../../../utils/collectionutils';
 import { CollectionCard } from '../cards/collectioncard';
 
@@ -128,7 +128,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 								});
 								return <> </>
 							}
-							const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
+							const collection = structuredClone(col.collection) as PlayerCollection;
 							collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 							//collection.needed = comboCrew.length;
 							col.neededStars = neededStars(comboCrew);

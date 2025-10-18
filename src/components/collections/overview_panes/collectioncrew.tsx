@@ -1,5 +1,5 @@
 import React from "react"
-import { Collection } from "../../../model/game-elements"
+import { Collection } from "../../../model/collections";
 import { GlobalContext } from "../../../context/globalcontext";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewPresenter } from "../../item_presenters/crew_presenter";

@@ -7,7 +7,7 @@ import { CollectionDetails } from '../overview_modal';
 import { formatColString } from '../context';
 import { getAllStatBuffs } from '../../../utils/collectionutils';
 import { getIconPath } from '../../../utils/assets';
-import { Collection } from '../../../model/game-elements';
+import { Collection } from "../../../model/collections";
 
 export const CollectionsOverview = () => {
 	const globalContext = React.useContext(GlobalContext);

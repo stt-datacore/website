@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from '../../utils/storage';
-import { CollectionFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collectionfilter';
+import { CollectionFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collections';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
 import { Filter } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';

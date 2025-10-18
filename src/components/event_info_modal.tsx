@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Image, Tab } from 'semantic-ui-react';
+import { Button, Container, Image, Label, Popup, Tab } from 'semantic-ui-react';
 
 import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
@@ -10,7 +10,8 @@ import { CrewHoverStat } from './hovering/crewhoverstat';
 import { ItemHoverStat } from './hovering/itemhoverstat';
 import { ShipHoverStat } from './hovering/shiphoverstat';
 import { GlobalContext } from '../context/globalcontext';
-import { Leaderboard } from '../model/events';
+import { EventInstance, Leaderboard } from '../model/events';
+import { OptionsPanelFlexRow } from './stats/utils';
 
 type EventInfoModalProps = {
 	instanceId: number,
@@ -19,12 +20,12 @@ type EventInfoModalProps = {
 	leaderboard: Leaderboard[],
 }
 
-function EventInfoModal(props: EventInfoModalProps) {
+export function EventInfoModal(props: EventInfoModalProps) {
 	const globalContext = React.useContext(GlobalContext);
 	const { event_instances } = globalContext.core;
 
 	const { t } = globalContext.localized;
-	const {instanceId, image, hasDetails, leaderboard} = props;
+	const { instanceId, image, hasDetails, leaderboard} = props;
 	const [eventData, setEventData] = React.useState<GameEvent | null>(null);
 	const [lastEvent, setLastEvent] = React.useState<GameEvent | null>(null);
 
@@ -48,7 +49,7 @@ function EventInfoModal(props: EventInfoModalProps) {
 			}
 		}
 		fetchEventData();
-	}, []);
+	}, [instanceId]);
 
 	const eventInfoPanes = [
 		{
@@ -114,4 +115,90 @@ function EventInfoModal(props: EventInfoModalProps) {
 	);
 }
 
-export default EventInfoModal;
+interface EventModalHeaderProps {
+	instance: EventInstance;
+	setInstance?: (value: EventInstance) => void;
+	flip?: boolean;
+}
+
+export const EventModalHeader = (props: EventModalHeaderProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { event_instances } = globalContext.core;
+	const [prevEvent, setPrevEvent] = React.useState<EventInstance | undefined>();
+	const [nextEvent, setNextEvent] = React.useState<EventInstance | undefined>();
+	const { flip, instance: modalEventInstance, setInstance: setModalEventInstance } = props;
+
+	React.useEffect(() => {
+		let idx = event_instances.findIndex(e => e === modalEventInstance);
+		if (idx <= 0) {
+			setPrevEvent(undefined);
+		}
+		else {
+			setPrevEvent(event_instances[idx - 1]);
+		}
+		if (idx === -1 || idx >= event_instances.length - 1) {
+			setNextEvent(undefined);
+		}
+		else {
+			setNextEvent(event_instances[idx + 1]);
+		}
+	}, [modalEventInstance]);
+
+	return (
+		<div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
+			<div style={{...OptionsPanelFlexRow, alignItems: 'center', gap: '0.5em'}}>
+				<span>{modalEventInstance.event_name}</span>
+				{!!modalEventInstance?.rerun && <Label color='brown'>{t('global.rerun')}</Label>}
+			</div>
+			{!!setModalEventInstance && (<>
+				{!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!prevEvent} onClick={clickPrev} icon='arrow left' />}
+						content={<div>{prevEvent?.event_name}</div>}
+					/>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!nextEvent} onClick={clickNext} icon='arrow right' />}
+						content={<div>{nextEvent?.event_name}</div>}
+					/>
+				</div>}
+				{!!flip && <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!nextEvent} onClick={clickNext} icon='arrow left' />}
+						content={<div>{nextEvent?.event_name}</div>}
+					/>
+					<Popup
+						hoverable
+						trigger={<Button disabled={!prevEvent} onClick={clickPrev} icon='arrow right' />}
+						content={<div>{prevEvent?.event_name}</div>}
+					/>
+				</div>}
+			</>)}
+		</div>
+	)
+
+	function clickNext() {
+		if (!setModalEventInstance) return;
+		let curr = event_instances.findIndex(e => e === modalEventInstance);
+		if (curr === -1) return;
+		if (curr < event_instances.length - 1) {
+			curr++;
+			setModalEventInstance(event_instances[curr]);
+		}
+	}
+
+	function clickPrev() {
+		if (!setModalEventInstance) return;
+		let curr = event_instances.findIndex(e => e === modalEventInstance);
+		if (curr === -1) return;
+		if (curr > 0) {
+			curr--;
+			setModalEventInstance(event_instances[curr]);
+		}
+	}
+
+
+}

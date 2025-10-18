@@ -13,6 +13,7 @@ import { CompletionState, PlayerCrew } from "../../model/player";
 import { AvatarView } from "../item_presenters/avatarview";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { getEventData } from "../../utils/events";
+import { Button } from "semantic-ui-react";
 
 interface GlobalFarmProps {
     pageId?: string;
@@ -34,7 +35,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     const { cancel, runWorker, running } = workerContext;
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, configureFilters, itemSourceFilter, masteryFilter } = filterContext;
+    const { available, filterItems, rarityFilter, itemTypeFilter, hideUnneeded, showUnownedNeeded, configureFilters, itemSourceFilter, masteryFilter } = filterContext;
 
     const rosterCrew = React.useMemo(() => {
         if (playerData) {
@@ -77,11 +78,11 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         setTimeout(() => {
             runWorker(
                 "equipmentWorker", {
-                    playerData,
-                    items: coreItems,
-                    addNeeded: true,
-                    crewFilter
-                },
+                playerData,
+                items: coreItems,
+                addNeeded: true,
+                crewFilter
+            },
                 (data: { data: { result: EquipmentWorkerResults } }) => {
                     if (playerData && !crewFilter?.length) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setPrefilteredData(filterDemands(data.data.result.items as EquipmentItem[]));
@@ -90,6 +91,14 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
             )
         }, 500);
     }, [playerData, coreItems, crewFilter, props.noRender]);
+
+    React.useEffect(() => {
+        if (crewFilter?.length && rosterCrew?.length) {
+            let cfnew = rosterCrew.filter(f => crewFilter.includes(f.id)).map(c => c.id);
+            if (cfnew.length === crewFilter.length) return;
+            setCrewFilter(cfnew);
+        }
+    }, [rosterCrew, crewFilter]);
 
     React.useEffect(() => {
         if (available && !props.noRender) {
@@ -104,7 +113,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         else {
             return prefiteredData ?? props.items ?? globalContext.core.items;
         }
-    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter]);
+    }, [coreItems, prefiteredData, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter, hideUnneeded]);
 
     const sources = React.useMemo(() => {
         const demands = (displayData as EquipmentItem[]); //.map(me => me.demands?.map(de => ({...de.equipment!, needed: de.count, quantity: de.have }) as EquipmentItem) ?? []).flat();
@@ -119,13 +128,13 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                             return;
                         }
                         else {
-                            csource.items.push(JSON.parse(JSON.stringify(demand)));
+                            csource.items.push(structuredClone(demand));
                         }
                     }
                     else {
                         newsources.push({
                             source,
-                            items: [JSON.parse(JSON.stringify(demand))]
+                            items: [structuredClone(demand)]
                         });
                     }
                 });
@@ -144,13 +153,15 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         return (
             <>
                 <CrewMultiPicker
+                    renderExtraContent={drawExtraContent}
+                    selectionPosition="after"
                     pageId={pageId || 'items/global_farm'}
                     selectedCrew={crewFilter}
                     updateSelected={setCrewFilter}
                     rosterCrew={rosterCrew}
-                    />
+                />
 
-                <div style={{...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start'}}>
+                <div style={{ ...flexRow, justifyContent: 'center', marginTop: '4em', minHeight: '50vh', alignItems: 'flex-start' }}>
                     {globalContext.core.spin(t('spinners.demands'))}
 
                 </div>
@@ -161,13 +172,14 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
         return <React.Fragment>
             <CrewHoverStat targetGroup="global_farm_crew" />
             <CrewMultiPicker
+                renderExtraContent={drawExtraContent}
+                selectionPosition="after"
                 pageId='items/global_farm'
                 selectedCrew={crewFilter}
                 updateSelected={setCrewFilter}
                 rosterCrew={rosterCrew}
-                />
+            />
             <ItemHoverStat targetGroup="global_farm" />
-
             <FarmTable
                 eventData={eventData}
                 renderExpanded={crewFilter?.length ? undefined : renderExpanded}
@@ -176,23 +188,36 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 hoverTarget="global_farm"
                 pageId='global_farm'
                 sources={sources}
-                textStyle={{fontStyle: 'normal', fontSize: '1em'}}
-                />
-            </React.Fragment>
+                textStyle={{ fontStyle: 'normal', fontSize: '1em' }}
+            />
+        </React.Fragment>
+    }
+
+    function drawExtraContent() {
+        const selFav = () => {
+            let favs = rosterCrew.filter(f => f.favorite && !f.immortal).map(m => m.id) ?? [];
+            let cf = [... new Set(crewFilter.concat(favs))];
+            setCrewFilter(cf);
+        }
+        return (
+            <div style={{margin:'0 0 1em 0'}}>
+                <Button onClick={selFav}>{t('items.quick_select.favorites')}</Button>
+            </div>
+        )
     }
 
     function renderExpanded(item: FarmSources) {
-        const crewSymbols = [... new Set(item.items.map(i => i.demandCrew ?? []).flat()) ]
+        const crewSymbols = [... new Set(item.items.map(i => i.demandCrew ?? []).flat())]
         const workCrew = rosterCrew
             .filter(rc => crewSymbols.includes(rc.symbol))
             .sort((a, b) => b.max_rarity - a.max_rarity || b.rarity - a.rarity || b.level - a.level || b.equipment.length - a.equipment.length || a.name.localeCompare(b.name));
 
         return (
             <div className="ui segment">
-                <div style={{...flexRow, flexWrap: 'wrap', overflowY: 'auto', maxHeight: '30em'}}>
+                <div style={{ ...flexRow, flexWrap: 'wrap', overflowY: 'auto', maxHeight: '30em' }}>
                     {workCrew.map((crew) => {
                         return <div
-                            style={{...flexCol, width: '8em', height: '8em', cursor: 'pointer', textAlign: 'center', justifyContent: 'flex-start'}}
+                            style={{ ...flexCol, width: '8em', height: '8em', cursor: 'pointer', textAlign: 'center', justifyContent: 'flex-start' }}
                             onClick={() => {
                                 if (!crewFilter.includes(crew.id)) {
                                     setCrewFilter([...crewFilter, crew.id]);
@@ -205,9 +230,10 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                             <AvatarView
                                 mode='crew'
                                 item={crew}
+                                id={crew.id}
                                 size={64}
                                 targetGroup="global_farm_crew"
-                                />
+                            />
                             {crew.name}
                         </div>
                     })}
@@ -216,7 +242,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }
 
     function globalCrewToPlayerCrew() {
-        return globalContext.core.crew.map(c => ({...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew);
+        return globalContext.core.crew.map(c => ({ ...c, id: c.archetype_id, immortal: CompletionState.DisplayAsImmortalStatic }) as PlayerCrew);
     }
 
 }

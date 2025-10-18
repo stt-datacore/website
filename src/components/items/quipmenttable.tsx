@@ -5,18 +5,20 @@ import { EquipmentItem } from "../../model/equipment";
 import { qbitsToSlots } from "../../utils/crewutils";
 import { getPossibleQuipment } from "../../utils/itemutils";
 import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
-import { QuipmentFilterContext } from "./quipmentfilters";
+import { QuipmentFilterContext, QuipmentMode } from "./quipmentfilters";
+import { PlayerEquipmentItem } from "../../model/player";
 
 interface QuipmentTableProps extends EquipmentTableProps {
     ownedItems: boolean;
     ownedCrew: boolean;
+    mode: QuipmentMode;
 }
 
 export const QuipmentTable = (props: QuipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const quipmentContext = React.useContext(QuipmentFilterContext);
 
-    const { ownedCrew } = props;
+    const { ownedCrew, mode } = props;
     const { playerData } = globalContext.player;
 
     const {
@@ -55,24 +57,32 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
 
     const items = React.useMemo(() => {
         let quipment = props.items?.filter(f => f.type === 14) ?? globalContext.core.items.filter(f => f.type === 14);
+        let qbits = props.items?.filter(f => f.type === 15) ?? globalContext.core.items.filter(f => f.type === 15);
         if (crew) {
             quipment = getPossibleQuipment(crew, quipment as EquipmentItem[]);
         }
-        if (available) return filterItems(quipment as EquipmentItem[]);
-        else return quipment;
+        if (mode === 'qbit') {
+            if (available) return filterItems(qbits as EquipmentItem[]);
+            else return qbits;
+        }
+        else {
+            if (available) return filterItems(quipment as EquipmentItem[]);
+            else return quipment;
+        }
     }, [crew, props.items, ownedOption, traitOptions, skillOptions, rarityOptions]);
 
     return <EquipmentTable
         {...{
             ...props,
-            buffsColumn: true,
-            hideOwnedColumns: true,
+            buffsColumn: mode === 'quipment',
+            hideOwnedColumns: mode === 'quipment',
+            ownedColumns: ['quantity'],
             selectionMode: !!crew,
             selection,
             setSelection,
             maxSelections: maxSlots,
             items,
-            types: [14]
+            types: [mode === 'qbit' ? 15 : 14]
         }}
         />
 

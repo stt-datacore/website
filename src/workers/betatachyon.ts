@@ -1,6 +1,7 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
-import { Collection, PolestarCombo } from "../model/game-elements";
+import { Collection } from "../model/collections";
+import { PolestarCombo } from "../model/keystone";
 import { PlayerCrew } from "../model/player";
 import { AntimatterSeatMap } from "../model/voyage";
 import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";
@@ -318,7 +319,7 @@ const BetaTachyon = {
             }
 
             if (playerData.citeMode && playerData.citeMode.rarities?.length) {
-                playerData = JSON.parse(JSON.stringify(playerData));
+                playerData = structuredClone(playerData);
                 playerData.player.character.crew = playerData.player.character.crew
                 .filter((crew) => playerData.citeMode?.rarities?.includes(crew.max_rarity));
             }
@@ -369,8 +370,8 @@ const BetaTachyon = {
                 besttrips[`${sk[0]}/${sk[1]}/${sk[2]}`] = findBest(immoCrew, sk, magic * 2);
             });
 
-            const allCrew = JSON.parse(JSON.stringify(inputCrew)) as CrewMember[];
-            const quipment = JSON.parse(JSON.stringify(config.coreItems.filter(f => f.type === 14).map(f => getItemWithBonus(f)))) as ItemWithBonus[];
+            const allCrew = structuredClone(inputCrew) as CrewMember[];
+            const quipment = structuredClone(config.coreItems.filter(f => f.type === 14).map(f => getItemWithBonus(f))) as ItemWithBonus[];
 
             quipment.forEach(q => q.item.demands = calcItemDemands(q.item, config.coreItems, playerData.player.character.items));
 
@@ -673,9 +674,9 @@ const BetaTachyon = {
             });
 
             resolve({
-                crewToCite: resultCrew.filter(f => f.rarity !== f.max_rarity).map(nc => JSON.parse(JSON.stringify(nc))),
-                crewToRetrieve: resultCrew.filter(f => f.rarity !== f.max_rarity && f.unique_polestar_combos?.length).map(nc => JSON.parse(JSON.stringify(nc))),
-                crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => JSON.parse(JSON.stringify(nc))),
+                crewToCite: resultCrew.filter(f => f.rarity !== f.max_rarity).map(nc => structuredClone(nc)),
+                crewToRetrieve: resultCrew.filter(f => f.rarity !== f.max_rarity && f.unique_polestar_combos?.length).map(nc => structuredClone(nc)),
+                crewToTrain: resultCrew.filter(f => f.rarity === f.max_rarity || ((f.rarity >= f.max_rarity / 2 && f.level <= 70))).map(nc => structuredClone(nc)),
                 skillOrderRarities: tripleRare
             } as CiteData);
         });

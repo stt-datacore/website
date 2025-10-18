@@ -15,7 +15,7 @@ export const ProficiencyRangeInput = (props: ProficiencyRangeInputProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { contestSkill, onChange } = props;
 	return (
-		<div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+		<div style={{ display: 'flex', alignItems: 'center', columnGap: '.5em' }}>
 			<ProficiencyInput	/* Min */
 				placeholder={t('voyage.contests.min')}
 				field='range_min'
@@ -58,7 +58,7 @@ const ProficiencyInput = (props: ProficiencyInputProps) => {
 			value={value}
 			onChange={(e, { value }) => { setValue(value as string); validate(value as string); } }
 			// onBlur={() => { if (invalid) { setValue(contestantSkill[field]); setInvalid(false); } }}
-			style={{ width: '6em' }}
+			style={{ width: '5em' }}
 			error={invalid}
 		/>
 	);

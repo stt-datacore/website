@@ -1,26 +1,25 @@
 import React from "react";
-import { Table, Pagination, Dropdown } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { EquipmentItemSource, EquipmentItem } from "../../model/equipment";
+import { EquipmentItem, EquipmentItemSource } from "../../model/equipment";
+import { Filter } from "../../model/game-elements";
+import { omniSearchFilter } from "../../utils/omnisearch";
 import { useStateWithStorage } from "../../utils/storage";
+import { IEventData } from "../eventplanner/model";
 import { GatherItemFilter } from "../gather/gather_planner";
 import { ItemTarget } from "../hovering/itemhoverstat";
 import ItemDisplay from "../itemdisplay";
 import ItemSources from "../itemsources";
-import { ItemDropDown } from "./itemdropdown";
 import { printChrons, printIntel } from "../retrieval/context";
-import { filterHighs, OptionsPanelFlexRow } from "../stats/utils";
-import { IEventData } from "../eventplanner/model";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { Filter } from "../../model/game-elements";
-import { omniSearchFilter } from "../../utils/omnisearch";
+import { OptionsPanelFlexRow } from "../stats/utils";
+import { ItemDropDown } from "./itemdropdown";
+import { Quest } from "../../model/missions";
 
 export interface FarmSources {
-
     source: EquipmentItemSource,
     items: EquipmentItem[]
 }
-
 
 export interface FarmTableProps {
     pageId: string;
@@ -40,19 +39,14 @@ export const FarmTable = (props: FarmTableProps) => {
     const { sources, pageId, renderExpanded, excludedSourceTypes, eventData } = props;
     const hover_target = props.hoverTarget ?? 'farm_item_target';
 
-    let allItems = [ ...new Set(sources.map(m => m.items).flat())];
+    let allItems = [...new Set(sources.map(m => m.items).flat())];
     allItems = allItems.filter((f, i) => allItems.findIndex(f2 => f2.symbol === f.symbol) === i);
     const globalContext = React.useContext(GlobalContext);
+    const { episodes } = globalContext.core;
     const { playerData, ephemeral } = globalContext.player;
-    const { t, tfmt } = globalContext.localized;
+    const { t } = globalContext.localized;
 
     const [itemFilter, setItemFilter] = useStateWithStorage(`${pageId}/farm/item_filter`, '', { rememberForever: true });
-
-    const [currentPage, setCurrentPage] = React.useState<number>(1);
-    const [itemsPerPage, setItemsPerPage] = useStateWithStorage(`${pageId}/farm/items_per_page`, 10, { rememberForever: true });
-
-    const [sortColumn, setSortColumn] = useStateWithStorage<'source' | 'demands'>(`${pageId}/farm/sort_column`, 'demands', { rememberForever: true });
-    const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>(`${pageId}/farm/sort_direction`, 'descending', { rememberForever: true });
 
     const [sortedSources, setSortedSources] = React.useState(sources);
 
@@ -71,8 +65,33 @@ export const FarmTable = (props: FarmTableProps) => {
     const expanding = !!renderExpanded;
     const flexRow = OptionsPanelFlexRow;
 
+    const eps = React.useMemo(() => {
+        let res = [] as JSX.Element[];
+        let eps = {} as {[key:string]: string};
+
+        if (episodes) {
+            episodes.forEach(e => {
+                let prefilter = e.quests.filter(f => f.challenges?.length || f.action === 'Enter Space Battle');
+                let questidx = [] as { quest: Quest, index: number }[]
+
+                questidx = prefilter.map((item, idx) => ({ quest: item, index: idx + 1}));
+
+                if (e.symbol.startsWith("dispute_")) {
+                    questidx[questidx.length - 1].index--;
+                }
+
+                questidx.forEach(({ quest: q, index: idx}) => {
+                    let ep = (e.episode === -1 ? (e.episode_title || '') : `${e.episode}`).padStart(3, '0');
+                    let idxs = `${idx}`.padStart(3, '0');
+                    eps[q.symbol] = `${ep}_${idxs}`;
+                });
+            });
+        }
+        return eps;
+    }, [episodes]);
+
     React.useEffect(() => {
-        const distinctItems = [ ... new Set(sources.map(m => m.items).flat().map(m => m.symbol)) ]
+        const distinctItems = [... new Set(sources.map(m => m.items).flat().map(m => m.symbol))]
             .map(m => globalContext.core.items.find(f => f.symbol === m)!)
             .sort((a, b) => {
                 let r = a.name.localeCompare(b.name);
@@ -80,7 +99,7 @@ export const FarmTable = (props: FarmTableProps) => {
                 return r;
             });
 
-        const newList = (JSON.parse(JSON.stringify(sources)) as FarmSources[]).filter(item => {
+        const newList = (structuredClone(sources) as FarmSources[]).filter(item => {
             //if (item.source.type === 4) return false;
             if (excludedSourceTypes?.includes(item.source.type)) return false;
             item.items = item.items.filter(fitem => {
@@ -95,7 +114,6 @@ export const FarmTable = (props: FarmTableProps) => {
                 }
                 return true;
             });
-
             if (itemFilter === 'single_source_mission') {
                 if (!item.items.some(item => item.item_sources.length === 1)) return false;
             }
@@ -120,19 +138,27 @@ export const FarmTable = (props: FarmTableProps) => {
                 return false;
             }
 
+            let mp_name = (getEpName(item.source.mission_symbol || ""));
+            if (mp_name) {
+                item.source.map_position = mp_name;
+            }
+            else {
+                item.source.map_position = item.source.name;
+            }
+
             return true;
         });
 
         setDistinctItems(distinctItems);
         setSortedSources(newList);
-    }, [sources, sortColumn, sortDirection, searchText, itemFilter]);
+    }, [sources, searchText, itemFilter, eps]);
 
     if (!playerData) return <></>
 
     const tableConfig = [
         {
             width: 2, column: 'source.name', title: t('shuttle_helper.missions.columns.mission'),
-            pseudocolumns: ['source.name', 'source.cost', 'source.type'],
+            pseudocolumns: ['source.name', 'source.cost', 'source.type', 'source.map_position'],
             translatePseudocolumn: (field) => {
                 field = field.replace('source.', '');
                 return t(`global.${field}`) || field;
@@ -142,6 +168,8 @@ export const FarmTable = (props: FarmTableProps) => {
                 if (options.field === 'source.name') r = a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0) || (a.source.type - b.source.type);
                 else if (options.field === 'source.cost') r = (a.source.cost ?? 0) - (b.source.cost ?? 0) || a.source.name.localeCompare(b.source.name) || (a.source.type - b.source.type);
                 else if (options.field === 'source.type') r = (a.source.type - b.source.type) || a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0);
+                else if (options.field === 'source.map_position') r = ((a.source.map_position || a.source.name).localeCompare(b.source.map_position || b.source.name)) || (a.source.mastery ?? 0) - (b.source.mastery ?? 0) || a.source.name.localeCompare(b.source.name) || (a.source.cost ?? 0) - (b.source.cost ?? 0);
+
                 return r;
             }
         },
@@ -155,34 +183,33 @@ export const FarmTable = (props: FarmTableProps) => {
         }
     ] as ITableConfigRow[];
 
-    return (<div style={{ marginTop: "1em"}}>
+    return (<div style={{ marginTop: "1em" }}>
         <h2>{t('items.item_sources')}</h2>
         <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                margin: '0.25em',
-                marginBottom: '1em',
-                gap: '0.5em'
-            }}>
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            margin: '0.25em 0.25em 1em 0',
+            gap: '0.5em'
+        }}>
 
-            {t('global.search')}{": "}
-            <ItemDropDown style={{width: '24em'}} items={distinctItems}
+            <ItemDropDown style={{ width: '24em' }} items={distinctItems}
                 icons={true}
                 selectedSymbols={selectedItems}
                 setSelectedSymbols={setSelectedItems}
-                />
+            />
 
             <GatherItemFilter itemFilter={itemFilter} setItemFilter={setItemFilter} />
         </div>
         <SearchableTable
-            tableStyle={{width: '100%'}}
+            showSortDropdown
+            tableStyle={{ width: '100%' }}
             id={`${pageId}/farm_table`}
             data={sortedSources}
             config={tableConfig}
             renderTableRow={(row, idx, isActive) => renderTableRow(row, phrases)}
             filterRow={filterTableRow}
-            />
+        />
     </div>)
 
     function filterTableRow(row: FarmSources, filter: Filter[], search?: string) {
@@ -224,7 +251,7 @@ export const FarmTable = (props: FarmTableProps) => {
                     setExpanded(row);
                 }
             }}
-            >
+        >
             <Table.Cell width={4}>
                 <h3>{row.source.name}</h3>
                 <div style={{ fontSize: '1em' }}>
@@ -234,13 +261,13 @@ export const FarmTable = (props: FarmTableProps) => {
                     <ItemSources farmFormat={true} item_sources={[row.source]} />
                 </div>
                 {[0, 2].includes(row.source.type) && !!row.source.cost &&
-                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
-                    {t('global.cost{{:}}')}<span style={{color:costColor}}>{printChrons(cost)}</span>
-                </div>}
+                    <div style={{ ...flexRow, gap: '0.5em', marginTop: '1em' }}>
+                        {t('global.cost{{:}}')}<span style={{ color: costColor }}>{printChrons(cost)}</span>
+                    </div>}
                 {!!intel &&
-                <div style={{...flexRow, gap: '0.5em', marginTop: '1em'}}>
-                    <span style={{color: 'white'}}>{printIntel(intel, t, true)}</span>
-                </div>}
+                    <div style={{ ...flexRow, gap: '0.5em', marginTop: '1em' }}>
+                        <span style={{ color: 'white' }}>{printIntel(intel, t, true)}</span>
+                    </div>}
             </Table.Cell>
             <Table.Cell>
                 <div style={{
@@ -283,12 +310,13 @@ export const FarmTable = (props: FarmTableProps) => {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                textAlign: 'center'}}>
+                                textAlign: 'center'
+                            }}>
 
                                 <span
                                     onClick={() => {
                                         if (!selectedItems.includes(item.symbol)) {
-                                            setSelectedItems([...selectedItems, item.symbol ]);
+                                            setSelectedItems([...selectedItems, item.symbol]);
                                         }
                                         else {
                                             setSelectedItems(selectedItems.filter(f => f !== item.symbol));
@@ -300,45 +328,52 @@ export const FarmTable = (props: FarmTableProps) => {
                                         fontWeight: itemHi ? 'bold' : undefined
                                     }}
                                 >{item!.rarity}* <u>{item!.name}</u></span>
-                                 {!!chance && <span>({t('shuttle_helper.missions.columns.success_chance{{:}}')}{chance}/5)</span>}
+                                {!!chance && <span>({t('shuttle_helper.missions.columns.success_chance{{:}}')}{chance}/5)</span>}
                                 <span
                                     style={{
                                         fontStyle: 'italic',
-                                        ... props.textStyle,
+                                        ...props.textStyle,
                                         color: (item.needed ?? 0) > (item.quantity ?? 0) ? 'orange' : undefined
                                     }}
-                                    >
-                                        {t('items.n_needed', { n: item.needed?.toLocaleString() ?? '' })}
+                                >
+                                    {t('items.n_needed', { n: item.needed?.toLocaleString() ?? '' })}
                                 </span>
                                 {!!props.showOwned && <span
                                     style={{
                                         fontStyle: 'italic',
-                                        ... props.textStyle,
+                                        ...props.textStyle,
                                         color: (item.needed ?? 0) > (item.quantity ?? 0) ? undefined : 'lightgreen'
                                     }}
-                                    >
-                                        {t('items.n_owned', { n: item.quantity?.toLocaleString() ?? '' })}
+                                >
+                                    {t('items.n_owned', { n: item.quantity?.toLocaleString() ?? '' })}
                                 </span>}
                                 {!!props.showFarmable && !!item.needed && typeof item.quantity === 'number' && item.needed > item.quantity && <span
                                     style={{
                                         fontStyle: 'italic',
-                                        ... props.textStyle,
+                                        ...props.textStyle,
                                         color: 'lightblue'
                                     }}
-                                    >
-                                        {t('items.n_farmable', { n: (item.needed - item.quantity)?.toLocaleString() ?? '' })}
+                                >
+                                    {t('items.n_farmable', { n: (item.needed - item.quantity)?.toLocaleString() ?? '' })}
                                 </span>}
                             </div>
                         </div>
                     })}
                 </div>
                 {expanded === row && !!renderExpanded &&
-                <div>
-                    {renderExpanded(row)}
-                </div>}
+                    <div>
+                        {renderExpanded(row)}
+                    </div>}
             </Table.Cell>
         </Table.Row>
 
+    }
+
+    function getEpName(e: string) {
+        if (e in eps) {
+            return eps[e];
+        }
+        return '';
     }
 
 }

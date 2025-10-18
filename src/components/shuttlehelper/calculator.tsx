@@ -21,7 +21,7 @@ export const Calculator = () => {
 	const { helperId, groupId, activeShuttles, rosterType, rosterCrew, eventData, shuttlers, setShuttlers, assigned, setAssigned } = shuttlersContext;
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
-	const { playerData } = globalContext.player;
+	const { playerData, ephemeral } = globalContext.player;
 
 	const [considerActive, setConsiderActive] = useStateWithStorage<boolean>(helperId+'/considerActive', true);
 	const [considerVoyage, setConsiderVoyage] = useStateWithStorage<boolean>(helperId+'/considerVoyage', false);
@@ -52,8 +52,8 @@ export const Calculator = () => {
 	}, [calcState]);
 
 	const canBorrow: boolean = eventData?.seconds_to_start === 0
-		&& !!playerData?.player.character.crew_borrows?.length
-		&& playerData?.player.squad.rank !== 'LEADER';
+		&& playerData?.player.squad.rank !== 'LEADER'
+		&& !!ephemeral?.borrowedCrew.length;
 
 	const missionsSelected: number = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).length;
 	const groupMissionIds: string[] = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).map(shuttle => shuttle.id);
@@ -203,7 +203,7 @@ export const Calculator = () => {
 		if (!considerFrozen && crew.immortal > 0)
 			return false;
 
-		if ((!canBorrow || !considerShared) && crew.shared)
+		if ((!canBorrow || !considerShared) && crew.borrowed)
 			return false;
 
 		if (excludeQuipped && isQuipped(crew))
@@ -322,7 +322,7 @@ export const Calculator = () => {
 		});
 		if (seats.length === 0) return;
 
-		const scores: ICrewScore[] = JSON.parse(JSON.stringify(crewScores.ranked)) as ICrewScore[];
+		const scores: ICrewScore[] = structuredClone(crewScores.ranked) as ICrewScore[];
 		let iAssigned = 0;
 		while (scores.length > 0 && iAssigned < seats.length) {
 			const testScore: ICrewScore | undefined = scores.shift();

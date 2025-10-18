@@ -7,10 +7,11 @@ type CrewRarityFilterProps = {
 	pageId: string;
 	crewFilters: ICrewFilter[];
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
+	notifySetFilter?: (value: number[]) => void;
 };
 
 export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
-	const { crewFilters, setCrewFilters } = props;
+	const { crewFilters, setCrewFilters, notifySetFilter } = props;
 
 	const [rarityFilter, setRarityFilter] = React.useState<number[]>([] as number[]);
 
@@ -23,6 +24,7 @@ export const CrewRarityFilter = (props: CrewRarityFilterProps) => {
 			crewFilters.push({ id: 'max_rarity', filterTest: filterByRarity });
 		}
 		setCrewFilters([...crewFilters]);
+		if (notifySetFilter) notifySetFilter(rarityFilter);
 	}, [rarityFilter]);
 
 	return (
