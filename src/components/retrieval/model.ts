@@ -1,4 +1,4 @@
-import { KeystoneBase, PolestarFilter } from '../../model/game-elements';
+import { KeystoneBase, PolestarFilter } from "../../model/keystone";
 import { PlayerCrew } from '../../model/player';
 
 // Keystone (i.e. constellations AND polestars) with quantity owned

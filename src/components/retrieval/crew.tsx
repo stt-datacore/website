@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Checkbox, Dropdown, Form, Icon, Loader } from 'semantic-ui-react';
 
-import { Collection } from '../../model/game-elements';
+import { Collection } from "../../model/collections";
 import { GlobalContext } from '../../context/globalcontext';
 import { RarityFilter, CrewTraitFilter } from '../../components/crewtables/commonoptions';
 

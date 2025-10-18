@@ -5,7 +5,7 @@ import { Action, ItemTranslation, ShipTraitNames, TraitNames, TranslationSet } f
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { ReferenceShip, Schematics, Ship } from '../model/ship';
-import { Collection } from '../model/game-elements';
+import { Collection } from "../model/collections";
 import { CryoCollection, PlayerCrew, TranslateMethod } from '../model/player';
 import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';

@@ -6,7 +6,7 @@ import { GlobalContext } from '../../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
 import { useStateWithStorage } from '../../../utils/storage';
 import CollectionsCrewCard from '../cards/crewcard';
-import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collectionfilter';
+import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collections';
 import { findColGroupsCrew, getOptCols, getOwnedCites, neededStars, starCost } from '../../../utils/collectionutils';
 import { CollectionCard } from '../cards/collectioncard';
 

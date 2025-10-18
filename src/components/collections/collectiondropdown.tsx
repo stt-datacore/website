@@ -2,7 +2,7 @@ import React from "react";
 import { CryoCollection, PlayerCollection } from "../../model/player";
 import { GlobalContext } from "../../context/globalcontext";
 import { Form, Dropdown } from "semantic-ui-react";
-import { Collection } from "../../model/game-elements";
+import { Collection } from "../../model/collections";
 
 export interface CollectionDropDownProps {
     style?: React.CSSProperties;

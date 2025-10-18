@@ -14,7 +14,7 @@ import { CrewBaseCells, getBaseTableConfig, renderMainDataScore } from './base';
 import { getBernardsNumber } from '../../../utils/gauntlet';
 import { printPortalStatus } from '../../../utils/crewutils';
 import { categorizeCrewCollections } from '../../../utils/collectionutils';
-import { Collection } from '../../../model/game-elements';
+import { Collection } from "../../../model/collections";
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;

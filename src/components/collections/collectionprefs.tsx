@@ -2,7 +2,7 @@ import React from "react"
 import { GlobalContext } from "../../context/globalcontext"
 import { CollectionsContext } from "./context";
 import { Checkbox, Pagination, Dropdown, Form, DropdownItemProps } from "semantic-ui-react";
-import { CollectionCombo, CollectionMatchMode, ComboCostMap } from "../../model/collectionfilter";
+import { CollectionCombo, CollectionMatchMode, ComboCostMap } from "../../model/collections";
 import { appelate } from "../../utils/misc";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { RewardFilter } from "./rewardfilter";

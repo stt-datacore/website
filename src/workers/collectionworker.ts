@@ -6,7 +6,7 @@ import {
     CollectionWorkerResult,
     ColComboMap,
     ComboCostMap,
-} from "../model/collectionfilter";
+} from "../model/collections";
 import { PlayerCollection, PlayerCrew } from "../model/player";
 import { getPermutations, makeAllCombos } from "../utils/misc";
 

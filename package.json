@@ -10,7 +10,7 @@
     "build": "gatsby build",
     "buildci": "gatsby build && rimraf ./public/media/assets",
     "clean": "gatsby clean",
-    "develop": "gatsby develop -p 8881",
+    "develop": "gatsby develop -p 8881 -H 0.0.0.0",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx}",
     "start": "yarn run develop",
     "serve": "gatsby serve",

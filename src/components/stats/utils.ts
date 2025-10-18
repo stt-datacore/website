@@ -1,5 +1,5 @@
 import { BaseSkills, CrewMember } from "../../model/crew";
-import { Collection } from "../../model/game-elements";
+import { Collection } from "../../model/collections";
 import { TranslateMethod } from "../../model/player";
 import { TraitNames } from "../../model/traits";
 import { AntimatterSeatMap } from "../../model/voyage";

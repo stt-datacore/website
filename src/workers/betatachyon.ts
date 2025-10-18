@@ -1,6 +1,7 @@
 import CONFIG from "../components/CONFIG";
 import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
-import { Collection, PolestarCombo } from "../model/game-elements";
+import { Collection } from "../model/collections";
+import { PolestarCombo } from "../model/keystone";
 import { PlayerCrew } from "../model/player";
 import { AntimatterSeatMap } from "../model/voyage";
 import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";

@@ -108,6 +108,7 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                 </div>
             </div>
             <QuipmentTable
+                mode='quipment'
                 ownedItems={!!globalContext.player.playerData}
                 ownedCrew={false}
                 itemTargetGroup={'crew_quipment'}

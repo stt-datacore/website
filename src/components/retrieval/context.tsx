@@ -3,7 +3,7 @@ import React from 'react';
 import { IKeystone, IPolestarTailors, IRosterCrew, CrewFilterField } from './model';
 import { MarketAggregation } from '../../model/celestial';
 import { TranslateMethod } from '../../model/player';
-import { KeystoneBase } from '../../model/game-elements';
+import { KeystoneBase } from "../../model/keystone";
 
 export interface IRetrievalContext {
 	allKeystones: IKeystone[];	// All keystones (i.e. constellations AND polestars) with quantity owned and polestar odds

@@ -1,26 +1,24 @@
 import React from "react";
 
 import { Link } from "gatsby";
-
-import { useStateWithStorage } from "../../utils/storage";
-
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, Pagination, Popup, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
+
+import { GlobalContext } from "../../context/globalcontext";
+import { useStateWithStorage } from "../../utils/storage";
+import CONFIG from "../CONFIG";
 
 import { Gauntlet, GauntletFilterProps } from "../../model/gauntlets";
 import { CompletionState, PlayerCrew } from "../../model/player";
 
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { comparePairs, getPlayerPairs, isImmortal, prettyObtained, printPortalStatus, qbitsToSlots, skillSum } from "../../utils/crewutils";
+import { GauntletBucketType, getCritColor, getElevatedBuckets } from "../../utils/gauntlet";
+
+import { renderMainDataScore } from "../crewtables/views/base";
+import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 import { formatPair } from "./paircard";
-
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
-import { arrayIntersect } from "../../utils/misc";
-import CONFIG from "../CONFIG";
-import { GlobalContext } from "../../context/globalcontext";
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { renderMainDataScore } from "../crewtables/views/base";
-import { GauntletBucketType, getCritColor, getElevatedBuckets } from "../../utils/gauntlet";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 

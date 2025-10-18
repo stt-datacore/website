@@ -3,7 +3,7 @@ import React from 'react';
 import { DropdownItemProps, Header, Icon, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { CollectionCombo, CollectionInfo, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collectionfilter';
+import { CollectionCombo, CollectionInfo, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collections';
 import { CrewMember } from '../../model/crew';
 import { PlayerCollection, PlayerCrew } from '../../model/player';
 import { navToCrewPage } from '../../utils/nav';
@@ -21,7 +21,7 @@ import { WorkerContext } from '../../context/workercontext';
 import { CollectionPrefs } from './collectionprefs';
 import { CollectionTableView } from './views/tableview';
 import { TinyStore } from '../../utils/tiny';
-import { Collection } from '../../model/game-elements';
+import { Collection } from "../../model/collections";
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];

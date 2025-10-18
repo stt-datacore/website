@@ -1,5 +1,5 @@
 import React from "react";
-import { CollectionCombo, CollectionInfo, CollectionFilterOptions } from "../../../model/collectionfilter";
+import { CollectionCombo, CollectionInfo, CollectionFilterOptions } from "../../../model/collections";
 import { GlobalContext } from "../../../context/globalcontext";
 import { Progress, Icon, Image } from "semantic-ui-react";
 

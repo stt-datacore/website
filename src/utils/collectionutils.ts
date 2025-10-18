@@ -1,8 +1,8 @@
 import { CrewMember, RewardsGridNeed } from "../model/crew";
-import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
+import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collections";
 import { ItemArchetypeBase, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from "../model/player";
 import { getCollectionRewards, getMilestoneRewards } from "./itemutils";
-import { Collection } from "../model/game-elements";
+import { Collection } from "../model/collections";
 
 
 

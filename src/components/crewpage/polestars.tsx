@@ -3,7 +3,7 @@ import { Link } from 'gatsby';
 import { Segment, Header, Grid, Table, Pagination, Dropdown, Checkbox, Icon, Button } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
-import { Constellation, ConstellationMap, Polestar, PolestarCombo, categorizeKeystones } from '../../model/game-elements';
+import { Constellation, ConstellationMap, Polestar, PolestarCombo, categorizeKeystones } from "../../model/keystone";
 import { GlobalContext } from '../../context/globalcontext';
 import { findPolestars } from '../../utils/retrieval';
 import { OptionsPanelFlexColumn } from '../stats/utils';

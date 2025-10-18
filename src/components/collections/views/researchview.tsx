@@ -6,7 +6,7 @@ import { Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
 import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
 import { useStateWithStorage } from '../../../utils/storage';
 import CollectionsCrewCard from '../cards/crewcard';
-import { CollectionInfo } from '../../../model/collectionfilter';
+import { CollectionInfo } from '../../../model/collections';
 import { getOwnedCites } from '../../../utils/collectionutils';
 import { CollectionCard } from '../cards/collectioncard';
 import { RewardFilter } from '../rewardfilter';
