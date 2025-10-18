@@ -2380,7 +2380,8 @@
             "power_creep": "{{stat_trends.graphs.skill_area}}",
             "release_graph": "Calendrier de sortie",
             "skill_area": "Fluage de puissance",
-            "title": "Graphiques"
+            "title": "Graphiques",
+            "trait_distributions": "Distributions de traits"
         },
         "initial_release": "Publication initiale",
         "items": {
@@ -2445,7 +2446,21 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "distributions": {
+                "combo": "Combinaisons de traits les plus fréquentes",
+                "data_set": {
+                    "all_traits": "Tous les traits",
+                    "hidden_traits": "Caractéristiques cachées",
+                    "portal_traits": "Caractéristiques du portail",
+                    "variant_traits": "Caractéristiques variantes"
+                },
+                "rarity": "Traits les plus fréquents par rareté",
+                "select_data_set": "Sélectionner un ensemble de données",
+                "series": "Traits les plus fréquents par série",
+                "traits": "Traits les plus fréquents"
+            },
             "exclude_launch": "Exclude launch crew",
+            "exclude_x": "Exclure {{x}}",
             "hide_only_one": "Masquer les traits avec un seul équipier",
             "only_show_potential_collections": "Afficher uniquement les collections potentielles",
             "potential_collection_score_n": "Score de collecte potentiel : {{n}}",
@@ -2507,7 +2522,7 @@
             "avg_of_crew": "Score moyen de {{crew}} pour ce concours",
             "avg_of_opponent": "Score moyen de l'adversaire pour ce concours",
             "avg_score": "Score moyenne",
-            "boost_impact" : {
+            "boost_impact": {
                 "crit": "{{crew}} augmente les chances de coup critique de ce concours",
                 "ineffective": "Le boost n'a aucun effet sur aucun concours",
                 "others": "{{crew}} améliore une compétence inutilisée qui pourrait être pertinente pour les concours ultérieurs",

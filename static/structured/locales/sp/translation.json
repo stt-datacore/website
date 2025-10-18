@@ -2378,7 +2378,8 @@
             "power_creep": "{{stat_trends.graphs.skill_area}}",
             "release_graph": "Calendario de lanzamiento",
             "skill_area": "La incursión del poder",
-            "title": "Gráficos"
+            "title": "Gráficos",
+            "trait_distributions": "Distribuciones de rasgos"
         },
         "initial_release": "Lanzamiento inicial",
         "items": {
@@ -2443,7 +2444,21 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "distributions": {
+                "combo": "Combinaciones de rasgos más frecuentes",
+                "data_set": {
+                    "all_traits": "Todos los rasgos",
+                    "hidden_traits": "Rasgos ocultos",
+                    "portal_traits": "Rasgos del portal",
+                    "variant_traits": "Rasgos variantes"
+                },
+                "rarity": "Rasgos más frecuentes por rareza",
+                "select_data_set": "Seleccionar conjunto de datos",
+                "series": "Rasgos más frecuentes por serie",
+                "traits": "Rasgos más frecuentes"
+            },
             "exclude_launch": "Exclude launch crew",
+            "exclude_x": "Excluir {{x}}",
             "hide_only_one": "Ocultar rasgos con uno solo tripulante",
             "only_show_potential_collections": "Mostrar solo colecciones potenciales",
             "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
@@ -2505,7 +2520,7 @@
             "avg_of_crew": "Puntuación media de {{crew}} para este concurso",
             "avg_of_opponent": "Puntuación media del oponente para esta contienda",
             "avg_score": "Puntuación media",
-            "boost_impact" : {
+            "boost_impact": {
                 "crit": "{{crew}} está aumentando la probabilidad crítica de este concurso",
                 "ineffective": "El boost no tiene efecto en ningún concurso",
                 "others": "{{crew}} está potenciando una habilidad no utilizada que puede ser relevante para concursos posteriores",

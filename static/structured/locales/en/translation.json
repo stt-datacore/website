@@ -2369,7 +2369,8 @@
             "power_creep": "{{stat_trends.graphs.skill_area}}",
             "release_graph": "Release Schedule",
             "skill_area": "Power Creep",
-            "title": "Graphs"
+            "title": "Graphs",
+            "trait_distributions": "Trait Distributions"
         },
         "initial_release": "Initial Release",
         "items": {
@@ -2434,7 +2435,21 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "distributions": {
+                "combo": "Most frequent trait combinations",
+                "data_set": {
+                    "all_traits": "All Traits",
+                    "hidden_traits": "Hidden Traits",
+                    "portal_traits": "Portal Traits",
+                    "variant_traits": "Variant Traits"
+                },
+                "rarity": "Most frequent traits by rarity",
+                "select_data_set": "Select Data Set",
+                "series": "Most frequent traits by series",
+                "traits": "Most frequent traits"
+            },
             "exclude_launch": "Exclude launch crew",
+            "exclude_x": "Exclude {{x}}",
             "hide_only_one": "Hide traits with only one crew",
             "only_show_potential_collections": "Only show potential collections",
             "potential_collection_score_n": "Potential Collection Score: {{n}}",
@@ -2496,7 +2511,7 @@
             "avg_of_crew": "{{crew}}'s average score for this contest",
             "avg_of_opponent": "Opponent's average score for this contest",
             "avg_score": "Average Score",
-            "boost_impact" : {
+            "boost_impact": {
                 "crit": "{{crew}} is boosting this contest's crit chance",
                 "ineffective": "Boost has no effect to any contest",
                 "others": "{{crew}} is boosting an unused skill that may be relevant to later contests",

@@ -2368,7 +2368,8 @@
             "power_creep": "{{stat_trends.graphs.skill_area}}",
             "release_graph": "Veröffentlichungsplan",
             "skill_area": "Machtkriechen",
-            "title": "Grafiken"
+            "title": "Grafiken",
+            "trait_distributions": "Merkmalsverteilungen"
         },
         "initial_release": "Erste Veröffentlichung",
         "items": {
@@ -2433,7 +2434,21 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "distributions": {
+                "combo": "Häufigste Merkmalskombinationen",
+                "data_set": {
+                    "all_traits": "Alle Merkmale",
+                    "hidden_traits": "Versteckte Merkmale",
+                    "portal_traits": "Portalmerkmale",
+                    "variant_traits": "Variantenmerkmale"
+                },
+                "rarity": "Häufigste Merkmale nach Seltenheit",
+                "select_data_set": "Datensatz auswählen",
+                "series": "Häufigste Merkmale nach Serie",
+                "traits": "Häufigste Merkmale“"
+            },
             "exclude_launch": "Exclude launch crew",
+            "exclude_x": "{{x}} ausschließen",
             "hide_only_one": "Merkmale mit nur einer Crew verbergen",
             "only_show_potential_collections": "Nur potentielle Sammlungen anzeigen",
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
@@ -2495,7 +2510,7 @@
             "avg_of_crew": "{{crew}}s Durchschnittspunktzahl für diesen Wettbewerb",
             "avg_of_opponent": "Durchschnittliche Punktzahl des Gegners für diesen Wettbewerb",
             "avg_score": "Durchschnittliche Punktzahl",
-            "boost_impact" : {
+            "boost_impact": {
                 "crit": "{{crew}} erhöht die kritische Trefferchance dieses Wettbewerbs",
                 "ineffective": "Boost hat keinen Einfluss auf Wettbewerbe",
                 "others": "{{crew}} steigert eine ungenutzte Fähigkeit, die für spätere Wettbewerbe relevant sein könnte",
