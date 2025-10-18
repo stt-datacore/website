@@ -14,6 +14,8 @@ export type TraitDistributionType = 'frequent' | 'combo' | 'rarity' | 'series';
 
 export type TraitDataSet = 'portal' | 'variant' | 'hidden' | 'all';
 
+export const CommonExclusions = ['human', 'federation', 'starfleet', 'male', 'female', 'nonhuman', 'organic'];
+
 interface TraitDistributionProps {
     portalTraits: string[];
     variantTraits: string[];
@@ -39,7 +41,7 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
         portalTraits: portalIn,
         allTraits: allIn,
         variantTraits,
-        hiddenTraits
+        hiddenTraits: hiddenIn
     } = props;
 
     const [type, setType] = useStateWithStorage<TraitDistributionType>('stattrends/trait_distribution_type', 'frequent');
@@ -53,13 +55,18 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
 
     const portalTraits = React.useMemo(() => {
         if (!excludeHFS) return portalIn;
-        return portalIn.filter(trait => !['human', 'federation', 'starfleet', 'male', 'nonhuman', 'organic'].includes(trait))
+        return portalIn.filter(trait => !CommonExclusions.includes(trait))
     }, [portalIn, excludeHFS]);
 
     const allTraits = React.useMemo(() => {
         if (!excludeHFS) return allIn;
-        return allIn.filter(trait => !['human', 'federation', 'starfleet', 'male', 'nonhuman', 'organic'].includes(trait))
+        return allIn.filter(trait => !CommonExclusions.includes(trait))
     }, [allIn, excludeHFS]);
+
+    const hiddenTraits = React.useMemo(() => {
+        if (!excludeHFS) return hiddenIn;
+        return hiddenIn.filter(trait => !CommonExclusions.includes(trait))
+    }, [hiddenIn, excludeHFS]);
 
     const dataSetChoices = [
         { key: 'all', value: 'all', text: t('stat_trends.traits.distributions.data_set.all_traits') },
@@ -108,7 +115,7 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
                 <Checkbox
                     checked={excludeHFS}
                     onChange={(e, { checked }) => setExcludeHFS(!!checked)}
-                    label={t('stat_trends.traits.exclude_x', { x: ['human', 'federation', 'starfleet', 'male', 'nonhuman', 'organic'].map(trait => TRAIT_NAMES[trait] || trait).join(", ")})}
+                    label={t('stat_trends.traits.exclude_x', { x: CommonExclusions.map(trait => TRAIT_NAMES[trait] || trait).join(", ")})}
                     />
             </div>
             <div style={{margin: '1em 0'}}>
