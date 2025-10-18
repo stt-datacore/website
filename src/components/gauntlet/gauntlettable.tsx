@@ -18,10 +18,9 @@ import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { arrayIntersect } from "../../utils/misc";
 import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
-import { getCrewCrit, getCritColor, printGauntlet } from "../../utils/gauntlet";
+import { GauntletBucketType, getCrewCrit, getCritColor, getElevatedBuckets, makeGauntletKey } from "../../utils/gauntlet";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
-type BucketType = { crit: number, name: string, count: number };
 
 export type GauntletTableHighlightMode = 'normal' | 'live';
 
@@ -59,7 +58,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
 
     const pageStartIdx = (activePage - 1) * itemsPerPage;
     const [elevated, setElevated] = React.useState({} as { [key: string]: number });
-    const [crewBuckets, setCrewBuckets] = React.useState({} as {[key:string]: BucketType[] });
+    const [crewBuckets, setCrewBuckets] = React.useState({} as {[key:string]: GauntletBucketType[] });
     const imageClick = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, data: any) => {
         console.log("imageClick");
         // if (matchMedia('(hover: hover)').matches) {
@@ -131,9 +130,9 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     React.useEffect(() => {
         if (gauntlets?.length) {
             const elev: {[key:string]:number} = {};
-            const cb: {[key:string]:BucketType[]} = {};
+            const cb: {[key:string]:GauntletBucketType[]} = {};
             for (let c of data) {
-                const buckets = getElevatedBuckets(c);
+                const buckets = getElevatedBuckets(c, gauntlets, TRAIT_NAMES);
                 let high = buckets.filter(f => f.crit >= 45);
                 if (high?.length) {
                     elev[c.symbol] = high.length;
@@ -292,7 +291,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     {gauntlets?.length && <>
                         <div style={{cursor: openCrit !== crew.id ? 'zoom-in' : 'zoom-out'}} onClick={() => setOpenCrit(openCrit === crew.id ? 0 : crew.id)}>
                             {openCrit !== crew.id && <>{elevated[crew.symbol]}</>}
-                            {openCrit === crew.id && renderElevateCritTable(crew)}
+                            {openCrit === crew.id && renderElevatedCritTable(crew)}
                         </div>
                     </>}
                     {!gauntlets?.length && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
@@ -328,7 +327,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             </Table.Row>)
     }
 
-    function renderElevateCritTable(crew: PlayerCrew) {
+    function renderElevatedCritTable(crew: PlayerCrew) {
         if (!gauntlets) return <></>
         const buckets = crewBuckets[crew.symbol];
         if (!buckets) return <></>
@@ -336,28 +335,28 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
             <div style={{maxHeight: '15em', overflowY: 'auto'}}>
                 <Table striped>
                     {buckets.map((bucket, idx) => {
-                        const { name, crit, count } = bucket;
-
-                        return <Table.Row key={`gpcrit_${crew.symbol}_${name}_${crit}`}>
-                            <Table.Cell>
-                                {count}
-                            </Table.Cell>
-                            <Table.Cell>
-                                {name}
-                            </Table.Cell>
-                            <Table.Cell>
-                                <div style={{minWidth: '4em'}}>
-                                <Label color={getCritColor(crit)}>
-                                    {t('global.n_%', { n: crit })}
-                                </Label>
-                                </div>
-                            </Table.Cell>
-                        </Table.Row>
+                        const { key, name, crit, count } = bucket;
+                        return (
+                            <Table.Row key={`gpcrit_${crew.symbol}_${key}_${crit}`}>
+                                <Table.Cell>
+                                    {count}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {name || key}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <div style={{minWidth: '4em'}}>
+                                    <Label color={getCritColor(crit)}>
+                                        {t('global.n_%', { n: crit })}
+                                    </Label>
+                                    </div>
+                                </Table.Cell>
+                            </Table.Row>
+                        );
                     })}
                 </Table>
             </div>
         )
-
     }
 
     function rosterizeCrew(data: PlayerCrew[]) {
@@ -518,33 +517,6 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         }
 
         return newarr;
-    }
-
-    function getElevatedBuckets(crew: PlayerCrew) {
-        if (!gauntlets) return [];
-        const buckets = [] as BucketType[];
-        const addtobucket = (g: Gauntlet, c: number) => {
-            const name = printGauntlet(g, TRAIT_NAMES);
-            let f = buckets.find(b => b.name === name);
-            if (!f) {
-                f = {
-                    crit: c,
-                    name,
-                    count: 1
-                };
-                buckets.push(f);
-            }
-            else {
-                f.count++;
-            }
-        }
-
-        const critted = gauntlets.filter(f => f.contest_data && f.contest_data.traits.some(t => crew.traits.includes(t)));
-
-        for (let g of critted) {
-            addtobucket(g, getCrewCrit(crew, g));
-        }
-        return buckets.sort((a, b) => b.crit - a.crit || b.count - a.count || a.name.localeCompare(b.name));
     }
 }
 
