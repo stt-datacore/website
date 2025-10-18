@@ -143,7 +143,9 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 for (let milestone of milestones) {
                     result = result.concat(getFilteredMilestoneRewards(milestone, mapFilter.rewardFilter).map(r => {
                         r = structuredClone(r);
-                        r.data!.collection = col1.type_id!
+                        r.data ??= {};
+                        r.data.collection = col1.type_id!
+                        r.data.goal ??= milestone.goal;
                         return r;
                     }));
                 }
@@ -154,7 +156,9 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 result = result.concat(getMilestoneRewards(milestonesFromCurrent(col1))
                     .map(r => {
                         r = structuredClone(r);
-                        r.data!.collection = col1.type_id!
+                        r.data ??= {};
+                        r.data.collection = col1.type_id!
+                        r.data.goal ??= col1.milestone.goal;
                         return r;
                     }))
                     .filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''));
@@ -168,7 +172,9 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 result = result.concat(getFilteredMilestoneRewards(col1.milestone, mapFilter.rewardFilter)
                 .map(r => {
                     r = structuredClone(r);
-                    r.data!.collection = col1.type_id!
+                    r.data ??= {};
+                    r.data.collection = col1.type_id!
+                    r.data.goal ??= col1.milestone.goal;
                     return r;
                 }));
             }
@@ -179,7 +185,9 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                     .filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''))
                     .map(r => {
                         r = structuredClone(r);
-                        r.data!.collection = col1.type_id!
+                        r.data ??= {};
+                        r.data.collection = col1.type_id!
+                        r.data.goal ??= col1.milestone.goal
                         return r;
                     });
                 result = result.concat(afilter);

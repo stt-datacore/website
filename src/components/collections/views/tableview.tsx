@@ -106,7 +106,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 		const tabledProgress = unmaxed?.sort((a, b) => (a?.needed ?? 0) - (b?.needed ?? 0)).map(collection => {
 			if (!collection) return <></>
 			return (
-				<tr key={collection.id} style={{ cursor: 'pointer' }} onClick={() => setModalInstance({ collection, pageId: 'collections/crew', activeTab: 1 })}>
+				<tr key={`crew_collection_${collection.id}_${crew.id}`} style={{ cursor: 'pointer' }} onClick={() => setModalInstance({ collection, pageId: 'collections/crew', activeTab: 1 })}>
 					<td style={{ whiteSpace: 'wrap', fontSize: '.95em' }}>{collection.name}</td>
 					<td style={{ textAlign: 'right', fontSize: '.95em' }}>
 						<Popup
@@ -161,7 +161,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 					{renderMainDataScore(crew)}
 				</Table.Cell>
 				<Table.Cell width={4}>
-					{tabledProgress && (
+					{!!tabledProgress && (
 						<table style={{ width: '100%' }}>
 							<tbody>{tabledProgress}</tbody>
 						</table>

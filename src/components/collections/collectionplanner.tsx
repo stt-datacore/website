@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { ItemArchetypeBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
+import { ItemArchetypeBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward, CryoCollection } from '../../model/player';
 import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import { TinyStore } from '../../utils/tiny';
 import { CollectionsOverview } from './views/overview';
@@ -168,10 +168,15 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 				return true;
 			}
 		});
-	}, [hardFilter, mapFilter]);
+	}, [hardFilter, mapFilter, tempcol]);
 
-	const displayCrew = React.useMemo(() => directFilterCrew(collectionCrew), [collectionCrew, colContext]);
-	const [topCrewScore, topStarScore] = React.useMemo(() => computeGrades(playerCollections, displayCrew), [playerCollections, displayCrew]);
+	const displayCrew = React.useMemo(() =>
+		directFilterCrew(collectionCrew, extendedCollections),
+	[collectionCrew, colContext]);
+
+	const [topCrewScore, topStarScore] = React.useMemo(() =>
+		computeGrades(playerCollections, displayCrew),
+	[playerCollections, displayCrew]);
 
 	return (
 		<React.Fragment>
@@ -189,7 +194,10 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		</React.Fragment>
 	);
 
-	function directFilterCrew(crew: PlayerCrew[]): PlayerCrew[] {
+	function directFilterCrew(crew: PlayerCrew[], activeCollections: CryoCollection[]): PlayerCrew[] {
+		crew = crew.filter(c => {
+			return !!c.collections.filter(ccol => activeCollections.some(ac => ac.name === ccol)).length
+		})
 		return crew.filter(c => checkCommonFilter(colContext, c))
 	}
 

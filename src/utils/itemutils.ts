@@ -363,7 +363,7 @@ export function checkReward(items: (EquipmentItem | EquipmentItem)[], reward: Re
 
 export function getMilestoneRewards(milestones: Milestone[]) {
 	return milestones.map((milestone) => {
-		return (milestone.buffs?.map(b => b as ItemArchetypeBase) ?? [] as Reward[]).concat(milestone.rewards ?? [] as Reward[]) as Reward[];
+		return (milestone.buffs?.map(b => ({...b as ItemArchetypeBase, data: { goal: milestone.goal }})) ?? [] as Reward[]).concat((milestone.rewards ?? [] as Reward[]).map(r => ({...r, data: { goal: milestone.goal }}))) as Reward[];
 	}).flat();
 }
 
