@@ -11,6 +11,8 @@ import { formatShipScore } from '../../ship/utils';
 import { GlobalContext } from '../../../context/globalcontext';
 import CABExplanation from '../../explanations/cabexplanation';
 import { CurrentWeighting } from '../../../model/crew';
+import { getElevatedBuckets } from '../../../utils/gauntlet';
+import { renderElevatedCritTable } from '../../gauntlet/sharedutils';
 
 const ScoreFields = [
     "overall",
@@ -121,17 +123,25 @@ type CrewRankCellsProps = {
 	crew: IRosterCrew;
     weights: CurrentWeighting;
     rarityFilter?: number[];
+    critExpanded?: string;
+    setCritExpanded: (value?: string) => void;
 };
 
 export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
-	const { crew, weights, rarityFilter } = props;
+	const { crew, weights, rarityFilter, critExpanded, setCritExpanded } = props;
     const rarity = rarityFilter?.length === 1 ? rarityFilter[0] : 5;
-    const { t } = React.useContext(GlobalContext).localized;
+    const globalContext = React.useContext(GlobalContext);
+    const { t, TRAIT_NAMES } = globalContext.localized;
+    const { gauntlets } = globalContext.core;
     const datacoreColor = crew.ranks.scores?.overall ? gradeToColor(crew.ranks.scores.overall / 100) ?? undefined : undefined;
 	const dcGradeColor = crew.ranks.scores?.overall_grade ? gradeToColor(crew.ranks.scores.overall_grade) ?? undefined : undefined;
     const rarityLabels = CONFIG.RARITIES.map(m => m.name);
     const gradeColor = gradeToColor(crew.cab_ov_grade) ?? undefined;
     const cabColor = gradeToColor(Number(crew.cab_ov) / 16) ?? undefined;
+
+    const isExpanded = React.useMemo(() => {
+        return critExpanded === crew.symbol;
+    }, [critExpanded, crew]);
 
     let sortedFields = ScoreFields.slice(3).sort((a, b) => {
         if (typeof weights[rarity][a] !== 'number' && typeof weights[rarity][b] !== 'number') {
@@ -191,17 +201,45 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
                 }
                 if (typeof val !== 'number') return <></>
 
-                return (<Table.Cell key={`scores.${field}`} textAlign='center'>
-                    <span style={{color: gradeToColor(val / 100)}}>
-                        {field === 'ship' && !!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
-					    {field !== 'ship' && val}
-                    </span>
-                    <p style={{fontSize: '0.8em'}}>
-                        #{rank}
-                    </p>
+                return (<Table.Cell key={`scores.${field}`} textAlign='center'
+                    style={getCellStyle(field)}
+                    onClick={() => clickCell(field)}
+                >
+                    {(field !== 'crit' || !isExpanded) && (<>
+                        <span style={{color: gradeToColor(val / 100)}}>
+                            {field === 'ship' && !!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.overall, t)}
+                            {field !== 'ship' && val}
+                        </span>
+                        <p style={{fontSize: '0.8em'}}>
+                            #{rank}
+                        </p>
+                    </>)}
+                    {field === 'crit' && isExpanded && (drawCritTable())}
 				</Table.Cell>)
 			})}
 		</React.Fragment>
-	)
+	);
+
+    function drawCritTable() {
+        const buckets = getElevatedBuckets(crew, gauntlets, TRAIT_NAMES);
+        return renderElevatedCritTable(crew, buckets, t);
+    }
+
+    function getCellStyle(field: string) {
+        if (field !== 'crit') return undefined;
+        if (critExpanded) return { cursor: 'zoom-out' };
+        return { cursor: 'zoom-in' };
+
+    }
+
+    function clickCell(field: string) {
+        if (field !== 'crit') return;
+        if (critExpanded === crew.symbol) {
+            setCritExpanded(undefined);
+        }
+        else {
+            setCritExpanded(crew.symbol);
+        }
+    }
 };
 

@@ -19,6 +19,7 @@ import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 
 import { formatPair } from "./paircard";
+import { renderElevatedCritTable } from "./sharedutils";
 
 type SortDirection = 'ascending' | 'descending' | undefined;
 
@@ -325,7 +326,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     {gauntlets?.length && <>
                         <div style={{cursor: openCrit !== crew.id ? 'zoom-in' : 'zoom-out'}} onClick={() => setOpenCrit(openCrit === crew.id ? 0 : crew.id)}>
                             {openCrit !== crew.id && <>{elevated[crew.symbol]}</>}
-                            {openCrit === crew.id && renderElevatedCritTable(crew)}
+                            {openCrit === crew.id && renderElevatedCritTable(crew, crewBuckets[crew.symbol], t)}
                         </div>
                     </>}
                     {!gauntlets?.length && ((prettyTraits?.filter(t => crew.traits_named.includes(t))?.length ?? 0) * 20 + 5) + "%"}
@@ -374,38 +375,6 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                     </div>
                 </Table.Cell>
             </Table.Row>)
-    }
-
-    function renderElevatedCritTable(crew: PlayerCrew) {
-        if (!gauntlets) return <></>
-        const buckets = crewBuckets[crew.symbol];
-        if (!buckets) return <></>
-        return (
-            <div style={{maxHeight: '15em', overflowY: 'auto'}}>
-                <Table striped>
-                    {buckets.map((bucket, idx) => {
-                        const { key, name, crit, count } = bucket;
-                        return (
-                            <Table.Row key={`gpcrit_${crew.symbol}_${key}_${crit}`}>
-                                <Table.Cell>
-                                    {count}
-                                </Table.Cell>
-                                <Table.Cell>
-                                    {name || key}
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div style={{minWidth: '4em'}}>
-                                    <Label color={getCritColor(crit)}>
-                                        {t('global.n_%', { n: crit })}
-                                    </Label>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                        );
-                    })}
-                </Table>
-            </div>
-        )
     }
 
     function rosterizeCrew(data: PlayerCrew[]) {

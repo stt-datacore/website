@@ -254,6 +254,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
+	const [critExpanded, setCritExpanded] = useStateWithStorage(pageId+'/rosterTable/critExpanded', undefined as string | undefined);
 
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
 	const [activeRarities, setActiveRarities] = React.useState([] as number[]);
@@ -311,7 +312,15 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			available: true,
 			optionText: t('crew_views.scoring'),
 			tableConfig: getDataCoreRanksTableConfig(globalContext.core.current_weighting, t, activeRarities),
-			renderTableCells: (crew: IRosterCrew) => <CrewDataCoreRankCells rarityFilter={activeRarities} weights={globalContext.core.current_weighting} crew={crew} />
+			renderTableCells: (crew: IRosterCrew) => (
+				<CrewDataCoreRankCells
+					crew={crew}
+					critExpanded={critExpanded}
+					setCritExpanded={setCritExpanded}
+					rarityFilter={activeRarities}
+					weights={globalContext.core.current_weighting}
+				/>
+			)
 		},
 		{
 			id: 'g_ranks',
