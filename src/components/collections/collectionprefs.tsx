@@ -8,6 +8,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { RewardFilter } from "./rewardfilter";
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import CONFIG from "../CONFIG";
+import { useStateWithStorage } from "../../utils/storage";
 
 
 export interface CollectionPrefsProps {
@@ -15,6 +16,8 @@ export interface CollectionPrefsProps {
     playerCollections: PlayerCollection[];
     extendedCollections: PlayerCollection[];
     workerRunning: boolean;
+    compactView: boolean;
+    setCompactView: (value: boolean) => void;
     mode: 'crew' | 'group' | 'optimizer';
 }
 
@@ -23,7 +26,7 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt } = globalContext.localized;
     const colContext = React.useContext(CollectionsContext);
-    const { playerCollections, extendedCollections, mode, colCombos } = props;
+    const { playerCollections, extendedCollections, mode, colCombos, compactView, setCompactView } = props;
     const { favorited, setFavorited, showIncomplete, setShowIncomplete, hardFilter, setHardFilter, byCost, setByCost, costMode, setCostMode, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
     const { setTierFilter, tierFilter, ownedFilter, setOwnedFilter, rarityFilter, setRarityFilter, fuseFilter, setFuseFilter } = colContext;
 
@@ -73,7 +76,6 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
         }
         return results;
     }, [mode, playerCollections, extendedCollections]);
-
 
     const ownedFilterOptions = [] as DropdownItemProps;
 
@@ -215,12 +217,14 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
                 selection={mapFilter?.rewardFilter}
                 setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
             />
-            <div style={{ display: 'grid', gridTemplateAreas: "'a b' 'c d'" }}>
+            <div style={{ display: 'grid', gridTemplateAreas: "'a b' 'c d' 'e f'" }}>
                 {mode !== 'crew' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'a' }} label={t('collections.options.honor_sale_pricing')} checked={costMode === 'sale'} onChange={(e, { checked }) => setCostMode(checked ? 'sale' : 'normal')} />}
                 {mode !== 'crew' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'c' }} label={t('collections.options.prioritize_favorite_crew')} checked={favorited} onChange={(e, { checked }) => setFavorited(!!checked)} />}
                 {mode === 'optimizer' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'b' }} label={t('collections.options.sort_by_cost')} checked={byCost} onChange={(e, { checked }) => setByCost(checked ?? false)} />}
                 {mode === 'optimizer' && <Checkbox style={{ margin: "0.5em 1em", gridArea: 'd' }} label={t('collections.options.show_incomplete_combos')} checked={showIncomplete} onChange={(e, { checked }) => setShowIncomplete(!!checked)} />}
             </div>
+
         </div>
+        {mode !== 'crew' && <Checkbox style={{ margin: "1em 0" }} label={t('collections.options.compact_view')} checked={compactView} onChange={(e, { checked }) => setCompactView(!!checked)} />}
     </div>)
 }

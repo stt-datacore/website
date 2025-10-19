@@ -15,13 +15,14 @@ export interface GroupTableProps {
 	playerCollections: PlayerCollection[];
 	colData: CollectionInfo[];
 	workerRunning: boolean;
+	compactView: boolean;
 };
 
 export const CollectionResearchView = (props: GroupTableProps) => {
 	const colContext = React.useContext(CollectionsContext);
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
-	const { workerRunning, colData } = props;
+	const { workerRunning, colData, compactView } = props;
 	const { costMode, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
 	// const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -88,6 +89,7 @@ export const CollectionResearchView = (props: GroupTableProps) => {
 								<Table.Cell width={4} style={{ verticalAlign: "top" }}>
 
 									<CollectionCard
+										compactView={compactView}
 										ownedCites={ownedCites}
 										mapFilter={mapFilter}
 										setMapFilter={setMapFilter}
@@ -101,6 +103,7 @@ export const CollectionResearchView = (props: GroupTableProps) => {
 									<Grid doubling columns={3} textAlign='center' >
 										{col.crew.map((crew, ccidx) => (
 											<CollectionsCrewCard
+												compactView={compactView}
 												highlightIfNeeded
 												crew={crew}
 												collection={collection}

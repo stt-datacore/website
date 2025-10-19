@@ -288,6 +288,7 @@
             "warning": "La vista del optimizador de colección muestra solo la tripulación propia."
         },
         "options": {
+            "compact_view": "Vista compacta",
             "group_rewards": "Agrupa las recompensas",
             "hard_filter": "Filtro duro",
             "honor_sale_pricing": "Precios de venta de honor",

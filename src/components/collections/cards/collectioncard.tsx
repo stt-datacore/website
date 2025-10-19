@@ -17,6 +17,7 @@ export interface CollectionCardProps {
     searchFilter: string;
     setMapFilter: (value: CollectionFilterOptions) => void;
     setSearchFilter: (value: string) => void;
+    compactView: boolean;
 }
 
 export const CollectionCard = (props: CollectionCardProps) => {

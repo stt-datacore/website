@@ -58,6 +58,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const milestoneOpts = [] as DropdownItemProps[];
 
 	const [tabIndex, setTabIndex] = useStateWithStorage<number | undefined>('collectionstool/tabIndex', undefined, { rememberForever: true });
+    const [compactView, setCompactView] = useStateWithStorage('collectionstool/compactView', false, { rememberForever: true });
 
 	React.useEffect(() => {
 		let selnum = undefined as number | undefined;
@@ -233,6 +234,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			mode: 'group',
 			render: (workerRunning: boolean) =>
 				<CollectionResearchView
+					compactView={compactView}
 					workerRunning={workerRunning}
 					playerCollections={playerCollections}
 					colData={colData} />
@@ -247,6 +249,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			mode: 'optimizer',
 			render: (workerRunning: boolean) =>
 				<CollectionCombosView
+					compactView={compactView}
 					workerRunning={workerRunning}
 					playerCollections={playerCollections}
 					colCombos={colCombos}
@@ -278,6 +281,8 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 				{tabPanes[tabIndex].showFilters &&
 					<CollectionPrefs
+						compactView={compactView}
+						setCompactView={setCompactView}
 						mode={tabPanes[tabIndex ?? 0].mode as any}
 						playerCollections={playerCollections}
 						extendedCollections={extendedCollections}

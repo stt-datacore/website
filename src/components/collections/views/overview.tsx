@@ -8,6 +8,7 @@ import { formatColString } from '../context';
 import { getAllStatBuffs } from '../../../utils/collectionutils';
 import { getIconPath } from '../../../utils/assets';
 import { Collection } from "../../../model/collections";
+import { LazyImage } from '../../lazyimage';
 
 export const CollectionsOverview = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -53,7 +54,7 @@ export const CollectionsOverview = () => {
 											</div>
 										</div>
 									</Label>
-									<Image
+									<LazyImage
 										src={`${process.env.GATSBY_ASSETS_URL}${colInfo.image}`}
 										size="large"
 										// onError={e => e.target.style.visibility = 'hidden'}
