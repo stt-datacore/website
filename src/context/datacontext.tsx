@@ -260,9 +260,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 						newData.portal_log = result.json;
 						newData.portal_log?.forEach(log => log.date = new Date(log.date));
 						break;
-					case 'event_instances':
-						newData.event_instances = computeEventDates(result.json);
-						break;
 					default:
 						newData[result.demand] = result.json;
 						break;
@@ -377,45 +374,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 	function reset(): boolean {
 		setData({ ...defaultData });
 		return true;
-	}
-
-	function computeEventDates(instances: EventInstance[]) {
-		let anchor_id = 490;
-		let fi = instances.findIndex(f => f.fixed_instance_id === anchor_id);
-		let z = anchor_id;
-		let name = '';
-		let ref = {} as {[key:string]: number};
-		for (let i = fi; i >= 0; i--) {
-			ref[instances[i].instance_id] = z;
-			if (i > 0 && instances[i].event_name !== instances[i - 1].event_name) {
-				z--;
-			}
-		}
-		name = '';
-		z = anchor_id;
-		let c = instances.length;
-		for (let i = fi; i < c; i++) {
-			ref[instances[i].instance_id] = z;
-			if (i < c - 1 && instances[i].event_name !== instances[i + 1].event_name) {
-				z++;
-			}
-			name = instances[i].event_name;
-		}
-		const betas = instances.filter(f => f.event_name.includes("Event Beta") || f.event_name.includes("Event Test"));
-		function eventToDate(finstid: number) {
-			let num = finstid;
-			let anchor_id = 490;
-			let anchor_date = new Date('2025-09-25T16:00:00');
-			let b = betas.filter(f => ref[f.instance_id] >= finstid);
-			num += b.length;
-			anchor_date.setDate(anchor_date.getDate() - (7 * (anchor_id - num)));
-			return anchor_date;
-		}
-
-		for (let inst of instances) {
-			inst.event_date = eventToDate(ref[inst.instance_id]);
-		}
-		return instances;
 	}
 
 	function processAllShips(all_ships: ReferenceShip[]) {
