@@ -26,10 +26,10 @@ export const ChartsView = (props: ChartsViewProps) => {
     const [useFilters, setUseFilters] = useStateWithStorage(`stats_calendar_use_filters`, true, { rememberForever: true });
 
     React.useEffect(() => {
-        if (currGraph !== 'event_distributions' && hideFilters) {
+        if (!currGraph.includes("_distributions") && hideFilters) {
             setHideFilters(false);
         }
-        else if (currGraph === 'event_distributions' && !hideFilters) {
+        else if (currGraph.includes("_distributions") && !hideFilters) {
             setHideFilters(true);
         }
     }, [currGraph]);
@@ -94,7 +94,7 @@ export const ChartsView = (props: ChartsViewProps) => {
             </div>
         </div>
 
-        {currGraph !== 'event_distributions' && <div style={{...flexRow, alignSelf: 'flex-start', margin: '1em 0' }}>
+        {!currGraph.includes("_distributions") && <div style={{...flexRow, alignSelf: 'flex-start', margin: '1em 0' }}>
             <Checkbox
                 label={t('stat_trends.graphs.ignore_filters')}
                 checked={!useFilters}

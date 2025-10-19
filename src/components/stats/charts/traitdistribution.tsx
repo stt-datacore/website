@@ -1,6 +1,6 @@
 import { PieTooltipProps, ResponsivePie } from "@nivo/pie";
 import React from "react";
-import { Checkbox, Dropdown, Label } from "semantic-ui-react";
+import { Checkbox, Dropdown } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { getPermutations } from "../../../utils/misc";
 import { useStateWithStorage } from "../../../utils/storage";
@@ -8,7 +8,6 @@ import CONFIG from "../../CONFIG";
 import { AvatarView } from "../../item_presenters/avatarview";
 import themes from '../../nivo_themes';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
-import { renderMainDataScore } from "../../crewtables/views/base";
 
 export type TraitDistributionType = 'frequent' | 'combo' | 'rarity' | 'series';
 
@@ -297,9 +296,9 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
             seriesStats.sort((a, b) => b.score - a.score);
             let final = sortSeries(seriesStats);
             if (dataSet === 'variant') final = final.slice(0, 40);
-            if (dataSet === 'all') final = final.slice(0, 30);
-            if (dataSet === 'portal') final = final.slice(0, 25);
-            if (dataSet === 'hidden') final = final.slice(0, 25);
+            if (dataSet === 'all') final = final.slice(0, 40);
+            if (dataSet === 'portal') final = final.slice(0, 40);
+            if (dataSet === 'hidden') final = final.slice(0, 40);
             setChartData(final);
             setCalculate(0);
         }, 100);
