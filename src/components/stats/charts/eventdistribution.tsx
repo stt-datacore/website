@@ -82,8 +82,8 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                 }}
             />
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em' }}>
-                <div style={{ height: '50vw', width: '70vw', border: '2px solid #666', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em 0' }}>
+                <div style={{ height: '50vw', width: '100%', border: '2px solid #666', borderRadius: '12px' }}>
                     <ResponsivePie
                         data={chartData}
                         value={'score'}
