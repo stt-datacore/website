@@ -288,6 +288,7 @@
             "warning": "La vue de l'optimiseur de collection affiche uniquement l'équipage possédé."
         },
         "options": {
+            "compact_view": "Vue compacte",
             "group_rewards": "Regrouper les récompenses",
             "hard_filter": "Filtre dur",
             "honor_sale_pricing": "Prix de vente d'honneur",

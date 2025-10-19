@@ -288,6 +288,7 @@
             "warning": "In der Sammlungsoptimierungsansicht werden nur die eigenen Crewmitglieder angezeigt."
         },
         "options": {
+            "compact_view": "Kompaktansicht",
             "group_rewards": "Gruppieren Sie die Belohnungen",
             "hard_filter": "Harter Filter",
             "honor_sale_pricing": "Preise für den Ehrenverkauf",

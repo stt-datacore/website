@@ -288,6 +288,7 @@
             "warning": "The collection optimizer view shows only owned crew."
         },
         "options": {
+            "compact_view": "Compact View",
             "group_rewards": "Group Rewards",
             "hard_filter": "Hard Filter",
             "honor_sale_pricing": "Honor Sale Pricing",
