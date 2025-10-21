@@ -47,7 +47,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
 
     const compactStyle: React.CSSProperties = {
         width: "300px",
-        margin: "1.5em",
+        margin: "0.5em",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
