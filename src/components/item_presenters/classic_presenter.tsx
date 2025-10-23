@@ -227,7 +227,7 @@ const DateAdded = (props: { crew: CrewMember }) => {
 	const { t } = globalContext.localized;
 	return (
 		<p>
-			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : (new Date(crew.date_added))?.toLocaleDateString() || ""} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 		</p>
 	);
 };
@@ -237,10 +237,10 @@ const CapAchiever = (props: { crew: CrewMember }) => {
 	const { crew } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	if (!crew.cap_achiever || crew.preview) return <></>
+	if (!crew.cap_achiever?.date || crew.preview) return <></>
 	return (
 		<p>
-			<b>{t('base.cap_achiever')}: </b>{crew.cap_achiever.name} ({new Date(crew.cap_achiever.date * 1000).toLocaleDateString()})
+			<b>{t('base.cap_achiever')}: </b>{crew.cap_achiever.name} ({new Date(crew.cap_achiever.date * 1000)?.toLocaleDateString() || ""})
 		</p>
 	);
 };
