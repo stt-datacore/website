@@ -211,8 +211,10 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 			{
 				width: 2, column: 'collections', title: t('base.collections'), reverse: true,
 				customCompare: (a: PlayerCrew, b: PlayerCrew) => {
-					if (!ocols) return a.collections.length - b.collections.length;
-					return a.collections.filter(c => ocols.includes(c)).length - b.collections.filter(c => ocols.includes(c)).length
+					let r = 0;
+					if (ocols) r = a.collections.filter(c => ocols.includes(c)).length - b.collections.filter(c => ocols.includes(c)).length
+					if (!r) r = a.collections.length - b.collections.length;
+					return r;
 				},
 			},
 		);
