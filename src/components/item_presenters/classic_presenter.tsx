@@ -242,7 +242,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	return (
 		<p>
 			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : (new Date(crew.date_added))?.toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
-			{!!crewEvent && !disable_event_modal && (
+			{!!crewEvent?.event_date && !disable_event_modal && (
 				<div>
 					{t('obtained.long.Event{{:}}')}&nbsp;
 					<span style={{
@@ -254,7 +254,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 						}}
 					>
 						<u><b>{crewEvent.event_name}</b></u>
-						&nbsp;&mdash;{crewEvent.event_date?.toLocaleDateString()}
+						&nbsp;&mdash;{(new Date(crewEvent.event_date))?.toLocaleDateString()}
 						&nbsp;({printWhere(crew)})
 					</span>
 				</div>
