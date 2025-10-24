@@ -1,5 +1,5 @@
 import React from 'react';
-import { Step, Icon } from 'semantic-ui-react';
+import { Icon, Step } from 'semantic-ui-react';
 
 import { BorrowedCrew, CompletionState, PlayerCrew } from '../../model/player';
 
@@ -8,12 +8,9 @@ import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
 
-import { IRosterCrew } from './model';
 import { TinyStore } from '../../utils/tiny';
-import { CrewMember } from '../../model/crew';
-import { QuipmentProspectsOptions } from '../qpconfig/options';
-import { DefaultQuipmentConfig, QPContext, QuipmentProspectConfig } from '../qpconfig/provider';
-import { useStateWithStorage } from '../../utils/storage';
+import { QPContext } from '../qpconfig/provider';
+import { IRosterCrew } from './model';
 
 type RosterPickerProps = {
 	rosterType: string;
@@ -31,7 +28,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
-	const [qpConfig, setQpConfig, applyQp] = qpContext.useQPConfig();
+	const [qpConfig, , applyQp] = qpContext.useQPConfig();
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
