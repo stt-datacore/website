@@ -1047,6 +1047,7 @@
         "filters": "Filter",
         "filters_warning": "Aufgrund Ihrer aktuellen Suchoptionen sind einige Ergebnisse möglicherweise ausgeblendet.",
         "fleet": "Flotte",
+        "fuses": "Fusionen",
         "group_by": "Gruppiere nach",
         "hidden": "Versteckt",
         "hide": "Verstecken",
@@ -2472,7 +2473,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Alle als unsterblich ansehen"
+            "as_immortalized": "Alle als unsterblich ansehen",
+            "cheapestfffe": "Günstigste VAVA"
         },
         "title": "Besondere Ansichten"
     },

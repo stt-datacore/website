@@ -38,6 +38,7 @@ import { ReleaseDateFilter } from './filters/crewreleasedate';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { CrewSkillOrder } from './filters/crewskillorder';
+import { CheapestFilters, DefaultCheapestOpts } from './filters/cheapestfffe';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -255,7 +256,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	const [critExpanded, setCritExpanded] = useStateWithStorage(pageId+'/rosterTable/critExpanded', undefined as string | undefined);
-
+	const [cheapest, setCheapest] = useStateWithStorage(pageId+'/rosterTable/special/cheapestfffe/config', structuredClone(DefaultCheapestOpts), { rememberForever: true });
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
 	const [activeRarities, setActiveRarities] = React.useState([] as number[]);
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
@@ -492,6 +493,16 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				/>
 		},
 		{
+			id: 'chepeastfffe',
+			available: specialView === 'cheapestfffe',
+			form:
+				<CheapestFilters
+					key='filter_mycrew_specialview_cheapestfffe'
+					config={cheapest}
+					setConfig={setCheapest}
+				/>
+		},
+		{
 			id: 'ownership',
 			available: playerData && (['offers', 'allCrew', 'buyBack'].includes(rosterType)),
 			form:
@@ -638,7 +649,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	return (
 		<React.Fragment>
 			<Form>
-				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: '1em' }}>
+				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', columnGap: '1em' }}>
 					<Form.Field
 						placeholder={t('crew_views.base')}
 						control={Dropdown}

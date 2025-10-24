@@ -304,7 +304,7 @@ export const OwnedLabel = (props: { crew: IRosterCrew, statsPopup?: boolean }) =
 };
 
 
-export type SpecialViews = '' | 'as_immortalized';
+export type SpecialViews = '' | 'as_immortalized' | 'cheapestfffe';
 
 export type SpecialViewProps = {
 	specialView?: SpecialViews;
@@ -317,7 +317,10 @@ export const SpecialViewMode = (props: SpecialViewProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const viewModes = [] as DropdownItemProps[];
 
-	viewModes.push({ key: 'as_immortalized', value: 'as_immortalized', text: t('view_special.options.as_immortalized') })
+	viewModes.push(
+		{ key: 'as_immortalized', value: 'as_immortalized', text: t('view_special.options.as_immortalized') },
+		{ key: 'cheapestfffe', value: 'cheapestfffe', text: t('view_special.options.cheapestfffe') }
+	);
 
 	return (
 		<Form.Field>

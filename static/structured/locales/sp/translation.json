@@ -1053,6 +1053,7 @@
         "filters": "Filtros",
         "filters_warning": "Algunos resultados pueden estar ocultos debido a sus opciones de búsqueda actuales.",
         "fleet": "Flota",
+        "fuses": "Fusiones",
         "group_by": "Agrupar por",
         "hidden": "Oculto",
         "hide": "Ocultar",
@@ -2482,7 +2483,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Ver todo como inmortalizado"
+            "as_immortalized": "Ver todo como inmortalizado",
+            "cheapestfffe": "Más barato TFTE"
         },
         "title": "Vistas especiales"
     },

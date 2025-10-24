@@ -1930,7 +1930,7 @@ export function cheapestFFFE(
 	max_rarity?: number,
 	min_rarity?: number,
 	skirmish?: boolean,
-	fuse?: boolean
+	fuse?: number
 	) {
 	max_rarity ??= 99;
 	min_rarity ??= 1;

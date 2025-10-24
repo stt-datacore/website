@@ -1047,6 +1047,7 @@
         "filters": "Filters",
         "filters_warning": "Some results may be hidden due to your current search options.",
         "fleet": "Fleet",
+        "fuses": "Fuses",
         "group_by": "Group by",
         "hidden": "Hidden",
         "hide": "Hide",
@@ -2473,7 +2474,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "View all as immortalized"
+            "as_immortalized": "View all as immortalized",
+            "cheapestfffe": "Cheapest FFFE"
         },
         "title": "Special views"
     },

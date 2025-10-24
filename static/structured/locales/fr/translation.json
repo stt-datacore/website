@@ -1055,6 +1055,7 @@
         "filters": "Filtres",
         "filters_warning": "Certains résultats peuvent être masqués en raison de vos options de recherche actuelles.",
         "fleet": "Flotte",
+        "fuses": "Fusions",
         "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
@@ -2484,7 +2485,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Tout voir comme immortalisé"
+            "as_immortalized": "Tout voir comme immortalisé",
+            "cheapestfffe": "Moins cher EFEÉ"
         },
         "title": "Vues spéciales"
     },
