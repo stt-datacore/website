@@ -645,7 +645,14 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			setOwnedSkills(ownedSkills);
 		}
 	}, [preparedCrew]);
-
+	const ocols = [] as string[];
+	if (specialView === 'cheapestfffe') {
+		playerData?.player.character.cryo_collections.forEach(col => {
+			if (col?.milestone?.goal) {
+				ocols.push(col.name);
+			}
+		});
+	}
 	return (
 		<React.Fragment>
 			<Form>
@@ -699,7 +706,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						rosterCrew={preparedCrew}
 						crewFilters={crewFilters}
 						extraSearchContent={view ? view?.extraSearchContent : renderExtraSearchContent()}
-						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers', specialView === 'cheapestfffe')}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers', specialView === 'cheapestfffe', ocols)}
 						renderTableCells={(crew: IRosterCrew) =>
 							view?.renderTableCells ?
 							view.renderTableCells(crew) :
