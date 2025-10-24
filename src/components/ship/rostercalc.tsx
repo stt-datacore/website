@@ -150,7 +150,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     });
 
-    (globalContext.player.playerData ? ['pvp', 'skirmish', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp']).forEach((mode) => {
+    (globalContext.player.playerData ? ['pvp',
+        //'skirmish',
+        'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp']).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         if (mode.startsWith('fbb')) {
@@ -334,7 +336,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         const newconfig = { ...battleConfig };
         newconfig.defense = 0;
         newconfig.offense = 0;
-
+        if (battleMode === 'skirmish') {
+            setBattleMode('pvp');
+            return;
+        }
         if (globalContext.player.playerData) {
             if (battleMode.startsWith('fbb')) {
                 let bs = globalContext.player.playerData.player.character.captains_bridge_buffs.find(f => f.stat === 'fbb_boss_ship_attack');
@@ -371,24 +376,24 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
         setBattleConfig(newconfig);
 
-        if (battleMode === 'skirmish') {
-            if (globalContext.player.playerData && globalContext.core.crew?.length && !gameEvents.length) {
-                const gev = [] as IEventData[];
+        // if (battleMode === 'skirmish') {
+        //     if (globalContext.player.playerData && globalContext.core.crew?.length && !gameEvents.length) {
+        //         const gev = [] as IEventData[];
 
-                globalContext.player.ephemeral?.events?.forEach((ev) => {
-                    if (ev.content_types.includes('skirmish')) {
-                        let eventData = getEventData(ev, globalContext.core.crew);
-                        if (eventData) {
-                            gev.push(eventData);
-                        }
-                    }
-                });
-                if (gev.length) {
-                    setGameEvents(gev);
-                    if (!currentEvent || !gev.some(ev => ev.symbol === currentEvent?.symbol)) setCurrentEvent(gev[0]);
-                }
-            }
-        }
+        //         globalContext.player.ephemeral?.events?.forEach((ev) => {
+        //             if (ev.content_types.includes('skirmish')) {
+        //                 let eventData = getEventData(ev, globalContext.core.crew);
+        //                 if (eventData) {
+        //                     gev.push(eventData);
+        //                 }
+        //             }
+        //         });
+        //         if (gev.length) {
+        //             setGameEvents(gev);
+        //             if (!currentEvent || !gev.some(ev => ev.symbol === currentEvent?.symbol)) setCurrentEvent(gev[0]);
+        //         }
+        //     }
+        // }
         if (!battleMode.startsWith('fbb')) {
             setUseOpponents(battleMode);
         }
