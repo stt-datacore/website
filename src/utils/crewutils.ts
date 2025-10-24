@@ -2,13 +2,14 @@ import { simplejson2csv, ExportField } from './misc';
 import { BuffStatTable, calculateBuffConfig } from './voyageutils';
 
 import CONFIG from '../components/CONFIG';
-import { CompactCrew, CompletionState, GauntletPairScore, PlayerCrew, PlayerData, TranslateMethod } from '../model/player';
+import { CompactCrew, CompletionState, CryoCollection, GauntletPairScore, PlayerCrew, PlayerData, TranslateMethod } from '../model/player';
 import { BaseSkills, ComputedSkill, CrewMember, PlayerSkill, Skill } from '../model/crew';
 import { Ability, ChargePhase, Ship, ShipAction } from '../model/ship';
 import { ObjectNumberSortConfig, StatsSorter } from './statssorter';
 import { ItemBonusInfo, ItemWithBonus } from './itemutils';
-import { EquipmentItem } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource, IDemand } from '../model/equipment';
 import { TinyStore } from './tiny';
+import { demandsPerSlot } from './equipment';
 
 const tiny = TinyStore.getStore(`global_playerSettings`);
 export var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
@@ -1920,4 +1921,190 @@ export function getSkillOrderScore(crew: CrewMember, reports: SkillRarityReport<
 
 export function formatMissingTrait(trait: string) {
 	return trait.split("_").map(str => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`).join(" ");
+}
+const BAD_COST = 0;
+export function cheapestFFFE(
+	profile: PlayerData,
+	crew: CrewMember[],
+	items: EquipmentItem[],
+	max_rarity?: number,
+	min_rarity?: number,
+	skirmish?: boolean,
+	fuse?: boolean
+	) {
+	max_rarity ??= 99;
+	min_rarity ??= 1;
+
+	function bestChronCost(item: EquipmentItem, skirmish?: boolean) {
+		let bestCost = 0;
+
+		if (!item.factionOnly) {
+			let bestMissions = item.item_sources.filter((s) => (!skirmish || s.type !== 0) && s.avg_cost && s.avg_cost >= 1).sort((a, b) => (a.avg_cost || 9999) - (b.avg_cost || 9999));
+			if (bestMissions.length > 0) {
+				if (!skirmish || bestMissions.some(m => m.type === 2)) {
+					bestCost = bestMissions[0].avg_cost || 0;
+				}
+			}
+		}
+
+		if (!bestCost && skirmish) return BAD_COST;
+		return bestCost;
+	}
+
+
+	function getNeededItems(crew_symbol: string, min_level: number, max_level: number = 100, skirmish?: boolean) {
+		let foundcrew = crew.find((c) => c.symbol === crew_symbol);
+
+		if (!foundcrew) {
+			return undefined;
+		}
+
+		// TODO: partially equipped bands (e.g. level 30 with the 2nd equipment slot filled)
+
+		let demands: IDemand[] = [];
+		let dupeChecker = new Set<string>();
+		let craftCost = 0;
+
+		foundcrew.equipment_slots
+			.filter((es: any) => es.level >= min_level && es.level <= max_level)
+			.forEach((es: any) => {
+				craftCost += demandsPerSlot(es, items, dupeChecker, demands, foundcrew.symbol);
+			});
+
+		demands = demands.sort((a, b) => b.count - a.count);
+
+		return { demands, craftCost };
+	}
+
+	let ocols = [] as number[];
+	profile.player.character.cryo_collections.filter(col => {
+		if (col?.milestone?.goal && col.type_id) {
+			ocols.push(col.type_id);
+		}
+	});
+
+	let profileCrew = profile.player.character.crew.filter(f => !f.immortal);
+	let profileItems = profile.player.character.items;
+	const needs = {} as { [key: string]: { demands: IDemand[], craftCost: number } };
+	const sources = {} as { [key: string]: EquipmentItemSource[] };
+
+	let candidates = profileCrew.filter((c: PlayerCrew) => {
+		let findcrew = crew.find(f => f.symbol === c.symbol)!;
+
+		if (findcrew?.max_rarity) {
+			if (findcrew.max_rarity > max_rarity || findcrew.max_rarity < min_rarity) return false;
+		}
+
+		if (c.level >= 90) {
+			if (c.equipment.length === 4) return false;
+			let needed = getNeededItems(c.symbol, 90, c.level, skirmish);
+			if (!needed || needed.demands.every(d => bestChronCost(d.equipment!, skirmish) <= BAD_COST) || needed.craftCost <= BAD_COST) {
+				return false;
+			}
+			needs[c.symbol] = needed;
+		}
+		else {
+			let needed = getNeededItems(c.symbol, c.level, undefined, skirmish);
+			if (!needed || needed.demands.every(d => bestChronCost(d.equipment!, skirmish) <= BAD_COST) || needed.craftCost <= BAD_COST) {
+				return false;
+			}
+			needs[c.symbol] = needed;
+		}
+
+		if (!fuse) {
+			if (c.rarity === findcrew?.max_rarity) {
+				c.max_rarity = findcrew?.max_rarity;
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		let fnum = 0;
+
+		if (typeof fuse === 'number') {
+			fnum = fuse;
+		}
+
+		if (c.rarity === (findcrew?.max_rarity ?? 0) - fnum) {
+			c.max_rarity = findcrew?.max_rarity;
+			return true;
+		}
+		else {
+			return false;
+		}
+	});
+
+	candidates = candidates.map((c: any) => {
+		//let needed = c.level >= 90 ? getNeededItems(c.symbol, 90, c.level, skirmish) : getNeededItems(c.symbol, c.level, undefined, skirmish);
+		let needed = needs[c.symbol];
+		if (!needed) {
+			return c;
+		}
+		let neededItems = needed.demands;
+
+		let requiredChronCost = neededItems.reduce((totalCost, item) => {
+			let have = profileItems.find((j: any) => j.symbol === item.symbol)?.quantity || 0;
+			let need = item.count;
+			if (have >= need) {
+				return totalCost;
+			}
+			return totalCost + ((need - have) * bestChronCost(item.equipment!, skirmish));
+		}, 0);
+
+		let requiredFactionItems = neededItems.reduce((totalItems, item) => {
+			let have = profileItems.find((j: any) => j.symbol === item.symbol)?.quantity || 0;
+			let need = item.count;
+			if (have >= need) {
+				return totalItems;
+			}
+			if (!item.factionOnly) {
+				return totalItems;
+			}
+			return totalItems + (need - have);
+		}, 0);
+		return {
+			...c,
+			requiredChronCost,
+			requiredFactionItems,
+			craftCost: needed.craftCost,
+		}
+	}).sort((a: any, b: any) => {
+		let r = 0;
+		if (skirmish) {
+			sources[a.symbol] ??= needs[a.symbol].demands.map(d => d.equipment!.item_sources ?? []).flat();
+			sources[b.symbol] ??= needs[b.symbol].demands.map(d => d.equipment!.item_sources ?? []).flat();
+
+			let needa = sources[a.symbol];
+			let ac = needa.length;
+			let as = needa.filter(f => f.type === 2).length;
+
+			let needb = sources[b.symbol];
+			let bc = needb.length;
+			let bs = needb.filter(f => f.type === 2).length;
+
+			if (ac && bc) {
+				if (as && bs) {
+					ac = as / ac;
+					bc = bs / bc;
+					r = bc - ac;
+				}
+				else if (as) {
+					r = -1;
+				}
+				else if (bs) {
+					r = 1;
+				}
+			}
+		}
+		//if (!r) r = (b.rarity/b.max_rarity) - (a.rarity/a.max_rarity);
+		if (!r) r = a.requiredChronCost - b.requiredChronCost;
+		return r;
+	});
+
+	return {
+		candidates,
+		collections: ocols
+	}
 }
