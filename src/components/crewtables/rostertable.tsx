@@ -8,7 +8,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
 import { ITableConfigRow } from '../../components/searchabletable';
 import ProspectPicker from '../../components/prospectpicker';
-import { oneCrewCopy, applyCrewBuffs } from '../../utils/crewutils';
+import { oneCrewCopy, applyCrewBuffs, cheapestFFFE } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { IRosterCrew, RosterType, ICrewMarkup, ICrewFilter } from './model';
@@ -612,7 +612,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	React.useEffect(() => {
 		// Apply roster markups, i.e. add sortable fields to crew
 		prepareCrew();
-	}, [rosterCrew, crewMarkups, rosterConfig]);
+	}, [rosterCrew, crewMarkups, rosterConfig, specialView, cheapest]);
 
 	React.useEffect(() => {
 		const newConfig: RosterConfig = {
@@ -699,8 +699,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						rosterCrew={preparedCrew}
 						crewFilters={crewFilters}
 						extraSearchContent={view ? view?.extraSearchContent : renderExtraSearchContent()}
-						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers')}
-						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells alternativeLayout={altBaseLayout && rosterType !== 'offers'} tableType={props.tableType} crew={crew} pageId={pageId} />}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers', specialView === 'cheapestfffe')}
+						renderTableCells={(crew: IRosterCrew) =>
+							view?.renderTableCells ?
+							view.renderTableCells(crew) :
+							<CrewBaseCells
+								pageId={pageId}
+								alternativeLayout={altBaseLayout && rosterType !== 'offers'}
+								tableType={props.tableType}
+								crew={crew}
+								cheap={specialView === 'cheapestfffe'}
+							/>}
 						lockableCrew={lockableCrew}
 						specialView={specialView}
 						loading={isPreparing}
@@ -738,7 +747,20 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}
 
 	async function prepareCrew() {
-		const preparedCrew = rosterCrew.map(crew => {
+		let useCrew = rosterCrew;
+		if (specialView === 'cheapestfffe' && !!playerData) {
+			let { candidates } = cheapestFFFE(
+				playerData,
+				globalContext.core.crew,
+				globalContext.core.items,
+				cheapest.max_rarity,
+				cheapest.min_rarity,
+				cheapest.skirmish,
+				cheapest.fuse
+			)
+			useCrew = candidates;
+		}
+		const preparedCrew = useCrew.map(crew => {
 			if (crewMarkups.length > 0) {
 					crewMarkups.forEach(crewMarkup => {
 					crewMarkup.applyMarkup(crew);

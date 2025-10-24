@@ -18,8 +18,9 @@ import CrewStat from '../../item_presenters/crewstat';
 import { printFancyPortal } from '../../base/utils';
 import { OfferCrew } from '../../../model/offers';
 import { formatShipScore } from '../../ship/utils';
+import { printChrons, printCredits } from '../../retrieval/context';
 
-export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean) => {
+export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean, cheap?: boolean) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
@@ -49,6 +50,26 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 	);
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
+	}
+
+	if (cheap) {
+		tableConfig.push(
+			{
+				width: 1,
+				column: "requiredChronCost",
+				title: t('global.item_types.chronitons')
+			},
+			{
+				width: 1,
+				column: "requiredFactionItems",
+				title: t('behold_helper.columns.faction_items')
+			},
+			{
+				width: 1,
+				column: "craftCost",
+				title: t('behold_helper.columns.build_cost')
+			}
+		)
 	}
 	if (tableType === 'offers' || alternativeLayout) {
 		tableConfig.push(
@@ -167,11 +188,12 @@ type CrewCellProps = {
 	crew: IRosterCrew;
 	tableType: RosterType
 	alternativeLayout?: boolean
-	absRank?: boolean
+	absRank?: boolean,
+	cheap?: boolean
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew, tableType, absRank, alternativeLayout } = props;
+	const { crew, tableType, absRank, alternativeLayout, cheap } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const tiny = TinyStore.getStore("index");
 
@@ -206,6 +228,17 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					{crew.ranks.voyTriplet && <><br /><small style={{color: 'lightblue', fontStyle: 'italic'}}>{voyPower.toLocaleString()}</small></>}
 				</div>
 			</Table.Cell>}
+			{(!!cheap) && (<>
+				<Table.Cell textAlign='left' width={1}>
+					{printChrons(Math.ceil(crew.requiredChronCost || 0))}
+				</Table.Cell>
+				<Table.Cell textAlign='left' width={1}>
+					{crew.requiredFactionItems?.toLocaleString() || '0'}
+				</Table.Cell>
+				<Table.Cell textAlign='left' width={1}>
+					{printCredits(crew.craftCost)}
+				</Table.Cell>
+			</>)}
 			{(tableType === 'offers' || alternativeLayout) && <>
 				<Table.Cell textAlign='left' width={1}>
 					{crew.skill_order.map(skill => {
