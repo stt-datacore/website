@@ -217,7 +217,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		phaseType,
 		buffConfig,
 		applyBonus,
-		showPotential
+		showPotential,
+		globalContext.core.crew
 	);
 
 	const flexRow = OptionsPanelFlexRow;

@@ -549,6 +549,7 @@ export function computeEventBest(
 	buffConfig?: BuffStatTable,
 	applyBonus?: boolean,
 	showPotential?: boolean,
+	allCrew?: CrewMember[]
 	) {
 
 	const encounterTraits = ["inspiring", "explorer", "scoundrel", "casual", "playful", "hero", "marksman", "investigator"];
@@ -609,6 +610,12 @@ export function computeEventBest(
 						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
+							if (allCrew) {
+								let refcrew = allCrew.find(c => c.symbol === crew.symbol);
+								if (refcrew) {
+									crew.ship_battle = structuredClone(refcrew.ship_battle);
+								}
+							}
 						}
 						if (phaseType !== 'voyage') {
 							crew[skill.name].core = crew[skill.name].core*crew.bonus;
