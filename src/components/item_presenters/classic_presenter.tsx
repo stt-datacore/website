@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'gatsby';
-import { Segment, Accordion, Table, Rating, Icon, SemanticICONS } from 'semantic-ui-react';
+import { Segment, Accordion, Table, Rating, Icon, SemanticICONS, Modal, Label, Button } from 'semantic-ui-react';
 
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
 import { GlobalContext } from '../../context/globalcontext';
@@ -13,6 +13,9 @@ import { OwnedLabel } from '../crewtables/commonoptions';
 import { CrewItemsView } from './crew_items';
 import { PlayerCrew } from '../../model/player';
 import { CollectionDisplay } from './presenter_utils';
+import { EventInfoModal, EventModalHeader } from '../event_info_modal';
+import { EventInstance } from '../../model/events';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 type ValidField =
 	'collections' |
@@ -221,15 +224,139 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 	return <></>;
 };
 
-const DateAdded = (props: { crew: CrewMember }) => {
-	const { crew } = props;
+const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) => {
+	const { crew, disable_event_modal } = props;
 	const globalContext = React.useContext(GlobalContext);
+	const instances = globalContext.core.event_instances;
 	const { t } = globalContext.localized;
+	const [modalOpen, setModalOpen] = React.useState(false);
+	const [crewEvent, setCrewEvent] = React.useState<EventInstance | undefined>(undefined);
+	const [modalEvent, setModalEvent] = React.useState<EventInstance | undefined>(undefined);
+	const [addEvent, setAddEvent] = React.useState<EventInstance | undefined>(undefined);
+	const [accOpen, setAccOpen] = React.useState(false);
+
+	React.useEffect(() => {
+		resetCrewEvent();
+	}, [crew]);
+
 	return (
 		<p>
-			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : (new Date(crew.date_added))?.toLocaleDateString() || ""} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : (new Date(crew.date_added))?.toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
+			{!!crewEvent?.event_date && !disable_event_modal && (
+				<div>
+					{t('obtained.long.Event{{:}}')}&nbsp;
+					<span style={{
+							cursor: 'pointer'
+						}}
+						onClick={() => {
+							resetCrewEvent();
+							setModalOpen(true);
+						}}
+					>
+						<u><b>{crewEvent.event_name}</b></u>
+						&nbsp;&mdash;{(new Date(crewEvent.event_date))?.toLocaleDateString()}
+						&nbsp;({printWhere(crew)})
+					</span>
+				</div>
+			)}
+			{!!modalEvent && modalOpen && !disable_event_modal && <>
+				<Modal
+					open
+					size="large"
+					onClose={() => {
+						setModalOpen(false);
+						setModalEvent(crewEvent);
+					}}
+					closeIcon
+				>
+					<Modal.Header>
+						<EventModalHeader
+							instance={modalEvent}
+							setInstance={setModalEvent}
+							/>
+					</Modal.Header>
+					<Modal.Content scrolling>
+						<EventInfoModal
+							instanceId={modalEvent.instance_id}
+							image={modalEvent.image}
+							hasDetails={modalEvent.event_details}
+							leaderboard={[]}
+						/>
+					</Modal.Content>
+				</Modal>
+			</>}
+			{!!crew.obtained_metadata?.additional_events?.length && (
+				<Accordion activeIndex={accOpen ? 0 : -1}>
+					<Accordion.Title onClick={() => setAccOpen(!accOpen)}>
+						<div style={{display: 'inline'}}>
+							<Icon name={accOpen ? 'triangle down' : 'triangle right'} />
+							<span>
+								{t('base.additional_event_appearances')}
+							</span>
+						</div>
+					</Accordion.Title>
+					<Accordion.Content active={accOpen}>
+						{crew.obtained_metadata.additional_events.map(add => {
+							let evtData = instances.find(f => f.instance_id === add.instance_id);
+							if (!evtData) return <></>;
+							return (
+								<React.Fragment key={`crew_additional_${add.instance_id}`}>
+									<div style={{
+											cursor: 'pointer',
+											margin: '0.25em 1em'
+										}}
+										onClick={() => {
+											setAddEvent(evtData);
+										}}
+									>
+										&nbsp;{evtData.event_date?.toLocaleDateString()}
+										&nbsp;&mdash;&nbsp;<u><b>{evtData.event_name}</b></u>
+										&nbsp;({t(`event_info.${add.where}_rewards`)})
+										{evtData.rerun ? <>&nbsp;&mdash;&nbsp;{t('global.rerun')}</> : ''}
+									</div>
+								<Modal
+									open={addEvent === evtData}
+									size="large"
+									onClose={() => setAddEvent(undefined)}
+									closeIcon
+								>
+									<Modal.Header>
+										<EventModalHeader
+											instance={evtData}
+											/>
+									</Modal.Header>
+									<Modal.Content scrolling>
+										<EventInfoModal
+											instanceId={evtData.instance_id}
+											image={evtData.image}
+											hasDetails={evtData.event_details}
+											leaderboard={[]}
+										/>
+									</Modal.Content>
+								</Modal>
+							</React.Fragment>)
+						})}
+					</Accordion.Content>
+				</Accordion>
+			)}
 		</p>
 	);
+
+	function printWhere(crew: CrewMember) {
+		let txt = t(`event_info.${crew.obtained_metadata.where}_rewards`)
+		if (!txt && crew.obtained === 'Mega') txt = t(`event_info.threshold_rewards`);
+		return txt;
+	}
+
+	function resetCrewEvent() {
+		let event: EventInstance | undefined = undefined;
+		if (['Event', 'Mega'].includes(crew.obtained) && crew.obtained_metadata?.event_instance_id) {
+			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
+		}
+		setCrewEvent(event);
+		setModalEvent(event);
+	}
+
 };
 
 
@@ -265,7 +392,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 
 	const [showPane, setShowPane] = React.useState(false);
 
-	const debasedCrew = JSON.parse(JSON.stringify(crew));
+	const debasedCrew = structuredClone(crew);
 
 	return (
 		<Accordion>
@@ -408,7 +535,7 @@ export const Skills = (props: SkillsProps) => {
 		if (skillData) skills = skillData.base_skills;
 	}
 
-	const debasedCrew = JSON.parse(JSON.stringify(crew));
+	const debasedCrew = structuredClone(crew);
 	debasedCrew.base_skills = skills;
 	Object.keys(debasedCrew.base_skills).map(skill => {
 		if (!debasedCrew.base_skills[skill])

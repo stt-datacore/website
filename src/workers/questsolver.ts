@@ -160,8 +160,8 @@ const QuestSolver = {
             return 4;
         }
 
-        const playerItems = JSON.parse(JSON.stringify(config.context.player.playerData.player.character.items)) as PlayerEquipmentItem[];
-        const allQuipment = JSON.parse(JSON.stringify(config.context.core.items.filter(f => f.type === 14))) as EquipmentItem[];
+        const playerItems = structuredClone(config.context.player.playerData.player.character.items) as PlayerEquipmentItem[];
+        const allQuipment = structuredClone(config.context.core.items.filter(f => f.type === 14)) as EquipmentItem[];
 
         function deductItem(item: EquipmentItem, history: { [key: string]: boolean[]} ) {
             history[item.symbol] ??= [];
@@ -429,7 +429,7 @@ const QuestSolver = {
 
                 if (!config.includeCurrentQp || (!("skills" in crew) || !Object.keys(crew.skills).length || crew.immortal !== -1)) {
                     if (!crew.skills) {
-                        crew.skills = { ...JSON.parse(JSON.stringify(crew.base_skills)) };
+                        crew.skills = { ...structuredClone(crew.base_skills) };
                     }
                     applyCrewBuffs(crew, config.buffs);
                 }
@@ -449,7 +449,7 @@ const QuestSolver = {
                 .filter(f => !!f.immortal && ((f.immortal === -1) || considerFrozen))
                 .concat(!!config.considerUnowned ? (playerData.player.character.unOwnedCrew ?? []) : [])
                 .map((crew) => {
-                    crew = JSON.parse(JSON.stringify(crew));
+                    crew = structuredClone(crew);
 
                     if (crew.immortal === -1) {
                         let ac = ephemeral?.activeCrew?.find(c => c.id === crew.id);
@@ -463,7 +463,7 @@ const QuestSolver = {
                         crew.kwipment = [0, 0, 0, 0];
                         crew.kwipment_expiration = [0, 0, 0, 0];
                         crew.q_bits = 1300;
-                        crew.skills = JSON.parse(JSON.stringify(crew.base_skills));
+                        crew.skills = structuredClone(crew.base_skills);
                         Object.keys(crew.skills).forEach((skill) => {
                             crew.skills[skill].skill = skill;
                             crew[skill] = {
@@ -526,7 +526,7 @@ const QuestSolver = {
                 maxPathCrew[key] = [];
                 pathMap[key] = path;
 
-                tempRoster = JSON.parse(JSON.stringify(roster));
+                tempRoster = structuredClone(roster);
 
                 let lastChallenge = undefined as MissionChallenge | undefined;
                 let pcrew = [] as IQuestCrew[];
@@ -715,7 +715,7 @@ const QuestSolver = {
                             threekeys.push(crews_key);
 
                             tg.forEach((c) => {
-                                let nc = JSON.parse(JSON.stringify(c)) as IQuestCrew;
+                                let nc = structuredClone(c) as IQuestCrew;
                                 // let added_key = makeAddedKey(c, path_key);
                                 c.associated_paths ??= [];
                                 // let adquip = added[added_key].filter(f => true).map(sym => Number.parseInt(allQuipment.find(q => q.symbol === sym)?.kwipment_id as string)) as number[];

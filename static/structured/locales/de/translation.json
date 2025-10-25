@@ -27,13 +27,16 @@
         "trigger_always": "Immer auslösen",
         "trigger_once": "Einmal auslösen",
         "trigger_once_desc": "Sobald der Alarm ausgelöst wurde, wird er deaktiviert, Sie können ihn jedoch im Alarmmodus erneut aktivieren.",
+        "watched_crew": "Alarm: Beobachtete Crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) wurde erworben!",
         "when_new_crew": "Alarm, wenn Kopien einer nicht eigenen Crew im Rückkaufpool entdeckt werden.",
         "when_new_fuse": "Alarm, wenn im Rückkaufpool eine Zündschnur für eine eigene Crew entdeckt wird."
     },
     "base": {
+        "additional_event_appearances": "Zusätzliche Auftritte im Ereignissen",
         "all_crew": "Die gesamte Crew anzeigen",
         "best_pair": "Bestes Paar",
         "bigbook_tier": "Stufe",
+        "boss": "{{rank_names.fbb_rank}}",
         "cab_power": "CAB",
         "cap_achiever": "Zuerst zum Maximum",
         "collection": "Sammlung",
@@ -61,6 +64,7 @@
         "n_to_next": "{{n}} zur nächsten",
         "never_in_portal": "Nie im Zeitportal",
         "not_in_portal": "Nicht im Zeitportal",
+        "not_maincast": "Nicht die Hauptbesetzung",
         "not_uniquely_retrievable": "Nicht eindeutig abrufbar",
         "not_yet_in_portal": "Noch nicht im Zeitportal",
         "offer_cost": "Angebotskosten",
@@ -140,6 +144,13 @@
             }
         }
     },
+    "boosts": {
+        "add_boost": "Add a boost",
+        "boost": "{{ship.boost}}",
+        "boosts": "{{ship.boosts}}",
+        "change_boost": "Change boost",
+        "no_boost": "No boost"
+    },
     "buffs": {
         "max_buffs": "Maximale Buffs",
         "max_quipment_buffs_best": "Maximale Rüstzeug Buffs (Beste Rüstzeug)",
@@ -158,7 +169,9 @@
                 "collections": "Sammlungen verbessern erhöhte Statistiken",
                 "groupSparsity": "Reisegruppenknappheit",
                 "improved": "Verbesserte Reise",
+                "is_custom": "Maßgeschneidert",
                 "magic": "Maßgrenze (Magische Zahl)",
+                "name": "{{global.name}}",
                 "never": "Niemals im Portal",
                 "portal": "Nicht im Portal",
                 "power": "Basis-Leistungswert",
@@ -275,6 +288,7 @@
             "warning": "In der Sammlungsoptimierungsansicht werden nur die eigenen Crewmitglieder angezeigt."
         },
         "options": {
+            "compact_view": "Kompaktansicht",
             "group_rewards": "Gruppieren Sie die Belohnungen",
             "hard_filter": "Harter Filter",
             "honor_sale_pricing": "Preise für den Ehrenverkauf",
@@ -328,7 +342,12 @@
                 "title": "Fortschritt"
             }
         },
-        "progress_to_next": "Weiter zum nächsten"
+        "progress_to_next": "Weiter zum nächsten",
+        "types": {
+            "crew_rewarding": "Crew-Belohnungssammlungen",
+            "stat_boosting": "Stat-Boosting-Sammlungen",
+            "vanity": "Vanity-Sammlungen"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Crew auf aktiven Shuttles berücksichtigen",
@@ -344,7 +363,10 @@
             "do_not_exclude_event_crew": "Crew des Ereignisses nicht ausschließen",
             "event_skill_matrix_crew": "Crew innerhalb der Ereignisfertigkeitsmatrix",
             "featured_event_crew": "Vorgestellte Event-Crew",
+            "highest_power": "Höchste Leistung",
+            "last_expiring": "Letztes Ablaufdatum",
             "note_current": "Aktuelle Ausschlüsse notieren",
+            "noted_exclusions": "Bekannte Ausschlüsse",
             "phase_type": "Phasentyp",
             "restore_notes": "Notierte Ausschlüsse abrufen",
             "search": "Suche nach auszuschließender Crew",
@@ -396,12 +418,21 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 Ergebnisse gefunden. Bitte probieren Sie verschiedene Suchoptionen aus.",
+        "no_results_parts": {
+            "message": "Bitte probieren Sie verschiedene Suchoptionen aus.",
+            "title": "0 Ergebnisse gefunden."
+        },
         "optional_filters": "Optionale Filter",
         "search_by_name": "Suche nach Crewmitgliedern nach Namen",
         "select_crew": "{{crew}} auszuwählen",
         "tip": {
             "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
         }
+    },
+    "crew_quipment": {
+        "active_quipment_skills": "Aktive Rüstzeug Fähigkeiten",
+        "compatible_quipment": "Kompatible Rüstzeugen",
+        "trait_limited": "Nur merkmalsbeschränkte Rüszeuge anzeigen"
     },
     "crew_state": {
         "expires_in": "Crew läuft in {{time}} ab",
@@ -425,6 +456,8 @@
         "columns": {
             "g": "H",
             "gauntlet_ranks": "Herausforderung-Ränge",
+            "r": "G",
+            "reasons_to_keep": "Gründe für die Beibehaltung",
             "s": "S",
             "shuttle_ranks": "Shuttle-Ränge",
             "u": "N",
@@ -468,6 +501,10 @@
         "ship": "Schiffsfähigkeiten anzeigen",
         "view_big_book": "{{crew}} im Big Book anzeigen",
         "voyage": "Reiseränge anzeigen"
+    },
+    "delete": {
+        "prompt_x": "Möchten Sie „{{x}}“ wirklich löschen?",
+        "title": "Löschen"
     },
     "demands": {
         "demands": "Anforderungen",
@@ -535,8 +572,12 @@
         "select_phase": "Wählen Sie eine Phase aus",
         "skill_matrix": "Kompetenzmatrix",
         "skill_matrix_heading": "Diese Matrix zeigt Ihre beste Crew für jede mögliche Fähigkeitskombination. Verwenden Sie diese Matrix, um Ihre beste Crew für dieses Ereignis zu ermitteln. Tippen Sie auf eine Zelle, um andere Crew mit dieser Fähigkeitskombination anzuzeigen.",
+        "specialist": {
+            "instructions": "Um den Auto-Staffer zu verwenden, wählen Sie eine oder mehrere Missionen aus, indem Sie auf die Titelspalte tippen, und tippen Sie dann auf die Schaltfläche „Automatische Besetzung“.",
+            "mission_running": "Mission läuft."
+        },
         "specialist_missions": "Spezialmissionen",
-        "staff_selected": "Besetzen Sie die ausgewählten",
+        "staff_selected": "Automatische Besetzung",
         "table": {
             "columns": {
                 "best": "Am besten",
@@ -576,6 +617,33 @@
     },
     "events_common": {
         "skirmish_guess_warning": "Dieses Event enthält eine Scharmützelkomponente und eine vollständige Liste der beteiligten Crewmitglieder ist möglicherweise erst nach Beginn des Events verfügbar."
+    },
+    "factions": {
+        "already_honored": "Schon Ehrenstatus",
+        "already_tanked": "Schon getankt",
+        "average_odds_dropdown": "Shuttles laufen mit einer durchschnittlichen Chance von {{dropdown}}",
+        "columns": {
+            "faction": "Fraktion",
+            "honored": "Ehrenstatus",
+            "reputation": "Ruf",
+            "shuttles_to_honored": "Shuttles bis Ehrenstatus",
+            "shuttles_to_tank": "Shuttles zum Tanken",
+            "time_needed": "Benötigte Zeit"
+        },
+        "n_shuttles_per_day": "Start von {{n}} Shuttles pro Tag.",
+        "n_shuttles_to_tank": "{{n}} Shuttles zum Tanken",
+        "n_successful_missions": "{{n}} erfolgreiche Missionen.",
+        "odds_note": "(Hinweis: Shuttles können nicht gestartet werden, wenn die Erfolgswahrscheinlichkeit unter 14 % liegt. Um getankt zu werden, muss die Wahrscheinlichkeit unter 60 % sein.)",
+        "reputation": {
+            "allied": "Verbündet",
+            "despised": "Verachtet",
+            "friendly": "Freundlich",
+            "honored": "Ehrenstatus",
+            "hostile": "Feindlich",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanken",
+        "tanking_explain": "{{tanking}} Shuttles heißt, sie absichtlich failen zu lassen, damit die Schwierigkeit und Dauer der Shuttle-Missionen runtergehen."
     },
     "fbb": {
         "alert_no_solution": "Für diesen Knoten wurden keine möglichen Lösungen gefunden. Möglicherweise müssen Sie Ihre Filter ändern, Ihre gelösten Merkmale noch einmal überprüfen oder die Liste der versuchten Crew zurücksetzen.",
@@ -761,6 +829,7 @@
             "dailies": "Tagesaufgaben",
             "display_name": "{{global.name}}",
             "event_rank": "Event-Rang",
+            "fleet": "{{global.fleet}}",
             "last_active": "Zuletzt aktiv",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
@@ -931,8 +1000,10 @@
         "and": "und",
         "and_n_more_ellipses": "und {{n}} weitere ...",
         "any": "Beliebig",
+        "apply": "Anwenden",
         "apply_filters": "Filter anwenden",
         "approx": "Ca.",
+        "assigned": "Assigned",
         "average": "Durchschnitt",
         "avg": "Durchschn.",
         "base": "Grundlage",
@@ -951,6 +1022,7 @@
         "copy_permalink_clipboard": "Permalink in die Zwischenablage kopieren",
         "cost": "Kosten",
         "create": "Erstellen",
+        "create_new_x": "Neues {{x}} erstellen",
         "date_end": "Enddatum",
         "date_start": "Startdatum",
         "default": "Standard",
@@ -961,11 +1033,15 @@
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",
         "download": "Herunterladen",
+        "duplicate_input": "Doppelte Eingabe",
+        "duplicate_name": "Doppelter Name",
         "edit": "Bearbeiten",
+        "edit_presets": "Voreinstellungen bearbeiten",
         "enable": "Aktivieren",
         "enabled": "Aktiviert",
         "episode": "Episode",
         "error": "Fehler",
+        "exact": "Genau",
         "exclusive": "Exklusive",
         "experimental": "Experimentell",
         "filters": "Filter",
@@ -980,6 +1056,7 @@
         "ingredient_warning": "Sie haben nicht die Zutaten, um diesen Gegenstand herzustellen.",
         "ingredient_warning_all": "Sie haben nicht die Zutaten, um alle diese Gegenstände herzustellen.",
         "initial_launch": "Erstveröffentlichung des Spiels",
+        "invalid_input": "Ungültige Eingabe",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena Eintrittskarte",
@@ -1022,6 +1099,7 @@
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
         "lose": "Verlieren",
+        "map_position": "Kartenposition",
         "max": "Maximal",
         "max_rarity": "Max. Seltenheit",
         "member": "Mitglied",
@@ -1037,6 +1115,7 @@
         "name": "Namen",
         "never": "Niemals",
         "new": "Neu",
+        "new_name": "Neuer Name",
         "no": "Nein",
         "no_items_found": "Keine Elemente gefunden",
         "no_search_results_found": "Es wurden keine Ergebnisse gefunden. Versuchen Sie es mit anderen Suchoptionen.",
@@ -1044,18 +1123,23 @@
         "notes": "Anmerkungen",
         "obtained": "Erhalten von",
         "officer": "Offizier",
+        "opponent": "{{gauntlet.opponent_table.opponent}}",
         "optional": "Optional",
         "options": "Optionen",
         "or": "oder",
+        "partial": "Teilweise",
         "pending_release": "Ausstehende Veröffentlichung",
         "percentile": "Perzentil",
         "permalink": "Permalink",
         "portal": "Zeitportal",
         "portal_update": "Zeitportal-Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
+        "rename": "Umbenennen",
+        "rerun": "Wiederholung",
         "reserved": "Reserviert",
         "reset": "Zurücksetzen",
         "rows_per_page": "Zeilen pro Seite",
@@ -1144,6 +1228,7 @@
         "filter_by_series": "Filtern nach Serie",
         "filter_by_ship_ability": "Filtern nach Schiffsfähigkeit",
         "filter_by_skill": "Filtern nach Fähigkeit",
+        "filter_by_skill_order_ownership": "Filtern nach Besitz der Fähigkeitsreihenfolge",
         "filter_by_status": "Filtern nach Status",
         "filter_by_timeframe": "Filtern nach Zeitraum",
         "filter_by_trait": "Filtern nach Merkmalen",
@@ -1153,6 +1238,7 @@
         "filter_crew_by_rank": "Filtern Sie die Crew nach Rang",
         "filter_ship_grants": "Schiffszuschüsse filtern",
         "filter_ship_rarity": "Schiffsrarität filtern",
+        "min_battle_stations": "Mindestanzahl an Gefechtsstationen",
         "prioritize_rewards": "Belohnungen priorisieren",
         "roster_maintenance": "Dienstplanpflege",
         "select_crew": "Crew auswählen",
@@ -1271,7 +1357,10 @@
         "equippable_by_rarity_traits": "Ausrüstbar für bis zu {{rarity}} Crew mit den folgenden Merkmalen: {{traits}}",
         "equippable_by_traits": "Von der Crew mit den folgenden Merkmalen ausstattbar: {{traits}}",
         "faction_only": "Nur Fraktion",
+        "hide_unneeded_items": "Nicht benötigte Artikel ausblenden",
         "is_used_to_build": "Wird zum Bau dieser verwendet",
+        "item_information": "Artikelinformationen",
+        "item_load_error": "Fehler beim Laden der Artikeldaten",
         "item_sources": "Artikelquellen",
         "n_farmable": "{{n}} landwirtschaftliche",
         "n_needed": "{{n}} benötigt",
@@ -1284,6 +1373,9 @@
             "owned_or_buildable": "Eigene oder baubare Rüstzeugen anzeigen"
         },
         "post_immortalization_advancement": "Fortschritt nach der Unsterblichkeit",
+        "quick_select": {
+            "favorites": "Wähle alle favorisierten Crewmitglieder aus"
+        },
         "recipe": "Rezept",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
@@ -1372,7 +1464,8 @@
         "pvp_3": "Daten zur Commander-Liga",
         "pvp_4": "Daten zur Kapitän-Liga",
         "pvp_5": "Daten der Admiral-Liga",
-        "quest_data": "Quest-Daten"
+        "quest_data": "Quest-Daten",
+        "voyage_log": "Reiseprotokolldaten"
     },
     "logic": {
         "AND": "UND",
@@ -1441,7 +1534,8 @@
     "mission_type": {
         "type_0": "Konfliktquest",
         "type_2": "Schiffsschlacht",
-        "type_4": "Kadettenherausforderung"
+        "type_4": "Kadettenherausforderung",
+        "type_5": "Kontinuumsmission"
     },
     "missions": {
         "continuum_mission_map": "Kontinuumsmissionskarte",
@@ -1544,7 +1638,7 @@
             "priority": "Nur vollständig fusionierte Nicht-Unsterbliche anzeigen",
             "quippable": "Nur rüstbare Crew anzeigen",
             "quipped": "Nur gerüstete Crew anzeigen",
-            "quipped_hide": "Crew mit Rüstzeugen verstecken",
+            "quipped_hide": "Crew mit Rüstzeug verstecken",
             "threshold": "Nur Crew anzeigen, die 2 Sicherungen benötigt"
         },
         "text_match": {
@@ -1560,6 +1654,10 @@
             "matches": "Übereinstimmungen",
             "trait": "Merkmalen"
         }
+    },
+    "overwrite": {
+        "prompt_x": "Möchten Sie „{{x}}“ wirklich überschreiben?",
+        "title": "Überschreiben"
     },
     "pages": {
         "crew_stats": "Crew-Statistiken",
@@ -1589,6 +1687,14 @@
         "n_shuttles": "{{n}} Shuttles",
         "starbase_level": "Sternenbasis-Level",
         "x_y_crew": "{{x}} / {{y}} Crew"
+    },
+    "polestars": {
+        "best_chance_long": "Alle Polarsterne, die die beste Chance bieten, diese Besatzung zurückzuholen",
+        "best_chance_short": "Beste Chance",
+        "combo": "Polarsterne Kombination",
+        "crew_constellation": "Sternbild für {{crew}}",
+        "optimal": "Optimale Polarsterne für die Bergung der Besatzung",
+        "shared_with_crew": "Gemeinsam mit {{crew}}"
     },
     "profile": {
         "charts_and_stats": "Diagramme und Statistiken",
@@ -1628,6 +1734,7 @@
             "skill_order": "Fähigkeitsreihenfolge"
         },
         "mode_label": "Fertigkeiten-Modus",
+        "quippable_traits": "Nur Crew mit merkmalsbeschränkter Rüstzeug anzeigen",
         "slot_label": "Slots-Modus",
         "slots": {
             "n_natural": "Bis zu {{n}} natürliche Ablagefächer ausstatten",
@@ -1656,6 +1763,7 @@
             "offense": "Angriff (Genauigkeit/Schaden)",
             "select": "Wählen Sie einen Vorteil"
         },
+        "always_show_datascore": "DataScore immer anzeigen",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Stufe",
         "cab_grade": "CAB-Klasse",
@@ -1721,9 +1829,29 @@
     },
     "ranking_tools": {
         "current_weighting": "Aktuelle Gewichtung",
-        "show_weighting_details": "Gewichtungsdetails anzeigen"
+        "show_weighting_details": "Gewichtungsdetails anzeigen",
+        "weights": {
+            "base_plus": {
+                "quipment": "{{rank_names.scores.quipment}}",
+                "shuttleRank": "{{rank_names.scores.shuttle}}",
+                "title": "Basis+ Gewichtung"
+            },
+            "gauntlet_plus": {
+                "crit": "{{rank_names.scores.crit}}",
+                "gauntlet": "{{rank_names.scores.gauntlet}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Herausforderung+ Gewichtung"
+            },
+            "voyage_plus": {
+                "am_seating": "{{rank_names.scores.am_seating}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Reise+ Gewichtung",
+                "voyage": "{{rank_names.scores.voyage}}"
+            }
+        }
     },
     "retrieval": {
+        "alert_pending_crew": "Diese Crew ist derzeit nicht eindeutig abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "allow_unowned": "Unbesessene Crew zulassen",
         "assume_in_game_favorites": "Spielfavoriten dynamisch zur Wunschliste hinzufügen",
         "combo": "Combo",
@@ -1743,6 +1871,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Alle eindeutig abrufbaren Crewmitglieder anzeigen",
+            "show_expiring_crew": "Ablaufende eindeutige Abrufe anzeigen",
             "show_retrievable_crew": "Nur Crew anzeigen, die ich abrufen kann"
         },
         "description": "Finden Sie die besten Möglichkeiten, über die Crewabfrage Crewmitglieder zu Ihrer Liste hinzuzufügen.",
@@ -1798,6 +1927,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Mindestanzahl nicht einzigartiger Besatzungsmitglieder",
         "modes": {
             "mutual_polestar_calculator": "Gemeinsamer Polarstern-Rechner",
             "mutual_polestar_calculator_desc": "Finden Sie Combos, die gleiche Chancen bieten, Nicht-Unsterbliche zurückzuholen",
@@ -1828,7 +1958,7 @@
             "add_prospective_polestars": "Potenzielle Polarsterne hinzufügen",
             "columns": {
                 "added": "Hinzugefügt",
-                "crate_count": "Konstellations-Chance",
+                "crate_count": "Sternbilds-Chance",
                 "crew_count": "Crew im Zeitportal",
                 "name": "{{retrieval.polestar}}",
                 "owned": "Im Besitz",
@@ -1839,7 +1969,7 @@
                 "already_owned": "Du besitzt bereits alle Polarsterne in der {{crate}}."
             },
             "definitions": {
-                "crate_count": "Ihre Chance, durch einen erfolgreichen Scan eine beliebige Konstellation mit dem Polarstern zu erhalten.",
+                "crate_count": "Ihre Chance, durch einen erfolgreichen Scan eine beliebige Sternbild mit dem Polarstern zu erhalten.",
                 "owned_best_odds": "Ihre beste Chance, durch einen erfolgreichen Scan den Polarstern zu erhalten.",
                 "scan_odds": "Ihre Gesamtchance, durch einen erfolgreichen Scan den Polarstern zu erhalten."
             },
@@ -1853,6 +1983,7 @@
         "use_all_combos_below_to_retrieve": "Verwenden Sie ALLE Combos unten, um abzurufen",
         "use_any_combo_below_to_retrieve": "Verwenden Sie eine der folgenden Kombinationen, um abzurufen",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "Diese Crew ist derzeit nur einmal abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "wishlist": {
             "add": "Zur Wunschliste hinzufügen.",
             "auto": "Crew wird automatisch zur Wunschliste hinzugefügt.",
@@ -1918,6 +2049,12 @@
         },
         "title": "Kaderübersicht"
     },
+    "sales": {
+        "active": "Aktive Rabatte",
+        "honor_sale": "Ehrenrabatt",
+        "slot_sale": "Crewplätze Rabatt",
+        "title": "Rabatte"
+    },
     "series": {
         "ds9": "Deep Space Nine",
         "dsc": "Discovery",
@@ -1925,6 +2062,7 @@
         "low": "Lower Decks",
         "original": "Timelines Originals",
         "pic": "Picard",
+        "sfa": "Starfleet Academy",
         "snw": "Strange New Worlds",
         "tas": "Die Enterprise",
         "tng": "Das nächste Jahrhundert",
@@ -1987,6 +2125,9 @@
                 "exclude_ability": "Crew mit dieser Fähigkeit ausschließen",
                 "power_depth": "Erweiterte Leistungstiefe"
             },
+            "apply_boss_effects": "Boss-Ketten-Buffs anwenden",
+            "apply_buffs": "Buffs auf herrenlose Schiffe anwenden",
+            "as_maxed": "Verwenden Sie maximale Schiffsstatistiken",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} akzeptierte Ergebnisse) ({{time}})",
             "calculating_pct_ellipses": "Berechnung ... ({{percent}} % abgeschlossen)",
             "calculating_pct_ellipses_verbose": "Berechnung ... ({{percent}} % abgeschlossen) ({{progress}} / {{count}}) ({{accepted}} akzeptierte Ergebnisse)",
@@ -2025,6 +2166,7 @@
         "crit_rating": "Krit Treffer",
         "cycle_time": "Zykluszeit",
         "depth_hr_warn": "* Standardmäßig gilt die Leistungstiefe nicht für die Hüllereparatur-Crew.",
+        "dps": "SPS",
         "duration": "Dauer",
         "equipment_bonus": "Ausrüstungsbonus",
         "evasion": "Ausweichen",
@@ -2058,6 +2200,11 @@
             "admiral": "Admiral Division",
             "captain": "Captain Division",
             "commander": "Commander Division"
+        },
+        "roster": {
+            "all": "Alle Schiffe",
+            "owned": "Schiffe im Besitz",
+            "unowned": "Schiffe ohne Besitz"
         },
         "shields": "Schilde",
         "ship": "Schiff",
@@ -2179,6 +2326,11 @@
             }
         }
     },
+    "skill_order_ownership": {
+        "notmax": "Nur nicht im Besitz befindliche oder nicht maximierte Fertigkeitsaufträge anzeigen",
+        "underowned": "Nur nicht maximierte Fertigkeitsaufträge anzeigen",
+        "unowned": "Nur nicht besessene Fertigkeitsaufträge anzeigen"
+    },
     "spinners": {
         "calculating": "Berechnung...",
         "calculating_voyage_estimate": "Schätzung wird berechnet. Bitte warten...",
@@ -2199,6 +2351,13 @@
             "velocity": "Geschwindigkeit"
         },
         "description": "Studieren Sie Statistiken zur Entwicklung der Besatzungsstärke im Laufe der Zeit.",
+        "events": {
+            "event": "Ereignisbelohnung Crew",
+            "mega": "{{obtained.long.Mega}}",
+            "traits": "{{base.featured_traits}}",
+            "type": "{{event_stats.event_type}}",
+            "variants": "{{base.variants}}"
+        },
         "exact_skill_order_only": "Nur exakte Fertigkeitsreihenfolgen anzeigen (keine teilweisen Übereinstimmungen)",
         "graphs": {
             "circle": "Kompetenzkreise",
@@ -2210,7 +2369,8 @@
             "power_creep": "{{stat_trends.graphs.skill_area}}",
             "release_graph": "Veröffentlichungsplan",
             "skill_area": "Machtkriechen",
-            "title": "Grafiken"
+            "title": "Grafiken",
+            "trait_distributions": "Merkmalsverteilungen"
         },
         "initial_release": "Erste Veröffentlichung",
         "items": {
@@ -2226,6 +2386,7 @@
             "quantity": "{{global.quantity}}"
         },
         "last_release": "Letzte Veröffentlichung",
+        "last_sync_timestamp": "Zeitstempel der letzten Sync",
         "new_high": "Neuer Highscore",
         "new_highs_only": "Nur neue Highscores anzeigen",
         "released_duration": "Debüt {{duration}}",
@@ -2274,7 +2435,21 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "distributions": {
+                "combo": "Häufigste Merkmalskombinationen",
+                "data_set": {
+                    "all_traits": "Alle Merkmale",
+                    "hidden_traits": "Versteckte Merkmale",
+                    "portal_traits": "Portalmerkmale",
+                    "variant_traits": "Variantenmerkmale"
+                },
+                "rarity": "Häufigste Merkmale nach Seltenheit",
+                "select_data_set": "Datensatz auswählen",
+                "series": "Häufigste Merkmale nach Serie",
+                "traits": "Häufigste Merkmale“"
+            },
             "exclude_launch": "Exclude launch crew",
+            "exclude_x": "{{x}} ausschließen",
             "hide_only_one": "Merkmale mit nur einer Crew verbergen",
             "only_show_potential_collections": "Nur potentielle Sammlungen anzeigen",
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
@@ -2294,6 +2469,12 @@
             "description": "Berücksichtigen Sie nur Ihre eigene Crew",
             "title": "Eigene Crew"
         }
+    },
+    "view_special": {
+        "options": {
+            "as_immortalized": "Alle als unsterblich ansehen"
+        },
+        "title": "Besondere Ansichten"
     },
     "voyage": {
         "active": {
@@ -2322,24 +2503,69 @@
             "title": "Captain Idol's Voyage Analysis Sheet"
         },
         "contests": {
+            "assign_crew": "Weisen Sie {{crew}} diesem Wettbewerb zu",
+            "assigned_crew": "Besatzung zuweisen",
+            "assigned_to_crew": "{{crew}} ist diesem Wettbewerb zugeordnet",
+            "assigned_to_n": "Zugewiesen zum Wettbewerb {{n}}",
             "avg": "{{global.avg}}",
-            "contest_simulator": "Kampfsimulator",
+            "avg_of_crew": "{{crew}}s Durchschnittspunktzahl für diesen Wettbewerb",
+            "avg_of_opponent": "Durchschnittliche Punktzahl des Gegners für diesen Wettbewerb",
+            "avg_score": "Durchschnittliche Punktzahl",
+            "boost_impact": {
+                "crit": "{{crew}} erhöht die kritische Trefferchance dieses Wettbewerbs",
+                "ineffective": "Boost hat keinen Einfluss auf Wettbewerbe",
+                "others": "{{crew}} steigert eine ungenutzte Fähigkeit, die für spätere Wettbewerbe relevant sein könnte",
+                "self": "{{crew}} verbessert eine Fähigkeit, die für ihren eigenen Wettbewerb relevant ist",
+                "skill": "{{crew}} steigert seinen Beitrag zu dieser Wettbewerbsfähigkeit",
+                "unneeded": "Ein Boost hier hat keinen Einfluss auf diesen Wettbewerb"
+            },
+            "champions_description": "Die voraussichtlichen Gewinnchancen Ihrer Mannschaft für jeden Wettbewerb sind unten aufgeführt. Tippen Sie auf die Quoten, um den Wettbewerb mit höherer Sicherheit zu simulieren. Tippen Sie auf {{icon}}, um die Mannschaft diesem Wettbewerb zuzuweisen.",
+            "champions_header": "Reisebesatzung",
+            "contest": "Wettbewerb",
+            "contest_simulator": "Wettbewerbssimulator",
             "contestant": "Kämpfer",
             "contestant_alt": "Kämpfer",
+            "contests_description": "Verwenden Sie dieses Dienstprogramm, um Ihre Begegnungswettbewerbe zu planen.",
+            "contests_header": "Teilnehmerzuteilungen",
+            "contests_n_count": "Wettbewerbe ({{n}})",
+            "contributors_description": "Die für diesen Wettbewerb eingesetzte Crew wird ihr gesamtes Können einbringen. Crewmitglieder aus früheren Wettbewerben können zusätzlich einen Teil ihrer ungenutzten Fähigkeiten einbringen. Die durchschnittlichen Beiträge aller teilnehmenden Crewmitglieder zu diesem Wettbewerb sind unten aufgeführt. Sie können Boosts hinzufügen, um Ihren Beitrag zu erhöhen und so Ihre Gewinnchancen zu verbessern.",
+            "crew_exhausted": "{{crew}} kann keine erschöpften Fähigkeiten beitragen",
+            "crew_irrelevant": "{{crew}} hat keine relevanten Fähigkeiten, die zu diesem Wettbewerb beitragen können",
+            "crew_wasted": "{{crew}} kann nicht zu inaktiven Fähigkeiten beitragen",
             "crit_chance": "Kritische Trefferchance",
+            "encounter_helper_title": "Begegnungshelfer",
+            "find_viable_crew": "Finden Sie eine geeignete Crew für diesen Wettbewerb",
+            "importer": {
+                "data_loaded": "Begegnungsdaten geladen!",
+                "data_required": "Zusätzliche Daten erforderlich",
+                "description": "Der Begegnungshelfer benötigt zusätzliche Daten, die in Ihren Spielerdaten nicht vorhanden sind. Sie können die benötigten Daten abrufen und importieren, indem Sie den folgenden Anweisungen folgen.",
+                "follow_instructions": "Befolgen Sie die nachstehenden Anweisungen, um Ihre Begegnungsdaten zu aktualisieren.",
+                "json_early": "Keine Begegnungsdaten gefunden. Bitte versuchen Sie es erneut, wenn Ihre Reise eine Begegnung erreicht hat.",
+                "json_invalid": "Die importierten Daten sind ungültig. Bitte bestätigen Sie, dass der Reisedatenlink korrekt ist, und versuchen Sie es erneut.",
+                "json_undefined": "Keine Daten",
+                "progress_warning": "Dieses Dienstprogramm kann die Crew für bereits abgeschlossene Wettbewerbe im Spiel nicht anzeigen. Sie müssen den folgenden Wettbewerben die erfolgreiche Crew manuell zuweisen, um eine genauere Darstellung der für die verbleibenden Wettbewerbe erforderlichen Fähigkeiten zu erhalten.",
+                "tap_to_open": "Wenn die folgenden Informationen nicht mit Ihrer Begegnung im Spiel übereinstimmen, tippen Sie hier, um Ihre Begegnungsdaten zu aktualisieren."
+            },
             "max": "{{global.max}}",
             "min": "{{global.min}}",
             "n_viable_crew": "Ihre Reise verfügt über {{n}} geeignete Crewmitglieder für diesen Wettbewerb",
             "no_skill": "Keine Fähigkeit",
             "notes": {
-                "crit_icon": "represents a crew's number of potential crit traits.",
-                "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
-                "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
+                "crit_icon": "{{img}} stellt die Anzahl potenzieller kritischer Treffermerkmale eines Besatzungsmitglieds dar.",
+                "scores": "Die Punktzahlen ergeben sich aus der Summe der durchschnittlichen Fähigkeiten eines Besatzungsmitglieds nach 3 Würfen pro Wettbewerbsfertigkeit.",
+                "simulate_contestant": "Wählen Sie einen Teilnehmer aus, der in einem {{skills}}-Wettbewerb simuliert werden soll."
             },
-            "search_for_contestant": "Search for contestant",
-            "select_crit_chance": "Select crit chance",
-            "simulate_contest": "Simulate contest",
-            "wins": "Wins"
+            "odds_of_winning": "Gewinnchancen",
+            "reset_assignments": "Zurücksetzen der Zuweisungen",
+            "reset_boosts": "Boosts zurücksetzen",
+            "search_for_contestant": "Suche nach einem Kämpfer",
+            "select_crit_chance": "Krit.-Chance auswählen",
+            "show_relevant_boosts": "Nur relevante Boosts anzeigen",
+            "simulate_contest": "Wettbewerb simulieren",
+            "starting_skills": "Erste Fähigkeiten",
+            "unused_skill": "Wenn {{crew}} diesem Wettbewerb zugewiesen wird, wird sie ihre ungenutzte Fähigkeit {{skill}} zu {{n}} späteren Wettbewerben mit einem durchschnittlichen Mehrwert von +{{avg}} (pro Wettbewerb) beitragen.",
+            "vp_multiplier": "SP-Multiplikator",
+            "wins": "Siege"
         },
         "crew_finder_hints": {
             "best_rank": {
@@ -2378,10 +2604,10 @@
             "skill_modal": {
                 "header_detail": {
                     "all": "{{voyage.voyages.all}}",
-                    "last_n_days": "Last {{n}} Days"
+                    "last_n_days": "Letzte {{n}} Tage"
                 },
                 "notes": {
-                    "crew_skill": "Each cell indicates what percentage of time {{crew}} is used when the row is the voyage primary and the column is the voyage secondary."
+                    "crew_skill": "Jede Zelle gibt an, wie viel Prozent der Zeit {{crew}} verwendet wird, wenn die Zeile die primäre Reise und die Spalte die sekundäre Reise ist."
                 }
             }
         },
@@ -2560,6 +2786,8 @@
             "voyage_prefs": "Bevorzugte Fähigkeiten der Reise",
             "voyage_prefs_explain": "Wenn eine bevorzugte Reisefertigkeit ausgewählt wird, wird die Fertigkeitsreihenfolge der Crew so sortiert, dass passende Fertigkeiten zuerst angezeigt werden."
         },
+        "recreate_dilemma": "Dilemma-Reise neu erstellen",
+        "recreate_encounter": "Begegnungsreise nachstellen",
         "results": {
             "actions": {
                 "abort": "Abbrechen",
@@ -2669,5 +2897,16 @@
             "custom": "Individuelle Reisen",
             "upcoming": "Bevorstehende Reisen"
         }
+    },
+    "voyage_log": {
+        "behold": "Anblick",
+        "choice_x": "Wahl {{x}}",
+        "choices": "Auswahlmöglichkeiten",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "Sie können auf Ihre Reiseprotokolle auf ähnliche Weise zugreifen, wie Sie derzeit auf Ihre Spielerdaten zugreifen."
+        },
+        "reference": "Dilemmas Referenz",
+        "title": "Reisedilemma-Dienstprogramm"
     }
 }

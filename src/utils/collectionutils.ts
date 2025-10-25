@@ -1,8 +1,8 @@
-import { RewardsGridNeed } from "../model/crew";
-import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collectionfilter";
+import { CrewMember, RewardsGridNeed } from "../model/crew";
+import { CollectionFilterOptions, CollectionInfo, CollectionCombo, CollectionsToolSettings, ComboCostMap } from "../model/collections";
 import { ItemArchetypeBase, Milestone, MilestoneBuff, PlayerCollection, PlayerCrew, Reward } from "../model/player";
 import { getCollectionRewards, getMilestoneRewards } from "./itemutils";
-import { Collection } from "../model/game-elements";
+import { Collection } from "../model/collections";
 
 
 
@@ -142,8 +142,10 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 let milestones = milestonesFromCurrent(col1);
                 for (let milestone of milestones) {
                     result = result.concat(getFilteredMilestoneRewards(milestone, mapFilter.rewardFilter).map(r => {
-                        r = JSON.parse(JSON.stringify(r));
-                        r.data!.collection = col1.type_id!
+                        r = structuredClone(r);
+                        r.data ??= {};
+                        r.data.collection = col1.type_id!
+                        r.data.goal ??= milestone.goal;
                         return r;
                     }));
                 }
@@ -153,8 +155,10 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
             for (let col1 of colGroup) {
                 result = result.concat(getMilestoneRewards(milestonesFromCurrent(col1))
                     .map(r => {
-                        r = JSON.parse(JSON.stringify(r));
-                        r.data!.collection = col1.type_id!
+                        r = structuredClone(r);
+                        r.data ??= {};
+                        r.data.collection = col1.type_id!
+                        r.data.goal ??= col1.milestone.goal;
                         return r;
                     }))
                     .filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''));
@@ -167,8 +171,10 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 if (!col1) continue;
                 result = result.concat(getFilteredMilestoneRewards(col1.milestone, mapFilter.rewardFilter)
                 .map(r => {
-                    r = JSON.parse(JSON.stringify(r));
-                    r.data!.collection = col1.type_id!
+                    r = structuredClone(r);
+                    r.data ??= {};
+                    r.data.collection = col1.type_id!
+                    r.data.goal ??= col1.milestone.goal;
                     return r;
                 }));
             }
@@ -178,8 +184,10 @@ export function rewardsFilterGetRewards(mapFilter: CollectionFilterOptions, colG
                 let afilter = getCollectionRewards([col1])
                     .filter(r => mapFilter.rewardFilter?.includes(r.symbol ?? ''))
                     .map(r => {
-                        r = JSON.parse(JSON.stringify(r));
-                        r.data!.collection = col1.type_id!
+                        r = structuredClone(r);
+                        r.data ??= {};
+                        r.data.collection = col1.type_id!
+                        r.data.goal ??= col1.milestone.goal
                         return r;
                     });
                 result = result.concat(afilter);
@@ -425,7 +433,7 @@ export function getAllStatBuffs(col: Collection) {
         return [];
     }
 
-    let buffs = JSON.parse(JSON.stringify(col.milestones)).map(c => c.buffs).flat() as MilestoneBuff[];
+    let buffs = structuredClone(col.milestones).map(c => c.buffs).flat() as MilestoneBuff[];
 
     buffs.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 
@@ -457,7 +465,7 @@ export function getAllCrewRewards(col: Collection) {
         return [];
     }
 
-    let rewards = JSON.parse(JSON.stringify(col.milestones)).map((c: Milestone) => c.rewards!).flat().filter((f: Reward) => f.type === 1) as Reward[];
+    let rewards = structuredClone(col.milestones).map((c: Milestone) => c.rewards!).flat().filter((f: Reward) => f.type === 1) as Reward[];
 
     rewards.sort((a, b) => a.symbol!.localeCompare(b.symbol!));
 
@@ -484,3 +492,14 @@ export function getAllCrewRewards(col: Collection) {
     return output;
 }
 
+export function categorizeCrewCollections(crew: CrewMember, collections: Collection[]) {
+    let cols = collections.filter(f => crew.collection_ids.some(cid => `${cid}` == `${f.id}` || `${cid}` == `${f.type_id}`));
+    let crew_rewards = cols.map(c => ({collection: c, rewards: getAllCrewRewards(c), size: c.crew?.length ?? 1})).filter(c => c.rewards.length);
+    let stat_buffs = cols.map(c => ({collection: c, rewards: getAllStatBuffs(c), size: c.crew?.length ?? 1})).filter(c => c.rewards.length);
+    let others = cols.filter(c => !crew_rewards.some(c2 => c == c2.collection) && !stat_buffs.some(c2 => c == c2.collection)).map(c => ({collection: c, rewards: [] as Reward[], size: c.crew?.length ?? 1}));
+    let crew_rewards_score = crew_rewards.map(cr => cr.rewards.length / (cr.size || 1)).reduce((p, n) => p + n, 0) / (crew_rewards.length || 1);
+    let stat_buffs_score = stat_buffs.map(sb => sb.rewards.length / (sb.size || 1)).reduce((p, n) => p + n, 0) / (stat_buffs.length || 1);
+    let others_score = others.map(ot => ot.rewards.length / (ot.size || 1)).reduce((p, n) => p + n, 0) / (others.length || 1);
+
+    return { crew_rewards, stat_buffs, others, crew_rewards_score, stat_buffs_score, others_score };
+}

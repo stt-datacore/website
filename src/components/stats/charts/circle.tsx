@@ -37,7 +37,237 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
     const RGBColors = getRGBSkillColors();
 
     React.useEffect(() => {
-        const workcrew = statFilterCrew(filterConfig, crew);
+        setCircleData(buildCircleData());
+    }, [globalContext.core.crew, filterConfig, useFilters]);
+
+    const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
+
+    return (
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'stretch',
+            alignItems: 'center',
+            gap: '1em',
+            margin: '1em 0'
+        }}>
+            <div style={{...flexRow, gap: '1em', alignItems: 'center', justifyContent: 'center'}}>
+                {Object.keys(CONFIG.SKILLS).sort().map(skill => {
+                    return (
+                        <div
+                            key={`circle_legend_skill_${skill}`}
+                            style={{...flexRow, gap: '0.25em'}}
+                        >
+                            <div style={{
+                                background: RGBColors[skill],
+                                border: '1px solid black',
+                                margin: '0.25em',
+                                width: '24px',
+                                height: '24px'
+                            }}>
+                                &nbsp;
+                            </div>
+                            <span>{CONFIG.SKILLS_SHORT.find(short => short.name === skill)!.short}</span>
+                        </div>
+                    );
+                })}
+            </div>
+            {!!circleData && [circleData].map((circle, idx) => {
+                return <div style={{height: `800px`, width: '100%'}} key={`stats_skill_circle_${idx}`}>
+                    {!!zoomedElem && !zoomElect && zoomedElem.data.crew.length > 0 &&
+                    <div style={{
+                        position: 'absolute',
+                        zIndex: '1001',
+                        margin: '1em',
+                        height: 'calc(800px - 2em)',
+                        width: isMobile ? 'calc(100% - 4em)' : '1100px',
+                        display: 'flex',
+                        flexDirection:'column',
+                        alignItems: 'center',
+                        justifyContent: 'center'}}
+                        onClick={() => setZoomElect(1)}
+                    >
+                            <CrewTiles crew={zoomedElem.data.crew.map(m => crew.find(f => f.symbol === m)!)}
+                                targetGroup="stat_trends_crew"
+                                scrolling
+                                title={getSkillOrderTitle(zoomedElem.data.name)}
+                                style={{
+                                    textAlign: 'center',
+                                    alignSelf: 'center',
+                                    backgroundColor: 'rgba(70,70,70,0.7)',
+                                    padding: '1em',
+                                    borderRadius: '2em'}}
+                                round={true}
+                                //maxCrew={30}
+                                rich
+                                itemHeight="8em"
+                                avatarSize={64}
+                                pageId='circle_stats'
+                            />
+                    </div>}
+                    <ResponsiveCirclePacking
+                        onClick={node => {
+                            setZoomedElem(zoomedElem?.id === node?.id ? null : node);
+                            setZoomElect(0);
+                        }}
+                        zoomedId={zoomedElem?.id}
+                        data={circleData}
+                        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                        id="name"
+                        colorBy="id"
+                        inheritColorFromParent={false}
+                        value="loc"
+                        theme={themes.dark}
+                        colors={({id, data}) => {
+                            return RGBColors[data.skills[data.skills.length - 1]] || '#333'
+                        }}
+                        childColor={{
+                            from: 'color',
+                            modifiers: [
+                                [
+                                    'brighter',
+                                    0.4
+                                ]
+                            ]
+                        }}
+                        padding={4}
+                        enableLabels={true}
+                        //labelsFilter={n=>1===n.node.depth}
+                        labelsSkipRadius={40}
+                        tooltip={(data) => {
+                            return renderTooltip(data);
+                        }}
+                        labelTextColor={{
+                            from: 'color',
+                            modifiers: [
+                                [
+                                    'darker',
+                                    2
+                                ]
+                            ]
+                        }}
+                        borderWidth={1}
+                        borderColor={{
+                            from: 'color',
+                            modifiers: [
+                                [
+                                    'darker',
+                                    0.5
+                                ]
+                            ]
+                        }}
+                        // defs={[
+                        //     {
+                        //         id: 'lines',
+                        //         type: 'patternLines',
+                        //         background: 'none',
+                        //         color: 'inherit',
+                        //         rotation: -45,
+                        //         lineWidth: 5,
+                        //         spacing: 8
+                        //     }
+                        // ]}
+                        // fill={[
+                        //     {
+                        //         match: {
+                        //             depth: 1
+                        //         },
+                        //         id: 'lines'
+                        //     }
+                        // ]}
+                    />
+
+                </div>
+
+            })}
+        </div>
+    );
+
+    function getSkillOrderTitle(key: string, className?: string, style?: React.CSSProperties) {
+        let shorts = key.split("/").map(short => short.trim());
+        let skills = shorts.map(short => CONFIG.SKILLS_SHORT.find(sk => sk.short === short)!.name);
+        if (className === undefined) className = 'ui label';
+
+        return (
+            <div className={className} style={{
+                ...flexRow,
+                display: 'inline-flex',
+                padding: '1em',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '3',
+                ...style
+            }}>
+                {skills.map((skill, i) => {
+                    let icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`;
+                    let name = `${shorts[i]}`;
+                    return (
+                        <div
+                            key={`stats_skill_circles_title_${key}_${skill}`}
+                            style={{...flexRow, gap: '0.25em'}}
+                        >
+                            {i !== 0 && <span style={{fontSize:'1.25em'}}>&nbsp;/&nbsp;</span>}
+                            <img src={icon} style={{height:'20px'}} alt={name} />
+                            <div style={{ paddingBottom: '4px', borderBottom: `3px solid ${RGBColors[skill]}`}}>{name}</div>
+                        </div>
+                    );
+                })}
+            </div>
+        )
+    }
+
+    function renderTooltip(data: ComputedDatum<CircleData>) {
+
+        if (data.data.name.toLowerCase().includes('datacore')) {
+            return (
+                <div
+                    className='ui segment'
+                    key={`tooltip_${data.data.name}`}
+                    style={{
+                        display: 'grid',
+                        gridTemplateAreas: `'skills' 'stats2'`,
+                        textAlign: 'center'
+                    }}
+                >
+                    <div style={{gridArea: 'skills'}}>
+                        {data.data.name}
+                    </div>
+                    <div style={{gridArea: 'stats2'}}>
+                        {t('base.crew{{:}}')} {data.formattedValue}
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div
+                    className='ui segment'
+                    key={`tooltip_${data.data.name}`}
+                    style={{
+                        display: 'grid',
+                        gridTemplateAreas: `'skills' 'stats1' 'stats2' 'stats3'`,
+                        textAlign: 'center',
+                        gap: '0.5em 1em'
+                    }}
+                >
+                    {getSkillOrderTitle(data.data.name, '', { gridArea: 'skills' })}
+                    <div style={{gridArea: 'stats1'}}>
+                        {data.formattedValue}
+                    </div>
+                    <div style={{gridArea: 'stats2'}}>
+                        {t('base.crew{{:}}')} {data.data.crew.length.toLocaleString()}
+                    </div>
+                    {data.value !== data.data.crew.length && <div style={{gridArea: 'stats3'}}>
+                        {t('stat_trends.trait_columns.total_crew{{:}}')} {data.value}
+                    </div>}
+                </div>
+            )
+        }
+    }
+
+    function buildCircleData() {
+        const workcrew = useFilters ? statFilterCrew(filterConfig, crew) : crew;
         const circleData = {
             name: 'STT Datacore',
             children: [],
@@ -106,127 +336,6 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
             }
             circleData.children.push(skill1d);
         }
-
-        setCircleData(circleData);
-    }, [globalContext.core.crew, filterConfig, useFilters]);
-
-    const flexRow = OptionsPanelFlexRow;
-    const flexCol = OptionsPanelFlexColumn;
-
-    return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'stretch',
-            alignItems: 'center',
-            gap: '1em',
-            margin: '1em 0'
-        }}>
-
-            {!!circleData && [circleData].map((circle, idx) => {
-                return <div style={{height: `800px`, width: '100%'}} key={`stats_skill_circle_${idx}`}>
-                    {!!zoomedElem && !zoomElect && zoomedElem.data.crew.length > 0 &&
-                    <div style={{
-                        position: 'absolute',
-                        zIndex: '1001',
-                        margin: '1em',
-                        height: 'calc(800px - 2em)',
-                        width: isMobile ? 'calc(100% - 4em)' : '1100px',
-                        display: 'flex',
-                        flexDirection:'column',
-                        alignItems: 'center',
-                        justifyContent: 'center'}}
-                        onClick={() => setZoomElect(1)}
-                    >
-                            <CrewTiles crew={zoomedElem.data.crew.map(m => crew.find(f => f.symbol === m)!)}
-                                targetGroup="stat_trends_crew"
-                                scrolling
-                                title={zoomedElem.data.name}
-                                style={{
-                                    textAlign: 'center',
-                                    alignSelf: 'center',
-                                    backgroundColor: 'rgba(70,70,70,0.7)',
-                                    padding: '1em',
-                                    borderRadius: '2em'}}
-                                round={true}
-                                //maxCrew={30}
-                                rich
-                                itemHeight="8em"
-                                avatarSize={64}
-                                pageId='circle_stats'
-                            />
-                    </div>}
-                    <ResponsiveCirclePacking
-                        onClick={node => {
-                            setZoomedElem(zoomedElem?.id === node?.id ? null : node);
-                            setZoomElect(0);
-                        }}
-                        zoomedId={zoomedElem?.id}
-                        data={circleData}
-                        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-                        id="name"
-                        colorBy="id"
-                        inheritColorFromParent={false}
-                        value="loc"
-                        theme={themes.dark}
-                        colors={({id, data}) => {
-                            return RGBColors[data.skills[data.skills.length - 1]] || '#333'
-                        }}
-                        childColor={{
-                            from: 'color',
-                            modifiers: [
-                                [
-                                    'brighter',
-                                    0.4
-                                ]
-                            ]
-                        }}
-                        padding={4}
-                        enableLabels={true}
-                        //labelsFilter={n=>1===n.node.depth}
-                        labelsSkipRadius={40}
-                        labelTextColor={{
-                            from: 'color',
-                            modifiers: [
-                                [
-                                    'darker',
-                                    2
-                                ]
-                            ]
-                        }}
-                        borderWidth={1}
-                        borderColor={{
-                            from: 'color',
-                            modifiers: [
-                                [
-                                    'darker',
-                                    0.5
-                                ]
-                            ]
-                        }}
-                        // defs={[
-                        //     {
-                        //         id: 'lines',
-                        //         type: 'patternLines',
-                        //         background: 'none',
-                        //         color: 'inherit',
-                        //         rotation: -45,
-                        //         lineWidth: 5,
-                        //         spacing: 8
-                        //     }
-                        // ]}
-                        // fill={[
-                        //     {
-                        //         match: {
-                        //             depth: 1
-                        //         },
-                        //         id: 'lines'
-                        //     }
-                        // ]}
-                    />
-
-                </div>
-
-            })}
-        </div>)
+        return circleData;
+    }
 }

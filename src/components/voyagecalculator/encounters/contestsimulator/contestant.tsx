@@ -1,8 +1,11 @@
 import React from 'react';
+import { InView } from 'react-intersection-observer';
 import {
 	Dropdown,
 	DropdownItemProps,
+	Grid,
 	Icon,
+	Label,
 	Message,
 	Segment,
 	Statistic,
@@ -17,75 +20,76 @@ import { ProficiencyRangeInput } from '../common/rangeinput';
 
 type ContestantProps = {
 	skills: string[];
+	critChances: number[];
 	contestant: IContestant;
 	wins: string | JSX.Element;
 	editContestant: (contestant: IContestant) => void;
 	dismissContestant?: () => void;
+	compact?: boolean;
+	onWinsViewChange?: (inView: boolean) => void;
 };
 
 export const Contestant = (props: ContestantProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { skills, contestant, wins, editContestant, dismissContestant } = props;
+	const { skills, critChances, contestant, wins, editContestant, dismissContestant, compact } = props;
 
 	const expectedRoll: IExpectedScore = getExpectedScore(contestant.skills);
 
-	const critChanceOptions: DropdownItemProps[] = [
-		{ key: '0%', value: 0, text: '0%' },
-		{ key: '5%', value: 5, text: '5%' },
-		{ key: '10%', value: 10, text: '10%' },
-		{ key: '15%', value: 15, text: '15%' },
-		{ key: '25%', value: 25, text: '25%' },
-		{ key: '45%', value: 45, text: '45%' },
-		{ key: '65%', value: 65, text: '65%' }
-	];
+	const critChanceOptions = React.useMemo<DropdownItemProps[]>(() => {
+		const options: DropdownItemProps[] = critChances.map(critChance => {
+			return {
+				key: `${critChance}%`,
+				value: critChance,
+				text: t('global.n_%', { n: critChance })
+			};
+		});
+		options.push({ key: '0%', value: 0, text: t('global.n_%', { n: 0 }) });
+		if (!options.map(option => option.value).includes(contestant.critChance)) {
+			options.push({
+				key: `${contestant.critChance}%`,
+				value: contestant.critChance,
+				text: t('global.n_%', { n: contestant.critChance })
+			});
+		}
+		options.sort((a, b) => (a.value as number) - (b.value as number));
+		return options;
+	}, [critChances, contestant.critChance]);
 
 	return (
 		<React.Fragment>
 			<Message attached onDismiss={dismissContestant}>
-				<Message.Header style={{ textAlign: 'center' }}>
-					{contestant.crew?.name ?? t('voyage.contests.contestant')}
-				</Message.Header>
-				<div style={{ display: 'flex', justifyContent: 'center' }}>
-					{contestant.crew && (
-						<AvatarView
-							mode='crew'
-							size={96}
-							item={contestant.crew}
-							partialItem={true}
-						/>
-					)}
-					{!contestant.crew && (
-						<div style={{ display: 'flex', alignItems: 'center', height: '96px' }}>
-							<Icon name='user' size='huge' />
-						</div>
-					)}
-				</div>
+				{!compact && renderFullHeader()}
+				{compact && renderCompactHeader()}
 			</Message>
-			<Segment attached>
-				<Table striped compact>
-					<Table.Body>
-						{skills.map(skill => renderContestantSkill(skill))}
-						<Table.Row>
-							<Table.Cell	/* Crit Chance */
-								textAlign='center'
-							>
-								{t('voyage.contests.crit_chance')}
-							</Table.Cell>
-							<Table.Cell textAlign='center'>
-								<Dropdown	/* Select crit chance */
-									placeholder={t('voyage.contests.select_crit_chance')}
-									selection
-									options={critChanceOptions}
-									value={contestant.critChance}
-									onChange={(e, { value }) => editContestant({...contestant, critChance: value as number})}
-								/>
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
-				</Table>
-			</Segment>
+			{!compact && (
+				<Segment attached>
+					<Table striped compact>
+						<Table.Body>
+							{skills.map(skill => renderContestantSkill(skill))}
+							<Table.Row>
+								<Table.Cell	/* Crit Chance */>
+									<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+										<div>
+											{t('voyage.contests.crit_chance')}
+										</div>
+										<div>
+											<Dropdown	/* Select crit chance */
+												placeholder={t('voyage.contests.select_crit_chance')}
+												selection
+												options={critChanceOptions}
+												value={contestant.critChance}
+												onChange={(e, { value }) => editContestant({...contestant, critChance: value as number})}
+											/>
+										</div>
+									</div>
+								</Table.Cell>
+							</Table.Row>
+						</Table.Body>
+					</Table>
+				</Segment>
+			)}
 			<Message attached='bottom'>
-				<Statistic.Group size='mini' widths='four'>
+				<Statistic.Group size='mini' widths={4}>
 					<Statistic	/* Avg */>
 						<Statistic.Value>{expectedRoll.average}</Statistic.Value>
 						<Statistic.Label>{t('voyage.contests.avg')}</Statistic.Label>
@@ -99,6 +103,11 @@ export const Contestant = (props: ContestantProps) => {
 						<Statistic.Label>{t('voyage.contests.max')}</Statistic.Label>
 					</Statistic>
 					<Statistic	/* Wins */>
+						{props.onWinsViewChange && (
+							<InView
+								onChange={(inView, _entry) => props.onWinsViewChange!(inView)}
+							/>
+						)}
 						<Statistic.Value>{wins}</Statistic.Value>
 						<Statistic.Label>{t('voyage.contests.wins')}</Statistic.Label>
 					</Statistic>
@@ -107,26 +116,120 @@ export const Contestant = (props: ContestantProps) => {
 		</React.Fragment>
 	);
 
+	function renderFullHeader(): JSX.Element {
+		return (
+			<React.Fragment>
+				<Message.Header style={{ textAlign: 'center' }}>
+					{contestant.crew?.name ?? t('voyage.contests.contestant')}
+				</Message.Header>
+				{renderAvatar()}
+			</React.Fragment>
+		);
+	}
+
+	function renderCompactHeader(): JSX.Element {
+		return (
+			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: '1em' }}>
+				<div>
+					{renderAvatar()}
+				</div>
+				<div style={{ textAlign: 'center' }}>
+					<Label.Group>
+						{skills.map(skill => renderContestantSkillLabel(skill))}
+						<Label>
+							<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+								<span>
+									<img
+										src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+										style={{ height: '1.1em', verticalAlign: 'middle' }}
+										className='invertibleIcon'
+									/>
+								</span>
+								<span>
+									{t('global.n_%', { n: contestant.critChance })}
+								</span>
+							</div>
+						</Label>
+					</Label.Group>
+				</div>
+			</div>
+		);
+	}
+
+	function renderAvatar(): JSX.Element {
+		return (
+			<div style={{ display: 'flex', justifyContent: 'center' }}>
+				{contestant.crew && (
+					<AvatarView
+						mode='crew'
+						size={compact ? 64 : 96}
+						item={contestant.crew}
+						partialItem={true}
+					/>
+				)}
+				{!contestant.crew && (
+					<div style={{ display: 'flex', alignItems: 'center', height: `${compact ? '64' : '96'}px` }}>
+						<Icon name='user' size='huge' />
+					</div>
+				)}
+			</div>
+		);
+	}
+
 	function renderContestantSkill(skill: string): JSX.Element {
 		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
 
 		return (
 			<Table.Row key={skill}>
-				<Table.Cell textAlign='center'>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.5em', verticalAlign: 'middle' }} className='invertibleIcon' />
-				</Table.Cell>
-				<Table.Cell textAlign='center'>
-					{contestantSkill && (
-						<ProficiencyRangeInput
-							contestSkill={contestantSkill}
-							onChange={editProficiency}
-						/>
-					)}
-					{!contestantSkill && (
-						<>{t('voyage.contests.no_skill')}</>
-					)}
+				<Table.Cell>
+					<Grid columns='equal' verticalAlign='middle'>
+						<Grid.Column textAlign='center'>
+							<img
+								src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+								style={{ height: '1.5em' }}
+								className='invertibleIcon'
+							/>
+						</Grid.Column>
+						<Grid.Column width={9} textAlign='center'>
+							{contestantSkill && (
+								<ProficiencyRangeInput
+									contestSkill={contestantSkill}
+									onChange={editProficiency}
+								/>
+							)}
+							{!contestantSkill && (
+								<>{t('voyage.contests.no_skill')}</>
+							)}
+						</Grid.Column>
+						<Grid.Column width={1} /* Hack to prevent grid from exceeding table width */ />
+					</Grid>
 				</Table.Cell>
 			</Table.Row>
+		);
+	}
+
+	function renderContestantSkillLabel(skill: string): JSX.Element {
+		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
+		return (
+			<Label key={skill}>
+				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
+					<span>
+						<img
+							src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+							style={{ height: '1.1em', verticalAlign: 'middle' }}
+							className='invertibleIcon'
+						/>
+					</span>
+					<span>
+						{contestantSkill && (
+							<>{contestantSkill.range_min}-{contestantSkill.range_max}</>
+						)}
+						{!contestantSkill && (
+							<>{t('voyage.contests.no_skill')}</>
+						)}
+					</span>
+				</div>
+			</Label>
 		);
 	}
 
@@ -138,4 +241,3 @@ export const Contestant = (props: ContestantProps) => {
 		}
 	}
 };
-

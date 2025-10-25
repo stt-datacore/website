@@ -38,7 +38,10 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 
 	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
 	let activeContent: Content | undefined = undefined;
-
+	let mega = activeEvent.threshold_rewards.find(f => f.rewards.some(r => r.type === 1 || r.item_type === 1) && f.points === 25000)?.rewards.find(r => r.type === 1 || r.item_type === 1);
+	if (mega) {
+		result.mega_crew = mega.symbol;
+	}
 	// Content from autosynced events is an array of activeContents, taken at various sync times
 	//	Assume the last content here is the most recent content
 	if (Array.isArray(activeEvent.content)) {
@@ -477,7 +480,7 @@ export function getSpecialistBonus(eventData: IEventData) {
 		!eventData.activeContent?.main_mission ||
 		!eventData.activeContent?.featured_crew_bonus_chance ||
 		!eventData.activeContent?.featured_trait_bonus_chance
-	) return undefined;
+	) return { high: 30, low: 15 };
 
 	const inc = eventData.activeContent.bonus_chance_inc;
 	const failures = eventData.activeContent.main_mission.bonus_failures;
@@ -546,7 +549,10 @@ export function computeEventBest(
 	buffConfig?: BuffStatTable,
 	applyBonus?: boolean,
 	showPotential?: boolean,
+	allCrew?: CrewMember[]
 	) {
+
+	const encounterTraits = ["inspiring", "explorer", "scoundrel", "casual", "playful", "hero", "marksman", "investigator"];
 
 	let bestCombos: IBestCombos = {};
 	const zeroCombos: IEventCombos = {};
@@ -598,12 +604,21 @@ export function computeEventBest(
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
 				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150, true);
 			}
-			if ((crew.bonus > 1 || showPotential) && (phaseType !== 'galaxy')) {
+			if ((crew.bonus > 1 || showPotential)
+				// TODO: Why did we have this here?
+				// && (phaseType !== 'galaxy')
+				) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
 						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
+							if (allCrew && phaseType === 'skirmish') {
+								let refcrew = allCrew.find(c => c.symbol === crew.symbol);
+								if (refcrew) {
+									crew.ship_battle = structuredClone(refcrew.ship_battle);
+								}
+							}
 						}
 						if (phaseType !== 'voyage') {
 							crew[skill.name].core = crew[skill.name].core*crew.bonus;
@@ -657,6 +672,9 @@ export function computeEventBest(
 		crew.combos = combos;
 		crew.bestPair = bestPair;
 		crew.bestSkill = bestSkill;
+		if (eventData.content_types.includes('voyage')) {
+			crew.encounter_traits = crew.traits.filter(trait => encounterTraits.includes(trait));
+		}
 	});
 
 	return bestCombos;

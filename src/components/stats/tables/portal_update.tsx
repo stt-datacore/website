@@ -53,11 +53,11 @@ export const PortalUpdateTable = () => {
         return portalLog.filter(f => f.portal_batch_id === update).map(pl => crew.find(c => c.symbol === pl.symbol)! as IRosterCrew)
             .map(c => {
                 return CrewPreparer.prepareCrewMember(c, buffMode || 'none', 'shown_full', globalContext, false)[0];
-            }) as PlayerCrew[];
+            })
+            .filter(c => !!c?.ranks?.scores) as PlayerCrew[];
     }, [update, portalLog]);
 
     const flexCol = OptionsPanelFlexColumn;
-    const flexRow = OptionsPanelFlexRow;
 
     return (<div style={{...flexCol, margin: '1em 0', gap: '1em', alignItems: 'flex-start'}}>
         <div style={{...flexCol, alignItems: 'flex-start'}}>

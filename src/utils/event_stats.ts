@@ -59,8 +59,8 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
         if (!filtered.length) continue;
         filtered.sort((a, b) => b.score - a.score);
         let avg = filtered.map(e => e.score).reduce((p, n) => p + n, 0) / lb.leaderboard.length;
-        let min = filtered.map(e => e.score).reduce((p, n) => p < n && p !== 0 ? p : n, 0);
-        let max = filtered.map(e => e.score).reduce((p, n) => p > n && p !== 0 ? p : n, 0);
+        let min = filtered.map(e => e.score).reduce((p, n) => p < n ? p : n, 0);
+        let max = filtered.map(e => e.score).reduce((p, n) => n > p ? n : p, 0);
         let median = filtered[filtered.length / 2].score;
 
         let contentType = eventData.content_types?.join("/") || eventData.content?.content_type;
@@ -122,7 +122,7 @@ export function makeTypeBuckets(in_stats: EventStats[]): { [key: string]: EventS
         savedStats[stat.instance_id] = stat;
     });
 
-    let stats = JSON.parse(JSON.stringify(in_stats)) as EventStats[];
+    let stats = structuredClone(in_stats) as EventStats[];
     stats.forEach((stat) => {
         stat.event_type = stat.event_type?.split('/').sort().join('/');
     });

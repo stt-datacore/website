@@ -1,19 +1,16 @@
 import React from 'react';
-import { Step, Icon } from 'semantic-ui-react';
+import { Icon, Step } from 'semantic-ui-react';
 
-import { CompletionState, PlayerCrew } from '../../model/player';
+import { BorrowedCrew, CompletionState, PlayerCrew } from '../../model/player';
 
 import { GlobalContext } from '../../context/globalcontext';
 
 import CONFIG from '../../components/CONFIG';
 import { applyCrewBuffs } from '../../utils/crewutils';
 
-import { IRosterCrew } from './model';
 import { TinyStore } from '../../utils/tiny';
-import { CrewMember } from '../../model/crew';
-import { QuipmentProspectsOptions } from '../qpconfig/options';
-import { DefaultQuipmentConfig, QPContext, QuipmentProspectConfig } from '../qpconfig/provider';
-import { useStateWithStorage } from '../../utils/storage';
+import { QPContext } from '../qpconfig/provider';
+import { IRosterCrew } from './model';
 
 type RosterPickerProps = {
 	rosterType: string;
@@ -31,7 +28,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const [allCrew, setAllCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 	const [myCrew, setMyCrew] = React.useState<IRosterCrew[] | undefined>(undefined);
 
-	const [qpConfig, setQpConfig, applyQp] = qpContext.useQPConfig();
+	const [qpConfig, , applyQp] = qpContext.useQPConfig();
 
 	React.useEffect(() => {
 		const rosterType = playerData ? 'myCrew' : 'allCrew';
@@ -103,7 +100,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		});
 
 		const rosterCrew = playerData.player.character.crew.map(crew => {
-			let crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+			let crewman = structuredClone(crew) as IRosterCrew;
 
 			// Re-attach active_status, id, index properties
 			crewman.active_status = 0;
@@ -138,13 +135,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		// Add shared crew to roster
 		const store = TinyStore.getStore(`eventData/${playerData.player.dbid}`);
 
-		if (playerData.player.squad.rank !== 'LEADER' && !playerData.player.character.crew_borrows?.length) {
+		if (playerData.player.squad.rank !== 'LEADER' && !ephemeral?.borrowedCrew.length) {
 			if (ephemeral?.events?.length) {
-				let crewBorrow = store.getValue<CrewMember>(`crewBorrow/${ephemeral.events[0].id}`);
+				let crewBorrow = store.getValue<BorrowedCrew>(`crewBorrow/${ephemeral.events[0].id}`);
 				if (crewBorrow) {
 					const sharedCrew = { ...globalContext.core.crew.find(c => c.symbol === crewBorrow.symbol), ...crewBorrow } as IRosterCrew;
 					sharedCrew.id = rosterCrew.length + 1;
-					sharedCrew.shared = true;
+					sharedCrew.borrowed = true;
 					sharedCrew.statusIcon = 'share alternate';
 					sharedCrew.have = false;
 					if (buffConfig) applyCrewBuffs(sharedCrew, buffConfig);
@@ -160,13 +157,13 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		}
 		else {
 			store.clear();
-			playerData.player.character.crew_borrows?.forEach((crewBorrow, idx) => {
+			ephemeral?.borrowedCrew.forEach((crewBorrow, idx) => {
 				if (ephemeral?.events?.length) {
-					store.setValue<CrewMember>(`crewBorrow/${ephemeral.events[0].id}`, crewBorrow, true);
+					store.setValue<BorrowedCrew>(`crewBorrow/${ephemeral.events[0].id}`, crewBorrow, true);
 				}
 				const sharedCrew = { ...globalContext.core.crew.find(c => c.symbol === crewBorrow.symbol), ...crewBorrow } as IRosterCrew;
 				sharedCrew.id = rosterCrew.length + idx + 1;
-				sharedCrew.shared = true;
+				sharedCrew.borrowed = true;
 				sharedCrew.statusIcon = 'share alternate';
 				sharedCrew.have = false;
 				if (buffConfig) applyCrewBuffs(sharedCrew, buffConfig);
@@ -181,7 +178,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		let crewmanId = 1;
 
 		const rosterCrew = globalContext.core.crew.map(crew => {
-			let crewman = JSON.parse(JSON.stringify(crew)) as IRosterCrew;
+			let crewman = structuredClone(crew) as IRosterCrew;
 			crewman.id = crewmanId++;
 			CONFIG.SKILLS_SHORT.forEach((skill) => {
 				crewman[skill.name] = {

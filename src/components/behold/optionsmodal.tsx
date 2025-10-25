@@ -52,6 +52,7 @@ export class BeholdOptionsModal extends OptionsModal<BeholdModalOptions> {
 			{ key: 'low', value: 'low', text: t('series.low') },
 			{ key: 'snw', value: 'snw', text: t('series.snw') },
 			{ key: 'vst', value: 'vst', text: t('series.vst') },
+			{ key: 'sfa', value: 'sfa', text: t('series.sfa') },
 			{ key: 'original', value: 'original', text: t('series.original') },
 		];
 

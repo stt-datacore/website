@@ -4,7 +4,9 @@ import { Form, Dropdown } from 'semantic-ui-react';
 import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { CompletionState } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
-import { isQuipped } from '../../../utils/crewutils';
+import { getCrewQuipment, isQuipped } from '../../../utils/crewutils';
+import { EquipmentItem } from '../../../model/equipment';
+import { getPossibleQuipment } from '../../../utils/itemutils';
 
 type CrewMaintenanceFilterProps = {
 	pageId: string;
@@ -17,7 +19,6 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 	const { crewFilters, setCrewFilters } = props;
-
 	const [maintenanceFilter, setMaintenanceFilter] = React.useState('');
 
 	const maintenanceOptions = [

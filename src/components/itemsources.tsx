@@ -7,9 +7,11 @@ import CONFIG from './CONFIG';
 import { TinyStore } from '../utils/tiny';
 import { GlobalContext } from '../context/globalcontext';
 import { Quest } from '../model/missions';
+import { ContinuumMission } from '../model/continuum';
 
 type ItemSourcesProps = {
 	item_sources: EquipmentItemSource[];
+	continuum_mission?: ContinuumMission;
 	brief?: boolean;
 	refItem?: string;
 	pageId?: string;
@@ -23,6 +25,7 @@ interface ItemSourcesState {
 		battle: boolean;
 		faction: boolean;
 		cadet: boolean;
+		continuum: boolean;
 	}
 }
 
@@ -41,14 +44,15 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 				dispute: true,
 				battle: true,
 				faction: true,
-				cadet: true
+				cadet: true,
+				continuum: true
 			}
 		} as ItemSourcesState;
 		this.state = this.tiny.getValue<ItemSourcesState>('whole_state', defstate) ?? defstate;
 	}
 
-	private readonly setBrief = (name: 'dispute' | 'battle' | 'faction' | 'cadet', value: boolean) => {
-		const newstate = JSON.parse(JSON.stringify(this.state)) as ItemSourcesState;
+	private readonly setBrief = (name: 'dispute' | 'battle' | 'faction' | 'cadet' | 'continuum', value: boolean) => {
+		const newstate = structuredClone(this.state) as ItemSourcesState;
 		newstate.briefs[name] = value;
 		this.tiny.setValue('whole_state', newstate);
 		window.setTimeout(() => {
@@ -57,7 +61,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 
 	}
 
-	private readonly getBrief = (name: 'dispute' | 'battle' | 'faction' | 'cadet') => {
+	private readonly getBrief = (name: 'dispute' | 'battle' | 'faction' | 'cadet' | 'continuum') => {
 		return this.state.briefs[name];
 	}
 
@@ -67,6 +71,9 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		let shipBattles = this.props.item_sources.filter(e => e.type === 2);
 		let factions = this.props.item_sources.filter(e => e.type === 1);
 		let cadets = this.props.item_sources.filter(e => e.type === 4);
+		let continuum = this.props.item_sources.filter(e => e.type === 5);
+		let cq = this.props.continuum_mission?.quests?.map(q => q.name!);
+
 		const { brief, refItem, farmFormat: noHeading } = this.props;
 		const briefLen = this.props.briefLength ?? 2;
 		const briefSep = <>, </>;
@@ -74,7 +81,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		const briefSepFinal = <><br /></>;
 		const textDec = "";
 		let res = [] as JSX.Element[];
-		let eps = {};
+		let eps = {} as {[key:string]: JSX.Element};
 
 		if (this.context.core.episodes) {
 			this.context.core.episodes.forEach(e => {
@@ -171,12 +178,13 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 				</p>
 			);
 		}
+
 		if (cadets.length > 0) {
 			const isBriefed = this.getBrief('cadet');
 
 			cadets.sort((a, b) => (a.avg_cost ?? 0) - (b.avg_cost ?? 0));
 			res.push(
-				<p key={'disputeMissions'}>
+				<p key={'cadetMissions'}>
 					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('item_source.cadet_missions')}: </b>}{brief && <>{briefSepInit}</>}
 					{cadets
 						.slice(0, (brief && isBriefed) ? briefLen : undefined)
@@ -200,8 +208,44 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 			);
 		}
 
+		if (continuum.length > 0) {
+			const isBriefed = this.getBrief('continuum');
+
+			res.push(
+				<p key={'continuumMissions'}>
+					{!noHeading && <b style={{textDecoration: brief ? textDec : undefined}}>{t('mission_type.type_5')}: </b>}{brief && <>{briefSepInit}</>}
+					{continuum
+						.slice(0, (brief && isBriefed) ? briefLen : undefined)
+						.map((entry, idx) => (
+							<MissionCost
+								continuum={true}
+								key={idx}
+								hideCost={noHeading}
+								mission_symbol={entry.mission_symbol}
+								cost={entry.cost ?? 0}
+								avg_cost={entry.avg_cost}
+								name={this.contFmt(entry.name, cq)}
+								chance_grade={entry.chance_grade}
+								mastery={entry.mastery ?? 0}
+							/>
+						))
+						.reduce((prev, curr) => <>{prev}{brief && <>{briefSep}</> || <>{', '}</>}{curr}</>)}
+					{refItem && brief && isBriefed && disputeMissions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('dispute', false)}>({t('global.show_n_more_ellipses', { n: `${disputeMissions.length - briefLen}` })})</a></>}
+					{refItem && brief && !isBriefed && disputeMissions.length > briefLen && <><>{briefSepFinal}</><a style={{cursor: "pointer"}} onClick={(e) => this.setBrief('dispute', true)}>({t('global.show_less')})</a></>}
+				</p>
+			);
+		}
 
 		return res;
+	}
+
+	contFmt(name: string, cq?: string[]) {
+		if (!cq) return name;
+		let i = cq.indexOf(name);
+		if (i !== -1) {
+			return `(${i+1}) ${name}`;
+		}
+		return name;
 	}
 }
 

@@ -3,7 +3,7 @@ import { GlobalContext } from "../../../context/globalcontext"
 import { Dropdown } from "semantic-ui-react";
 import { useStateWithStorage } from "../../../utils/storage";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
-import { ResponsivePie } from "@nivo/pie";
+import { PieTooltipProps, ResponsivePie } from "@nivo/pie";
 import themes from '../../nivo_themes';
 import CONFIG from "../../CONFIG";
 import { getVariantTraits } from "../../../utils/crewutils";
@@ -32,17 +32,16 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, TRAIT_NAMES } = globalContext.localized;
 
-    const [type, setType] = useStateWithStorage<EventDistributionType>('stattrends/distribution_type', 'event');
-
+    const [type, setType] = useStateWithStorage<EventDistributionType>('stattrends/event_distribution_type', 'event');
     const { event_stats, crew, event_scoring } = globalContext.core;
 
     const eventChoices = [
-        { key: 'event', value: 'event', text: t('obtained.long.Event') },
-        { key: 'mega', value: 'mega', text: t('obtained.long.Mega') },
-        { key: 'traits', value: 'traits', text: t('base.featured_traits') },
-        { key: 'variants', value: 'variants', text: t('base.variants') },
-        { key: 'type', value: 'type', text: t('event_stats.event_type') },
-        { key: 'type_series', value: 'type_series', text: t('event_stats.event_type') + " + " + t('base.series') },
+        { key: 'event', value: 'event', text: t('stat_trends.events.event') },
+        { key: 'mega', value: 'mega', text: t('stat_trends.events.mega') },
+        { key: 'traits', value: 'traits', text: t('stat_trends.events.traits') },
+        { key: 'variants', value: 'variants', text: t('stat_trends.events.variants') },
+        { key: 'type', value: 'type', text: t('stat_trends.events.type') },
+        { key: 'type_series', value: 'type_series', text: t('stat_trends.events.type') + " + " + t('base.series') },
     ];
 
     const flexCol = OptionsPanelFlexColumn;
@@ -59,6 +58,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'low', value: 'low', text: t('series.low') },
         { key: 'snw', value: 'snw', text: t('series.snw') },
         { key: 'vst', value: 'vst', text: t('series.vst') },
+        { key: 'sfa', value: 'sfa', text: t('series.sfa') },
         { key: 'original', value: 'original', text: t('series.original') },
     ];
 
@@ -81,64 +81,15 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                     setType(value as any);
                 }}
             />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em' }}>
-                <div style={{ height: '50vw', width: '70vw', border: '2px solid #666', borderRadius: '12px' }}>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em 0' }}>
+                <div style={{ height: '50vw', width: '100%', border: '2px solid #666', borderRadius: '12px' }}>
                     <ResponsivePie
                         data={chartData}
                         value={'score'}
                         arcLinkLabel={(data) => data.data.label}
                         arcLabel={(data) => `${t('global.n_%', { n: data.value })}`}
-                        tooltip={(data) => {
-                            let stats: EventStats | undefined = undefined;
-                            let img: string | undefined = undefined;
-                            if (data.datum.data.data.extra?.is_event) {
-                                stats = data.datum.data.data.extra.bucket[0];
-                                img = data.datum.data.data.extra?.image;
-                            }
-                            let fc = crew.filter(cc => data.datum.data.data.crew.includes(cc.symbol))
-                            if (fc?.length) {
-                                if (fc.some(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')) {
-                                    fc = fc.filter(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')
-                                    fc.sort((a, b) => b.date_added.getTime() - a.date_added.getTime());
-                                }
-                                else {
-                                    fc.sort((a, b) => b.ranks.scores.overall - a.ranks.scores.overall);
-                                }
-                            }
-                            let cmm = fc?.length ? fc[0] : undefined;
-
-                            let label = `${data.datum.label}`;
-                            let amount = `${t('global.n_%', { n: data.datum.value })}`;
-                            return <div className="ui label" style={{...flexRow, justifyContent:'flex-start', gap: '1em'}}>
-                                <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
-                                <p>
-                                    <span>{label}</span>
-                                    {!!cmm && !stats && <span>
-                                        <br />
-                                        {cmm.date_added.toLocaleDateString()}
-                                        </span>}
-
-                                    {!!img && !!stats && (
-                                        <div>
-                                            <img src={`${process.env.GATSBY_ASSETS_URL}${img}`} style={{padding: 0,margin:0, height: '64px', border: '1px solid gray', borderRadius: '12px'}} />
-                                            <br/>{stats?.event_name}
-                                            <br/>{stats?.discovered?.toLocaleDateString()}
-                                        </div>
-                                    )}
-                                </p>
-                                <span>
-                                    {amount}
-                                </span>
-                                <span>
-                                    {t('global.n_x', { n: data.datum.data.events, x: t('menu.game_info.events') })}
-                                </span>
-                                {!!cmm && <div style={{textAlign:'center'}}>{t('base.rewards')} <AvatarView
-                                        mode='crew'
-                                        item={cmm}
-                                        size={64}
-                                    /></div>}
-                                </div>
-                        }}
+                        tooltip={renderTooltip}
                         theme={themes.dark}
                         margin={{ top: 80, right: 80, bottom: 80, left: 80 }}
                         innerRadius={0.4}
@@ -160,6 +111,59 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
             </div>
         </div>
     )
+
+    function renderTooltip(data: PieTooltipProps<PieSeriesType>) {
+        let stats: EventStats | undefined = undefined;
+        let img: string | undefined = undefined;
+        if (data.datum.data.data.extra?.is_event) {
+            stats = data.datum.data.data.extra.bucket[0];
+            img = data.datum.data.data.extra?.image;
+        }
+        let fc = crew.filter(cc => data.datum.data.data.crew.includes(cc.symbol))
+        if (fc?.length) {
+            if (fc.some(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')) {
+                fc = fc.filter(cc => cc.obtained === 'Event' || cc.obtained === 'Mega')
+                fc.sort((a, b) => b.date_added.getTime() - a.date_added.getTime());
+            }
+            else {
+                fc.sort((a, b) => b.ranks.scores.overall - a.ranks.scores.overall);
+            }
+        }
+        let cmm = fc?.length ? fc[0] : undefined;
+
+        let label = `${data.datum.label}`;
+        let amount = `${t('global.n_%', { n: data.datum.value })}`;
+        return <div className="ui label" style={{...flexRow, justifyContent:'flex-start', gap: '1em'}}>
+            <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
+            <p>
+                <span>{label}</span>
+                {!!cmm && !stats && <span>
+                    <br />
+                    {cmm.date_added.toLocaleDateString()}
+                    </span>}
+
+                {!!img && !!stats && (
+                    <div>
+                        <img src={`${process.env.GATSBY_ASSETS_URL}${img}`} style={{padding: 0,margin:0, height: '64px', border: '1px solid gray', borderRadius: '12px'}} />
+                        <br/>{stats?.event_name}
+                        <br/>{stats?.discovered?.toLocaleDateString()}
+                    </div>
+                )}
+            </p>
+            <span>
+                {amount}
+            </span>
+            <span>
+                {t('global.n_x', { n: data.datum.data.events, x: t('menu.game_info.events') })}
+            </span>
+            {!!cmm && <div style={{textAlign:'center'}}>{t('base.rewards')} <AvatarView
+                    mode='crew'
+                    item={cmm}
+                    size={64}
+                /></div>}
+            </div>
+
+    }
 
     function createTraitEventStats() {
         const traits = {} as StatDataType;
@@ -278,6 +282,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                 if (!series[ser].events.includes(evt.instance_id)) series[ser].events.push(evt.instance_id);
             }
         });
+
         const seriesStats = [] as PieSeriesType[];
         let totals = 0;
 
@@ -361,7 +366,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
 
     function createEventTypeStats(by_series?: boolean) {
         if (!event_stats?.length) return [];
-        const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
+        const newStats = structuredClone(event_stats) as EventStats[];
         let buckets = makeTypeBuckets(newStats);
         let top = {} as { [key: string]: number };
         Object.entries(buckets).forEach(([type, bucket]) => {

@@ -263,7 +263,7 @@ export default class CONFIG {
 	static readonly SERIES = [
 		'tos', 'tas',
 		'tng', 'ds9', 'voy', 'ent',
-		'dsc', 'pic', 'low', 'snw', 'vst',
+		'dsc', 'pic', 'low', 'snw', 'vst', 'sfa',
 		'original'
 	];
 

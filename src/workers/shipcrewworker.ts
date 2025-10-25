@@ -8,26 +8,28 @@ const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerTransportItem }) => boolean = () => true) => {
         return new Promise<ShipWorkerResults>(async (resolve, reject) => {
             const {
-                event_crew,
-                rate,
                 activation_offsets,
-                ship,
                 battle_mode,
-                opponents,
                 defense,
-                offense,
+                effects,
+                event_crew,
+                fixed_activation_delay,
                 ignore_skill,
                 max_iterations,
-                simulate,
+                offense,
+                opponents,
                 ranking_method,
-                fixed_activation_delay } = options;
+                rate,
+                ship,
+                simulate,
+            } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
             const opponent_variance = options.opponent_variance;
 
             const starttime = new Date();
 
-            let max_results = options.max_results ?? 100;
+            //let max_results = options.max_results ?? 100;
             let current_id = 1;
 
             const workCrew = options.crew;
@@ -183,7 +185,7 @@ const ShipCrewWorker = {
                 }
 
                 let res = newseats.map((set) => {
-                    let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate, opponent_variance);
+                    let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate, opponent_variance, false, false, false, effects);
                     let attack = processBattleRun(battle_data, set);
 
                     if (!get_attacks) {

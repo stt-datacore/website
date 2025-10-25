@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { ItemArchetypeBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from '../../model/player';
+import { ItemArchetypeBase, CompletionState, ImmortalReward, MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward, CryoCollection } from '../../model/player';
 import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
 import { TinyStore } from '../../utils/tiny';
 import { CollectionsOverview } from './views/overview';
@@ -21,10 +21,10 @@ export const CollectionPlanner = () => {
 
 	if (!playerData) return <CollectionsOverview />;
 
-	const allCrew = JSON.parse(JSON.stringify(crew)) as PlayerCrew[];
-	const myCrew = crewCopy(playerData.player.character.crew);
+	const allCrew = React.useMemo(() => structuredClone(crew) as PlayerCrew[], [crew]);
+	const myCrew = React.useMemo(() => crewCopy(playerData.player.character.crew), [playerData]);
 
-	const collectionCrew = [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
+	const collectionCrew = React.useMemo(() => [...new Set(allCollections.map(ac => ac.crew).flat())].map(acs => {
 		const crew = oneCrewCopy(allCrew.find(ac => ac.symbol == acs) as PlayerCrew) as PlayerCrew;
 		crew.highest_owned_rarity = 0;
 		crew.highest_owned_level = 0;
@@ -53,13 +53,13 @@ export const CollectionPlanner = () => {
 			crew.highest_owned_level = owned[0].level;
 		}
 		return crew;
-	});
+	}), [allCrew, myCrew]);
 
-	const playerCollections = allCollections.map(ac => {
+	const playerCollections = React.useMemo(() => allCollections.map(ac => {
 		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0, milestones: ac.milestones };
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
-			if (pc) collection = { ...collection, ...JSON.parse(JSON.stringify(pc)) };
+			if (pc) collection = { ...collection, ...structuredClone(pc) };
 		}
 		collection.id = ac.id; // Use allCollections ids instead of ids in player data
 		collection.crew = ac.crew;
@@ -88,7 +88,7 @@ export const CollectionPlanner = () => {
 			if ((cc.highest_owned_rarity ?? 0) > 0) collection.owned++;
 		});
 		return collection;
-	});
+	}), [playerData, collectionCrew]);
 
 	return (
 		<CollectionFilterProvider pageId='collectionTool' playerCollections={playerCollections}>
@@ -104,7 +104,7 @@ export const CollectionPlanner = () => {
 				existing.quantity += reward.quantity ?? 1;
 			}
 			else {
-				current.push(JSON.parse(JSON.stringify(reward)));
+				current.push(structuredClone({...reward, quantity: reward.quantity ?? 0}));
 			}
 		});
 	}
@@ -144,7 +144,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 				return true;
 			}
 		})
-		?.map(c => JSON.parse(JSON.stringify(c))) ?? [];
+		?.map(c => structuredClone(c)) ?? [];
 		if (mapFilter?.collectionsFilter?.length === 1) {
 			let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
 			if (idx >= 0) {
@@ -168,13 +168,15 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 				return true;
 			}
 		});
-	}, [hardFilter, mapFilter]);
+	}, [hardFilter, mapFilter, tempcol]);
 
+	const displayCrew = React.useMemo(() =>
+		directFilterCrew(collectionCrew, extendedCollections),
+	[collectionCrew, colContext]);
 
-
-	const displayCrew = directFilterCrew(collectionCrew);
-
-	const [topCrewScore, topStarScore] = computeGrades(playerCollections, displayCrew);
+	const [topCrewScore, topStarScore] = React.useMemo(() =>
+		computeGrades(playerCollections, displayCrew),
+	[playerCollections, displayCrew]);
 
 	return (
 		<React.Fragment>
@@ -192,7 +194,10 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 		</React.Fragment>
 	);
 
-	function directFilterCrew(crew: PlayerCrew[]): PlayerCrew[] {
+	function directFilterCrew(crew: PlayerCrew[], activeCollections: CryoCollection[]): PlayerCrew[] {
+		crew = crew.filter(c => {
+			return !!c.collections.filter(ccol => activeCollections.some(ac => ac.name === ccol)).length
+		})
 		return crew.filter(c => checkCommonFilter(colContext, c))
 	}
 
@@ -286,7 +291,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 
     function mergeTiers(col: PlayerCollection, startTier: number | 'n/a', endTier: number | 'n/a'): PlayerCollection {
-        let result = JSON.parse(JSON.stringify(col)) as PlayerCollection;
+        let result = structuredClone(col) as PlayerCollection;
 		if (startTier === 'n/a' || endTier === 'n/a') return col;
 
         let mergedRewards = {} as { [key: number]: Reward };
@@ -299,7 +304,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
                 m.rewards.forEach((reward) => {
                     if (!(reward.id in mergedRewards)) {
-                        mergedRewards[reward.id] = JSON.parse(JSON.stringify(reward));
+                        mergedRewards[reward.id] = structuredClone(reward);
                     }
                     else {
                         mergedRewards[reward.id].quantity += reward.quantity;
@@ -308,7 +313,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
                 m.buffs.forEach((buff) => {
                     if (!(buff.id in mergedBuffs)) {
-                        mergedBuffs[buff.id] = JSON.parse(JSON.stringify(buff));
+                        mergedBuffs[buff.id] = structuredClone(buff);
                     }
                     else {
                         mergedBuffs[buff.id].quantity ??= 1;

@@ -171,7 +171,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     ing.needed! += item.needed!;
                 }
                 else {
-                    newingredients.push(JSON.parse(JSON.stringify(item)));
+                    newingredients.push(structuredClone(item));
                 }
             });
         });
@@ -387,14 +387,19 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap'}}>
                     {items?.filter(orig => recipes[orig.item.symbol].some(rid => rid.symbol === item!.symbol)).map(item => {
-                        return <AvatarView
-                                    partialItem={true}
-                                    targetGroup='voyage_prospect_summary'
-                                    key={`item_summary_key_${item.item.symbol}+recipe`}
-                                    mode='item'
-                                    item={item.item}
-                                    size={32}
-                                />
+                        return (<div
+                            style={{...flexCol, fontSize: '0.8em'}}
+                        >
+                            <AvatarView
+                                partialItem={true}
+                                targetGroup='voyage_prospect_summary'
+                                key={`item_summary_key_${item.item.symbol}+recipe`}
+                                mode='item'
+                                item={item.item}
+                                size={32}
+                            />
+                            x{item.item.needed}
+                        </div>);
                     })}
                 </div>
             </Table.Cell>
@@ -464,7 +469,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
         Object.entries(counts).forEach(([symbol, count]) => {
             let item = quipment.find(f => f.symbol === symbol);
             if (!item?.recipe?.list?.length) return;
-            item = JSON.parse(JSON.stringify(item)) as EquipmentItem;
+            item = structuredClone(item) as EquipmentItem;
             item.needed = count;
             newitems.push(item);
             const qpcounts = {} as {[key: string]: number }
@@ -474,7 +479,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 if (qi) {
                     qpcounts[qi.symbol] ??= 0;
                     qpcounts[qi.symbol] += (li.count * count);
-                    return JSON.parse(JSON.stringify(qi));
+                    return structuredClone(qi);
                 }
                 else return undefined;
             }).filter(i => i) as EquipmentItem[];

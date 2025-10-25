@@ -360,7 +360,7 @@ export const ResultsGroup = (props: ResultsGroupProps) => {
 						getCrewEventBonus(voyageConfig, cs.crew)
 					);
 					const seconds: number = estimate.refills[0].result*60*60;
-					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses);
+					estimate.vpDetails = calcVoyageVP(seconds, eventCrewBonuses, voyageConfig.event_content?.encounter_times);
 				}
 				result.name = formatTime(estimate.refills[0].result, t);
 				if (result.proposal) result.proposal.estimate = estimate;

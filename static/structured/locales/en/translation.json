@@ -27,13 +27,16 @@
         "trigger_always": "Trigger Always",
         "trigger_once": "Trigger Once",
         "trigger_once_desc": "Once the alert has been triggered, it will be deactivated, but you can re-activate it from the alert modal.",
+        "watched_crew": "Alert: Watched crew '{{subject}}' ({{rarity}}/{{max_rarity}}*) has been acquired!",
         "when_new_crew": "Alert when copies of an unowned crew are discovered in the buy-back well.",
         "when_new_fuse": "Alert when a fuse for an owned crew is discovered in the buy-back well."
     },
     "base": {
+        "additional_event_appearances": "Additional event appearances",
         "all_crew": "Show all crew",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
+        "boss": "{{rank_names.fbb_rank}}",
         "cab_power": "CAB",
         "cap_achiever": "First to Max",
         "collection": "Collection",
@@ -61,6 +64,7 @@
         "n_to_next": "{{n}} to next",
         "never_in_portal": "Never In Portal",
         "not_in_portal": "Not In Portal",
+        "not_maincast": "Not Main Cast",
         "not_uniquely_retrievable": "Not Uniquely Retrievable",
         "not_yet_in_portal": "Not yet in portal",
         "offer_cost": "Offer Cost",
@@ -140,6 +144,13 @@
             }
         }
     },
+    "boosts": {
+        "add_boost": "Add a boost",
+        "boost": "{{ship.boost}}",
+        "boosts": "{{ship.boosts}}",
+        "change_boost": "Change boost",
+        "no_boost": "No boost"
+    },
     "buffs": {
         "max_buffs": "Max buffs",
         "max_quipment_buffs_best": "Max Quipment Buffs (Best Quipment)",
@@ -158,7 +169,9 @@
                 "collections": "Stat-Boosting Collections Increased",
                 "groupSparsity": "Voyage Group Sparsity",
                 "improved": "Voyages Improved",
+                "is_custom": "Custom",
                 "magic": "Measure Limit (Magic number)",
+                "name": "{{global.name}}",
                 "never": "Never In Portal",
                 "portal": "Not In Portal",
                 "power": "Base Power Score",
@@ -275,6 +288,7 @@
             "warning": "The collection optimizer view shows only owned crew."
         },
         "options": {
+            "compact_view": "Compact View",
             "group_rewards": "Group Rewards",
             "hard_filter": "Hard Filter",
             "honor_sale_pricing": "Honor Sale Pricing",
@@ -328,7 +342,12 @@
                 "title": "Progress"
             }
         },
-        "progress_to_next": "Progress to next"
+        "progress_to_next": "Progress to next",
+        "types": {
+            "crew_rewarding": "Crew-rewarding collections",
+            "stat_boosting": "Stat-boosting collections",
+            "vanity": "Vanity collections"
+        }
     },
     "consider_crew": {
         "active_shuttles": "Consider crew on active shuttles",
@@ -344,7 +363,10 @@
             "do_not_exclude_event_crew": "Do not exclude event crew",
             "event_skill_matrix_crew": "Event skill matrix crew",
             "featured_event_crew": "Featured event crew",
+            "highest_power": "Highest power",
+            "last_expiring": "Last expiring",
             "note_current": "Note current exclusions",
+            "noted_exclusions": "Noted Exclusions",
             "phase_type": "Phase type",
             "restore_notes": "Recall noted exclusions",
             "search": "Search for crew to exclude",
@@ -396,12 +418,21 @@
         "close": "{{global.close}}",
         "filter": "{{global.filters}}",
         "no_results": "0 results found. Please try different search options.",
+        "no_results_parts": {
+            "message": "Please try different search options.",
+            "title": "0 results found."
+        },
         "optional_filters": "Optional Filters",
         "search_by_name": "Search for crew by name",
         "select_crew": "Select {{crew}}",
         "tip": {
             "double_tap": "Tip: Double-tap to select a crew more quickly."
         }
+    },
+    "crew_quipment": {
+        "active_quipment_skills": "Active Quipment Skills{{:}}",
+        "compatible_quipment": "Compatible Quipment",
+        "trait_limited": "Show only trait-limited quipment"
     },
     "crew_state": {
         "expires_in": "Crew expires in {{time}}",
@@ -425,6 +456,8 @@
         "columns": {
             "g": "G",
             "gauntlet_ranks": "Gauntlet Ranks",
+            "r": "R",
+            "reasons_to_keep": "Reasons To Keep",
             "s": "S",
             "shuttle_ranks": "Shuttle Ranks",
             "u": "U",
@@ -468,6 +501,10 @@
         "ship": "Show ship abilities",
         "view_big_book": "View {{crew}} on Big Book",
         "voyage": "Show voyage ranks"
+    },
+    "delete": {
+        "prompt_x": "Are you sure you wish to delete '{{x}}'?",
+        "title": "Delete"
     },
     "demands": {
         "demands": "Demands",
@@ -535,8 +572,12 @@
         "select_phase": "Select a phase",
         "skill_matrix": "Skill Matrix",
         "skill_matrix_heading": "This matrix shows your best crew for each possible skill combination. Use this matrix to identify your best crew for this event. Tap a cell to view other crew with that skill combination.",
+        "specialist": {
+            "instructions": "To use the auto-staffer, select one or more missions by tapping the title column, and then tap the auto-staff button.",
+            "mission_running": "Mission is running."
+        },
         "specialist_missions": "Specialist Missions",
-        "staff_selected": "Staff Selected",
+        "staff_selected": "Auto-Staff",
         "table": {
             "columns": {
                 "best": "Best",
@@ -576,6 +617,33 @@
     },
     "events_common": {
         "skirmish_guess_warning": "This event contains a skirmish component, and a complete list of featured crew may not be available until after this event begins."
+    },
+    "factions": {
+        "already_honored": "Already honored",
+        "already_tanked": "Already tanked",
+        "average_odds_dropdown": "Running shuttles at average odds of {{dropdown}}",
+        "columns": {
+            "faction": "Faction",
+            "honored": "Honored",
+            "reputation": "Reputation",
+            "shuttles_to_honored": "Shuttles to Honored",
+            "shuttles_to_tank": "Shuttles to Tank",
+            "time_needed": "Time Needed"
+        },
+        "n_shuttles_per_day": "Running {{n}} shuttles per day.",
+        "n_shuttles_to_tank": "{{n}} shuttles to tank.",
+        "n_successful_missions": "{{n}} successful missions.",
+        "odds_note": "(Note: Shuttles cannot be run with a probability of success less than 14%. Shuttles need a probability of less than 60% to be tanked.)",
+        "reputation": {
+            "allied": "Allied",
+            "despised": "Despised",
+            "friendly": "Friendly",
+            "honored": "Honored",
+            "hostile": "Hostile",
+            "neutral": "Neutral"
+        },
+        "tanking": "Tanking",
+        "tanking_explain": "{{tanking}} shuttles is the process of deliberately failing shuttles so that the difficulty and duration of shuttle missions go down."
     },
     "fbb": {
         "alert_no_solution": "No possible solutions found for this node. You may need to change your filters, double-check your solved traits, or reset the list of attempted crew.",
@@ -761,6 +829,7 @@
             "dailies": "Dailies",
             "display_name": "{{global.name}}",
             "event_rank": "Event Rank",
+            "fleet": "{{global.fleet}}",
             "last_active": "Last Active",
             "last_update": "{{global.last_updated}}",
             "level": "{{base.level}}",
@@ -931,8 +1000,10 @@
         "and": "and",
         "and_n_more_ellipses": "and {{n}} more ...",
         "any": "Any",
+        "apply": "Apply",
         "apply_filters": "Apply Filters",
         "approx": "Approx.",
+        "assigned": "Assigned",
         "average": "Average",
         "avg": "Avg",
         "base": "Base",
@@ -951,6 +1022,7 @@
         "copy_permalink_clipboard": "Copy permalink to clipboard",
         "cost": "Cost",
         "create": "Create",
+        "create_new_x": "Create New {{x}}",
         "date_end": "End Date",
         "date_start": "Start Date",
         "default": "Default",
@@ -961,11 +1033,15 @@
         "disabled": "Disabled",
         "dismiss": "Dismiss",
         "download": "Download",
+        "duplicate_input": "Duplicate input",
+        "duplicate_name": "Duplicate name",
         "edit": "Edit",
+        "edit_presets": "Manage Presets",
         "enable": "Enable",
         "enabled": "Enabled",
         "episode": "Episode",
         "error": "Error",
+        "exact": "Exact",
         "exclusive": "Exclusive",
         "experimental": "Experimental",
         "filters": "Filters",
@@ -980,6 +1056,7 @@
         "ingredient_warning": "You do not have the ingredients to build this item.",
         "ingredient_warning_all": "You do not have the ingredients to build all of these items.",
         "initial_launch": "Initial Game Launch",
+        "invalid_input": "Invalid input",
         "item_types": {
             "arena": "Arena",
             "arena_tickets": "Arena tickets",
@@ -1022,6 +1099,7 @@
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
         "lose": "Lose",
+        "map_position": "Map Position",
         "max": "Max",
         "max_rarity": "Max. rarity",
         "member": "Member",
@@ -1037,6 +1115,7 @@
         "name": "Name",
         "never": "Never",
         "new": "New",
+        "new_name": "New name",
         "no": "No",
         "no_items_found": "No items found",
         "no_search_results_found": "No results found. Please try different search options.",
@@ -1044,18 +1123,23 @@
         "notes": "Notes",
         "obtained": "Obtained",
         "officer": "Officer",
+        "opponent": "{{gauntlet.opponent_table.opponent}}",
         "optional": "Optional",
         "options": "Options",
         "or": "or",
+        "partial": "Partial",
         "pending_release": "Pending Release",
         "percentile": "Percentile",
-        "permalink": "permalink",
+        "permalink": "Permalink",
         "portal": "Portal",
         "portal_update": "Portal Update",
+        "preset": "Preset",
         "presets": "Presets",
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
+        "rename": "Rename",
+        "rerun": "Rerun",
         "reserved": "Reserved",
         "reset": "Reset",
         "rows_per_page": "Rows per page",
@@ -1084,6 +1168,7 @@
         "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "toggle_layout": "Toggle layout",
         "type": "Type",
+        "unassigned": "Unassigned",
         "uncheck_all": "Uncheck all",
         "unselect_all": "Unselect All",
         "view_options": "View Options",
@@ -1144,6 +1229,7 @@
         "filter_by_series": "Filter by series",
         "filter_by_ship_ability": "Filter by ship ability",
         "filter_by_skill": "Filter by skill",
+        "filter_by_skill_order_ownership": "Filter by skill order ownership",
         "filter_by_status": "Filter by status",
         "filter_by_timeframe": "Filter by timeframe",
         "filter_by_trait": "Filter by trait",
@@ -1153,6 +1239,7 @@
         "filter_crew_by_rank": "Filter crew by rank",
         "filter_ship_grants": "Filter ship grants",
         "filter_ship_rarity": "Filter ship rarity",
+        "min_battle_stations": "Minimum battle stations",
         "prioritize_rewards": "Prioritize Rewards",
         "roster_maintenance": "Roster maintenance",
         "select_crew": "Select Crew",
@@ -1271,7 +1358,10 @@
         "equippable_by_rarity_traits": "Equippable by up to {{rarity}} crew with the following traits: {{traits}}",
         "equippable_by_traits": "Equippable by crew with the following traits: {{traits}}",
         "faction_only": "Faction Only",
+        "hide_unneeded_items": "Hide unneeded items",
         "is_used_to_build": "Is used to build these",
+        "item_information": "Item Information",
+        "item_load_error": "Error loading item data",
         "item_sources": "Item sources",
         "n_farmable": "{{n}} farmable",
         "n_needed": "{{n}} needed",
@@ -1284,6 +1374,9 @@
             "owned_or_buildable": "Show owned or buildable quipment"
         },
         "post_immortalization_advancement": "Post-immortalization advancement",
+        "quick_select": {
+            "favorites": "Select all favorited crew"
+        },
         "recipe": "Recipe",
         "required_traits": "Required Traits: {{traits}}",
         "show_unowned_needed": "Show unowned needed items",
@@ -1372,7 +1465,8 @@
         "pvp_3": "commander division data",
         "pvp_4": "captain division data",
         "pvp_5": "admiral division data",
-        "quest_data": "quest data"
+        "quest_data": "quest data",
+        "voyage_log": "voyage log data"
     },
     "logic": {
         "AND": "AND",
@@ -1441,7 +1535,8 @@
     "mission_type": {
         "type_0": "Conflict Quest",
         "type_2": "Ship Battle",
-        "type_4": "Cadet Challenge"
+        "type_4": "Cadet Challenge",
+        "type_5": "Continuum Mission"
     },
     "missions": {
         "continuum_mission_map": "Continuum Mission Map",
@@ -1561,6 +1656,10 @@
             "trait": "Trait"
         }
     },
+    "overwrite": {
+        "prompt_x": "Are you sure you wish to overwrite '{{x}}'?",
+        "title": "Overwrite"
+    },
     "pages": {
         "crew_stats": "Crew Stats",
         "crew_view_modes": {
@@ -1589,6 +1688,14 @@
         "n_shuttles": "{{n}} shuttles",
         "starbase_level": "Starbase level",
         "x_y_crew": "{{x}} / {{y}} crew"
+    },
+    "polestars": {
+        "best_chance_long": "All the polestars that give the best chance of retrieving this crew",
+        "best_chance_short": "Best Chance",
+        "combo": "Polestar Combination",
+        "crew_constellation": "{{crew}} Constellation",
+        "optimal": "Optimal Polestars for Crew Retrieval",
+        "shared_with_crew": "Shared with {{crew}}"
     },
     "profile": {
         "charts_and_stats": "Charts & Stats",
@@ -1628,6 +1735,7 @@
             "skill_order": "Skill Order"
         },
         "mode_label": "Skill mode",
+        "quippable_traits": "Only show crew with trait-limited quipment",
         "slot_label": "Slot mode",
         "slots": {
             "n_natural": "Quip up to {{n}} natural slots",
@@ -1656,6 +1764,7 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "always_show_datascore": "Always show DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
         "cab_grade": "CAB Grade",
@@ -1721,9 +1830,29 @@
     },
     "ranking_tools": {
         "current_weighting": "Current Weighting",
-        "show_weighting_details": "Show weighting details"
+        "show_weighting_details": "Show weighting details",
+        "weights": {
+            "base_plus": {
+                "quipment": "{{rank_names.scores.quipment}}",
+                "shuttleRank": "{{rank_names.scores.shuttle}}",
+                "title": "Base+ Weighting"
+            },
+            "gauntlet_plus": {
+                "crit": "{{rank_names.scores.crit}}",
+                "gauntlet": "{{rank_names.scores.gauntlet}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Gauntlet+ Weighting"
+            },
+            "voyage_plus": {
+                "am_seating": "{{rank_names.scores.am_seating}}",
+                "quipment": "{{rank_names.scores.quipment}}",
+                "title": "Voyage+ Weighting",
+                "voyage": "{{rank_names.scores.voyage}}"
+            }
+        }
     },
     "retrieval": {
+        "alert_pending_crew": "This crew is currently not uniquely retrievable but a future portal update will change this status.",
         "allow_unowned": "Allow unowned crew",
         "assume_in_game_favorites": "Dynamically add in-game favorites to wishlist",
         "combo": "Combo",
@@ -1743,6 +1872,7 @@
         "crew": {
             "show_all_crew": "{{base.all_crew}}",
             "show_all_uniquely_retrievable": "Show all uniquely retrievable crew",
+            "show_expiring_crew": "Show expiring unique retrievals",
             "show_retrievable_crew": "Only show crew I can retrieve"
         },
         "description": "Find the best options for adding crew to your roster via crew retrieval.",
@@ -1798,6 +1928,7 @@
         },
         "max_iterations": "{{ship.calc.max_iterations}}",
         "max_workers": "{{ship.calc.max_workers}}",
+        "min_non_unique": "Minimum non-uniques",
         "modes": {
             "mutual_polestar_calculator": "Mutual Polestar Calculator",
             "mutual_polestar_calculator_desc": "Find combos that give equal chances of retrieving non-immortals",
@@ -1853,6 +1984,7 @@
         "use_all_combos_below_to_retrieve": "Use ALL combos below to retrieve",
         "use_any_combo_below_to_retrieve": "Use any combo below to retrieve",
         "verbose_status_updates": "{{ship.calc.verbose_status_updates}}",
+        "warn_expiring_crew": "This crew is currently uniquely retrievable but a future portal update will change this status.",
         "wishlist": {
             "add": "Add to wishlist.",
             "auto": "Crew is auto wishlisted.",
@@ -1918,6 +2050,12 @@
         },
         "title": "Roster Summary"
     },
+    "sales": {
+        "active": "Active Sales",
+        "honor_sale": "Honor Sale",
+        "slot_sale": "Crew Slot Sale",
+        "title": "Sales"
+    },
     "series": {
         "ds9": "Deep Space Nine",
         "dsc": "Discovery",
@@ -1925,6 +2063,7 @@
         "low": "Lower Decks",
         "original": "Timelines Originals",
         "pic": "Picard",
+        "sfa": "Starfleet Academy",
         "snw": "Strange New Worlds",
         "tas": "The Animated Series",
         "tng": "The Next Generation",
@@ -1987,6 +2126,9 @@
                 "exclude_ability": "Exclude crew with this ability",
                 "power_depth": "Advanced Power Depth"
             },
+            "apply_boss_effects": "Apply boss chain buffs",
+            "apply_buffs": "Apply buffs to unowned ships",
+            "as_maxed": "Use max ship stats",
             "calc_summary": "{{message}} ({{count}}) ({{accepted}} accepted results) ({{time}})",
             "calculating_pct_ellipses": "Calculating ... ({{percent}}% complete)",
             "calculating_pct_ellipses_verbose": "Calculating ... ({{percent}}% complete) ({{progress}} / {{count}}) ({{accepted}} accepted results)",
@@ -2025,6 +2167,7 @@
         "crit_rating": "Crit Rating",
         "cycle_time": "Cycle Time",
         "depth_hr_warn": "* By default, power level depth does not apply to hull-repair crew.",
+        "dps": "DPS",
         "duration": "Duration",
         "equipment_bonus": "Equipment Bonus",
         "evasion": "Evasion",
@@ -2058,6 +2201,11 @@
             "admiral": "Admiral Division",
             "captain": "Captain Division",
             "commander": "Commander Division"
+        },
+        "roster": {
+            "all": "All Ships",
+            "owned": "Owned Ships",
+            "unowned": "Unowned Ships"
         },
         "shields": "Shields",
         "ship": "Ship",
@@ -2179,6 +2327,11 @@
             }
         }
     },
+    "skill_order_ownership": {
+        "notmax": "Only show unowned or unmaxed skill orders",
+        "underowned": "Only unmaxed skill orders",
+        "unowned": "Only unowned skill orders"
+    },
     "spinners": {
         "calculating": "Calculating...",
         "calculating_voyage_estimate": "Calculating estimate. Please wait...",
@@ -2199,6 +2352,13 @@
             "velocity": "Velocity"
         },
         "description": "Study statistics about crew power trending over time.",
+        "events": {
+            "event": "Event Reward Crew",
+            "mega": "{{obtained.long.Mega}}",
+            "traits": "{{base.featured_traits}}",
+            "type": "{{event_stats.event_type}}",
+            "variants": "{{base.variants}}"
+        },
         "exact_skill_order_only": "Show exact skill order progressions, only (no partial matches)",
         "graphs": {
             "circle": "Skill Circles",
@@ -2210,7 +2370,8 @@
             "power_creep": "{{stat_trends.graphs.skill_area}}",
             "release_graph": "Release Schedule",
             "skill_area": "Power Creep",
-            "title": "Graphs"
+            "title": "Graphs",
+            "trait_distributions": "Trait Distributions"
         },
         "initial_release": "Initial Release",
         "items": {
@@ -2226,6 +2387,7 @@
             "quantity": "{{global.quantity}}"
         },
         "last_release": "Last Release",
+        "last_sync_timestamp": "Last Sync Timestamp",
         "new_high": "New High",
         "new_highs_only": "Only show new highs",
         "released_duration": "Released {{duration}}",
@@ -2274,7 +2436,21 @@
             "trait": "{{hints.trait}}"
         },
         "traits": {
+            "distributions": {
+                "combo": "Most frequent trait combinations",
+                "data_set": {
+                    "all_traits": "All Traits",
+                    "hidden_traits": "Hidden Traits",
+                    "portal_traits": "Portal Traits",
+                    "variant_traits": "Variant Traits"
+                },
+                "rarity": "Most frequent traits by rarity",
+                "select_data_set": "Select Data Set",
+                "series": "Most frequent traits by series",
+                "traits": "Most frequent traits"
+            },
             "exclude_launch": "Exclude launch crew",
+            "exclude_x": "Exclude {{x}}",
             "hide_only_one": "Hide traits with only one crew",
             "only_show_potential_collections": "Only show potential collections",
             "potential_collection_score_n": "Potential Collection Score: {{n}}",
@@ -2294,6 +2470,12 @@
             "description": "Only consider your owned crew",
             "title": "Owned Crew"
         }
+    },
+    "view_special": {
+        "options": {
+            "as_immortalized": "View all as immortalized"
+        },
+        "title": "Special views"
     },
     "voyage": {
         "active": {
@@ -2322,23 +2504,68 @@
             "title": "Captain Idol's Voyage Analysis Sheet"
         },
         "contests": {
+            "assign_crew": "Assign {{crew}} to this contest",
+            "assigned_crew": "Assigned Crew",
+            "assigned_to_crew": "{{crew}} is assigned to this contest",
+            "assigned_to_n": "Assigned to Contest {{n}}",
             "avg": "{{global.avg}}",
+            "avg_of_crew": "{{crew}}'s average score for this contest",
+            "avg_of_opponent": "Opponent's average score for this contest",
+            "avg_score": "Average Score",
+            "boost_impact": {
+                "crit": "{{crew}} is boosting this contest's crit chance",
+                "ineffective": "Boost has no effect to any contest",
+                "others": "{{crew}} is boosting an unused skill that may be relevant to later contests",
+                "self": "{{crew}} is boosting a skill that is relevant to their own contest",
+                "skill": "{{crew}} is boosting their contribution to this contest skill",
+                "unneeded": "A boost here will have no effect on this contest"
+            },
+            "champions_description": "Your crew's expected odds of winning each contest are listed below. Tap the odds to simulate that contest with higher confidence. Tap {{icon}} to assign the crew to that contest.",
+            "champions_header": "Voyage Crew",
+            "contest": "Contest",
             "contest_simulator": "Contest Simulator",
             "contestant": "Contestant",
             "contestant_alt": "contestant",
+            "contests_description": "Use this tool to plan your encounter contests.",
+            "contests_header": "Contest Assignments",
+            "contests_n_count": "Contests ({{n}})",
+            "contributors_description": "The crew assigned to this contest will contribute their full proficiency. Some crew assigned to prior contests may also contribute a fraction of their unused skills. The average values added to this contest by all contributing crew are listed below. You can add boosts to increase any contribution, which may improve the odds of winning this contest.",
+            "crew_exhausted": "{{crew}} cannot contribute exhausted skills",
+            "crew_irrelevant": "{{crew}} has no relevant skills to contribute to this contest",
+            "crew_wasted": "{{crew}} cannot contribute to inactive skills",
             "crit_chance": "Crit Chance",
+            "encounter_helper_title": "Encounter helper",
+            "find_viable_crew": "Find viable crew for this contest",
+            "importer": {
+                "data_loaded": "Encounter Data Loaded!",
+                "data_required": "Additional Data Required",
+                "description": "The Encounter Helper requires additional data that is not present in your player data. You can access and import the required data by following the instructions below.",
+                "follow_instructions": "Follow the instructions below to update your encounter data.",
+                "json_early": "No encounter data found. Please try again when your voyage has reached an encounter.",
+                "json_invalid": "The imported data is not valid. Please confirm the voyage data link is correct and try again.",
+                "json_undefined": "No data",
+                "progress_warning": "This tool is unable to see the crew used for any contests you have already completed in-game. You must manually assign successful crew to the contests below to get a more accurate representation of viable skills for the remaining contests.",
+                "tap_to_open": "If the information below does not match your encounter in-game, tap here to update your encounter data."
+            },
             "max": "{{global.max}}",
             "min": "{{global.min}}",
             "n_viable_crew": "Your voyage has {{n}} viable crew for this contest",
             "no_skill": "No Skill",
             "notes": {
-                "crit_icon": "represents a crew's number of potential crit traits.",
+                "crit_icon": "{{img}} represents a crew's number of potential crit traits.",
                 "scores": "Scores are the sum of a crew's average proficiency after 3 rolls per contest skill.",
                 "simulate_contestant": "Select a contestant to simulate in a {{skills}} contest."
             },
+            "odds_of_winning": "Odds of Winning",
+            "reset_assignments": "Reset assignments",
+            "reset_boosts": "Reset boosts",
             "search_for_contestant": "Search for contestant",
             "select_crit_chance": "Select crit chance",
+            "show_relevant_boosts": "Only show relevant boosts",
             "simulate_contest": "Simulate contest",
+            "starting_skills": "Starting Skills",
+            "unused_skill": "If assigned to this contest, {{crew}} will contribute their unused {{skill}} skill to {{n}} later contest(s) with an average value added of +{{avg}} (per contest).",
+            "vp_multiplier": "VP Multiplier",
             "wins": "Wins"
         },
         "crew_finder_hints": {
@@ -2560,6 +2787,8 @@
             "voyage_prefs": "Voyage Skill Preference",
             "voyage_prefs_explain": "If a voyage skill preference is selected the crew's skill order is sorted so that matching skills come first."
         },
+        "recreate_dilemma": "Re-create dilemma voyage",
+        "recreate_encounter": "Re-create encounter voyage",
         "results": {
             "actions": {
                 "abort": "Abort",
@@ -2669,5 +2898,16 @@
             "custom": "Custom Voyages",
             "upcoming": "Upcoming Voyages"
         }
+    },
+    "voyage_log": {
+        "behold": "Behold",
+        "choice_x": "Choice {{x}}",
+        "choices": "Choices",
+        "import": {
+            "click_here": "{{fleet.import.click_here}}",
+            "heading": "You can access your voyage logs in a similar way to how you access your player data, currently."
+        },
+        "reference": "Dilemma Reference",
+        "title": "Voyage Dilemma Utility"
     }
 }

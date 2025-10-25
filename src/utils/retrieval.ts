@@ -1,5 +1,5 @@
 import { CrewMember } from "../model/crew";
-import { PolestarCombo } from "../model/game-elements";
+import { PolestarCombo } from "../model/keystone";
 import { PlayerCrew } from "../model/player";
 
 export function findPolestars(crew: PlayerCrew | CrewMember, roster: (PlayerCrew | CrewMember)[]): PolestarCombo[] {

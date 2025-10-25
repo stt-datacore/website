@@ -1,5 +1,5 @@
 import React from "react"
-import { Collection } from "../../../model/game-elements"
+import { Collection } from "../../../model/collections";
 import { GlobalContext } from "../../../context/globalcontext";
 import { Icon, Tab, Table } from "semantic-ui-react";
 import { PlayerCollection, Reward } from "../../../model/player";

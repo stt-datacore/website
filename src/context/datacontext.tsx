@@ -1,20 +1,23 @@
 import { navigate } from 'gatsby';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { v4 } from 'uuid';
 import { ContinuumMission } from '../model/continuum';
 import { Achiever, CrewMember, QuipmentScores, SkillQuipmentScores } from '../model/crew';
-import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { EquipmentItem } from '../model/equipment';
 import { EventInstance, EventLeaderboard } from '../model/events';
-import { Collection, KeystoneBase, PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
+import { PortalLogEntry, POST_BIGBOOK_EPOCH } from '../model/game-elements';
+import { Collection } from "../model/collections";
+import { KeystoneBase } from "../model/keystone";
 import { Gauntlet } from '../model/gauntlets';
 import { Mission } from '../model/missions';
 import { ObjectiveEvent } from '../model/player';
 import { BattleStations, ReferenceShip, Schematics, Ship } from '../model/ship';
 import { StaticFaction } from '../model/shuttle';
-import { calcQuipmentScore } from '../utils/equipment';
+import { Dilemma } from '../model/voyage';
 import { EventStats } from '../utils/event_stats';
-import { getItemWithBonus } from '../utils/itemutils';
 import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
+import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
 
@@ -41,6 +44,7 @@ export type ValidDemands =
 	'gauntlets' |
 	'items' |
 	'keystones' |
+	'maincast' |
 	'misc_stats' |
 	'missions' |
 	'missionsfull' |
@@ -74,6 +78,7 @@ const defaultData = {
 	continuum_missions: [] as ContinuumMission[],
 	crew: [] as CrewMember[],
 	current_weighting: {},
+	dilemmas: [] as Dilemma[],
 	episodes: [] as Mission[],
 	event_instances: [] as EventInstance[],
 	event_leaderboards: [] as EventLeaderboard[],
@@ -84,6 +89,7 @@ const defaultData = {
 	gauntlets: [] as Gauntlet[],
 	items: [] as EquipmentItem[],
 	keystones: [] as KeystoneBase[],
+	maincast: {},
 	missions: [] as Mission[],
 	missionsfull: [] as Mission[],
 	objective_events: [] as ObjectiveEvent[],
@@ -91,6 +97,7 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	topQuipmentScores: [] as QuipmentScores[],
+	sync_time: new Date()
 } as ICoreData;
 
 export const defaultCore = {
@@ -102,19 +109,45 @@ export const defaultCore = {
 
 export const DataContext = React.createContext<ICoreContext>(defaultCore as ICoreContext);
 
+type SyncConfig = {
+	token: string,
+	timestamp: string,
+}
+
+const defaultSyncConfig = {
+	token: v4().replace(/-/g, ''),
+	timestamp: (new Date('2016-01-01T00:00:00Z')).toISOString()
+}
+
 export const DataProvider = (props: DataProviderProperties) => {
 	const { children } = props;
-
+	const [tsAck, setTsAck] = React.useState(false);
+	const [syncConfig, setSyncConfig] = useStateWithStorage<SyncConfig>('sync_config', defaultSyncConfig, { rememberForever: true });
 	const [isReadying, setIsReadying] = React.useState(false);
 	const [data, setData] = React.useState<ICoreData>(defaultData);
+
+	React.useEffect(() => {
+		(async () => {
+			let ts = await getSyncTimestamp();
+			if (ts && ts !== syncConfig.timestamp) {
+				setSyncConfig({ token: v4().replace(/-/g, ''), timestamp: ts });
+			}
+			setTimeout(() => setTsAck(true));
+		})();
+	}, []);
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
 		return (<span><Icon loading name='spinner' /> {message}</span>);
 	};
 
+	if (!tsAck || !syncConfig) return spin();
+
+	const { token: syncToken } = syncConfig;
+
 	const providerValue = {
 		...data,
+		sync_time: new Date(syncConfig.timestamp),
 		ready,
 		reset,
 		spin,
@@ -152,6 +185,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'gauntlets',
 			'items',
 			'keystones',
+			'maincast',
 			'misc_stats',
 			'missions',
 			'missionsfull',
@@ -174,7 +208,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -196,6 +230,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		Promise.all(unsatisfied.map(async (demand) => {
 			let url = `/structured/${demand}.json`;
 			if (demand === 'cadet') url = '/structured/cadet.txt';
+			if (syncToken) url += `?_st=${syncToken}`;
 			const response = await fetch(url);
 			const json = await response.json();
 			return { demand, json } as IDemandResult;
@@ -225,7 +260,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 						newData.portal_log = result.json;
 						newData.portal_log?.forEach(log => log.date = new Date(log.date));
 						break;
-
 					default:
 						newData[result.demand] = result.json;
 						break;
@@ -233,15 +267,12 @@ export const DataProvider = (props: DataProviderProperties) => {
 			});
 
 			// Post-process interdependent demands
-			if (unsatisfied.includes('items') && unsatisfied.includes('cadet')) {
-				postProcessCadetItems(newData);
-			}
 			if (unsatisfied.includes('items') && unsatisfied.includes('crew') && unsatisfied.includes('all_buffs')) {
-				postProcessQuipmentScores(newData.crew, newData.items);
-				//calculateQPower(newData.crew, newData.items, newData.all_buffs);
 				newData.topQuipmentScores = calculateTopQuipment(newData.crew);
 			}
-			if (unsatisfied.includes('ship_schematics') && unsatisfied.includes('battle_stations')) {
+
+			if (unsatisfied.includes('ship_schematics') &&
+				(unsatisfied.includes('battle_stations') || unsatisfied.includes('all_ships'))) {
 				postProcessShipBattleStations(newData);
 			}
 
@@ -348,7 +379,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 	function processAllShips(all_ships: ReferenceShip[]) {
 		for (let ship of all_ships) {
 			ship.id = ship.archetype_id;
-			//ship.ranks ??= { overall: 0, arena: 0, fbb: 0, kind: 'ship', overall_rank: all_ships.length + 1, fbb_rank: all_ships.length + 1, arena_rank: all_ships.length + 1, divisions: { fbb: {}, arena: {} } }
 		}
 		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels), id: ship.id || ship.archetype_id }));
 		return all_ships;
@@ -367,13 +397,6 @@ export const DataProvider = (props: DataProviderProperties) => {
 		return result;
 	}
 
-	function postProcessQuipmentScores(crew: CrewMember[], items: EquipmentItem[]) {
-		const quipment = items.filter(f => f.type === 14).map(item => getItemWithBonus(item));
-		crew.forEach(crew => {
-			calcQuipmentScore(crew, quipment);
-		});
-	}
-
 	function processGauntlets(result: Gauntlet[] | undefined): Gauntlet[] {
 		result?.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 		return result ?? [];
@@ -390,15 +413,15 @@ export const DataProvider = (props: DataProviderProperties) => {
 	}
 
 	function postProcessShipBattleStations(data: ICoreData): void {
-		if (data.battle_stations.length && data.ship_schematics.length) {
+		if (data.all_ships.length && data.ship_schematics.length) {
 			for (let sch of data.ship_schematics) {
-				let battle = data.battle_stations.find(b => b.symbol === sch.ship.symbol);
+				let battle = data.all_ships.find(b => b.symbol === sch.ship.symbol);
 				if (battle) {
 					sch.ship.battle_stations = battle.battle_stations;
 				}
 			}
 
-			let scsave = data.ship_schematics.map((sc => JSON.parse(JSON.stringify({ ...sc.ship, level: 0 })) as Ship));
+			let scsave = data.ship_schematics.map((sc => structuredClone({ ...sc.ship, level: 0 }) as Ship));
 			let c = scsave.length;
 			for (let i = 0; i < c; i++) {
 				let ship = scsave[i];
@@ -409,91 +432,43 @@ export const DataProvider = (props: DataProviderProperties) => {
 					}
 				}
 			}
-			//data.ships = scsave;
 		}
-	}
+		else if (data.battle_stations.length && data.ship_schematics.length) {
+			for (let sch of data.ship_schematics) {
+				let battle = data.battle_stations.find(b => b.symbol === sch.ship.symbol);
+				if (battle) {
+					sch.ship.battle_stations = battle.battle_stations;
+				}
+			}
 
-	function postProcessCadetItems(data: ICoreData): void {
-		const cadetforitem = data.cadet?.filter(f => f.cadet);
-		if (DC_DEBUGGING) console.log("Finding cadet mission farm sources for items ...");
-
-		if (cadetforitem?.length) {
-			for(const item of data.items) {
-				for (let ep of cadetforitem) {
-					let quests = ep.quests.filter(q => q.quest_type === 'ConflictQuest' && q.mastery_levels?.some(ml => ml.rewards?.some(r => r.potential_rewards?.some(px => px.symbol === item.symbol))));
-					if (quests?.length) {
-						for (let quest of quests) {
-							if (quest.mastery_levels?.length) {
-								let x = 0;
-								for (let ml of quest.mastery_levels) {
-									if (ml.rewards?.some(r => r.potential_rewards?.some(pr => pr.symbol === item.symbol))) {
-										let mx = ml.rewards.map(r => r.potential_rewards?.length).reduce((prev, curr) => Math.max(prev ?? 0, curr ?? 0)) ?? 0;
-										mx = (1/mx) * 1.80;
-										let qitem = {
-											type: 4,
-											mastery: x,
-											name: quest.name,
-											energy_quotient: 1,
-											chance_grade: 5 * mx,
-											mission_symbol: quest.symbol,
-											cost: 1,
-											avg_cost: 1/mx,
-											cadet_mission: ep.episode_title,
-											cadet_symbol: ep.symbol
-										} as EquipmentItemSource;
-										if (!item.item_sources.find(f => f.mission_symbol === quest.symbol)) {
-											item.item_sources.push(qitem);
-										}
-									}
-									x++;
-								}
-							}
-						}
+			let scsave = data.ship_schematics.map((sc => structuredClone({ ...sc.ship, level: 0 }) as Ship));
+			let c = scsave.length;
+			for (let i = 0; i < c; i++) {
+				let ship = scsave[i];
+				if (ship.levels) {
+					let n = highestLevel(ship);
+					if (ship.max_level && n === ship.max_level + 1 && ship.levels[`${n}`].hull) {
+						scsave[i] = { ...ship, ...ship.levels[`${n}`] };
 					}
 				}
 			}
 		}
-
-		if (DC_DEBUGGING) console.log("Done with cadet missions.");
 	}
 
-
-	function getObtained(data: CrewMember) {
-		if (data.traits_hidden.includes("exclusive_honorhall") || data.symbol === "crusher_j_vox_crew") {
-			return "HonorHall";
+	async function getSyncTimestamp() {
+		let rnd = v4().replace(/-/g, '');
+		try {
+			const response = await fetch(`/structured/sync_timestamp.txt?_ax=${rnd}`);
+			if (response.ok) {
+				const txt = (await response.text()).replace('\n', '');
+				return txt;
+			}
 		}
-		else if (data.traits_hidden.includes("exclusive_gauntlet")) {
-			return "Gauntlet";
+		catch (e) {
+			console.log(e);
 		}
-		else if (data.traits_hidden.includes("exclusive_voyage")) {
-			return "Voyage";
-		}
-		else if (data.traits_hidden.includes("exclusive_collection")) {
-			return "Collection";
-		}
-		else if (data.traits_hidden.includes("exclusive_bridge")) {
-			return "BossBattle";
-		}
-		else if (data.traits_hidden.includes("exclusive_fusion")) {
-			return "Fuse";
-		}
-		else if (data.traits_hidden.includes("exclusive_achievement")) {
-			return "Achievement";
-		}
-		else if (data.symbol === "tuvok_mirror_crew") {
-			return "Faction";
-		}
-		else if (data.symbol === "boimler_evsuit_crew") {
-			return "WebStore";
-		}
-		else if (data.symbol === "quinn_crew") {
-			return "Missions";
-		}
-		else {
-			return "Event/Pack/Giveaway";
-		}
+		return null;
 	}
-
 };
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {

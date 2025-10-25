@@ -12,7 +12,7 @@ import CONFIG from '../../../CONFIG';
 
 import { IProspectiveConfig } from '../../lineupeditor/model';
 import { ContestSimulatorModal } from '../../encounters/contestsimulator/modal';
-import { makeContestant } from '../utils';
+import { DEFAULT_CRIT_CHANCES, makeContestant } from '../utils';
 
 import { IProficiencyContext, ProficiencyContext } from './context';
 import { getSkillPairData, ISkillPairData } from './data';
@@ -125,7 +125,7 @@ const ProficiencyContestSimulator = (props: ProficiencyContestSimulatorProps) =>
 			id='proficiency/contestsimulator'
 			skills={skills}
 			traitPool={voyageConfig.event_content?.encounter_traits ?? []}
-			a={makeContestant(skills, [], trigger.crew)}
+			a={makeContestant(skills, [], trigger.crew, DEFAULT_CRIT_CHANCES)}
 			aPool={voyagers}
 			bPool={roster}
 			dismissSimulator={cancelTrigger}

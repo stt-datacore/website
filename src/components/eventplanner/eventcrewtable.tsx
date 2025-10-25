@@ -21,6 +21,7 @@ import { SkillPicker } from '../base/skillpicker';
 import { QPContext } from '../qpconfig/provider';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
 import { OptionsPanelFlexRow } from '../stats/utils';
+import { CrewShipCells, getShipTableConfig } from '../crewtables/views/shipabilities';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -36,7 +37,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const { t } = globalContext.localized;
 	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
 
-	const { playerData, buffConfig } = globalContext.player;
+	const { playerData, buffConfig, ephemeral } = globalContext.player;
 	const { rosterType, eventData, phaseIndex } = props;
 
 	const [skillFilter, setSkillFilter] = useStateWithStorage('eventplanner/skillFilter', [] as string[] | undefined);
@@ -51,6 +52,9 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const [initOptions, setInitOptions] = React.useState<InitialOptions>({});
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
+	const priText = t('quipment_ranks.primary');
+	const secText = t('quipment_ranks.secondary');
+
 	React.useEffect(() => {
 		setInitOptions({});
 	}, [eventData, phaseIndex]);
@@ -62,59 +66,108 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			</div>
 		);
 
-	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
-		{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
-		{ width: 1, column: 'bestSkill.score', title: t('event_planner.table.columns.best'), reverse: true },
-		{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
-	];
+	const tableConfig: ITableConfigRow[] = React.useMemo(() => {
+		const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
+		if (phaseType === 'skirmish') {
+			const results = getShipTableConfig(t, false);
+			results.unshift(
+				{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
+				{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
+			);
+			return results as ITableConfigRow[];
+		}
+		else {
+			const results = [
+				{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
+				{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
+				{ width: 1, column: 'bestSkill.score', title: t('event_planner.table.columns.best'), reverse: true },
+			] as ITableConfigRow[];
 
-	if (eventData.activeContent?.content_type === 'voyage') {
-		tableConfig.push(
-			{
-				width: 1,
-				column: 'q_bits',
-				title: t('base.qp'),
-				reverse: true,
-				tiebreakers: ['crew.bonus'],
-				customCompare(a: IRosterCrew, b: IRosterCrew) {
-					let aslots = qbitsToSlots(a.q_bits);
-					let bslots = qbitsToSlots(b.q_bits);
-					let r = aslots - bslots;
-					if (!r) r = a.q_bits! - b.q_bits!;
-					if (!r) r = a.score! - b.score!;
-					if (!r) r = (a as any).bestSkill.score - (b as any).bestSkill.score;
+			if (eventData.activeContent?.content_type === 'voyage') {
+				const bonusCol = results.find(f => f.column === 'bonus')!;
+				bonusCol.customCompare = (a: IRosterCrew, b: IRosterCrew) => {
+					let r = a.bonus - b.bonus;
+					if (!r) r = b.ranks.gauntletRank - a.ranks.gauntletRank;
 					return r;
 				}
+				results.push(
+					{
+						width: 1,
+						column: 'q_bits',
+						title: t('base.qp'),
+						reverse: true,
+						tiebreakers: ['crew.bonus'],
+						customCompare(a: IRosterCrew, b: IRosterCrew, config) {
+							let aslots = qbitsToSlots(a.q_bits);
+							let bslots = qbitsToSlots(b.q_bits);
+							let r = aslots - bslots;
+							if (!r) r = a.q_bits! - b.q_bits!;
+							if (!r) r = bonusCol.customCompare!(a, b, config);
+							if (!r && a.score !== undefined && b.score !== undefined) r = a.score - b.score;
+							if (!r) r = (a as any).bestSkill.score - (b as any).bestSkill.score;
+							return r;
+						}
+					},
+					{
+						width: 1,
+						column: 'traits',
+						title: t('base.traits'),
+						customCompare: (a: IEventScoredCrew, b: IEventScoredCrew, config) => {
+							let al = a.encounter_traits?.length ?? 0;
+							let bl = b.encounter_traits?.length ?? 0;
+							let r = al - bl;
+							if (!r) r = bonusCol.customCompare!(a, b, config);
+							if (!r) {
+								let astr = a.encounter_traits?.map(trait => globalContext.localized.TRAIT_NAMES[trait]).join(",") || "";
+								let bstr = b.encounter_traits?.map(trait => globalContext.localized.TRAIT_NAMES[trait]).join(",") || "";
+								r = astr.localeCompare(bstr);
+							}
+							return r;
+						},
+						reverse: true
+					},
+					{
+						width: 1,
+						column: 'ranks.gauntletRank',
+						title: t('rank_names.gauntlet_rank')
+					}
+				)
 			}
-		)
-	}
+			else {
+				results.push(
+					{ width: 1, column: 'bestPair.score', title: t('event_planner.table.columns.pair'), reverse: true }
+				)
+			}
+			CONFIG.SKILLS_SHORT.forEach((skill) => {
+				const title: string = eventData.activeContent?.primary_skill === skill.name ? priText : (eventData.activeContent?.secondary_skill === skill.name ? secText : '')
+				results.push({
+					width: 1,
+					column: `${skill.name}.core`,
+					title:
+						<span
+							title={title}
+						>
+							{eventData.activeContent?.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
+							{eventData.activeContent?.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
+							<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+						</span>,
+					reverse: true,
+					customCompare:
+						// Sort by skill voyage score for voyage events
+						eventData.activeContent?.content_type === 'voyage' ?
+							(a: IRosterCrew, b: IRosterCrew) => {
+								const voyScore = (crew: IRosterCrew) => Math.floor(crew[skill.name].core + (crew[skill.name].min + crew[skill.name].max) / 2);
+								return voyScore(a) - voyScore(b);
+							}
+						// Otherwise sort by skill base score (default behavior)
+						: undefined
+				});
+			});
+			return results;
+		}
+	}, [eventData, phaseIndex]);
 
-	const priText = t('quipment_ranks.primary');
-	const secText = t('quipment_ranks.secondary');
-
-	CONFIG.SKILLS_SHORT.forEach((skill) => {
-		const title: string = eventData.activeContent?.primary_skill === skill.name ? priText : (eventData.activeContent?.secondary_skill === skill.name ? secText : '')
-		tableConfig.push({
-			width: 1,
-			column: `${skill.name}.core`,
-			title:
-				<div
-					title={title}
-					style={{
-						display: 'flex',
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center',
-						gap: '0.5em'
-					}}>
-					{eventData.activeContent?.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
-					{eventData.activeContent?.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
-					<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
-				</div>,
-			reverse: true
-		});
-	});
+	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
 	// Check for custom column (i.e. combo from crew matrix click)
 	let customColumn = '';
@@ -133,8 +186,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		});
 	}
 
-	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
-
 	const zeroCombos: IEventCombos = {};
 	for (let first = 0; first < CONFIG.SKILLS_SHORT.length; first++) {
 		let firstSkill = CONFIG.SKILLS_SHORT[first];
@@ -147,17 +198,17 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	const canBorrow = phaseType === 'shuttles'
 		&& eventData.seconds_to_start === 0
-		&& !!playerData?.player.character.crew_borrows?.length
-		&& playerData?.player.squad.rank !== 'LEADER';
+		&& playerData?.player.squad.rank !== 'LEADER'
+		&& !!ephemeral?.borrowedCrew.length;
 
 	// Always calculate new skill numbers from original, unaltered crew list
-	let rosterCrew = JSON.parse(JSON.stringify(props.rosterCrew)) as IEventScoredCrew[];
+	let rosterCrew = structuredClone(props.rosterCrew) as IEventScoredCrew[];
 
 	// Filter crew by bonus, frozen here instead of searchabletable callback so matrix can use filtered crew list
 	if (showBonus) rosterCrew = rosterCrew.filter((c) => eventData.bonus.indexOf(c.symbol) >= 0);
 	if (!showFrozen) rosterCrew = rosterCrew.filter((c) => c.immortal <= 0);
 	if (excludeQuipped) rosterCrew = rosterCrew.filter((c) => !isQuipped(c));
-	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.shared);
+	if (!canBorrow || !showShared) rosterCrew = rosterCrew.filter((c) => !c.borrowed);
 	if (onlyIdleCrew) rosterCrew = rosterCrew.filter((c) => !c.active_status);
 
 	let bestCombos: IBestCombos = computeEventBest(
@@ -166,7 +217,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		phaseType,
 		buffConfig,
 		applyBonus,
-		showPotential
+		showPotential,
+		globalContext.core.crew
 	);
 
 	const flexRow = OptionsPanelFlexRow;
@@ -184,12 +236,12 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						checked={showBonus}
 						onChange={(e, { checked }) => setShowBonus(checked)}
 					/>
-					<Form.Field
+					{phaseType !== 'skirmish' && <Form.Field
 						control={Checkbox}
 						label={t('event_planner.table.options.apply_event_bonus')}
 						checked={applyBonus}
 						onChange={(e, { checked }) => setApplyBonus(checked)}
-					/>
+					/>}
 					{rosterType === 'myCrew' &&
 						<React.Fragment>
 							<Form.Field
@@ -233,13 +285,14 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					}
 				</Form.Group>
 			</Form>
+			{phaseType !== 'skirmish' &&
 			<div style={{...flexRow, justifyContent: 'flex-start', alignItems: 'center', gap: '1em'}}>
 				<div style={{margin: '0.5em 0'}}>
 					{t('hints.filter_by_skill')}:&nbsp;&nbsp;
 					<SkillPicker multiple short value={skillFilter} setValue={setSkillFilter} />
 				</div>
 				<QuipmentProspectsOptions config={qpConfig} setConfig={setQpConfig} hideVoyageOptions={true} />
-			</div>
+			</div>}
 			<SearchableTable
 				id='eventplanner'
 				data={rosterCrew}
@@ -290,33 +343,49 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					{phaseType === 'voyage' && crew.bonus > 1 ? `${crew.bonus} AM` : ''}
 					{phaseType === 'galaxy' && crew.bonus > 1 ? t('global.n_%', { n: `${crew.bonus}` }) : ''}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
-					<b>{scoreLabel(crew.bestSkill.score)}</b>
-					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
-				</Table.Cell>
-				<Table.Cell textAlign='center'>
-					{!!crew.bestPair.score && <>
-					<b>{scoreLabel(crew.bestPair.score)}</b>
-					<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
-					{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
-					</>}
-				</Table.Cell>
-				{eventData.activeContent?.content_type === 'voyage' &&
-				<Table.Cell textAlign='center'>
-					<b>{(crew.q_bits)}</b>
-					<br />
-					{slots === 1 && t('base.one_slot')}
-					{slots !== 1 && t('base.n_slots', { n: `${slots}`})}
-				</Table.Cell>}
-				{CONFIG.SKILLS_SHORT.map(skill =>
-					crew.base_skills[skill.name] ? (
-						<Table.Cell key={skill.name} textAlign='center'>
-							{renderSkillScore(crew, skill.name)}
+				{phaseType !== 'skirmish' && (
+					<React.Fragment>
+						<Table.Cell textAlign='center'>
+							<b>{scoreLabel(crew.bestSkill.score)}</b>
+							<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 						</Table.Cell>
-					) : (
-						<Table.Cell key={skill.name} />
-					)
+						{eventData.activeContent?.content_type !== 'voyage' && <Table.Cell textAlign='center'>
+							{!!crew.bestPair.score && <>
+							<b>{scoreLabel(crew.bestPair.score)}</b>
+							<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
+							{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
+							</>}
+						</Table.Cell>}
+						{eventData.activeContent?.content_type === 'voyage' && (<>
+							<Table.Cell textAlign='center'>
+								<b>{(crew.q_bits)}</b>
+								<br />
+								{slots === 1 && t('base.one_slot')}
+								{slots !== 1 && t('base.n_slots', { n: `${slots}`})}
+							</Table.Cell>
+							<Table.Cell>
+								{printEncounterTraits(crew)}
+							</Table.Cell>
+							<Table.Cell textAlign='center'>
+								<b>#{crew.ranks.gauntletRank}</b>
+								<div style={{fontSize: '0.8em'}}>
+									{printExtraGauntlet(crew)}
+								</div>
+							</Table.Cell>
+						</>)}
+						{CONFIG.SKILLS_SHORT.map(skill =>
+							crew.base_skills[skill.name] ? (
+								<Table.Cell key={skill.name} textAlign='center'>
+									{renderSkillScore(crew, skill.name)}
+								</Table.Cell>
+							) : (
+								<Table.Cell key={skill.name} />
+							)
+						)}
+					</React.Fragment>
 				)}
+				{phaseType === 'skirmish' &&
+				<CrewShipCells crew={crew} withranks={false} />}
 				{customColumn !== '' && (
 					<Table.Cell key='custom' textAlign='center'>
 						<b>{renderCustomLabel(crew, customColumn)}</b>
@@ -324,6 +393,33 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				)}
 			</Table.Row>
 		);
+	}
+
+	function printEncounterTraits(crew: IEventScoredCrew) {
+		if (!crew.encounter_traits?.length) return <></>
+		let named = crew.encounter_traits?.map(ec => globalContext.localized.TRAIT_NAMES[ec]);
+		named.sort();
+		return (<>
+			{named.map((txt) => {
+				return (<div key={`${crew.id}_${txt}_trait`}>
+					{txt}
+				</div>)
+			})}
+		</>);
+	}
+
+	function printExtraGauntlet(crew: IEventScoredCrew) {
+		let granks = Object.entries(crew.ranks).filter(([key, value]) => key.slice(0, 2) === 'G_');
+		let strs = [] as React.JSX.Element[];
+		granks.sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]));
+		for (let rank of granks) {
+			if (rank[1] <= 25) {
+				let skills = rank[0].slice(2).split("_").map(short => CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === short)!.name).map(skill => CONFIG.SKILLS_SHORT.find(f => f.name === skill)!.short).join("/");
+				strs.push(<>{`#${rank[1]} ${skills}`}</>);
+			}
+		}
+		if (!strs.length) return <></>;
+		else return strs.reduce((p, n) => (p !== undefined ? <>{p}<br/>{n}</> : n) as React.JSX.Element, undefined as React.JSX.Element | undefined) || <></>;
 	}
 
 	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): JSX.Element {
