@@ -604,7 +604,10 @@ export function computeEventBest(
 				else if (phaseType === 'skirmish') crew.bonus = getBonus(crew, eventData, 1.5, 2);
 				else if (phaseType === 'voyage') crew.bonus = getBonus(crew, eventData, 50, 150, true);
 			}
-			if ((crew.bonus > 1 || showPotential) && (phaseType !== 'galaxy')) {
+			if ((crew.bonus > 1 || showPotential)
+				// TODO: Why did we have this here?
+				// && (phaseType !== 'galaxy')
+				) {
 				CONFIG.SKILLS_SHORT.forEach(skill => {
 					if (crew[skill.name].core > 0) {
 						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
