@@ -613,7 +613,7 @@ export function computeEventBest(
 						if (showPotential && crew.immortal === CompletionState.NotComplete && !crew.prospect) {
 							crew[skill.name].current = crew[skill.name].core*crew.bonus;
 							if (buffConfig) crew[skill.name] = applySkillBuff(buffConfig, skill.name, crew.skill_data[crew.rarity-1].base_skills[skill.name]);
-							if (allCrew) {
+							if (allCrew && phaseType === 'skirmish') {
 								let refcrew = allCrew.find(c => c.symbol === crew.symbol);
 								if (refcrew) {
 									crew.ship_battle = structuredClone(refcrew.ship_battle);
