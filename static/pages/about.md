@@ -29,7 +29,7 @@ Some code used to build this site was originally authored by IAmPicard (c) 2017 
 
 Most of the code for the website, the bot and accompanying services was originally authored by TemporalAgent7 (c) 2019 – 2020 and released under the MIT license.
 
-The codebase is currently maintained by \[UFP\] U.S.S John Jay and \[IPA\] ironyWrit (c) 2023 - 2024 and released under the MIT license.
+The codebase is currently maintained by \[UFP\] U.S.S John Jay and \[IPA\] ironyWrit (c) 2023 - 2025 and released under the MIT license.
 
 Additional Contributors:
 
