@@ -1,47 +1,34 @@
 import React from "react";
 import {
+	Button,
 	Container,
-	Header,
-	Message,
-	Segment,
-	Label,
-	Grid,
-	Modal,
-	Icon,
-	Step,
-	Table,
-	DropdownItemProps,
 	Dropdown,
+	DropdownItemProps,
+	Grid,
+	Header,
+	Icon,
+	Input,
+	Label,
+	Message,
+	Modal,
 	Pagination,
+	Segment,
 	SemanticWIDTHS,
+	Step,
+	Table
 } from "semantic-ui-react";
 
-import moment from "moment";
-import 'moment/locale/fr';
-import 'moment/locale/de';
-import 'moment/locale/es';
-
-import LazyImage from "../components/lazyimage";
-import EventInfoModal from "../components/event_info_modal";
-import { EventLeaderboard } from "../model/events";
+import { EventInfoModal, EventModalHeader } from "../components/event_info_modal";
+import { CrewHoverStat } from "../components/hovering/crewhoverstat";
+import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
+import { AvatarView } from "../components/item_presenters/avatarview";
+import { LazyImage } from "../components/lazyimage";
 import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
-import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
-import { EventStats, makeTypeBuckets } from "../utils/event_stats";
-import { GauntletPane } from "../utils/gauntlet";
-import { AvatarView } from "../components/item_presenters/avatarview";
-import { CrewHoverStat } from "../components/hovering/crewhoverstat";
-import { useStateWithStorage } from "../utils/storage";
+import { EventInstance, EventLeaderboard } from "../model/events";
 import { gradeToColor } from "../utils/crewutils";
-
-type EventInstance = {
-	event_details?: boolean;
-	event_id: number;
-	event_name: string;
-	fixed_instance_id: number;
-	image: string;
-	instance_id: number;
-};
+import { EventStats, makeTypeBuckets } from "../utils/event_stats";
+import { useStateWithStorage } from "../utils/storage";
 
 type TypeTotals = {
 	type: string,
@@ -52,12 +39,6 @@ const EventsPage = () => {
 	return (
 		<DataPageLayout
 			demands={[
-				"crew",
-				"cadet",
-				"all_buffs",
-				"items",
-				"all_ships",
-				"ship_schematics",
 				"event_instances",
 				"event_stats",
 				"event_leaderboards",
@@ -68,38 +49,50 @@ const EventsPage = () => {
 	);
 };
 
-const EventsPageComponent = () => {
-	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
-	const { event_leaderboards, event_instances } = globalContext.core;
-	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
-	const [leaderboardData, setLeaderboardData] = React.useState<{
-		[key: string]: EventLeaderboard;
-	} | null>(null);
-	const [loadingError, setLoadingError] = React.useState<any>(null);
-	const [modalEventInstance, setModalEventInstance] =
-		React.useState<EventInstance | null>(null);
+type EventsPageComponentProps = {
+}
 
+const EventsPageComponent = (props: EventsPageComponentProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { event_leaderboards, event_instances } = globalContext.core;
+
+	const { isMobile } = globalContext;
+	const { t } = globalContext.localized;
+	const [eventsData, setEventsData] = React.useState<EventInstance[]>([]);
+	const [leaderboardData, setLeaderboardData] = React.useState<{ [key: string]: EventLeaderboard } | null>(null);
+	const [loadingError, setLoadingError] = React.useState<any>(null);
+	const [modalEventInstance, setModalEventInstance] = React.useState<EventInstance | null>(null);
 	const [tab, setTab] = React.useState(0);
+	const [filter, setFilter] = React.useState('');
 
 	React.useEffect(() => {
-		function loadData() {
-			try {
-				const eventDataList = [...event_instances];
-				setEventsData(eventDataList.reverse());
-				const leaderboardDataList = event_leaderboards;
-				const keyedLeaderboard = {} as { [key: string]: EventLeaderboard };
-				leaderboardDataList.forEach(
-					(entry) => (keyedLeaderboard[entry.instance_id] = entry)
-				);
-				setLeaderboardData(keyedLeaderboard);
-			} catch (e) {
-				setLoadingError(e);
-			}
+		try {
+			const eventDataList = [...event_instances];
+			setEventsData(eventDataList.reverse());
+			const leaderboardDataList = event_leaderboards;
+			const keyedLeaderboard = {} as { [key: string]: EventLeaderboard };
+			leaderboardDataList.forEach(
+				(entry) => (keyedLeaderboard[entry.instance_id] = entry)
+			);
+			setLeaderboardData(keyedLeaderboard);
+		} catch (e) {
+			setLoadingError(e);
 		}
-
-		loadData();
 	}, []);
+
+	const filteredList = React.useMemo(() => {
+		if (!filter) return eventsData;
+		else {
+			let text = filter.toLowerCase().trim();
+			let filtered = eventsData.filter(evt => {
+				if (evt.event_name.toLowerCase().trim().includes(text)) return true;
+				let ct = evt.content_types?.map(ct => t(`event_types.${ct}`));
+				if (!!ct?.length && ct?.some(s => !!s && s.toLowerCase().includes(text))) return true;
+				return false;
+			});
+			return filtered;
+		}
+	}, [eventsData, filter]);
 
 	return (
 		<Container style={{ paddingTop: "4em", paddingBottom: "2em" }}>
@@ -139,19 +132,53 @@ const EventsPageComponent = () => {
 				</Step>
 			</Step.Group>
 
-			{tab === 0 && (
+			<div style={{
+				display: tab === 0 ? undefined : 'none'
+			}}>
+				<div style={{margin: '1em 0'}}>
+					<Input
+						style={{ width: isMobile ? '100%' : '50%' }}
+						iconPosition="left"
+						placeholder={t('global.search_ellipses')}
+						value={filter}
+						onChange={(e, { value }) => setFilter(value)}>
+						<input />
+						<Icon name='search' />
+						<Button icon onClick={() => setFilter('')} >
+							<Icon name='delete' />
+						</Button>
+					</Input>
+				</div>
 				<Grid stackable columns={3}>
-					{eventsData.map((eventInfo) => (
-						<Grid.Column key={eventInfo.instance_id}>
+					{filteredList.map((eventInfo, idx) => (
+						<Grid.Column key={`event_data_${eventInfo.instance_id}${filter}`}>
 							<div
 								style={{ cursor: "pointer" }}
 								onClick={() => setModalEventInstance(eventInfo)}
 							>
 								<Segment padded>
-									<Label attached="bottom">{eventInfo.event_name}</Label>
+									<Label attached="bottom" style={{display: 'inline-flex', alignItems: 'center'}}>
+										<span style={{flexGrow:1}}>
+											{eventInfo.event_name}
+											{!!eventInfo.event_date && (<>
+												{!!eventInfo.content_types?.length && (<>
+													&nbsp;&mdash;&nbsp;
+													{formatEventType(eventInfo.content_types)}
+												</>)}
+												{!!eventInfo.event_date && (<>
+													&nbsp;&mdash;&nbsp;
+													{(new Date(eventInfo.event_date)).toLocaleDateString()}
+												</>)}
+											</>)}
+										</span>
+										{!!eventInfo?.rerun && (
+											<Label size='mini' style={{justifySelf: 'flex-end'}} color='brown'>{t('global.rerun')}</Label>
+										)}
+									</Label>
 									<LazyImage
 										src={`${process.env.GATSBY_ASSETS_URL}${eventInfo.image}`}
 										size="large"
+										style={{maxHeight: '159px'}}
 										onError={(e) => (e.target.style.visibility = "hidden")}
 									/>
 								</Segment>
@@ -159,8 +186,16 @@ const EventsPageComponent = () => {
 						</Grid.Column>
 					))}
 				</Grid>
-			)}
-			{tab === 1 && <EventStatsComponent />}
+			</div>
+
+			<div style={{
+				display: tab === 1 ? undefined : 'none'
+			}}>
+				<EventStatsComponent
+				 search={filter}
+				 setSearch={setFilter}
+				 leaderboard={leaderboardData || {}} />
+			</div>
 			{modalEventInstance !== null && (
 				<Modal
 					open
@@ -168,7 +203,13 @@ const EventsPageComponent = () => {
 					onClose={() => setModalEventInstance(null)}
 					closeIcon
 				>
-					<Modal.Header>{modalEventInstance.event_name}</Modal.Header>
+					<Modal.Header>
+						<EventModalHeader
+							flip={true}
+							instance={modalEventInstance}
+							setInstance={setModalEventInstance}
+						/>
+					</Modal.Header>
 					<Modal.Content scrolling>
 						<EventInfoModal
 							instanceId={modalEventInstance.instance_id}
@@ -186,22 +227,32 @@ const EventsPageComponent = () => {
 			<CrewHoverStat targetGroup="event_info_stats" />
 		</Container>
 	);
+
+	function formatEventType(types: string[]) {
+		types = [...new Set(types)];
+		return types.map(type => t(`event_type.${type}`)).join("/");
+	}
 };
 
-const EventStatsComponent = () => {
+type EventStatsProps = {
+	leaderboard: {[key:string]: EventLeaderboard };
+	search: string;
+	setSearch: (value: string) => void;
+}
+
+const EventStatsComponent = (props: EventStatsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { event_stats, event_instances } = globalContext.core;
+	const { leaderboard, search: filter, setSearch: setFilter } = props;
 	const { playerData } = globalContext.player;
-	const { t } = globalContext.localized;
+	const { t, TRAIT_NAMES } = globalContext.localized;
 	const [totalPages, setTotalPages] = React.useState(1);
 	const [itemsPerPage, setItemsPerPage] = React.useState(20);
 	const [activePage, setActivePage] = React.useState(1);
 
 	const [compiledStats, setCompiledStats] = React.useState<EventStats[]>([]);
 
-	const [activePageResults, setActivePageResults] = React.useState<
-		EventStats[]
-	>([]);
+	const [activePageResults, setActivePageResults] = React.useState<EventStats[]>([]);
 
 	const [sortColumn, setSortColumn] = React.useState('');
 	const [sortDirection, setSortDirection] = React.useState<'ascending' | 'descending'>('ascending');
@@ -212,6 +263,8 @@ const EventStatsComponent = () => {
 	const [typeTotals, setTypeTotals] = React.useState([] as TypeTotals[]);
 	const [eventTypes, setEventTypes] = useStateWithStorage('event_stats/event_types', [] as string[]);
 	const [topPct, setTopPct] = React.useState<{[key:string]: number}>({});
+	//const [event_stats, setEventStats] = React.useState<EventStats[]>([]);
+
 	const switchDir = () => {
 		if (sortDirection === 'ascending') setSortDirection('descending');
 		else setSortDirection('ascending');
@@ -221,9 +274,31 @@ const EventStatsComponent = () => {
 	const isMobile =
 		typeof window !== "undefined" && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
+	// React.useEffect(() => {
+	// 	if (event_instances?.length && !!Object.keys(leaderboard)?.length) {
+	// 		const stats = structuredClone(globalContext.core.event_stats);
+
+	// 		for (let stat of stats) {
+	// 			if (leaderboard[stat.instance_id]) {
+	// 				let scores = leaderboard[stat.instance_id].leaderboard.map(l => l.score);
+	// 				scores.sort((a, b) => b - a);
+	// 				stat.max = scores[0];
+	// 				stat.min = scores[scores.length - 1];
+	// 				stat.median = scores[Math.floor(scores.length / 2)];
+	// 				stat.avg = Math.round((scores.reduce((p, n) => p + n, 0) / scores.length));
+	// 			}
+	// 		}
+	// 		setEventStats(stats);
+	// 	}
+	// 	else {
+	// 		setEventStats([]);
+	// 	}
+	// }, [leaderboard]);
+
+
 	React.useEffect(() => {
 		if (!event_stats?.length) return;
-		const newStats = JSON.parse(JSON.stringify(event_stats)) as EventStats[];
+		const newStats = structuredClone(event_stats) as EventStats[];
 		const buckets = makeTypeBuckets(newStats);
 		let top = {} as { [key: string]: number };
 		Object.entries(buckets).forEach(([type, bucket]) => {
@@ -272,12 +347,30 @@ const EventStatsComponent = () => {
 		setCompiledStats(newStats);
 	}, [event_stats]);
 
+	const featuredTextMap = React.useMemo(() => {
+		let es = {} as {[key:string]: string[]};
+		for (let evt of event_stats) {
+			es[evt.instance_id] ??= [];
+			let cn = globalContext.core.crew.find(f => f.symbol === evt.crew);
+			if (cn) es[evt.instance_id].push(cn.name);
+			let add = evt.featured_crew?.map(fc => globalContext.core.crew.find(f => f.symbol === fc)?.name || '')?.filter(f => !!f) ?? [];
+			es[evt.instance_id] = es[evt.instance_id].concat(add);
+			add = evt.other_legendaries?.map(fc => globalContext.core.crew.find(f => f.symbol === fc)?.name || '')?.filter(f => !!f) ?? [];
+			es[evt.instance_id] = es[evt.instance_id].concat(add);
+			es[evt.instance_id] = es[evt.instance_id].concat(evt.bonus_traits?.map(bt => TRAIT_NAMES[bt] || '')?.filter(f => !!f) || []);
+			es[evt.instance_id] = es[evt.instance_id].map(m => m.toLowerCase());
+		}
+		return es;
+	}, [event_stats]);
+
 	React.useEffect(() => {
 		if (!compiledStats?.length) return;
 		let maxidx = compiledStats.length - 1;
 		let eventTypes = [] as string[];
 		let newTypeFilter = [] as string[];
 		let totals = {} as { [key: string]: number };
+
+		let text = filter.toLowerCase().trim();
 
 		let filtered = compiledStats.sort((a, b) => a.instance_id - b.instance_id).filter((stat, idx) => {
 			if (weeks) {
@@ -286,6 +379,11 @@ const EventStatsComponent = () => {
 				}
 			}
 			if (!eventTypes.includes(stat.sorted_event_type ?? stat.event_type)) eventTypes.push(stat.sorted_event_type ?? stat.event_type);
+			if (text) {
+				if (stat.event_name.toLowerCase().trim().includes(text)) return true;
+				if (featuredTextMap[stat.instance_id].some(key => key.includes(text))) return true;
+				return false;
+			}
 			return true;
 		});
 
@@ -366,7 +464,7 @@ const EventStatsComponent = () => {
 		setActivePageResults(
 			filtered.slice(pageStartIdx, pageStartIdx + itemsPerPage)
 		);
-	}, [compiledStats, itemsPerPage, activePage, totalPages, sortColumn, sortDirection, typeFilter, weeks]);
+	}, [compiledStats, itemsPerPage, activePage, totalPages, sortColumn, sortDirection, typeFilter, weeks, filter]);
 
 	const pageSizes = [1, 5, 10, 20, 50, 100].map((size) => {
 		return {
@@ -421,6 +519,20 @@ const EventStatsComponent = () => {
 				<EventTypeFilter availableTypes={eventTypes} type={typeFilter} setType={setTypeFilter} />
 				<TimeframeFilter timeframe={timeframe} setTimeframe={setTimeframe} setWeeks={setWeeks} />
 			</div>
+			<div style={{margin: '1em 0'}}>
+				<Input
+					style={{ width: isMobile ? '100%' : '50%' }}
+					iconPosition="left"
+					placeholder={t('global.search_ellipses')}
+					value={filter}
+					onChange={(e, { value }) => setFilter(value)}>
+					<input />
+					<Icon name='search' />
+					<Button icon onClick={() => setFilter('')} >
+						<Icon name='delete' />
+					</Button>
+				</Input>
+			</div>
 			<Table striped sortable>
 				<Table.Header>
 					<Table.Row>
@@ -471,7 +583,7 @@ const EventStatsComponent = () => {
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colspan={8}>
+						<Table.HeaderCell colspan={9}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={activePage}
@@ -501,6 +613,9 @@ const EventStatsComponent = () => {
 		if (instance?.image) {
 			url = `${process.env.GATSBY_ASSETS_URL}${instance.image}`;
 		}
+		if (stat.event_name === 'The Darkest Timeline') {
+			console.log("here");
+		}
 		return <Table.Row key={`event_stats_${stat.event_name}_${idx}`}>
 			<Table.Cell width={5}>
 				<div style={{
@@ -514,9 +629,7 @@ const EventStatsComponent = () => {
 					{!!url && <img src={url} style={{height: '96px'}} />}
 					{stat.discovered && <p style={{fontSize:'0.8em',fontStyle: 'italic'}}>
 						{stat.guessed && "~ "}
-						{moment(stat.discovered)
-							.locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language)
-							.format("MMM D, YYYY")}
+						{stat.discovered && (new Date(stat.discovered)).toLocaleDateString() || ''}
 					</p>}
 					{[stat.crew, ...stat.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);
@@ -581,11 +694,12 @@ interface TimeframeFilterProps {
 	setWeeks?: (value?: number) => void;
 	customOptions?: CustomTimeFilterProps[];
 	customBefore?: boolean;
+	disabled?: boolean;
 }
 
 export const TimeframeFilter = (props: TimeframeFilterProps) => {
 
-	const { timeframe, setTimeframe, setWeeks, customBefore, customOptions } = props;
+	const { disabled, timeframe, setTimeframe, setWeeks, customBefore, customOptions } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const options = [
@@ -617,6 +731,7 @@ export const TimeframeFilter = (props: TimeframeFilterProps) => {
 	options.reverse();
 
 	return <Dropdown
+			disabled={disabled}
 			placeholder={t('hints.filter_by_timeframe')}
 			clearable
 			selection
@@ -641,11 +756,12 @@ interface EventTypeFilterProps {
 	type?: string[];
 	setType: (value?: string[]) => void;
 	availableTypes: string[];
+	disabled?: boolean;
 }
 
 const EventTypeFilter = (props: EventTypeFilterProps) => {
 
-	const { type, setType, availableTypes } = props;
+	const { type, setType, availableTypes, disabled } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 
 	const options = [] as DropdownItemProps[];
@@ -663,6 +779,7 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 	});
 
 	return <Dropdown
+			disabled={disabled}
 			placeholder={t('hints.filter_by_event_type')}
 			clearable
 			search

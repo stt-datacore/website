@@ -1,16 +1,14 @@
-import React from "react";
-import { GauntletPane } from "../../utils/gauntlet"
 import moment from "moment";
+import React from "react";
 import { Dropdown } from "semantic-ui-react";
-import { skillToShort } from "../../utils/crewutils";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
-import { GauntletContext } from "./dataprovider";
 import { Gauntlet } from "../../model/gauntlets";
-import { GauntletView } from "./gauntletview";
+import { skillToShort } from "../../utils/crewutils";
+import { GauntletPane } from "../../utils/gauntlet";
 import { useStateWithStorage } from "../../utils/storage";
-
-
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { GauntletContext } from "./dataprovider";
+import { GauntletView } from "./gauntletview";
 
 export interface BrowseableGauntletProps {
     searching?: boolean;

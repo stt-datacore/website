@@ -183,7 +183,7 @@ export const LineupEditor = (props: LineupEditorProps) => {
 
 	function seekSlotForAlternate(alternateCrew: IVoyageCrew): void {
 		if (slotTarget) {
-			const altCrewSlots: IProspectiveCrewSlot[] = JSON.parse(JSON.stringify(prospectiveCrewSlots));
+			const altCrewSlots: IProspectiveCrewSlot[] = structuredClone(prospectiveCrewSlots) as IProspectiveCrewSlot[];
 			// Unseat alternate crew from current seat first, if already seated
 			const currentSlot: IProspectiveCrewSlot | undefined = altCrewSlots.find(cs => cs.crew?.id === alternateCrew.id);
 			if (currentSlot) currentSlot.crew = undefined;

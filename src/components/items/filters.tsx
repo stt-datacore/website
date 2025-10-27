@@ -2,7 +2,7 @@ import React from "react";
 import { EquipmentItem } from "../../model/equipment";
 import CONFIG from "../CONFIG";
 import { Checkbox, Dropdown, DropdownItemProps } from "semantic-ui-react";
-import { OptionsPanelFlexRow } from "../stats/utils";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { GlobalContext } from "../../context/globalcontext";
 import { useStateWithStorage } from "../../utils/storage";
 import { PlayerEquipmentItem } from "../../model/player";
@@ -17,6 +17,8 @@ const ItemSources = {
 export interface IItemsFilterContext {
     available: boolean,
     ownedItems: boolean,
+    hideUnneeded?: boolean,
+    setHideUnneeded: (value?: boolean) => void;
     showUnownedNeeded?: boolean,
     setShowUnownedNeeded: (value?: boolean) => void;
     rarityFilter?: number[];
@@ -27,7 +29,7 @@ export interface IItemsFilterContext {
     setItemSourceFilter: (value?: number[]) => void;
     masteryFilter?: number[];
     setMasteryFilter: (value?: number[]) => void;
-    filterItems: (items: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) => (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[];
+    filterItems: (items: (EquipmentItem | PlayerEquipmentItem)[]) => (EquipmentItem | PlayerEquipmentItem)[];
     configureFilters: (pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) => void;
 }
 
@@ -35,6 +37,8 @@ const DefaultContextData: IItemsFilterContext = {
     available: false,
     ownedItems: false,
     showUnownedNeeded: false,
+    hideUnneeded: false,
+    setHideUnneeded: () => false,
     setShowUnownedNeeded: () => false,
     setRarityFilter: () => false,
     setItemTypeFilter: () => false,
@@ -56,13 +60,14 @@ export interface ItemsFilterProps {
 
 export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t, useT }  = globalContext.localized;
+    const { t, useT } = globalContext.localized;
     const { t: hint } = useT('hints');
     const { children, pageId, pool, ownedItems, noRender } = props;
 
     const [filterPool, setFilterPool] = React.useState(pool);
 
     const [showUnownedNeeded, setShowUnownedNeeded] = useStateWithStorage<boolean | undefined>(`${pageId}/items_show_unowned_needed`, false, { rememberForever: true });
+    const [hideUnneeded, setHideUnneeded] = useStateWithStorage<boolean | undefined>(`${pageId}/items_hide_unneeded`, false, { rememberForever: true });
     const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_rarity_filter`, undefined, { rememberForever: true });
     const [itemTypeFilter, setItemTypeFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_type_filter`, undefined, { rememberForever: true });
     const [itemSourceFilter, setItemSourceFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/items_item_source_filter`, undefined, { rememberForever: true });
@@ -107,6 +112,8 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
         setRarityFilter,
         itemTypeFilter,
         setItemTypeFilter,
+        hideUnneeded,
+        setHideUnneeded,
         showUnownedNeeded,
         setShowUnownedNeeded,
         filterItems,
@@ -118,9 +125,10 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     }
 
     const flexRow = OptionsPanelFlexRow;
+    const flexCol = OptionsPanelFlexColumn;
 
     return <React.Fragment>
-        {!noRender && <div className={'ui segment'} style={{...flexRow, flexWrap: 'wrap'}}>
+        {!noRender && <div className={'ui segment'} style={{ ...flexRow, flexWrap: 'wrap' }}>
             <Dropdown
                 placeholder={hint("filter_by_rarity")}
                 multiple
@@ -157,14 +165,24 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 value={masteryFilter}
                 onChange={(e, { value }) => setMasteryFilter(value as number[] ?? [])}
             />}
-            {!!ownedItems && !!setShowUnownedNeeded &&
-            <Checkbox
-                label={t("items.show_unowned_needed")}
-                checked={showUnownedNeeded}
-                onChange={(e, { checked }) =>
-                    setShowUnownedNeeded(!!checked)
-                }
-            />}
+            <div style={{ ...flexCol, alignItems: 'flex-start', gap: '1em' }}>
+                {!!ownedItems && !!setShowUnownedNeeded &&
+                    <Checkbox
+                        label={t("items.show_unowned_needed")}
+                        checked={showUnownedNeeded}
+                        onChange={(e, { checked }) =>
+                            setShowUnownedNeeded(!!checked)
+                        }
+                    />}
+                {!!ownedItems && !!setShowUnownedNeeded &&
+                    <Checkbox
+                        label={t("items.hide_unneeded_items")}
+                        checked={hideUnneeded}
+                        onChange={(e, { checked }) =>
+                            setHideUnneeded(!!checked)
+                        }
+                    />}
+            </div>
         </div>}
         <ItemsFilterContext.Provider value={contextData}>
             {children}
@@ -183,21 +201,22 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 if (!item.item_sources?.some(s => itemSourceFilter.includes(s.type))) return false;
             }
             if (ownedItems && !showUnownedNeeded && item.quantity === 0) return false;
+            if (hideUnneeded && (!("needed" in item) || !item.needed)) return false;
             return true;
         })
-        .map(item => {
-            if (itemSourceFilter?.length) {
-                item = { ... item };
-                if ("item_sources" in item && item.item_sources) {
-                    item.item_sources = item.item_sources
-                        .filter(s =>
-                            itemSourceFilter.includes(s.type) &&
-                            (s.type === 1 || !masteryFilter?.length || masteryFilter.includes(s.mastery ?? -1))
-                        );
+            .map(item => {
+                if (itemSourceFilter?.length) {
+                    item = { ...item };
+                    if ("item_sources" in item && item.item_sources) {
+                        item.item_sources = item.item_sources
+                            .filter(s =>
+                                itemSourceFilter.includes(s.type) &&
+                                (s.type === 1 || !masteryFilter?.length || masteryFilter.includes(s.mastery ?? -1))
+                            );
+                    }
                 }
-            }
-            return item;
-        });
+                return item;
+            });
     }
 
     function configureFilters(pool?: (EquipmentItem | EquipmentItem | PlayerEquipmentItem)[]) {

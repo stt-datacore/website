@@ -11,7 +11,7 @@ import { SemanticWIDTHS } from 'semantic-ui-react';
 export interface CustomFieldDef {
 	field: string;
 	text: string;
-	format?: (value: any) => string;
+	format?: (value: any, context: any) => string | React.JSX.Element;
 	width?: SemanticWIDTHS;
 	reverse?: boolean,
     customCompare?: (a: any, b: any) => number;

@@ -82,6 +82,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	const steps = [] as JSX.Element[];
 	const buyFuses = getFusesInBuybackWell();
 	const buyUnowned = getUnownedInBuybackWell();
+	const buyWatched = getWatchedInBuybackWell();
 
 	const allCrewJSX = (
 		<Step active={rosterType === 'allCrew'} onClick={() => setRosterType('allCrew')}>
@@ -183,6 +184,17 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						})} {t('alerts.check_buyback')}
 				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
 		})}
+		{!!buyWatched?.length && buyWatched.map((crew, idx) => {
+			if (newDismissed.includes(crew.symbol)) return <></>
+			let cols = [] as CryoCollection[];
+			return drawAlert(crew, <>
+				{t('alerts.watched_crew', {
+						subject: `${crew.name}`,
+						rarity: `${crew.rarity}`,
+						max_rarity: `${crew.max_rarity}`
+						})} {t('alerts.check_buyback')}
+				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
+		})}
 		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
 			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
 		</Step.Group>
@@ -251,9 +263,19 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			</div>)
 	}
 
+	function getOwnedBuybackCrew() {
+		if (!playerData?.buyback_well?.length) return [];
+		return playerData.buyback_well.map(bw => playerData.player.character.crew.find(f => f.symbol === bw.symbol && f.rarity !== f.max_rarity && ((f.rarity === f.highest_owned_rarity || f.highest_owned_rarity === undefined)))).filter(f => f !== undefined).sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	function getUnownedBuybackCrew() {
+		if (!playerData?.buyback_well?.length) return [];
+		return playerData.buyback_well.map(f => playerData.player.character.unOwnedCrew?.find(u => u.symbol === f.symbol)!).filter(f => f !== undefined).sort((a, b) => a.name.localeCompare(b.name));
+	}
+
 	function getFusesInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
-		let newcrew = playerData.player.character.crew.filter(f => f.rarity < f.max_rarity && playerData.buyback_well.some(bc => bc.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let newcrew = getOwnedBuybackCrew();
 		let lastcrew = undefined as PlayerCrew | undefined;
 		let finalcrew = [] as PlayerCrew[];
 		for (let u of newcrew) {
@@ -270,7 +292,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	function getUnownedInBuybackWell() {
 		if (!playerData?.buyback_well?.length) return [];
-		let newcrew = playerData.buyback_well.filter(f => playerData.player.character.unOwnedCrew?.some(u => u.symbol === f.symbol)).sort((a, b) => a.symbol.localeCompare(b.symbol)).map(m => playerData.player.character.unOwnedCrew!.find(f => f.symbol === m.symbol)!).sort((a, b) => a.symbol.localeCompare(b.symbol));
+		let newcrew = getUnownedBuybackCrew();
 		let lastcrew = undefined as PlayerCrew | undefined;
 		let finalcrew = [] as PlayerCrew[];
 		for (let u of newcrew) {
@@ -284,6 +306,24 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		}
 		return finalcrew.filter(f => f.rarity >= alertConfig.alert_new || f.max_rarity === 1 || (alertConfig.always_legendary && f.max_rarity === 5));
 	}
+
+	function getWatchedInBuybackWell() {
+		if (!playerData?.buyback_well?.length) return [];
+		let newcrew = [...playerData.buyback_well];
+		let lastcrew = undefined as PlayerCrew | undefined;
+		let finalcrew = [] as PlayerCrew[];
+		for (let u of newcrew) {
+			if (lastcrew && u.symbol === lastcrew.symbol) lastcrew.rarity++;
+			else {
+				u = { ...u };
+				u.rarity = 1;
+				finalcrew.push(u);
+				lastcrew = u;
+			}
+		}
+		return finalcrew.filter(f => alertConfig.alert_crew.includes(f.symbol));
+	}
+
 
 	function dismissNew(crew: PlayerCrew) {
 		if (!newDismissed.includes(crew.symbol)) {

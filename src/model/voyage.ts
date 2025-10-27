@@ -1,10 +1,10 @@
 // import { Helper } from '../components/voyagecalculator/helpers/Helper';
 import { VPDetails } from '../utils/voyagevp';
-import { BaseSkills } from './crew';
+import { BaseSkills, CrewMember } from './crew';
 import { Icon } from './game-elements';
-import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, VoyageCrewSlot, VoyageSkills } from './player';
-import { Ship } from './ship';
-
+import { Aggregates, CrewSlot, PendingRewards, PlayerCrew, Reward, VoyageCrewSlot, VoyageSkills } from './player';
+import { ReferenceShip, Ship } from './ship';
+import { VoyageNarrative as Narrative } from './voyagelog';
 // Voyage calculator require crew.skills
 export interface IVoyageCrew extends PlayerCrew {
 	skills: BaseSkills;
@@ -27,7 +27,11 @@ export interface IVoyageEventContent extends VoyageEncounterCommon {
 	primary_skill: string;
 	secondary_skill: string;
 	encounter_traits?: string[];
-    encounter_times?: number[];
+	encounter_times?: number[];
+	passive_bonus?: {
+		event_crew: number;
+		event_trait: number;
+	};
 };
 
 // Extends IVoyageInputConfig to include calculation result
@@ -121,6 +125,7 @@ export interface ITrackedVoyage {
 	revivals: number;
     lootcrew: string[];
     remote?: boolean;
+    orphan?: boolean;
 };
 
 export interface ITrackedFlatEstimate {
@@ -698,3 +703,53 @@ export interface VoyageNarrative {
 	event_time: number;
 	crew: string[];	// crew symbol
 };
+
+export interface DilemmaChoice {
+    text: string,
+    reward: string[];
+    parsed?: {
+        rarity?: number;
+        crew?: CrewMember;
+        ship?: Ship | ReferenceShip;
+        chrons?: number;
+        merits?: number;
+        honor?: number;
+        behold?: boolean;
+        schematics?: number;
+    }
+}
+
+export const AlphaRef = (() => {
+    const res = [] as string[];
+    const charStart = "A".charCodeAt(0);
+    const charEnd = "Z".charCodeAt(0);
+    for (let i = charStart; i <= charEnd; i++) {
+        res.push(String.fromCharCode(i));
+    }
+    return res;
+})();
+
+export interface DilemmaMultipartData {
+    requiredChoices: string[];
+    dilemma: Dilemma;
+    unlock?: number;
+}
+
+export interface Dilemma {
+    title: string;
+    baseTitle?: string;
+    chances: {
+        legendary_behold: number,
+        superrare_behold: number,
+        superrrare_crew: number,
+        replicator_fuel: number,
+        ship_schematic: number
+    },
+    choiceA: DilemmaChoice;
+    choiceB: DilemmaChoice;
+    choiceC?: DilemmaChoice;
+    narrative?: Narrative;
+    rarity?: number;
+    selection?: number;
+    multipart?: DilemmaMultipartData[];
+}

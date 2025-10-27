@@ -15,8 +15,7 @@ export interface EncounterImportProps {
 };
 
 export const EncounterImportComponent = (props: EncounterImportProps) => {
-	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
+	const { t } = React.useContext(GlobalContext).localized;
 	const { voyage, data, setData } = props;
 
 	const [collapsed, setCollapsed] = React.useState<boolean>(false);
@@ -26,16 +25,16 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 	return (
 		<React.Fragment>
 			{!data && (
-				<Notification
-					header='Additional Data Required'
+				<Notification	/* Additional Data Required */
+					header={t('voyage.contests.importer.data_required')}
 					content={renderImportMessage()}
 					icon='database'
 					warning
 				/>
 			)}
 			{!!data && (
-				<Notification
-					header='Encounter Data Loaded!'
+				<Notification	/* Encounter Data Loaded! */
+					header={t('voyage.contests.improter.data_loaded')}
 					content={renderUpdateMessage()}
 					icon='database'
 					color='blue'
@@ -50,7 +49,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 	function renderImportMessage(): JSX.Element {
 		return (
 			<p>
-				The Encounter Helper requires additional data that is not present in your player data. You can access and import the required data by following the instructions below.
+				{t('voyage.contests.importer.description')}
 			</p>
 		);
 	}
@@ -58,8 +57,8 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 	function renderUpdateMessage(): JSX.Element {
 		return (
 			<p>
-				{collapsed && <>If the information below does not match your encounter in-game, tap here to update your encounter data.</>}
-				{!collapsed && <>Follow the instructions below to update your encounter data.</>}
+				{collapsed && <>{t('voyage.contests.importer.tap_to_open')}</>}
+				{!collapsed && <>{t('voyage.contests.importer.follow_instructions')}</>}
 			</p>
 		);
 	}
@@ -92,7 +91,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 	}
 
 	function validateJson(json: VoyageRefreshData[]): true | string {
-		if (!json) return ('No data');
+		if (!json) return t('voyage.contests.importer.json_undefined');
 
 		let encounterData: VoyageRefreshEncounter | undefined;
 
@@ -101,12 +100,12 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 		}
 		catch (e) {	/* The imported data is not valid. Please confirm the voyage data link is correct and try again. */
 			console.log(e);
-			return 'The imported data is not valid. Please confirm the voyage data link is correct and try again.';
+			return t('voyage.contests.importer.json_invalid');
 		}
 
 		if (!encounterData) {
 			/* No encounter data found. Please try again when your voyage has reached an encounter. */
-			return 'No encounter data found. Please try again when your voyage has reached an encounter.';
+			return t('voyage.contests.importer.json_early');
 		}
 
 		return true;
@@ -118,14 +117,14 @@ export function getEncounterDataFromJson(voyageRefresh: VoyageRefreshData[]): Vo
 	let encounterData: VoyageRefreshEncounter | undefined;
 	voyageRefresh.forEach(refresh => {
 		refresh.character?.voyage.forEach(voyage => {
-			if (voyage.encounter) encounterData = JSON.parse(JSON.stringify(voyage.encounter));
+			if (voyage.encounter) encounterData = structuredClone(voyage.encounter);
 		});
 	});
 	return encounterData;
 }
 
 // Serialize IEncounter object from VoyageRefreshEncounter
-export function serializeEncounter(encounterData: VoyageRefreshEncounter): IEncounter | undefined {
+export function serializeEncounter(encounterData: VoyageRefreshEncounter, critChances: number[]): IEncounter | undefined {
 	let encounter: IEncounter | undefined;
 	const startingSkills: EncounterStartingSkills = encounterData.skills;
 	const incrementProf: number = encounterData.increment_prof;
@@ -146,6 +145,7 @@ export function serializeEncounter(encounterData: VoyageRefreshEncounter): IEnco
 		encounter = {
 			id: encounterData.id,
 			critTraits: traits,
+			critChances,
 			contests
 
 		};

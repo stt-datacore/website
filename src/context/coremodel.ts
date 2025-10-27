@@ -2,12 +2,15 @@ import { ContinuumMission } from "../model/continuum";
 import { Achiever, CapAchievers, CrewMember, CurrentWeighting, QuipmentScores } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { EventInstance, EventLeaderboard, EventScoreSet } from "../model/events";
-import { Collection, KeystoneBase, Polestar, Constellation, PortalLogEntry } from "../model/game-elements";
+import { PortalLogEntry } from "../model/game-elements";
+import { Collection } from "../model/collections";
+import { KeystoneBase, Polestar, Constellation } from "../model/keystone";
 import { Gauntlet } from "../model/gauntlets";
 import { Mission } from "../model/missions";
 import { ObjectiveEvent } from "../model/player";
 import { BattleStations, ReferenceShip, Schematics, Ship } from "../model/ship";
 import { StaticFaction } from "../model/shuttle";
+import { Dilemma } from "../model/voyage";
 import { EventStats } from "../utils/event_stats";
 import { BuffStatTable } from "../utils/voyageutils";
 
@@ -20,6 +23,7 @@ export interface ICoreData {
 	continuum_missions: ContinuumMission[];
 	crew: CrewMember[];
 	current_weighting: CurrentWeighting;
+	dilemmas: Dilemma[];
 	episodes: Mission[];
 	event_instances: EventInstance[];
 	event_leaderboards: EventLeaderboard[];
@@ -30,6 +34,7 @@ export interface ICoreData {
 	gauntlets: Gauntlet[];
 	items: EquipmentItem[];
 	keystones: (KeystoneBase | Polestar | Constellation)[];
+	maincast: { [key:string]: string[] };
 	missions: Mission[];
 	missionsfull: Mission[];
 	objective_events: ObjectiveEvent[];
@@ -37,4 +42,5 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	topQuipmentScores: QuipmentScores[];
+	sync_time: Date;
 };

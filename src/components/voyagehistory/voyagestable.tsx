@@ -19,6 +19,7 @@ import CONFIG from '../CONFIG';
 import { HistoryContext } from './context';
 import { deleteTrackedData, postUnsynchronizedVoyages, removeVoyageFromHistory, SyncState } from './utils';
 import { VoyageModal } from './voyagemodal';
+import { PromptContext } from '../../context/promptcontext';
 
 interface ITableState {
 	data: ITrackedVoyage[];
@@ -42,8 +43,10 @@ interface ITableColumn {
 
 export const VoyagesTable = () => {
 	const globalContext = React.useContext(GlobalContext);
+	const promptContext = React.useContext(PromptContext);
 	const { SHIP_TRAIT_NAMES, t, tfmt } = globalContext.localized;
 	const { ephemeral } = globalContext.player;
+	const { confirm } = promptContext;
 	const { dbid, history, setHistory, syncState, setMessageId } = React.useContext(HistoryContext);
 
 	const [activeVoyage, setActiveVoyage] = React.useState<ITrackedVoyage | undefined>(undefined);
@@ -179,37 +182,32 @@ export const VoyagesTable = () => {
 		const isRunning: boolean = row.voyage_id > 0 && !!ephemeral?.voyage.find(v => v.id === row.voyage_id);
 		return (
 			<Table.Row key={row.tracker_id}>
-				<Table.Cell style={{
-					display: 'flex',
-					padding: '1em',
-					flexDirection: 'row',
-					alignItems: 'center',
-					justifyContent: 'flex-start',
-					gap: '1em'
-				}}>
-					<Icon name='trash' onClick={() => removeTrackedVoyage(row.tracker_id)} style={{cursor: 'pointer'}} />
-					<div onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell>
+					<a
+						onClick={() => setActiveVoyage(row)}
+						style={{ fontWeight: 'bold', cursor: 'pointer' }}
+					>
 						{dtCreated.toLocaleDateString()}
-						{isRunning && <><br/>{t('voyage.running_voyage')}</>}
-					</div>
+					</a>
+					{isRunning && <><br/>{t('voyage.running_voyage')}</>}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.primary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{CONFIG.SKILLS[row.skills.secondary_skill]}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{SHIP_TRAIT_NAMES[row.ship_trait] ?? row.ship_trait}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{row.max_hp}
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					<b>{formatTime(row.estimate.median, t)}</b>
 					<br />({`${formatTime(row.estimate.minimum, t)} - ${formatTime(row.estimate.moonshot, t)}`})
 				</Table.Cell>
-				<Table.Cell textAlign='center' onClick={() => setActiveVoyage(row)} style={{ cursor: 'pointer' }}>
+				<Table.Cell textAlign='center'>
 					{renderLastEstimate(row.checkpoint)}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
@@ -245,34 +243,45 @@ export const VoyagesTable = () => {
 	}
 
 	function removeTrackedVoyage(trackerId: number): void {
-		if (typeof window !== 'undefined') {
-			let result = window.confirm(t('voyage.history.warn_delete'));
-			if (!result) return;
-		}
-		if (syncState === SyncState.RemoteReady) {
-			deleteTrackedData(dbid, trackerId).then((success: boolean) => {
-				if (success) {
-					removeVoyageFromHistory(history, trackerId);
-					setHistory({...history});
-					setActiveVoyage(undefined);
+
+		if (confirm) {
+			confirm({
+				message: t('voyage.history.warn_delete'),
+				title: t('global.delete'),
+				onClose: (result) => {
+					if (!result) return;
+					if (syncState === SyncState.RemoteReady) {
+						deleteTrackedData(dbid, trackerId).then((success: boolean) => {
+							if (success) {
+								removeVoyageFromHistory(history, trackerId);
+								setHistory({...history});
+								setActiveVoyage(undefined);
+							}
+							else {
+								throw('Failed removeTrackedVoyage -> deleteTrackedData');
+							}
+						}).catch(e => {
+							setMessageId('voyage.history_msg.failed_to_delete');
+							console.log(e);
+						});
+					}
+					else if (syncState === SyncState.LocalOnly) {
+						removeVoyageFromHistory(history, trackerId);
+						setHistory({...history});
+						setActiveVoyage(undefined);
+					}
+					else {
+						setMessageId('voyage.history_msg.invalid_sync_state');
+						console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
+					}
+
 				}
-				else {
-					throw('Failed removeTrackedVoyage -> deleteTrackedData');
-				}
-			}).catch(e => {
-				setMessageId('voyage.history_msg.failed_to_delete');
-				console.log(e);
-			});
+			})
 		}
-		else if (syncState === SyncState.LocalOnly) {
-			removeVoyageFromHistory(history, trackerId);
-			setHistory({...history});
-			setActiveVoyage(undefined);
-		}
-		else {
-			setMessageId('voyage.history_msg.invalid_sync_state');
-			console.log(`Failed removeTrackedVoyage (invalid syncState: ${syncState})`);
-		}
+		// if (typeof window !== 'undefined') {
+		// 	let result = window.confirm(t('voyage.history.warn_delete'));
+		// 	if (!result) return;
+		// }
 	}
 
 	function reducer(state: ITableState, action: ITableAction): ITableState {

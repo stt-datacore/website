@@ -2,7 +2,7 @@ import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';
 import { EquipmentItem } from '../model/equipment';
-import { CompactCrew, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { BorrowedCrew, CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
 import { Ship } from '../model/ship';
 import { ShuttleAdventure } from '../model/shuttle';
 import { ShipTraitNames } from '../model/traits';
@@ -15,6 +15,8 @@ import { TinyStore } from '../utils/tiny';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
 import { DataContext, DataProviderProperties } from './datacontext';
 
+export type GuildCache = { id: number, slabel: string };
+
 export interface PlayerContextData {
 	loaded: boolean;
 	showPlayerGlance: boolean,
@@ -25,6 +27,7 @@ export interface PlayerContextData {
 	setNewCrew: (value: PlayerCrew[] | undefined) => void;
 	newCrew?: PlayerCrew[];
 	reset?: () => void;
+	guildCache: GuildCache[];
 	playerData?: PlayerData;
 	ephemeral?: IEphemeralData;
 	strippedPlayerData?: PlayerData;
@@ -49,6 +52,7 @@ export interface IEphemeralData {
 	objectiveEventRoot: ObjectiveEventRoot;
 	galaxyCooldowns: GalaxyCrewCooldown[];
 	stimpack?: Stimpack;
+	borrowedCrew: BorrowedCrew[];
 };
 
 export interface ISessionStates {
@@ -75,7 +79,8 @@ export const defaultPlayer = {
 	noGradeColors: true,
 	setNoGradeColors: () => false,
 	calculatedDemands: undefined,
-	setCalculatedDemands: () => false
+	setCalculatedDemands: () => false,
+	guildCache: []
 } as PlayerContextData;
 
 export const PlayerContext = React.createContext<PlayerContextData>(defaultPlayer as PlayerContextData);
@@ -85,9 +90,11 @@ const tiny = TinyStore.getStore(`global_playerSettings`);
 export const PlayerProvider = (props: DataProviderProperties) => {
 
 	const coreData = React.useContext(DataContext);
-	const { crew, ship_schematics, all_ships } = coreData;
+	const { crew, all_ships } = coreData;
 
 	const { children } = props;
+
+	const [guildCache, setGuildCache] = useStateWithStorage<GuildCache[]>('guild_cache', [], { rememberForever: true, avoidSessionStorage: true });
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
@@ -120,7 +127,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		if (!input || (!all_ships.length) || !crew.length) return;
 		// ephemeral data (e.g. active crew, active shuttles, voyage data, and event data)
 		//	can be misleading when outdated, so keep a copy for the current session only
-		const activeCrew = [] as CompactCrew[];
+		const activeCrew: CompactCrew[] = [];
 		input.player.character.crew.forEach(crew => {
 			if (crew.active_status > 0) {
 				activeCrew.push({
@@ -161,7 +168,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				archetype_cache: {} as ArchetypeRoot20,
 				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot,
 				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
-				stimpack: input.player.character.stimpack
+				stimpack: input.player.character.stimpack,
+				borrowedCrew: [...input.player.character.crew_borrows ?? []]
 			});
 		}
 
@@ -173,7 +181,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
 
 		if (input.stripped !== true) {
-			setStripped({ ... JSON.parse(JSON.stringify(strippedData)), stripped: true });
+			setStripped({ ... structuredClone(strippedData), stripped: true });
 		}
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools
@@ -181,17 +189,22 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		const quipment = coreData.items.filter(i => i.type === 14).map(i => getItemWithBonus(i));
 		prepareProfileData('PLAYER_CONTEXT', coreData.crew, preparedProfileData, dtImported, quipment);
+
+		if (preparedProfileData.player.fleet?.id) {
+			syncGuildCache(preparedProfileData.player.fleet);
+		}
+
 		setProfile(preparedProfileData);
 
 		if (preparedProfileData) {
-			const all_ships = JSON.parse(JSON.stringify(coreData.all_ships));
-			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames);
+			const all_ships = structuredClone(coreData.all_ships);
+			const mergedShips = mergeRefShips(all_ships, preparedProfileData.player.character.ships, {} as ShipTraitNames, false, false, buffConfig);
 			setPlayerShips(mergedShips);
 		}
 
 		setSessionStates({...defaultSessionStates});
 		setLoaded(true);
-	}, [input, crew, ship_schematics]);
+	}, [input, crew, all_ships]);
 
 	const reset = (): void => {
 		setStripped(undefined);
@@ -234,7 +247,8 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		restoreHiddenAlerts,
 		setRestoreHiddenAlerts,
 		calculatedDemands,
-		setCalculatedDemands
+		setCalculatedDemands,
+		guildCache
 	} as PlayerContextData;
 
 	return (
@@ -247,5 +261,19 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		const newSessionStates = sessionStates ?? {} as ISessionStates;
 		newSessionStates[sessionKey] = sessionValue;
 		setSessionStates({...newSessionStates});
+	}
+
+	function syncGuildCache(fleet: Fleet) {
+		let g = guildCache.find(f => f.id === fleet.id);
+		if (g) {
+			g.slabel = fleet.slabel;
+		}
+		else {
+			guildCache.push({
+				id: fleet.id,
+				slabel: fleet.slabel
+			});
+		}
+		setGuildCache([...guildCache]);
 	}
 };

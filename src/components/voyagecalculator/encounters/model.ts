@@ -4,6 +4,7 @@ export interface IEncounter {
 	id: number;
 	contests: IContest[];
 	critTraits: string[];
+	critChances: number[];
 };
 
 export interface IContest {
@@ -30,6 +31,7 @@ export interface IExpectedScore {
 };
 
 export interface IContestResult {
+	id: string;
 	oddsA: number;
 	simulated?: ISimulatedResults;
 };

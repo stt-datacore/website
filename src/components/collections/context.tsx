@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import { useStateWithStorage } from '../../utils/storage';
-import { CollectionFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collectionfilter';
+import { CollectionFilterOptions, ICollectionsContext, CollectionMatchMode, CollectionsToolSettings, CollectionModalDisplayOptions } from '../../model/collections';
 import { checkCommonFilter, checkRewardFilter } from '../../utils/collectionutils';
 import { Filter } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
@@ -45,7 +45,7 @@ const DefaultData = {
     showThisCrew: () => false,
     setCollectionSettings: () => null,
     modalInstance: null,
-    setModalInstance: () => false
+    setModalInstance: () => false,
 } as ICollectionsContext;
 
 export const CollectionsContext = React.createContext<ICollectionsContext>(DefaultData);
@@ -59,9 +59,10 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
     const { children, pageId } = props;
 
     const [collectionSettings, setCollectionSettings] = useStateWithStorage(pageId +'/collectionSettings', DefaultConfig, { rememberForever: true });
-	const [modalInstance, setModalInstance] = React.useState(null as CollectionModalDisplayOptions | null);
+    const [modalInstance, setModalInstance] = React.useState(null as CollectionModalDisplayOptions | null);
 
     const data = {
+        ... DefaultConfig,
         ... collectionSettings,
         setMapFilter,
         setSearchFilter,
@@ -72,10 +73,8 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setTierFilter,
         setHardFilter,
         setFavorited,
-
         checkCommonFilter,
         checkRewardFilter,
-
         setShort,
         setCostMode,
         setMatchMode,
@@ -113,7 +112,6 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
     </CollectionsContext.Provider>)
 
     function showThisCrew(crew: PlayerCrew, filters: Filter[], filterType: string | null | undefined): boolean {
-
         if (crew.immortal === -1 || crew.immortal > 0) {
             return false;
         }
@@ -154,16 +152,16 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
         setCollectionSettings({ ... collectionSettings, searchFilter })
     }
 
+	function setCostMode(costMode: "normal" | "sale") {
+        setCollectionSettings({ ... collectionSettings, costMode })
+    }
+
     function setMapFilter(mapFilter: CollectionFilterOptions) {
         setCollectionSettings({ ... collectionSettings, mapFilter })
     }
 
 	function setShort(short: boolean) {
         setCollectionSettings({ ... collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
-    }
-
-	function setCostMode(costMode: "normal" | "sale") {
-        setCollectionSettings({ ... collectionSettings, costMode })
     }
 
 	function setMatchMode(matchMode: CollectionMatchMode) {

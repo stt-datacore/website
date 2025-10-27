@@ -6,7 +6,7 @@ import {
     CollectionWorkerResult,
     ColComboMap,
     ComboCostMap,
-} from "../model/collectionfilter";
+} from "../model/collections";
 import { PlayerCollection, PlayerCrew } from "../model/player";
 import { getPermutations, makeAllCombos } from "../utils/misc";
 
@@ -157,10 +157,11 @@ function normalCollectionSort<T extends PlayerCrew>(crew: T[], searchFilter?: st
     });
 }
 
+type Relative = { name: string, needed: number, crew: string[] };
 interface LocalCollectionInfo {
     name: string;
     crew: string[];
-    relatives: string[];
+    relatives: Relative[];
     needed: number;
 }
 
@@ -210,6 +211,7 @@ const CollectionOptimizer = {
             });
 
             const workingCrew = [... new Set(colInfo.map((col: LocalCollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
+            normalCollectionSort(workingCrew);
 
             workingCrew.forEach((crew) => {
                 let crewcols = colInfo.filter(c => crew.collections.includes(c.name));
@@ -218,21 +220,106 @@ const CollectionOptimizer = {
                 for (let i = 0; i < c; i++) {
                     for (let j = 0; j < c; j++) {
                         if (i === j) continue;
-                        if (!crewcols[i].relatives.includes(crewcols[j].name)) {
-                            crewcols[i].relatives.push(crewcols[j].name);
+                        let frel = crewcols[i].relatives.find(rel => rel.name === crewcols[j].name);
+                        if (!frel) {
+                            crewcols[i].relatives.push({
+                                name: crewcols[j].name,
+                                needed: crewcols[j].needed,
+                                crew: [crew.symbol]
+                            });
+                        }
+                        else if (!frel.crew.includes(crew.symbol)) {
+                            frel.crew.push(crew.symbol);
                         }
                     }
                 }
             });
+            // type ComboKey = { main: Relative, cols: Relative[], crew: string[] };
+            // function subset(a: ComboKey, b: ComboKey) {
+            //     if (a === b) return false;
+            //     if (a.main.name === b.main.name) {
+            //         if (b.cols.every(c => a.cols.some(c2 => c.name === c2.name)) && a.cols.length > b.cols.length) {
+            //             if (b.crew.every(c1 => a.crew.some(c2 => c1 === c2))) return true;
+            //         }
+            //     }
+            //     return false;
+            // }
+            // const comboKeys = {} as { [key: string]: ComboKey };
+            // const newCombos = colInfo.map(col => {
+            //     const combos = [] as ComboKey[];
+            //     if (col.name === 'The Way Home') {
+            //         console.log('');
+            //     }
+            //     let rels = col.relatives.filter(f => f.needed <= col.needed);
+            //     rels = rels.filter(rel => {
+            //         if (rel.needed <= rel.crew.length) {
+            //             combos.push({
+            //                 main: col,
+            //                 cols: [rel],
+            //                 crew: rel.crew
+            //             });
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     let size = rels.length;
+            //     for (let d = 2; d <= size; d++) {
+            //         getPermutations(rels, d, undefined, true, undefined, (set, idx) => {
+            //             let cc = col.crew.filter(f => set.some(s => s.crew.includes(f)));
+            //             if (cc.length >= col.needed) {
+            //                 let pset = set.filter(f => cc.filter(c2 => f.crew.includes(c2)).length >= f.needed);
+            //                 if (pset.length === set.length) {
+            //                     getPermutations(cc, col.needed, undefined, true, undefined, (roster) => {
+            //                         let fset = pset.filter(prel => {
+            //                             return prel.crew.filter(f => roster.includes(f)).length >= prel.needed;
+            //                         });
+
+            //                         if (fset.length === pset.length) {
+            //                             let newkey = [col.name, ...set.map(s => s.name)].sort().join(",");
+            //                             let cb = {
+            //                                 main: col,
+            //                                 cols: fset.map((fs) => ({...fs, crew: fs.crew.filter(f => roster.includes(f))})),
+            //                                 crew: roster
+            //                             };
+            //                             combos.push(cb);
+            //                             comboKeys[newkey] ??= cb;
+            //                             return false;
+            //                         }
+            //                         return roster;
+            //                     }, true);
+            //                     return set;
+            //                 }
+            //             }
+            //             return set;
+            //         });
+            //     }
+            //     return { col, combos };
+            // }).filter(f => f.combos.length);
+
+            // let keybs = Object.keys(comboKeys);
+
+            // //keybs = keybs.filter(key => keybs.every(key2 => key === key2 || !subset(key2.split(','), key.split(','))));
+            // let finalCombos = keybs
+            //     .map(key => comboKeys[key])
+            //     .sort((a, b) => a.crew.length - b.crew.length || b.cols.length - a.cols.length || a.main.name.localeCompare(b.main.name));
+
+            // finalCombos = finalCombos.filter((cb) => {
+            //     if (!finalCombos.some(fc => subset(fc, cb))) {
+            //         if (cb.crew.every(c => cb.cols.filter(f => f.crew.includes(c)).length >= 1)) {
+            //             return true;
+            //         }
+            //     }
+            //     return false;
+            // });
 
             const preFiltered = colInfo.map(c => {
-                c.relatives.sort();
+                //c.relatives = c.relatives.filter(f => f.needed <= c.needed);
+                c.relatives.sort((a, b) => b.needed - a.needed || a.name.localeCompare(b.name));
                 let col = workingCollections.find(f => f.name === c.name) as PlayerCollection;
                 let map = {
                     collection: col,
                     crew: c.crew.map(csym => workingCrew.find(f => f.symbol === csym) as PlayerCrew)
                 } as CollectionInfo;
-
                 map.crew = normalCollectionSort(map.crew, searchFilter, searches, favorites);
                 map.neededStars = neededStars(map.crew, map.collection.needed ?? 0);
                 map.collection.neededCost = starCost(
@@ -291,8 +378,8 @@ const CollectionOptimizer = {
             const linkScores = {} as { [key: string]: CollectionInfo[] };
 
             colInfo.forEach((ci) => {
-                ci.relatives.forEach((cirkey) => {
-                    let cirel = colInfo.find(c => c.name === cirkey);
+                ci.relatives.forEach((rel) => {
+                    let cirel = colInfo.find(c => c.name === rel.name);
                     if (cirel) {
                         let crew = ci.crew.filter(cf => cirel.crew.includes(cf)).map(ccsym => workingCrew.find(c => c.symbol === ccsym) as PlayerCrew).filter(f => f.have);
                         crew = normalCollectionSort(crew, searchFilter, searches, favorites);
@@ -460,7 +547,7 @@ const CollectionOptimizer = {
                     const exact = [] as ColComboMap[];
                     const over = [] as ColComboMap[];
                     const under = [] as ColComboMap[];
-                    const cml = col.maps.length;
+                    // const cml = col.maps.length;
 
                     // for (let i = cml; i >= 1; i--) {
                     //     getPermutations(col.maps, i, undefined, true, undefined, (cols) => {

@@ -11,6 +11,7 @@ type CombosGridProps = {
 	combos: IPolestar[][];
 	fuseIndex: number;
 	alwaysShowPrice?: boolean
+	alwaysSortByCost?: boolean
 };
 
 export const CombosGrid = (props: CombosGridProps) => {
@@ -18,30 +19,34 @@ export const CombosGrid = (props: CombosGridProps) => {
 	const { t } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { polestarTailors, market, allKeystones } = React.useContext(RetrievalContext);
-	const { alwaysShowPrice, fuseIndex } = props;
-
-	let combos = [...props.combos];
+	const { alwaysShowPrice, alwaysSortByCost, fuseIndex, combos } = props;
 
 	const addedPolestars = polestarTailors.added;
 	const disabledPolestars = polestarTailors.disabled;
 
 	const [paginationPage, setPaginationPage] = React.useState<number>(1);
 
-	combos.forEach(combo => combo.sort((a, b) => a.name.localeCompare(b.name)));
-	if (!combos.every(cb => cb.some(ps => !ps.owned)) || !market) {
-		combos.sort(sortCombos);
-	}
-	else {
-		let psyms = combos.map(cb => cb.map(ps => ps.symbol));
-		let provided = combos.flat();
-		sortCombosByCost(psyms, allKeystones, market, true, 'ascending', (a, b) => {
-			let ap = a.map(am => provided.find(p => p.symbol === am)!);
-			let bp = b.map(am => provided.find(p => p.symbol === am)!);
-			return sortCombos(ap, bp);
-		});
-		combos = psyms.map(m => m.map(b => provided.find(f => f.symbol === b)!));
-	}
-	const data: IPolestar[][] = combos.slice();
+	const data = React.useMemo(() => {
+		let combos = [...props.combos];
+		combos.forEach(combo => combo.sort((a, b) => a.name.localeCompare(b.name)));
+
+		if ((!alwaysSortByCost && !combos.every(cb => cb.some(ps => !ps.owned))) || !market) {
+			combos.sort(sortCombos);
+		}
+		else {
+			let psyms = combos.map(cb => cb.map(ps => ps.symbol));
+			let provided = combos.flat();
+			sortCombosByCost(psyms, allKeystones, market, !alwaysSortByCost, 'ascending', (a, b) => {
+				let ap = a.map(am => provided.find(p => p.symbol === am)!);
+				let bp = b.map(am => provided.find(p => p.symbol === am)!);
+				return sortCombos(ap, bp);
+			});
+			combos = psyms.map(m => m.map(b => provided.find(f => f.symbol === b)!));
+		}
+		return combos;
+	}, [alwaysShowPrice, alwaysSortByCost, combos, market, allKeystones]);
+
+	//const data: IPolestar[][] = combos.slice();
 
 	// Pagination
 	const itemsPerPage = 10, itemsToShow = itemsPerPage*paginationPage;
@@ -55,7 +60,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 							<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
 								<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 								<br />{polestar.short_name}
-								{playerData && (
+								{(playerData || !!alwaysShowPrice) && (
 									<React.Fragment>
 										<br />{renderCount(polestar)}
 									</React.Fragment>
@@ -112,26 +117,32 @@ export const CombosGrid = (props: CombosGridProps) => {
 	}
 
 	function renderCount(polestar: IPolestar): JSX.Element {
-		let color: SemanticCOLORS | undefined = undefined;
+		let labelColor: SemanticCOLORS | undefined = undefined;
+		let fontColor: SemanticCOLORS | undefined = undefined;
 
 		if (disabledPolestars.includes(polestar.id))
-			color = 'orange';
+			labelColor = 'orange';
 		else if (fuseIndex > polestar.owned && addedPolestars.filter(added => added === polestar.symbol).length > 0)
-			color = 'blue';
-		else if (polestar.owned === 0)
-			color = 'yellow';
+			labelColor = 'blue';
+		else if (polestar.owned === 0) {
+			labelColor = 'yellow';
+			fontColor = 'black';
+		}
 
 		return (
-			<>
-			<Label color={color}>
-				{polestar.owned}
-			</Label>
-			{!!market && (polestar.owned === 0 || alwaysShowPrice) &&
-				<div style={{margin: '0.25em', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0.25em'}}>
-					{printISM(market[polestar.id]?.low ?? 0)}
-					{t('global.n_available', { n: `${market[polestar.id].sell_count.toLocaleString()}`})}
-				</div>}
-			</>
+			<React.Fragment>
+				<Label color={labelColor}>
+					<span style={{ color: fontColor }}>
+						{polestar.owned}
+					</span>
+				</Label>
+				{!!market && (polestar.owned === 0 || alwaysShowPrice) && (
+					<div style={{margin: '0.25em', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '0.25em'}}>
+						{printISM(market[polestar.id]?.low ?? 0)}
+						{t('global.n_available', { n: `${market[polestar.id].sell_count.toLocaleString()}`})}
+					</div>
+				)}
+			</React.Fragment>
 		);
 	}
 };

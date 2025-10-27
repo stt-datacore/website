@@ -91,7 +91,7 @@
 			"ship_schematic": 0
 		},
 		"choiceA": {
-			"text": "Encourage the young Trill to join Starfleet (Choice A can lead to **A Life Alone, Part 2**)",
+			"text": "Encourage the young Trill to join Starfleet. (Choice A can lead to **A Life Alone, Part 2**)",
 			"reward": [
 				"30 :honor:",
 				"30 :chrons:",

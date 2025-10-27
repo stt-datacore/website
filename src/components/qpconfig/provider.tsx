@@ -96,8 +96,7 @@ export const QPConfigProvider = (props: QPConfigProps) => {
 
 export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], buffConfig: BuffStatTable | undefined, params: IQPParams) {
 	const { voyageConfig, qpConfig } = params;
-
-	if (qpConfig.enabled && c.immortal === -1 && c.q_bits >= 100) {
+	if (qpConfig.enabled && c.immortal && c.q_bits >= 100) {
 		if (qpConfig.current && c.kwipment.some(q => typeof q === 'number' ? q : q[1])) {
 			return c;
 		}
@@ -130,13 +129,13 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 
 		let useQuipment: QuippedPower | undefined = undefined;
 		if (qpConfig.mode === 'all') {
-			useQuipment = newcopy.best_quipment_3!;
+			useQuipment = newcopy.best_quipment_3 || newcopy.best_quipment_1_2 || newcopy.best_quipment;
 		}
 		else if (qpConfig.mode === 'best') {
-			useQuipment = newcopy.best_quipment!;
+			useQuipment = newcopy.best_quipment;
 		}
 		else if (qpConfig.mode === 'best_2') {
-			useQuipment = newcopy.best_quipment_1_2!;
+			useQuipment = newcopy.best_quipment_1_2 || newcopy.best_quipment;
 		}
 
 		if (!useQuipment) return c;
@@ -149,6 +148,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 				min: skill.range_min,
 				max: skill.range_max
 			}
+			newcopy.skills ??= {};
 			newcopy.skills[skill.skill] = {
 				...skill
 			}
@@ -167,13 +167,12 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 			});
 		}
 
-
 		while (newcopy.kwipment.length < 4) newcopy.kwipment.push(0);
 		newcopy.kwipment_expiration = [0, 0, 0, 0];
 		newcopy.kwipment_prospects = true;
 		return newcopy;
 	}
-	else if (qpConfig.remove && c.q_bits >= 100 && c.immortal === -1) {
+	else if (qpConfig.remove && c.q_bits >= 100) {
 		let newcopy = oneCrewCopy(c);
 		newcopy.kwipment = [0, 0, 0, 0];
 		newcopy.kwipment_expiration = [0, 0, 0, 0];
@@ -181,7 +180,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 			newcopy.skills = applyCrewBuffs(newcopy, buffConfig)!
 		}
 		else {
-			newcopy.skills = JSON.parse(JSON.stringify(newcopy.base_skills));
+			newcopy.skills = structuredClone(newcopy.base_skills);
 		}
 		return newcopy;
 	}

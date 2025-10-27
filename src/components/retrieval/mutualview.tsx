@@ -44,6 +44,15 @@ const optionStyle = {
     justifyContent: 'flex-start'
 } as React.CSSProperties;
 
+const sectionStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '2em',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    justifyContent: 'center'
+} as React.CSSProperties;
+
 function comboToPolestars(combo: string[]) {
     const symbols = [] as string[];
     combo.forEach((item) => {
@@ -63,6 +72,9 @@ interface MutualViewConfig {
     allowUnowned?: number;
     no100?: boolean;
     alwaysShowPrice?: boolean;
+    min_rarity?: number;
+    max_rarity?: number;
+    non_unique?: number;
 }
 
 type MutualViewProps = {
@@ -183,13 +195,24 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
         })
     });
 
-    const allowUnowned = [] as DropdownItemProps[];
+    const allowedOptions = [] as DropdownItemProps[];
 
     [0, 1, 2, 3].forEach((num) => {
-        allowUnowned.push({
+        allowedOptions.push({
             key: `allowUnowned_${num}`,
             value: num,
             text: `${num}`
+        })
+    });
+
+    const rarities = [] as DropdownItemProps[];
+
+    [1, 2, 3, 4, 5].forEach((num) => {
+        let rareinfo = CONFIG.RARITIES[num];
+        rarities.push({
+            key: `allowUnowned_${num}`,
+            value: num,
+            text: `${rareinfo.name}`
         })
     });
 
@@ -238,14 +261,7 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
     }
 
     return <div className="ui segment">
-        <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '2em',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            justifyContent: 'center'
-        }}>
+        <div style={sectionStyle}>
             <div style={{ margin: '1em', display: 'flex', textAlign: 'center', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '1em', marginBottom: '1em' }}>
                 <span>{running && <Icon loading name='spinner' /> } {progressMsg || t('global.idle')}</span>
             </div>
@@ -262,7 +278,7 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                 <span>{t('retrieval.allow_unowned')}</span>
                 <Dropdown
                     disabled={running}
-                    options={allowUnowned}
+                    options={allowedOptions}
                     value={config.allowUnowned || 0}
                     onChange={(e, { value }) => setConfig({ ...config, allowUnowned: value as number | undefined })}
                 />
@@ -288,6 +304,56 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                     />
                     <Icon style={{margin:0,cursor:'pointer'}} name='close' onClick={() => setConfig({ ...config, max_iterations: undefined })} />
                 </div>
+            </div>
+        </div>
+        <div style={{...sectionStyle, gap: '2em', margin: '1em'}}>
+            <div style={optionStyle}>
+                <span>{t('global.min_rarity')}</span>
+                <Dropdown
+                    scrolling
+                    disabled={running}
+                    options={rarities}
+                    value={config.min_rarity}
+                    onChange={(e, { value }) => {
+                        if (typeof value === 'number') {
+                            if (config.max_rarity && config.max_rarity < value) {
+                                setConfig({ ...config, min_rarity: value, max_rarity: value });
+                                return;
+                            }
+                        }
+                        setConfig({ ...config, min_rarity: value as number | undefined });
+                    }}
+                />
+            </div>
+            <div style={optionStyle}>
+                <span>{t('global.max_rarity')}</span>
+                <Dropdown
+                    scrolling
+                    disabled={running}
+                    options={rarities}
+                    value={config.max_rarity}
+                    onChange={(e, { value }) => {
+                        if (typeof value === 'number') {
+                            if (config.min_rarity && config.min_rarity > value) {
+                                setConfig({ ...config, min_rarity: value, max_rarity: value });
+                                return;
+                            }
+                        }
+                        setConfig({ ...config, max_rarity: value as number | undefined });
+                    }}
+                />
+            </div>
+            <div style={optionStyle}>
+                <span>{t('retrieval.min_non_unique')}</span>
+                <Dropdown
+                    scrolling
+                    disabled={running || !config.no100}
+                    options={allowedOptions}
+                    value={config.non_unique}
+                    onChange={(e, { value }) => {
+                        setConfig({ ...config, non_unique: value as number | undefined });
+                    }}
+                />
             </div>
         </div>
         <div style={{...optionStyle, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
@@ -362,7 +428,10 @@ const MutualWorkerPanel = (props: MutualWorkerPanelProps) => {
                 comboSize,
                 verbose: config.verbose,
                 allowUnowned: config.allowUnowned || 0,
-                no100: !!config.no100
+                no100: !!config.no100,
+                max_rarity: config.max_rarity,
+                min_rarity: config.min_rarity,
+                non_unique: config.non_unique
             },
             callback: calculateCallback
         })

@@ -4,7 +4,7 @@ import { Aggregates, CompactCrew, PlayerCrew, PlayerData } from "./player";
 import { BattleMode, Ship, ShipAction, ShipRankingMethod } from "./ship";
 import { BuffStatTable } from "../utils/voyageutils";
 import { EquipmentItem } from "./equipment";
-import { Collection } from "./game-elements";
+import { Collection } from "./collections";
 import { ICoreData } from "../context/coremodel";
 import { MissionChallenge, MissionTraitBonus, QuestFilterConfig } from "./missions";
 import { IEphemeralData } from "../context/playercontext";
@@ -133,7 +133,10 @@ export interface EquipmentWorkerResults {
 }
 
 export interface BetaTachyonSettings {
-    name?: string,
+    // Name of the settings
+    name: string,
+    // Is Custom?
+    is_custom: boolean,
     // Voyages Improved
     improved: number,
     // Base Power Score
@@ -286,10 +289,14 @@ export interface IMutualPolestarWorkerConfig extends WorkerConfigBase<IMutualPol
     comboSize: PolestarComboSize;
     allowUnowned: number;
     no100: boolean;
+    min_rarity?: number;
+    max_rarity?: number;
+    non_unique?: number;
 }
 
 export interface IPolestarCrew extends CompactCrew {
     disposition: 'include' | 'exclude' | 'unowned';
+    unique: boolean;
 }
 
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
@@ -297,6 +304,9 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IM
     crew: IPolestarCrew[];
     comboSize: PolestarComboSize;
     allowUnowned?: number;
+    min_rarity?: number;
+    max_rarity?: number;
+    non_unique?: number;
 }
 export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
     ranking_method: ShipRankingMethod,

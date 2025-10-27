@@ -20,10 +20,11 @@ export interface IEventData extends IOrigEventData {
 	featured_ships: string[];	/* ONLY featured ships by symbol */
 	bonusGuessed?: boolean;
 	activeContent?: Content;
+	mega_crew?: string;
 };
 
 export interface IRosterCrew extends PlayerCrew {
-	shared?: boolean;
+	borrowed?: boolean;
 	statusIcon?: SemanticICONS;
 };
 
@@ -31,6 +32,7 @@ export interface IEventScoredCrew extends IRosterCrew {
 	combos: IEventCombos;
 	bestSkill: IEventSkill;
 	bestPair: IEventPair;
+	encounter_traits?: string[];
 };
 
 export interface IEventCombos {

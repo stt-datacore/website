@@ -60,7 +60,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 						methods = ['vp'];
 					sortLineups(datacoreSorter, lineups, estimates, methods)
 						.then(sorted => {
-							output(JSON.parse(JSON.stringify(sorted)), false);
+							output(structuredClone(sorted), false);
 						});
 				});
 		})
@@ -108,7 +108,7 @@ const VoyagersWorker = (input: InputType, output: OutputType, chewable: Chewable
 				const seconds: number = estimate.refills[0].result*60*60;
 				const bonuses: number[] = [];
 				lineup.crew.forEach(crew => bonuses.push(crew.event_score));
-				estimate.vpDetails = calcVoyageVP(seconds, bonuses);
+				estimate.vpDetails = calcVoyageVP(seconds, bonuses, voyage_description.event_content?.encounter_times);
 			}
 			resolve({ estimate, key: lineup.key });
 		});

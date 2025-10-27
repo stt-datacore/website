@@ -94,8 +94,9 @@ export const AvatarView = (props: AvatarViewProps) => {
     const items = props.altItems ?? globalContext.core.items;
     const crew = props.altCrew ?? globalContext.core.crew;
     const all_ships = globalContext.core.all_ships;
-    const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, id, size, ignorePlayer, hideRarity, targetGroup } = props;
+    const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, size, ignorePlayer, hideRarity, targetGroup } = props;
     const symbol = props.symbol || props.item?.symbol;
+    const id = props.id || props.item?.id;
     const crewBackground = props.crewBackground ?? 'normal';
 
     const useDirect = props.useDirect || false //?? !!props.item;
@@ -230,7 +231,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     function prepareCrew(gen_item?: BasicItem) {
         if ((!passDirect && !useDirect) || !gen_item || partialItem) {
             if (!ignorePlayer && !!playerData && !gen_item) {
-                gen_item = playerData.player.character.crew.find(f => f.symbol === symbol || (id !== undefined && f.id?.toString() === id?.toString()) || (id !== undefined && f.archetype_id?.toString() === id?.toString()));
+                gen_item = playerData.player.character.crew.find(f => (id !== undefined && f.id?.toString() === id?.toString()) || (id !== undefined && !f.id && f.archetype_id?.toString() === id?.toString()) || (!id && f.symbol === symbol));
             }
             if (!gen_item) {
                 gen_item = crew.find(f => id ? f.archetype_id === id : f.symbol === symbol) as BasicItem | undefined;

@@ -4,7 +4,7 @@ import { GlobalContext } from "../../context/globalcontext";
 
 import { JsonInputForm } from "../base/jsoninputform";
 import { Notification } from "../page/notification";
-import { Fleet } from "../../model/fleet";
+import { FleetDetails } from "../../model/fleet";
 import { PvpRoot } from "../../model/pvp";
 
 export interface OpponentImporterProps {

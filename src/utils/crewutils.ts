@@ -11,7 +11,7 @@ import { EquipmentItem } from '../model/equipment';
 import { TinyStore } from './tiny';
 
 const tiny = TinyStore.getStore(`global_playerSettings`);
-var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+export var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
 tiny.subscribe((key) => {
 	if (key === 'noGradeColors') {
 		gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
@@ -397,10 +397,66 @@ export function isQuipped<T extends PlayerCrew>(crew: T) {
 	}
 }
 
-export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number): PlayerCrew[] {
+export type OneToManyMatch<T, U extends T> = {
+	token: T;
+	matches: U[];
+}
+
+/**
+ * Merge two lists of related objects where the second list can be related to the first list more than once.
+ * @param onelist The unique list.
+ * @param manylist The many match list.
+ * @param key Either a field name or a compare method
+ * @returns {OneToManyMatch<T, U>} Object array of relation maps of the two list.
+ */
+export function mergeListsOneToMany<T, U extends T>(onelist: T[], manylist: U[], key: (keyof T) | ((a: T, b: T) => number)): OneToManyMatch<T, U>[] {
+	if (!onelist.length) return [];
+	if (!manylist.length) return onelist.map(obj => ({ token: obj, matches: [] }));
+	let results = [] as OneToManyMatch<T, U>[];
+	let comp: ((a: T, b: T) => number);
+	if (typeof key === 'function') {
+		comp = key;
+	}
+	else {
+		if (typeof onelist[0][key] === 'string') {
+			comp = (a, b) => (a[key] as string || '').localeCompare(b[key] as string || '');
+		}
+		else {
+			comp = (a, b) => (a[key] as any) - (b[key] as any);
+		}
+	}
+
+	//let orgList = list1;
+
+	onelist = onelist.slice().sort(comp);
+	manylist = manylist.slice().sort(comp);
+
+	let c = onelist.length;
+	let d = manylist.length;
+	let j = 0;
+	for (let i = 0; i < c; i++) {
+		let res: OneToManyMatch<T, U> = {
+			token: onelist[i],
+			matches: []
+		}
+		while (j < d && comp(onelist[i], manylist[j]) === 0) {
+			res.matches.push(manylist[j++]);
+		}
+		results.push(res);
+	}
+	// results.sort((a, b) => {
+	// 	let ax = orgList.findIndex(fi => fi === a.token);
+	// 	let bx = orgList.findIndex(fi => fi === b.token);
+	// 	return ax - bx;
+	// });
+
+	return results;
+}
+
+export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: PlayerData, buffConfig?: BuffStatTable, rarity?: number, knownPlayerCrew?: PlayerCrew[]): PlayerCrew[] {
 	// Create a copy of crew instead of directly modifying the source (allcrew)
-	let templateCrew = JSON.parse(JSON.stringify(origCrew)) as PlayerCrew;
-	let outputcrew = [] as PlayerCrew[];
+	const templateCrew = structuredClone(origCrew) as PlayerCrew;
+	const outputcrew = [] as PlayerCrew[];
 
 	if (buffConfig && !Object.keys(buffConfig)?.length) buffConfig = undefined;
 
@@ -437,20 +493,21 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	}
 
 	let inroster = [] as PlayerCrew[];
-
 	let crew = templateCrew;
 
 	if (playerData?.player?.character) {
 		if (!crew.preview && playerData.player.character.c_stored_immortals?.includes(crew.archetype_id)) {
-			crew = JSON.parse(JSON.stringify(templateCrew));
+			crew = structuredClone(templateCrew);
 			crew.immortal = 1;
+			crew.id = 0;
 		}
 		else {
 			let frozen = playerData.player.character.stored_immortals.find(im => im.id === crew.archetype_id && !crew.preview);
 			if (frozen) {
-				crew = JSON.parse(JSON.stringify(templateCrew));
+				crew = structuredClone(templateCrew);
 				crew.immortal = frozen.quantity;
 				crew.q_bits = frozen.qbits ?? 0;
+				crew.id = 0;
 			}
 		}
 
@@ -467,7 +524,12 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		}
 	}
 
-	inroster = crew.preview ? [] : inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal <= 0 || c.immortal === undefined) && c.archetype_id === crew.archetype_id) ?? []);
+	if (!crew.preview) {
+		inroster = (knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal === undefined || c.immortal <= 0) && c.archetype_id === crew.archetype_id) ?? []));
+	}
+	else {
+		inroster.length = 0;
+	}
 
 	const maxxed = {
 		maxowned: crew.highest_owned_rarity as number | undefined,
@@ -478,85 +540,90 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (!maxxed.maxowned || owned.rarity > maxxed.maxowned) maxxed.maxowned = owned.rarity;
 		if (!maxxed.maxlevel || owned.level > maxxed.maxlevel) maxxed.maxlevel = owned.level;
 		if (inroster.length > 1) {
-			crew = JSON.parse(JSON.stringify(templateCrew));
+			crew = structuredClone(templateCrew);
 		}
-		let workitem: PlayerCrew = owned;
+
+		crew.have = true;
+		crew.favorite = owned.favorite;
 		crew.is_new = owned.is_new;
 		crew.id = owned.id;
 		crew.expires_in = owned.expires_in;
 		crew.local_slots = owned.local_slots;
-		if (owned.cap_achiever) crew.cap_achiever = owned.cap_achiever;
+		crew.cap_achiever ??= owned.cap_achiever;
 
-		if (workitem.immortal > 0) crew.immortal = workitem.immortal;
-		if (rarity !== 6) {
-			crew.rarity = workitem.rarity;
-			crew.base_skills = workitem.base_skills;
-			if (rarity === undefined) crew.level = workitem.level;
-			crew.equipment = workitem.equipment;
-			crew.q_bits = workitem.q_bits ?? 0;
-			crew.kwipment_slots = workitem.kwipment_slots;
+		if (owned.immortal && owned.immortal > 0) crew.immortal = owned.immortal;
+
+		if (rarity !== PREPARE_MAX_RARITY) {
+			crew.rarity = owned.rarity;
+			crew.base_skills = owned.base_skills;
+			if (rarity === undefined) crew.level = owned.level;
+			crew.equipment = owned.equipment;
+			crew.q_bits = owned.q_bits ?? 0;
+			crew.kwipment_slots = owned.kwipment_slots;
 			crew.kwipment = [0, 0, 0, 0];
 			crew.kwipment_expiration = [0, 0, 0, 0];
 
-			if (workitem.kwipment?.length) {
-				if (workitem.kwipment?.length && workitem.kwipment[0] && typeof workitem.kwipment[0] !== 'number') {
-					for (let nums of workitem.kwipment as number[][]) {
+			if (owned.kwipment?.length) {
+				if (owned.kwipment?.length && owned.kwipment[0] && typeof owned.kwipment[0] !== 'number') {
+					for (let nums of owned.kwipment as number[][]) {
 						crew.kwipment[nums[0]] = nums[1];
 					}
-					for (let nums of workitem.kwipment_expiration as number[][]) {
+					for (let nums of owned.kwipment_expiration as number[][]) {
 						crew.kwipment_expiration[nums[0]] = nums[1];
 					}
 				}
-				else if (workitem.kwipment?.length) {
-					crew.kwipment = workitem.kwipment;
-					crew.kwipment_expiration = workitem.kwipment_expiration;
+				else if (owned.kwipment?.length) {
+					crew.kwipment = owned.kwipment;
+					crew.kwipment_expiration = owned.kwipment_expiration;
 				}
 			}
 
-			if (workitem.ship_battle && rarity === undefined) crew.ship_battle = workitem.ship_battle;
+			if (owned.ship_battle && rarity === undefined) crew.ship_battle = owned.ship_battle;
 
 			if (typeof rarity === 'number') {
 				crew.action.bonus_amount -= (crew.max_rarity - rarity);
 			}
-			else if (workitem.action) {
-				crew.action.bonus_amount = workitem.action.bonus_amount;
+			else if (owned.action) {
+				crew.action.bonus_amount = owned.action.bonus_amount;
 			}
 		}
-
-		crew.have = true;
-		crew.favorite = workitem.favorite;
 
 		// Use skills directly from player data when possible
-		if (rarity && rarity >= 1 && rarity <= 5) {
+		if (rarity && rarity >= 1 && rarity <= crew.max_rarity) {
 			crew.rarity = rarity;
 			rarity--;
-			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
-			}
-			for (let skill of Object.keys(workitem.skill_data[rarity].base_skills)) {
 
-				crew[skill] = {
-					core: workitem.skill_data[rarity].base_skills[skill].core,
-					min: workitem.skill_data[rarity].base_skills[skill].range_min,
-					max: workitem.skill_data[rarity].base_skills[skill].range_max
-				} as ComputedSkill;
+			crew.base_skills = owned.skill_data[rarity].base_skills;
+
+			for (let skill in CONFIG.SKILLS) {
+				let data = owned.skill_data[rarity].base_skills[skill] as Skill | undefined;
+				if (data) {
+					crew[skill] = {
+						core: data.core,
+						min: data.range_min,
+						max: data.range_max
+					};
+				}
+				else {
+					crew[skill] = { core: 0, min: 0, max: 0 };
+				}
 			}
-			crew.base_skills = workitem.skill_data[rarity].base_skills;
 		}
-		else if (workitem.skills && rarity !== PREPARE_MAX_RARITY) {
+		else if (owned.skills && rarity !== PREPARE_MAX_RARITY) {
+			crew.skills = owned.skills;
 			for (let skill in CONFIG.SKILLS) {
-				crew[skill] = { core: 0, min: 0, max: 0 } as ComputedSkill;
+				if (skill in owned.skills) {
+					let data = owned.skills[skill];
+					crew[skill] = {
+						core: data.core,
+						min: data.range_min,
+						max: data.range_max
+					};
+				}
+				else {
+					crew[skill] = { core: 0, min: 0, max: 0 };
+				}
 			}
-
-			// Override computed buffs because of mismatch with game data
-			for (let skill in workitem.skills) {
-				crew[skill] = {
-					core: workitem.skills[skill].core,
-					min: workitem.skills[skill].range_min,
-					max: workitem.skills[skill].range_max
-				} as ComputedSkill;
-			}
-			crew.skills = workitem.skills;
 		}
 		// Otherwise apply buffs to base_skills
 		else if (buffConfig) {
@@ -576,24 +643,19 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		if (rarity && crew.equipment?.length !== 4) {
 			crew.equipment = [0, 1, 2, 3];
 		}
-		outputcrew.push(oneCrewCopy(crew));
+		outputcrew.push(crew);
 	}
 
 	if (!crew.have) {
-		if ((crew.immortal <= 0 || crew.immortal === undefined) && rarity && rarity < crew.max_rarity && rarity > 0) {
-			if (rarity) {
-				crew.action.bonus_amount -= (crew.max_rarity - rarity);
-				rarity--;
-			}
-			crew = oneCrewCopy({ ...JSON.parse(JSON.stringify(crew)), ...JSON.parse(JSON.stringify(crew.skill_data[rarity])) });
+		if ((crew.immortal === undefined || crew.immortal <= 0) && rarity && rarity < crew.max_rarity && rarity > 0) {
+			crew.action.bonus_amount -= (crew.max_rarity - rarity);
+			crew = oneCrewCopy(crew);
+			crew.rarity = rarity;
+			crew.base_skills = structuredClone(crew.skill_data[rarity - 1].base_skills);
 		}
-		if (!crew.have) {
-			if (buffConfig) applyCrewBuffs(crew, buffConfig);
-			crew.immortal = playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
-		}
-		if (rarity && !crew.equipment?.length) {
-			crew.equipment = [0, 1, 2, 3];
-		}
+		if (buffConfig) applyCrewBuffs(crew, buffConfig);
+		crew.immortal = playerData?.player?.character?.crew?.length ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
+		crew.equipment ??= [0, 1, 2, 3];
 		outputcrew.push(crew);
 	}
 
@@ -601,11 +663,10 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		crew.immortal = playerData ? CompletionState.DisplayAsImmortalUnowned : CompletionState.DisplayAsImmortalStatic;
 	}
 
-	outputcrew.forEach(f => {
+	for (let f of outputcrew) {
 		f.highest_owned_rarity = maxxed.maxowned;
 		f.highest_owned_level = maxxed.maxlevel;
-		//if (quipment) calcQLots(f, quipment, buffConfig, !f.have);
-	});
+	}
 
 	return outputcrew;
 }
@@ -634,13 +695,13 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
 	let cidx = -1;
-
-	for (let c of allcrew) {
-		if (c.symbol === 'troi_ageofsail_crew') {
-			console.log('break');
-		}
-		for (let crew of prepareOne(c, playerData, buffConfig, undefined)) {
-
+	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.symbol.localeCompare(b.symbol));
+	for (let tl of twolists) {
+		let c = tl.token;
+		// if (c.symbol === 'troi_ageofsail_crew') {
+		// 	console.log('break');
+		// }
+		for (let crew of prepareOne(c, playerData, buffConfig, undefined, tl.matches)) {
 			if (crew.have) {
 				if (!crew.id) {
 					crew.id = cidx--;
@@ -684,7 +745,8 @@ export function getHighest<T extends PlayerCrew>(crew: T[]) {
  * @returns A deep copy an array of crew with Date objects ensured
  */
 export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
-	return (JSON.parse(JSON.stringify(crew)) as T[]).map(c => ({...c, date_added: new Date(c.date_added) }));
+	return structuredClone(crew);
+	//return (structuredClone(crew)) as T[]).map(c => ({...c, date_added: new Date(c.date_added) });
 }
 
 /**
@@ -693,9 +755,7 @@ export function crewCopy<T extends CrewMember>(crew: T[]): T[] {
  * @returns A deep copy of a single crew with Date objects ensured
  */
 export function oneCrewCopy<T extends CrewMember>(crew: T): T {
-	let result = JSON.parse(JSON.stringify(crew)) as T;
-	crew.date_added = new Date(crew.date_added);
-	return result;
+	return structuredClone(crew);
 }
 
 export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) : CompactCrew {
@@ -709,12 +769,12 @@ export function makeCompact<T extends PlayerCrew>(crew: T, exclude?: string[]) :
 	if (!exclude?.includes("max_level")) newcrew.max_level = crew.max_level;
 	if (!exclude?.includes("max_rarity")) newcrew.max_rarity = crew.max_rarity;
 	if (!exclude?.includes("rarity")) newcrew.rarity  = crew.rarity;
-	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? JSON.parse(JSON.stringify(crew.equipment)) : undefined;
+	if (!exclude?.includes("equipment")) newcrew.equipment = newcrew.equipment ? structuredClone(crew.equipment) : [];
 	if (!exclude?.includes("skill_order")) newcrew.skill_order  = [ ...crew.skill_order ];
-	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? JSON.parse(JSON.stringify(crew.base_skills)) : undefined;
-	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? JSON.parse(JSON.stringify(crew.skills)) : undefined;
+	if (!exclude?.includes("base_skills")) newcrew.base_skills  = crew.base_skills ? structuredClone(crew.base_skills) : undefined;
+	if (!exclude?.includes("skills")) newcrew.skills  = crew.skills ? structuredClone(crew.skills) : undefined;
 	if (!exclude?.includes("favorite")) newcrew.favorite  = crew.favorite;
-	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? JSON.parse(JSON.stringify(crew.ship_battle)) : undefined;
+	if (!exclude?.includes("ship_battle")) newcrew.ship_battle  = crew.ship_battle ? structuredClone(crew.ship_battle) : undefined;
 	if (!exclude?.includes("active_status")) newcrew.active_status  = crew.active_status;
 	if (!exclude?.includes("active_id")) newcrew.active_id  = crew.active_id;
 	if (!exclude?.includes("active_index")) newcrew.active_index  = crew.active_index;
@@ -866,11 +926,11 @@ export function getPlayerPairs(crew: PlayerCrew | CrewMember, multiplier?: numbe
 
 		if (skills.length <= 2) {
 			if (skills.length === 1) {
-				skills.push(JSON.parse(JSON.stringify(emptySkill)));
+				skills.push(structuredClone(emptySkill));
 			}
 			pairs.push(skills);
-			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);
-			pairs.push([JSON.parse(JSON.stringify(emptySkill)), JSON.parse(JSON.stringify(emptySkill))]);
+			pairs.push([structuredClone(emptySkill), structuredClone(emptySkill)]);
+			pairs.push([structuredClone(emptySkill), structuredClone(emptySkill)]);
 			return pairs;
 		}
 

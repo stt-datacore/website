@@ -2,7 +2,7 @@ import React from "react";
 import { IEventData, IRosterCrew } from "../eventplanner/model"
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { GlobalContext } from "../../context/globalcontext";
-import { Button, Checkbox, Icon, Label, Modal, Segment, Table } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Label, Message, Modal, Segment, Table } from "semantic-ui-react";
 import { SpecialistMission } from "../../model/player";
 import { Filter } from "../../model/game-elements";
 import { omniSearchFilter } from "../../utils/omnisearch";
@@ -166,11 +166,23 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     return <React.Fragment>
         <h2>{t('event_planner.specialist_missions')}</h2>
         <CrewHoverStat targetGroup="specialist_missions" />
+        <Message color='blue'>
+            <Icon name='info' bordered style={{ borderRadius: '16px', backgroundColor: 'white' }} />
+            {t('event_planner.specialist.instructions')}
+        </Message>
         <div style={{...flexRow, gap: '1em', margin: '1em 0'}}>
-            <Button onClick={() => staffSelected()}><Icon name='user' /> {t('event_planner.staff_selected')}</Button>
-            <Button onClick={() => selectAll()}><Icon name='globe' /> {t('global.select_all')}</Button>
-            <Button onClick={() => selectNone()}><Icon name='remove circle' /> {t('global.unselect_all')}</Button>
-            <Button onClick={() => clearAll()}><Icon name='cancel' /> {t('global.clear_all')}</Button>
+            <Button
+                disabled={!selectedMissions?.length}
+                onClick={() => staffSelected()}><Icon name='user' /> {t('event_planner.staff_selected')}</Button>
+            <Button
+                disabled={selectedMissions?.length === missions?.length || locked?.length === missions?.length}
+                onClick={() => selectAll()}><Icon name='globe' /> {t('global.select_all')}</Button>
+            <Button
+                disabled={!selectedMissions?.length || locked?.length === missions?.length}
+                onClick={() => selectNone()}><Icon name='remove circle' /> {t('global.unselect_all')}</Button>
+            <Button
+                disabled={!selectedMissions?.length || locked?.length === missions?.length}
+                onClick={() => clearAll()}><Icon name='cancel' /> {t('global.clear_all')}</Button>
         </div>
         <div style={{...flexRow, gap: '0.25em', margin: '1em 0'}}>
             <Checkbox checked={preferBonus} label={t('event_planner.prefer_high_bonus')} onChange={(e, { checked }) => setPreferBonus(!!checked)} />
@@ -297,13 +309,24 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const failed = !!staffingFailures?.some(sel => sel === row.id);
 
         return <Table.Row negative={failed}>
-            <Table.Cell style={{cursor: isLocked ? undefined : 'pointer'}} onClick={() => !isLocked && toggleMission(row)}>
+            <Table.Cell style={{cursor: isLocked ? 'no-drop' : 'pointer'}} onClick={() => !isLocked && toggleMission(row)}>
                 <div style={{...flexRow, alignItems: 'flex-start', gap: '0.25em'}}>
                     <div style={{width: '24px', margin: '0 0.5em'}}>
                         {selected && <Icon name='check' />}
+                        {isLocked && <Icon name='lock' />}
                     </div>
-                    <div>
-                        {row.title}
+                    <div style={{
+                        ...flexCol,
+                        alignItems: 'flex-start',
+                        gap: '0em'}}>
+                        <div>
+                            {row.title}
+                        </div>
+                        {isLocked && (
+                            <div style={{color: 'lightgreen', fontSize: '0.8em'}}>
+                                ({t('event_planner.specialist.mission_running')})
+                            </div>
+                        )}
                     </div>
                 </div>
             </Table.Cell>
@@ -360,8 +383,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                 margin: '0em',
                 padding: '1em',
                 width: '100%',
-                cursor: isLocked ? undefined : 'pointer'
-
+                cursor: isLocked ? 'no-drop' : 'pointer'
             }} onClick={() => !isLocked ? openPicker(mission) : false}>
                 {!!rec?.position && <Label corner='right' style={{fontSize: '1.2em', padding: '0.75em', textAlign: 'right'}} content={rec.position}></Label>}
                 <div style={{...flexRow, gap: '0.5em', justifyContent: 'flex-start', gridArea: 'area1', marginRight: '0.25em'}}>
@@ -453,7 +475,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
             const missioncrew = positionCrew
                 .filter(c =>
-                        !c.active_status &&
+                        // (c.active_status === 0 || c.active_status === 3) &&
                         !galaxyCooldowns.some(g => g.crew_id === c.id && g.disabled_until.getTime() > Date.now())
                 )
 
@@ -488,7 +510,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
     }
 
     function clearAll() {
-        setMissionCrew(missionCrew.filter(f => f.ending_at));
+        setMissionCrew(missionCrew.filter(f => !!f.ending_at));
         setSelectedMissions([].slice());
         setStaffingFailures([].slice());
     }

@@ -15,6 +15,7 @@ import { AvatarView } from "../item_presenters/avatarview";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ItemsFilterContext } from "./filters";
 import { downloadData, skillSum } from "../../utils/crewutils";
+import { PlayerResource } from "../page/playerglance";
 
 export interface EquipmentTableProps {
     pageId: string;
@@ -31,6 +32,7 @@ export interface EquipmentTableProps {
     setSelection?: (value?: number[]) => void;
     maxSelections?: number;
     selectionMode?: boolean;
+    ownedColumns?: string[];
 }
 
 export const EquipmentTable = (props: EquipmentTableProps) => {
@@ -38,20 +40,23 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
 
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const { pageId, hideOwnedColumns: hideOwnedInfo, types, buffsColumn: buffs, flavorColumn: flavor, customFields, noRender } = props;
+    const { pageId, hideOwnedColumns: hideOwnedInfo, ownedColumns, types, buffsColumn: buffs, flavorColumn: flavor, customFields, noRender } = props;
     const { selection, setSelection, maxSelections, selectionMode } = props;
 
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter } = filterContext;
+    const { available, ownedItems, filterItems, rarityFilter, itemTypeFilter, showUnownedNeeded, hideUnneeded, itemSourceFilter, masteryFilter } = filterContext;
 
     const items = React.useMemo(() => {
+        let items = [] as (EquipmentItem | PlayerEquipmentItem)[];
         if (available) {
-            return filterItems(props.items ?? globalContext.core.items);
+            items = filterItems(props.items ?? globalContext.core.items);
         }
         else {
-            return props.items ?? globalContext.core.items;
+            items = props.items ?? globalContext.core.items;
         }
-    }, [props.items, globalContext.core.items, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter]);
+        if (types) items = items.filter(f => !f.type || types.includes(f.type));
+        return items;
+    }, [props.items, globalContext.core.items, available, rarityFilter, itemTypeFilter, showUnownedNeeded, itemSourceFilter, masteryFilter, hideUnneeded]);
 
     const buffCache = React.useMemo(() => {
         if (items?.length && buffs) {
@@ -92,10 +97,15 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     ] as ITableConfigRow[];
 
     if (!hideOwnedInfo) {
-        tableConfig.push(
-            { width: 1, column: 'quantity', title: t("items.columns.quantity"), reverse: true },
-            { width: 1, column: 'needed', title: t("items.columns.needed"), reverse: true },
-        );
+        if (!ownedColumns || ownedColumns.includes('quantity')) {
+            tableConfig.push(
+                { width: 1, column: 'quantity', title: t("items.columns.quantity"), reverse: true },
+            );
+        }
+        if (!ownedColumns || ownedColumns.includes('needed')) {
+            tableConfig.push(
+                { width: 1, column: 'needed', title: t("items.columns.needed"), reverse: true },
+        );}
     }
 
     if (!types?.length) {
@@ -127,9 +137,11 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
     }
 
     if (!hideOwnedInfo) {
-        tableConfig.push(
-            { width: 1, column: 'factionOnly', title: t("items.faction_only"), reverse: false },
-        );
+        if (!ownedColumns || ownedColumns.includes('faction_only')) {
+            tableConfig.push(
+                { width: 1, column: 'factionOnly', title: t("items.faction_only"), reverse: false },
+            );
+        }
     }
 
     if (!!customFields?.length) {
@@ -237,8 +249,8 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                     </div>
                 </div>
             </Table.Cell>
-            {!hideOwnedInfo && <Table.Cell>{item.quantity}</Table.Cell>}
-            {!hideOwnedInfo && (
+            {!hideOwnedInfo && (!ownedColumns || ownedColumns.includes('quantity')) && <Table.Cell>{item.quantity}</Table.Cell>}
+            {!hideOwnedInfo && (!ownedColumns || ownedColumns.includes('needed')) && (
                 <Table.Cell>{item.needed ?? "N/A"}</Table.Cell>
             )}
             {!types?.length && (
@@ -251,7 +263,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
             {!!flavor && (
                 <Table.Cell>{createFlavor(item, flavorConfig)}</Table.Cell>
             )}
-            {!hideOwnedInfo && (
+            {!hideOwnedInfo && (!ownedColumns || ownedColumns.includes('faction_only')) && (
                 <Table.Cell>
                     {item.factionOnly === undefined
                         ? ""
@@ -264,7 +276,7 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
                 customFields.map((field) => (
                     <Table.Cell key={"custom_" + field.field + "_value"}>
                         {field.format
-                            ? field.format(item[field.field])
+                            ? field.format(item[field.field], item)
                             : item[field.field]}
                     </Table.Cell>
                 ))}

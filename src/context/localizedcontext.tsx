@@ -5,7 +5,7 @@ import { Action, ItemTranslation, ShipTraitNames, TraitNames, TranslationSet } f
 import { CrewMember } from '../model/crew';
 import { EquipmentItem } from '../model/equipment';
 import { ReferenceShip, Schematics, Ship } from '../model/ship';
-import { Collection } from '../model/game-elements';
+import { Collection } from "../model/collections";
 import { CryoCollection, PlayerCrew, TranslateMethod } from '../model/player';
 import { DataContext } from './datacontext';
 import { PlayerContext, PlayerContextData } from './playercontext';
@@ -298,8 +298,18 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		if (newFallbackMap) {
 			setFallbackMap(makeWebstringMap(newFallbackMap));
 		}
+		const wsmap = makeWebstringMap(webStringsJson);
 
-		setWebStringMap(makeWebstringMap(webStringsJson));
+		// Add some translation shortcuts to traits for ease of use with filters.
+		// TODO: At some point, we can rework the filtering strategy for these particular things.
+
+		translatedGameStrings.TRAIT_NAMES['maincast'] = wsmap['rank_names.scores.main_cast'];
+		translatedGameStrings.TRAIT_NAMES['notmaincast'] = wsmap['base.not_maincast'];
+		// TODO: Not main cast
+		["ds9", "dsc", "ent", "low", "original", "pic", "snw", "tas", "tng", "tos", "voy", "vst", "sfa"]
+			.forEach(series => translatedGameStrings.TRAIT_NAMES[series] = wsmap[`series.${series}`]);
+
+		setWebStringMap(wsmap);
 		setGameStrings({...translatedGameStrings});
 		setEnglishStrings({...englishStrings});
 		setLanguage(newLanguage);
@@ -449,7 +459,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], all_ships: ReferenceShip[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[], ReferenceShip[]] | [undefined, undefined, undefined] {
 		if ((ship_schematics.length || all_ships.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
 			let result1 = ignoreSchematics ? [] : ship_schematics.map((ship) => {
-				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? JSON.parse(JSON.stringify(ship.ship.actions)) : undefined }};
+				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? structuredClone(ship.ship.actions) : undefined }};
 				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
 				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
 				ship.ship.traits_named = ship.ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -463,7 +473,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				return ship;
 			});
 			let result2 = ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? JSON.parse(JSON.stringify(ship.actions)): undefined };
+				ship = { ... ship, actions: ship.actions ? structuredClone(ship.actions): undefined };
 				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -477,7 +487,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				return ship;
 			});
 			let result3 = ignoreSchematics ? [] : all_ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? JSON.parse(JSON.stringify(ship.actions)): undefined };
+				ship = { ... ship, actions: ship.actions ? structuredClone(ship.actions) : [] };
 				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);

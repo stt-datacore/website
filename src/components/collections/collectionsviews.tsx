@@ -3,7 +3,7 @@ import React from 'react';
 import { DropdownItemProps, Header, Icon, Step } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { CollectionCombo, CollectionInfo, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collectionfilter';
+import { CollectionCombo, CollectionInfo, CollectionWorkerConfig, CollectionWorkerResult, ComboCostMap } from '../../model/collections';
 import { CrewMember } from '../../model/crew';
 import { PlayerCollection, PlayerCrew } from '../../model/player';
 import { navToCrewPage } from '../../utils/nav';
@@ -21,7 +21,7 @@ import { WorkerContext } from '../../context/workercontext';
 import { CollectionPrefs } from './collectionprefs';
 import { CollectionTableView } from './views/tableview';
 import { TinyStore } from '../../utils/tiny';
-import { Collection } from '../../model/game-elements';
+import { Collection } from "../../model/collections";
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
@@ -58,6 +58,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const milestoneOpts = [] as DropdownItemProps[];
 
 	const [tabIndex, setTabIndex] = useStateWithStorage<number | undefined>('collectionstool/tabIndex', undefined, { rememberForever: true });
+    const [compactView, setCompactView] = useStateWithStorage('collectionstool/compactView', false, { rememberForever: true });
 
 	React.useEffect(() => {
 		let selnum = undefined as number | undefined;
@@ -109,14 +110,15 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 	React.useEffect(() => {
 		if (typeof window !== 'undefined') {
-			if (initialized) {
-				runWorker();
-			}
-			else {
-				setRequestRun(true);
-			}
+			setRequestRun(true);
+			// if (initialized) {
+			// 	runWorker();
+			// }
+			// else {
+			// 	setRequestRun(true);
+			// }
 		}
-	}, [playerData, colContext]);
+	}, [colContext]);
 
 	if (!playerData) return <></>;
 
@@ -232,6 +234,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			mode: 'group',
 			render: (workerRunning: boolean) =>
 				<CollectionResearchView
+					compactView={compactView}
 					workerRunning={workerRunning}
 					playerCollections={playerCollections}
 					colData={colData} />
@@ -246,6 +249,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			mode: 'optimizer',
 			render: (workerRunning: boolean) =>
 				<CollectionCombosView
+					compactView={compactView}
 					workerRunning={workerRunning}
 					playerCollections={playerCollections}
 					colCombos={colCombos}
@@ -277,6 +281,8 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 
 				{tabPanes[tabIndex].showFilters &&
 					<CollectionPrefs
+						compactView={compactView}
+						setCompactView={setCompactView}
 						mode={tabPanes[tabIndex ?? 0].mode as any}
 						playerCollections={playerCollections}
 						extendedCollections={extendedCollections}

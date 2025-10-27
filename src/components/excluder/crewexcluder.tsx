@@ -1,20 +1,24 @@
 import React from 'react';
-import { Form, Dropdown, Segment, Message, Button, Label, Image, Icon, DropdownItemProps, Popup } from 'semantic-ui-react';
+import { Button, Dropdown, DropdownItemProps, Form, Icon, Image, Label, Message, Popup, Segment } from 'semantic-ui-react';
 
 import { IVoyageCrew, IVoyageInputConfig } from '../../model/voyage';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../base/optionsmodal_base';
+import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from '../base/optionsmodal_base';
 
+import { GlobalContext } from '../../context/globalcontext';
+import { PromptContext } from '../../context/promptcontext';
+import { CrewMember } from '../../model/crew';
+import { PlayerCrew } from '../../model/player';
+import { isQuipped, oneCrewCopy } from '../../utils/crewutils';
+import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
+import { useStateWithStorage } from '../../utils/storage';
+import CONFIG from '../CONFIG';
 import CrewPicker from '../crewpicker';
 import { IEventData, IEventScoredCrew } from '../eventplanner/model';
-import { computeEventBest, getEventData, getRecentEvents } from '../../utils/events';
-import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
-import { crewCopy, oneCrewCopy } from '../../utils/crewutils';
-import CONFIG from '../CONFIG';
-import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
-import { PlayerCrew } from '../../model/player';
-import { useStateWithStorage } from '../../utils/storage';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
+import { CrewItemsView } from '../item_presenters/crew_items';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { QuipmentPopover } from '../voyagecalculator/quipment/quipmentpopover';
+import { NoteEditor } from './noteeditor';
 
 interface ISelectOption {
 	key: string;
@@ -37,9 +41,14 @@ type SelectedBonusType = '' | 'all' | 'featured' | 'matrix';
 
 export const CrewExcluder = (props: CrewExcluderProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { confirm } = globalContext;
+	const promptContext = React.useContext(PromptContext);
+	const { confirm } = promptContext;
 	const { t, tfmt, useT } = globalContext.localized;
 	const { t: excluder } = useT('consider_crew.excluder');
+
+	const [notesOpen, setNotesOpen] = React.useState(false);
+	const [quipOpen, setQuipOpen] = React.useState(false);
+	const [quipValues, setQuipValues] = React.useState([] as number[]);
 
 	const { events: inputEvents, voyageConfig, pageId } = props;
 	const { ephemeral, playerData } = globalContext.player;
@@ -90,13 +99,18 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 						}
 					}
 					else {
-						phase = (gameEvent.content_types as any) as string;
+						if (typeof gameEvent.content_types === 'string') {
+							phase = (gameEvent.content_types as any) as string;
+						}
+						else if (gameEvent.content_types.length) {
+							phase = gameEvent.content_types[0];
+						}
 					}
 
 					// Event-type dependent exclusion modes
 					if (phase === 'galaxy' || phase === 'skirmish') {
-						activeBonus = '';
 						activeEvent = '';
+						activeBonus = '';
 					}
 					else if (phase === 'gather') {
 						activeBonus = 'matrix';
@@ -155,6 +169,10 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			}
 		}
 	}, [selectedEvent, selectedBonus, phase, considerFrozen])
+
+	const quippedSelection = React.useMemo(() => {
+		return getQuippedSelection();
+	}, [excludedCrewIds]);
 
 	const eventOptions = [] as ISelectOption[];
 	events.forEach(gameEvent => {
@@ -235,8 +253,16 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								)}
 							</Form.Group>
 						)}
-						<Form.Field>
+					</Form.Group>
+
+					<div style={{...OptionsPanelFlexRow, gap: '1em', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-start'}}>
 							<Button color='blue' onClick={(e) => excludeQuipped()}>{t('consider_crew.exclude_quipped')}</Button>
+							<Button color='blue' icon='pencil' onClick={openQuipEditor}
+								/>
+
+						</div>
+						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
 							<Popup
 								content={excluder('denote_current')}
 								trigger={
@@ -271,9 +297,51 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 										/>
 									}
 								/>
-						</Form.Field>
 
-					</Form.Group>
+							<Button
+								disabled={!notedExclusions?.length}
+								style={{float: 'right'}}
+								icon='pencil'
+								onClick={() => setNotesOpen(!notesOpen)}
+							/>
+
+						</div>
+					</div>
+
+					<NoteEditor
+						mode='add'
+						title={t('consider_crew.exclude_quipped')}
+						isOpen={quipOpen}
+						showHighest
+						showExpiring
+						currentSelection={quippedSelection}
+						onClose={(result) => {
+							if (result) {
+								if (quippedSelection?.length) {
+									let osel = excludedCrewIds.filter(id => !quippedSelection.includes(id));
+									updateExclusions([...osel, ...result]);
+								}
+								else {
+									excludeQuipped(result);
+								}
+							}
+							setQuipOpen(false);
+						}}
+						crewIds={quipValues}
+						/>
+
+					<NoteEditor
+						mode='remove'
+						title={t('consider_crew.excluder.noted_exclusions')}
+						isOpen={notesOpen}
+						onClose={(result) => {
+							if (result) {
+								setNotedExclusions(result);
+							}
+							setNotesOpen(false);
+						}}
+						crewIds={notedExclusions}
+						/>
 				</Message.Content>
 			</Message>
 			<Segment attached='bottom'>
@@ -281,6 +349,17 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 			</Segment>
 		</React.Fragment>
 	);
+
+	function openQuipEditor() {
+		const quipped = props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
+		setQuipValues(quipped);
+		setQuipOpen(true);
+	}
+
+	function getQuippedSelection() {
+		const quipped = props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
+		return excludedCrewIds.filter(f => quipped.includes(f));
+	}
 
 	function renderExcludedCrew(): JSX.Element {
 		const visibleExcludedCrew = [] as IVoyageCrew[];
@@ -363,8 +442,8 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		updateExclusions([...excludedCrewIds]);
 	}
 
-	function excludeQuipped() {
-		const quipped = props.rosterCrew.filter(f => !excludedCrewIds?.includes(f.id) && f.kwipment?.some(k => typeof k === 'number' ? !!k : !!k[1]))?.map(c => c.id);
+	function excludeQuipped(list?: number[]) {
+		const quipped = list || props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
 		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
 	}
 
@@ -434,9 +513,17 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 			handleSelect={(crew) => onCrewPick(crew as IVoyageCrew)}
 			options={options} setOptions={setOptions} defaultOptions={DEFAULT_EXCLUDER_OPTIONS}
 			pickerModal={ExcluderOptionsModal} renderTrigger={renderTrigger}
+			renderCrewCaption={renderCaption}
 			filterCrew={(data, searchFilter) => filterCrew(data as IVoyageCrew[], searchFilter)}
 		/>
 	);
+
+	function renderCaption(crew: CrewMember | PlayerCrew): JSX.Element {
+		return <div style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
+			<CrewItemsView nonInteractive={true} itemSize={24} crew={crew} quipment={true} />
+			<span>{crew.name}</span>
+		</div>
+	}
 
 	function renderTrigger(): JSX.Element {
 		return (
@@ -452,7 +539,9 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 		data = data.filter(crew =>
 			true
 				&& (options.rarities.length === 0 || options.rarities.includes(crew.max_rarity))
+				&& ((options.quippedStatus === 1 && isQuipped(crew)) || (options.quippedStatus === 2 && !isQuipped(crew)) || (!options.quippedStatus))
 				&& (searchFilter === '' || (query(crew.name) || query(crew.short_name)))
+				&& (!options.skill?.length || options.skill.includes(crew.skill_order[0]))
 		);
 		return data;
 	}
@@ -467,20 +556,38 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 
 interface IExcluderModalOptions extends OptionsBase {
 	rarities: number[];
+	quippedStatus: number | undefined;
+	skill: string[];
 };
 
 const DEFAULT_EXCLUDER_OPTIONS = {
-	rarities: []
+	rarities: [],
+	quippedStatus: undefined,
+	skill: []
 } as IExcluderModalOptions;
 
 class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 	state: { isDefault: boolean; isDirty: boolean; options: any; modalIsOpen: boolean; };
-	declare props: any;
+	//declare props: any;
 
 	protected getOptionGroups(): OptionGroup[] {
 		const { t } = this.context.localized;
+		ExcluderOptionsModal.quippedStatusOptions.length = 0;
+		ExcluderOptionsModal.quippedStatusOptions.push(
+			{
+				key: `quipped`,
+				value: 1,
+				text: t('options.roster_maintenance.quipped')
+			},
+			{
+				key: `quipped_hide`,
+				value: 2,
+				text: t('options.roster_maintenance.quipped_hide')
+			},
+		);
+
 		return [
 			{
 				title: t('hints.filter_by_rarity{{:}}'),
@@ -495,25 +602,66 @@ class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 					justifyContent: 'flex-start',
 					gap:'0.5em'
 				}
-			}]
+			},
+			{
+				title: t('hints.filter_by_quipped_status{{:}}'),
+				key: 'quippedStatus',
+				multi: false,
+				options: ExcluderOptionsModal.quippedStatusOptions,
+				initialValue: undefined,
+				placeholder: t('options.crew_status.none'),
+				containerStyle: {
+					marginTop: '0.5em',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-start',
+					justifyContent: 'flex-start',
+					gap:'0.5em'
+				}
+			},
+			{
+				title: t('hints.filter_by_skill{{:}}'),
+				key: 'skill',
+				multi: true,
+				options: ExcluderOptionsModal.skillOptions,
+				initialValue: [] as string[],
+				placeholder: t('options.crew_status.none'),
+				containerStyle: {
+					marginTop: '0.5em',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-start',
+					justifyContent: 'flex-start',
+					gap:'0.5em'
+				}
+			}];
 	}
 	protected getDefaultOptions(): IExcluderModalOptions {
 		return DEFAULT_EXCLUDER_OPTIONS;
 	}
 
 	static readonly rarityOptions = [] as ModalOption[];
+	static readonly quippedStatusOptions = [] as ModalOption[];
+	static readonly skillOptions = [] as ModalOption[];
 
 	constructor(props: OptionsModalProps<IExcluderModalOptions>) {
 		super(props);
 
+		ExcluderOptionsModal.rarityOptions.length = 0;
+		ExcluderOptionsModal.skillOptions.length = 0;
+
 		CONFIG.RARITIES.forEach((r, i) => {
 			if (i === 0) return;
-			ExcluderOptionsModal.rarityOptions.length = 0;
 			ExcluderOptionsModal.rarityOptions.push(
 				{ key: `${i}*`, value: i, text: `${i}* ${r.name}` }
 			)
 		});
 
+		CONFIG.SKILLS_SHORT.forEach((data) => {
+			ExcluderOptionsModal.skillOptions.push(
+				{ key: `${data.name}`, value: data.name, text: `${data.short}` }
+			)
+		});
 
 		this.state = {
 			isDefault: false,
@@ -523,11 +671,17 @@ class ExcluderOptionsModal extends OptionsModal<IExcluderModalOptions> {
 		}
 	}
 
+	resetOptions(): void {
+		this.setState({ ... this.state, options: structuredClone(DEFAULT_EXCLUDER_OPTIONS) });
+	}
+
 	protected checkState(): boolean {
 		const { options } = this.state;
 
-		const isDefault = options.rarities.length === 0;
-		const isDirty = options.rarities.length !== this.props.options.rarities.length || !this.props.options.rarities.every(r => options.rarities.includes(r));
+		options.quippedStatus ??= 0;
+
+		const isDefault = options.rarities.length === 0 && options.quippedStatus === 0;
+		const isDirty = options.quippedStatus !== this.props.options.quippedStatus || options.rarities.join() !== this.props.options.rarities.join() || options.skill.join() !== this.props.options.skill.join()
 
 		if (this.state.isDefault !== isDefault || this.state.isDirty !== isDirty) {
 			this.setState({ ...this.state, isDefault, isDirty });

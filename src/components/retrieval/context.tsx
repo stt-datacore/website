@@ -3,7 +3,7 @@ import React from 'react';
 import { IKeystone, IPolestarTailors, IRosterCrew, CrewFilterField } from './model';
 import { MarketAggregation } from '../../model/celestial';
 import { TranslateMethod } from '../../model/player';
-import { KeystoneBase } from '../../model/game-elements';
+import { KeystoneBase } from "../../model/keystone";
 
 export interface IRetrievalContext {
 	allKeystones: IKeystone[];	// All keystones (i.e. constellations AND polestars) with quantity owned and polestar odds
@@ -29,6 +29,28 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
 		<img src={img} style={{height: '1.5em'}} />
 		<span>{quantity.toLocaleString()} {t && printISM ? t('global.item_types.ism') : ''}</span>
+	</div>
+}
+
+export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
+
+	return <div
+		title={t ? t('global.item_types.honor') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printHonor ? t('global.item_types.honor') : ''}</span>
+	</div>
+}
+
+export function printMerits(quantity: number, t?: TranslateMethod, printMerits?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/pe_currency_icon.png`;
+
+	return <div
+		title={t ? t('global.item_types.merits') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printMerits ? t('global.item_types.merits') : ''}</span>
 	</div>
 }
 

@@ -2,7 +2,8 @@ import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { Table } from "semantic-ui-react";
-import { approxDate, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { approxDate } from "../itemdateutils";
 import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
@@ -261,7 +262,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
                     }
                     {expanded === item.symbol && !!item.more_traits &&
                         <Table.Row>
-                            <Table.Cell colspan={2}>
+                            <Table.Cell colSpan={2}>
                                 {t('global.and_n_more_ellipses', { n: item.more_traits })}
                             </Table.Cell>
                         </Table.Row>

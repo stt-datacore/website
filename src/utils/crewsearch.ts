@@ -50,7 +50,7 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 						else if (condition.value?.toString) {
 							rarities.push(Number.parseInt(condition.value.toString()));
 						}
-						
+
 						continue;
 					}
 
@@ -68,10 +68,15 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 							(matchesFilter(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[crew.action.ability.type], condition.value) ||
 								matchesFilter(CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition], condition.value)));
 				} else if (condition.keyword === 'skill_order' || condition.keyword === 'order') {
-					let sko = crew.skill_order.map(v => skillToShort(v)).join("/").toLowerCase();
-					conditionResult = sko.startsWith(condition.value.toLowerCase());
-				} 
-				// else if (condition.keyword === 'obtained') {					
+					let sko = crew.skill_order.map(v => skillToShort(v)).map(s => s!.toLowerCase());
+					let cond = /([a-z]+|\*)\/?([a-z]+|\*)?\/?([a-z]+|\*)?/.exec(condition.value.toLowerCase());
+					conditionResult = !!cond?.slice(1)
+						.filter(f => f !== undefined)
+						.every(
+							(skill, idx) => skill === '*' || (sko.length > idx && sko[idx] === skill)
+						);
+				}
+				// else if (condition.keyword === 'obtained') {
 				// 	conditionResult = crew.obtained.toLowerCase().includes(condition.value.toLowerCase());
 				// }
 				meetsAllConditions = meetsAllConditions && (condition.negated ? !conditionResult : conditionResult);

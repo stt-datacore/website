@@ -25,10 +25,20 @@ export enum SyncState {
 	RemoteReady
 };
 
+
 export interface TrackerPostResult {
 	status: number;
 	inputId?: number;
 	trackerId?: number;
+};
+
+export interface TrackerPostResultBatch {
+	status: number;
+	data: {
+		status: number;
+		inputId?: number;
+		trackerId?: number;
+	}[]
 };
 
 export interface LootCrew {
@@ -282,6 +292,21 @@ export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assi
 	.catch((error) => { throw(error); });
 }
 
+export async function postTrackedDataBatch(dbid: string, voyages: ITrackedVoyage[], assignments: IFullPayloadAssignment[][]): Promise<TrackerPostResultBatch> {
+	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedDataBatch`
+	return await fetch(route, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			dbid,
+			voyages,
+			assignments
+		})
+	})
+	.then((response: Response) => response.json())
+	.catch((error) => { throw(error); });
+}
+
 export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHistory, tracker_id?: number) {
 	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
 	let unsynced = history.voyages.filter(v => !v.remote);
@@ -321,6 +346,11 @@ export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHi
 	}
 }
 
+export function repairRemoteHistory(dbid: string): Promise<any> {
+	return fetch(`${process.env.GATSBY_DATACORE_URL}api/repairVoyages?dbid=${dbid}`)
+	.catch((error) => { throw(error); });
+}
+
 export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
 	let route = `${process.env.GATSBY_DATACORE_URL}api/postVoyage`
 	return await fetch(route, {
@@ -348,7 +378,7 @@ export async function deleteTrackedData(dbid: string, trackerId?: number): Promi
 		.catch((error) => { throw(error); });
 }
 
-export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
+export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory, importMode?: boolean) {
 	local.voyages ??= [];
 	local.crew ??= {};
 	remote.voyages ??= [];
@@ -356,6 +386,7 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 
 	let lrms = local.voyages.filter(f => f.remote);
 	let rrms = remote.voyages.filter(f => f.remote);
+	let allorig = local.voyages.concat(remote.voyages);
 
 	function cleanHistory(hist: IVoyageHistory) {
 		hist.voyages = hist.voyages.filter(f => !!f?.tracker_id);
@@ -394,56 +425,82 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 
 	localIds.sort();
 
-	let maxRemote = remoteIds.sort().reverse()[0];
+	let maxRemote = remoteIds.sort((a, b) => b - a)[0];
 	let minLocal = maxRemote + 1;
 	let lvoyages = local.voyages.slice();
 
 	if (lvoyages.length) {
-		for (let voy of lvoyages) {
+		lvoyages.forEach((voy) => {
 			let rf = remote.voyages.find(f => f.voyage_id === voy.voyage_id);
-			if (rf) {
+			if (voy.voyage_id && rf) {
 				removeTrackerId(local, voy.tracker_id);
 			}
-			else if (remoteIds.includes(voy.tracker_id)) {
+			else if (remoteIds.includes(voy.tracker_id))  {
 				changeTrackerId(local, voy.tracker_id, minLocal++);
+			}
+		});
+	}
+
+	const currhistory = local;
+
+	let newvoyages = remote.voyages.concat(currhistory.voyages)
+
+	newvoyages.sort((a, b) => a.created_at - b.created_at || a.voyage_id - b.voyage_id || a.tracker_id - b.tracker_id);
+
+	// Prefilter. Prefer remote.
+	newvoyages = newvoyages.filter((voy, idx) => voy.voyage_id == 0 ? true : newvoyages.findIndex(fivoy => voy.voyage_id == fivoy.voyage_id) == idx);
+
+
+	// examine voyages for duplication
+	let testvoyages = newvoyages.slice();
+
+	newvoyages.sort((a, b) => b.voyage_id - a.voyage_id || (a.remote == b.remote ? 0 : (a.remote ? -1 : b.remote ? 1 : 0)));
+	newvoyages = newvoyages.filter((voy, idx) => newvoyages.findIndex(voy2 => compareVoyages(voy2, voy, { omitVoyageId: true, omitTrackerId: true, omitCreatedAt: true })) == idx);
+
+	// Check tracker id's.
+	newvoyages.sort((a, b) => b.tracker_id - a.tracker_id);
+	let newid = newvoyages[0].tracker_id + 1;
+	let unique_ids = [...new Set(newvoyages.map(m => m.tracker_id))];
+
+	for (let tid of unique_ids) {
+		let found = newvoyages.filter(f => f.tracker_id === tid);
+		if (found.length > 1) {
+			let c = found.length;
+			for (let i = 1; i < c; i++) {
+				found[i].tracker_id = newid++;
+				found[i].remote = false;
 			}
 		}
 	}
 
-	remote = JSON.parse(JSON.stringify(remote), (key, value) => {
-		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
-			try {
-				return new Date(value);
+	if (importMode) {
+		let orphans = allorig.filter(f => !newvoyages.some(f2 => {
+			return compareVoyages(f, f2, { omitTrackerId: true, omitVoyageId: true, omitCreatedAt: true })
+		}));
+		if (orphans.length) {
+			orphans.sort((a, b) => a.created_at - b.created_at);
+			for (let orphan of orphans) {
+				orphan.tracker_id = newid++;
+				orphan.orphan = true;
+				orphan.remote = false;
 			}
-			catch {
-				return value;
-			}
+			orphans.reverse();
+			newvoyages = orphans.concat(newvoyages);
 		}
-		return value;
-	}) as IVoyageHistory;
+	}
 
-	const newhistory = JSON.parse(JSON.stringify(local), (key, value) => {
-		if (typeof value === 'string' && (key.toLowerCase().includes("date") || key.toLowerCase().includes("time"))) {
-			try {
-				return new Date(value);
-			}
-			catch {
-				return value;
-			}
-		}
-		return value;
-	}) as IVoyageHistory;
+	newvoyages.sort((a, b) => b.created_at - a.created_at);
 
-	newhistory.voyages = newhistory.voyages.concat(remote.voyages);
+	currhistory.voyages = newvoyages;
 
 	Object.keys(remote.crew).forEach((symbol) => {
-		newhistory.crew[symbol] ??= [];
-		if (newhistory.crew[symbol]) {
-			newhistory.crew[symbol] = newhistory.crew[symbol].concat(remote.crew[symbol]);
+		currhistory.crew[symbol] ??= [];
+		if (currhistory.crew[symbol]) {
+			currhistory.crew[symbol] = currhistory.crew[symbol].concat(remote.crew[symbol]);
 		}
 	});
 
-	newhistory.voyages.forEach((voy) => {
+	currhistory.voyages.forEach((voy) => {
 		if (lrms.some(v => v.tracker_id === voy.tracker_id && v.remote) || rrms.some(v => v.tracker_id === voy.tracker_id && v.remote)) {
 			voy.remote = true;
 		}
@@ -451,5 +508,41 @@ export function mergeHistories(local: IVoyageHistory, remote: IVoyageHistory) {
 			voy.remote = false;
 		}
 	});
-	return newhistory;
+
+	return currhistory;
+}
+
+interface CompareOpts {
+	omitTrackerId?: boolean,
+	omitVoyageId?: boolean,
+	omitCreatedAt?: boolean,
+}
+
+function compareVoyages(voyage1: ITrackedVoyage, voyage2: ITrackedVoyage, opts?: CompareOpts) {
+
+	opts ??= {};
+	const { omitCreatedAt, omitTrackerId, omitVoyageId } = opts;
+
+    if (!omitTrackerId && voyage1.tracker_id !== voyage2.tracker_id) return false;
+	if (!omitVoyageId && voyage1.voyage_id !== voyage2.voyage_id) return false;
+	if (!omitCreatedAt && voyage1.created_at !== voyage2.created_at) return false;
+    if (voyage1.skills.primary_skill !== voyage2.skills.primary_skill) return false;
+    if (voyage1.skills.secondary_skill !== voyage2.skills.secondary_skill) return false;
+    if (voyage1.ship_trait !== voyage2.ship_trait) return false;
+    if (voyage1.estimate.dilemma.chance !== voyage2.estimate.dilemma.chance) return false;
+    if (voyage1.estimate.dilemma.hour !== voyage2.estimate.dilemma.hour) return false;
+    if (voyage1.estimate.median !== voyage2.estimate.median) return false;
+    if (voyage1.estimate.minimum !== voyage2.estimate.minimum) return false;
+    if (voyage1.estimate.moonshot !== voyage2.estimate.moonshot) return false;
+    if (voyage1.ship !== voyage2.ship) return false;
+    if (voyage1.max_hp !== voyage2.max_hp) return false;
+	for (let agg of ['command_skill', 'science_skill', 'diplomacy_skill', 'security_skill', 'medicine_skill', 'engineering_skill']) {
+		if (!voyage1.skill_aggregates[agg] && !voyage2.skill_aggregates[agg]) continue;
+		else if (!voyage1.skill_aggregates[agg] || !voyage2.skill_aggregates[agg]) return false;
+
+		if (voyage1.skill_aggregates[agg].core !== voyage2.skill_aggregates[agg].core) return false;
+		if (voyage1.skill_aggregates[agg].range_min !== voyage2.skill_aggregates[agg].range_min) return false;
+		if (voyage1.skill_aggregates[agg].range_max !== voyage2.skill_aggregates[agg].range_max) return false;
+	}
+	return true;
 }

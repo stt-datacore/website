@@ -6,7 +6,7 @@ import { GlobalContext } from '../../../context/globalcontext';
 import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
 import { useStateWithStorage } from '../../../utils/storage';
 import CollectionsCrewCard from '../cards/crewcard';
-import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collectionfilter';
+import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collections';
 import { findColGroupsCrew, getOptCols, getOwnedCites, neededStars, starCost } from '../../../utils/collectionutils';
 import { CollectionCard } from '../cards/collectioncard';
 
@@ -15,6 +15,7 @@ export interface CollectionOptimizerProps {
 	playerCollections: PlayerCollection[];
 	workerRunning: boolean;
 	costMap: ComboCostMap[];
+	compactView: boolean;
 }
 
 interface ComboConfig {
@@ -30,7 +31,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 	const { workerRunning } = props;
 	const { matchMode, setMatchMode, costMode, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
-	const { costMap, colCombos } = props;
+	const { costMap, colCombos, compactView } = props;
 
 	const [pageSize, setPageSize] = useStateWithStorage("colOptimizer/itemsPerPage", 1, { rememberForever: true });
 	const [crewPos, setCrewPos] = useStateWithStorage<'top' | 'bottom'>("colOptimizer/crewPos", 'top', { rememberForever: true });
@@ -128,7 +129,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 								});
 								return <> </>
 							}
-							const collection = JSON.parse(JSON.stringify(col.collection)) as PlayerCollection;
+							const collection = structuredClone(col.collection) as PlayerCollection;
 							collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 							//collection.needed = comboCrew.length;
 							col.neededStars = neededStars(comboCrew);
@@ -137,6 +138,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 							return (<Table.Row key={"colgroup" + idx} >
 								<Table.Cell width={4} style={{ verticalAlign: "top" }}>
 									<CollectionCard
+										compactView={compactView}
 										ownedCites={ownedCites}
 										mapFilter={mapFilter}
 										setMapFilter={setMapFilter}
@@ -180,6 +182,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 
 													return (
 														<CollectionCard
+															compactView={compactView}
 															ownedCites={ownedCites}
 															style={{ width: "350px" }}
 															brief={true}
@@ -194,6 +197,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 										<Grid doubling columns={3} textAlign='center'>
 											{comboCrew.map((crew, ccidx) => (
 												<CollectionsCrewCard
+													compactView={compactView}
 													crew={crew}
 													collection={collection}
 													index={ccidx}

@@ -31,7 +31,8 @@ export interface ICrewUtility {
 		shuttle: number;
 		gauntlet: number;
 		voyage: number;
-	}
+	},
+	reasons_to_keep: string[];
 };
 
 export interface ICrewUtilityRanks {

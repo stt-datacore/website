@@ -80,7 +80,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
             let cm: Ship | undefined = undefined;
 
             if (item.owned) {
-                item = JSON.parse(JSON.stringify(dataIn)) as Ship;
+                item = structuredClone(dataIn) as Ship;
                 if (item.level === item.max_level) {
                     item.immortal = CompletionState.Immortalized;
                 }

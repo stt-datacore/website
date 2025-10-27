@@ -4,15 +4,25 @@ import { AllBuffsCapHash, Player, PlayerCrew, TranslateMethod } from '../model/p
 import { AntimatterSeatMap } from '../model/voyage';
 import { Estimate } from "../model/voyage";
 
-export const formatTime = (time: number, t?: TranslateMethod): string => {
+export const formatTime = (time: number, t?: TranslateMethod, zeroMin = true): string => {
 
 	let hours = Math.floor(time);
 	let minutes = Math.floor((time-hours)*60);
-	if (t) {
-		return `${t('duration.n_h_compact', { hours: `${hours}` })} ${t('duration.n_m_compact', { minutes: `${minutes}` })}`;
+	if (zeroMin || minutes) {
+		if (t) {
+			return `${t('duration.n_h_compact', { hours: `${hours}` })} ${t('duration.n_m_compact', { minutes: `${minutes}` })}`;
+		}
+		else {
+			return hours+"h " +minutes+"m";
+		}
 	}
 	else {
-		return hours+"h " +minutes+"m";
+		if (t) {
+			return `${t('duration.n_h_compact', { hours: `${hours}` })}`;
+		}
+		else {
+			return hours+"h";
+		}
 	}
 };
 
@@ -58,7 +68,7 @@ export function calculateMaxBuffs(allBuffs: AllBuffsCapHash): BuffStatTable {
 	};
 
 	Object.keys(allBuffs)
-		.filter(z => z.includes("skill"))
+		.filter(z => z.includes("skill") || z.includes("ship"))
 		.forEach(buff => {
 			let p = parseBuff(buff);
 			if (p) result[p.skill] = {} as IBuffStat;
@@ -100,6 +110,13 @@ export function calculateBuffConfig(playerData: Player): BuffStatTable {
 			}
 		}
 	}
+
+	playerData.character.captains_bridge_buffs.forEach((buff) => {
+		buffConfig[buff.stat] = {
+			multiplier: 1,
+			percent_increase: buff.value
+		}
+	});
 
 	return buffConfig;
 }

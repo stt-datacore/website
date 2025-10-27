@@ -1,5 +1,5 @@
 import { Filter } from "./game-elements";
-import { PlayerCollection, PlayerCrew, PlayerData } from "./player";
+import { MilestoneBuff, PlayerCollection, PlayerCrew, PlayerData, Reward } from "./player";
 
 export interface CollectionFilterOptions {
 	collectionsFilter?: number[];
@@ -133,4 +133,19 @@ export interface CollectionWorkerResult {
     combos: CollectionCombo[];
     collections: CollectionInfo[];
     comboCostMap: ComboCostMap[];
+}
+export interface Collection {
+  id: number;
+  type_id?: number;
+  name: string;
+  crew?: string[];
+  description?: string;
+  image?: string;
+  milestones?: Milestone[];
+}
+
+export interface Milestone {
+  goal: number;
+  buffs: MilestoneBuff[];
+  rewards: Reward[];
 }

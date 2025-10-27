@@ -13,7 +13,7 @@ type MissionEditorProps = {
 };
 
 export const MissionEditor = (props: MissionEditorProps) => {
-	const [shuttle, setShuttle] = React.useState<Shuttle>(JSON.parse(JSON.stringify(props.shuttle)));
+	const [shuttle, setShuttle] = React.useState<Shuttle>(structuredClone(props.shuttle));
 
 	const isNewMission: boolean = props.shuttle.seats[0].skillA === '';
 

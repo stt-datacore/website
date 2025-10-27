@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Checkbox, Dropdown, Form, Icon, Loader } from 'semantic-ui-react';
 
-import { Collection } from '../../model/game-elements';
+import { Collection } from "../../model/collections";
 import { GlobalContext } from '../../context/globalcontext';
 import { RarityFilter, CrewTraitFilter } from '../../components/crewtables/commonoptions';
 
@@ -13,7 +13,7 @@ import { filterTraits } from './utils';
 export const RetrievalCrew = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { collections } = globalContext.core;
+	const { collections, maincast } = globalContext.core;
 	const { playerData } = globalContext.player;
 	const { market, allKeystones, rosterCrew, setRosterCrew, polestarTailors, getCrewFilter, setCrewFilter, resetForm, wishlist, autoWishes } = React.useContext(RetrievalContext);
 
@@ -43,9 +43,11 @@ export const RetrievalCrew = () => {
 
 	// Apply crew filters here
 	React.useEffect(() => {
+		const cast = Object.values(maincast).flat();
 		const filtered = rosterCrew.filter(c =>
 			retrievableFilter === '' ||
 			(retrievableFilter === 'retrievable' && c.retrievable === RetrievableState.Viable) ||
+			(retrievableFilter === 'expiring' && c.retrievable === RetrievableState.Expiring) ||
 			(retrievableFilter === 'actionable' &&
 				(c.actionable === ActionableState.Now || c.actionable === ActionableState.PostTailor))
 		).filter(c =>
@@ -62,6 +64,12 @@ export const RetrievalCrew = () => {
 				rarityFilter.includes(c.max_rarity)
 		).filter(c => {
 			if (traitFilter.length === 0) return true;
+			if (traitFilter.includes('maincast') && cast.some(trait => c.traits_hidden.includes(trait))) {
+				return true;
+			}
+			if (traitFilter.includes('notmaincast') && !cast.some(trait => c.traits_hidden.includes(trait))) {
+				return true;
+			}
 			if (minTraitMatches >= traitFilter.length)
 				return traitFilter.every(trait => c.traits.includes(trait) || c.traits_hidden.includes(trait));
 			else if (minTraitMatches === 2) {
@@ -82,7 +90,8 @@ export const RetrievalCrew = () => {
 
 	const retrievableFilterOptions = [
 		{ key: 'none', value: '', text: t('retrieval.crew.show_all_crew') },
-		{ key: 'retrievable', value: 'retrievable', text: t('retrieval.crew.show_all_uniquely_retrievable') }
+		{ key: 'retrievable', value: 'retrievable', text: t('retrieval.crew.show_all_uniquely_retrievable') },
+		{ key: 'expiring', value: 'expiring', text: t('retrieval.crew.show_expiring_crew') },
 	];
 	if (playerData) {
 		retrievableFilterOptions.push(
@@ -205,7 +214,7 @@ export const RetrievalCrew = () => {
 			// Calculate retrievable, actionable states; highest owned rarities, levels
 			//	Retrievable = any player can retrieve crew
 			//	Actionable = user can retrieve with tailored polestars
-			const rosterCrew = JSON.parse(JSON.stringify(globalContext.core.crew)) as IRosterCrew[];
+			const rosterCrew = structuredClone(globalContext.core.crew) as IRosterCrew[];
 			rosterCrew.forEach(crew => {
 				crew.retrievable = RetrievableState.Viable;
 				crew.alt_source = '';
@@ -230,8 +239,11 @@ export const RetrievalCrew = () => {
 						crew.retrievable = RetrievableState.InFuture;
 					}
 				}
-				else if (!crew.unique_polestar_combos || crew.unique_polestar_combos.length === 0) {
+				else if (!crew.unique_polestar_combos?.length) {
 					crew.retrievable = RetrievableState.NonUnique;
+				}
+				else if (crew.unique_polestar_combos?.length && !crew.unique_polestar_combos_later?.length) {
+					crew.retrievable = RetrievableState.Expiring;
 				}
 
 				crew.actionable = ActionableState.None;

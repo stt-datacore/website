@@ -378,7 +378,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
     const { t } = globalContext.localized;
     const [popularCrew, setPopularCrew] = React.useState<PolestarCrew[]>([]);
     const [includeHfs, setIncludeHfs] = React.useState(false);
-    const TRAIT_NAMES = JSON.parse(JSON.stringify(globalContext.localized.TRAIT_NAMES));
+    const TRAIT_NAMES = structuredClone(globalContext.localized.TRAIT_NAMES);
     const [rarities, setRarities] = useStateWithStorage(`popular_rarity_filter`, [5] as number[]);
     const [top, setTop] = useStateWithStorage(`popular_keystone_top`, 10, { rememberForever: true });
     const [minPolestars, setMinPolestars] = useStateWithStorage(`popular_keystone_min_polestars`, 3);
