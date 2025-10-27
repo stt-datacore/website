@@ -59,6 +59,7 @@ export interface IDeduction {
 };
 
 export interface IUserPrefs {
+	confirm_guess: boolean;
 	favorites: string[];
 	handicap_rarity: boolean;
 	handicap_series: boolean;

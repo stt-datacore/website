@@ -14,7 +14,7 @@ import {
 	Segment
 } from 'semantic-ui-react';
 
-import { IDataGridSetup, IEssentialData } from '../dataset_presenters/model';
+import { IDataGridSetup, IDataPickerState, IEssentialData } from '../dataset_presenters/model';
 import { DataPicker } from '../dataset_presenters/datapicker';
 
 import { IDeduction, IRosterCrew, TAssertion, TDeductionField, THintGroup } from './model';
@@ -145,7 +145,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 	}, [data, hints, userPrefs.hide_guessed_crew, userPrefs.hide_nonviable_crew]);
 
 	const gridSetup: IDataGridSetup = {
-		renderGridColumn: (datum: IEssentialData) => renderGridCrew(datum as IRosterCrew),
+		renderGridColumn: (datum: IEssentialData, isSelected: boolean) => renderGridCrew(datum as IRosterCrew, isSelected),
 		defaultSort: {
 			id: '_favorite',
 			customSort: (a: IEssentialData, b: IEssentialData) => sortCrew(a as IRosterCrew, b as IRosterCrew)
@@ -158,7 +158,8 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 			data={data}
 			closePicker={handleSelectedIds}
 			selection
-			closeOnChange
+			singleSelect={true}
+			closeOnChange={!userPrefs.confirm_guess}
 			preFilteredIds={filteredIds}
 			search
 			searchPlaceholder='Search for crew by name'
@@ -168,9 +169,9 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		/>
 	);
 
-	function handleSelectedIds(selectedIds: Set<number>): void {
+	function handleSelectedIds(selectedIds: Set<number>, affirmative: boolean): void {
 		props.closeCrewPicker();
-		if (selectedIds.size > 0) {
+		if (selectedIds.size > 0 && (affirmative || !userPrefs.confirm_guess)) {
 			const selectedId: number = [...selectedIds][0];
 			const selectedCrew: IRosterCrew | undefined = data.find(datum =>
 				datum.id === selectedId
@@ -183,7 +184,11 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		return <GuessPickerOptions />;
 	}
 
-	function renderActions(): JSX.Element {
+	function renderActions(state: IDataPickerState): JSX.Element {
+		let selectedCrew: IRosterCrew | undefined;
+		if (state.pendingSelectedIds.size > 0) {
+			selectedCrew = data.find(datum => datum.id === [...state.pendingSelectedIds][0]);
+		}
 		return (
 			<React.Fragment>
 				{deductions.length > 0 && (
@@ -192,10 +197,19 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 						onClick={() => props.openHintPicker()}
 					/>
 				)}
-				<Button /* Close */
-					content='Close'
-					onClick={() => props.closeCrewPicker()}
-				/>
+				{!selectedCrew && (
+					<Button /* Close */
+						content='Close'
+						onClick={() => props.closeCrewPicker()}
+					/>
+				)}
+				{selectedCrew && (
+					<Button /* Guess NAME */
+						content={`Guess ${selectedCrew.name}`}
+						onClick={() => handleSelectedIds(state.pendingSelectedIds, true)}
+						color='blue'
+					/>
+				)}
 			</React.Fragment>
 		);
 	}
@@ -213,7 +227,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		return 1;
 	}
 
-	function renderGridCrew(crew: IRosterCrew): JSX.Element {
+	function renderGridCrew(crew: IRosterCrew, isSelected: boolean): JSX.Element {
 		const isGuessed: boolean = !!evaluatedGuesses.find(evaluatedGuess => evaluatedGuess.crew.symbol === crew.symbol);
 		const isFavorited: boolean = userPrefs.favorites.includes(crew.symbol);
 		const isViable: boolean = rules.series.includes(crew.gamified_series)
@@ -228,6 +242,9 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 					</div>
 					{isGuessed && (
 						<Label corner='right' color='red' icon='x' />
+					)}
+					{isSelected && (
+						<Label corner='right' color='blue' icon='check' />
 					)}
 				</Image>
 				<div>
@@ -325,6 +342,12 @@ const GuessPickerOptions = () => {
 					label='Hide guessed crew'
 					checked={userPrefs.hide_guessed_crew}
 					onChange={(e, { checked }) => setUserPrefs({...userPrefs, hide_guessed_crew: checked})}
+				/>
+				<Form.Field	/* Confirm guess */
+					control={Checkbox}
+					label='Confirm guess'
+					checked={userPrefs.confirm_guess}
+					onChange={(e, { checked }) => setUserPrefs({...userPrefs, confirm_guess: checked})}
 				/>
 			</Form.Group>
 			<Divider />

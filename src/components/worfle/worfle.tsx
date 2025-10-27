@@ -21,6 +21,7 @@ const DEBUG_FLAG_MULTIPLE_NAMES = false;	// Prints crew with multiple short name
 const DEBUG_FLAG_DUPLICATE_NAMES = false;	// Prints crew with non-unique short names
 
 const prefDefaults: IUserPrefs = {
+	confirm_guess: false,
 	favorites: [],
 	handicap_rarity: false,
 	handicap_series: false,
