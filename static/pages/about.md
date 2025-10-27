@@ -38,6 +38,6 @@ Bernard for the equation for Bernard's Number in the gauntlet tool.
 JimBerlin and dmscramjet for equations related to the ship battle calculator.
 Dangevin for equations related to the voyage event VP calculator.
 
-[STT Power Ratings](https://cabtools.app/) are maintained by A Traveling Man & Cymru Am Byth. Content used with their permission.
+CAB STT Power Ratings are maintained by Dangevin (retired). Content used with permission.
 
 This project is licensed under MIT, and if you choose to contribute code or other media you agree that your contributions will be licensed under its [MIT license](https://github.com/stt-datacore/website/blob/master/LICENSE).
