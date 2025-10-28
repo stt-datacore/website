@@ -1569,6 +1569,7 @@
             "Pack": "Paket",
             "Pack/Giveaway": "Paket/Giveaway",
             "Six Pack": "Sixpack",
+            "Theme Pack": "Themenpaket",
             "Voyage": "Reise Exklusiv",
             "WebStore": "Web Store"
         },
@@ -1592,6 +1593,7 @@
             "Pack": "Paket",
             "Pack/Giveaway": "Paket/Giveaway",
             "Six Pack": "Sixpack",
+            "Theme Pack": "Themenpaket",
             "Voyage": "Reise",
             "WebStore": "Web Store"
         }
