@@ -482,7 +482,7 @@ export const SortDropDown = (props: SortDropdownProps) => {
 			let skillText = "";
 			if (typeof col.title !== 'string' && col.column?.includes("_skill")) {
 				let skill_part = col.column.split(".").find(f => f.endsWith("_skill"))
-				if (skill_part) skillText = ` ${CONFIG.SKILLS[skill_part]}`;
+				if (skill_part) skillText = ` ${CONFIG.SKILLS[skill_part]}` || ' ';
 			}
 			props.push({
 				key: `${col.column}_dropdown_column`,

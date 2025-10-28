@@ -158,7 +158,7 @@ export function appelate(text: string) {
 }
 
 export function translatePseudocolumn(name: string, t: TranslateMethod) {
-	return t(`base.pseudocolumns.${name}`);
+	return t(`base.pseudocolumns.${name}`) || "";
 }
 
 export const getImageName = (reward) => {
