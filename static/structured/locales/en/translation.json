@@ -1571,6 +1571,7 @@
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Giveaway",
             "Six Pack": "Six Pack",
+            "Theme Pack": "Theme Pack",
             "Voyage": "Voyage Exclusive",
             "WebStore": "Web Store"
         },
@@ -1594,6 +1595,7 @@
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Giveaway",
             "Six Pack": "Six Pack",
+            "Theme Pack": "Theme Pack",
             "Voyage": "Voyage",
             "WebStore": "Web Store"
         }

@@ -1582,6 +1582,7 @@
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Concours",
             "Six Pack": "Pack de six",
+            "Theme Pack": "Pack thématique",
             "Voyage": "Voyage Exclusif",
             "WebStore": "Magasin en ligne"
         },
@@ -1605,6 +1606,7 @@
             "Pack": "Pack",
             "Pack/Giveaway": "Pack/Concours",
             "Six Pack": "Pack de six",
+            "Theme Pack": "Pack thématique",
             "Voyage": "Voyage",
             "WebStore": "Magasin"
         }
