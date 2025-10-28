@@ -45,13 +45,15 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
             config.push({
                 width: 1,
                 column: 'skill_' + skill,
-                title: <div style={{display: 'inline-block'}}>
-                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                    <span>
-                    {t(`quipment_ranks.${skill}`)}
-                    </span>
-                </div>
-                </div>,
+                title: (
+                    <div style={{display: 'inline-block'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                            <span>
+                            {t(`quipment_ranks.${skill}`)}
+                            </span>
+                        </div>
+                    </div>
+                ),
                 reverse: true,
                 customCompare: (a: IRosterCrew, b: IRosterCrew) => skoComp(a, b, idx)
             });
@@ -62,13 +64,15 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
             config.push({
                 width: 1,
                 column: 'pairs_' + skill,
-                title: <div style={{display: 'inline-block'}}>
-                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                    <span>
-                        {t(`quipment_ranks.${skill}`)}
-                    </span>
-                </div>
-                </div>,
+                title: (
+                    <div style={{display: 'inline-block'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                            <span>
+                                {t(`quipment_ranks.${skill}`)}
+                            </span>
+                        </div>
+                    </div>
+                ),
                 reverse: true,
                 customCompare: (a: IRosterCrew, b: IRosterCrew) => multiComp(a, b, idx)
             });
@@ -78,18 +82,20 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
         Object.keys(CONFIG.SKILLS).forEach((skill) => {
             config.push({
                 width: 1,
-                column: 'skill_' + skill,
-                title: <div style={{display: 'inline-block'}}>
-                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                    <img
-                        style={{ height: '16px'}}
-                        src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
-                        />
-                    <span>
-                    &nbsp;{skillToShort(skill)}
-                    </span>
-                </div>
-                </div>,
+                column: skill,
+                title: (
+                    <div style={{display: 'inline-block'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                            <img
+                                style={{ height: '16px'}}
+                                src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+                                />
+                            <span>
+                            &nbsp;{skillToShort(skill)}
+                            </span>
+                        </div>
+                    </div>
+                ),
                 reverse: true,
                 customCompare: (a: IRosterCrew, b: IRosterCrew) => qpComp(a, b, skill)
             });
