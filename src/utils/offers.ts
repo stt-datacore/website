@@ -31,6 +31,7 @@ export async function loadOfferCrew(crewList: CrewMember[], offerName?: string, 
         result.push({
             name: offer.primary_content[0].title,
             crew,
+            event_owner: offer.event_owner,
             description: offer.primary_content[0].info_text ?? '',
             drop_info: getDropInfo(offer),
             seconds_remain: offer.primary_content[0].offer.seconds_remain

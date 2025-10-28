@@ -4,6 +4,7 @@ import { Reward } from "./player";
 
 export interface OfferCrew {
     name: string;
+    event_owner?: string;
     drop_info: DropInfo[];
     crew: CrewMember[];
     seconds_remain?: number;
