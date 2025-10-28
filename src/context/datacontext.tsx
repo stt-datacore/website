@@ -230,7 +230,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		Promise.all(unsatisfied.map(async (demand) => {
 			let url = `/structured/${demand}.json`;
 			if (demand === 'cadet') url = '/structured/cadet.txt';
-			if (syncToken) url += `?_st=${syncToken}`;
+			//if (syncToken) url += `?_st=${syncToken}`;
 			const response = await fetch(url);
 			const json = await response.json();
 			return { demand, json } as IDemandResult;
