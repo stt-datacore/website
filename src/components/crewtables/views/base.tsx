@@ -334,7 +334,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			)}
 			{!!cheap && (
 				<Table.Cell>
-					<CollectionDisplay crew={crew} />
+					<CollectionDisplay crew={crew} showProgress />
 				</Table.Cell>
 			)}
 		</React.Fragment>
