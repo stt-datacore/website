@@ -1630,6 +1630,7 @@
             "advanceable": "Nur Crew anzeigen, die nicht beanspruchte Plätze für Rüstzeug hat",
             "buyback": "Crew mit Sicherungen im Rückkaufschacht anzeigen",
             "dupes": "Nur doppelte Crew anzeigen",
+            "expiring": "Nur auslaufende Crewmitglieder anzeigen",
             "fe": "Nur voll ausgestattete Nicht-Unsterbliche anzeigen",
             "fodder": "Nur nicht fusionierte Crew anzeigen",
             "freezable": "Nur einfrierbare Crew anzeigen",

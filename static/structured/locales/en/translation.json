@@ -1631,6 +1631,7 @@
             "advanceable": "Only show crew with unclaimed quipment slots",
             "buyback": "Show crew with fuses in buy-back well",
             "dupes": "Only show duplicate crew",
+            "expiring": "Only show expiring crew",
             "fe": "Only show fully equipped non-immortals",
             "fodder": "Only show unfused crew",
             "freezable": "Only show freezable crew",

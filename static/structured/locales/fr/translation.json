@@ -1642,6 +1642,7 @@
             "advanceable": "Afficher uniquement les équipiers disposant d'emplacements du quipement non réclamés",
             "buyback": "Afficher les équipiers avec les fusibles dans le puits de rachat",
             "dupes": "Afficher uniquement les équipiers en doubles",
+            "expiring": "Afficher uniquement l'équipage expirant",
             "fe": "Afficher uniquement les non-immortels entièrement équipés",
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",

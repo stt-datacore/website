@@ -1640,6 +1640,7 @@
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
             "buyback": "Muestra tripulación con fusibles en pozo de recompra",
             "dupes": "Mostrar sólo tripulación duplicada",
+            "expiring": "Mostrar solo la tripulación que está por vencer",
             "fe": "Mostrar solo a los no inmortales completamente equipados",
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
