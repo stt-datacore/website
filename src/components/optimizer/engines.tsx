@@ -9,7 +9,7 @@ import BetaTachyonSettingsPopup, {
 } from "./btsettings";
 import { Segment, Dropdown, Checkbox, DropdownItemProps } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { CiteMode, PlayerData } from "../../model/player";
+import { CiteMode, PlayerCrew, PlayerData } from "../../model/player";
 import { UnifiedWorker } from "../../typings/worker";
 import { CiteOptContext } from "./context";
 import { RarityFilter } from "../crewtables/commonoptions";
@@ -209,6 +209,10 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
     function workerResponse(message: { data: { result: any; }; }) {
         const result = message.data.result as CiteData;
+
+        const pcrew = playerData?.player.character.crew;
+        const acrew = globalContext.core.crew;
+
         if (engine === 'beta_tachyon_pulse') {
             let skmap = {} as { [key: string]: SkillOrderRarity };
             result.skillOrderRarities.forEach(sko => skmap[sko.skillorder] = sko);
@@ -218,9 +222,9 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             setCiteConfig({...citeConfig, checks: [] });
         }
         else {
-            result.crewToCite = result.crewToCite.map(c => ({...c,...playerData?.player.character.crew.find(fc => fc.name === c.name)!}));
-            result.crewToTrain = result.crewToTrain.map(c => ({...c,...playerData?.player.character.crew.find(fc => fc.name === c.name)!}));
-            let retrievable = result.crewToCite.filter(f => ({...f, ...playerData?.player.character.crew.find(fc => fc.name === f.name && fc.unique_polestar_combos?.length)}));
+            result.crewToCite = result.crewToCite.map(c => ({...c,...(pcrew?.find(fc => fc.name === c.name) ?? acrew?.find(fc => fc.name === c.name))! } as PlayerCrew));
+            result.crewToTrain = result.crewToTrain.map(c => ({...c,...(pcrew?.find(fc => fc.name === c.name) ?? acrew?.find(fc => fc.name === c.name))! } as PlayerCrew));
+            let retrievable = result.crewToCite.filter(c => ({...c, ...(pcrew?.find(fc => fc.name === c.name) ?? acrew?.find(fc => fc.name === c.name))! } as PlayerCrew));
             result.crewToRetrieve = retrievable.map((r, i) => ({ ...structuredClone(r), pickerId: i + 1 }));
             setResults({ citeData: result, skoMap: undefined });
             setCiteConfig({...citeConfig, checks: [] });

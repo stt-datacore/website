@@ -481,6 +481,18 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	templateCrew.kwipment = origCrew.kwipment;
 	templateCrew.kwipment_expiration = origCrew.kwipment_expiration;
 
+	if (templateCrew.preview === undefined && origCrew.preview !== undefined) {
+		templateCrew.preview = origCrew.preview;
+	}
+
+	templateCrew.preview ??= false;
+
+	if (origCrew.ranks) {
+		templateCrew.ranks = origCrew.ranks;
+	}
+	if (origCrew.collection_ids) {
+		templateCrew.collection_ids = origCrew.collection_ids;
+	}
 	if (templateCrew.date_added) {
 		templateCrew.date_added = new Date(templateCrew.date_added);
 
