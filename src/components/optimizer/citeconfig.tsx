@@ -26,7 +26,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
     if (proccrew.length === 0) {
         proccrew = undefined;
     }
-    else if (!proccrew[0].skills) {
+    else {
         proccrew = proccrew.map(mc => globalContext.player.playerData?.player.character.crew.find(f => f.name === mc.name)!)!
     }
 
@@ -59,7 +59,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
     const resCols = resultCrew?.map(m => m.collection_ids).flat();
     const availCols = [ ...new Set(resCols?.map(m => Number(m)) ?? globalContext.core.collections.map(m => Number(m.id))) ];
     const counts = availCols.map((ac) => {
-        let t = resultCrew?.filter(crew => crew.collection_ids.includes(ac?.toString()))?.length;
+        let t = resultCrew?.filter(crew => crew.collection_ids?.includes(ac?.toString()))?.length || 0;
         return {
             col: ac,
             count: t
