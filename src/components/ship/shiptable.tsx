@@ -109,6 +109,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	}, [ships, shipsInUse, rarityFilter, grantFilter, abilityFilter, traitFilter, ownership, onlyUsed, mode, buffMode, minSeats]);
 
 	const tableConfig = React.useMemo(() => {
+
 		const conf = [
 			{ width: 3, column: 'name', title: t('ship.ship') },
 			{ width: 1, column: 'ranks.overall', title: t('rank_names.ship_rank'), reverse: true },
@@ -144,7 +145,8 @@ export const ShipTable = (props: ShipTableProps) => {
 		] as ITableConfigRow[];
 		if (!showRanks) conf.splice(1, 3);
 		return conf;
-	}, [showRanks]);
+	}, [showRanks, t]);
+
 	return (<div>
 		{!event_ships?.length &&
 
