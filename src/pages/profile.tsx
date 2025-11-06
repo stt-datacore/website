@@ -34,7 +34,7 @@ import { calculateBuffConfig } from '../utils/voyageutils';
 
 export const ProfilePage = () => {
 	return (
-		<DataPageLayout demands={['cadet', 'episodes', 'items', 'all_buffs']}>
+		<DataPageLayout demands={['cadet', 'episodes', 'items', 'all_buffs', 'current_weighting']}>
 			<ProfilePageLoader />
 		</DataPageLayout>
 	);
