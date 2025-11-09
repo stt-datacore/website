@@ -68,7 +68,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
     const { voyageLog, crewTargetGroup, shipTargetGroup, itemTargetGroup, updateDilemma } = props;
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
-    const goldRewards = crew.filter(f => f.traits_hidden.includes("exclusive_voyage") && f.max_rarity === 5);
+    const goldRewards = crew.filter(f => (f.traits_hidden.includes("exclusive_voyage") || f.symbol === 'rutherford_peak_efficiency_crew') && f.max_rarity === 5);
 
     const [dilemmas, setDilemmas] = React.useState<Dilemma[]>([]);
 
