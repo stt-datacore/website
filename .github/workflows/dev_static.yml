@@ -1,0 +1,46 @@
+# STT DataCore Beta Website Build Pipeline
+
+name: Website CI Update Static Files Dev
+
+# Controls when the action will run. Triggers the workflow on push
+# events but only for the master branch
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      - 'static/structured/**'
+
+#   workflow_run:
+#     workflows: ["sync-dev"]
+#     types:
+#       - completed
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+            ref: dev
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      # Install our SSH Key into build server
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PROD_SSH_KEY }}
+          known_hosts: ${{ secrets.PROD_KNOWN_HOSTS }}
+
+      # Runs a set of commands using the runners shell
+      - name: Rsync over ssh
+        run: |
+          rsync -avz --progress ./static/structured/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/structured
