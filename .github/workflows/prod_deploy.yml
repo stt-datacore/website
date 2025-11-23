@@ -7,8 +7,7 @@ name: Website CI Deploy Prod
 on:
   push:
     branches: [ master ]
-    paths:
-      - '!static/structured/**'
+    paths: [ '!static/structured/**' ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
