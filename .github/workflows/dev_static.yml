@@ -7,7 +7,7 @@ name: Website CI Update Static Files Dev
 on:
   push:
     branches: [ dev ]
-    paths: [ 'static/structured/**' ]
+    paths: [ static/structured/** ]
 
 #   workflow_run:
 #     workflows: ["sync-dev"]
