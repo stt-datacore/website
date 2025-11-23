@@ -1,12 +1,12 @@
-name: sync-beta
-run-name: Sync Beta Full Merge
+name: sync-beta-static
+run-name: Sync Beta Static Files
 on:
   pull_request:
     types: [opened, ready_for_review, reopened, synchronize, labeled]
 
   push:
     branches: [ 'master' ]
-    paths: [ '!static/structured/**']
+    paths: [ 'static/structured/**']
 
 jobs:
     merge-master:

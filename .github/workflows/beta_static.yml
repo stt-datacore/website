@@ -10,7 +10,7 @@ on:
     paths: [ static/structured/** ]
 
   workflow_run:
-    workflows: ["sync-beta"]
+    workflows: ["sync-beta-static"]
     types:
       - completed
 
