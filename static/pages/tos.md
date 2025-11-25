@@ -33,7 +33,9 @@ Last Updated: 2025-01-07
 
 5. Intellectual Property
 
-- All content on Datacore is released under the MIT License. You may use, share, and modify our content in accordance with the terms of the MIT License.
+- All Datacore software code is released under the MIT License. You may use, share, and modify our content in accordance with the terms of the MIT License.
+
+- All images featured from the game are the property of CBS/ViaCom, Paramount, and Tilting Point. Used with permission.
 
 6. Disclaimer of Warranties
 
