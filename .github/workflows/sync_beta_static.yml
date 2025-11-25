@@ -6,7 +6,7 @@ on:
 
   push:
     branches: [ 'master' ]
-    paths: [ 'static/structured/**']
+    paths: [ static/structured/** ]
 
 jobs:
     merge-master:

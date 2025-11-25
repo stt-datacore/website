@@ -7,7 +7,7 @@ name: Website CI Deploy Dev
 on:
   push:
     branches: [ dev ]
-    paths: [ '!static/structured/**' ]
+    paths-ignore: [ static/structured/** ]
 
 #   workflow_run:
 #     workflows: ["sync-dev"]

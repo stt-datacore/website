@@ -7,7 +7,7 @@ name: Website CI Deploy Beta
 on:
   push:
     branches: [ beta ]
-    paths: [ '!static/structured/**' ]
+    paths-ignore: [ static/structured/** ]
 
   workflow_run:
     workflows: ["sync-beta"]
