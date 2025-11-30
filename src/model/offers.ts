@@ -61,7 +61,7 @@ export interface OfferContent {
     bonus_text_2?: string;
     bonus_text_3: any;
     bonus_text_4: any;
-    offer: Offer;
+    offer: ContentOffer;
 }
 
 export interface Cost {
@@ -69,7 +69,7 @@ export interface Cost {
     amount: number;
 }
 
-export interface Offer {
+export interface ContentOffer {
     currency_bundle?: string;
     cost?: Cost;
     obtain: Obtain[];
