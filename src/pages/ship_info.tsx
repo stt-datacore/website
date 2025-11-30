@@ -26,6 +26,9 @@ const ShipInfoPage = () => {
 		if (urlParams.has('ship')) {
 			ship_key = urlParams.get('ship') ?? undefined;
 		}
+		if (!ship_key && urlParams.has('symbol')) {
+			ship_key = urlParams.get('symbol') ?? undefined;
+		}
 		if (!ship_key) {
 			navigate('/ships');
 			return;
