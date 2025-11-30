@@ -44,6 +44,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const pseudos = ['name'];
 	if (rosterType === 'myCrew') pseudos.push('level', 'q_bits', 'is_new');
 	if ((['allCrew', 'offers', 'buyBack'].includes(rosterType)) && playerData) pseudos.push('highest_owned_rarity');
+
 	pseudos.push('ranks.traitRank');
 	pseudos.push('quipment_score');
 	pseudos.push('collections.length');

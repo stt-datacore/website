@@ -35,10 +35,12 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		{ key: 'threshold', value: 'threshold', text: t('options.roster_maintenance.threshold') },
 		{ key: 'fodder', value: 'fodder', text: t('options.roster_maintenance.fodder') },
 		{ key: 'dupes', value: 'dupes', text: t('options.roster_maintenance.dupes') },
+		{ key: 'expiring', value: 'expiring', text: t('options.roster_maintenance.expiring') },
 		{ key: 'buyback', value: 'buyback', text: t('options.roster_maintenance.buyback') },
 	];
 
 	const filterByMaintenance = (crew: IRosterCrew) => {
+		if (maintenanceFilter === 'expiring' && !crew.expires_in) return false;
 		if (maintenanceFilter === 'quipped' && !isQuipped(crew)) return false;
 		if (maintenanceFilter === 'quippable' && (!crew.q_bits || crew.q_bits < 100)) return false;
 		if (maintenanceFilter === 'advanceable' && ((crew.q_bits !== undefined && crew.q_bits >= 1300) || !crew.immortal)) return false;
