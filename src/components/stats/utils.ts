@@ -602,28 +602,54 @@ export function createStatsDataSet(prefilteredCrew: CrewMember[]) {
             let next = work[i];
             if (!next.prev && i === c - 1) break;
             let curr = next.prev ?? work[i + 1];
-            if (!next.prev) continue;
-            let dd = next.epoch_day - curr.epoch_day;
-            let sd = [] as number[];
-            for (let j = 0; j < s; j++) {
-                sd.push(next.aggregates[j] - curr.aggregates[j]);
+
+            if (next?.prev) {
+                let dd = next.epoch_day - curr.epoch_day;
+                let sd = [] as number[];
+                for (let j = 0; j < s; j++) {
+                    sd.push(next.aggregates[j] - curr.aggregates[j]);
+                }
+                let diff: EpochDiff = {
+                    symbols: [next.symbol, curr.symbol],
+                    day_diff: dd,
+                    epoch_days: [next.epoch_day, curr.epoch_day],
+                    skill_diffs: sd,
+                    skills: next.skills,
+                    velocity: 0,
+                    aggregates: [next.aggregates, curr.aggregates],
+                    cores: [next.cores, curr.cores],
+                    proficiencies: [next.proficiencies, curr.proficiencies],
+                    rarity: curr.rarity,
+                    crew: [next.crew, curr.crew]
+                };
+                let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
+                if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
+                epochDiffs.push(diff);
             }
-            let diff: EpochDiff = {
-                symbols: [next.symbol, curr.symbol],
-                day_diff: dd,
-                epoch_days: [next.epoch_day, curr.epoch_day],
-                skill_diffs: sd,
-                skills: next.skills,
-                velocity: 0,
-                aggregates: [next.aggregates, curr.aggregates],
-                cores: [next.cores, curr.cores],
-                proficiencies: [next.proficiencies, curr.proficiencies],
-                rarity: curr.rarity,
-                crew: [next.crew, curr.crew]
-            };
-            let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
-            if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
-            epochDiffs.push(diff);
+            else {
+                let dd = 0;
+                let sd = [] as number[];
+                for (let j = 0; j < s; j++) {
+                    sd.push(0);
+                }
+                let diff: EpochDiff = {
+                    symbols: [next.symbol, next.symbol],
+                    day_diff: dd,
+                    epoch_days: [next.epoch_day, next.epoch_day],
+                    skill_diffs: sd,
+                    skills: next.skills,
+                    velocity: 0,
+                    aggregates: [next.aggregates, next.aggregates],
+                    cores: [next.cores, next.cores],
+                    proficiencies: [next.proficiencies, next.proficiencies],
+                    rarity: next.rarity,
+                    crew: [next.crew, next.crew],
+                    unique: true
+                };
+                let avgdiff = diff.skill_diffs.reduce((p, n) => p + n, 0) / diff.skill_diffs.length;
+                if (avgdiff && diff.day_diff) diff.velocity = avgdiff / diff.day_diff;
+                epochDiffs.push(diff);
+            }
         }
     }
 
