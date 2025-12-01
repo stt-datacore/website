@@ -583,6 +583,7 @@ export function createStatsDataSet(prefilteredCrew: CrewMember[]) {
             entry.prev = curr[key];
             curr[key] = entry;
         });
+        curr = {};
     }
 
     flatData.sort((a, b) => b.epoch_day - a.epoch_day || b.rarity - a.rarity);
@@ -603,7 +604,7 @@ export function createStatsDataSet(prefilteredCrew: CrewMember[]) {
             if (!next.prev && i === c - 1) break;
             let curr = next.prev ?? work[i + 1];
 
-            if (next?.prev) {
+            if (next?.prev && next.rarity === next.prev.rarity) {
                 let dd = next.epoch_day - curr.epoch_day;
                 let sd = [] as number[];
                 for (let j = 0; j < s; j++) {
