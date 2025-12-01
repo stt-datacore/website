@@ -59,7 +59,7 @@ export async function getEventStats(crew: CrewMember[], leaderboards: EventLeade
         if (!filtered.length) continue;
         filtered.sort((a, b) => b.score - a.score);
         let avg = filtered.map(e => e.score).reduce((p, n) => p + n, 0) / lb.leaderboard.length;
-        let min = filtered.map(e => e.score).reduce((p, n) => p < n ? p : n, 0);
+        let min = filtered.map(e => e.score).reduce((p, n) => p < n && p != 0 ? p : n, 0);
         let max = filtered.map(e => e.score).reduce((p, n) => n > p ? n : p, 0);
         let median = filtered[filtered.length / 2].score;
 
