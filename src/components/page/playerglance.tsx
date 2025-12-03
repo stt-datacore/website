@@ -58,6 +58,9 @@ type ShuttleData = {
 }
 
 export const PlayerGlance = (props: PlayerGlanceProps) => {
+    const [saleUpdate, setSaleUpdate] = useStateWithStorage<Date | undefined>('stt_sale_data_update', undefined);
+    const [saleData, setSaleData] = useStateWithStorage<SaleData | undefined>('stt_sale_data', undefined);
+
     const flexRow = OptionsPanelFlexRow;
 
     const globalContext = React.useContext(GlobalContext);
@@ -69,14 +72,12 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
     const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
     const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
-    const [saleData, setSaleData] = useStateWithStorage<SaleData | undefined>('stt_sale_data', undefined, { rememberForever: true });
-    const [saleUpdate, setSaleUpdate] = useStateWithStorage<Date | undefined>('stt_sale_data_update', undefined, { rememberForever: true });
 
     React.useEffect(() => {
         setTimeout(() => {
             initShuttleTime();
             getSales();
-        }, 100);
+        }, 250);
     }, [ephemeral]);
 
     const currentEvent = React.useMemo(() => {
