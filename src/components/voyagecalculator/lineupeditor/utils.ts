@@ -1,11 +1,25 @@
 import { BaseSkills } from '../../../model/crew';
 import { PlayerCrew } from '../../../model/player';
 import { Ship } from '../../../model/ship';
-import { Estimate, IVoyageInputConfig } from '../../../model/voyage';
+import { Estimate, IVoyageCrew, IVoyageInputConfig } from '../../../model/voyage';
 import { UnifiedWorker } from '../../../typings/worker';
 import { calcVoyageVP } from '../../../utils/voyagevp';
 import { getCrewTraitBonus, getCrewEventBonus, getShipTraitBonus } from '../utils';
 import { IProspectiveConfig, IProspectiveCrewSlot } from './model';
+
+export const VoyageSlotOrder = [
+	'command_skill',
+	'diplomacy_skill',
+	'security_skill',
+	'engineering_skill',
+	'science_skill',
+	'medicine_skill'
+];
+
+export function getRemainingSkills(crew: IVoyageCrew) {
+	let remain = VoyageSlotOrder.filter(f => !crew.skill_order.includes(f));
+	return remain;
+}
 
 export function getProspectiveConfig(voyageConfig: IVoyageInputConfig, ship: Ship | undefined, crewSlots: IProspectiveCrewSlot[]): IProspectiveConfig {
 	const skillAggregates: BaseSkills = {
