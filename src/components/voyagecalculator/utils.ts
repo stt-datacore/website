@@ -43,14 +43,17 @@ export function getCrewTraitBonus(voyageConfig: IVoyageInputConfig, crew: Player
 				traitBonus = content.antimatter_bonus_for_featured_crew;
 			}
 			else {
-				if (content.antimatter_bonus_crew_traits.some(bonusTrait => (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)))) {
-					traitBonus = content.antimatter_bonus_per_crew_trait;
-				}
-				// content.antimatter_bonus_crew_traits.forEach(bonusTrait => {
-				// 	if (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)) {
-				// 		traitBonus += content.antimatter_bonus_per_crew_trait;
-				// 	}
-				// });
+				// Non-featured event crew get an AM bonus per matching trait
+				content.antimatter_bonus_crew_traits.forEach(bonusTrait => {
+					if (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)) {
+						traitBonus += content.antimatter_bonus_per_crew_trait;
+					}
+				});
+
+				// Alternate calculation: Non-featured crew get a fixed AM bonus when matching 1 or more event trait
+				// if (content.antimatter_bonus_crew_traits.some(bonusTrait => (crew.traits.includes(bonusTrait) || crew.traits_hidden.includes(bonusTrait)))) {
+				// 	traitBonus = content.antimatter_bonus_per_crew_trait;
+				// }
 			}
 		}
 	}
