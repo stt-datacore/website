@@ -246,7 +246,7 @@ export function calculateCrewDemands(crew: CrewMember | PlayerCrew, items: Equip
 	};
 }
 
-function estimateChronitonCost(equipment: EquipmentItem | undefined): number {
+export function estimateChronitonCost(equipment: EquipmentItem | undefined): number {
 	let sources = equipment?.item_sources.filter(e => e.type === 0 || e.type === 2);
 
 	// If faction only
