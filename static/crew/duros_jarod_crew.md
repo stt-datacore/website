@@ -1,5 +1,5 @@
 ---
-name: Duras, son of Ja'rod
+name: Duras, Son of Ja'rod
 rarity: 4
 series: tng
 memory_alpha:
