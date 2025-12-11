@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import { CrewMember } from "../../model/crew";
-import { PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
+import { CryoCollection, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
 
 import { navigate } from "gatsby";
 import { GlobalContext } from "../../context/globalcontext";
@@ -39,15 +39,16 @@ const frozenStyle: React.CSSProperties = {
 export interface CollectionDisplayProps {
     crew: PlayerCrew | CrewMember;
     style?: React.CSSProperties;
+    showProgress?: boolean;
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
     const context = React.useContext(GlobalContext);
     const { playerData } = context.player;
-    const { crew, style } = props;
+    const { crew, style, showProgress } = props;
 
     const ocols = [] as string[];
-
+    let ccols = [] as CryoCollection[];
     const dispClick = (e, col: string) => {
         navigate("/collections?select=" + encodeURIComponent(col));
     }
@@ -64,19 +65,31 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
             }
         });
     }
-
+    if (playerData) {
+        ccols = playerData.player.character.cryo_collections.filter(cc => ocols.includes(cc.name));
+    }
     return (<div style={{
         ... (style ?? {}),
         cursor: "pointer"
     }}>
-        {crew.collections?.map((col, idx) => (
-            <a
-                style={{
-                    color: ocols.includes(col) ? 'lightgreen' : undefined
-                }}
-                onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
-                {col}
-            </a>))?.reduce((prev, next) => <>{prev}, {next}</>) ?? <></>}
+        {crew.collections?.map((col, idx) => {
+            let prog = 0;
+            let goal = 0;
+            if (showProgress) {
+                let rcol = ccols.find(f => f.name === col && f.milestone.goal != 'n/a');
+                if (rcol) {
+                    prog = rcol.progress as number;
+                    goal = rcol.milestone.goal as number;
+                }
+            }
+            return (
+                <a
+                    style={{
+                        color: ocols.includes(col) ? 'lightgreen' : undefined
+                    }}
+                    onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
+                    {col} {(!!prog && !!goal) && <span style={{color: 'skyblue'}}>({prog} / {goal})</span>}
+                </a>)})?.reduce((prev, next) => <>{prev}, {next}</>) ?? <></>}
     </div>)
 }
 

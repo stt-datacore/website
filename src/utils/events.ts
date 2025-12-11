@@ -443,14 +443,17 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 				amount = activeContent.antimatter_bonus_for_featured_crew ?? high;
 			}
 			else {
-				if (activeContent.antimatter_bonus_crew_traits?.some(trait => (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)))) {
-					amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
-				}
-				// activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
-				// 	if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
-				// 		amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
-				// 	}
-				// });
+				// Non-featured event crew get an AM bonus per matching trait
+				activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
+					if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
+						amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
+					}
+				});
+
+				// Alternate calculation: Non-featured crew get a fixed AM bonus when matching 1 or more event trait
+				// if (activeContent.antimatter_bonus_crew_traits?.some(trait => (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)))) {
+				// 	amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
+				// }
 			}
 		}
 		else {

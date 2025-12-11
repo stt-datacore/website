@@ -15,6 +15,8 @@ import { getBernardsNumber } from '../../../utils/gauntlet';
 import { printPortalStatus } from '../../../utils/crewutils';
 import { categorizeCrewCollections } from '../../../utils/collectionutils';
 import { Collection } from "../../../model/collections";
+import { Ship, ShipInUse } from '../../../model/ship';
+import { getShipsInUse } from '../../../utils/shiputils';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
@@ -66,17 +68,30 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const [ranks, setRanks] = React.useState<PlayerUtilityRanks | undefined>(undefined);
 	const [userPrefs, setUserPrefs] = useStateWithStorage<IUtilityUserPrefs>(dbid+'/utility', defaultPrefs, { rememberForever: true });
 	const [showPane, setShowPane] = React.useState(false);
+	const [shipsInUse, setShipsInUse] = React.useState<ShipInUse[]>([]);
+	const [crewOnShips, setCrewOnShips] = React.useState<IRosterCrew[]>([]);
 
 	const crewReasons = React.useMemo(() => {
 		if (!playerData) return {};
 		const playerCols = playerData.player.character.cryo_collections.filter(f => f.milestone.rewards?.length);
 		const cols = globalContext.core.collections.filter(f => playerCols.some(pc => `${pc.type_id}` == `${f.id}` || `${pc.type_id}` == `${f.type_id}`))
 		const output = {} as {[key:string]: string[]}
+		let shipCrew = [] as IRosterCrew[];
+		if (globalContext?.player) {
+			let ships = getShipsInUse(globalContext.player);
+			setShipsInUse(ships);
+			shipCrew = ships.map(s => s.ship.battle_stations?.map(bs => bs.crew) || []).flat().filter(f => f !== undefined) as IRosterCrew[] || [];
+			if (shipCrew.length) {
+				// Single representation of crew, only.
+				shipCrew = shipCrew.filter((c, i) => shipCrew.findIndex(c2 => c2.id === c.id) === i);
+			}
+			setCrewOnShips(shipCrew);
+		}
 		for (let c of rosterCrew) {
-			output[c.id] = reasonsToKeep(c, cols);
+			output[c.id] = reasonsToKeep(c, cols, shipCrew);
 		}
 		return output;
-	}, [rosterCrew, playerData]);
+	}, [rosterCrew, globalContext.player]);
 
 	const addCrewUtility = (crew: IRosterCrew) => {
 		const myRanks = {} as ICrewUtilityRanks;
@@ -328,30 +343,35 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		setRanks({...ranks});
 	}
 
-	function reasonsToKeep(crew: CrewMember, collections: Collection[]) {
+	function reasonsToKeep(crew: CrewMember, collections: Collection[], crewOnShips: CrewMember[]) {
 		let reasons = [] as string[];
 		if (crew.ranks.scores.ship.overall_rank <= 50) {
 			reasons.push(t(`rank_names.scores.ship`))
 		}
-		let nev = t('global.never');
-		let ps = printPortalStatus(crew, t, true, true);
-		if (ps.includes(nev)) {
-			ps = ps.replace(nev, '').trim();
-			reasons.push(`${t('base.never_in_portal')} ${ps}`);
+		if (crewOnShips.some(c => c.id === crew.id)) {
+			reasons.push(t('ship.battle_stations'));
 		}
 		let scores = Object.entries(crew.ranks.scores).filter(([key, value]) => key.includes("_rank") && value <= 50);
 		for (let s of scores) {
 			reasons.push(t(`rank_names.scores.${s[0]}`))
 		}
-		const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, collections);
-		if (crew_rewards.length) {
-			reasons.push(t('collections.types.crew_rewarding'));
-		}
-		if (stat_buffs.length && stat_buffs.some(sb => sb.size <= 50)) {
-			reasons.push(t('collections.types.stat_boosting'));
-		}
-		if (others.length) {
-			reasons.push(t('collections.types.vanity'));
+		if ("immortal" in crew && crew.immortal === 0) {
+			let nev = t('global.never');
+			let ps = printPortalStatus(crew, t, true, true);
+			if (ps.includes(nev)) {
+				ps = ps.replace(nev, '').trim();
+				reasons.push(`${t('base.never_in_portal')} ${ps}`);
+			}
+			const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, collections);
+			if (crew_rewards.length) {
+				reasons.push(t('collections.types.crew_rewarding'));
+			}
+			if (stat_buffs.length && stat_buffs.some(sb => sb.size <= 50)) {
+				reasons.push(t('collections.types.stat_boosting'));
+			}
+			if (others.length) {
+				reasons.push(t('collections.types.vanity'));
+			}
 		}
 		return reasons.filter(f => !!f).sort();
 	}
@@ -438,7 +458,7 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 	);
 
 	function renderReasonsToKeep(crew: IRosterCrew) {
-		if (crew.immortal) return <>{t('global.na')}</>;
+		//if (crew.immortal) return <>{t('global.na')}</>;
 		if (!crew.markup?.crew_utility?.reasons_to_keep?.length) return <>{t('global.none')}</>;
 		return crew.markup.crew_utility.reasons_to_keep.map((reason, idx) => {
 			let key = `${crew.symbol}_reason_${idx}`;
