@@ -81,7 +81,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 			let ships = getShipsInUse(globalContext.player);
 			setShipsInUse(ships);
 			shipCrew = ships.map(s => s.ship.battle_stations?.map(bs => bs.crew) || []).flat().filter(f => f !== undefined) as IRosterCrew[] || [];
-			shipCrew = shipCrew.concat(playerData.player.character.crew.filter(f => f.passive_id !== undefined))
+			shipCrew = shipCrew.concat(playerData.player.character.crew.filter(f => f.passive_status))
 			if (shipCrew.length) {
 				// Single representation of crew, only.
 				shipCrew = shipCrew.filter((c, i) => shipCrew.findIndex(c2 => c2.id === c.id) === i);
