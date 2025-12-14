@@ -558,6 +558,11 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		}
 
 		crew.have = true;
+
+		crew.passive_id = owned.passive_id;
+		crew.passive_index = owned.passive_index;
+		crew.passive_status = owned.passive_status;
+
 		crew.favorite = owned.favorite;
 		crew.is_new = owned.is_new;
 		crew.id = owned.id;

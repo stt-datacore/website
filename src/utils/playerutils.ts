@@ -215,6 +215,9 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             favorite: crew.favorite,
             expires_in: crew.expires_in,
             cap_achiever: crew.cap_achiever,
+            passive_index: crew.passive_index,
+            passive_status: crew.passive_status,
+            passive_id: crew.passive_id,
             action: {
                 bonus_amount: crew.action?.bonus_amount,
             },

@@ -35,7 +35,14 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		featured_ships: [],
 		bonus_ships: []
 	};
-
+	let ac: Content;
+	if (Array.isArray(activeEvent.content)) {
+		ac = activeEvent.content[0];
+	}
+	else {
+		ac = activeEvent.content;
+	}
+	result.factions = ac?.shuttles?.map(s => s.token);
 	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
 	let activeContent: Content | undefined = undefined;
 	let mega = activeEvent.threshold_rewards.find(f => f.rewards.some(r => r.type === 1 || r.item_type === 1) && f.points === 25000)?.rewards.find(r => r.type === 1 || r.item_type === 1);
