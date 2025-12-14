@@ -24,6 +24,8 @@ import { SpecialistMissionTable } from '../specialist/specialistmissions';
 import { IEventData, IRosterCrew } from './model';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { CrewPresenter } from '../item_presenters/crew_presenter';
+import { factionImageLocations } from '../factions';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 interface ISelectOptions {
 	key: string;
@@ -177,6 +179,7 @@ export const EventPicker = (props: EventPickerProps) => {
 				</div>
 			)}
 
+			{!!eventData.factions?.length && <EventFactions event={eventData} />}
 			{!!megacrew && <EventMega event={eventData} mega={megacrew} />}
 			{!!eventData.featured_ships.length && <EventFeaturedShips event={eventData} />}
 
@@ -342,6 +345,40 @@ const EventMega = (props: FeatureToolProps & { mega: CrewMember }) => {
 				targetGroup='event_mega'
 			/>
 			<i>{mega.name}</i>
+		</div>
+	</div></>)
+}
+
+
+export const EventFactions = (props: FeatureToolProps & { vertical?: boolean, imgSize?: string }) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
+	const { event } = props;
+	if (!event.factions?.length) return <></>;
+	let facts = event.factions.map(f => globalContext.core.factions.find(fe => fe.shuttle_token_id === f)!);
+
+	return (<>
+		<h4>{t('menu.tools.factions')}</h4>
+		<div style={{
+		display: 'flex',
+		flexDirection: 'column',
+		flexWrap: 'wrap',
+		alignItems: 'flex-start',
+		justifyContent: 'flex-start'
+	}}>
+		<div style={{
+				display: 'flex', flexDirection: props.vertical ? 'column' : 'row', alignItems: 'space-between', justifyContent: 'center',
+				gap: '4em',
+				flexWrap: 'wrap'
+			}}>
+
+			{facts.map(faction => {
+				return (<div key={`${faction.id}_${faction.home_system}_eventpicker`} style={{...OptionsPanelFlexRow, alignItems: 'center', gap: '0.5em'}}>
+					<img style={{margin: 0, height: props.imgSize ?? '48px'}} src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
+					<div>{faction.name}</div>
+				</div>)
+			})}
+
 		</div>
 	</div></>)
 }
