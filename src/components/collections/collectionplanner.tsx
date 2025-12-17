@@ -56,7 +56,15 @@ export const CollectionPlanner = () => {
 	}), [allCrew, myCrew]);
 
 	const playerCollections = React.useMemo(() => allCollections.map(ac => {
-		let collection: PlayerCollection = { id: ac.id, name: ac.name, progress: 0, milestone: { goal: 0 }, owned: 0, milestones: ac.milestones };
+		let collection: PlayerCollection = {
+			id: ac.id,
+			name: ac.name,
+			progress: 0,
+			milestone: { goal: 0 },
+			owned: 0,
+			milestones: ac.milestones,
+			score: ac.score
+		};
 		if (playerData.player.character.cryo_collections) {
 			const pc = playerData.player.character.cryo_collections.find((pc) => pc.name === ac.name);
 			if (pc) collection = { ...collection, ...structuredClone(pc) };
