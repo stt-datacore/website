@@ -1279,7 +1279,7 @@ export interface CryoCollection extends Collection {
   traits?: string[]
   extra_crew?: number[]
   claimable_milestone_index?: number
-  milestone: Milestone
+  milestone: Milestone,
 }
 
 export interface PlayerCollection extends CryoCollection {
