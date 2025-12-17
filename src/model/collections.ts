@@ -134,6 +134,23 @@ export interface CollectionWorkerResult {
     collections: CollectionInfo[];
     comboCostMap: ComboCostMap[];
 }
+
+export interface CollectionScore {
+  score: number;
+  details: {
+    portal: number;
+    average_rarity: number;
+    average_datascore: number;
+    rarity_datascores: {
+      "1"?: number,
+      "2"?: number,
+      "3"?: number,
+      "4"?: number,
+      "5"?: number,
+    }
+  }
+}
+
 export interface Collection {
   id: number;
   type_id?: number;
@@ -142,6 +159,7 @@ export interface Collection {
   description?: string;
   image?: string;
   milestones?: Milestone[];
+  score?: CollectionScore;
 }
 
 export interface Milestone {
