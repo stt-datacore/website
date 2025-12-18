@@ -139,6 +139,7 @@ export interface CollectionScore {
   score: number;
   details: {
     portal: number;
+    non_portal: number;
     average_rarity: number;
     average_datascore: number;
     rarity_datascores: {
