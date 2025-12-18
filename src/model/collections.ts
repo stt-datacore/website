@@ -140,6 +140,7 @@ export interface CollectionScore {
   details: {
     portal: number;
     non_portal: number;
+    difficulty: number;
     average_rarity: number;
     average_datascore: number;
     average_portal_datascore: number;
