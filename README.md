@@ -39,7 +39,8 @@ Scripts that take care of parsing the big / little book data, new items, ships a
 As of v2.1, DataCore requires Node 18+, and yarn to build.
 
 # Usage
-On first run, run `publish.sh -f` to generate static frontend website. 
+
+On first run, run `publish.sh -f` to generate static frontend website.
 
 For future updates, setup a cron job that runs `publish.sh` once per hour.
 
