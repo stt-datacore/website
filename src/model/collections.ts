@@ -144,6 +144,7 @@ export interface CollectionScore {
     average_datascore: number;
     average_portal_datascore: number;
     average_nonportal_datascore: number;
+    loot_score: number;
     rarity_datascores: {
       "1"?: number,
       "2"?: number,
