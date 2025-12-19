@@ -6,10 +6,12 @@ import { CrewMember } from '../../model/crew';
 import { Constellation, ConstellationMap, Polestar, PolestarCombo, categorizeKeystones } from "../../model/keystone";
 import { GlobalContext } from '../../context/globalcontext';
 import { findPolestars } from '../../utils/retrieval';
-import { OptionsPanelFlexColumn } from '../stats/utils';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { printISM } from '../retrieval/context';
 import { useStateWithStorage } from '../../utils/storage';
+import { AvatarView } from '../item_presenters/avatarview';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type PolestarsProps = {
 	crew: CrewMember;
@@ -135,6 +137,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [paginationRows, setPaginationRows] = React.useState(10);
+	const [expanded, setExpanded] = React.useState<number | undefined>(undefined);
 
 	React.useEffect(() => {
 		if (!Object.keys(market)?.length) {
@@ -171,9 +174,11 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 	let totalPages = Math.ceil(optimalPolestars.length / paginationRows);
 	const data = optimalPolestars.slice(paginationRows * (paginationPage - 1), paginationRows * paginationPage);
 
-	return (
+	return (<>
+		<CrewHoverStat targetGroup='polestars' />
 		<Segment>
 			<Header as='h4'>{t('polestars.optimal')}</Header>
+
 			<div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap'}}>
 				<div>{t('polestars.best_chance_long')}</div>
 				<div style={{display: 'flex', alignItems: 'center', gap: '0.5em', marginTop: '0.5em'}}>
@@ -215,8 +220,43 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 								</div>
 								)}
 							</Table.Cell>
-							<Table.Cell>
+							<Table.Cell
+								onClick={() => {
+									if (optimal.count > 1) {
+										if (expanded === idx) {
+											setExpanded(undefined);
+										}
+										else {
+											setExpanded(idx);
+										}
+									}
+								}}
+								style={{ cursor: optimal.count > 1 ? (expanded === idx ? 'zoom-out' : 'zoom-in') : undefined }}
+								>
 								{renderComboGrid(optimal)}
+								{expanded === idx && (<>
+									<div style={{...OptionsPanelFlexRow, margin: '1em 0', gap: '1em', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-evenly'}}>
+										{optimal.alts.map((alt) => (
+											<div style={{
+												...OptionsPanelFlexColumn,
+												justifyContent: 'flex-start',
+												alignItems: 'center',
+												gap: '0.5em',
+												width: '10em'
+												}}>
+												<AvatarView
+													targetGroup='polestars'
+													size={64}
+													mode='crew'
+													item={alt}
+													/>
+												<Link key={alt.symbol} to={`/crew/${alt.symbol}/`} style={{ textAlign: 'center'}}>
+													{alt.name}
+												</Link>
+											</div>
+										))}
+									</div>
+								</>)}
 							</Table.Cell>
 						</Table.Row>
 					))}
@@ -245,7 +285,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 				</Table.Footer>
 			</Table>
 		</Segment>
-	);
+	</>);
 
 	function renderComboGrid(polestarCombo: PolestarCombo): JSX.Element {
 		const comboColumns = polestarCombo.polestars.map((trait, idx) => {
