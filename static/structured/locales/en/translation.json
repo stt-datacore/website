@@ -992,6 +992,8 @@
         }
     },
     "global": {
+        "loot": "Loot",
+        "difficulty": "Difficulty",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",

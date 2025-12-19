@@ -59,8 +59,15 @@ export const CollectionsOverview = () => {
 										size="large"
 										// onError={e => e.target.style.visibility = 'hidden'}
 									/>
-									<Label attached='bottom'>
+									<Label attached='bottom'
+										// style={{minHeight: '4em'}}
+										>
+										<div style={{margin:0,padding:0}}>
 										{formatColString(colInfo.description!)}
+										</div>
+										<div style={{margin:0,padding:0}}>
+
+										</div>
 									</Label>
 								</Segment>
 							</div>
