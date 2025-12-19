@@ -273,7 +273,10 @@
             "grade": "Grade",
             "immortal_rewards": "Immortal Rewards",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Star Grade"
+            "star_grade": "Star Grade",
+            "total_owned": "Total Owned",
+            "progress": "{{collections.panes.progress.title}}",
+            "needed": "{{items.columns.needed}}"
         },
         "group": {
             "warning": "The grouped collection view shows only owned crew if the collections list is not filtered."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Show incomplete combos",
             "show_maxed_collections": "Show maxed collections",
+            "show_scoring_columns": "Show scoring columns",
             "sort_by_cost": "Sort by cost"
         },
         "panes": {

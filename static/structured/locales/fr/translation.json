@@ -273,7 +273,10 @@
             "grade": "Grade",
             "immortal_rewards": "Récompenses pour l'immortalisation",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grade étoile"
+            "star_grade": "Grade étoile",
+            "total_owned": "Total possédé",
+            "progress": "{{collections.panes.progress.title}}",
+            "needed": "{{items.columns.needed}}"
         },
         "group": {
             "warning": "La vue des collections groupées affiche uniquement l'équipage possédé si la liste des collections n'est pas filtrée."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Afficher les combos incomplets",
             "show_maxed_collections": "Afficher les collections maxées",
+            "show_scoring_columns": "Afficher les colonnes de notation",
             "sort_by_cost": "Trier par coût"
         },
         "panes": {

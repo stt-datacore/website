@@ -273,7 +273,10 @@
             "grade": "Grad",
             "immortal_rewards": "Belohnungen für die Unsterblichkeit",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Sterngrad"
+            "star_grade": "Sterngrad",
+            "total_owned": "Gesamtbesitz",
+            "progress": "{{collections.panes.progress.title}}",
+            "needed": "{{items.columns.needed}}"
         },
         "group": {
             "warning": "In der gruppierten Sammlungsansicht werden nur die eigenen Crewmitglieder angezeigt, wenn die Sammlungsliste nicht gefiltert ist."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Unvollständige Combos anzeigen",
             "show_maxed_collections": "Maximale Sammlungen anzeigen",
+            "show_scoring_columns": "Punktespalten anzeigen",
             "sort_by_cost": "Nach Kosten sortieren"
         },
         "panes": {
