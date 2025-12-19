@@ -43,3 +43,10 @@ jobs:
       - name: Rsync over ssh
         run: |
           rsync -avz --progress ./static/structured/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/structured
+
+      # Clear the cloudflare cache
+      - name: Cloudflare Cache Cleaner
+        uses: Cyb3r-Jak3/action-cloudflare-cache@v3.0.0
+        with:
+            zone: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+            api_token: ${{ secrets.CLOUDFLARE_TOKEN }}
