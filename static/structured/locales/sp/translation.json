@@ -273,7 +273,10 @@
             "grade": "Grado",
             "immortal_rewards": "Recompensas por la inmortalización",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grado de estrella"
+            "star_grade": "Grado de estrella",
+            "total_owned": "Total de propiedad",
+            "progress": "{{collections.panes.progress.title}}",
+            "needed": "{{items.columns.needed}}"
         },
         "group": {
             "warning": "La vista de colecciones agrupadas muestra solo la tripulación propia si la lista de colecciones no está filtrada."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Mostrar combos incompletos",
             "show_maxed_collections": "Mostrar colecciones maximizadas",
+            "show_scoring_columns": "Mostrar columnas de puntuación",
             "sort_by_cost": "Ordenar por costo"
         },
         "panes": {
