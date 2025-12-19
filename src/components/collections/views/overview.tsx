@@ -9,6 +9,7 @@ import { getAllStatBuffs } from '../../../utils/collectionutils';
 import { getIconPath } from '../../../utils/assets';
 import { Collection } from "../../../model/collections";
 import { LazyImage } from '../../lazyimage';
+import { gradeToColor, numberToGrade } from '../../../utils/crewutils';
 
 export const CollectionsOverview = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -65,7 +66,15 @@ export const CollectionsOverview = () => {
 										<div style={{margin:0,padding:0}}>
 										{formatColString(colInfo.description!)}
 										</div>
-										<div style={{margin:0,padding:0}}>
+										<div style={{margin:0,padding:'0.5em 0 0 0'}}>
+											{t('global.difficulty{{:}}')}
+											<span style={{color: gradeToColor((colInfo.score?.details?.difficulty ?? 0) / 100)}}>
+												{numberToGrade((colInfo.score?.details?.difficulty ?? 0) / 100)}
+											</span>,&nbsp;
+											{t('global.loot{{:}}')}
+											<span style={{color: gradeToColor((colInfo.score?.details?.loot_score ?? 0) / 100)}}>
+												{numberToGrade((colInfo.score?.details?.loot_score ?? 0) / 100)}
+											</span>
 
 										</div>
 									</Label>
