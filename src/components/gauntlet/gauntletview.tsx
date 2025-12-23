@@ -67,14 +67,20 @@ export const GauntletView = (props: GauntletViewProps) => {
     }, [gauntlet]);
 
     React.useEffect(() => {
-        if (typeof window !== 'undefined') {
-			if (initialized) {
+        if (typeof window !== 'undefined' && !outerGauntlet.unavailable_msg) {
+			if (!!gauntlet?.unavailable_msg) {
+                setGauntlet(outerGauntlet);
+            }
+            if (initialized) {
 				runWorker();
 			}
 			else {
 				setRequestRun(true);
 			}
 		}
+        else {
+            setGauntlet(outerGauntlet);
+        }
     }, [settings, natural, outerGauntlet, filter, buffMode, range_max, playerData]);
 
 	setTimeout(() => {
@@ -85,7 +91,6 @@ export const GauntletView = (props: GauntletViewProps) => {
 	}, 500);
 
     return <React.Fragment>
-
         <div style={{
             marginBottom: "2em",
             overflowX: "auto",
@@ -96,18 +101,17 @@ export const GauntletView = (props: GauntletViewProps) => {
             {pane === 'live' && <h1 style={{ margin: 0, marginBottom: "0.5em", padding: 0 }}>{t('gauntlet.pages.live_gauntlet.title')}</h1>}
 
             {!!gauntlet && <GauntletHeader gauntlet={gauntlet} />}
-
-            <GauntletPrefsPanel />
+            {!gauntlet.unavailable_msg && <GauntletPrefsPanel />}
 
             {(running || !gauntlet) && <div style={{ margin: '2em', textAlign: 'center', height: "50vh" }}>
                 {globalContext.core.spin(t('spinners.default'))}
             </div>}
 
-            {!running && !!gauntlet && viewMode === 'pair_cards' && !!gauntlet && renderPairTableView()}
-            {!running && !!gauntlet && viewMode === 'table' && !!gauntlet && renderTable()}
-            {!running && !!gauntlet && viewMode === 'big' && !!gauntlet && renderBigCards()}
-            {!running && !!gauntlet && viewMode === 'small' && !!gauntlet && renderSmallCards()}
-            {!running && !!gauntlet && pane === 'live' && viewMode === 'opponent_table' && !!opponentCache && renderOpponentTable()}
+            {!running && !!gauntlet && !gauntlet.unavailable_msg && viewMode === 'pair_cards' && !!gauntlet && renderPairTableView()}
+            {!running && !!gauntlet && !gauntlet.unavailable_msg && viewMode === 'table' && !!gauntlet && renderTable()}
+            {!running && !!gauntlet && !gauntlet.unavailable_msg && viewMode === 'big' && !!gauntlet && renderBigCards()}
+            {!running && !!gauntlet && !gauntlet.unavailable_msg && viewMode === 'small' && !!gauntlet && renderSmallCards()}
+            {!running && !!gauntlet && !gauntlet.unavailable_msg && pane === 'live' && viewMode === 'opponent_table' && !!opponentCache && renderOpponentTable()}
 
         </div>
     </React.Fragment>

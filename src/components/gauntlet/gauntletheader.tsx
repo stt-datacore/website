@@ -32,6 +32,14 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
     const [buckets, setBuckets] = React.useState<CrewMember[][]>([]);
     const [featuredOpen, setFeaturedOpen] = useStateWithStorage('gauntlet_featured_open', false, { rememberForever: true });
 
+    const [randCrew, setRandCrew] = React.useState<React.JSX.Element | undefined>();
+
+    React.useEffect(() => {
+        if (!randCrew) {
+            setRandCrew(randomCrew('q_jdl', globalContext.core.crew));
+        }
+    }, [randCrew, globalContext.core.crew]);
+
     React.useEffect(() => {
         const buckets = [[], [], []] as CrewMember[][];
         const seen = [] as string[];
@@ -129,8 +137,10 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
 
     if (gauntlet.unavailable_msg) {
         return (
-            <Message icon>
-                {randomCrew("q_jdl", globalContext.core.crew)}
+            <Message icon  onClick={() => setRandCrew(undefined)}>
+                <div style={{margin:'1em'}}>
+                    {randCrew || <></>}
+                </div>
                 <Message.Content>
                     <Message.Header>{gauntlet.unavailable_msg}</Message.Header>
                     {gauntlet.unavailable_desc_msg}

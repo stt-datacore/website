@@ -7,7 +7,7 @@ import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
 
-import { Step, Label, Icon } from "semantic-ui-react";
+import { Step, Label, Icon, SemanticWIDTHS } from "semantic-ui-react";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GauntletImportComponent } from "./gauntletimporter";
@@ -81,12 +81,12 @@ export const GauntletPicker = () => {
             description: "",
             refresh: true
         },
-        {
-            pane: 'yesterday',
-            menuItem: yDateStr,
-            render: () => <div style={{ fontSize: fs }}><GauntletView gauntlets={gauntlets} gauntlet={yesterday} /></div>,
-            description: ''
-        },
+        // {
+        //     pane: 'yesterday',
+        //     menuItem: yDateStr,
+        //     render: () => <div style={{ fontSize: fs }}><GauntletView gauntlets={gauntlets} gauntlet={yesterday} /></div>,
+        //     description: ''
+        // },
         {
             pane: 'previous',
             menuItem: isMobile ? tfmt('gauntlet.pages.previous_gauntlets.short') : tfmt('gauntlet.pages.previous_gauntlets.title'),
@@ -125,7 +125,7 @@ export const GauntletPicker = () => {
                 currentHasRemote={!!liveGauntlet}
             />}
         <div style={{ margin: "1em 0" }}>
-            <Step.Group fluid>
+            <Step.Group fluid widths={tabPanes.length as any}>
                 {tabPanes.map((tabPane, idx) => {
                     return (
                         <Step key={`gauntlet_Tab_${idx}`} active={tabPane.pane === pane} onClick={() => setPane(tabPane.pane as GauntletPane)}>
