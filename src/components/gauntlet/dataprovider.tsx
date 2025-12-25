@@ -164,6 +164,8 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
             if (!api.contest_data.traits.every(t => today.contest_data?.traits.includes(t))) return false;
             if (today.jackpot_crew !== api.jackpot_crew) return false;
         }
+        else if (!today.contest_data && !api.contest_data) return true;
+        else if (!today.contest_data || !api.contest_data) return false;
         return true;
     }
 
@@ -171,7 +173,9 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         return fetch("https://datacore.app/api/gauntlet_info")
             .then((result) => result.json())
             .then((json) => ({ ...json, fromApi: true, date: moment(new Date()).utc(false).toISOString() } as Gauntlet))
-            .catch((e) => undefined);
+            .catch((e) =>
+                undefined
+        );
     }
 
     function refreshApiGauntlet() {
