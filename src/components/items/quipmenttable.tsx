@@ -85,10 +85,11 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
                         </div>
                     </>),
                     width: 1
-                }
+                },
+                ...props.customFields ?? [],
             ] as CustomFieldDef[];
         }
-        return [];
+        return props.customFields;
     }, [items, mode]);
 
     return <EquipmentTable
