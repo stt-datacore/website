@@ -272,11 +272,11 @@
             },
             "grade": "Grad",
             "immortal_rewards": "Belohnungen für die Unsterblichkeit",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
             "star_grade": "Sterngrad",
-            "total_owned": "Gesamtbesitz",
-            "progress": "{{collections.panes.progress.title}}",
-            "needed": "{{items.columns.needed}}"
+            "total_owned": "Gesamtbesitz"
         },
         "group": {
             "warning": "In der gruppierten Sammlungsansicht werden nur die eigenen Crewmitglieder angezeigt, wenn die Sammlungsliste nicht gefiltert ist."
@@ -1052,6 +1052,7 @@
         "filters": "Filter",
         "filters_warning": "Aufgrund Ihrer aktuellen Suchoptionen sind einige Ergebnisse möglicherweise ausgeblendet.",
         "fleet": "Flotte",
+        "frequency": "Frequenz",
         "fuses": "Fusionen",
         "group_by": "Gruppiere nach",
         "hidden": "Versteckt",

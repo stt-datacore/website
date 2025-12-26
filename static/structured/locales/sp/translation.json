@@ -272,11 +272,11 @@
             },
             "grade": "Grado",
             "immortal_rewards": "Recompensas por la inmortalización",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
             "star_grade": "Grado de estrella",
-            "total_owned": "Total de propiedad",
-            "progress": "{{collections.panes.progress.title}}",
-            "needed": "{{items.columns.needed}}"
+            "total_owned": "Total de propiedad"
         },
         "group": {
             "warning": "La vista de colecciones agrupadas muestra solo la tripulación propia si la lista de colecciones no está filtrada."
@@ -1058,6 +1058,7 @@
         "filters": "Filtros",
         "filters_warning": "Algunos resultados pueden estar ocultos debido a sus opciones de búsqueda actuales.",
         "fleet": "Flota",
+        "frequency": "Frecuencia",
         "fuses": "Fusiones",
         "group_by": "Agrupar por",
         "hidden": "Oculto",
