@@ -272,8 +272,11 @@
             },
             "grade": "Grado",
             "immortal_rewards": "Recompensas por la inmortalización",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grado de estrella"
+            "star_grade": "Grado de estrella",
+            "total_owned": "Total de propiedad"
         },
         "group": {
             "warning": "La vista de colecciones agrupadas muestra solo la tripulación propia si la lista de colecciones no está filtrada."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Mostrar combos incompletos",
             "show_maxed_collections": "Mostrar colecciones maximizadas",
+            "show_scoring_columns": "Mostrar columnas de puntuación",
             "sort_by_cost": "Ordenar por costo"
         },
         "panes": {
@@ -1035,6 +1039,7 @@
         "delete": "Ocultar",
         "delete_confirm": "¿Estás seguro de que deseas eliminar estos datos?",
         "delete_selected": "Ocultar seleccionado",
+        "difficulty": "Difficulty",
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
@@ -1053,6 +1058,8 @@
         "filters": "Filtros",
         "filters_warning": "Algunos resultados pueden estar ocultos debido a sus opciones de búsqueda actuales.",
         "fleet": "Flota",
+        "frequency": "Frecuencia",
+        "fuses": "Fusiones",
         "group_by": "Agrupar por",
         "hidden": "Oculto",
         "hide": "Ocultar",
@@ -1104,6 +1111,7 @@
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "loot": "Botín",
         "lose": "Perder",
         "map_position": "Posición del mapa",
         "max": "Máximo",
@@ -1639,6 +1647,7 @@
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
             "buyback": "Muestra tripulación con fusibles en pozo de recompra",
             "dupes": "Mostrar sólo tripulación duplicada",
+            "expiring": "Mostrar solo la tripulación que está por vencer",
             "fe": "Mostrar solo a los no inmortales completamente equipados",
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
@@ -2484,7 +2493,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Ver todo como inmortalizado"
+            "as_immortalized": "Ver todo como inmortalizado",
+            "cheapestfffe": "Más barato TFTE"
         },
         "title": "Vistas especiales"
     },

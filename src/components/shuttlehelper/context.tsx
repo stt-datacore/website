@@ -15,6 +15,7 @@ export interface IShuttlersContext {
 	setShuttlers: (shuttlers: Shuttlers) => void;
 	assigned: ISeatAssignment[];
 	setAssigned: (assigned: ISeatAssignment[]) => void;
+	eventFactions?: number[];
 };
 
 export const ShuttlersContext = React.createContext<IShuttlersContext>({} as IShuttlersContext);

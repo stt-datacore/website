@@ -272,8 +272,11 @@
             },
             "grade": "Grad",
             "immortal_rewards": "Belohnungen für die Unsterblichkeit",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Sterngrad"
+            "star_grade": "Sterngrad",
+            "total_owned": "Gesamtbesitz"
         },
         "group": {
             "warning": "In der gruppierten Sammlungsansicht werden nur die eigenen Crewmitglieder angezeigt, wenn die Sammlungsliste nicht gefiltert ist."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Unvollständige Combos anzeigen",
             "show_maxed_collections": "Maximale Sammlungen anzeigen",
+            "show_scoring_columns": "Punktespalten anzeigen",
             "sort_by_cost": "Nach Kosten sortieren"
         },
         "panes": {
@@ -1029,6 +1033,7 @@
         "delete": "Löschen",
         "delete_confirm": "Möchten Sie diese Daten wirklich löschen?",
         "delete_selected": "Ausgewählte löschen",
+        "difficulty": "Schwierigkeitsgrad",
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",
@@ -1047,6 +1052,8 @@
         "filters": "Filter",
         "filters_warning": "Aufgrund Ihrer aktuellen Suchoptionen sind einige Ergebnisse möglicherweise ausgeblendet.",
         "fleet": "Flotte",
+        "frequency": "Frequenz",
+        "fuses": "Fusionen",
         "group_by": "Gruppiere nach",
         "hidden": "Versteckt",
         "hide": "Verstecken",
@@ -1098,6 +1105,7 @@
         "load_defaults": "Standards laden",
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
+        "loot": "Beute",
         "lose": "Verlieren",
         "map_position": "Kartenposition",
         "max": "Maximal",
@@ -1629,6 +1637,7 @@
             "advanceable": "Nur Crew anzeigen, die nicht beanspruchte Plätze für Rüstzeug hat",
             "buyback": "Crew mit Sicherungen im Rückkaufschacht anzeigen",
             "dupes": "Nur doppelte Crew anzeigen",
+            "expiring": "Nur auslaufende Crewmitglieder anzeigen",
             "fe": "Nur voll ausgestattete Nicht-Unsterbliche anzeigen",
             "fodder": "Nur nicht fusionierte Crew anzeigen",
             "freezable": "Nur einfrierbare Crew anzeigen",
@@ -2474,7 +2483,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Alle als unsterblich ansehen"
+            "as_immortalized": "Alle als unsterblich ansehen",
+            "cheapestfffe": "Günstigste VAVA"
         },
         "title": "Besondere Ansichten"
     },

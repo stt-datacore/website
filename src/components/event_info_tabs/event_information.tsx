@@ -8,6 +8,7 @@ import { PlayerCrew } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
 import { CrewTarget } from '../hovering/crewhoverstat';
 import { Ship } from '../../model/ship';
+import { EventFactions } from '../eventplanner/eventpicker';
 
 const contentTypeMap = {
 	gather: 'Galaxy',
@@ -101,6 +102,7 @@ function EventInformationTab(props: { eventData: GameEvent, lastEvent?: GameEven
 				</Card.Content>
 				<Card.Content extra>
 					<p>{bonus_text}</p>
+					{!!currEvent?.factions?.length && <EventFactions imgSize='24px' event={currEvent} />}
 					{content_types.includes('skirmish') && currEvent?.bonusGuessed &&
 						<Message warning>{t('events_common.skirmish_guess_warning')}</Message>}
 				</Card.Content>

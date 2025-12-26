@@ -272,8 +272,11 @@
             },
             "grade": "Grade",
             "immortal_rewards": "Récompenses pour l'immortalisation",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grade étoile"
+            "star_grade": "Grade étoile",
+            "total_owned": "Total possédé"
         },
         "group": {
             "warning": "La vue des collections groupées affiche uniquement l'équipage possédé si la liste des collections n'est pas filtrée."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Afficher les combos incomplets",
             "show_maxed_collections": "Afficher les collections maxées",
+            "show_scoring_columns": "Afficher les colonnes de notation",
             "sort_by_cost": "Trier par coût"
         },
         "panes": {
@@ -1037,6 +1041,7 @@
         "delete": "Masquer",
         "delete_confirm": "Êtes-vous sûr de vouloir supprimer ces données ?",
         "delete_selected": "Masquer la sélection",
+        "difficulty": "Difficulté",
         "disable": "Désactiver",
         "disabled": "Désactivé",
         "dismiss": "Rejeter",
@@ -1055,6 +1060,8 @@
         "filters": "Filtres",
         "filters_warning": "Certains résultats peuvent être masqués en raison de vos options de recherche actuelles.",
         "fleet": "Flotte",
+        "frequency": "Fréquence",
+        "fuses": "Fusions",
         "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
@@ -1106,6 +1113,7 @@
         "load_defaults": "Charger les défauts",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
+        "loot": "Butin",
         "lose": "Perdre",
         "map_position": "Position sur la carte",
         "max": "Max",
@@ -1641,6 +1649,7 @@
             "advanceable": "Afficher uniquement les équipiers disposant d'emplacements du quipement non réclamés",
             "buyback": "Afficher les équipiers avec les fusibles dans le puits de rachat",
             "dupes": "Afficher uniquement les équipiers en doubles",
+            "expiring": "Afficher uniquement l'équipage expirant",
             "fe": "Afficher uniquement les non-immortels entièrement équipés",
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",
@@ -2486,7 +2495,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Tout voir comme immortalisé"
+            "as_immortalized": "Tout voir comme immortalisé",
+            "cheapestfffe": "Moins cher EFEÉ"
         },
         "title": "Vues spéciales"
     },
