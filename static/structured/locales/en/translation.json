@@ -272,11 +272,11 @@
             },
             "grade": "Grade",
             "immortal_rewards": "Immortal Rewards",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
             "star_grade": "Star Grade",
-            "total_owned": "Total Owned",
-            "progress": "{{collections.panes.progress.title}}",
-            "needed": "{{items.columns.needed}}"
+            "total_owned": "Total Owned"
         },
         "group": {
             "warning": "The grouped collection view shows only owned crew if the collections list is not filtered."
@@ -996,8 +996,6 @@
         }
     },
     "global": {
-        "loot": "Loot",
-        "difficulty": "Difficulty",
         "aborted": "Aborted",
         "admiral": "Admiral",
         "advanced_settings": "Advanced Settings",
@@ -1035,6 +1033,7 @@
         "delete": "Delete",
         "delete_confirm": "Are you sure you wish to delete this data?",
         "delete_selected": "Delete Selected",
+        "difficulty": "Difficulty",
         "disable": "Disable",
         "disabled": "Disabled",
         "dismiss": "Dismiss",
@@ -1053,6 +1052,7 @@
         "filters": "Filters",
         "filters_warning": "Some results may be hidden due to your current search options.",
         "fleet": "Fleet",
+        "frequency": "Frequency",
         "fuses": "Fuses",
         "group_by": "Group by",
         "hidden": "Hidden",
@@ -1105,6 +1105,7 @@
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
+        "loot": "Loot",
         "lose": "Lose",
         "map_position": "Map Position",
         "max": "Max",

@@ -7,6 +7,8 @@ import { getPossibleQuipment } from "../../utils/itemutils";
 import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
 import { QuipmentFilterContext, QuipmentMode } from "./quipmentfilters";
 import { PlayerEquipmentItem } from "../../model/player";
+import { CustomFieldDef } from "./utils";
+import { OptionsPanelFlexRow } from "../stats/utils";
 
 interface QuipmentTableProps extends EquipmentTableProps {
     ownedItems: boolean;
@@ -17,7 +19,7 @@ interface QuipmentTableProps extends EquipmentTableProps {
 export const QuipmentTable = (props: QuipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const quipmentContext = React.useContext(QuipmentFilterContext);
-
+    const { t } = globalContext.localized;
     const { ownedCrew, mode } = props;
     const { playerData } = globalContext.player;
 
@@ -71,6 +73,24 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
         }
     }, [crew, props.items, ownedOption, traitOptions, skillOptions, rarityOptions]);
 
+    const customFields = React.useMemo(() => {
+        if (mode === 'qbit') {
+            return [
+                {
+                    text: t('global.frequency'),
+                    field: 'kwipment_frequency',
+                    format: (value) => (<>
+                        <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+                        <span>{(value as number).toLocaleString()}</span>
+                        </div>
+                    </>),
+                    width: 1
+                }
+            ] as CustomFieldDef[];
+        }
+        return [];
+    }, [items, mode]);
+
     return <EquipmentTable
         {...{
             ...props,
@@ -82,7 +102,8 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
             setSelection,
             maxSelections: maxSlots,
             items,
-            types: [mode === 'qbit' ? 15 : 14]
+            types: [mode === 'qbit' ? 15 : 14],
+            customFields
         }}
         />
 
