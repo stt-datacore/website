@@ -1175,6 +1175,7 @@
         "squadron_leader": "Squadron Leader",
         "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "toggle_layout": "Toggle layout",
+        "total": "Total",
         "type": "Type",
         "unassigned": "Unassigned",
         "uncheck_all": "Uncheck all",

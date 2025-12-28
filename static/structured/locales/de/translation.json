@@ -1175,6 +1175,7 @@
         "squadron_leader": "Geschwaderführer",
         "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
         "toggle_layout": "Layout umschalten",
+        "total": "Gesamt",
         "type": "Typ",
         "uncheck_all": "Deaktivieren Sie alle",
         "unselect_all": "Auswahl aufheben",
