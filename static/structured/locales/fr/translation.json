@@ -1185,6 +1185,7 @@
         "squadron_leader": "Chef d'escadron",
         "supply_kit_active_n": "Kit de fournitures actif ({{n}} % de réduction)",
         "toggle_layout": "Basculer la mise en page",
+        "total": "Total",
         "type": "Type",
         "uncheck_all": "Décochez tout",
         "unselect_all": "Tout désélectionner",
