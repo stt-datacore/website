@@ -73,25 +73,6 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
         }
     }, [crew, props.items, ownedOption, traitOptions, skillOptions, rarityOptions]);
 
-    const customFields = React.useMemo(() => {
-        if (mode === 'qbit') {
-            return [
-                {
-                    text: t('global.frequency'),
-                    field: 'kwipment_frequency',
-                    format: (value) => (<>
-                        <div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
-                        <span>{(value as number).toLocaleString()}</span>
-                        </div>
-                    </>),
-                    width: 1
-                },
-                ...props.customFields ?? [],
-            ] as CustomFieldDef[];
-        }
-        return props.customFields;
-    }, [items, mode]);
-
     return <EquipmentTable
         {...{
             ...props,
@@ -103,8 +84,7 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
             setSelection,
             maxSelections: maxSlots,
             items,
-            types: [mode === 'qbit' ? 15 : 14],
-            customFields
+            types: [mode === 'qbit' ? 15 : 14]
         }}
         />
 
