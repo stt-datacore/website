@@ -978,7 +978,7 @@ export function getElevatedBuckets(crew: PlayerCrew, gauntlets: Gauntlet[], TRAI
 		};
 		keybucket[key].count++;
 	}
-	const critted = gauntlets.filter(f => f.contest_data && f.contest_data.traits.some(t => crew.traits.includes(t)));
+	const critted = gauntlets.filter(f => !f.sequence_id && f.contest_data && f.contest_data.traits.some(t => crew.traits.includes(t)));
 	for (let g of critted) {
 		addtobucket(g, getCrewCrit(crew, g));
 	}
