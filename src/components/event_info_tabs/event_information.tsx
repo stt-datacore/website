@@ -19,7 +19,7 @@ const contentTypeMap = {
 };
 
 function getEventType(contentTypes: string[], t?: TranslateMethod) {
-	const mappedTypes = contentTypes.map(type => t ? t(`event_type.${type}`) : contentTypeMap[type]);
+	const mappedTypes = contentTypes?.map(type => t ? t(`event_type.${type}`) : contentTypeMap[type]) ?? [];
 	const items = new Set(mappedTypes);
 	return [...items].join(' / ');
 }
@@ -103,7 +103,7 @@ function EventInformationTab(props: { eventData: GameEvent, lastEvent?: GameEven
 				<Card.Content extra>
 					<p>{bonus_text}</p>
 					{!!currEvent?.factions?.length && <EventFactions imgSize='24px' event={currEvent} />}
-					{content_types.includes('skirmish') && currEvent?.bonusGuessed &&
+					{!!content_types?.includes('skirmish') && currEvent?.bonusGuessed &&
 						<Message warning>{t('events_common.skirmish_guess_warning')}</Message>}
 				</Card.Content>
 			</Card>
