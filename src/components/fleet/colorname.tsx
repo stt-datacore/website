@@ -12,7 +12,7 @@ export const ColorName = (props: ColorNameProps) => {
     if (!text) return <></>
     const segments = [] as JSX.Element[];
 
-    let splits = text.split("<#");
+    let splits = `${text}`.split("<#");
     if (splits.length === 1) return <span>{text}</span>;
 
 
