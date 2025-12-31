@@ -37,7 +37,6 @@ export const DemandsTable = (props: DemandsTableProps) => {
             runWorker(
                 "equipmentWorker", {
                     playerData,
-                    items: props.items,
                     addNeeded: true
                 },
                 (data: { data: { result: EquipmentWorkerResults } }) => {

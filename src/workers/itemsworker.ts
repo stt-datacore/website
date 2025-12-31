@@ -3,9 +3,12 @@ import { CrewMember } from "../model/crew";
 import { EquipmentItem, ICrewDemands } from "../model/equipment";
 import { PlayerCrew } from "../model/player";
 import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../model/worker";
-import { calculateRosterDemands, mergeDemands } from "../utils/equipment";
+import { mergeDemands } from "../utils/equipment";
 import { binaryLocate, mergeItems } from "../utils/itemutils";
 import { ParaDemandConfig } from "./parademand";
+
+import itemCache from '../../static/structured/items.json';
+const items = itemCache as EquipmentItem[];
 
 const ItemsWorker = {
 	splitCrew: (crew: (PlayerCrew | CrewMember)[]) => {
@@ -18,7 +21,11 @@ const ItemsWorker = {
 			cores,
 			batches: [] as (PlayerCrew | CrewMember)[][]
 		}
-		const batchSize = Math.floor(crew.length / cores)
+		if (crew.length <= 128) {
+			result.batches.push(crew);
+			return result;
+		}
+		const batchSize = Math.floor(crew.length / cores);
 		while (crew.length) {
 			let bcrew = crew.splice(0, batchSize);
 			result.batches.push(bcrew);
@@ -44,12 +51,9 @@ const ItemsWorker = {
 		return result;
 	},
     processItems: (config: EquipmentWorkerConfig) => {
-
         return new Promise<EquipmentWorkerResults>(async (resolve, reject) => {
-            const { items, playerData, crewFilter, excludePrimary } = config;
-
+            const { playerData, crewFilter, excludePrimary } = config;
 			const data = mergeItems(playerData?.player.character.items ?? [], items).map(d => ({...d, needed: 0 })) as EquipmentItem[];
-
             const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));
 
 			data.sort((a, b) => a.symbol.localeCompare(b.symbol));
@@ -78,23 +82,18 @@ const ItemsWorker = {
 						}
 					}
 				}
-
 				const crew = playerData.player.character.crew.filter(c => !crewFilter?.length || crewFilter.includes(c.id));
-
 				const { batches } = ItemsWorker.splitCrew(crew)
 
-				await localforage.setItem('itemsWorker_coreItems', items);
 				const workers = batches.map(batch => {
 					return ItemsWorker.paraDispatch({
 						crew: batch,
-						items: [],
 						excludePrimary,
 						fromCurrLvl: true
 					});
 				});
-				let demandres = (await Promise.all(workers)).filter(f => f !== undefined);
-				await localforage.removeItem('itemsWorker_coreItems');
 
+				let demandres = (await Promise.all(workers)).filter(f => f !== undefined);
 				const rosterDemands = demandres.reduce((p, n) => p ? mergeDemands(p, n) : n, undefined as ICrewDemands | undefined);
 
 				//const rosterDemands = calculateRosterDemands(crew, items as EquipmentItem[], true, excludePrimary);
