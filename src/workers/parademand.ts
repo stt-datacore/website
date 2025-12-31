@@ -3,10 +3,11 @@ import { CrewMember } from "../model/crew";
 import { EquipmentItem, ICrewDemands } from "../model/equipment";
 import { PlayerCrew } from "../model/player";
 import { calculateRosterDemands } from "../utils/equipment";
+import itemCache from '../../static/structured/items.json';
+const items = itemCache as EquipmentItem[];
 
 export interface ParaDemandConfig {
     crew: (CrewMember | PlayerCrew)[],
-    items: EquipmentItem[],
     fromCurrLvl: boolean,
     excludePrimary?: boolean
 }
@@ -20,7 +21,7 @@ self.onmessage = async (message: { data: { id: string; config: ParaDemandConfig;
     };
     const config = message.data.config as ParaDemandConfig;
     const { crew, fromCurrLvl, excludePrimary } = config;
-    const items = await localforage.getItem<EquipmentItem[]>('itemsWorker_coreItems');
+
     if (!items?.length) postResult({} as any, false);
     const rosterDemands = calculateRosterDemands(crew, items!, fromCurrLvl, excludePrimary);
     postResult(rosterDemands, false);

@@ -79,7 +79,6 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
             runWorker(
                 "equipmentWorker", {
                 playerData,
-                items: coreItems,
                 addNeeded: true,
                 crewFilter
             },
