@@ -1872,6 +1872,21 @@
             }
         }
     },
+    "resource_tracker": {
+        "columns": {
+            "day_over_day_average": "Promedio diario",
+            "difference": "Diferencia",
+            "resource": "Recurso",
+            "timestamp": "Marca de tiempo"
+        },
+        "enable": "Habilitar el seguimiento de recursos",
+        "select_view": "Seleccionar vista",
+        "title": "Rastreador de recursos",
+        "view": {
+            "by_resource": "Por recurso",
+            "by_update": "Según la última actualización"
+        }
+    },
     "retrieval": {
         "alert_pending_crew": "Actualmente esta tripulante no se puede recuperar de forma única, pero una futura actualización del portal cambiará este estado.",
         "allow_unowned": "Permitir tripulación sin propietario",

@@ -1863,6 +1863,21 @@
             }
         }
     },
+    "resource_tracker": {
+        "columns": {
+            "day_over_day_average": "Day over day average",
+            "difference": "Difference",
+            "resource": "Resource",
+            "timestamp": "Timestamp"
+        },
+        "enable": "Enable Resource Tracking",
+        "select_view": "Select view",
+        "title": "Resource Tracker",
+        "view": {
+            "by_resource": "By resource",
+            "by_update": "By last update"
+        }
+    },
     "retrieval": {
         "alert_pending_crew": "This crew is currently not uniquely retrievable but a future portal update will change this status.",
         "allow_unowned": "Allow unowned crew",
