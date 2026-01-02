@@ -661,7 +661,7 @@
             "title": "CAB's FBB Combo Chain Helper"
         },
         "chain_n": "Kette #{{n}}",
-        "chain_solved": "Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.",
+        "chain_solved": "Ihre Flotte hat alle Knoten für diese Combo-Kette gelöst. Wählen Sie einen anderen Boss oder aktualisieren Sie Ihre Spielerdaten, um aktive Schlachten zu aktualisieren.",
         "columns": {
             "coverage": "Abdeckung",
             "crew": "{{base.crew}}",
@@ -816,7 +816,7 @@
             "trait_colors_a": "Merkmalsfarben",
             "trait_colors_b": "helfen, die Seltenheit jedes Merkmals pro Knoten zu visualisieren, z. B. bedeutet ein goldenes Merkmal, dass seine Crew die einzig mögliche Crew mit diesem Merkmal in diesem Knoten ist, ein violettes Merkmal ist ein Merkmal, das von 2 möglichen Crewmitgliedern in diesem Knoten geteilt wird, ein blaues Merkmal wird von 3 möglichen Crewmitgliedern geteilt usw. Beachten Sie, dass potenzielle Alpha-Ausnahmen unabhängig von der Seltenheit immer orange sind.",
             "trait_numbers_a": "Merkmalsnummern",
-            "trait_numbers_b": "identify how many remaining nodes that trait is possibly a solution for, based on an unofficial rule that duplicate traits in the pool are either never a solution or always a solution.",
+            "trait_numbers_b": "Identifizieren Sie, für wie viele verbleibende Knoten dieses Merkmal möglicherweise eine Lösung darstellt, basierend auf einer inoffiziellen Regel, die besagt, dass doppelte Merkmale im Pool entweder nie oder immer eine Lösung sind.",
             "trait_numbers_b_ori": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
         },
         "undo_solve": "Lösen rückgängig machen",
@@ -1189,7 +1189,7 @@
             "title": "In Arbeit!"
         },
         "x_or_better": "{{x}} oder besser",
-        "x_or_y": "{{x}} or {{y}}",
+        "x_or_y": "{{x}} oder {{y}}",
         "yes": "Ja",
         "you_own_n_of_y": "Sie besitzen {{n}} von {{y}}."
     },
