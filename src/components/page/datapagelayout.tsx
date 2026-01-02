@@ -51,8 +51,9 @@ const MainContent = ({ children, narrowLayout }) => {
 	if (DEBUG_MODE) console.log("MainContent component render");
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData, ephemeral } = globalContext.player;
-	const [energyLog, setEnergyLog] = useStateWithStorage('energy_log', {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
-	const [energyLogEnabled, setenergyLogEnabled] = useStateWithStorage('energy_log_enabled', false, { rememberForever: true });
+	const eldb = playerData?.player.dbid ?? 0;
+	const [energyLog, setEnergyLog] = useStateWithStorage(`${eldb}/energy_log`, {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
+	const [energyLogEnabled, setenergyLogEnabled] = useStateWithStorage(`${eldb}/energy_log_enabled`, false, { rememberForever: true });
 
 	React.useEffect(() => {
 		if (playerData && ephemeral && energyLogEnabled) {
