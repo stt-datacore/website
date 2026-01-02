@@ -667,6 +667,7 @@
             "title": "CAB's {{fbb.cab.name}}"
         },
         "chain_n": "Cadena #{{n}}",
+        "chain_solved": "Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.",
         "columns": {
             "coverage": "Cobertura",
             "crew": "{{base.crew}}",
