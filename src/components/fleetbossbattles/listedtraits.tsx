@@ -16,7 +16,7 @@ export const ListedTraits = (props: ListedTraitsProps) => {
 		if (b === '?') return -1;
 		return TRAIT_NAMES[a].localeCompare(TRAIT_NAMES[b]);
 	};
-	const traits = props.traits.slice().sort((a: string, b: string) => traitSort(a, b)) as string[];
+	const traits: string[] = props.traits.slice().sort((a: string, b: string) => traitSort(a, b));
 	if (traits.length > 1) traits.splice(1, 0, '+');
 
 	return (
@@ -35,14 +35,13 @@ type NamedTraitProps = {
 
 const NamedTrait = (props: NamedTraitProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const { TRAIT_NAMES } = globalContext.localized;
+	const { t, TRAIT_NAMES } = globalContext.localized;
 	const { trait, traitData } = props;
 
 	if (trait === '+' || trait === '?')
 		return <span>{trait}</span>;
 
-	const instances = traitData.filter(t => t.trait === trait);
-	const needed = instances.length - instances.filter(t => t.consumed).length;
+	const instances: SolverTrait[] = traitData.filter(t => t.trait === trait);
 
 	return (
 		<div style={{
@@ -58,6 +57,9 @@ const NamedTrait = (props: NamedTraitProps) => {
 	);
 
 	function renderNeeded(): JSX.Element {
+		let needed: string = t('global.x_or_y', { x: 0, y: instances.length });
+		const consumed: number = instances.filter(t => t.consumed).length;
+		if (consumed > 0) needed = `${instances.length - consumed}`;
 		return (
 			<div style={{
 				background: 'white',
@@ -65,7 +67,8 @@ const NamedTrait = (props: NamedTraitProps) => {
 				margin: '-.4em 0',
 				padding: '.25em',
 				border: '2px solid black',
-				borderRadius: '4px'
+				borderRadius: '4px',
+				whiteSpace: 'nowrap'
 			}}>
 				{needed}
 			</div>

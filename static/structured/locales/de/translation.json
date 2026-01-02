@@ -816,7 +816,8 @@
             "trait_colors_a": "Merkmalsfarben",
             "trait_colors_b": "helfen, die Seltenheit jedes Merkmals pro Knoten zu visualisieren, z. B. bedeutet ein goldenes Merkmal, dass seine Crew die einzig mögliche Crew mit diesem Merkmal in diesem Knoten ist, ein violettes Merkmal ist ein Merkmal, das von 2 möglichen Crewmitgliedern in diesem Knoten geteilt wird, ein blaues Merkmal wird von 3 möglichen Crewmitgliedern geteilt usw. Beachten Sie, dass potenzielle Alpha-Ausnahmen unabhängig von der Seltenheit immer orange sind.",
             "trait_numbers_a": "Merkmalsnummern",
-            "trait_numbers_b": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
+            "trait_numbers_b": "identify how many remaining nodes that trait is possibly a solution for, based on an unofficial rule that duplicate traits in the pool are either never a solution or always a solution.",
+            "trait_numbers_b_ori": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
         },
         "undo_solve": "Lösen rückgängig machen",
         "x_y_confirmed_solved": "{{x}}/{{y}} als gelöst bestätigt",
@@ -1188,6 +1189,7 @@
             "title": "In Arbeit!"
         },
         "x_or_better": "{{x}} oder besser",
+        "x_or_y": "{{x}} or {{y}}",
         "yes": "Ja",
         "you_own_n_of_y": "Sie besitzen {{n}} von {{y}}."
     },
