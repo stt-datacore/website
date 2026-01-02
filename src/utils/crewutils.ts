@@ -1226,8 +1226,8 @@ export function numberToGrade(value: number, noneText?: string) {
 	else if (value >= 0.67) return "D+";
 	else if (value >= 0.63) return "D";
 	else if (value >= 0.60) return "D-";
-	else if (value >= 0.475) return "F+";
-	else if (value >= 0.275) return "F";
+	else if (value >= 0.55) return "F+";
+	else if (value >= 0.40) return "F";
 	else return "F-";
 }
 
