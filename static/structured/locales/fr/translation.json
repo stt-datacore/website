@@ -1874,6 +1874,23 @@
             }
         }
     },
+    "resource_tracker": {
+        "clear": "Effacer le journal des ressources",
+        "columns": {
+            "difference": "Différence",
+            "moving_average": "Moyenne mobile",
+            "resource": "Ressource",
+            "timestamp": "Horodatage"
+        },
+        "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
+        "enable": "Activer le suivi des ressources",
+        "select_view": "Sélectionner la vue",
+        "title": "Suivi des ressources",
+        "view": {
+            "by_resource": "Par ressource",
+            "by_update": "Selon la dernière mise à jour"
+        }
+    },
     "retrieval": {
         "alert_pending_crew": "Cet équipage n'est actuellement pas récupérable de manière unique, mais une future mise à jour du portail modifiera ce statut.",
         "allow_unowned": "Autoriser l'équipage sans propriétaire",
