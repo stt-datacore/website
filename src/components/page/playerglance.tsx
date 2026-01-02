@@ -19,7 +19,7 @@ export interface SaleData {
     honor_sale: boolean;
 }
 
-type AllEnergy = {
+export type AllEnergy = {
     money: number,
     premium_purchasable: number,
     honor: number,
@@ -234,35 +234,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     </div>
     )
 
-    function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData): AllEnergy {
-        const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
-
-        const chrons = getChrons(playerData);
-        const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
-        const quantum = playerData.crew_crafting_root?.energy?.quantity;
-        const valor = ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
-        const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
-        const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
-        const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
-        const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
-
-        return {
-            money,
-            premium_purchasable,
-            honor,
-            premium_earnable,
-            shuttle_rental_tokens,
-            chrons,
-            ism,
-            quantum,
-            valor,
-            ownedCites,
-            cadet,
-            pvp,
-            supplyKit
-        }
-    }
-
     function createResources(playerData: PlayerData, energy: AllEnergy) {
         let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
         let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
@@ -472,6 +443,35 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 getSales();
             }, 60000);
         }
+    }
+}
+
+export function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData): AllEnergy {
+    const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
+
+    const chrons = getChrons(playerData);
+    const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
+    const quantum = playerData.crew_crafting_root?.energy?.quantity;
+    const valor = ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
+    const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
+    const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
+    const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
+    const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
+
+    return {
+        money,
+        premium_purchasable,
+        honor,
+        premium_earnable,
+        shuttle_rental_tokens,
+        chrons,
+        ism,
+        quantum,
+        valor,
+        ownedCites,
+        cadet,
+        pvp,
+        supplyKit
     }
 }
 
