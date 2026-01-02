@@ -75,6 +75,14 @@ export function crewMatchesSearchFilter(crew: PlayerCrew | CrewMember, filters: 
 						.every(
 							(skill, idx) => skill === '*' || (sko.length > idx && sko[idx] === skill)
 						);
+				} else if (condition.keyword === 'before') {
+					let d = new Date(condition.value);
+					if (typeof crew.date_added === 'string') crew.date_added = new Date(crew.date_added);
+					conditionResult = (crew.date_added.getTime() <= d.getTime());
+				} else if (condition.keyword === 'after') {
+					let d = new Date(condition.value);
+					if (typeof crew.date_added === 'string') crew.date_added = new Date(crew.date_added);
+					conditionResult = (crew.date_added.getTime() >= d.getTime());
 				}
 				// else if (condition.keyword === 'obtained') {
 				// 	conditionResult = crew.obtained.toLowerCase().includes(condition.value.toLowerCase());
