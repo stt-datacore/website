@@ -2,37 +2,19 @@ import { navigate } from "gatsby";
 import React from "react";
 import { Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { IEphemeralData } from "../../context/playercontext";
-import { ISM_ID, PlayerData, TranslateMethod } from "../../model/player";
+import { PlayerData, TranslateMethod } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
-import { CiteInventory, getOwnedCites } from "../../utils/collectionutils";
 import { mergeItems } from "../../utils/itemutils";
 import { colorToRGBA, printShortDistance } from "../../utils/misc";
-import { getChrons } from "../../utils/playerutils";
 import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
+import { AllEnergy, getAllEnergy } from "./util";
 
 export interface SaleData {
     slot_sale: boolean;
     honor_sale: boolean;
-}
-
-export type AllEnergy = {
-    money: number,
-    premium_purchasable: number,
-    honor: number,
-    premium_earnable: number,
-    shuttle_rental_tokens: number,
-    chrons: number,
-    ism: number,
-    quantum: number | undefined,
-    valor: number | undefined,
-    ownedCites: CiteInventory[],
-    cadet: number,
-    pvp: number,
-    supplyKit: number;
 }
 
 export interface PlayerResource {
@@ -445,33 +427,3 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     }
 }
-
-export function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData): AllEnergy {
-    const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
-
-    const chrons = getChrons(playerData);
-    const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
-    const quantum = playerData.crew_crafting_root?.energy?.quantity;
-    const valor = ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
-    const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
-    const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
-    const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
-    const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
-
-    return {
-        money,
-        premium_purchasable,
-        honor,
-        premium_earnable,
-        shuttle_rental_tokens,
-        chrons,
-        ism,
-        quantum,
-        valor,
-        ownedCites,
-        cadet,
-        pvp,
-        supplyKit
-    }
-}
-

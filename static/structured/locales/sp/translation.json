@@ -1873,12 +1873,14 @@
         }
     },
     "resource_tracker": {
+        "clear": "Borrar registro de recursos",
         "columns": {
-            "day_over_day_average": "Promedio diario",
             "difference": "Diferencia",
+            "moving_average": "Media móvil",
             "resource": "Recurso",
             "timestamp": "Marca de tiempo"
         },
+        "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
         "enable": "Habilitar el seguimiento de recursos",
         "select_view": "Seleccionar vista",
         "title": "Rastreador de recursos",

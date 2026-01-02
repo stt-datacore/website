@@ -1863,12 +1863,14 @@
         }
     },
     "resource_tracker": {
+        "clear": "Ressourcenprotokoll löschen",
         "columns": {
-            "day_over_day_average": "Durchschnittswert im Vergleich zum Vortag",
             "difference": "Differenz",
+            "moving_average": "Gleitender Durchschnitt",
             "resource": "Ressource",
             "timestamp": "Zeitstempel"
         },
+        "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
         "enable": "Ressourcenverfolgung aktivieren",
         "select_view": "Ansicht auswählen",
         "title": "Ressourcenverfolgung",

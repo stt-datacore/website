@@ -1875,12 +1875,14 @@
         }
     },
     "resource_tracker": {
+        "clear": "Effacer le journal des ressources",
         "columns": {
-            "day_over_day_average": "Moyenne journalière",
             "difference": "Différence",
+            "moving_average": "Moyenne mobile",
             "resource": "Ressource",
             "timestamp": "Horodatage"
         },
+        "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
         "enable": "Activer le suivi des ressources",
         "select_view": "Sélectionner la vue",
         "title": "Suivi des ressources",

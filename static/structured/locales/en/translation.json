@@ -1864,12 +1864,14 @@
         }
     },
     "resource_tracker": {
+        "clear": "Clear resource log",
         "columns": {
-            "day_over_day_average": "Day over day average",
             "difference": "Difference",
+            "moving_average": "Moving average",
             "resource": "Resource",
             "timestamp": "Timestamp"
         },
+        "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
         "enable": "Enable Resource Tracking",
         "select_view": "Select view",
         "title": "Resource Tracker",
