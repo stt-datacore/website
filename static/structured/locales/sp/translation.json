@@ -1872,6 +1872,23 @@
             }
         }
     },
+    "resource_tracker": {
+        "clear": "Borrar registro de recursos",
+        "columns": {
+            "difference": "Diferencia",
+            "moving_average": "Media móvil",
+            "resource": "Recurso",
+            "timestamp": "Marca de tiempo"
+        },
+        "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
+        "enable": "Habilitar el seguimiento de recursos",
+        "select_view": "Seleccionar vista",
+        "title": "Rastreador de recursos",
+        "view": {
+            "by_resource": "Por recurso",
+            "by_update": "Según la última actualización"
+        }
+    },
     "retrieval": {
         "alert_pending_crew": "Actualmente esta tripulante no se puede recuperar de forma única, pero una futura actualización del portal cambiará este estado.",
         "allow_unowned": "Permitir tripulación sin propietario",

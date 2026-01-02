@@ -1862,6 +1862,23 @@
             }
         }
     },
+    "resource_tracker": {
+        "clear": "Ressourcenprotokoll löschen",
+        "columns": {
+            "difference": "Differenz",
+            "moving_average": "Gleitender Durchschnitt",
+            "resource": "Ressource",
+            "timestamp": "Zeitstempel"
+        },
+        "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+        "enable": "Ressourcenverfolgung aktivieren",
+        "select_view": "Ansicht auswählen",
+        "title": "Ressourcenverfolgung",
+        "view": {
+            "by_resource": "Nach Ressource",
+            "by_update": "Laut letzter Aktualisierung"
+        }
+    },
     "retrieval": {
         "alert_pending_crew": "Diese Crew ist derzeit nicht eindeutig abrufbar, aber ein zukünftiges Zeitportal-Update wird diesen Status ändern.",
         "allow_unowned": "Unbesessene Crew zulassen",

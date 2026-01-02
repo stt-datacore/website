@@ -10,6 +10,8 @@ import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
 import { AlertContext, AlertProvider } from '../alerts/alertprovider';
+import { useStateWithStorage } from '../../utils/storage';
+import { EnergyLog, EnergyLogContext, getAllEnergy, IEnergyLogContext } from './util';
 
 const DEBUG_MODE = false;
 
@@ -47,14 +49,86 @@ export interface DataPageLayoutProps {
 
 const MainContent = ({ children, narrowLayout }) => {
 	if (DEBUG_MODE) console.log("MainContent component render");
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData, ephemeral } = globalContext.player;
+	const [energyLog, setEnergyLog] = useStateWithStorage('energy_log', {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
+	const [energyLogEnabled, setenergyLogEnabled] = useStateWithStorage('energy_log_enabled', false, { rememberForever: true });
 
-	return narrowLayout ? (
-		<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
-	) : (
-		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
-	);
+	React.useEffect(() => {
+		if (playerData && ephemeral && energyLogEnabled) {
+			const ts = new Date();
+			const dbid = playerData.player.dbid;
+			const {
+				money,
+				premium_purchasable,
+				honor,
+				premium_earnable,
+				shuttle_rental_tokens,
+				chrons,
+				ism,
+				quantum,
+			} = getAllEnergy(playerData, ephemeral);
+			const logEntry = {
+				money,
+				premium_purchasable,
+				honor,
+				premium_earnable,
+				shuttle_rental_tokens,
+				chrons,
+				ism,
+				quantum,
+			};
+			energyLog[dbid] ??= [];
+			if (energyLog[dbid].length) {
+				energyLog[dbid][energyLog[dbid].length-1].timestamp = new Date(energyLog[dbid][energyLog[dbid].length-1].timestamp);
+				if (energyLog[dbid][energyLog[dbid].length-1].timestamp.getDate() !== ts.getDate() ||
+				    JSON.stringify(energyLog[dbid][energyLog[dbid].length - 1].energy) !== JSON.stringify(logEntry)) {
+					energyLog[dbid].push({
+						energy: logEntry,
+						timestamp: ts
+					});
+					setEnergyLog(structuredClone(energyLog));
+				}
+			}
+			else {
+				energyLog[dbid].push({
+					energy: logEntry,
+					timestamp: ts
+				});
+				setEnergyLog(structuredClone(energyLog));
+			}
+		}
+	}, [playerData, ephemeral, energyLogEnabled]);
+
+	const energyData: IEnergyLogContext = React.useMemo(() => ({
+		enabled: energyLogEnabled,
+		log: energyLog,
+		setEnabled: setenergyLogEnabled,
+		setLog: setEnergyLog,
+		clearLog: clearEnergyLog
+	}), [energyLog, energyLogEnabled, playerData, ephemeral]);
+
+	return (<>
+		<EnergyLogContext.Provider value={energyData}>
+			{narrowLayout ? (
+				<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
+			) : (
+				<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
+			)}
+		</EnergyLogContext.Provider>
+	</>);
+
+	function clearEnergyLog(clearAll?: boolean) {
+		if (clearAll) {
+			setEnergyLog(structuredClone({}));
+			return;
+		}
+		if (!playerData) return;
+		let dbid = playerData.player.dbid;
+		energyLog[dbid] = [].slice();
+		setEnergyLog(structuredClone(energyLog));
+	}
 }
-
 
 // const getNavigatorLanguage = () => {
 // 	let lang = 'en';
