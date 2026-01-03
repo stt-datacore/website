@@ -7,18 +7,24 @@ export interface IEnergyLogContextProvider {
     children: React.ReactNode;
 }
 
+type EnergyEnabledType = { [key:string]:boolean };
 export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     const globalContext = React.useContext(GlobalContext);
     const { playerData, ephemeral } = globalContext.player;
     const [energyLog, setEnergyLog] = useStateWithStorage(`energy_log`, {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
-    const [energyLogEnabled, setenergyLogEnabled] = useStateWithStorage(`energy_log_enabled`, false, { rememberForever: true });
+    const [energyLogEnabled, setEnergyLogEnabled] = useStateWithStorage(`energy_log_enabled`, {} as EnergyEnabledType, { rememberForever: true });
 
     const { children } = props;
 
     React.useEffect(() => {
-        if (playerData && ephemeral && energyLogEnabled) {
+        if (playerData && ephemeral) {
             const ts = new Date();
             const dbid = playerData.player.dbid;
+            if (typeof energyLogEnabled === 'boolean') {
+                setEnergyLogEnabled({[dbid]: energyLogEnabled});
+                return;
+            }
+            if (!energyLogEnabled[dbid]) return;
             const {
                 money,
                 premium_purchasable,
@@ -62,9 +68,9 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     }, [playerData, ephemeral, energyLogEnabled]);
 
     const energyData = {
-        enabled: energyLogEnabled,
+        enabled: getEnabled(),
         log: energyLog,
-        setEnabled: setenergyLogEnabled,
+        setEnabled,
         setLog: setEnergyLog,
         clearLog: clearEnergyLog
     };
@@ -85,4 +91,18 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
 		energyLog[dbid] = [].slice();
 		setEnergyLog(structuredClone(energyLog));
 	}
+
+    function setEnabled(value: boolean) {
+        if (!playerData) return;
+		let dbid = playerData.player.dbid;
+        energyLogEnabled[dbid] = value;
+        setEnergyLogEnabled({...energyLogEnabled});
+    }
+
+    function getEnabled() {
+        if (!playerData) return false;
+        let dbid = playerData.player.dbid;
+        return !!energyLogEnabled[dbid];
+    }
+
 }
