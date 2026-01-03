@@ -59,7 +59,7 @@ export const ResourceTracker = () => {
         else {
             return [].slice();
         }
-    }, [playerData]);
+    }, [playerData, log]);
 
     const stats = React.useMemo(() => {
         const stats = compileStats();
