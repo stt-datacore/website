@@ -669,6 +669,7 @@
             "title": "CAB's FBB Combo Chain Helper"
         },
         "chain_n": "Chaîne #{{n}}",
+        "chain_solved": "Votre flotte a résolu tous les nodules de cette chaîne combo. Sélectionnez un autre boss ou mettez à jour vos données de joueur pour actualiser les batailles actives.",
         "columns": {
             "coverage": "Couverture",
             "crew": "{{base.crew}}",
@@ -823,7 +824,8 @@
             "trait_colors_a": "Couleurs des traits",
             "trait_colors_b": "aident à visualiser la rareté de chaque trait par nodule, par exemple, un trait doré signifie que son équipage est le seul équipage possible avec ce trait dans ce nodule, un trait violet est un trait partagé par 2 équipages possibles dans ce nodule, un le trait bleu est partagé par 3 équipages possibles, etc. Notez que les exceptions alpha potentielles sont toujours orange, quelle que soit la rareté.",
             "trait_numbers_a": "Numéros de traits",
-            "trait_numbers_b": "identifient le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
+            "trait_numbers_b": "identifiez le nombre de nodules restants pour lesquels ce trait est éventuellement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool ne sont jamais une solution ou toujours une solution.",
+            "trait_numbers_b_ori": "identifient le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
         },
         "undo_solve": "Annuler la résolution",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmé résolu",
@@ -1197,6 +1199,7 @@
             "title": "Travail en cours !"
         },
         "x_or_better": "{{x}} ou mieux",
+        "x_or_y": "{{x}} ou {{y}}",
         "yes": "Oui",
         "you_own_n_of_y": "Vous possédez {{n}} de {{y}}."
     },
