@@ -44,11 +44,13 @@ const exportNodeGroups = (node: SolverNode, nodeGroups: FilteredGroup[], traitDa
 
 	const sortedTraits = (traits: string[], alphaTest: string = '') => {
 		const traitNameInstance = (trait: string) => {
-			let name = TRAIT_NAMES[trait];
+			let name: string = TRAIT_NAMES[trait];
 			if (prefValue(exportPrefs, 'duplicates') === 'number') {
-				const instances = traitData.filter(t => t.trait === trait);
+				const instances: SolverTrait[] = traitData.filter(t => t.trait === trait);
 				if (instances.length > 1) {
-					const needed = instances.length - instances.filter(t => t.consumed).length;
+					let needed: string = `0 or ${instances.length}`;
+					const consumed: number = instances.filter(t => t.consumed).length;
+					if (consumed > 0) needed = `${instances.length - consumed}`;
 					name += ` ${needed}`;
 				}
 			}
@@ -365,7 +367,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>
 				<div>
-					{t('fbb.crew_lists.customize.heading')}					
+					{t('fbb.crew_lists.customize.heading')}
 				</div>
 				<Form style={{ marginTop: '1em' }}>
 					<Form.Group grouped>

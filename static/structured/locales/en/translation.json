@@ -661,6 +661,7 @@
             "title": "CAB's FBB Combo Chain Helper"
         },
         "chain_n": "Chain #{{n}}",
+        "chain_solved": "Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.",
         "columns": {
             "coverage": "Coverage",
             "crew": "{{base.crew}}",
@@ -815,7 +816,8 @@
             "trait_colors_a": "Trait colors",
             "trait_colors_b": "help visualize the rarity of each trait per node, e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that potential alpha exceptions are always orange, regardless of rarity.",
             "trait_numbers_a": "Trait numbers",
-            "trait_numbers_b": "identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution."
+            "trait_numbers_b": "identify how many remaining nodes that trait is possibly a solution for, based on an unofficial rule that duplicate traits in the pool are either never a solution or always a solution.",
+            "trait_numbers_b_ori": "identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution."
         },
         "undo_solve": "Undo Solve",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmed solved",
@@ -1188,6 +1190,7 @@
             "title": "Work In Progress!"
         },
         "x_or_better": "{{x}} or better",
+        "x_or_y": "{{x}} or {{y}}",
         "yes": "Yes",
         "you_own_n_of_y": "You own {{n}} of {{y}}."
     },
