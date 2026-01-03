@@ -39,10 +39,11 @@ export const ResourceTracker = () => {
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
     const trackerContext = React.useContext(EnergyLogContext);
-
+    const dbid = playerData?.player.dbid ?? 0;
     const { enabled, setEnabled, log, clearLog } = trackerContext;
 
-    const [resourceFilter, setResourceFilter] = useStateWithStorage<string[]>('resource_tracker/filters', []);
+    const [resourceFilter, setResourceFilter] = useStateWithStorage<string[]>(`${dbid}/resource_tracker/filters`, []);
+    const [dailyFinal, setDailyFinal] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/daily_final`, false);
 
     const bodyArea: React.CSSProperties = {
         ...OptionsPanelFlexColumn,
@@ -67,7 +68,7 @@ export const ResourceTracker = () => {
             if (resourceFilter.length && !resourceFilter.includes(row.resource)) return false;
             return true;
         });
-    }, [entries, resourceFilter]);
+    }, [entries, resourceFilter, dailyFinal]);
 
     if (!playerData) {
         return (
@@ -82,7 +83,8 @@ export const ResourceTracker = () => {
         {
             column: 'timestamp',
             width: 1,
-            title: t('resource_tracker.columns.timestamp')
+            title: t('resource_tracker.columns.timestamp'),
+            reverse: true
         },
         {
             column: 'resource',
@@ -131,17 +133,27 @@ export const ResourceTracker = () => {
                 </div>
             </div>
             {enabled && (
-                <div style={{...OptionsPanelFlexColumn, margin: '1em 0', alignItems: 'flex-start', gap: '0.5em'}}>
-                    <span>{t('hints.filter_by_item_type')}</span>
-                    <Dropdown
-                        placeholder={t('global.show_all')}
-                        options={filterOpts}
-                        value={resourceFilter}
-                        selection
-                        multiple
-                        clearable
-                        onChange={(e, { value }) => setResourceFilter(value as string[] || []) }
-                        />
+                <div style={{...OptionsPanelFlexRow, alignItems: 'center'}}>
+                    <div style={{...OptionsPanelFlexColumn, margin: '1em 0', alignItems: 'flex-start', gap: '0.5em'}}>
+                        <span>{t('hints.filter_by_item_type')}</span>
+                        <div style={{...OptionsPanelFlexRow, margin: '0', justifyContent: 'center', gap: '1em'}}>
+                            <Dropdown
+                                placeholder={t('global.show_all')}
+                                options={filterOpts}
+                                value={resourceFilter}
+                                selection
+                                multiple
+                                clearable
+                                onChange={(e, { value }) => setResourceFilter(value as string[] || []) }
+                                />
+
+                            <Checkbox
+                                checked={dailyFinal}
+                                onChange={(e, { checked }) => setDailyFinal(!!checked)}
+                                label={t('resource_tracker.daily_final')}
+                            />
+                        </div>
+                    </div>
                 </div>)
             }
             {enabled && (
@@ -214,7 +226,7 @@ export const ResourceTracker = () => {
     }
 
     function compileStats() {
-        const stats = entries.map((entry) => {
+        let stats = entries.map((entry) => {
             entry.timestamp = new Date(entry.timestamp);
             return Object.keys(entry.energy).map(key => {
                 const obj = {
@@ -233,6 +245,9 @@ export const ResourceTracker = () => {
             r = a.resource.localeCompare(b.resource);
             return r;
         });
+        if (dailyFinal) {
+            stats = stats.filter((stat1, idx) => stats.findLastIndex(stat2 => dateOf(stat1) === dateOf(stat2) && stat1.resource === stat2.resource) === idx);
+        }
         const c = stats.length;
         let avgs = {} as {[key:string]: number}
         let lastval = {} as {[key:string]: number}
@@ -248,7 +263,10 @@ export const ResourceTracker = () => {
         }
         return stats;
     }
-
+    function dateOf(stat: ResourceData) {
+        let str = typeof stat.timestamp === 'string' ? stat.timestamp : ((new Date(stat.timestamp)).toISOString());
+        return str.slice(0, 10);
+    }
     function printValue(row: ResourceData) {
         if (row.resource === 'ism') {
             return (

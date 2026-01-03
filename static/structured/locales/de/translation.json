@@ -1874,6 +1874,7 @@
             "timestamp": "Zeitstempel"
         },
         "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+        "daily_final": "Endgültige tägliche Erfassungen",
         "enable": "Ressourcenverfolgung aktivieren",
         "select_view": "Ansicht auswählen",
         "title": "Ressourcenverfolgung",

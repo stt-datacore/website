@@ -1875,6 +1875,7 @@
             "timestamp": "Timestamp"
         },
         "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
+        "daily_final": "Final daily captures",
         "enable": "Enable Resource Tracking",
         "select_view": "Select view",
         "title": "Resource Tracker",

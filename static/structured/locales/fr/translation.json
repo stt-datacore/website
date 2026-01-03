@@ -1886,6 +1886,7 @@
             "timestamp": "Horodatage"
         },
         "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
+        "daily_final": "Captures quotidiennes finales",
         "enable": "Activer le suivi des ressources",
         "select_view": "Sélectionner la vue",
         "title": "Suivi des ressources",

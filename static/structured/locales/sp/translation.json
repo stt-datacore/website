@@ -1884,6 +1884,7 @@
             "timestamp": "Marca de tiempo"
         },
         "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
+        "daily_final": "Capturas diarias finales",
         "enable": "Habilitar el seguimiento de recursos",
         "select_view": "Seleccionar vista",
         "title": "Rastreador de recursos",
