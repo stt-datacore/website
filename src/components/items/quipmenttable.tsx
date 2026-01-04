@@ -7,6 +7,8 @@ import { getPossibleQuipment } from "../../utils/itemutils";
 import { EquipmentTable, EquipmentTableProps } from "./equipment_table";
 import { QuipmentFilterContext, QuipmentMode } from "./quipmentfilters";
 import { PlayerEquipmentItem } from "../../model/player";
+import { CustomFieldDef } from "./utils";
+import { OptionsPanelFlexRow } from "../stats/utils";
 
 interface QuipmentTableProps extends EquipmentTableProps {
     ownedItems: boolean;
@@ -17,7 +19,7 @@ interface QuipmentTableProps extends EquipmentTableProps {
 export const QuipmentTable = (props: QuipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const quipmentContext = React.useContext(QuipmentFilterContext);
-
+    const { t } = globalContext.localized;
     const { ownedCrew, mode } = props;
     const { playerData } = globalContext.player;
 

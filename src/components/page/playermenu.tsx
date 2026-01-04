@@ -80,6 +80,10 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			customAction: (e, data) => setModalOpen(true)
 		},
 		{
+			title: t('resource_tracker.title'),
+			link: '/resourcetracker'
+		},
+		{
 			title: <div><Icon name={showPlayerGlance ? 'toggle off' : 'toggle on'} />&nbsp;{t('menu.player.toggle_glance')}</div>,
 			checkVisible: (data) => !!playerData,
 			customAction: (e, data) => {

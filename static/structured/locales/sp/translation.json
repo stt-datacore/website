@@ -272,8 +272,11 @@
             },
             "grade": "Grado",
             "immortal_rewards": "Recompensas por la inmortalización",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grado de estrella"
+            "star_grade": "Grado de estrella",
+            "total_owned": "Total de propiedad"
         },
         "group": {
             "warning": "La vista de colecciones agrupadas muestra solo la tripulación propia si la lista de colecciones no está filtrada."
@@ -308,6 +311,7 @@
             },
             "show_incomplete_combos": "Mostrar combos incompletos",
             "show_maxed_collections": "Mostrar colecciones maximizadas",
+            "show_scoring_columns": "Mostrar columnas de puntuación",
             "sort_by_cost": "Ordenar por costo"
         },
         "panes": {
@@ -663,6 +667,7 @@
             "title": "CAB's {{fbb.cab.name}}"
         },
         "chain_n": "Cadena #{{n}}",
+        "chain_solved": "Tu flota ha resuelto todos los nodos de esta cadena combinada. Selecciona otro jefe o actualiza tus datos de jugador para actualizar las batallas activas.",
         "columns": {
             "coverage": "Cobertura",
             "crew": "{{base.crew}}",
@@ -817,7 +822,8 @@
             "trait_colors_a": "Colores característicos",
             "trait_colors_b": "ayudan a visualizar la rareza de cada rasgo por nódulo, por ejemplo, un rasgo dorado significa que su tripulante es la única tripulante posible con ese rasgo en ese nódulo, un rasgo morado es un rasgo compartido por 2 posibles tripulantes en ese nódulo, un El rasgo azul es compartido por 3 posibles tripulantes, etc. Tenga en cuenta que las posibles excepciones alfa siempre son naranjas, independientemente de la rareza.",
             "trait_numbers_a": "Números de rasgos",
-            "trait_numbers_b": "identifican para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
+            "trait_numbers_b": "identifique para cuántos nodos restantes ese rasgo es posiblemente una solución, basándose en una regla no oficial de que los rasgos duplicados en el grupo nunca son una solución o siempre son una solución.",
+            "trait_numbers_b_ori": "identifican para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
         },
         "undo_solve": "Deshacer resolver",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmado resuelto",
@@ -1035,6 +1041,7 @@
         "delete": "Ocultar",
         "delete_confirm": "¿Estás seguro de que deseas eliminar estos datos?",
         "delete_selected": "Ocultar seleccionado",
+        "difficulty": "Difficulty",
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
@@ -1053,6 +1060,8 @@
         "filters": "Filtros",
         "filters_warning": "Algunos resultados pueden estar ocultos debido a sus opciones de búsqueda actuales.",
         "fleet": "Flota",
+        "frequency": "Frecuencia",
+        "fuses": "Fusiones",
         "group_by": "Agrupar por",
         "hidden": "Oculto",
         "hide": "Ocultar",
@@ -1104,6 +1113,7 @@
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "loot": "Botín",
         "lose": "Perder",
         "map_position": "Posición del mapa",
         "max": "Máximo",
@@ -1175,6 +1185,7 @@
         "squadron_leader": "Líder de escuadrón",
         "supply_kit_active_n": "Kit de suministros activo ({{n}}% de descuento)",
         "toggle_layout": "Cambiar diseño",
+        "total": "Total",
         "type": "Tipo",
         "uncheck_all": "Desmarcar todo",
         "unselect_all": "Deseleccionar todo",
@@ -1186,6 +1197,7 @@
             "title": "¡Trabajo en progreso!"
         },
         "x_or_better": "{{x}} o mejor",
+        "x_or_y": "{{x}} o {{y}}",
         "yes": "Sí",
         "you_own_n_of_y": "Eres dueño de {{n}} de {{y}}."
     },
@@ -1639,6 +1651,7 @@
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
             "buyback": "Muestra tripulación con fusibles en pozo de recompra",
             "dupes": "Mostrar sólo tripulación duplicada",
+            "expiring": "Mostrar solo la tripulación que está por vencer",
             "fe": "Mostrar solo a los no inmortales completamente equipados",
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
@@ -1860,6 +1873,24 @@
                 "title": "Ponderación del Viaje+",
                 "voyage": "{{rank_names.scores.voyage}}"
             }
+        }
+    },
+    "resource_tracker": {
+        "clear": "Borrar registro de recursos",
+        "columns": {
+            "difference": "Diferencia",
+            "moving_average": "Media móvil",
+            "resource": "Recurso",
+            "timestamp": "Marca de tiempo"
+        },
+        "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
+        "daily_final": "Capturas diarias finales",
+        "enable": "Habilitar el seguimiento de recursos",
+        "select_view": "Seleccionar vista",
+        "title": "Rastreador de recursos",
+        "view": {
+            "by_resource": "Por recurso",
+            "by_update": "Según la última actualización"
         }
     },
     "retrieval": {
@@ -2484,7 +2515,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Ver todo como inmortalizado"
+            "as_immortalized": "Ver todo como inmortalizado",
+            "cheapestfffe": "Más barato TFTE"
         },
         "title": "Vistas especiales"
     },

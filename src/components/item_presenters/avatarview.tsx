@@ -96,7 +96,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     const all_ships = globalContext.core.all_ships;
     const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, size, ignorePlayer, hideRarity, targetGroup } = props;
     const symbol = props.symbol || props.item?.symbol;
-    const id = props.id || props.item?.id;
+    let id = props.id || props.item?.id;
     const crewBackground = props.crewBackground ?? 'normal';
 
     const useDirect = props.useDirect || false //?? !!props.item;
@@ -234,6 +234,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 gen_item = playerData.player.character.crew.find(f => (id !== undefined && f.id?.toString() === id?.toString()) || (id !== undefined && !f.id && f.archetype_id?.toString() === id?.toString()) || (!id && f.symbol === symbol));
             }
             if (!gen_item) {
+                if ((props.item as any)?.preview) id = 0;
                 gen_item = crew.find(f => id ? f.archetype_id === id : f.symbol === symbol) as BasicItem | undefined;
                 if (gen_item) {
                     gen_item = { ...gen_item };
