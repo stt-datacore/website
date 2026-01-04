@@ -1,6 +1,6 @@
 import React from "react"
 import { GlobalContext } from "./globalcontext";
-import { EnergyLog, EnergyLogContext, getAllEnergy } from "../components/page/util";
+import { EnergyLog, EnergyLogContext, getAllEnergy, IEnergyLogContext } from "../components/page/util";
 import { useStateWithStorage } from "../utils/storage";
 
 export interface IEnergyLogContextProvider {
@@ -20,11 +20,11 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         if (playerData && ephemeral) {
             const ts = new Date();
             const dbid = playerData.player.dbid;
-            if (typeof energyLogEnabled === 'boolean') {
-                setEnergyLogEnabled({[dbid]: energyLogEnabled});
+
+            if (!energyLogEnabled[dbid]) {
                 return;
             }
-            if (!energyLogEnabled[dbid]) return;
+
             const {
                 money,
                 premium_purchasable,
@@ -35,6 +35,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 ism,
                 quantum,
             } = getAllEnergy(playerData, ephemeral);
+
             const logEntry = {
                 money,
                 premium_purchasable,
@@ -45,30 +46,35 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 ism,
                 quantum,
             };
-            energyLog[dbid] ??= [];
-            if (energyLog[dbid].length) {
-                energyLog[dbid][energyLog[dbid].length-1].timestamp = new Date(energyLog[dbid][energyLog[dbid].length-1].timestamp);
-                if (energyLog[dbid][energyLog[dbid].length-1].timestamp.getDate() !== ts.getDate() ||
-                    JSON.stringify(energyLog[dbid][energyLog[dbid].length - 1].energy) !== JSON.stringify(logEntry)) {
-                    energyLog[dbid].push({
+
+            const elognew = energyLog ? { ...energyLog } : {};
+            elognew[dbid] ??= [];
+
+            if (elognew[dbid].length) {
+                elognew[dbid][elognew[dbid].length-1].timestamp = new Date(elognew[dbid][elognew[dbid].length-1].timestamp);
+                if (elognew[dbid][elognew[dbid].length-1].timestamp.getDate() !== ts.getDate() ||
+                    JSON.stringify(elognew[dbid][elognew[dbid].length - 1].energy) !== JSON.stringify(logEntry)) {
+                    elognew[dbid].push({
                         energy: logEntry,
                         timestamp: ts
                     });
-                    setEnergyLog({...energyLog});
                 }
             }
             else {
-                energyLog[dbid].push({
+                elognew[dbid].push({
                     energy: logEntry,
                     timestamp: ts
                 });
-                setEnergyLog({...energyLog});
             }
+
+            setEnergyLog(elognew);
         }
     }, [playerData, ephemeral, energyLogEnabled]);
 
-    const energyData = {
-        enabled: getEnabled(),
+    const enabled = getEnabledState();
+
+    const energyData: IEnergyLogContext = {
+        enabled,
         log: energyLog,
         setEnabled,
         setLog: setEnergyLog,
@@ -79,7 +85,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         <EnergyLogContext.Provider value={energyData}>
             {children}
         </EnergyLogContext.Provider>
-    </>)
+    </>);
 
     function clearEnergyLog(clearAll?: boolean) {
 		if (clearAll) {
@@ -89,7 +95,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
 		if (!playerData) return;
 		let dbid = playerData.player.dbid;
 		energyLog[dbid] = [].slice();
-		setEnergyLog(structuredClone(energyLog));
+		setEnergyLog({...energyLog});
 	}
 
     function setEnabled(value: boolean) {
@@ -99,10 +105,9 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         setEnergyLogEnabled({...energyLogEnabled});
     }
 
-    function getEnabled() {
+    function getEnabledState() {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
         return !!energyLogEnabled[dbid];
     }
-
 }

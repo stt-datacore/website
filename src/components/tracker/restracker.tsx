@@ -54,13 +54,14 @@ export const ResourceTracker = () => {
     const entries = React.useMemo(() => {
         if (playerData) {
             const dbid = playerData.player.dbid;
+            if (!enabled) return [].slice();
             log[dbid] ??= [];
             return log[dbid];
         }
         else {
             return [].slice();
         }
-    }, [playerData, log]);
+    }, [playerData, log, enabled]);
 
     const stats = React.useMemo(() => {
         const stats = compileStats();
@@ -68,7 +69,7 @@ export const ResourceTracker = () => {
             if (resourceFilter.length && !resourceFilter.includes(row.resource)) return false;
             return true;
         });
-    }, [entries, resourceFilter, dailyFinal]);
+    }, [log, enabled, resourceFilter, dailyFinal]);
 
     if (!playerData) {
         return (
