@@ -265,8 +265,8 @@ export const ResourceTracker = () => {
         return stats;
     }
     function dateOf(stat: ResourceData) {
-        let str = typeof stat.timestamp === 'string' ? stat.timestamp : ((new Date(stat.timestamp)).toISOString());
-        return str.slice(0, 10);
+        let str = typeof stat.timestamp === 'string' ? stat.timestamp : ((new Date(stat.timestamp)).toLocaleDateString());
+        return str;
     }
     function printValue(row: ResourceData) {
         if (row.resource === 'ism') {
