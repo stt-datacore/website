@@ -22,6 +22,7 @@ import { QPContext } from '../qpconfig/provider';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { CrewShipCells, getShipTableConfig } from '../crewtables/views/shipabilities';
+import { QuipmentProspectAccordion, QuipmentProspectList } from '../voyagecalculator/quipment/quipmentprospects';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -305,6 +306,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} />}
 		</React.Fragment>
 	);
 

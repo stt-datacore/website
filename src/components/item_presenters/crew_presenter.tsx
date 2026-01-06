@@ -250,7 +250,7 @@ export class CrewPresenter extends React.Component<
     };
 
     readonly shouldShowQuipment = (crew: PlayerCrew) => {
-        if (crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen') return true;
+        if (crew.immortal === -1 || crew.immortal > 0) return true;
         else {
             if (!crew.have) {
                 delete (crew as any).q_bits;
