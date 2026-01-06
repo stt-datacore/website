@@ -77,7 +77,8 @@ export default class CONFIG {
 		12: 'Starbase component',
 		13: 'Voyage token',
 		14: 'Continuum Quipment',
-		15: 'Continuum Q-Bit (Component)'
+		15: 'Continuum Q-Bit (Component)',
+		16: 'Boss Battle Unlock Token'
 	};
 
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
@@ -324,6 +325,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[13] = 'Voyage consumable';
 			this.REWARDS_ITEM_TYPE[14] = 'Continuum Quipment';
 			this.REWARDS_ITEM_TYPE[15] = 'Continuum Q-Bit';
+			this.REWARDS_ITEM_TYPE[16] = 'Boss Battle Unlock Token';
 
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Attack';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasion';
@@ -459,6 +461,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[13] = 'Provision de voyage';
 			this.REWARDS_ITEM_TYPE[14] = 'Quipement de continuum';
 			this.REWARDS_ITEM_TYPE[15] = 'Q-Bits de continuum';
+			this.REWARDS_ITEM_TYPE[16] = 'Jeton de déverrouillage du combat de boss';
 
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Attaque';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Évasion';
@@ -595,6 +598,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[13] = 'Reisevorräte';
 			this.REWARDS_ITEM_TYPE[14] = 'Kontinuum Rüstzeug';
 			this.REWARDS_ITEM_TYPE[15] = 'Kontinuum R-Bit';
+			this.REWARDS_ITEM_TYPE[16] = 'Bosskampf-Freischalt-Token';
 
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Angriffs';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Ausweichen';
@@ -730,6 +734,7 @@ export default class CONFIG {
 			this.REWARDS_ITEM_TYPE[13] = 'Suministros del viaje';
 			this.REWARDS_ITEM_TYPE[14] = 'Quipo de Continuo';
 			this.REWARDS_ITEM_TYPE[15] = ' Q-Bits de Continuo';
+			this.REWARDS_ITEM_TYPE[16] = 'Ficha de desbloqueo de batalla contra el jefe';
 
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[0] = 'Ataque';
 			this.CREW_SHIP_BATTLE_BONUS_TYPE[1] = 'Evasión';
