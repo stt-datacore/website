@@ -35,7 +35,7 @@ Additional Contributors:
 
 TygraDax for the Grade and Star Grade equations in the collection planner.
 Bernard for the equation for Bernard's Number in the gauntlet tool.
-JimBerlin and dmscramjet for equations related to the ship battle calculator.
+JimBerlin, dmscramjet and AviTrek for equations related to the ship battle calculator.
 Dangevin for equations related to the voyage event VP calculator.
 
 CAB STT Power Ratings are maintained by Dangevin (retired). Content used with permission.

@@ -790,13 +790,13 @@ export function iterateBattle(
                     }
                 }
                 else if (action.ability?.type === 9) {
-                    if (oppo) {
-                        state_time = state_time.map(_ => 0);
-                        reset_relief = reset_relief.map(r => r * 2);
+                    if (oppo && !cloaked) {
+                        state_time = state_time.map((a, i) => active[i] ? a : 0);
+                        reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
                     }
-                    else {
-                        o_state_time = o_state_time?.map(_ => 0);
-                        o_reset_relief = o_reset_relief?.map(r => r * 2);
+                    else if (!oppo && !oppo_cloaked) {
+                        o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
+                        o_reset_relief = o_reset_relief?.map((r, i) => o_active![i] ? r : r * 2);
                     }
                 }
                 else if (action.ability?.type === 10) {
