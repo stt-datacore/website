@@ -306,7 +306,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
-			{phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} />}
+			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
 		</React.Fragment>
 	);
 

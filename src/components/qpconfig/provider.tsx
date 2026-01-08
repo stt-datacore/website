@@ -162,6 +162,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 					min: skill.range_min,
 					max: skill.range_max
 				}
+				newcopy.skills ??= {};
 				newcopy.skills[key] = {
 					...skill
 				}
