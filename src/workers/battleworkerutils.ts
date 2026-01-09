@@ -233,16 +233,27 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
                 c_a_attack = action.bonus_amount;
                 comes_from[0] = action.symbol;
             }
-
         }
         else if (action.bonus_type === 1) {
-            if (c_a_evasion < action.bonus_amount) {
+            if (action.ability?.type === 0) {
+                if (c_a_evasion < action.bonus_amount + action.ability.amount) {
+                    c_a_evasion = action.bonus_amount + action.ability.amount;
+                    comes_from[0] = action.symbol;
+                }
+            }
+            else if (c_a_evasion < action.bonus_amount) {
                 c_a_evasion = action.bonus_amount;
                 comes_from[1] = action.symbol;
             }
         }
         else if (action.bonus_type === 2) {
-            if (c_a_accuracy < action.bonus_amount) {
+            if (action.ability?.type === 0) {
+                if (c_a_accuracy < action.bonus_amount + action.ability.amount) {
+                    c_a_accuracy = action.bonus_amount + action.ability.amount;
+                    comes_from[0] = action.symbol;
+                }
+            }
+            else if (c_a_accuracy < action.bonus_amount) {
                 c_a_accuracy = action.bonus_amount;
                 comes_from[2] = action.symbol;
             }
@@ -498,6 +509,7 @@ export function iterateBattle(
         offense ??= 0;
 
         time *= rate;
+        let battle_second = 0;
 
         if (!ship) return [];
 
@@ -535,6 +547,32 @@ export function iterateBattle(
             else {
                 return fixed_delay;
             }
+        }
+
+        let static_sim_hitter = 0;
+        let o_static_sim_hitter = 0;
+
+        const doesHit = (chance: number, oppo?: boolean) => {
+            if (simulate) {
+                return Math.random() <= chance;
+            }
+            else {
+                if (oppo) {
+                    o_static_sim_hitter += chance;
+                    if (o_static_sim_hitter >= 1) {
+                        o_static_sim_hitter = 0;
+                        return true;
+                    }
+                }
+                else {
+                    static_sim_hitter += chance;
+                    if (static_sim_hitter >= 1) {
+                        static_sim_hitter = 0;
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         allactions.forEach((action, i) => {
@@ -581,6 +619,7 @@ export function iterateBattle(
         let reset_relief = allactions.map(a => 1);
         let inited = allactions.map(a => false);
         let active = allactions.map(a => false);
+        let now_chance = 0;
 
         let o_alen = oppo_actions?.length ?? 0;
         let o_uses = oppo_actions?.map(a => 0);
@@ -589,6 +628,7 @@ export function iterateBattle(
         let o_reset_relief = oppo_actions?.map(a => 1);
         let o_inited = oppo_actions?.map(a => false);
         let o_active = oppo_actions?.map(a => false);
+        let o_now_chance = 0;
 
         const currents = allactions.map(m => false as false | ShipAction);
         const oppos = oppo_actions?.map(m => false as false | ShipAction);
@@ -791,12 +831,20 @@ export function iterateBattle(
                 }
                 else if (action.ability?.type === 9) {
                     if (oppo && !cloaked) {
-                        state_time = state_time.map((a, i) => active[i] ? a : 0);
-                        reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                        if (doesHit(o_now_chance, true)) {
+                            state_time = state_time.map((a, i) => active[i] ? a : 0);
+                            if (fbb_mode) {
+                                reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                            }
+                        }
                     }
                     else if (!oppo && !oppo_cloaked) {
-                        o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
-                        o_reset_relief = o_reset_relief?.map((r, i) => o_active![i] ? r : r * 2);
+                        if (doesHit(now_chance)) {
+                            o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
+                            if (fbb_mode) {
+                                o_reset_relief = o_reset_relief?.map((r, i) => o_active![i] ? r : r * 2);
+                            }
+                        }
                     }
                 }
                 else if (action.ability?.type === 10) {
@@ -893,7 +941,6 @@ export function iterateBattle(
         let actidx = 0;
         let act_cnt = currents.length;
         let activated = false;
-        let sec = 0;
         let action = null as null | ChargeAction;
         let o_action = null as null | ChargeAction;
 
@@ -961,8 +1008,13 @@ export function iterateBattle(
             return damage;
         }
 
+        powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
+        oppo_powerInfo = getInstantPowerInfo(work_opponent, currents, ship, offense);
+        now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
+        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+
         for (let inc = 1; inc <= time; inc++) {
-            sec = Math.round((inc / rate) * 100) / 100;
+            battle_second = Math.round((inc / rate) * 100) / 100;
             o_instant_now_min = o_instant_now_max = o_instant_now = 0;
             instant_now_min = instant_now_max = instant_now = 0;
 
@@ -975,7 +1027,7 @@ export function iterateBattle(
 
                 if (!inited[actidx]) {
                     if (!activated && state_time[actidx] >= (action.initial_cooldown - 0.01) + delay()) {
-                        if (sec - at_second >= delay()) {
+                        if (battle_second - at_second >= delay()) {
                             activation = activate(action, actidx);
                         }
                     }
@@ -988,14 +1040,14 @@ export function iterateBattle(
                 }
                 else if (inited[actidx] && !currents[actidx] && (!action.limit || uses[actidx] < action.limit)) {
                     if (!activated && state_time[actidx] >= action.cooldown - 0.01) {
-                        if (sec - at_second >= delay()) {
+                        if (battle_second - at_second >= delay()) {
                             activation = activate(action, actidx);
                         }
                     }
                 }
 
                 if (activation) {
-                    at_second = sec;
+                    at_second = battle_second;
                     powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
                     c_boarding = powerInfo.computed.boarding_damage_per_sec / rate;
                     boarding_sec = powerInfo.computed.boarding_damage_per_sec;
@@ -1031,7 +1083,7 @@ export function iterateBattle(
 
                     if (!o_inited![o_actidx]) {
                         if (!oppo_activated && o_state_time![o_actidx] >= (o_action.initial_cooldown - 0.01) + delay()) {
-                            if (sec - o_at_second >= delay()) {
+                            if (battle_second - o_at_second >= delay()) {
                                 oppo_activation = activate(o_action, o_actidx, true);
                             }
                         }
@@ -1044,15 +1096,16 @@ export function iterateBattle(
                     }
                     else if (o_inited![o_actidx] && !oppos![o_actidx] && (!o_action.limit || o_uses![o_actidx] < o_action.limit)) {
                         if (!oppo_activated && o_state_time![o_actidx] >= o_action.cooldown - 0.01) {
-                            if (sec - o_at_second >= delay()) {
+                            if (battle_second - o_at_second >= delay()) {
                                 oppo_activation = activate(o_action, o_actidx, true);
                             }
                         }
                     }
 
                     if (oppo_activation) {
-                        o_at_second = sec;
+                        o_at_second = battle_second;
                         oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
+                        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
                         o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                         o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
                         let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
@@ -1079,6 +1132,11 @@ export function iterateBattle(
                 oppo_aps_num = work_opponent ? 1 / oppvar : 0;
                 o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                 o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
+            }
+
+            if (powerInfo && oppo_powerInfo) {
+                now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
+                o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
             }
 
             let base_attack = powerInfo.computed.attack.base;
@@ -1234,7 +1292,7 @@ export function iterateBattle(
                 actions: currents.filter(f => f !== false) as ShipAction[],
                 hull,
                 shields,
-                second: sec,
+                second: battle_second,
                 attack: (standard_attack + instant_now),
                 min_attack: (base_attack + instant_now_min),
                 max_attack: (max_attack + instant_now_max),
