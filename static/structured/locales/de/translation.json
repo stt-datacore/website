@@ -1757,6 +1757,9 @@
         "three_skills": "Drei Fähigkeiten",
         "top_quipment": "Top-Rüstzeug"
     },
+    "rank_boss": {
+        "break_out": "Schlüsseln Sie die einzelnen Boss-Ergebnisse auf."
+    },
     "rank_names": {
         "advantage": {
             "d": "V",
