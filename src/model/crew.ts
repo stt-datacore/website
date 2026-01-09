@@ -318,6 +318,13 @@ export interface ConstituentWeights {
 
 export type CurrentWeighting = { [key:string]: ConstituentWeights };
 
+export interface BossDetails {
+    boss: string;
+    rarity: number;
+    score: number;
+    rank: number;
+}
+
 export interface ShipScores {
     overall: number,
     arena: number,
@@ -326,6 +333,7 @@ export interface ShipScores {
     overall_rank: number,
     arena_rank: number,
     fbb_rank: number,
+    boss_details: BossDetails[],
     divisions: {
         fbb: {
             1?: number,

@@ -1771,6 +1771,9 @@
         "three_skills": "Three Skills",
         "top_quipment": "Top Quipment"
     },
+    "rank_boss": {
+        "break_out": "Break out individual boss scores."
+    },
     "rank_names": {
         "advantage": {
             "d": "D",
