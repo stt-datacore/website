@@ -558,14 +558,14 @@ export function iterateBattle(
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += chance;
+                    o_static_sim_hitter += chance / 2;
                     if (o_static_sim_hitter >= 1) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += chance;
+                    static_sim_hitter += chance / 2;
                     if (static_sim_hitter >= 1) {
                         static_sim_hitter = 0;
                         return true;
@@ -1008,10 +1008,14 @@ export function iterateBattle(
             return damage;
         }
 
+        // Quickly grab the hit current chances
         powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
         oppo_powerInfo = getInstantPowerInfo(work_opponent, currents, ship, offense);
         now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
         o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+
+        // Deinitialize for real init, below.
+        powerInfo = oppo_powerInfo = null;
 
         for (let inc = 1; inc <= time; inc++) {
             battle_second = Math.round((inc / rate) * 100) / 100;
