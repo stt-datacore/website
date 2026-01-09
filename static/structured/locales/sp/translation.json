@@ -1780,6 +1780,9 @@
         "three_skills": "Tres Habilidades",
         "top_quipment": "Quipo de primera"
     },
+    "rank_boss": {
+        "break_out": "Muestra las puntuaciones individuales de cada jefe."
+    },
     "rank_names": {
         "advantage": {
             "d": "D",

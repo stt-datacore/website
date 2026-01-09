@@ -558,14 +558,14 @@ export function iterateBattle(
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += chance / 2;
+                    o_static_sim_hitter += ((now_speed / 1) * chance) / 2;
                     if (o_static_sim_hitter >= 1) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += chance / 2;
+                    static_sim_hitter += ((now_speed / 1) * chance) / 2;
                     if (static_sim_hitter >= 1) {
                         static_sim_hitter = 0;
                         return true;
@@ -620,6 +620,7 @@ export function iterateBattle(
         let inited = allactions.map(a => false);
         let active = allactions.map(a => false);
         let now_chance = 0;
+        let now_speed = 0;
 
         let o_alen = oppo_actions?.length ?? 0;
         let o_uses = oppo_actions?.map(a => 0);
@@ -629,6 +630,7 @@ export function iterateBattle(
         let o_inited = oppo_actions?.map(a => false);
         let o_active = oppo_actions?.map(a => false);
         let o_now_chance = 0;
+        let o_now_speed = 0;
 
         const currents = allactions.map(m => false as false | ShipAction);
         const oppos = oppo_actions?.map(m => false as false | ShipAction);
@@ -1013,7 +1015,8 @@ export function iterateBattle(
         oppo_powerInfo = getInstantPowerInfo(work_opponent, currents, ship, offense);
         now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
         o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
-
+        now_speed = powerInfo.computed.attacks_per_second;
+        o_now_speed = oppo_powerInfo.computed.attacks_per_second;
         // Deinitialize for real init, below.
         powerInfo = oppo_powerInfo = null;
 
@@ -1073,6 +1076,10 @@ export function iterateBattle(
 
             if (!powerInfo) {
                 powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
+                if (oppo_powerInfo) {
+                    now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
+                }
+                now_speed = powerInfo.computed.attacks_per_second;
                 c_boarding = powerInfo.computed.boarding_damage_per_sec / rate;
                 boarding_sec = powerInfo.computed.boarding_damage_per_sec;
                 aps_num = 1 / powerInfo.computed.attacks_per_second;
@@ -1110,6 +1117,7 @@ export function iterateBattle(
                         o_at_second = battle_second;
                         oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
                         o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+                        o_now_speed = oppo_powerInfo.computed.attacks_per_second;
                         o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                         o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
                         let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
@@ -1141,6 +1149,8 @@ export function iterateBattle(
             if (powerInfo && oppo_powerInfo) {
                 now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
                 o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+                now_speed = powerInfo.computed.attacks_per_second;
+                o_now_speed = oppo_powerInfo.computed.attacks_per_second;
             }
 
             let base_attack = powerInfo.computed.attack.base;

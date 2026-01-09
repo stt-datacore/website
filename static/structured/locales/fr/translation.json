@@ -1782,6 +1782,9 @@
         "three_skills": "Trois Compétences",
         "top_quipment": "Quipement de pointe"
     },
+    "rank_boss": {
+        "break_out": "Affichez les scores individuels des boss."
+    },
     "rank_names": {
         "advantage": {
             "d": "D",

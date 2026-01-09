@@ -29,11 +29,6 @@ const BossData = (() => {
 		for (let i = 0; i < c; i++) {
 			group[i].id = id++;
 			group[i].rarity = i + 1 + ldiff;
-			if (group[i].actions?.length) {
-				if (group[i].actions![0].ability?.condition === 64) {
-					group[i].actions![0].cooldown = 4;
-				}
-			}
 		}
 		res = res.concat(group);
 	}
