@@ -10,6 +10,35 @@ import { PlayerContextData } from "../context/playercontext";
 import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
 import { ShipTraitNames } from "../model/traits";
 import { BuffStatTable } from "./voyageutils";
+import boss_data from '../../static/structured/boss_data.json';
+
+const BossData = (() => {
+	let res = [] as Ship[];
+	let bd = boss_data as any as Ship[];
+	let groups = {} as {[key:string]: Ship[]};
+	for (let boss of bd) {
+		groups[boss.symbol] ??= [];
+		groups[boss.symbol].push(boss);
+	}
+	let bg = Object.values(groups);
+	let id = 1;
+	for (let group of bg) {
+		group.sort((a, b) => a.hull - b.hull);
+		let c = group.length;
+		let ldiff = 6 - group.length;
+		for (let i = 0; i < c; i++) {
+			group[i].id = id++;
+			group[i].rarity = i + 1 + ldiff;
+			if (group[i].actions?.length) {
+				if (group[i].actions![0].ability?.condition === 64) {
+					group[i].actions![0].cooldown = 4;
+				}
+			}
+		}
+		res = res.concat(group);
+	}
+	return res;
+})();
 
 export const OFFENSE_ABILITIES = [0, 1, 4, 5, 7, 8, 10, 12];
 export const DEFENSE_ABILITIES = [2, 3, 6, 9, 10, 11];
@@ -20,13 +49,13 @@ export const DEFENSE_ACTIONS = [1];
 export const MaxOffense = 0.528;
 export const MaxDefense = 0.528;
 
-export const UNMBos: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":5200000000,"evasion":0,"attack":700000,"accuracy":120000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 6, antimatter: 0, level: 10};
-export const NMBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":3700000000,"evasion":0,"attack":570000,"accuracy":105000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 5, antimatter: 0, level: 10};
-export const BrutalBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":1150000000,"evasion":0,"attack":225000,"accuracy":80000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 4, antimatter: 0, level: 10}
-export const HardBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":220000000,"evasion":0,"attack":206000,"accuracy":70000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 3, antimatter: 0, level: 10};
-export const NormalBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":160000000,"evasion":0,"attack":92000,"accuracy":35000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 2, antimatter: 0, level: 10};
-export const EasyBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":20000000,"evasion":0,"attack":45000,"accuracy":15000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 1, antimatter: 0, level: 10};
-export const AllBosses = [EasyBoss, NormalBoss, HardBoss, BrutalBoss, NMBoss, UNMBos];
+// export const UNMBos: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":5200000000,"evasion":0,"attack":700000,"accuracy":120000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 6, antimatter: 0, level: 10};
+// export const NMBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":3700000000,"evasion":0,"attack":570000,"accuracy":105000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 5, antimatter: 0, level: 10};
+// export const BrutalBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":1150000000,"evasion":0,"attack":225000,"accuracy":80000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 4, antimatter: 0, level: 10}
+// export const HardBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":220000000,"evasion":0,"attack":206000,"accuracy":70000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 3, antimatter: 0, level: 10};
+// export const NormalBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":160000000,"evasion":0,"attack":92000,"accuracy":35000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 2, antimatter: 0, level: 10};
+// export const EasyBoss: Ship = {"icon":{"file":"/ship_previews/doomsday_machine"},"archetype_id":19557,"symbol":"doomsday_machine_ship","name":"Doomsday Machine(PL)","rarity":5,"shields":0,"hull":20000000,"evasion":0,"attack":45000,"accuracy":15000,"crit_chance":0,"crit_bonus":5000,"attacks_per_second":0.1,"shield_regen":0,"actions":[], id: 1, antimatter: 0, level: 10};
+export const AllBosses = BossData; // [EasyBoss, NormalBoss, HardBoss, BrutalBoss, NMBoss, UNMBos];
 
 export function getShipDivision(rarity: number) {
     return rarity === 5 ? 3 : rarity >= 3 && rarity <= 4 ? 2 : 1;
@@ -41,26 +70,25 @@ export function getCrewDivisions(rarity: number) {
 export const getBosses = (ship?: Ship, crew?: CrewMember) => {
     const bosses = [] as Ship[];
     AllBosses.forEach((boss, idx) => {
-        let rarity = boss.id - 1;
+        let rarity = boss.rarity;
         if (ship) {
-            if (rarity === 5 && ship.rarity !== 5) return;
-            if (rarity === 4 && ship.rarity < 4) return;
-            if (rarity === 3 && (ship.rarity < 3 || ship.rarity > 4)) return;
-            if (rarity === 2 && (ship.rarity < 2 || ship.rarity > 4)) return;
-            if (rarity === 1 && ship.rarity > 3) return;
-            if (rarity === 0 && ship.rarity > 2) return;
+            if (rarity === 6 && ship.rarity !== 5) return;
+            if (rarity === 5 && ship.rarity < 4) return;
+            if (rarity === 4 && (ship.rarity < 3 || ship.rarity > 4)) return;
+            if (rarity === 3 && (ship.rarity < 2 || ship.rarity > 4)) return;
+            if (rarity === 2 && ship.rarity > 3) return;
+            if (rarity === 1 && ship.rarity > 2) return;
         }
         if (crew) {
-            if (boss.id === 1 && ![1, 2].includes(crew.max_rarity)) return;
-            if (boss.id === 2 && ![1, 2, 3].includes(crew.max_rarity)) return;
-            if (boss.id === 3 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
-            if (boss.id === 4 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
-            if (boss.id === 5 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
-            if (boss.id === 6 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
+            if (rarity === 1 && ![1, 2].includes(crew.max_rarity)) return;
+            if (rarity === 2 && ![1, 2, 3].includes(crew.max_rarity)) return;
+            if (rarity === 3 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
+            if (rarity === 4 && ![1, 2, 3, 4].includes(crew.max_rarity)) return;
+            if (rarity === 5 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
+            if (rarity === 6 && ![1, 2, 3, 4, 5].includes(crew.max_rarity)) return;
         }
         bosses.push(boss);
     });
-
     return bosses;
 }
 
