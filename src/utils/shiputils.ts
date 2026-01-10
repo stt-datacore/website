@@ -1,16 +1,15 @@
-import { BaseSkillFields, CrewMember } from "../model/crew";
-import { PlayerCrew, Setup } from "../model/player";
-import { BattleMode, BattleStation, PvpDivision, ReferenceShip, ShipAction, ShipInUse, ShipLevel, ShipLevels, ShipLevelStats } from "../model/ship";
-import { Schematics, Ship } from "../model/ship";
-import { simplejson2csv, ExportField } from './misc';
-import { StatsSorter } from "./statssorter";
-import { shipStatSortConfig  } from "../utils/crewutils";
+import boss_data from '../../static/structured/boss_data.json';
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
-import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
+import { BaseSkillFields, CrewMember } from "../model/crew";
+import { PlayerCrew, Setup } from "../model/player";
+import { BattleMode, BattleStation, PvpDivision, ReferenceShip, Schematics, Ship, ShipAction, ShipInUse, ShipLevel, ShipLevels, ShipLevelStats } from "../model/ship";
 import { ShipTraitNames } from "../model/traits";
+import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
+import { shipStatSortConfig } from "../utils/crewutils";
+import { ExportField, simplejson2csv } from './misc';
+import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
-import boss_data from '../../static/structured/boss_data.json';
 
 const BossData = (() => {
 	let res = [] as Ship[];
@@ -537,7 +536,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
-			let battle_mode = `fbb_${fbb.id}` as BattleMode;
+			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
 			if (!battle_mode) return;
 			ship = structuredClone(ship) as Ship;
 			if (setupToSlots(fbb.setup, ship)) {
@@ -686,3 +685,13 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 export function refShips(input: ReferenceShip[]): Ship[] {
 	return input.map(input => ({...input, levels: undefined }));
 }
+
+export function bossFromBattleMode(mode: BattleMode) {
+	let bm = mode.split("_");
+	if (bm.length === 2) {
+		let bossid = Number(bm[1]) + 1;
+		return AllBosses.find(f => f.id === bossid);
+	}
+	return undefined;
+}
+

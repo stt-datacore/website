@@ -2200,6 +2200,7 @@
         "calculated_crew": "Tripulación calculada",
         "charge_phase": {
             "after_seconds": "Después de {{seconds}}s ",
+            "after_seconds_short": "@ {{seconds}}s ",
             "bonus": "+{{amount}} a {{ability}}",
             "cooldown": "{{time}}s recargar",
             "duration": "{{time}}s duración"
