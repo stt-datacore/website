@@ -6,7 +6,7 @@ import CONFIG from '../../../components/CONFIG';
 
 import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
-import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, mapToRankings } from '../../../utils/crewutils';
+import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, mapToRankings } from '../../../utils/crewutils';
 import { Ship } from '../../../model/ship';
 import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 import { AbilityUses, AdvantagePicker, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
@@ -145,7 +145,7 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.ability && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</> || <>None</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.charge_phases && <>{crew.action.charge_text}</>}
+				{crew.action.charge_phases && <>{getShipChargePhases(crew, undefined, t).join(", ")}</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{crew.ship_battle.accuracy && <>+<b>{crew.ship_battle.accuracy}</b></>}

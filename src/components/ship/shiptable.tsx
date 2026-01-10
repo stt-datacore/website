@@ -89,6 +89,10 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	const filteredShips = React.useMemo(() => {
 		const result = ships.filter((ship) => {
+			ship.ranks ??= {} as any;
+			ship.ranks!.overall ??= 0;
+			ship.ranks!.arena ??= 0;
+			ship.ranks!.fbb ??= 0;
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
