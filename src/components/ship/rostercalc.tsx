@@ -10,7 +10,7 @@ import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../..
 import { getHighest, prepareOne } from "../../utils/crewutils";
 import { getEventData } from "../../utils/events";
 import { formatRunTime } from "../../utils/misc";
-import { compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse, mergeRefShips } from "../../utils/shiputils";
+import { AllBosses, compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse, mergeRefShips } from "../../utils/shiputils";
 import { useStateWithStorage } from "../../utils/storage";
 import { CrewDropDown } from "../base/crewdropdown";
 import CONFIG from "../CONFIG";
@@ -48,6 +48,15 @@ interface BattleConfig {
     offense?: number;
     opponent?: Ship;
     effects?: BossEffect[];
+}
+
+function bossFromBattleMode(mode: BattleMode) {
+    let bm = mode.split("_");
+    if (bm.length === 2) {
+        let bossid = Number(bm[1]);
+        return AllBosses.find(f => f.id === bossid);
+    }
+    return undefined;
 }
 
 export const ShipRosterCalc = (props: RosterCalcProps) => {
@@ -152,12 +161,19 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     (globalContext.player.playerData ? ['pvp',
         //'skirmish',
-        'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'] : ['pvp']).forEach((mode) => {
+        ...AllBosses.map(m => `fbb_${m.id}`)] : ['pvp']).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
+        let fbbtext = '';
         if (mode.startsWith('fbb')) {
-            let sp = mode.split("_");
-            rarity = Number.parseInt(sp[1]);
+            let boss = bossFromBattleMode(mode);
+            if (boss) {
+                rarity = boss.rarity;
+                fbbtext = boss['ship_name'];
+            }
+            else {
+                return;
+            }
             if (ship) {
                 if (rarity === 5 && ship.rarity !== 5) return;
                 if (rarity === 4 && ship.rarity < 4) return;
@@ -170,7 +186,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         battleModes.push({
             key: mode,
             value: mode,
-            text: t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity + 1}*` : '')
+            text: fbbtext || (t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity + 1}*` : ''))
         });
     });
 
@@ -358,15 +374,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         delete newconfig.effects;
 
         if (battleMode.startsWith('fbb')) {
-            let rarity = Number.parseInt(battleMode.slice(4));
-            let bossData = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === rarity + 1);
-            let boss = bossData?.boss_ship;
+            let boss = bossFromBattleMode(battleMode);
+            let bossData = globalContext.player.ephemeral?.fleetBossBattlesRoot?.statuses.find(gr => gr.desc_id === (boss as any)?.desc_id);
             if (boss) {
                 if (bossData?.combo?.active_effects?.length) {
                     newconfig.effects = structuredClone(bossData.combo.active_effects);
                 }
                 boss = structuredClone(boss) as BossShip;
-                boss.rarity = rarity;
             }
             newconfig.opponent = boss;
         }
@@ -436,7 +450,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 try {
                     let rarity = Number.parseInt(urlParams.get('rarity')!);
                     let bmode = urlParams.get('battle_mode')! as BattleMode;
-                    if (['pvp', 'skirmish', 'fbb_0', 'fbb_0', 'fbb_1', 'fbb_2', 'fbb_3', 'fbb_4', 'fbb_5'].includes(bmode)) {
+                    if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb_")) {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
                         if (f) {
@@ -461,7 +475,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     React.useEffect(() => {
         if (crew?.length && ship.battle_stations?.length) {
             let max_rarity = ship.rarity;
-            if (battleMode === 'fbb_4') max_rarity = 5;
+            let boss = bossFromBattleMode(battleMode);
+            let mx = getBosses(ship)?.find(f => f.rarity === boss?.rarity && f.symbol === boss?.symbol)?.rarity;
+            if (mx) max_rarity = mx;
+            if (max_rarity > 5) max_rarity = 5;
             let crewcount = prefilterCrew(max_rarity).length;
             setCrewEstimate(crewcount);
         }

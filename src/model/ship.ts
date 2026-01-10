@@ -206,7 +206,7 @@ export interface BattleStations {
 
 export type PvpDivision = 'commander' | 'captain' | 'admiral';
 
-export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb_3' | 'fbb_4' | 'fbb_5';
+export type BattleMode = 'pvp' | 'skirmish' | 'fbb_0' | 'fbb_1' | 'fbb_2' | 'fbb_3' | 'fbb_4' | 'fbb_5' | string;
 
 
 export interface ShipInUse {

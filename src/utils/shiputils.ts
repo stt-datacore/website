@@ -537,14 +537,14 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
-			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
+			let battle_mode = `fbb_${fbb.id}` as BattleMode;
 			if (!battle_mode) return;
 			ship = structuredClone(ship) as Ship;
 			if (setupToSlots(fbb.setup, ship)) {
 				results.push({
 					ship,
 					battle_mode,
-					rarity: fbb.id - 1
+					rarity: fbb.id
 				});
 			}
 		}
