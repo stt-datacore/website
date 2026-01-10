@@ -254,6 +254,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
+	const [breakoutBosses, setBreakoutBosses] = useStateWithStorage<boolean>('/rosterTable/ships/breakoutBosses', false, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	const [critExpanded, setCritExpanded] = useStateWithStorage(pageId+'/rosterTable/critExpanded', undefined as string | undefined);
 	const [cheapest, setCheapest] = useStateWithStorage(pageId+'/rosterTable/special/cheapestfffe/config', structuredClone(DefaultCheapestOpts), { rememberForever: true });
@@ -304,9 +305,11 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					ships={playerShips ?? globalContext.core.ships}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
+					breakoutBosses={breakoutBosses}
+					setBreakoutBosses={setBreakoutBosses}
 				/>,
-			tableConfig: getShipTableConfig(t, shipranks),
-			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
+			tableConfig: getShipTableConfig(t, shipranks, breakoutBosses),
+			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withbosses={breakoutBosses} withranks={shipranks} crew={crew} />
 		},
 		{
 			id: 'dc_ranks',

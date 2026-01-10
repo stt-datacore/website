@@ -8,7 +8,7 @@ import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
 import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getSkills, mapToRankings } from '../../../utils/crewutils';
 import { Ship } from '../../../model/ship';
-import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
+import { AllBosses, ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 import { AbilityUses, AdvantagePicker, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
 import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
 
@@ -16,12 +16,12 @@ import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import { TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
-import { CrewMember } from '../../../model/crew';
+import { BossDetails, CrewMember } from '../../../model/crew';
 import { formatShipScore } from '../../ship/utils';
 
 const isWindow = typeof window !== 'undefined';
 
-export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
+export function getShipTableConfig(t: TranslateMethod, withranks: boolean, withbosses: boolean) {
 	const colConfig = [
 
 		{ width: 1, column: 'action.bonus_type', title: t('ship.boosts') },
@@ -42,6 +42,31 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
 	] as ITableConfigRow[];
 
 	if (withranks) {
+		if (withbosses) {
+			let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
+			distinct.sort().reverse();
+			for (let symbol of distinct) {
+				let boss = AllBosses.find(f => f.symbol === symbol);
+				if (boss && boss['ship_name']) boss.name = boss['ship_name'];
+				if (boss?.name) {
+					colConfig.unshift(
+						{
+							width: 1, column: 'ranks.scores.ship.boss_details.' + boss.symbol,
+							title: boss.name,
+							customCompare: (a: CrewMember, b: CrewMember) => {
+								let aboss = a.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+								let bboss = b.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+								if (!aboss && !bboss) return 0;
+								else if (!aboss) return -1;
+								else if (!bboss) return 1;
+								return aboss.rank - bboss.rank;
+							}
+						}
+					);
+				}
+			}
+		}
+
 		colConfig.unshift(
 			{
 				width: 1, column: 'ranks.scores.ship.overall', title: t('rank_names.ship_rank'),
@@ -81,7 +106,7 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
 				},
 				reverse: true
 			}
-		)
+		);
 	}
 
 	return colConfig;
@@ -90,11 +115,27 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
 type CrewCellProps = {
 	crew: IRosterCrew;
 	withranks: boolean;
+	withbosses?: boolean;
 };
 
 export const CrewShipCells = (props: CrewCellProps) => {
-	const { crew, withranks } = props;
+	const { crew, withranks, withbosses } = props;
 	const { t } = React.useContext(GlobalContext).localized;
+	let bosses = [] as Ship[];
+	if (withbosses) {
+		let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
+		distinct.sort();
+
+		for (let symbol of distinct) {
+			let boss = AllBosses.find(f => f.symbol === symbol);
+			if (boss) {
+				if ((boss as any).ship_name) boss.name = boss['ship_name'];
+				if (boss?.name) {
+					bosses.push(boss);
+				}
+			}
+		}
+	}
 	if (crew.action.ability !== undefined && crew.action.ability_text === undefined) {
 		crew.action.ability_text = crew.action.ability ? getShipBonus(t, crew) : '';
 	}
@@ -113,6 +154,25 @@ export const CrewShipCells = (props: CrewCellProps) => {
 					{!!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, crew.ranks.scores.ship.fbb, t)}
 					<p style={{fontSize: '0.8em'}}>#{crew.ranks.scores.ship.fbb_rank}</p>
 				</Table.Cell>
+			</>}
+			{!!withbosses && <>
+				{bosses.map((boss, idx) => {
+					let rank = crew.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+					if (rank) {
+						return (
+							<Table.Cell key={`${boss.symbol}_+${idx}`}>
+								{!!crew.ranks.scores.ship && formatShipScore(crew.ranks.scores.ship?.kind, rank.score, t)}
+								#{rank.rank}
+							</Table.Cell>
+						)
+					}
+					else {
+						return (
+							<Table.Cell key={`${boss.symbol}_+${idx}`}>
+							</Table.Cell>
+						)
+					}
+				})}
 			</>}
 			<Table.Cell textAlign='center'>
 				<b>{CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[crew.action.bonus_type]}</b>
@@ -184,12 +244,14 @@ type ShipAbilitiesFilterProps = {
 	playerData: any;
 	ships: Ship[];
 	crewFilters: ICrewFilter[];
+	breakoutBosses: boolean;
+	setBreakoutBosses: (value: boolean) => void;
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
 };
 
 export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
-	const { rosterCrew, crewFilters, setCrewFilters } = props;
+	const { rosterCrew, crewFilters, setCrewFilters, breakoutBosses, setBreakoutBosses } = props;
 
 	const [shipRarityFilter, setShipRarityFilter] = React.useState([] as number[]);
 	const [shipPickerFilter, setShipPickerFilter] = React.useState({} as ShipPickerFilter);
@@ -432,7 +494,12 @@ export const ShipAbilitiesFilter = (props: ShipAbilitiesFilterProps) => {
 								availableSeats={availableSeats}
 							/>
 					</div>
-
+					<div style={{margin: '0 1em'}}>
+						<Checkbox label={t('rank_boss.break_out')}
+							checked={!!breakoutBosses}
+							onChange={(e, { checked }) => setBreakoutBosses(!!checked)}
+						/>
+					</div>
 				</div>
 
 				<div style={{margin: "1em 0", display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center"}}>
