@@ -1103,7 +1103,7 @@ export function getShipBonus(t: TranslateMethod, item?: PlayerCrew | CrewMember 
 	return bonusText;
 }
 
-export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, t?: (value: string, opt?: { [key: string]: string }) => string): string[] {
+export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction | Ship, index?: number, t?: TranslateMethod, short?: boolean): string[] {
 	const phases = [] as string[];
 	let charge_time = 0;
 
@@ -1120,12 +1120,12 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 		let phaseDescription = '';
 
 		if (t) {
-			phaseDescription = t('ship.charge_phase.after_seconds', { seconds: `${charge_time}` });
+			phaseDescription = t(`ship.charge_phase.after_seconds${short ? '_short' : ''}`, { seconds: `${charge_time}` });
 			if (cp.ability_amount && action?.ability) {
-				phaseDescription += ', ' + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
+				phaseDescription += (short ? ": " : ", ") + CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[action.ability.type].replace('%VAL%', `${cp.ability_amount}`);
 			}
 			if (cp.bonus_amount) {
-				phaseDescription += ", " + t('ship.charge_phase.bonus', {
+				phaseDescription += (short ? ": " : ", ") + t('ship.charge_phase.bonus', {
 					amount: `${cp.bonus_amount}`,
 					ability: CONFIG.CREW_SHIP_BATTLE_BONUS_TYPE[action.bonus_type]
 				});

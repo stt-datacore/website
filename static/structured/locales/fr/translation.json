@@ -2171,6 +2171,7 @@
         "calculated_crew": "Équipage calculé",
         "charge_phase": {
             "after_seconds": "Après {{seconds}}s ",
+            "after_seconds_short": "@ {{seconds}}s ",
             "bonus": "+{{amount}} à {{ability}}",
             "cooldown": "{{time}}s recharge",
             "duration": "{{time}}s durée"

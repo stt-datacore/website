@@ -2160,6 +2160,7 @@
         "calculated_crew": "Calculated Crew",
         "charge_phase": {
             "after_seconds": "After {{seconds}}s ",
+            "after_seconds_short": "@ {{seconds}}s ",
             "bonus": "+{{amount}} to {{ability}}",
             "cooldown": "{{time}}s cooldown",
             "duration": "{{time}}s duration"

@@ -34,7 +34,21 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean) {
 		{ width: 1, column: 'action.limit', title: t('ship.uses') },
 		{ width: 1, column: 'action.ability.amount', title: t('ship.bonus_ability'), tiebreakers: ['action.ability.type'] },
 		{ width: 1, column: 'action.ability.condition', title: t('ship.trigger'), tiebreakers: ['action.ability.type', 'action.ability.amount'] },
-		{ width: 1, column: 'action.charge_text', title: t('ship.charge_phases') },
+		{
+			width: 2, column: 'action.charge_phases.length', title: t('ship.charge_phases'),
+			customCompare: (a: CrewMember, b: CrewMember) => {
+				if (!a.action.charge_phases && !b.action.charge_phases) return 0;
+				if (!a.action.charge_phases) return -1;
+				if (!b.action.charge_phases) return 1;
+				let r = a.action.charge_phases.length - b.action.charge_phases.length;
+				if (r) return r;
+				r = a.action.charge_phases[0].charge_time - b.action.charge_phases[0].charge_time;
+				if (r ) return r;
+				let atot = a.action.charge_phases.map(cp => cp.charge_time).reduce((p, n) => p + n, 0);
+				let btot = b.action.charge_phases.map(cp => cp.charge_time).reduce((p, n) => p + n, 0);
+				return atot - btot;
+			}
+		},
 		{ width: 1, column: 'ship_battle.accuracy', title: t('ship.accuracy'), reverse: true },
 		{ width: 1, column: 'ship_battle.crit_bonus', title: t('ship.crit_bonus'), reverse: true },
 		{ width: 1, column: 'ship_battle.crit_chance', title: t('ship.crit_rating'), reverse: true },
@@ -145,7 +159,13 @@ export const CrewShipCells = (props: CrewCellProps) => {
 				{crew.action.ability && <>{CONFIG.CREW_SHIP_BATTLE_TRIGGER[crew.action.ability.condition]}</> || <>None</>}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
-				{crew.action.charge_phases && <>{getShipChargePhases(crew, undefined, t).join(", ")}</>}
+				{crew.action.charge_phases &&
+					getShipChargePhases(crew, undefined, t, true).map((phaseText, idx) => (
+						<div key={`${crew.symbol}_charge_phase_${idx}`} style={{margin: '0.5em 0', textAlign: 'left'}}>
+							{phaseText}
+						</div>
+					))
+				}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{crew.ship_battle.accuracy && <>+<b>{crew.ship_battle.accuracy}</b></>}
