@@ -159,7 +159,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             let boss = bossFromBattleMode(mode);
             if (boss) {
                 rarity = boss.rarity;
-                fbbtext = boss['ship_name'];
+                fbbtext = boss['ship_name'] + ` ${rarity}*`;
             }
             else {
                 return;
