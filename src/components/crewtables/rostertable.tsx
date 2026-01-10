@@ -1,6 +1,6 @@
-import React from 'react';
 import { Link } from 'gatsby';
-import { Form, Dropdown, Header, Loader, Checkbox } from 'semantic-ui-react';
+import React from 'react';
+import { Checkbox, Dropdown, Form, Header, Loader } from 'semantic-ui-react';
 
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { CompletionState, PlayerBuffMode } from '../../model/player';
@@ -11,34 +11,34 @@ import ProspectPicker from '../../components/prospectpicker';
 import { oneCrewCopy, applyCrewBuffs, cheapestFFFE } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
-import { IRosterCrew, RosterType, ICrewMarkup, ICrewFilter } from './model';
 import { CrewConfigTable } from './crewconfigtable';
-import { CrewRarityFilter } from './filters/crewrarity';
-import { CrewTraitsFilter } from './filters/crewtraits';
-import { CrewStatusFilter } from './filters/crewstatus';
 import { CrewMaintenanceFilter } from './filters/crewmaintenance';
 import { CrewOwnershipFilter } from './filters/crewownership';
 import { CrewPortalFilter } from './filters/crewportal';
-import { getBaseTableConfig, CrewBaseCells } from './views/base';
-import { ShipAbilitiesFilter, getShipTableConfig, CrewShipCells } from './views/shipabilities';
-import { getRanksTableConfig, CrewRankCells } from './views/ranks';
-import { CrewUtilityForm, getCrewUtilityTableConfig, CrewUtilityCells } from './views/crewutility';
+import { CrewRarityFilter } from './filters/crewrarity';
+import { CrewStatusFilter } from './filters/crewstatus';
+import { CrewTraitsFilter } from './filters/crewtraits';
+import { ICrewFilter, ICrewMarkup, IRosterCrew, RosterType } from './model';
+import { CrewBaseCells, getBaseTableConfig } from './views/base';
+import { CrewUtilityCells, CrewUtilityForm, getCrewUtilityTableConfig } from './views/crewutility';
+import { CrewRankCells, getRanksTableConfig } from './views/ranks';
+import { CrewShipCells, ShipAbilitiesFilter, getShipTableConfig } from './views/shipabilities';
 
-import RosterSummary from './rostersummary';
-import { QuipmentScoreCells, getQuipmentTableConfig as getQuipmentTableConfig } from './views/quipmentscores';
-import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
-import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
-import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
-import { CrewBuffModes, SpecialViewMode, SpecialViews } from './commonoptions';
 import { UnifiedWorker } from '../../typings/worker';
-import { ObtainedFilter } from './filters/crewobtained';
-import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
-import WeightingInfoPopup from './weightinginfo';
-import { ReleaseDateFilter } from './filters/crewreleasedate';
-import { OptionsPanelFlexRow } from '../stats/utils';
+import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { OptionsPanelFlexRow } from '../stats/utils';
+import { CrewBuffModes, SpecialViewMode, SpecialViews } from './commonoptions';
+import { ObtainedFilter } from './filters/crewobtained';
+import { ReleaseDateFilter } from './filters/crewreleasedate';
 import { CrewSkillOrder } from './filters/crewskillorder';
 import { CheapestFilters, DefaultCheapestOpts } from './filters/cheapestfffe';
+import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
+import RosterSummary from './rostersummary';
+import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
+import { QuipmentScoreCells, getQuipmentTableConfig } from './views/quipmentscores';
+import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
+import WeightingInfoPopup from './weightinginfo';
 
 interface IRosterTableContext {
 	pageId: string;

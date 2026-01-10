@@ -53,7 +53,7 @@ export const Calculator = () => {
 
 	const canBorrow: boolean = eventData?.seconds_to_start === 0
 		&& playerData?.player.squad.rank !== 'LEADER'
-		&& !!ephemeral?.borrowedCrew.length;
+		&& !!ephemeral?.borrowedCrew?.length;
 
 	const missionsSelected: number = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).length;
 	const groupMissionIds: string[] = shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).map(shuttle => shuttle.id);
