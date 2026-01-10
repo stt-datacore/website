@@ -8,9 +8,8 @@ import { PlayerCrew } from "../../model/player";
 import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
 import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 import { getHighest, prepareOne } from "../../utils/crewutils";
-import { getEventData } from "../../utils/events";
 import { formatRunTime } from "../../utils/misc";
-import { AllBosses, compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse, mergeRefShips } from "../../utils/shiputils";
+import { AllBosses, bossFromBattleMode, compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
 import { useStateWithStorage } from "../../utils/storage";
 import { CrewDropDown } from "../base/crewdropdown";
 import CONFIG from "../CONFIG";
@@ -48,15 +47,6 @@ interface BattleConfig {
     offense?: number;
     opponent?: Ship;
     effects?: BossEffect[];
-}
-
-function bossFromBattleMode(mode: BattleMode) {
-    let bm = mode.split("_");
-    if (bm.length === 2) {
-        let bossid = Number(bm[1]);
-        return AllBosses.find(f => f.id === bossid);
-    }
-    return undefined;
 }
 
 export const ShipRosterCalc = (props: RosterCalcProps) => {
@@ -161,7 +151,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     (globalContext.player.playerData ? ['pvp',
         //'skirmish',
-        ...AllBosses.map(m => `fbb_${m.id}`)] : ['pvp']).forEach((mode) => {
+        ...AllBosses.map(m => `fbb_${m.id - 1}`)] : ['pvp']).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         let fbbtext = '';

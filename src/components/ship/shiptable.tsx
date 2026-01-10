@@ -1,21 +1,19 @@
 import React from 'react';
-import { Table, Checkbox, Label, DropdownItemProps, Dropdown } from 'semantic-ui-react';
+import { Checkbox, Dropdown, DropdownItemProps, Table } from 'semantic-ui-react';
 
-import { Ship, ShipInUse } from '../../model/ship';
-import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
-import { GlobalContext } from '../../context/globalcontext';
 import { navigate } from 'gatsby';
+import { GlobalContext } from '../../context/globalcontext';
+import { PlayerBuffMode } from '../../model/player';
+import { Ship, ShipInUse } from '../../model/ship';
+import { omniSearchFilter } from '../../utils/omnisearch';
+import { getShipsInUse, mergeRefShips } from '../../utils/shiputils';
+import { useStateWithStorage } from '../../utils/storage';
+import CONFIG from '../CONFIG';
 import { CrewBuffModes, RarityFilter } from '../crewtables/commonoptions';
 import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '../crewtables/shipoptions';
-import { getShipsInUse, mergeRefShips } from '../../utils/shiputils';
-import CONFIG from '../CONFIG';
-import { formatShipScore } from './utils';
+import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
-import { omniSearchFilter } from '../../utils/omnisearch';
-import { useStateWithStorage } from '../../utils/storage';
-import { PlayerBuffMode } from '../../model/player';
-import { BuffSelector, drawBuff, HoverSelectorConfig } from '../item_presenters/presenter_utils';
-import { BuffNames } from '../item_presenters/crew_preparer';
+import { formatShipScore } from './utils';
 
 type ShipTableProps = {
 	pageId: string;

@@ -1,22 +1,22 @@
 import React from 'react';
-import { Form, Table, Checkbox } from 'semantic-ui-react';
+import { Checkbox, Form, Table } from 'semantic-ui-react';
 
 
 import CONFIG from '../../../components/CONFIG';
 
 import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
-import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, mapToRankings } from '../../../utils/crewutils';
-import { Ship } from '../../../model/ship';
-import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 import { AbilityUses, AdvantagePicker, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
 import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
+import { Ship } from '../../../model/ship';
+import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, mapToRankings } from '../../../utils/crewutils';
+import { ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 
-import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
+import { ICrewFilter, IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
-import { TranslateMethod } from '../../../model/player';
 import { GlobalContext } from '../../../context/globalcontext';
 import { CrewMember } from '../../../model/crew';
+import { TranslateMethod } from '../../../model/player';
 import { formatShipScore } from '../../ship/utils';
 
 const isWindow = typeof window !== 'undefined';
