@@ -70,7 +70,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const tableConfig: ITableConfigRow[] = React.useMemo(() => {
 		const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 		if (phaseType === 'skirmish') {
-			const results = getShipTableConfig(t, false);
+			const results = getShipTableConfig(t, false, false);
 			results.unshift(
 				{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
 				{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
