@@ -200,7 +200,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const canBorrow = phaseType === 'shuttles'
 		&& eventData.seconds_to_start === 0
 		&& playerData?.player.squad.rank !== 'LEADER'
-		&& !!ephemeral?.borrowedCrew.length;
+		&& !!ephemeral?.borrowedCrew?.length;
 
 	// Always calculate new skill numbers from original, unaltered crew list
 	let rosterCrew = structuredClone(props.rosterCrew) as IEventScoredCrew[];
