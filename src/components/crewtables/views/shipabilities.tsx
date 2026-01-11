@@ -65,11 +65,11 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean, withb
 				if (boss?.name) {
 					colConfig.unshift(
 						{
-							width: 1, column: 'ranks.scores.ship.boss_details.' + boss.symbol,
+							width: 1, column: 'ranks.scores.ship.bosses.' + boss.symbol,
 							title: boss.name,
 							customCompare: (a: CrewMember, b: CrewMember) => {
-								let aboss = a.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
-								let bboss = b.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+								let aboss = a.ranks.scores.ship.bosses.find(f => f.boss === boss.symbol);
+								let bboss = b.ranks.scores.ship.bosses.find(f => f.boss === boss.symbol);
 								if (!aboss && !bboss) return 0;
 								else if (!aboss) return 1;
 								else if (!bboss) return -1;
@@ -171,7 +171,7 @@ export const CrewShipCells = (props: CrewCellProps) => {
 			</>}
 			{!!withbosses && <>
 				{bosses.map((boss, idx) => {
-					let rank = crew.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+					let rank = crew.ranks.scores.ship.bosses.find(f => f.boss === boss.symbol);
 					if (rank) {
 						return (
 							<Table.Cell key={`${boss.symbol}_+${idx}`}>

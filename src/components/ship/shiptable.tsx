@@ -14,7 +14,7 @@ import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '..
 import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { formatShipScore } from './utils';
-import { BossDetails } from '../../model/crew';
+import { BossDetails, BossScore } from '../../model/crew';
 
 type ShipTableProps = {
 	pageId: string;
@@ -142,15 +142,16 @@ export const ShipTable = (props: ShipTableProps) => {
 				if (boss?.name) {
 					bb.push(
 						{
-							width: 1, column: 'ranks.scores.ship.boss_details.' + boss.symbol,
+							width: 1, column: 'ranks.scores.ship.bosses.' + boss.symbol,
 							title: boss.name,
+							reverse: true,
 							customCompare: (a: Ship, b: Ship) => {
-								let aboss = a.ranks?.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
-								let bboss = b.ranks?.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+								let aboss = a.ranks?.bosses.find(f => f.boss === boss.symbol);
+								let bboss = b.ranks?.bosses.find(f => f.boss === boss.symbol);
 								if (!aboss && !bboss) return 0;
-								else if (!aboss) return 1;
-								else if (!bboss) return -1;
-								return aboss.rank - bboss.rank;
+								else if (!aboss) return -1;
+								else if (!bboss) return 1;
+								return aboss.score - bboss.score;
 							}
 						}
 					);
@@ -359,7 +360,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			</>}
 			{breakoutBosses && (<>
 				{bosses.map((boss, idx) => {
-					let rank = ship.ranks?.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+					let rank = ship.ranks?.bosses.find(f => f.boss === boss.symbol);
 					if (rank) {
 						return (
 							<Table.Cell key={`${boss.symbol}_+${idx}`}>
