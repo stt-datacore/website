@@ -71,8 +71,8 @@ export function getShipTableConfig(t: TranslateMethod, withranks: boolean, withb
 								let aboss = a.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
 								let bboss = b.ranks.scores.ship.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
 								if (!aboss && !bboss) return 0;
-								else if (!aboss) return -1;
-								else if (!bboss) return 1;
+								else if (!aboss) return 1;
+								else if (!bboss) return -1;
 								return aboss.rank - bboss.rank;
 							}
 						}
