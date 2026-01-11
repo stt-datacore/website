@@ -6,7 +6,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { PlayerBuffMode } from '../../model/player';
 import { Ship, ShipInUse } from '../../model/ship';
 import { omniSearchFilter } from '../../utils/omnisearch';
-import { getShipsInUse, mergeRefShips } from '../../utils/shiputils';
+import { AllBosses, getShipsInUse, mergeRefShips } from '../../utils/shiputils';
 import { useStateWithStorage } from '../../utils/storage';
 import CONFIG from '../CONFIG';
 import { CrewBuffModes, RarityFilter } from '../crewtables/commonoptions';
@@ -14,6 +14,7 @@ import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '..
 import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { formatShipScore } from './utils';
+import { BossDetails } from '../../model/crew';
 
 type ShipTableProps = {
 	pageId: string;
@@ -44,6 +45,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	const [ships, setShips] = React.useState<Ship[]>([]);
 	const [minOpts, setMinOpts] = React.useState<DropdownItemProps[] | undefined>(undefined);
 	const [minSeats, setMinSeats] = useStateWithStorage<number | undefined>(`${pageId}/ship_table_filter/min_seats`, undefined);
+	const [breakoutBosses, setBreakoutBosses] = useStateWithStorage<boolean>(`${pageId}/ship_table_filter/breakout_bosses`, false);
 
 	React.useEffect(() => {
 		if (playerShips?.length && !!playerData && mode === 'owned') {
@@ -110,13 +112,57 @@ export const ShipTable = (props: ShipTableProps) => {
 		return result;
 	}, [ships, shipsInUse, rarityFilter, grantFilter, abilityFilter, traitFilter, ownership, onlyUsed, mode, buffMode, minSeats]);
 
-	const tableConfig = React.useMemo(() => {
+	const bosses = React.useMemo(() => {
+		let newbosses = [] as Ship[];
+		if (breakoutBosses) {
+			let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
+			distinct.sort();
 
+			for (let symbol of distinct) {
+				let boss = AllBosses.find(f => f.symbol === symbol);
+				if (boss) {
+					if ((boss as any).ship_name) boss.name = boss['ship_name'];
+					if (boss?.name) {
+						newbosses.push(boss);
+					}
+				}
+			}
+		}
+		return newbosses;
+	}, [breakoutBosses]);
+
+	const tableConfig = React.useMemo(() => {
+		let bb = [] as ITableConfigRow[];
+		if (breakoutBosses) {
+			let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
+			distinct.sort();
+			for (let symbol of distinct) {
+				let boss = AllBosses.find(f => f.symbol === symbol);
+				if (boss && boss['ship_name']) boss.name = boss['ship_name'];
+				if (boss?.name) {
+					bb.push(
+						{
+							width: 1, column: 'ranks.scores.ship.boss_details.' + boss.symbol,
+							title: boss.name,
+							customCompare: (a: Ship, b: Ship) => {
+								let aboss = a.ranks?.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+								let bboss = b.ranks?.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+								if (!aboss && !bboss) return 0;
+								else if (!aboss) return 1;
+								else if (!bboss) return -1;
+								return aboss.rank - bboss.rank;
+							}
+						}
+					);
+				}
+			}
+		}
 		const conf = [
 			{ width: 3, column: 'name', title: t('ship.ship') },
 			{ width: 1, column: 'ranks.overall', title: t('rank_names.ship_rank'), reverse: true },
 			{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
 			{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
+			...bb,
 			{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
 			{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
 			{ width: 1, column: 'attack', title: t('ship.attack'), reverse: true },
@@ -147,7 +193,7 @@ export const ShipTable = (props: ShipTableProps) => {
 		] as ITableConfigRow[];
 		if (!showRanks) conf.splice(1, 3);
 		return conf;
-	}, [showRanks, t]);
+	}, [showRanks, t, breakoutBosses]);
 
 	return (<div>
 		{!event_ships?.length &&
@@ -190,6 +236,12 @@ export const ShipTable = (props: ShipTableProps) => {
 						checked={showRanks}
 						label={t('crew_views.scoring')}
 					/>
+					<div style={{margin: '0 1em'}}>
+						<Checkbox label={t('rank_boss.break_out')}
+							checked={!!breakoutBosses}
+							onChange={(e, { checked }) => setBreakoutBosses(!!checked)}
+						/>
+					</div>
 				</div>
 			</div>}
 		{!event_ships?.length && !!playerShips && mode === 'owned' &&
@@ -224,7 +276,7 @@ export const ShipTable = (props: ShipTableProps) => {
 		if (usages?.length) {
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity + 1}*`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity - 1}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
 				}
 				else if (usage.battle_mode === 'pvp') {
 					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
@@ -305,6 +357,26 @@ export const ShipTable = (props: ShipTableProps) => {
 					</div>
 				</Table.Cell>
 			</>}
+			{breakoutBosses && (<>
+				{bosses.map((boss, idx) => {
+					let rank = ship.ranks?.boss_details.filter(f => f.boss === boss.symbol).reduce((p, n) => p && p.rank < n.rank ? p : n, undefined as BossDetails | undefined);
+					if (rank) {
+						return (
+							<Table.Cell key={`${boss.symbol}_+${idx}`}>
+								{!!ship?.ranks && formatShipScore(ship?.ranks.kind, rank.score, t)}
+								#{rank.rank}
+							</Table.Cell>
+						)
+					}
+					else {
+						return (
+							<Table.Cell key={`${boss.symbol}_+${idx}`}>
+								{t('global.na')}
+							</Table.Cell>
+						)
+					}
+				})}
+			</>)}
 			<Table.Cell>{printShipValue(ship, "antimatter", pship)}</Table.Cell>
 			<Table.Cell>{printShipValue(ship, "accuracy", pship)}</Table.Cell>
 			<Table.Cell>{printShipValue(ship, "attack", pship)} ({printShipValue(ship, "attacks_per_second", pship)}/s)</Table.Cell>
