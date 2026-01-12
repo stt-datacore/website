@@ -148,8 +148,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             text: ev.name
         }
     });
-
-    (['pvp', ...AllBosses.map(m => `fbb_${m.id - 1}`)]).forEach((mode) => {
+    const compatBosses = getBosses(ship);
+    (['pvp', ...compatBosses.map(m => `fbb_${m.id - 1}`)]).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         let fbbtext = '';
