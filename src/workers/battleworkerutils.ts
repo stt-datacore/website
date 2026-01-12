@@ -151,7 +151,8 @@ export function getCritChance(n: number) {
     return 0;
 }
 
-export function hitChance(acc: number, opp_eva: number) {
+export function hitChance(acc: number, opp_eva: number, borgCube?: boolean) {
+    if (borgCube) return 1 / (1 + Math.exp(-18.38 * (acc / opp_eva - 0.75)));
     return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
 }
 
@@ -502,6 +503,8 @@ export function iterateBattle(
         let ship = setupShip(input_ship, crew, false, ignoreSeats, false, ignorePassives) || undefined;
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives, !!econf) as Ship;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
+
+        const borg_boss = fbb_mode && work_opponent.symbol === 'borgcube_fbb_boss_ship';
 
         opponent_variance ??= 0.2;
 
@@ -1014,7 +1017,7 @@ export function iterateBattle(
         powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
         oppo_powerInfo = getInstantPowerInfo(work_opponent, currents, ship, offense);
         now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
-        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
         now_speed = powerInfo.computed.attacks_per_second;
         o_now_speed = oppo_powerInfo.computed.attacks_per_second;
         // Deinitialize for real init, below.
@@ -1116,7 +1119,7 @@ export function iterateBattle(
                     if (oppo_activation) {
                         o_at_second = battle_second;
                         oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
-                        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+                        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
                         o_now_speed = oppo_powerInfo.computed.attacks_per_second;
                         o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                         o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
@@ -1148,7 +1151,7 @@ export function iterateBattle(
 
             if (powerInfo && oppo_powerInfo) {
                 now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
-                o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+                o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
                 now_speed = powerInfo.computed.attacks_per_second;
                 o_now_speed = oppo_powerInfo.computed.attacks_per_second;
             }
