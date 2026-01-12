@@ -1,14 +1,16 @@
 import React from "react"
 import { GlobalContext } from "../../context/globalcontext"
-import { EnergyLogContext } from "../page/util";
+import { EnergyLog, EnergyLogContext, EnergyLogEntry } from "../page/util";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { Button, Checkbox, Dropdown, Table } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Icon, Table } from "semantic-ui-react";
 import { PromptContext } from "../../context/promptcontext";
 import { useStateWithStorage } from "../../utils/storage";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { Filter } from "../../model/game-elements";
 import { printChrons, printCredits, printDilithium, printHonor, printISM, printMerits, printQuantum } from "../retrieval/context";
 import { omniSearchFilter } from "../../utils/omnisearch";
+import { downloadData } from "../../utils/crewutils";
+import { simplejson2csv } from "../../utils/misc";
 
 export type ResourceViewMode = 'resource' | 'update';
 
@@ -17,7 +19,9 @@ export interface ResourceData {
     amount: number,
     moving_average: number,
     difference: number,
-    timestamp: Date
+    timestamp: Date,
+    average_difference: number,
+    total_difference: number
 }
 
 const transKeys = {
@@ -40,10 +44,12 @@ export const ResourceTracker = () => {
     const { playerData } = globalContext.player;
     const trackerContext = React.useContext(EnergyLogContext);
     const dbid = playerData?.player.dbid ?? 0;
-    const { enabled, setEnabled, log, clearLog } = trackerContext;
+    const { enabled, setEnabled, log, clearLog, setLog } = trackerContext;
 
     const [resourceFilter, setResourceFilter] = useStateWithStorage<string[]>(`${dbid}/resource_tracker/filters`, []);
+    const [compiledStats, setCompiledStats] = React.useState<ResourceData[]>([]);
     const [dailyFinal, setDailyFinal] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/daily_final`, false);
+    const uploadRef = React.useRef<HTMLInputElement>(null);
 
     const bodyArea: React.CSSProperties = {
         ...OptionsPanelFlexColumn,
@@ -63,13 +69,17 @@ export const ResourceTracker = () => {
         }
     }, [playerData, log, enabled]);
 
+    React.useEffect(() => {
+        let stats = compileStats();
+        setCompiledStats(stats);
+    }, [log, enabled, resourceFilter, dailyFinal]);
+
     const stats = React.useMemo(() => {
-        const stats = compileStats();
-        return stats.filter(row => {
+        return compiledStats.filter(row => {
             if (resourceFilter.length && !resourceFilter.includes(row.resource)) return false;
             return true;
         });
-    }, [log, enabled, resourceFilter, dailyFinal]);
+    }, [compiledStats]);
 
     if (!playerData) {
         return (
@@ -95,7 +105,7 @@ export const ResourceTracker = () => {
         {
             column: 'amount',
             width: 1,
-            title: t('global.amount')
+            title: t('ship.amount')
         },
         {
             column: 'moving_average',
@@ -106,6 +116,16 @@ export const ResourceTracker = () => {
             column: 'difference',
             width: 1,
             title: t('resource_tracker.columns.difference')
+        },
+        {
+            column: 'average_difference',
+            width: 1,
+            title: t('resource_tracker.columns.average_difference')
+        },
+        {
+            column: 'total_difference',
+            width: 1,
+            title: t('resource_tracker.columns.total_difference')
         }
     );
 
@@ -131,6 +151,8 @@ export const ResourceTracker = () => {
                     <Button onClick={askClearLog} disabled={!enabled || !entries.length}>
                         {t('resource_tracker.clear')}
                     </Button>
+                    <Button icon='download' onClick={() => exportResourceLog()} ></Button>
+                    <Button icon='upload' onClick={() => uploadRef?.current?.click()}></Button>
                 </div>
             </div>
             {enabled && (
@@ -163,8 +185,24 @@ export const ResourceTracker = () => {
                     data={stats}
                     filterRow={filterRows}
                     renderTableRow={renderTableRow}
+                    extraSearchContent={<>
+                        <Button onClick={() => exportCSV()}>
+                            <Icon name='download' />
+                            {t('share_profile.export.export_csv')}
+                        </Button>
+                    </>}
                     />
             )}
+            <input
+                type="file"
+                accept="text/json,application/json"
+                ref={uploadRef}
+                style={{display: 'none'}}
+                onChange={(e) => importResourceLog(e.target.files || undefined)}
+                name="files"
+                id="upload_resource_log_file_input"
+                />
+
         </div>
     )
 
@@ -185,6 +223,12 @@ export const ResourceTracker = () => {
                 </Table.Cell>
                 <Table.Cell>
                     {Math.round(row.difference).toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
+                    {Math.round(row.average_difference).toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
+                    {Math.round(row.total_difference).toLocaleString()}
                 </Table.Cell>
             </Table.Row>
         )
@@ -236,6 +280,8 @@ export const ResourceTracker = () => {
                     amount: entry.energy[key] ?? 0,
                 } as ResourceData;
                 obj.difference = 0;
+                obj.average_difference = 0;
+                obj.total_difference = 0;
                 obj.moving_average = 0;
                 return obj;
             });
@@ -250,16 +296,23 @@ export const ResourceTracker = () => {
             stats = stats.filter((stat1, idx) => stats.findLastIndex(stat2 => dateOf(stat1) === dateOf(stat2) && stat1.resource === stat2.resource) === idx);
         }
         const c = stats.length;
-        let avgs = {} as {[key:string]: number}
+        let avgs = {} as {[key:string]: number};
+        let firsts = {} as {[key:string]: number};
+        let diffs = [] as number[];
         let lastval = {} as {[key:string]: number}
         for (let i = 0; i < c; i++) {
             const stat = stats[i];
             avgs[stat.resource] ??= stats[i].amount;
+            firsts[stat.resource] ??= stats[i].amount;
+
             stat.moving_average = (avgs[stat.resource] + stats[i].amount) / 2;
             avgs[stat.resource] = stat.moving_average;
             if (lastval[stat.resource] !== undefined) {
                 stat.difference = stat.amount - lastval[stat.resource];
+                diffs.push(stat.difference);
+                stat.average_difference = Math.round(diffs.reduce((p, n) => p + n, 0) / diffs.length);
             }
+            stat.total_difference = stat.amount - firsts[stat.resource];
             lastval[stat.resource] = stat.amount;
         }
         return stats;
@@ -308,10 +361,53 @@ export const ResourceTracker = () => {
             return (
                 printQuantum(row.amount)
             );
-        }else {
+        } else {
             return (
                 <>{(row.amount)}</>
             );
+        }
+    }
+
+    function exportCSV(clipboard?: boolean) {
+        const stats = compiledStats;
+        if (!stats?.length) return;
+        let text = simplejson2csv(stats, Object.keys(stats[0]).map((key) => ({
+            label: key === 'amount' ? t('ship.amount') : t(`resource_tracker.columns.${key}`),
+            value: (row) => key === 'resource' ? t(`global.item_types.${transKeys[row[key]]}`) : row[key]
+        })));
+         if (clipboard) {
+            navigator.clipboard.writeText(text);
+            return;
+        }
+        downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'resource_log.csv');
+    }
+
+    function exportResourceLog(clipboard?: boolean) {
+        let text = JSON.stringify(log, null, 4);
+        if (clipboard) {
+            navigator.clipboard.writeText(text);
+            return;
+        }
+        downloadData(`data:application/json;charset=utf-8,${encodeURIComponent(text)}`, 'resource_log.json');
+    }
+
+    function importResourceLog(files?: FileList) {
+        if (files?.length === 1) {
+            files[0].text().then((txt) => {
+                let inlog = JSON.parse(txt) as EnergyLogEntry[];
+                if (dbid) {
+                    inlog ??= [].slice();
+                    log[dbid] ??= [].slice();
+                    let newlog = inlog.concat(log[dbid]);
+                    newlog = newlog.filter((obj, i) => newlog.findIndex(obj2 => obj.timestamp.getTime() == obj2.timestamp.getTime()) === i);
+                    newlog.sort((a, b) => {
+                        let r = a.timestamp.getTime() - b.timestamp.getTime();
+                        return r;
+                    });
+                    log[dbid] = newlog;
+                    setLog({...log});
+                }
+            });
         }
     }
 }
