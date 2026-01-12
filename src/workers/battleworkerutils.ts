@@ -726,7 +726,7 @@ export function iterateBattle(
                 }
             }
 
-            if (!action.ability?.condition || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
+            if (!action.ability?.condition || action.ability.condition === 64 || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
                 if (action.comes_from === 'crew' && powerInfo && (!action.ability || action.ability?.type === 0)) {
                     let proposed_boost = 0;
                     let current_base = 0;
