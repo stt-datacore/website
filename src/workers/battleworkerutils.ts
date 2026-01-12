@@ -151,7 +151,8 @@ export function getCritChance(n: number) {
     return 0;
 }
 
-export function hitChance(acc: number, opp_eva: number) {
+export function hitChance(acc: number, opp_eva: number, borgCube?: boolean) {
+    if (borgCube) return 1 / (1 + Math.exp(-18.38 * (acc / opp_eva - 0.75)));
     return 1 / (1 + Math.exp(-1.9 * (acc / opp_eva - 0.55)));
 }
 
@@ -503,6 +504,8 @@ export function iterateBattle(
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives, !!econf) as Ship;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
 
+        const borg_boss = fbb_mode && work_opponent.symbol.includes('borg');
+
         opponent_variance ??= 0.2;
 
         defense ??= 0;
@@ -643,7 +646,7 @@ export function iterateBattle(
         });
 
         oppo_actions?.forEach((action) => {
-            if (action.ability?.condition && !o_native_grants.includes(action.ability.condition)) delete action.ability;
+            if (action.ability?.condition !== 64 && action.ability?.condition && !o_native_grants.includes(action.ability.condition)) delete action.ability;
         });
 
         let cloaked = false;
@@ -833,20 +836,23 @@ export function iterateBattle(
                 }
                 else if (action.ability?.type === 9) {
                     if (oppo && !cloaked) {
-                        if (doesHit(o_now_chance, true)) {
-                            state_time = state_time.map((a, i) => active[i] ? a : 0);
-                            if (fbb_mode) {
-                                reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                        if (borg_boss) {
+                            if (doesHit(o_now_chance, true)) {
+                                state_time = state_time.map((a, i) => active[i] ? a : 0);
+                                if (fbb_mode) {
+                                    reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                                }
                             }
+                            else {
+                                return false;
+                            }
+                        }
+                        else {
+                            state_time = state_time.map((a, i) => active[i] ? a : 0);
                         }
                     }
                     else if (!oppo && !oppo_cloaked) {
-                        if (doesHit(now_chance)) {
-                            o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
-                            if (fbb_mode) {
-                                o_reset_relief = o_reset_relief?.map((r, i) => o_active![i] ? r : r * 2);
-                            }
-                        }
+                        state_time = state_time.map((a, i) => active[i] ? a : 0);
                     }
                 }
                 else if (action.ability?.type === 10) {
@@ -1014,7 +1020,7 @@ export function iterateBattle(
         powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
         oppo_powerInfo = getInstantPowerInfo(work_opponent, currents, ship, offense);
         now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
-        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
         now_speed = powerInfo.computed.attacks_per_second;
         o_now_speed = oppo_powerInfo.computed.attacks_per_second;
         // Deinitialize for real init, below.
@@ -1116,7 +1122,7 @@ export function iterateBattle(
                     if (oppo_activation) {
                         o_at_second = battle_second;
                         oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
-                        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+                        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
                         o_now_speed = oppo_powerInfo.computed.attacks_per_second;
                         o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                         o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
@@ -1148,7 +1154,7 @@ export function iterateBattle(
 
             if (powerInfo && oppo_powerInfo) {
                 now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
-                o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion)
+                o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
                 now_speed = powerInfo.computed.attacks_per_second;
                 o_now_speed = oppo_powerInfo.computed.attacks_per_second;
             }
@@ -1254,7 +1260,7 @@ export function iterateBattle(
                         oppoattack = (oppo_standard_attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
                     }
                     else {
-                        oppoattack = (oppo_standard_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion));
+                        oppoattack = (oppo_standard_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss));
                     }
 
                     let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul);
