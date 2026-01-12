@@ -149,9 +149,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     });
 
-    (globalContext.player.playerData ? ['pvp',
-        //'skirmish',
-        ...AllBosses.map(m => `fbb_${m.id - 1}`)] : ['pvp']).forEach((mode) => {
+    (['pvp', ...AllBosses.map(m => `fbb_${m.id - 1}`)]).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         let fbbtext = '';
@@ -159,7 +157,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             let boss = bossFromBattleMode(mode);
             if (boss) {
                 rarity = boss.rarity;
-                fbbtext = boss['ship_name'] + ` ${rarity}*`;
+                fbbtext = boss.ship_name + ` ${rarity}*`;
             }
             else {
                 return;
