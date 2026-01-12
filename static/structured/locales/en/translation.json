@@ -1872,10 +1872,12 @@
     "resource_tracker": {
         "clear": "Clear resource log",
         "columns": {
+            "average_difference": "Average difference",
             "difference": "Difference",
             "moving_average": "Moving average",
             "resource": "Resource",
-            "timestamp": "Timestamp"
+            "timestamp": "Timestamp",
+            "total_difference": "Total difference"
         },
         "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
         "daily_final": "Final daily captures",

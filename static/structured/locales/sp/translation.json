@@ -1881,10 +1881,12 @@
     "resource_tracker": {
         "clear": "Borrar registro de recursos",
         "columns": {
+            "average_difference": "Diferencia promedio",
             "difference": "Diferencia",
             "moving_average": "Media móvil",
             "resource": "Recurso",
-            "timestamp": "Marca de tiempo"
+            "timestamp": "Marca de tiempo",
+            "total_difference": "Diferencia total"
         },
         "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
         "daily_final": "Capturas diarias finales",

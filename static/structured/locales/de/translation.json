@@ -1871,10 +1871,12 @@
     "resource_tracker": {
         "clear": "Ressourcenprotokoll löschen",
         "columns": {
+            "average_difference": "Durchschnittlicher Unterschied",
             "difference": "Differenz",
             "moving_average": "Gleitender Durchschnitt",
             "resource": "Ressource",
-            "timestamp": "Zeitstempel"
+            "timestamp": "Zeitstempel",
+            "total_difference": "Gesamtdifferenz"
         },
         "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
         "daily_final": "Endgültige tägliche Erfassungen",

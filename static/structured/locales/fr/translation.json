@@ -1883,10 +1883,12 @@
     "resource_tracker": {
         "clear": "Effacer le journal des ressources",
         "columns": {
+            "average_difference": "Différence moyenne",
             "difference": "Différence",
             "moving_average": "Moyenne mobile",
             "resource": "Ressource",
-            "timestamp": "Horodatage"
+            "timestamp": "Horodatage",
+            "total_difference": "Différence totale"
         },
         "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
         "daily_final": "Captures quotidiennes finales",
