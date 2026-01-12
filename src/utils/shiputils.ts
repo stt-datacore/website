@@ -63,7 +63,7 @@ export function getCrewDivisions(rarity: number) {
 }
 
 export const getBosses = (ship?: Ship, crew?: CrewMember) => {
-    const bosses = [] as Ship[];
+    const bosses = [] as BossShip[];
     AllBosses.forEach((boss, idx) => {
         let rarity = boss.rarity;
         if (ship) {
