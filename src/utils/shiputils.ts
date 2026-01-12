@@ -1,6 +1,7 @@
 import boss_data from '../../static/structured/boss_data.json';
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
+import { BossShip } from '../model/boss';
 import { BaseSkillFields, CrewMember } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
 import { BattleMode, BattleStation, PvpDivision, ReferenceShip, Schematics, Ship, ShipAction, ShipInUse, ShipLevel, ShipLevels, ShipLevelStats } from "../model/ship";
@@ -12,9 +13,9 @@ import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
 
 const BossData = (() => {
-	let res = [] as Ship[];
-	let bd = boss_data as any as Ship[];
-	let groups = {} as {[key:string]: Ship[]};
+	let res = [] as BossShip[];
+	let bd = boss_data as any as BossShip[];
+	let groups = {} as {[key:string]: BossShip[]};
 	for (let boss of bd) {
 		groups[boss.symbol] ??= [];
 		groups[boss.symbol].push(boss);
@@ -62,7 +63,7 @@ export function getCrewDivisions(rarity: number) {
 }
 
 export const getBosses = (ship?: Ship, crew?: CrewMember) => {
-    const bosses = [] as Ship[];
+    const bosses = [] as BossShip[];
     AllBosses.forEach((boss, idx) => {
         let rarity = boss.rarity;
         if (ship) {
