@@ -504,7 +504,7 @@ export function iterateBattle(
         let work_opponent = opponent ? setupShip(opponent, [], false, ignoreSeats, true, ignorePassives) as Ship : setupShip(input_ship, [...crew], false, ignoreSeats, true, ignorePassives, !!econf) as Ship;
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
 
-        const borg_boss = fbb_mode && work_opponent.symbol === 'borgcube_fbb_boss_ship';
+        const borg_boss = fbb_mode && work_opponent.symbol.includes('borg');
 
         opponent_variance ??= 0.2;
 
