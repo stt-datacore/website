@@ -646,7 +646,7 @@ export function iterateBattle(
         });
 
         oppo_actions?.forEach((action) => {
-            if (action.ability?.condition && !o_native_grants.includes(action.ability.condition)) delete action.ability;
+            if (action.ability?.condition !== 64 && action.ability?.condition && !o_native_grants.includes(action.ability.condition)) delete action.ability;
         });
 
         let cloaked = false;
@@ -836,20 +836,23 @@ export function iterateBattle(
                 }
                 else if (action.ability?.type === 9) {
                     if (oppo && !cloaked) {
-                        if (doesHit(o_now_chance, true)) {
-                            state_time = state_time.map((a, i) => active[i] ? a : 0);
-                            if (fbb_mode) {
-                                reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                        if (borg_boss) {
+                            if (doesHit(o_now_chance, true)) {
+                                state_time = state_time.map((a, i) => active[i] ? a : 0);
+                                if (fbb_mode) {
+                                    reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                                }
                             }
+                            else {
+                                return false;
+                            }
+                        }
+                        else {
+                            state_time = state_time.map((a, i) => active[i] ? a : 0);
                         }
                     }
                     else if (!oppo && !oppo_cloaked) {
-                        if (doesHit(now_chance)) {
-                            o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
-                            if (fbb_mode) {
-                                o_reset_relief = o_reset_relief?.map((r, i) => o_active![i] ? r : r * 2);
-                            }
-                        }
+                        state_time = state_time.map((a, i) => active[i] ? a : 0);
                     }
                 }
                 else if (action.ability?.type === 10) {
@@ -1257,7 +1260,7 @@ export function iterateBattle(
                         oppoattack = (oppo_standard_attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
                     }
                     else {
-                        oppoattack = (oppo_standard_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion));
+                        oppoattack = (oppo_standard_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss));
                     }
 
                     let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul);
