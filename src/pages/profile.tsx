@@ -157,8 +157,8 @@ const ProfilePageLoader = () => {
 			if (globalContext.player.playerData) {
 				setStrippedPlayerData(globalContext.player.playerData);
 				setLastModified(globalContext.player.playerData.calc?.lastModified);
-				return;
 			}
+			return;
 		}
 		let lastModified: Date | undefined = undefined;
 		let hash = v4();
