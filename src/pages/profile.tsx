@@ -153,7 +153,13 @@ const ProfilePageLoader = () => {
 	}
 
 	function fetchProfile(dbid?: string, dbidHash?: string) {
-		if (!dbid && !dbidHash) return;
+		if (!dbid && !dbidHash) {
+			if (globalContext.player.playerData) {
+				setStrippedPlayerData(globalContext.player.playerData);
+				setLastModified(globalContext.player.playerData.calc?.lastModified);
+				return;
+			}
+		}
 		let lastModified: Date | undefined = undefined;
 		let hash = v4();
 		let url: string;

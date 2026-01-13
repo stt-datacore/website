@@ -1526,7 +1526,8 @@
             "share_profile": "Compartir perfil",
             "toggle_coloring": "Alternar coloración de rango",
             "toggle_glance": "Alternar panel de un vistazo",
-            "update_player_data": "Actualizar datos del jugador"
+            "update_player_data": "Actualizar datos del jugador",
+            "view_profile": "Ver tu perfil"
         },
         "roster": {
             "crew": "Tripulación",

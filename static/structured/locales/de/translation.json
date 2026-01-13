@@ -1516,7 +1516,8 @@
             "share_profile": "Profil teilen",
             "toggle_coloring": "Rangfarbgebung umschalten",
             "toggle_glance": "Übersichtsfenster ein-/ausblenden",
-            "update_player_data": "Spielerdaten aktualisieren"
+            "update_player_data": "Spielerdaten aktualisieren",
+            "view_profile": "Ihr Profil anzeigen"
         },
         "roster": {
             "crew": "Crew",

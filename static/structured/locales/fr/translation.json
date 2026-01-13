@@ -1528,7 +1528,8 @@
             "share_profile": "Partager le profil",
             "toggle_coloring": "Changer la coloration des classements",
             "toggle_glance": "Basculer le panneau d'aperçu",
-            "update_player_data": "Mettre à jour les données"
+            "update_player_data": "Mettre à jour les données",
+            "view_profile": "Voir votre profil"
         },
         "roster": {
             "crew": "Équipage",
