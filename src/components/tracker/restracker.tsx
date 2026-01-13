@@ -11,6 +11,7 @@ import { printChrons, printCredits, printDilithium, printHonor, printISM, printM
 import { omniSearchFilter } from "../../utils/omnisearch";
 import { downloadData } from "../../utils/crewutils";
 import { simplejson2csv } from "../../utils/misc";
+import { DateRangePicker } from "../base/daterangepicker";
 
 export type ResourceViewMode = 'resource' | 'update';
 
@@ -46,6 +47,9 @@ export const ResourceTracker = () => {
     const dbid = playerData?.player.dbid ?? 0;
     const { enabled, setEnabled, log, clearLog, setLog } = trackerContext;
 
+    const [startDate, setStartDate] = useStateWithStorage<Date | undefined>(`${dbid}/resource_tracker/start_date`, undefined);
+    const [endDate, setEndDate] = useStateWithStorage<Date | undefined>(`${dbid}/resource_tracker/end_date`, undefined);
+
     const [resourceFilter, setResourceFilter] = useStateWithStorage<string[]>(`${dbid}/resource_tracker/filters`, []);
     const [compiledStats, setCompiledStats] = React.useState<ResourceData[]>([]);
     const [dailyFinal, setDailyFinal] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/daily_final`, false);
@@ -77,8 +81,25 @@ export const ResourceTracker = () => {
     const stats = React.useMemo(() => {
         return compiledStats.filter(row => {
             if (resourceFilter.length && !resourceFilter.includes(row.resource)) return false;
+            if (startDate && row.timestamp.getTime() < (new Date(startDate)).getTime()) return false;
+            if (endDate && row.timestamp.getTime() > (new Date(endDate)).getTime()) return false;
             return true;
         });
+    }, [compiledStats, startDate, endDate]);
+
+
+    const minDate = React.useMemo(() => {
+        if (!compiledStats?.length) return undefined;
+        let d = new Date(compiledStats[0].timestamp);
+        d.setDate(d.getDate() - 1);
+        return d;
+    }, [compiledStats]);
+
+    const maxDate = React.useMemo(() => {
+        if (!compiledStats?.length) return undefined;
+        let d = new Date(compiledStats[compiledStats.length - 1].timestamp);
+        d.setDate(d.getDate() + 1);
+        return d;
     }, [compiledStats]);
 
     if (!playerData) {
@@ -175,6 +196,16 @@ export const ResourceTracker = () => {
                                 onChange={(e, { checked }) => setDailyFinal(!!checked)}
                                 label={t('resource_tracker.daily_final')}
                             />
+                        </div>
+                        <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start'}}>
+                            <DateRangePicker
+                                minDate={minDate}
+                                maxDate={maxDate}
+                                startDate={startDate}
+                                endDate={endDate}
+                                setStartDate={setStartDate}
+                                setEndDate={setEndDate}
+                                />
                         </div>
                     </div>
                 </div>)
@@ -410,4 +441,5 @@ export const ResourceTracker = () => {
             });
         }
     }
+
 }
