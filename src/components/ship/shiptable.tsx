@@ -6,7 +6,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { PlayerBuffMode } from '../../model/player';
 import { Ship, ShipInUse } from '../../model/ship';
 import { omniSearchFilter } from '../../utils/omnisearch';
-import { AllBosses, getShipsInUse, mergeRefShips } from '../../utils/shiputils';
+import { AllBosses, getBosses, getShipsInUse, mergeRefShips } from '../../utils/shiputils';
 import { useStateWithStorage } from '../../utils/storage';
 import CONFIG from '../CONFIG';
 import { CrewBuffModes, RarityFilter } from '../crewtables/commonoptions';
@@ -14,7 +14,11 @@ import { ShipAbilityPicker, ShipOwnership, TraitPicker, TriggerPicker } from '..
 import { ShipHoverStat, ShipTarget } from '../hovering/shiphoverstat';
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { formatShipScore } from './utils';
-import { BossDetails, BossScore } from '../../model/crew';
+import { BossDetails, BossScore, CrewMember } from '../../model/crew';
+import { BossShip } from '../../model/boss';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { AvatarView } from '../item_presenters/avatarview';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type ShipTableProps = {
 	pageId: string;
@@ -23,6 +27,19 @@ type ShipTableProps = {
 	event_ship_traits?: string[];
 	mode: 'all' | 'owned';
 };
+
+type TestDetails = {
+	division: string,
+	mode: 'fbb' | 'arena',
+	boss?: BossShip,
+	crew: CrewMember[]
+}
+
+type ActiveDetails = {
+	ship: Ship
+	mode: 'fbb' | 'arena',
+	boss?: string
+}
 
 type Ownership = 'owned' | 'unowned';
 
@@ -46,6 +63,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	const [minOpts, setMinOpts] = React.useState<DropdownItemProps[] | undefined>(undefined);
 	const [minSeats, setMinSeats] = useStateWithStorage<number | undefined>(`${pageId}/ship_table_filter/min_seats`, undefined);
 	const [breakoutBosses, setBreakoutBosses] = useStateWithStorage<boolean>(`${pageId}/ship_table_filter/breakout_bosses`, false);
+	const [activeMode, setActiveMode] = React.useState<ActiveDetails | undefined>();
 
 	React.useEffect(() => {
 		if (playerShips?.length && !!playerData && mode === 'owned') {
@@ -113,7 +131,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	}, [ships, shipsInUse, rarityFilter, grantFilter, abilityFilter, traitFilter, ownership, onlyUsed, mode, buffMode, minSeats]);
 
 	const bosses = React.useMemo(() => {
-		let newbosses = [] as Ship[];
+		let newbosses = [] as BossShip[];
 		if (breakoutBosses) {
 			let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
 			distinct.sort();
@@ -269,6 +287,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			filterRow={filterRow}
 		/>
 		<ShipHoverStat targetGroup={`${pageId}/ship_hover`} />
+		<CrewHoverStat targetGroup={`${pageId}/crew_hover`} />
 	</div>);
 
 	function printUsage(ship: Ship) {
@@ -361,11 +380,30 @@ export const ShipTable = (props: ShipTableProps) => {
 			{breakoutBosses && (<>
 				{bosses.map((boss, idx) => {
 					let rank = ship.ranks?.bosses.find(f => f.boss === boss.symbol);
+					let isActive = activeMode && activeMode.ship === ship && activeMode.mode === 'fbb' && activeMode.boss === boss.symbol;
+
+					const toggle = () => {
+						if (isActive) {
+							setActiveMode(undefined);
+						}
+						else {
+							setActiveMode({
+								ship,
+								mode: 'fbb',
+								boss: boss.symbol
+							});
+						}
+					}
+
 					if (rank) {
 						return (
-							<Table.Cell key={`${boss.symbol}_+${idx}`}>
+							<Table.Cell key={`${boss.symbol}_+${idx}`}
+								style={{cursor: isActive ? 'zoom-in' : 'zoom-out'}}
+								onClick={() => toggle()}
+							>
 								{!!ship?.ranks && formatShipScore(ship?.ranks.kind, rank.score, t)}
 								#{rank.rank}
+								{isActive && printTestCrew(ship, 'fbb', boss.symbol)}
 							</Table.Cell>
 						)
 					}
@@ -425,5 +463,69 @@ export const ShipTable = (props: ShipTableProps) => {
 				</span>
 			)
 		}
+	}
+
+	function printTestCrew(ship: Ship, mode: 'fbb' | 'arena', fbb?: string) {
+		let testDeets = findTestCrew(ship, fbb);
+		return testDeets.map(deet => {
+
+			return (
+				<div className={'ui label'} style={{width: '200px', margin: '1em 0'}} key={`__deet_head_${deet.boss?.ship_name}_${deet.division}`}>
+					<h4>{deet.boss?.ship_name} {deet.boss?.rarity}*</h4>
+					<div style={{...OptionsPanelFlexColumn, alignItems: 'flex-start', gap: '1em'}}>
+						{deet.crew.map(c => {
+							return (
+								<div
+									key={`__deet_boss_crew_${deet.boss?.symbol}_${deet.division}_${c.symbol}`}
+									style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', gap: '0.5em'}}>
+									<AvatarView
+										mode='crew'
+										item={c}
+										size={32}
+										targetGroup={`${pageId}/crew_hover`}
+										/>
+									<span>
+										{c.name}
+									</span>
+								</div>
+							)
+						})}
+					</div>
+				</div>
+			)
+		})
+	}
+
+	function findTestCrew(ship: Ship, fbb?: string) {
+		let ecrew = [] as CrewMember[];
+		if (globalContext.player.playerData) {
+			ecrew = globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew ?? []);
+		}
+		else {
+			ecrew = globalContext.core.crew;
+		}
+		if (fbb && ship.ranks?.divisions.fbb_crew) {
+			let bosses = getBosses(ship).filter(f => f.symbol === fbb);
+			if (bosses?.length) {
+				return Object.entries(ship.ranks.divisions.fbb_crew).map(([division, crew]) => {
+					return {
+						division,
+						mode: 'fbb',
+						boss: bosses.find(f => f.id == Number(division)),
+						crew: crew.map(symbol => ecrew.find(fc => fc.symbol === symbol)!)
+					} as TestDetails;
+				}).filter(f => !!f.boss);
+			}
+		}
+		else if (ship.ranks?.divisions.arena_crew) {
+			return Object.entries(ship.ranks.divisions.arena_crew).map(([division, crew]) => {
+				return {
+					division,
+					mode: 'arena',
+					crew: crew.map(symbol => ecrew.find(fc => fc.symbol === symbol)!)
+				} as TestDetails;
+			});
+		}
+		return [];
 	}
 }
