@@ -80,6 +80,10 @@ export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
 			customAction: (e, data) => setModalOpen(true)
 		},
 		{
+			title: t('menu.player.view_profile'),
+			link: '/profile'
+		},
+		{
 			title: t('resource_tracker.title'),
 			link: '/resourcetracker'
 		},

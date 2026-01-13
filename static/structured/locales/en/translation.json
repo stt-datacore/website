@@ -1517,7 +1517,8 @@
             "share_profile": "Share Profile",
             "toggle_coloring": "Toggle grade coloring",
             "toggle_glance": "Toggle Overview Panel",
-            "update_player_data": "Update Player Data"
+            "update_player_data": "Update Player Data",
+            "view_profile": "View Your Profile"
         },
         "roster": {
             "crew": "Crew",
