@@ -87,7 +87,6 @@ export const ResourceTracker = () => {
         });
     }, [compiledStats, startDate, endDate]);
 
-
     const minDate = React.useMemo(() => {
         if (!compiledStats?.length) return undefined;
         let d = new Date(compiledStats[0].timestamp);
