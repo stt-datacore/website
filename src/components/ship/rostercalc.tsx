@@ -1257,8 +1257,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                     if (a.action.ability?.condition || b.action.ability?.condition) {
                         if (battleConfig.opponent?.actions?.length) {
-                            let apa = battleConfig.opponent.actions.some(act => act.status === a.action.ability?.condition);
-                            let bpa = battleConfig.opponent.actions.some(act => act.status === b.action.ability?.condition);
+                            let apa = battleConfig.opponent.actions.some(act => (act.status || 0) == (a.action.ability?.condition || 0));
+                            let bpa = battleConfig.opponent.actions.some(act => (act.status || 0) == (b.action.ability?.condition || 0));
                             if ((apa && bpa) || (!apa && !bpa)) return 0;
                             if (apa) return -1;
                             if (bpa) return 1;
