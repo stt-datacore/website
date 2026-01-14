@@ -481,6 +481,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	templateCrew.preview = origCrew.preview;
 	templateCrew.kwipment = origCrew.kwipment;
 	templateCrew.kwipment_expiration = origCrew.kwipment_expiration;
+	templateCrew.antimatter_bonus = origCrew.antimatter_bonus;
 
 	if (templateCrew.preview === undefined && origCrew.preview !== undefined) {
 		templateCrew.preview = origCrew.preview;
@@ -569,6 +570,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 		crew.expires_in = owned.expires_in;
 		crew.local_slots = owned.local_slots;
 		crew.cap_achiever ??= owned.cap_achiever;
+		crew.antimatter_bonus = owned.antimatter_bonus;
 
 		if (owned.immortal && owned.immortal > 0) crew.immortal = owned.immortal;
 
