@@ -14,6 +14,7 @@ import { CrewTraitMatchesCell } from './filters/crewtraits';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { CompletionState } from '../../model/player';
+import { printAM, printChrons } from '../retrieval/context';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -49,9 +50,15 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	pseudos.push('quipment_score');
 	pseudos.push('collections.length');
 	pseudos.push('date_added');
+	pseudos.push('antimatter_bonus');
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos },
+		{
+			width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos,
+			translatePseudocolumn: (field) => {
+				return t(`base.${field}`) || t(`base.pseudocolumns.${field}`);
+			}
+		 },
 		{ width: 1, column: 'max_rarity', title: t('base.rarity'), reverse: true, tiebreakers: ['rarity'] },
 	];
 	if (showTraitMatches) {
@@ -135,7 +142,10 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
 						</div>
-						<div style={{ gridArea: 'description' }}>{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}</div>
+						<div style={{ gridArea: 'description' }}>
+							{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
+							{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+						</div>
 					</div>
 				</Table.Cell>
 				<Table.Cell>

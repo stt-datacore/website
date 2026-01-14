@@ -11,6 +11,7 @@ import { gradeToColor, numberToGrade, prettyObtained, printPortalStatus } from '
 import { getCoolStats, translateSkills } from '../../utils/misc';
 import { SHIP_DEFENSE_COLOR, SHIP_OFFENSE_COLOR } from '../ship/utils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { printAM } from '../retrieval/context';
 
 type CrewRankHighlightsProps = {
 	crew: CrewMember;
@@ -126,11 +127,15 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				</>}
 				{isNever && <StatLabel
 					title={<>
-						<div style={{ width: "100%", color: CONFIG.RARITIES[5].color, textAlign: "center", display: 'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold' }}>
+						<div style={{ width: "100%", color: CONFIG.RARITIES[5].color, textAlign: !crew.antimatter_bonus ? "center" : 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold' }}>
 							{prettyObtained(crew, t, true)}
 						</div>
 					</>}
-					value="" />
+					value={crew.antimatter_bonus ?
+						(<>
+						{printAM(crew.antimatter_bonus, t, false, '24px', true)}
+						</>)
+						: ''} />
 
 
 				}
