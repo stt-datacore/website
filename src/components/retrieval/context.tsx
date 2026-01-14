@@ -91,7 +91,7 @@ export function printAM(quantity?: number, t?: TranslateMethod, printAM?: boolea
 	const img = `${process.env.GATSBY_ASSETS_URL}/captains_bridge_antimatter.png`;
 
 	return <div
-		title={t ? t('global.item_types.chronitons') : ''}
+		title={t ? t('ship.antimatter') : ''}
 		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
 		<img src={img} style={{height: imageHeight ?? '1.5em'}} />
 		<span>{!!withPlus && '+'}{quantity?.toLocaleString() || ""} {t && printAM ? t('ship.antimatter') : ''}</span>
