@@ -561,14 +561,14 @@ export function iterateBattle(
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += ((now_speed / 1) * chance) / 2;
+                    o_static_sim_hitter += ((now_speed) * chance);
                     if (o_static_sim_hitter >= 1) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += ((now_speed / 1) * chance) / 2;
+                    static_sim_hitter += ((now_speed) * chance);
                     if (static_sim_hitter >= 1) {
                         static_sim_hitter = 0;
                         return true;
@@ -839,7 +839,7 @@ export function iterateBattle(
                             if (doesHit(o_now_chance, true)) {
                                 state_time = state_time.map((a, i) => active[i] ? a : 0);
                                 if (fbb_mode) {
-                                    reset_relief = reset_relief.map((r, i) => active[i] || !r ? 3 : r + 3);
+                                    reset_relief = reset_relief.map((r, i) => active[i] ? 0 : r + 3);
                                 }
                             }
                             else {

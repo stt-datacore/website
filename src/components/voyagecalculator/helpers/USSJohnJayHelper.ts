@@ -59,12 +59,13 @@ export class USSJohnJayHelper extends Helper {
 	_messageToResults(request: IVoyageRequest, bests: JohnJayBest[]): IResultProposal[] {
 		return bests.map(best => {
 			const entries: IProposalEntry[] = [];
-			let crewTraitBonus: number = 0, eventCrewBonus: number = 0;
+			let crewTraitBonus: number = 0, eventCrewBonus: number = 0, exclusiveBonus: number = 0;
 			request.voyageConfig.crew_slots.forEach((cs, slotId) => {
 				const crew: IVoyageCrew | undefined = request.consideredCrew.find(c => c.id === best.crew[slotId].id);
 				if (crew) {
 					crewTraitBonus += getCrewTraitBonus(request.voyageConfig, crew as PlayerCrew, cs.trait);
 					eventCrewBonus += getCrewEventBonus(request.voyageConfig, crew as PlayerCrew);
+					exclusiveBonus += (crew.antimatter_bonus ?? 0);
 					entries.push({
 						slotId,
 						choice: crew,
@@ -76,7 +77,7 @@ export class USSJohnJayHelper extends Helper {
 				entries,
 				estimate: best.estimate,
 				aggregates: best.skills,
-				startAM: request.bestShip.score + crewTraitBonus,
+				startAM: request.bestShip.score + crewTraitBonus + exclusiveBonus,
 				eventCrewBonus
 			};
 		});
