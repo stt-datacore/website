@@ -561,14 +561,14 @@ export function iterateBattle(
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += ((now_speed) * chance);
+                    o_static_sim_hitter += (o_now_speed * chance);
                     if (o_static_sim_hitter >= 1) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += ((now_speed) * chance);
+                    static_sim_hitter += (now_speed * chance);
                     if (static_sim_hitter >= 1) {
                         static_sim_hitter = 0;
                         return true;
