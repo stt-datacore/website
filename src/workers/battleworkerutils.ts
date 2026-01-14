@@ -1034,7 +1034,7 @@ export function iterateBattle(
 
             for (actidx = 0; actidx < act_cnt; actidx++) {
                 action = allactions[actidx];
-                state_time[actidx] += (r_inc + reset_relief[actidx]);
+                state_time[actidx] += (r_inc + (r_inc * reset_relief[actidx]));
 
                 if (!inited[actidx]) {
                     if (!activated && state_time[actidx] >= (action.initial_cooldown - 0.01) + delay()) {
