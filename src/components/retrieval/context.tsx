@@ -43,14 +43,14 @@ export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: b
 	</div>
 }
 
-export function printDilithium(quantity: number, t?: TranslateMethod, printHonor?: boolean) {
+export function printDilithium(quantity: number, t?: TranslateMethod, printDil?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.dilithium') : ''}
 		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
 		<img src={img} style={{height: '1.5em'}} />
-		<span>{quantity.toLocaleString()} {t && printHonor ? t('global.item_types.dilithium') : ''}</span>
+		<span>{quantity.toLocaleString()} {t && printDil ? t('global.item_types.dilithium') : ''}</span>
 	</div>
 }
 

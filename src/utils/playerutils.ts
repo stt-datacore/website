@@ -221,7 +221,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             action: {
                 bonus_amount: crew.action?.bonus_amount,
             },
-            ship_battle: crew.ship_battle
+            ship_battle: crew.ship_battle,
+            antimatter_bonus: crew.antimatter_bonus
         } as PlayerCrew));
 
     let c_stored_immortals = p.player.character.stored_immortals

@@ -481,6 +481,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	templateCrew.preview = origCrew.preview;
 	templateCrew.kwipment = origCrew.kwipment;
 	templateCrew.kwipment_expiration = origCrew.kwipment_expiration;
+	templateCrew.antimatter_bonus = origCrew.antimatter_bonus;
 
 	if (templateCrew.preview === undefined && origCrew.preview !== undefined) {
 		templateCrew.preview = origCrew.preview;
