@@ -1125,6 +1125,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         const maxabilityvalues = [0, 0, 0, 0, 0].map(o => Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9).map(m => 0));
         const power_depth = powerDepth ?? 2;
         const advanced_power = advancedPowerSettings;
+        const isBorgBoss = fbb_mode && !!battleConfig.opponent?.symbol.includes('borg');
         advanced_power.ability_depths.forEach((a, i) => {
             if (advanced_power.ability_depths[i] === -1) {
                 advanced_power.ability_depths[i] = null;
@@ -1228,8 +1229,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             // check for bonus abilities, first
             if (a.action.ability && b.action.ability) {
                 if (fbb_mode) {
-                    if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
-                    if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
+                    if (isBorgBoss) {
+                        if ([0, 1, 2, 5].includes(a.action.ability.type) && ![0, 1, 2, 5].includes(b.action.ability.type)) return -1;
+                        if ([0, 1, 2, 5].includes(b.action.ability.type) && ![0, 1, 2, 5].includes(a.action.ability.type)) return 1;
+                    }
+                    else {
+                        if ([1, 2, 5].includes(a.action.ability.type) && ![1, 2, 5].includes(b.action.ability.type)) return -1;
+                        if ([1, 2, 5].includes(b.action.ability.type) && ![1, 2, 5].includes(a.action.ability.type)) return 1;
+                    }
                 }
                 else {
                     if ([0, 1, 5].includes(a.action.ability.type) && ![0, 1, 5].includes(b.action.ability.type)) return -1;
@@ -1248,7 +1255,22 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     r = bamt - aamt;
                     if (r) return r;
 
-                    r = a.action.ability.condition - b.action.ability.condition;
+                    if (a.action.ability?.condition || b.action.ability?.condition) {
+                        if (battleConfig.opponent?.actions?.length) {
+                            let apa = battleConfig.opponent.actions.some(act => act.status === a.action.ability?.condition);
+                            let bpa = battleConfig.opponent.actions.some(act => act.status === b.action.ability?.condition);
+                            if ((apa && bpa) || (!apa && !bpa)) return 0;
+                            if (apa) return -1;
+                            if (bpa) return 1;
+                        }
+                        else {
+                            r = (a.action.ability?.condition ?? 0) - (b.action.ability?.condition ?? 0);
+                        }
+                    }
+                    else {
+                        r = 0;
+                    }
+
                     if (r) return r;
                 }
                 else {
