@@ -554,22 +554,25 @@ export function iterateBattle(
 
         let static_sim_hitter = 0;
         let o_static_sim_hitter = 0;
+        let last_check_bs = 0;
 
         const doesHit = (chance: number, oppo?: boolean) => {
+            if (battle_second === last_check_bs) return false;
+            last_check_bs = battle_second;
             if (simulate) {
                 return Math.random() <= chance;
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += (o_now_speed * chance);
-                    if (o_static_sim_hitter >= 1) {
+                    o_static_sim_hitter += ((o_now_speed / rate) * chance);
+                    if (o_static_sim_hitter >= o_now_speed - (o_now_speed * (opponent_variance ?? 0))) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += (now_speed * chance);
-                    if (static_sim_hitter >= 1) {
+                    static_sim_hitter += ((now_speed / rate) * chance);
+                    if (static_sim_hitter >= now_speed) {
                         static_sim_hitter = 0;
                         return true;
                     }
@@ -614,6 +617,7 @@ export function iterateBattle(
             // }
         });
 
+        const relief_factor = 2;
 
         let alen = allactions.length;
         let uses = allactions.map(a => 0);
@@ -717,6 +721,9 @@ export function iterateBattle(
 
         const activate = (action: ChargeAction, actidx: number, oppo = false) => {
             let immediate = false as boolean | number;
+
+            // No matter what, if it becomes ready we are no longer eligible for relief.
+            if (!oppo && fbb_mode) reset_relief[actidx] = 0;
 
             if (action.status === 4) {
                 if ((oppo && cloaked) || (!oppo && oppo_cloaked)) {
@@ -834,12 +841,12 @@ export function iterateBattle(
                     }
                 }
                 else if (action.ability?.type === 9) {
-                    if (oppo && !cloaked) {
+                    if (oppo) {
                         if (borg_boss) {
                             if (doesHit(o_now_chance, true)) {
                                 state_time = state_time.map((a, i) => active[i] ? a : 0);
                                 if (fbb_mode) {
-                                    reset_relief = reset_relief.map((r, i) => active[i] ? 0 : r + 3);
+                                    reset_relief = reset_relief.map((r, i) => active[i] ? 0 : r + relief_factor);
                                 }
                             }
                             else {
@@ -898,7 +905,6 @@ export function iterateBattle(
                     cloaked = action.status === 2;
                     uses[actidx]++;
                     state_time[actidx] = 0;
-                    reset_relief[actidx] = 0;
                     inited[actidx] = true;
                     active[actidx] = true;
                 }
@@ -1082,6 +1088,7 @@ export function iterateBattle(
                 powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
                 if (oppo_powerInfo) {
                     now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
+                    o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
                 }
                 now_speed = powerInfo.computed.attacks_per_second;
                 c_boarding = powerInfo.computed.boarding_damage_per_sec / rate;
@@ -1121,6 +1128,7 @@ export function iterateBattle(
                         o_at_second = battle_second;
                         oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
                         o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
+                        now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.accuracy);
                         o_now_speed = oppo_powerInfo.computed.attacks_per_second;
                         o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                         o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
