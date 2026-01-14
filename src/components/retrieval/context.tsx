@@ -87,6 +87,17 @@ export function printIntel(quantity: number, t?: TranslateMethod, printIntel?: b
 	</div>
 }
 
+export function printAM(quantity?: number, t?: TranslateMethod, printAM?: boolean, imageHeight?: string, withPlus?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}/captains_bridge_antimatter.png`;
+
+	return <div
+		title={t ? t('global.item_types.chronitons') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: imageHeight ?? '1.5em'}} />
+		<span>{!!withPlus && '+'}{quantity?.toLocaleString() || ""} {t && printAM ? t('ship.antimatter') : ''}</span>
+	</div>
+}
+
 export function printChrons(quantity?: number, t?: TranslateMethod, printChrons?: boolean, imageHeight?: string) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`;
 
