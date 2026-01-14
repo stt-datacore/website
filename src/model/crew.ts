@@ -157,6 +157,7 @@ export interface CrewMember extends QuipmentScores {
     kwipment_expiration: number[][] | number[];
     q_bits: number;
     skill_order: string[];
+    antimatter_bonus?: number;
 
     /** Used internally, not part of incoming data */
     pickerId?: number;
