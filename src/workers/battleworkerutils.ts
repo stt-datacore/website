@@ -619,7 +619,7 @@ export function iterateBattle(
         let uses = allactions.map(a => 0);
         let max_uses = allactions.map(a => a.limit ?? 0);
         let state_time = allactions.map(a => 0);
-        let reset_relief = allactions.map(a => 1);
+        let reset_relief = allactions.map(a => 0);
         let inited = allactions.map(a => false);
         let active = allactions.map(a => false);
         let now_chance = 0;
@@ -629,7 +629,6 @@ export function iterateBattle(
         let o_uses = oppo_actions?.map(a => 0);
         //let o_max_uses = oppo_actions?.map(a => a.limit ?? 0);
         let o_state_time = oppo_actions?.map(a => 0);
-        let o_reset_relief = oppo_actions?.map(a => 1);
         let o_inited = oppo_actions?.map(a => false);
         let o_active = oppo_actions?.map(a => false);
         let o_now_chance = 0;
@@ -840,7 +839,7 @@ export function iterateBattle(
                             if (doesHit(o_now_chance, true)) {
                                 state_time = state_time.map((a, i) => active[i] ? a : 0);
                                 if (fbb_mode) {
-                                    reset_relief = reset_relief.map((r, i) => active[i] ? r : r * 2);
+                                    reset_relief = reset_relief.map((r, i) => active[i] || !r ? 3 : r + 3);
                                 }
                             }
                             else {
@@ -891,7 +890,6 @@ export function iterateBattle(
                     oppo_cloaked = action.status === 2;
                     o_uses![actidx]++;
                     o_state_time![actidx] = 0;
-                    o_reset_relief![actidx] = 1;
                     o_inited![actidx] = true;
                     o_active![actidx] = true;
                 }
@@ -900,7 +898,7 @@ export function iterateBattle(
                     cloaked = action.status === 2;
                     uses[actidx]++;
                     state_time[actidx] = 0;
-                    reset_relief[actidx] = 1;
+                    reset_relief[actidx] = 0;
                     inited[actidx] = true;
                     active[actidx] = true;
                 }
@@ -1036,7 +1034,7 @@ export function iterateBattle(
 
             for (actidx = 0; actidx < act_cnt; actidx++) {
                 action = allactions[actidx];
-                state_time[actidx] += (r_inc * reset_relief[actidx]);
+                state_time[actidx] += (r_inc + reset_relief[actidx]);
 
                 if (!inited[actidx]) {
                     if (!activated && state_time[actidx] >= (action.initial_cooldown - 0.01) + delay()) {
@@ -1096,7 +1094,7 @@ export function iterateBattle(
 
                 for (o_actidx = 0; o_actidx < oppo_cnt; o_actidx++) {
                     o_action = oppo_actions![o_actidx];
-                    o_state_time![o_actidx] += (r_inc * o_reset_relief![o_actidx]);
+                    o_state_time![o_actidx] += (r_inc);
 
                     if (!o_inited![o_actidx]) {
                         if (!oppo_activated && o_state_time![o_actidx] >= (o_action.initial_cooldown - 0.01) + delay()) {
