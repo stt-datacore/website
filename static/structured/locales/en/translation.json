@@ -34,6 +34,7 @@
     "base": {
         "additional_event_appearances": "Additional event appearances",
         "all_crew": "Show all crew",
+        "antimatter_bonus": "Antimatter bonus",
         "best_pair": "Best Pair",
         "bigbook_tier": "Tier",
         "boss": "{{rank_names.fbb_rank}}",

@@ -34,6 +34,7 @@
     "base": {
         "additional_event_appearances": "Apariciones adicionales en eventos",
         "all_crew": "Mostrar todos los tripulantes",
+        "antimatter_bonus": "Bonificación de antimateria",
         "best_pair": "Mejor pareja",
         "bigbook_tier": "Piso",
         "boss": "{{rank_names.fbb_rank}}",

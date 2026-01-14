@@ -34,6 +34,7 @@
     "base": {
         "additional_event_appearances": "Zusätzliche Auftritte im Ereignissen",
         "all_crew": "Die gesamte Crew anzeigen",
+        "antimatter_bonus": "Antimaterie-Bonus",
         "best_pair": "Bestes Paar",
         "bigbook_tier": "Stufe",
         "boss": "{{rank_names.fbb_rank}}",
