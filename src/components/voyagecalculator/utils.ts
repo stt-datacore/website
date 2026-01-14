@@ -34,6 +34,8 @@ export function getShipTraitBonus(voyageConfig: IVoyageInputConfig, ship: Ship):
 	return shipBonus;
 }
 
+// This only returns bonuses for matching seat or event traits
+//	Does NOT factor bonus for voyage exclusive crew
 export function getCrewTraitBonus(voyageConfig: IVoyageInputConfig, crew: PlayerCrew, trait?: string): number {
 	let traitBonus: number = 0;
 	if (voyageConfig.voyage_type === 'encounter') {

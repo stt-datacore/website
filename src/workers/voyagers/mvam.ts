@@ -103,8 +103,9 @@ export const MultiVectorAssault = (
 			const viableSkills: number[] = [0, 0, 0, 0, 0, 0];
 			const viableSlots: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-			// Antimatter value for matching slot trait or encounter crew traits
+			// Antimatter value for matching slot trait or encounter crew traits ONLY
 			//	0 or 25 for dilemma voyages; 0, 50, 100, or 150 for encounter voyages
+			//	Do NOT factor bonus for voyage exclusive crew here as that is not slot-dependent
 			const traitSlots: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 			const crewId: number = crew[i].id ?? i;
@@ -182,7 +183,8 @@ export const MultiVectorAssault = (
 				trait_values: traitValues,
 				ideal_trait_value: idealTraitValue,
 				event_score: eventCrewVP,
-				event_crit_traits: eventCritTraits
+				event_crit_traits: eventCritTraits,
+				antimatter_bonus: crew[i].antimatter_bonus ?? 0
 			};
 			primedRoster.push(crewman);
 		}
@@ -374,6 +376,8 @@ export const MultiVectorAssault = (
 	function getBoostedLineup(primedRoster: IPrimedCrew[], boosts: IBoosts): VoyagersLineup | false {
 		const TRAIT_BOOST: number = voyage.voyage_type === 'encounter' ? 400 : 200;
 		const CRIT_BOOST: number = voyage.voyage_type === 'encounter' ? 100 : 0;
+		const EXCLUSIVE_BOOST: number = 200;	// Equivalent to TRAIT_BOOST, pending tests
+
 		const favorScore = (a: IVoyagerScore, b: IVoyagerScore) => b.score - a.score;
 		const favorAntimatter = (a: IVoyagerScore, b: IVoyagerScore) => {
 			if (a.traitValue === b.traitValue)
@@ -405,7 +409,10 @@ export const MultiVectorAssault = (
 			traitValues.forEach((traitValue, idx) => {
 				const traitFactor: number = traitValues.length-idx-1;
 				boostedScores.push({
-					score: baseScore+(TRAIT_BOOST*traitFactor)+(CRIT_BOOST*primedRoster[i].event_crit_traits),
+					score: baseScore
+							+ (TRAIT_BOOST*traitFactor)
+							+ (CRIT_BOOST*primedRoster[i].event_crit_traits)
+							+ (EXCLUSIVE_BOOST*(primedRoster[i].antimatter_bonus / 25)),
 					id: primedRoster[i].id,
 					isIdeal: traitValue > 0 && traitValue === idealTraitValue,
 					traitValue,
