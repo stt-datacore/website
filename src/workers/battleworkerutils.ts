@@ -983,11 +983,7 @@ export function iterateBattle(
         let boarding_sec = 0;
         let o_boarding_sec = 0;
 
-        let aps_num = 0;
-        let oppo_aps_num = 0;
-
-        let oppvar = (work_opponent?.attacks_per_second ?? 1) + ((work_opponent?.attacks_per_second ?? 1) * opponent_variance);
-        oppo_aps_num = work_opponent ? 1 / oppvar : 0;
+        let oppvar = opponent_variance ? 1 + opponent_variance : 1;
 
         const hitoppo = (damage: number) => {
             if ((hull <= 0 || oppo_hull <= 0) && !ignoreDefeat) return 0;
@@ -1068,7 +1064,7 @@ export function iterateBattle(
                     powerInfo = getInstantPowerInfo(ship, currents, work_opponent, offense);
                     c_boarding = powerInfo.computed.boarding_damage_per_sec / rate;
                     boarding_sec = powerInfo.computed.boarding_damage_per_sec;
-                    aps_num = 1 / powerInfo.computed.attacks_per_second;
+                    now_speed = powerInfo.computed.attacks_per_second;
 
                     if (activation !== true) {
                         immediates.push({
@@ -1093,7 +1089,6 @@ export function iterateBattle(
                 now_speed = powerInfo.computed.attacks_per_second;
                 c_boarding = powerInfo.computed.boarding_damage_per_sec / rate;
                 boarding_sec = powerInfo.computed.boarding_damage_per_sec;
-                aps_num = 1 / powerInfo.computed.attacks_per_second;
             }
 
             if (oppos) {
@@ -1132,8 +1127,6 @@ export function iterateBattle(
                         o_now_speed = oppo_powerInfo.computed.attacks_per_second;
                         o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                         o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
-                        let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
-                        oppo_aps_num = work_opponent ? 1 / oppvar : 0;
 
                         if (oppo_activation !== true) {
                             oppo_immediates.push({
@@ -1152,8 +1145,7 @@ export function iterateBattle(
 
             if (work_opponent && !oppo_powerInfo && oppos) {
                 oppo_powerInfo = getInstantPowerInfo(work_opponent!, oppos ?? [], ship, 0);
-                let oppvar = (oppo_powerInfo.computed.attacks_per_second ?? 1) + ((oppo_powerInfo.computed.attacks_per_second ?? 1) * opponent_variance);
-                oppo_aps_num = work_opponent ? 1 / oppvar : 0;
+                o_now_speed = oppo_powerInfo.computed.attacks_per_second;
                 o_c_boarding = oppo_powerInfo.computed.boarding_damage_per_sec / rate;
                 o_boarding_sec = oppo_powerInfo.computed.boarding_damage_per_sec;
             }
@@ -1221,10 +1213,10 @@ export function iterateBattle(
                 oppo_immediates.length = 0;
             }
 
-            if (attack_counter >= aps_num) {
-                let number = attack_counter / aps_num;
+            if (attack_counter >= 1 / now_speed) {
+                let number = attack_counter / (1 / now_speed);
 
-                standard_attack = Math.ceil(standard_attack * number);
+                standard_attack = Math.ceil(max_attack * number);
                 base_attack = Math.ceil(base_attack * number);
                 max_attack = Math.ceil(max_attack * number);
 
@@ -1233,10 +1225,8 @@ export function iterateBattle(
                 if (((fbb_mode || !oppo_cloaked) && !cloaked)) {
                     let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
-
                     let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
                     let outgoing_damage = Math.ceil(actual_attack * mul);
-
                     outgoing_damage = hitoppo(outgoing_damage);
                     if (!outgoing_damage) {
                         standard_attack = base_attack = max_attack = 0;
@@ -1250,13 +1240,13 @@ export function iterateBattle(
                 standard_attack = base_attack = max_attack = 0;
             }
 
-            if (work_opponent && oppo_counter >= oppo_aps_num) {
-                let number = oppo_counter / oppo_aps_num;
+            if (work_opponent && oppo_counter >= (1 / o_now_speed) * oppvar) {
+                let number = oppo_counter / ((1 / o_now_speed) * oppvar);
                 oppo_counter = 0;
 
-                oppo_standard_attack = Math.ceil(oppo_standard_attack * number);
-                oppo_base_attack = Math.ceil(oppo_base_attack * number);
-                oppo_max_attack = Math.ceil(oppo_max_attack * number);
+                oppo_standard_attack = Math.ceil(oppo_max_attack * number * oppvar);
+                oppo_base_attack = Math.ceil(oppo_base_attack * number * oppvar);
+                oppo_max_attack = Math.ceil(oppo_max_attack * number * oppvar);
 
                 if (fbb_mode || (!oppo_cloaked && !cloaked)) {
                     let mul = currents.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
