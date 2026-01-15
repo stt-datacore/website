@@ -1216,7 +1216,7 @@ export function iterateBattle(
             if (attack_counter >= 1 / now_speed) {
                 let number = attack_counter / (1 / now_speed);
 
-                standard_attack = Math.ceil(max_attack * number);
+                standard_attack = Math.ceil(standard_attack * number);
                 base_attack = Math.ceil(base_attack * number);
                 max_attack = Math.ceil(max_attack * number);
 
@@ -1244,7 +1244,7 @@ export function iterateBattle(
                 let number = oppo_counter / ((1 / o_now_speed) * oppvar);
                 oppo_counter = 0;
 
-                oppo_standard_attack = Math.ceil(oppo_max_attack * number * oppvar);
+                oppo_standard_attack = Math.ceil(oppo_standard_attack * number * oppvar);
                 oppo_base_attack = Math.ceil(oppo_base_attack * number * oppvar);
                 oppo_max_attack = Math.ceil(oppo_max_attack * number * oppvar);
 
