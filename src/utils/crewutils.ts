@@ -347,7 +347,7 @@ export function downloadData(dataUrl: string | URL, name: string): void {
 	}
 }
 
-export function download(filename, text) {
+export function download(filename: string, text: any) {
 	let extension = filename.split('.').pop();
 	let mimeType = '';
 	let isText = true;
