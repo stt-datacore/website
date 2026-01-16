@@ -19,4 +19,4 @@ If you want to set up and try out the latest experimental versions or run your o
 We are continually striving to make the site as well as contributing to project more user friendly. Documentation is vital to achieving this goal. The current state of the documentation can be viewed [here](https://github.com/stt-datacore/wiki/wiki). If you feel you can make improvements you can go to our [Discord](https://discord.gg/2SY8W7Aeme) and request access.
 
 ### Donations
-We have enough reserve funds for now! The monthly cost is **$15** and our reserve fund is **$205**. However you can still join our [Patreon](https://www.patreon.com/Datacore) for future funding rounds.
+Please contact a DataCore development team member in the Discord server for ways to contribute.
