@@ -324,6 +324,8 @@ export interface BossScore {
 }
 export interface BossDetails extends BossScore {
     rarity: number;
+    crew: string[];
+    duration_crew: string[];
 }
 
 export interface ShipScores {
@@ -343,7 +345,11 @@ export interface ShipScores {
             3?: number,
             4?: number,
             5?: number,
-            6?: number
+            6?: number,
+            7?: number,
+            8?: number,
+            9?: number,
+            10?: number,
         },
         arena: {
             1?: number,
@@ -357,6 +363,10 @@ export interface ShipScores {
             4?: string[],
             5?: string[],
             6?: string[],
+            7?: string[],
+            8?: string[],
+            9?: string[],
+            10?: string[],
         },
         arena_crew: {
             1?: string[],
