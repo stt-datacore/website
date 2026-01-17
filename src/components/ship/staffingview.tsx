@@ -9,7 +9,7 @@ import { PlayerCrew } from "../../model/player"
 import { BattleStation, Ship } from "../../model/ship"
 import { findPotentialCrew, getShipDivision, mergeRefShips, setupShip } from "../../utils/shiputils"
 import { useStateWithStorage } from "../../utils/storage"
-import { OptionsPanelFlexColumn } from "../stats/utils"
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils"
 import { getShipBonus, getSkills } from "../../utils/crewutils"
 import CONFIG from "../CONFIG"
 import { getActionColor, getShipBonusIcon } from "../item_presenters/shipskill"
@@ -92,6 +92,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	}, [ship]);
 
 	const flexCol = OptionsPanelFlexColumn;
+	const flexRow = OptionsPanelFlexRow;
 
     if ((!ship && !isOpponent) || !crew) return context.core.spin(t('spinners.default'));
 
@@ -134,7 +135,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 					<div key={`${isOpponent ? 'opponent_' : ''}ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
 						<CrewPicker
 							locked={!!pvpData}
-							renderCrewCaption={renderCrewCaption}
+							renderCrewCaption={(crew) => renderCrewCaption(crew, bs)}
 							// isOpen={modalOpen}
 							// setIsOpen={setModalOpen}
 							filterCrew={filterCrew}
@@ -203,7 +204,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	}
 
 
-	function renderCrewCaption(crew: PlayerCrew | CrewMember) {
+	function renderCrewCaption(crew: PlayerCrew | CrewMember, bs: BattleStation) {
+		let dskill = !!crew.skill_order.includes(bs.skill);
 		return (
 			<div style={{
 				display: "flex",
@@ -211,7 +213,10 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				flexDirection: "column",
 				alignItems: "center"
 			}}>
-				<div>{crew.name}</div>
+				<div style={{...flexRow, alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
+					{dskill && <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "16px" }} />}
+					{crew.name}
+				</div>
 				<div style={{
 					color: getActionColor(crew.action.bonus_type)
 				}}>
@@ -263,29 +268,18 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				&& (!modalOptions?.abilities?.length || modalOptions?.abilities?.some((a) => crew.action.ability?.type.toString() === a));
 		});
 
-		// filteredcrew.sort((a, b) => {
-		// 	let r = b.action.bonus_amount - a.action.bonus_amount;
-
-		// 	if (!r) {
-		// 		if (b.action.ability !== undefined && a.action.ability === undefined) return 1;
-		// 		else if (a.action.ability !== undefined && b.action.ability === undefined) return -1;
-
-		// 		if (a.action.ability?.amount && b.action.ability?.amount) {
-		// 			r = b.action.ability.amount - a.action.ability.amount;
-		// 		}
-		// 		if (r) return r;
-
-		// 		r = b.action.initial_cooldown - a.action.initial_cooldown;
-		// 		if (r) return r;
-
-		// 		if (!a.action.limit && b.action.limit) return -1;
-		// 		else if (!b.action.limit && a.action.limit) return 1;
-		// 	}
-
-		// 	return r;
-		// })
 		return filteredcrew.sort((a, b) => {
-			return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
+			let ask = a.skill_order.some(skill => ship?.battle_stations?.some(bs => bs.skill === skill));
+			let bsk = a.skill_order.some(skill => ship?.battle_stations?.some(bs => bs.skill === skill));
+			if ((ask && bsk) || (!ask && !bsk)) {
+				if (a.ranks.scores.ship.arena_rank <= 100 && b.ranks.scores.ship.arena_rank <= 100) {
+					return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
+				}
+				else if (a.ranks.scores.ship.arena_rank <= 100) return -1;
+				else return 1;
+			}
+			else if (ask) return -1;
+			else return 1;
 		});
 	}
 
