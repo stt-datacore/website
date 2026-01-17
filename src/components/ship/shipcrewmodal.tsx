@@ -2,6 +2,7 @@ import React from 'react';
 import { OptionsBase, OptionsModal, OptionGroup, ModalOption, OptionsModalProps } from '../base/optionsmodal_base';
 import CONFIG from '../CONFIG';
 import { ShipAbilityPicker } from '../crewtables/shipoptions';
+import { RarityFilter } from '../crewtables/commonoptions';
 
 export interface ShipCrewModalOptions extends OptionsBase {
 	rarities: number[];
@@ -48,7 +49,26 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 				key: "rarities",
 				multi: true,
 				options: rarityOptions,
-				initialValue: [] as number[]
+				initialValue: [] as number[],
+				renderContent: () => (
+					<div style={{ margin: "0.5em 0px" }}>
+						<div style={{marginBottom: '0.5em'}}>{t('hints.filter_by_rarity{{:}}')}</div>
+						<RarityFilter
+							fluid
+							clearable
+							rarityFilter={this.state.options['rarities']}
+							setRarityFilter={(value) => {
+								this.setState({
+									...this.state,
+									options: {
+										...this.state.options,
+										rarities: value
+									}
+								})
+							}}
+							/>
+					</div>
+				)
 			},
 			{
 				title: `${t('hints.filter_by_ship_ability')}:`,
@@ -56,10 +76,16 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 				options: abilityOptions,
 				multi: false,
 				initialValue: [] as number[],
-				renderContent: () => <div style={{ margin: "0.5em 0px" }}>
-					<ShipAbilityPicker fluid selectedAbilities={this.state.options['abilities'] as string[]} setSelectedAbilities={(a) => this.setAbility(a)} />
-				</div>
-
+				renderContent: () => (
+					<div style={{ margin: "0.5em 0px" }}>
+						<div style={{marginBottom: '0.5em'}}>{t('hints.filter_by_ship_ability{{:}}')}</div>
+						<ShipAbilityPicker
+							fluid
+							selectedAbilities={this.state.options['abilities'] as string[]}
+							setSelectedAbilities={(a) => this.setAbility(a)}
+						/>
+					</div>
+				)
 			}]
 	}
 

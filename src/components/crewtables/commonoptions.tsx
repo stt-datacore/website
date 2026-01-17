@@ -22,6 +22,7 @@ type CrewRarityFilterProps = {
 	multiple?: boolean;
 	selection?: boolean;
 	clearable?: boolean;
+	fluid?: boolean;
 };
 
 export const RarityFilter = (props: CrewRarityFilterProps) => {
@@ -40,6 +41,7 @@ export const RarityFilter = (props: CrewRarityFilterProps) => {
 			<Dropdown
 				placeholder={props.altTitle ?? t('hints.filter_by_rarity')}
 				clearable={props.clearable ?? true}
+				fluid={props.fluid}
 				multiple={props.multiple ?? true}
 				selection={props.selection ?? true}
 				options={rarityFilterOptions}
