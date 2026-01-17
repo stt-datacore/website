@@ -403,7 +403,7 @@ export const ShipTable = (props: ShipTableProps) => {
 							>
 								{!!ship?.ranks && formatShipScore(ship?.ranks.kind, rank.score, t)}
 								#{rank.rank}
-								{isActive && printTestCrew(ship, 'fbb', boss.symbol)}
+								{isActive && printTestCrew(ship, boss.symbol)}
 							</Table.Cell>
 						)
 					}
@@ -465,8 +465,8 @@ export const ShipTable = (props: ShipTableProps) => {
 		}
 	}
 
-	function printTestCrew(ship: Ship, mode: 'fbb' | 'arena', fbb?: string) {
-		let testDeets = findTestCrew(ship, fbb);
+	function printTestCrew(ship: Ship, fbb?: string, crew?: string[]) {
+		let testDeets = findTestCrew(ship, fbb, crew);
 		return testDeets.map(deet => {
 
 			return (
@@ -496,7 +496,7 @@ export const ShipTable = (props: ShipTableProps) => {
 		})
 	}
 
-	function findTestCrew(ship: Ship, fbb?: string) {
+	function findTestCrew(ship: Ship, fbb?: string, crew?: string[]) {
 		let ecrew = [] as CrewMember[];
 		if (globalContext.player.playerData) {
 			ecrew = globalContext.player.playerData.player.character.crew.concat(globalContext.player.playerData.player.character.unOwnedCrew ?? []);
