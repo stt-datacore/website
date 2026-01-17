@@ -328,22 +328,25 @@ export const ResourceTracker = () => {
         const c = stats.length;
         let avgs = {} as {[key:string]: number};
         let firsts = {} as {[key:string]: number};
-        let diffs = [] as number[];
+        let lastdiff = {} as {[key:string]: number}
         let lastval = {} as {[key:string]: number}
         for (let i = 0; i < c; i++) {
             const stat = stats[i];
             avgs[stat.resource] ??= stats[i].amount;
             firsts[stat.resource] ??= stats[i].amount;
-
+            lastdiff[stat.resource] ??= firsts[stat.resource];
             stat.moving_average = (avgs[stat.resource] + stats[i].amount) / 2;
             avgs[stat.resource] = stat.moving_average;
             if (lastval[stat.resource] !== undefined) {
                 stat.difference = stat.amount - lastval[stat.resource];
-                diffs.push(stat.difference);
-                stat.average_difference = Math.round(diffs.reduce((p, n) => p + n, 0) / diffs.length);
             }
             stat.total_difference = stat.amount - firsts[stat.resource];
             lastval[stat.resource] = stat.amount;
+            lastdiff[stat.resource] = stat.average_difference;
+        }
+        let diffs = stats.map(stat => stat.difference);
+        for (let i = 0; i < c; i++) {
+            stats[i].average_difference = diffs.slice(0, i + 1).reduce((p, n) => p + n, 0) / (i + 1);
         }
         return stats;
     }
