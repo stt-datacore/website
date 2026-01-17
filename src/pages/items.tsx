@@ -311,19 +311,48 @@ const ItemsPage = (props: ItemsPageProps) => {
 		const qbitCust = [] as CustomFieldDef[];
 		qbitCust.push(
 			{
+				field: 'kwipment_frequency',
+				text: t('global.average'),
+				format: (value, item) => {
+					if (!value) return t('global.none')
+					if (item.symbol === 'continuum_energy_compon') return t('global.na');
+					let val = (value as number) / continuum_missions.length;
+					return (<>
+						<div style={{...OptionsPanelFlexRow, gap: '0.5em'}}>
+						<span>{val.toFixed()}</span>
+						</div>
+					</>)
+				},
+				width: 1,
+				customCompare: (a: EquipmentItem, b: EquipmentItem) => {
+					if (!a.kwipment_frequency && !b.kwipment_frequency) return 0;
+					else if (!a.kwipment_frequency) return -1;
+					else if (!b.kwipment_frequency) return 1;
+					return (a.kwipment_frequency! / continuum_missions.length) - (b.kwipment_frequency! / continuum_missions.length);
+				}
+			},
+			{
 				field: 'item_sources',
 				width: 2,
 				text: t('items.item_sources'),
 				format: (value: EquipmentItemSource[], item: EquipmentItem) => {
-					return (<>
+					if (item.symbol === 'continuum_energy_compon') return t('global.na');
+					let counter = 0;
+					const valMaps = (<>
 						{value.map(src => {
 							let count = src.quantity!;
 							let idx = cachedMission?.quests?.findIndex(q => q.name === src.name) ?? -1;
+							counter += count;
 							return (<div key={`qp_${item.symbol}_${src.name}+${src.mastery}`} style={{fontSize: '0.9em', margin: '0.25em 0'}}>
 							  	{idx+1}. {src.name} ({masteries[src.mastery!]}) {!!count && <>(x{count})</>}
 							</div>)
 						})}
-					</>)
+					</>);
+
+					return (<>
+						{valMaps}
+						{t('global.total{{:}}')}{' '}{counter}
+					</>);
 				},
 				customCompare: (a: EquipmentItem, b: EquipmentItem) => ((a.item_sources.length ?? 0) - (b.item_sources.length ?? 0)) || a.rarity - b.rarity || a.name.localeCompare(b.name),
 				reverse: true

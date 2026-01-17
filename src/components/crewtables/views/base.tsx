@@ -18,8 +18,10 @@ import CrewStat from '../../item_presenters/crewstat';
 import { printFancyPortal } from '../../base/utils';
 import { OfferCrew } from '../../../model/offers';
 import { formatShipScore } from '../../ship/utils';
+import { printChrons, printCredits } from '../../retrieval/context';
+import { CollectionDisplay } from '../../item_presenters/presenter_utils';
 
-export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean) => {
+export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean, cheap?: boolean, ocols?: string[]) => {
 	const tableConfig = [] as ITableConfigRow[];
 	tableConfig.push(
 		// { width: 1, column: 'bigbook_tier', title: t('base.bigbook_tier'), tiebreakers: ['cab_ov_rank'], tiebreakers_reverse: [false] },
@@ -49,6 +51,51 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 	);
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
+	}
+
+	if (cheap) {
+		tableConfig.push(
+			{
+				width: 1,
+				column: "requiredChronCost",
+				title: t('global.item_types.chronitons'),
+				customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+					let r = 0;
+					if (!r) r = (a.requiredChronCost || 0) - (b.requiredChronCost || 0);
+					if (!r) r = (a.craftCost - b.craftCost);
+					if (!r) r = (a.requiredFactionItems || 0) - (b.requiredFactionItems || 0);
+					return r;
+				}
+			},
+			{
+				width: 1,
+				column: "requiredFactionItems",
+				title: (
+					<div style={{display: 'inline-flex', width: '3em', textAlign: 'left', marginRight: '0.25em'}}>
+						{t('behold_helper.columns.faction_items').split(" ").map((t, idx) => <>{!!idx && <br />}{t}</>)}
+					</div>
+				),
+				customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+					let r = 0;
+					if (!r) r = (a.requiredFactionItems || 0) - (b.requiredFactionItems || 0);
+					if (!r) r = (a.requiredChronCost || 0) - (b.requiredChronCost || 0);
+					if (!r) r = (a.craftCost - b.craftCost);
+					return r;
+				}
+			},
+			{
+				width: 1,
+				column: "craftCost",
+				title: t('behold_helper.columns.build_cost'),
+				customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+					let r = 0;
+					if (!r) r = (a.craftCost - b.craftCost);
+					if (!r) r = (a.requiredChronCost || 0) - (b.requiredChronCost || 0);
+					if (!r) r = (a.requiredFactionItems || 0) - (b.requiredFactionItems || 0);
+					return r;
+				}
+			}
+		)
 	}
 	if (tableType === 'offers' || alternativeLayout) {
 		tableConfig.push(
@@ -122,7 +169,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 			});
 		});
 	}
-	if (tableType !== 'offers') {
+	if (tableType !== 'offers' && !cheap) {
 			tableConfig.push(
 			{
 				width: 1,
@@ -154,9 +201,22 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 			},
 		);
 	}
-	else {
+	else if (!cheap) {
 		tableConfig.push(
 			{ width: 2, column: 'q_bits', title: t('base.qp'), reverse: true },
+		);
+	}
+	else if (cheap) {
+		tableConfig.push(
+			{
+				width: 2, column: 'collections', title: t('base.collections'), reverse: true,
+				customCompare: (a: PlayerCrew, b: PlayerCrew) => {
+					let r = 0;
+					if (ocols) r = a.collections.filter(c => ocols.includes(c)).length - b.collections.filter(c => ocols.includes(c)).length
+					if (!r) r = a.collections.length - b.collections.length;
+					return r;
+				},
+			},
 		);
 	}
 	return tableConfig;
@@ -167,11 +227,12 @@ type CrewCellProps = {
 	crew: IRosterCrew;
 	tableType: RosterType
 	alternativeLayout?: boolean
-	absRank?: boolean
+	absRank?: boolean,
+	cheap?: boolean
 };
 
 export const CrewBaseCells = (props: CrewCellProps) => {
-	const { crew, tableType, absRank, alternativeLayout } = props;
+	const { crew, tableType, absRank, alternativeLayout, cheap } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const tiny = TinyStore.getStore("index");
 
@@ -206,6 +267,17 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					{crew.ranks.voyTriplet && <><br /><small style={{color: 'lightblue', fontStyle: 'italic'}}>{voyPower.toLocaleString()}</small></>}
 				</div>
 			</Table.Cell>}
+			{(!!cheap) && (<>
+				<Table.Cell textAlign='left' width={1}>
+					{printChrons(Math.ceil(crew.requiredChronCost || 0))}
+				</Table.Cell>
+				<Table.Cell textAlign='left' width={1}>
+					{crew.requiredFactionItems?.toLocaleString() || '0'}
+				</Table.Cell>
+				<Table.Cell textAlign='left' width={1}>
+					{printCredits(crew.craftCost)}
+				</Table.Cell>
+			</>)}
 			{(tableType === 'offers' || alternativeLayout) && <>
 				<Table.Cell textAlign='left' width={1}>
 					{crew.skill_order.map(skill => {
@@ -234,29 +306,37 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					<Table.Cell key={skill.name} />
 				)
 			)}
-			{tableType !== 'offers' &&
+			{tableType !== 'offers' && !cheap &&
 			<Table.Cell textAlign='center'>
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printPortalStatus(crew, t, true, true)}</b>
 			</Table.Cell>}
-			<Table.Cell textAlign='center' width={2}>
-				{(['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
-				{!['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType) &&
-					<div title={
-						crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
-						}>
-						<div>
-							{!!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
+			{!cheap && (
+				<Table.Cell textAlign='center' width={2}>
+					{(['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType)) && (crew.preview ? t('global.pending_release') : new Date(crew.date_added).toLocaleDateString())}
+					{!['allCrew', 'offers', 'buyBack', 'no_skills'].includes(tableType) && (
+						<div title={
+							crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
+							}>
+							<div>
+								{!!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
+							</div>
+							{!!crew.immortal && crew.immortal >= -1 &&
+							<div style={{fontSize:"0.8em", minWidth: '4em'}}>
+								({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
+							</div>}
+							{!!crew.immortal && crew.immortal >= -1 && qbslots < 4 &&
+							<div style={{fontSize:"0.8em", minWidth: '6em'}}>
+								({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })})
+							</div>}
 						</div>
-						{!!crew.immortal && crew.immortal >= -1 &&
-						<div style={{fontSize:"0.8em", minWidth: '4em'}}>
-							({qbslots === 1 && t('base.one_slot')}{qbslots !== 1 && t('base.n_slots', { n: qbitsToSlots(crew.q_bits).toString() })})
-						</div>}
-						{!!crew.immortal && crew.immortal >= -1 && qbslots < 4 &&
-						<div style={{fontSize:"0.8em", minWidth: '6em'}}>
-							({t('base.n_to_next', { n: qbProgressToNext(crew.q_bits)[0].toString() })})
-						</div>}
-					</div>}
-			</Table.Cell>
+					)}
+				</Table.Cell>
+			)}
+			{!!cheap && (
+				<Table.Cell>
+					<CollectionDisplay crew={crew} showProgress />
+				</Table.Cell>
+			)}
 		</React.Fragment>
 	);
 

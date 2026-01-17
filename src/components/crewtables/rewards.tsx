@@ -8,6 +8,7 @@ import { getImageName } from "../../utils/misc";
 import { RewardsGridNeed } from "../../model/crew";
 import { AvatarView } from "../item_presenters/avatarview";
 import CONFIG from "../CONFIG";
+import { OptionsPanelFlexColumn } from "../stats/utils";
 
 export function makeRewards(t: TranslateMethod) {
 	return [
@@ -134,29 +135,18 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 										alignItems: "center",
 										...props.style ?? {}
 									}}>
-										{/* <ItemDisplay
-										quantity={reward.quantity}
-										targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
-										itemSymbol={reward.symbol}
-										allCrew={allCrew}
-										allItems={items}
-										playerData={playerData}
-										src={`${process.env.GATSBY_ASSETS_URL}${img}`}
-										size={props.size ?? 32}
-										maxRarity={reward.rarity}
-										rarity={reward.rarity}
-									/> */}
-										<AvatarView
-											mode={reward.type === 1 ? 'crew' : 'item'}
-											size={props.size ?? 32}
-											altItems={items}
-											targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
-											symbol={reward.symbol}
-											src={`${process.env.GATSBY_ASSETS_URL}${img}`}
-											quantity={reward.quantity}
-										/>
-
-										<span>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</span>
+										<div style={{...OptionsPanelFlexColumn, gap: '0.1em'}}>
+											<AvatarView
+												mode={reward.type === 1 ? 'crew' : 'item'}
+												size={props.size ?? 32}
+												altItems={items}
+												targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
+												symbol={reward.symbol}
+												src={`${process.env.GATSBY_ASSETS_URL}${img}`}
+												quantity={reward.quantity}
+											/>
+											<div style={{textAlign: 'center'}}>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</div>
+										</div>
 									</div>
 								</Grid.Column>
 							);

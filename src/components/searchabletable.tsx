@@ -77,7 +77,7 @@ export interface SearchableTableProps {
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
 
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.ReactNode;
 
 	pagingOptions?: DropdownItemProps[];
 	defaultPaginationRows?: number;

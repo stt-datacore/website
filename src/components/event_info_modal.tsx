@@ -34,7 +34,7 @@ export function EventInfoModal(props: EventInfoModalProps) {
 			if (hasDetails) {
 				const fetchResp = await fetch(`/structured/events/${instanceId}.json`);
 				const data = await fetchResp.json() as GameEvent;
-				if (data.content_types.includes('skirmish')) {
+				if (data.content_types?.includes('skirmish')) {
 					event_instances.sort((a, b) => a.instance_id - b.instance_id);
 					let idx = event_instances.findIndex(fi => fi.instance_id === instanceId);
 					if (idx > 0) {
@@ -119,15 +119,20 @@ interface EventModalHeaderProps {
 	instance: EventInstance;
 	setInstance?: (value: EventInstance) => void;
 	flip?: boolean;
+	filter?: number[];
 }
 
 export const EventModalHeader = (props: EventModalHeaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { event_instances } = globalContext.core;
 	const [prevEvent, setPrevEvent] = React.useState<EventInstance | undefined>();
 	const [nextEvent, setNextEvent] = React.useState<EventInstance | undefined>();
-	const { flip, instance: modalEventInstance, setInstance: setModalEventInstance } = props;
+	const { flip, instance: modalEventInstance, setInstance: setModalEventInstance, filter: allowedEvents } = props;
+
+	const event_instances = React.useMemo(() => {
+		if (!allowedEvents?.length) return globalContext.core.event_instances.slice();
+		return globalContext.core.event_instances.filter(f => !allowedEvents || allowedEvents.includes(f.instance_id));
+	}, [allowedEvents, globalContext.core.event_instances]);
 
 	React.useEffect(() => {
 		let idx = event_instances.findIndex(e => e === modalEventInstance);
@@ -135,15 +140,17 @@ export const EventModalHeader = (props: EventModalHeaderProps) => {
 			setPrevEvent(undefined);
 		}
 		else {
-			setPrevEvent(event_instances[idx - 1]);
+			let eidx = idx - 1;
+			setPrevEvent(event_instances[eidx]);
 		}
 		if (idx === -1 || idx >= event_instances.length - 1) {
 			setNextEvent(undefined);
 		}
 		else {
-			setNextEvent(event_instances[idx + 1]);
+			let eidx = idx + 1;
+			setNextEvent(event_instances[eidx]);
 		}
-	}, [modalEventInstance]);
+	}, [modalEventInstance, event_instances]);
 
 	return (
 		<div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
@@ -199,6 +206,4 @@ export const EventModalHeader = (props: EventModalHeaderProps) => {
 			setModalEventInstance(event_instances[curr]);
 		}
 	}
-
-
 }

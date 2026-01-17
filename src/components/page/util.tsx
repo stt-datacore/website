@@ -1,15 +1,63 @@
 
 import { navigate } from 'gatsby';
-import React from 'react';
-import { Menu, Dropdown, Icon, SemanticICONS, DropdownItem, DropdownMenu, Container } from 'semantic-ui-react';
-import { v4 } from 'uuid';
 import * as lz from 'lz-string';
+import React from 'react';
+import { Container, Dropdown, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
+import { v4 } from 'uuid';
+import { IEphemeralData } from '../../context/playercontext';
+import { ISM_ID, PlayerData } from '../../model/player';
+import { CiteInventory, getOwnedCites } from '../../utils/collectionutils';
+import { getChrons } from '../../utils/playerutils';
 
 export const MaxMenuItems = 5;
 export const MaxMobileItems = 4;
 
 export const DefaultOpts = ['crew', 'behold', 'gauntlet', 'voyage', 'fbb'] as string[];
 export const DefaultOptsMobile = ['crew', 'gauntlet', 'voyage', 'fbb'] as string[];
+
+export interface TrackedEnergy {
+    money: number,
+    premium_purchasable: number,
+    honor: number,
+    premium_earnable: number,
+    shuttle_rental_tokens: number,
+    chrons: number,
+    ism: number
+}
+
+export interface AllEnergy extends TrackedEnergy {
+    quantum: number | undefined,
+    valor: number | undefined,
+    ownedCites: CiteInventory[],
+    cadet: number,
+    pvp: number,
+    supplyKit: number;
+}
+
+export interface EnergyLogEntry {
+    timestamp: Date;
+    energy: TrackedEnergy;
+};
+
+export type EnergyLog = { [ dbid: string ]: EnergyLogEntry[] };
+
+export interface IEnergyLogContext {
+    enabled: boolean;
+    setEnabled: (value: boolean) => void;
+    log: EnergyLog;
+    setLog: (value: EnergyLog) => void;
+    clearLog: () => void;
+}
+
+const energyLogDefaults = {
+    enabled: false,
+    log: {},
+    setLog: () => false,
+    setEnabled: () => false,
+    clearLog: () => false
+} as IEnergyLogContext;
+
+export const EnergyLogContext = React.createContext(energyLogDefaults);
 
 export interface NavItem {
 	title?: string | JSX.Element,
@@ -232,3 +280,33 @@ export function parsePermalink(value: string): string[][] | undefined {
     }
     return undefined;
 }
+
+export function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData): AllEnergy {
+    const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
+
+    const chrons = getChrons(playerData);
+    const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
+    const quantum = playerData.crew_crafting_root?.energy?.quantity;
+    const valor = ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
+    const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
+    const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
+    const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
+    const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
+
+    return {
+        money,
+        premium_purchasable,
+        honor,
+        premium_earnable,
+        shuttle_rental_tokens,
+        chrons,
+        ism,
+        quantum,
+        valor,
+        ownedCites,
+        cadet,
+        pvp,
+        supplyKit
+    }
+}
+
