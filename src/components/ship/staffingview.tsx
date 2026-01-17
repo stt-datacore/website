@@ -189,7 +189,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 					justifyContent: "center",
 					alignItems: "center"
 				}}>
-				{crewStations[idx] && (
+				{!!crewStations[idx] && (
 					<CrewTarget inputItem={crewStations[idx]} targetGroup={`${targetGroup || 'ship_profile'}`}>
 						<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
 					</CrewTarget>
