@@ -587,7 +587,10 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 	}
 
 	for (let crew of crewStations) {
-		if (crew === undefined) continue;
+		if (crew === undefined) {
+			x++;
+			continue;
+		}
 
 		newship.crit_bonus ??= 0;
 		newship.crit_chance ??= 0;

@@ -93,7 +93,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	React.useEffect(() => {
 		const c = inputShip?.battle_stations?.length ?? 0;
 		if (inputShip && crewStations) {
-			if (asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs == ship.battle_stations![i].crew)) return;
+			if (asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs?.id == ship.battle_stations![i]?.crew?.id)) return;
 			setShip(setupShip(inputShip, crewStations));
 			setOldMaxed(asMaxed);
 		}

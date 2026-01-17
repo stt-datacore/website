@@ -441,10 +441,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb_")) {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
-                        if (f) {
+                        if (f && bmode !== battleMode) {
                             setBattleMode(bmode);
                             setTimeout(() => {
-                                setCrewStations(f.ship.battle_stations!.map(bs => bs.crew! as PlayerCrew));
+                                if (crewStations?.length == f.ship.battle_stations?.length && f.ship.battle_stations?.some((bs, idx) => f.ship.battle_stations![idx].crew?.symbol != crewStations[idx]?.symbol)) {
+                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
+                                }
                             });
                         }
                     }
