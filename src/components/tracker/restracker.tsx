@@ -23,6 +23,8 @@ export interface ResourceData {
     timestamp: Date,
     average_difference: number,
     total_difference: number
+    amount_pct: number,
+    change_pct: number
 }
 
 const transKeys = {
@@ -246,13 +248,13 @@ export const ResourceTracker = () => {
                     {t(`global.item_types.${transKeys[row.resource]}`)}
                 </Table.Cell>
                 <Table.Cell>
-                    {printValue(row)}
+                    {printValue(row)}<br />{(100 * row.amount_pct).toFixed(1)}%
                 </Table.Cell>
                 <Table.Cell>
                     {Math.round(row.moving_average).toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
-                    {Math.round(row.difference).toLocaleString()}
+                    {Math.round(row.difference).toLocaleString()}<br />{(100 * (row.change_pct)).toFixed(1)}%
                 </Table.Cell>
                 <Table.Cell>
                     {Math.round(row.average_difference).toLocaleString()}
@@ -304,15 +306,17 @@ export const ResourceTracker = () => {
         let stats = entries.map((entry) => {
             entry.timestamp = new Date(entry.timestamp);
             return Object.keys(entry.energy).map(key => {
-                const obj = {
+                const obj: ResourceData = {
                     timestamp: entry.timestamp,
                     resource: key,
                     amount: entry.energy[key] ?? 0,
-                } as ResourceData;
-                obj.difference = 0;
-                obj.average_difference = 0;
-                obj.total_difference = 0;
-                obj.moving_average = 0;
+                    difference: 0,
+                    average_difference: 0,
+                    total_difference: 0,
+                    moving_average: 0,
+                    amount_pct: 0,
+                    change_pct: 0
+                };
                 return obj;
             });
         }).flat();
@@ -325,28 +329,55 @@ export const ResourceTracker = () => {
         if (dailyFinal) {
             stats = stats.filter((stat1, idx) => stats.findLastIndex(stat2 => dateOf(stat1) === dateOf(stat2) && stat1.resource === stat2.resource) === idx);
         }
-        const c = stats.length;
+        let c = stats.length;
         let avgs = {} as {[key:string]: number};
         let firsts = {} as {[key:string]: number};
-        let diffs = [] as number[];
-        let lastval = {} as {[key:string]: number}
+        let lastdiff = {} as {[key:string]: number}
+        let lastval = {} as {[key:string]: number};
+        let high = {} as {[key:string]: number};
+        let low = {} as {[key:string]: number};
         for (let i = 0; i < c; i++) {
             const stat = stats[i];
-            avgs[stat.resource] ??= stats[i].amount;
-            firsts[stat.resource] ??= stats[i].amount;
+            high[stat.resource] ??= stat.amount;
+            low[stat.resource] ??= stat.amount;
+            avgs[stat.resource] ??= stat.amount;
+            firsts[stat.resource] ??= stat.amount;
+            lastdiff[stat.resource] ??= firsts[stat.resource];
 
+            if (high[stat.resource] < stat.amount) {
+                high[stat.resource] = stat.amount;
+            }
+
+            if (low[stat.resource] > stat.amount) {
+                low[stat.resource] = stat.amount;
+            }
             stat.moving_average = (avgs[stat.resource] + stats[i].amount) / 2;
             avgs[stat.resource] = stat.moving_average;
             if (lastval[stat.resource] !== undefined) {
                 stat.difference = stat.amount - lastval[stat.resource];
-                diffs.push(stat.difference);
-                stat.average_difference = Math.round(diffs.reduce((p, n) => p + n, 0) / diffs.length);
             }
             stat.total_difference = stat.amount - firsts[stat.resource];
             lastval[stat.resource] = stat.amount;
+            lastdiff[stat.resource] = stat.average_difference;
+        }
+
+        let reslist = [...new Set(stats.map(stat => stat.resource))];
+        for (let res of reslist) {
+            let rstats = stats.filter(f => f.resource === res);
+            c = rstats.length;
+            for (let i = 0; i < c; i++) {
+                const stat = rstats[i];
+                let diffs = rstats.map(stat => stat.difference);
+                stat.average_difference = diffs.slice(0, i + 1).reduce((p, n) => p + n, 0) / (i + 1);
+                if (!high[stat.resource]) continue;
+                stat.amount_pct = stat.amount / high[stat.resource];
+                if (!stat.amount || stat.amount === low[stat.resource] || i == 0) continue;
+                stat.change_pct = stat.difference / stat.amount;
+            }
         }
         return stats;
     }
+
     function dateOf(stat: ResourceData) {
         let str = typeof stat.timestamp === 'string' ? stat.timestamp : ((new Date(stat.timestamp)).toLocaleDateString());
         return str;
