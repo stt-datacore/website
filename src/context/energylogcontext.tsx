@@ -19,7 +19,9 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     const { children } = props;
 
     React.useEffect(() => {
-        trackEnergy();
+        if (energyLogEnabled && playerData && ephemeral) {
+            trackEnergy();
+        }
     }, [playerData, ephemeral, energyLogEnabled]);
 
     React.useEffect(() => {
@@ -99,7 +101,8 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                     }
                     let newobj: any = {
                         energy: logEntry,
-                        timestamp: ts
+                        timestamp: ts,
+                        remote: remoteEnabled
                     };
                     elognew[dbid].push(newobj);
                 }
@@ -110,7 +113,8 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 }
                 let newobj: any = {
                     energy: logEntry,
-                    timestamp: ts
+                    timestamp: ts,
+                    remote: remoteEnabled
                 };
                 elognew[dbid].push(newobj);
             }
@@ -157,7 +161,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
 
     async function searchRemote(startDate?: Date, endDate?: Date) {
         if (!playerData) return undefined;
-        let dbid = playerData.player.dbid;
+        const dbid = playerData.player.dbid;
         let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources?dbid=${dbid}`;
         if (startDate) {
             url += `&startDate=${startDate.toLocaleDateString()}`;
@@ -165,16 +169,19 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         if (endDate) {
             url += `&startDate=${endDate.toLocaleDateString()}`;
         }
-        const newlog = [...energyLog[dbid] ?? []]
         return fetch(url)
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data)) {
+                    let newlog = [...energyLog[dbid] ?? []]
                     let energy = data as EnergyLogEntry[];
                     for (let eobj of energy) {
                         delete (eobj as any)['dbid'];
+                        eobj.remote = true;
                         newlog.push(eobj);
                     }
+                    newlog = newlog.filter((l, i) => newlog.findLastIndex(l2 => l.timestamp?.toString() === l2?.timestamp?.toString()) === i);
+                    energyLog[dbid] = newlog;
                     setEnergyLog({...energyLog});
                     return energy;
                 }
