@@ -44,17 +44,25 @@ export type EnergyLog = { [ dbid: string ]: EnergyLogEntry[] };
 export interface IEnergyLogContext {
     enabled: boolean;
     setEnabled: (value: boolean) => void;
+    remoteEnabled: boolean;
+    setRemoteEnabled: (value: boolean) => void;
     log: EnergyLog;
     setLog: (value: EnergyLog) => void;
     clearLog: () => void;
+    updateRemote: (entries: EnergyLogEntry[]) => Promise<any>;
+    searchRemote: (startDate?: Date, endDate?: Date) => Promise<EnergyLogEntry[] | undefined>
 }
 
 const energyLogDefaults = {
     enabled: false,
+    remoteEnabled: false,
     log: {},
     setLog: () => false,
     setEnabled: () => false,
-    clearLog: () => false
+    clearLog: () => false,
+    setRemoteEnabled: () => false,
+    updateRemote: (() => false) as any,
+    searchRemote: (() => false) as any
 } as IEnergyLogContext;
 
 export const EnergyLogContext = React.createContext(energyLogDefaults);

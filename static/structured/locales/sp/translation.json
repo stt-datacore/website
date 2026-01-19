@@ -1893,7 +1893,10 @@
         "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
         "daily_final": "Capturas diarias finales",
         "enable": "Habilitar el seguimiento de recursos",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Búsqueda remota",
         "select_view": "Seleccionar vista",
+        "start_date_hint": "Si no especifica una fecha de inicio para las búsquedas remotas, por defecto se devuelven los datos correspondientes a los últimos 365 días.",
         "title": "Rastreador de recursos",
         "view": {
             "by_resource": "Por recurso",

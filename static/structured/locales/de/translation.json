@@ -1883,7 +1883,10 @@
         "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
         "daily_final": "Endgültige tägliche Erfassungen",
         "enable": "Ressourcenverfolgung aktivieren",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Fernsuche",
         "select_view": "Ansicht auswählen",
+        "start_date_hint": "Wenn Sie kein Startdatum für die Remote-Suche angeben, werden standardmäßig Daten der letzten 365 Tage zurückgegeben.",
         "title": "Ressourcenverfolgung",
         "view": {
             "by_resource": "Nach Ressource",

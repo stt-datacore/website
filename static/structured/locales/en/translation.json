@@ -1884,7 +1884,10 @@
         "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
         "daily_final": "Final daily captures",
         "enable": "Enable Resource Tracking",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Remote Search",
         "select_view": "Select view",
+        "start_date_hint": "If you do not specify a start date for remote searches, 365 days worth of data is returned, by default.",
         "title": "Resource Tracker",
         "view": {
             "by_resource": "By resource",
