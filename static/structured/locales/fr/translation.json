@@ -1895,7 +1895,10 @@
         "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
         "daily_final": "Captures quotidiennes finales",
         "enable": "Activer le suivi des ressources",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Recherche à distance",
         "select_view": "Sélectionner la vue",
+        "start_date_hint": "If you do not specify a start date for remote searches, 365 days worth of data is returned, by default.",
         "title": "Suivi des ressources",
         "view": {
             "by_resource": "Par ressource",

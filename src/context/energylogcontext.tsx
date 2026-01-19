@@ -22,6 +22,18 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         trackEnergy();
     }, [playerData, ephemeral, energyLogEnabled]);
 
+    React.useEffect(() => {
+        if (remoteLogEnabled && playerData) {
+            let currlog = energyLog[playerData.player.dbid];
+            if (currlog?.length) {
+                updateRemote(currlog).then(() => searchRemote());
+            }
+            else {
+                searchRemote()
+            }
+        }
+    }, [remoteLogEnabled, playerData]);
+
     const enabled = getEnabledState();
     const remoteEnabled = getRemoteEnabledState();
 
@@ -32,7 +44,9 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         setLog: setEnergyLog,
         clearLog: clearEnergyLog,
         setRemoteEnabled,
-        remoteEnabled
+        remoteEnabled,
+        searchRemote,
+        updateRemote
     };
 
     return (<>
@@ -74,7 +88,6 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
 
             const elognew = energyLog ? { ...energyLog } : {};
             elognew[dbid] ??= [];
-
             if (elognew[dbid].length) {
                 elognew[dbid][elognew[dbid].length-1].timestamp = new Date(elognew[dbid][elognew[dbid].length-1].timestamp);
                 if (
@@ -84,22 +97,23 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                     if (!!remoteEnabled[dbid]) {
                         logToRemote(logEntry);
                     }
-                    elognew[dbid].push({
+                    let newobj: any = {
                         energy: logEntry,
                         timestamp: ts
-                    });
+                    };
+                    elognew[dbid].push(newobj);
                 }
             }
             else {
                 if (!!remoteEnabled[dbid]) {
                     logToRemote(logEntry);
                 }
-                elognew[dbid].push({
+                let newobj: any = {
                     energy: logEntry,
                     timestamp: ts
-                });
+                };
+                elognew[dbid].push(newobj);
             }
-
             setEnergyLog(elognew);
         }
     }
@@ -126,7 +140,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         if (!playerData) return;
 		let dbid = playerData.player.dbid;
         remoteLogEnabled[dbid] = value;
-        setRemoteLogEnabled({...energyLogEnabled});
+        setRemoteLogEnabled({...remoteLogEnabled});
     }
 
     function getEnabledState() {
@@ -141,7 +155,39 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         return !!remoteLogEnabled[dbid];
     }
 
-    function logToRemote(entry: TrackedEnergy) {
+    async function searchRemote(startDate?: Date, endDate?: Date) {
+        if (!playerData) return undefined;
+        let dbid = playerData.player.dbid;
+        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources?dbid=${dbid}`;
+        if (startDate) {
+            url += `&startDate=${startDate.toLocaleDateString()}`;
+        }
+        if (endDate) {
+            url += `&startDate=${endDate.toLocaleDateString()}`;
+        }
+        const newlog = [...energyLog[dbid] ?? []]
+        return fetch(url)
+            .then((res) => res.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    let energy = data as EnergyLogEntry[];
+                    for (let eobj of energy) {
+                        delete (eobj as any)['dbid'];
+                        newlog.push(eobj);
+                    }
+                    setEnergyLog({...energyLog});
+                    return energy;
+                }
+                return undefined;
+            })
+            .catch(e => {
+                console.log(`Could not post remote energy`);
+                console.log(e);
+                return undefined;
+            })
+    }
+
+    async function logToRemote(entry: TrackedEnergy) {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
         let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources`;
@@ -149,20 +195,40 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
             resources: entry,
             dbid
         }
-        fetch(url, {
+        return fetch(url, {
             method: "POST",
             body: JSON.stringify(postBody),
             headers: {
                 "Content-type": "application/json"
             }
         })
+        .then(res => res.json())
         .catch(e => {
             console.log(`Could not post remote energy`);
             console.log(e);
         })
     }
 
-
-
-
+    async function updateRemote(entries: EnergyLogEntry[]) {
+        if (!playerData) return false;
+        let dbid = playerData.player.dbid;
+        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources`;
+        let resources = entries.map((e) => ({ ...e, dbid }));
+        let postBody = {
+            resources,
+            dbid
+        }
+        return fetch(url, {
+            method: "POST",
+            body: JSON.stringify(postBody),
+            headers: {
+                "Content-type": "application/json"
+            }
+        })
+        .then(res => res.json())
+        .catch(e => {
+            console.log(`Could not post remote energy`);
+            console.log(e);
+        })
+    }
 }

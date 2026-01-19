@@ -47,7 +47,7 @@ export const ResourceTracker = () => {
     const { playerData } = globalContext.player;
     const trackerContext = React.useContext(EnergyLogContext);
     const dbid = playerData?.player.dbid ?? 0;
-    const { enabled, setEnabled, log, clearLog, setLog } = trackerContext;
+    const { enabled, setEnabled, log, clearLog, setLog, remoteEnabled, setRemoteEnabled, updateRemote, searchRemote } = trackerContext;
 
     const [startDate, setStartDate] = useStateWithStorage<Date | undefined>(`${dbid}/resource_tracker/start_date`, undefined);
     const [endDate, setEndDate] = useStateWithStorage<Date | undefined>(`${dbid}/resource_tracker/end_date`, undefined);
@@ -162,12 +162,17 @@ export const ResourceTracker = () => {
     return (
         <div style={bodyArea}>
             <div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
-                <div style={{...OptionsPanelFlexColumn}}>
+                <div style={{...OptionsPanelFlexColumn, alignItems: 'flex-start', gap: '1em'}}>
                     <Checkbox
                         checked={enabled}
                         onChange={(e, { checked }) => setEnabled(!!checked)}
                         label={t('resource_tracker.enable')}
                     />
+                    {!!enabled && <Checkbox
+                        checked={remoteEnabled}
+                        onChange={(e, { checked }) => setRemoteEnabled(!!checked)}
+                        label={t('resource_tracker.remote_tracking')}
+                    />}
                 </div>
                 <div>
                     <Button onClick={askClearLog} disabled={!enabled || !entries.length}>
@@ -443,8 +448,19 @@ export const ResourceTracker = () => {
         downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'resource_log.csv');
     }
 
-    function exportResourceLog(clipboard?: boolean) {
-        let text = JSON.stringify(log, null, 4);
+    function exportResourceLog(clipboard?: boolean, all?: boolean) {
+        let text = '';
+        if (all) {
+            text = JSON.stringify(log, null, 4);
+        }
+        else if (playerData) {
+            let dbid = playerData.player.dbid;
+            text = JSON.stringify(log[dbid], null, 4);
+        }
+        else {
+            return;
+        }
+
         if (clipboard) {
             navigator.clipboard.writeText(text);
             return;
@@ -455,9 +471,12 @@ export const ResourceTracker = () => {
     function importResourceLog(files?: FileList) {
         if (files?.length === 1) {
             files[0].text().then((txt) => {
-                let inlog = JSON.parse(txt) as EnergyLogEntry[];
+                let datain = JSON.parse(txt) as any;
+                let inlog = [] as EnergyLogEntry[];
+                if (Array.isArray(datain)) inlog = datain;
+                else inlog = datain[dbid];
+                inlog ??= [];
                 if (dbid) {
-                    inlog ??= [].slice();
                     log[dbid] ??= [].slice();
                     let newlog = inlog.concat(log[dbid]);
                     newlog = newlog.filter((obj, i) => newlog.findIndex(obj2 => obj.timestamp.getTime() == obj2.timestamp.getTime()) === i);

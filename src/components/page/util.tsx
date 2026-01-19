@@ -49,6 +49,8 @@ export interface IEnergyLogContext {
     log: EnergyLog;
     setLog: (value: EnergyLog) => void;
     clearLog: () => void;
+    updateRemote: (entries: EnergyLogEntry[]) => Promise<any>;
+    searchRemote: (startDate?: Date, endDate?: Date) => Promise<EnergyLogEntry[] | undefined>
 }
 
 const energyLogDefaults = {
@@ -58,7 +60,9 @@ const energyLogDefaults = {
     setLog: () => false,
     setEnabled: () => false,
     clearLog: () => false,
-    setRemoteEnabled: () => false
+    setRemoteEnabled: () => false,
+    updateRemote: (() => false) as any,
+    searchRemote: (() => false) as any
 } as IEnergyLogContext;
 
 export const EnergyLogContext = React.createContext(energyLogDefaults);
