@@ -37,6 +37,7 @@ export interface AllEnergy extends TrackedEnergy {
 export interface EnergyLogEntry {
     timestamp: Date;
     energy: TrackedEnergy;
+    remote?: boolean;
 };
 
 export type EnergyLog = { [ dbid: string ]: EnergyLogEntry[] };
