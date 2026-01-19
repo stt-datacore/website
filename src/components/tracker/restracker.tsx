@@ -78,6 +78,9 @@ export const ResourceTracker = () => {
     React.useEffect(() => {
         let stats = compileStats();
         setCompiledStats(stats);
+        if (!enabled && remoteEnabled) {
+            setRemoteEnabled(false);
+        }
     }, [log, enabled, resourceFilter, dailyFinal]);
 
     const stats = React.useMemo(() => {
