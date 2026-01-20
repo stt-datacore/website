@@ -132,7 +132,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 						)}
 					</div>
 				)}
-				{traitBonus !== 25 && (
+				{traitBonus > 0 && traitBonus !== 25 && (
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
 						<span>+{traitBonus}</span>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
