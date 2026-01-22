@@ -229,6 +229,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         let dbid = playerData.player.dbid;
         let url = `${process.env.GATSBY_DATACORE_URL}api/playerResourcesBatch`;
         let resources = entries.filter(e => !e.remote && !!e.energy).map((e) => ({ ...e, dbid })) as RemoteEnergyLogEntry[];
+        if (!resources?.length) return { "result": "ok" };
         let postBody = {
             resources,
             dbid
