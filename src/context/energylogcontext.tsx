@@ -1,6 +1,6 @@
 import React from "react"
 import { GlobalContext } from "./globalcontext";
-import { EnergyLog, EnergyLogContext, EnergyLogEntry, getAllEnergy, IEnergyLogContext, TrackedEnergy } from "../components/page/util";
+import { EnergyLog, EnergyLogContext, EnergyLogEntry, getAllEnergy, IEnergyLogContext, RemoteEnergyLogEntry, TrackedEnergy } from "../components/page/util";
 import { useStateWithStorage } from "../utils/storage";
 
 export interface IEnergyLogContextProvider {
@@ -15,25 +15,31 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     const [energyLog, setEnergyLog] = useStateWithStorage(`energy_log`, {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
     const [energyLogEnabled, setEnergyLogEnabled] = useStateWithStorage(`energy_log_enabled`, {} as EnergyEnabledType, { rememberForever: true });
     const [remoteLogEnabled, setRemoteLogEnabled] = useStateWithStorage(`energy_log_remote_enabled`, {} as EnergyEnabledType, { rememberForever: true });
+    const [oldRemoteLogEnabled, setOldRemoteLogEnabled] = React.useState<boolean | undefined>(undefined);
 
     const { children } = props;
 
     React.useEffect(() => {
-        if (energyLogEnabled && playerData && ephemeral) {
-            trackEnergy();
-        }
-    }, [playerData, ephemeral, energyLogEnabled]);
-
-    React.useEffect(() => {
-        if (remoteLogEnabled && playerData) {
-            let currlog = energyLog[playerData.player.dbid];
-            if (currlog?.length) {
-                updateRemote(currlog).then(() => searchRemote());
+        if (energyLogEnabled && playerData && ephemeral && energyLogEnabled[playerData.player.dbid]) {
+            if (remoteLogEnabled && remoteLogEnabled[playerData.player.dbid]) {
+                let currlog = energyLog[playerData.player.dbid];
+                if (currlog?.length) {
+                    updateRemote(currlog)
+                        .then(() => searchRemote())
+                        .then(() => trackEnergy());
+                }
+                else {
+                    searchRemote()
+                        .then(() => trackEnergy());
+                }
             }
             else {
-                searchRemote()
+                trackEnergy();
             }
         }
+    }, [playerData, ephemeral, energyLogEnabled, remoteLogEnabled]);
+
+    React.useEffect(() => {
     }, [remoteLogEnabled, playerData]);
 
     const enabled = getEnabledState();
@@ -174,12 +180,14 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
             .then((data) => {
                 if (Array.isArray(data)) {
                     let newlog = [...energyLog[dbid] ?? []]
-                    let energy = data as EnergyLogEntry[];
+                    let energy = data as RemoteEnergyLogEntry[];
                     for (let eobj of energy) {
-                        delete (eobj as any)['dbid'];
+                        delete eobj.dbid;
                         eobj.remote = true;
+                        eobj.timestamp = new Date(eobj.timestamp);
                         newlog.push(eobj);
                     }
+                    newlog.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
                     newlog = newlog.filter((l, i) => newlog.findLastIndex(l2 => l.timestamp?.toString() === l2?.timestamp?.toString()) === i);
                     energyLog[dbid] = newlog;
                     setEnergyLog({...energyLog});
@@ -219,8 +227,8 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     async function updateRemote(entries: EnergyLogEntry[]) {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
-        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources`;
-        let resources = entries.map((e) => ({ ...e, dbid }));
+        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResourcesBatch`;
+        let resources = entries.filter(e => !e.remote && !!e.energy).map((e) => ({ ...e, dbid })) as RemoteEnergyLogEntry[];
         let postBody = {
             resources,
             dbid
@@ -236,6 +244,24 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         .catch(e => {
             console.log(`Could not post remote energy`);
             console.log(e);
-        })
+        });
+    }
+
+    function resToEnergy(res: any) {
+        let energies = [] as TrackedEnergy[];
+        if (res.resources) {
+            if (res.resources.length) {
+                let enobj = {} as any;
+                for (let retrack of res.resources) {
+                    if (retrack.energy) {
+                        energies.push(retrack.energy);
+                    }
+                }
+            }
+            else if (res.energy) {
+                energies.push(res.energy);
+            }
+        }
+        return energies;
     }
 }

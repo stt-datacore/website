@@ -40,6 +40,10 @@ export interface EnergyLogEntry {
     remote?: boolean;
 };
 
+export interface RemoteEnergyLogEntry extends EnergyLogEntry {
+    dbid?: number;
+}
+
 export type EnergyLog = { [ dbid: string ]: EnergyLogEntry[] };
 
 export interface IEnergyLogContext {
