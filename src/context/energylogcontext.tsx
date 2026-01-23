@@ -102,26 +102,27 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                     elognew[dbid][elognew[dbid].length-1].timestamp.getDate() !== ts.getDate() ||
                     JSON.stringify(elognew[dbid][elognew[dbid].length - 1].energy) !== JSON.stringify(logEntry)
                 ) {
-                    if (!!remoteEnabled) {
-                        logToRemote(logEntry);
-                    }
+
                     let newobj: any = {
                         energy: logEntry,
                         timestamp: ts,
                         remote: remoteEnabled
                     };
+                    if (!!remoteEnabled) {
+                        logToRemote(newobj);
+                    }
                     elognew[dbid].push(newobj);
                 }
             }
             else {
-                if (!!remoteEnabled) {
-                    logToRemote(logEntry);
-                }
                 let newobj: any = {
                     energy: logEntry,
                     timestamp: ts,
                     remote: remoteEnabled
                 };
+                if (!!remoteEnabled) {
+                    logToRemote(newobj);
+                }
                 elognew[dbid].push(newobj);
             }
             setEnergyLog(elognew);
@@ -212,12 +213,13 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
             })
     }
 
-    async function logToRemote(entry: TrackedEnergy) {
+    async function logToRemote(entry: EnergyLogEntry) {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
         let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources`;
         let postBody = {
-            resources: entry,
+            resources: entry.energy,
+            timestamp: entry.timestamp,
             dbid
         }
         return fetch(url, {
