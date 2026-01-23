@@ -177,7 +177,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
             url += `&startDate=${startDate.toLocaleDateString()}`;
         }
         if (endDate) {
-            url += `&startDate=${endDate.toLocaleDateString()}`;
+            url += `&endDate=${endDate.toLocaleDateString()}`;
         }
         return fetch(url)
             .then((res) => res.json())

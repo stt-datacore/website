@@ -1,6 +1,6 @@
 import { navigate } from "gatsby";
 import React from "react";
-import { Icon, Image, Label } from "semantic-ui-react";
+import { Button, Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerData, TranslateMethod } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
@@ -10,7 +10,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
-import { AllEnergy, getAllEnergy } from "./util";
+import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
 
 export interface SaleData {
     slot_sale: boolean;
@@ -46,6 +46,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const flexRow = OptionsPanelFlexRow;
 
     const globalContext = React.useContext(GlobalContext);
+    const energyLogContext = React.useContext(EnergyLogContext);
+    const { enabled, remoteEnabled, searchRemote } = energyLogContext;
     const { openPlayerPanel, requestDismiss, narrow, t } = props;
 
     const { isMobile } = globalContext;
@@ -96,6 +98,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { supplyKit } = energy;
 
     if (!playerData?.player) return <></>;
+    const dbid = playerData.player.dbid;
 
     return (<div className={'ui segment'}
         style={{
@@ -144,6 +147,11 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
                 {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
                 {shuttleSeconds < 0 && <div style={{color: 'tomato', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
+                {/* {!!enabled && !!remoteEnabled && (
+                    <div style={{flexGrow: 1}}>
+                        <Button style={{float: 'right'}} icon='refresh' />
+                    </div>
+                )} */}
             </div>}
             <div style={{...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
                 {!!saleData?.honor_sale && (
