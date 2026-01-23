@@ -52,21 +52,14 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
 
     function updateEnergy() {
         if (energyLogEnabled && playerData && ephemeral && energyLogEnabled[playerData.player.dbid]) {
-            if (remoteLogEnabled && remoteLogEnabled[playerData.player.dbid]) {
-                let currlog = energyLog[playerData.player.dbid];
-                if (currlog?.length) {
-                    updateRemote(currlog)
-                        .then(() => searchRemote())
-                        .then(() => trackEnergy());
-                }
-                else {
-                    searchRemote()
-                        .then(() => trackEnergy());
-                }
-            }
-            else {
-                trackEnergy();
-            }
+            trackEnergy();
+            // if (remoteLogEnabled && remoteLogEnabled[playerData.player.dbid]) {
+            //     searchRemote()
+            //         .then(() => trackEnergy());
+            // }
+            // else {
+            //     trackEnergy();
+            // }
         }
     }
 

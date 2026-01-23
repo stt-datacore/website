@@ -23,16 +23,18 @@ const Dashboard = (props: DashboardProps) => {
 	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 	const isMobile = globalContext.isMobile;
 	const { player } = globalContext;
-	const { playerData, showPlayerGlance, setShowPlayerGlance } = player;
+	const { playerData, ephemeral, showPlayerGlance, setShowPlayerGlance } = player;
 	const { t } = globalContext.localized;
 	const { activePanel, setActivePanel, narrow, openInputPanel } = props;
 	const [mobileHideOverride, setMobileHideOverride] = React.useState(false);
 	const [hideOverrideHidden, setHideOverrideHidden] = React.useState(false);
 
 	React.useEffect(() => {
-		if (energyUpdated) return;
-		setEnergyUpdated(true);
-	}, [player]);
+		if (energyUpdated || !playerData || !ephemeral) return;
+		setTimeout(() => {
+			setEnergyUpdated(true);
+		}, 50);
+	}, [playerData, ephemeral]);
 
 	return (
 		<React.Fragment>
