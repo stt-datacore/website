@@ -2,7 +2,7 @@ import React from "react"
 import { GlobalContext } from "../../context/globalcontext"
 import { EnergyLog, EnergyLogContext, EnergyLogEntry } from "../page/util";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { Button, Checkbox, Dropdown, Icon, Table } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Icon, Message, Popup, Table } from "semantic-ui-react";
 import { PromptContext } from "../../context/promptcontext";
 import { useStateWithStorage } from "../../utils/storage";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
@@ -12,6 +12,7 @@ import { omniSearchFilter } from "../../utils/omnisearch";
 import { downloadData } from "../../utils/crewutils";
 import { simplejson2csv } from "../../utils/misc";
 import { DateRangePicker } from "../base/daterangepicker";
+import { update } from "lodash-es";
 
 export type ResourceViewMode = 'resource' | 'update';
 
@@ -115,14 +116,14 @@ export const ResourceTracker = () => {
     }, [compiledStats, startDate, endDate]);
 
     const minDate = React.useMemo(() => {
-        if (!compiledStats?.length) return undefined;
+        if (!compiledStats?.length || remoteEnabled) return undefined;
         let d = new Date(compiledStats[0].timestamp);
         d.setDate(d.getDate() - 1);
         return d;
     }, [compiledStats]);
 
     const maxDate = React.useMemo(() => {
-        if (!compiledStats?.length) return undefined;
+        if (!compiledStats?.length || remoteEnabled) return new Date();
         let d = new Date(compiledStats[compiledStats.length - 1].timestamp);
         d.setDate(d.getDate() + 1);
         return d;
@@ -203,8 +204,29 @@ export const ResourceTracker = () => {
                     <Button onClick={askClearLog} disabled={!enabled || !entries.length}>
                         {t('resource_tracker.clear')}
                     </Button>
-                    <Button icon='download' onClick={() => exportResourceLog()} ></Button>
-                    <Button icon='upload' onClick={() => uploadRef?.current?.click()}></Button>
+                    <Popup
+                        openOnTriggerMouseEnter={true}
+                        openOnTriggerClick={false}
+                        openOnTriggerFocus={true}
+                        trigger={(<Button icon='download' onClick={() => exportResourceLog()} />)}
+                        content={(<div>{t('share_profile.export.export_csv')}</div>)}
+                    />
+
+                    <Popup
+                        openOnTriggerMouseEnter={true}
+                        openOnTriggerClick={false}
+                        openOnTriggerFocus={true}
+                        trigger={(<Button icon='upload' onClick={() => uploadRef?.current?.click()} />)}
+                        content={(<div>{t('json.upload_file.title')}</div>)}
+                    />
+
+                    <Popup
+                        openOnTriggerMouseEnter={true}
+                        openOnTriggerClick={false}
+                        openOnTriggerFocus={true}
+                        trigger={(<Button icon='refresh' onClick={() => syncRemote()} />)}
+                        content={(<div>{t('global.sync_remote')}</div>)}
+                    />
                 </div>
             </div>
             {enabled && (
@@ -228,7 +250,7 @@ export const ResourceTracker = () => {
                                 label={t('resource_tracker.daily_final')}
                             />
                         </div>
-                        <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start'}}>
+                        <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', alignItems: 'center'}}>
                             <DateRangePicker
                                 minDate={minDate}
                                 maxDate={maxDate}
@@ -237,6 +259,18 @@ export const ResourceTracker = () => {
                                 setStartDate={setStartDate}
                                 setEndDate={setEndDate}
                                 />
+                            {remoteEnabled && (
+                                <div>
+                                    <div style={{height: '1.5em'}}></div>
+                                    <Button
+                                        disabled={!startDate && !endDate}
+                                        onClick={() => searchRemote(startDate, endDate)}
+                                    >{t('global.search_remote')}</Button>
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            {t('resource_tracker.start_date_hint')}
                         </div>
                     </div>
                 </div>)
@@ -517,4 +551,14 @@ export const ResourceTracker = () => {
         }
     }
 
+    function syncRemote() {
+        if (!playerData?.player) return;
+        const dbid = playerData.player.dbid;
+        const data = log[dbid]?.filter(f => !f.remote);
+        if (!data?.length) {
+            searchRemote(startDate, endDate);
+            return;
+        }
+        updateRemote(data).then(() => searchRemote());
+    }
 }
