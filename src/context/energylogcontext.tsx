@@ -42,6 +42,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         if (playerData && energyLog) {
             let dbid = playerData.player.dbid;
             let log = energyLog[dbid];
+            if (!log?.length) return;
             let newlog = [] as EnergyLogEntry[];
             for (let r of log) {
                 if (r.energy && !Array.isArray(r.energy)) {
@@ -49,7 +50,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 }
             }
             if (newlog.length !== log.length) {
-                setEnergyLog({...energyLog, [dbid]: newlog });
+                setEnergyLog({ ...energyLog, [dbid]: newlog });
             }
         }
     }, [energyLog]);
