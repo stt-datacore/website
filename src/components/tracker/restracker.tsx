@@ -76,8 +76,11 @@ export const ResourceTracker = () => {
     }, [playerData, log, enabled]);
 
     React.useEffect(() => {
-        let stats = compileStats();
-        setCompiledStats(stats);
+
+        if (enabled) {
+            let stats = compileStats();
+            setCompiledStats(stats);
+        }
         if (!enabled && remoteEnabled) {
             setRemoteEnabled(false);
         }
@@ -312,6 +315,7 @@ export const ResourceTracker = () => {
 
     function compileStats() {
         let stats = entries.map((entry) => {
+            if (!entry?.energy) return null;
             entry.timestamp = new Date(entry.timestamp);
             return Object.keys(entry.energy).map(key => {
                 const obj: ResourceData = {
@@ -327,7 +331,7 @@ export const ResourceTracker = () => {
                 };
                 return obj;
             });
-        }).flat();
+        }).filter(f => f !== null).flat();
         stats.sort((a, b) => {
             let r = a.timestamp.getTime() - b.timestamp.getTime();
             if (r) return r;

@@ -15,7 +15,6 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     const [energyLog, setEnergyLog] = useStateWithStorage(`energy_log`, {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
     const [energyLogEnabled, setEnergyLogEnabled] = useStateWithStorage(`energy_log_enabled`, {} as EnergyEnabledType, { rememberForever: true });
     const [remoteLogEnabled, setRemoteLogEnabled] = useStateWithStorage(`energy_log_remote_enabled`, {} as EnergyEnabledType, { rememberForever: true });
-    const [oldRemoteLogEnabled, setOldRemoteLogEnabled] = React.useState<boolean | undefined>(undefined);
 
     const { children } = props;
 
@@ -40,7 +39,20 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     }, [playerData, ephemeral, energyLogEnabled, remoteLogEnabled]);
 
     React.useEffect(() => {
-    }, [remoteLogEnabled, playerData]);
+        if (playerData && energyLog) {
+            let dbid = playerData.player.dbid;
+            let log = energyLog[dbid];
+            let newlog = [] as EnergyLogEntry[];
+            for (let r of log) {
+                if (r.energy && !Array.isArray(r.energy)) {
+                    newlog.push(r);
+                }
+            }
+            if (newlog.length !== log.length) {
+                setEnergyLog({...energyLog, [dbid]: newlog });
+            }
+        }
+    }, [energyLog]);
 
     const enabled = getEnabledState();
     const remoteEnabled = getRemoteEnabledState();
@@ -252,7 +264,6 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         let energies = [] as TrackedEnergy[];
         if (res.resources) {
             if (res.resources.length) {
-                let enobj = {} as any;
                 for (let retrack of res.resources) {
                     if (retrack.energy) {
                         energies.push(retrack.energy);
