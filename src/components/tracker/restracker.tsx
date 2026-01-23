@@ -63,6 +63,25 @@ export const ResourceTracker = () => {
         alignItems: 'stretch'
     }
 
+    React.useEffect(() => {
+        if (remoteEnabled && playerData && log && enabled) {
+            const dbid = playerData.player.dbid;
+            const playerLog = log[dbid] ?? [];
+            if (playerLog.length) {
+                searchRemote().then((results) => {
+                    if (!results) return;
+                    let plg = playerLog.filter(li => !li.remote && !results.some(res => (new Date(res.timestamp)).toISOString().slice(0, 16) === (new Date(li.timestamp)).toISOString().slice(0, 16)));
+                    if (plg.length) {
+                        updateRemote(plg).then(() => searchRemote());
+                    }
+                });
+            }
+            else {
+                searchRemote();
+            }
+        }
+    }, [remoteEnabled, playerData, enabled]);
+
     const entries = React.useMemo(() => {
         if (playerData) {
             const dbid = playerData.player.dbid;
