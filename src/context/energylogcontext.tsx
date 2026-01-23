@@ -133,6 +133,9 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
 		let dbid = playerData.player.dbid;
 		energyLog[dbid] = [].slice();
 		setEnergyLog({...energyLog});
+        if (remoteEnabled) {
+            clearRemote();
+        }
 	}
 
     function setEnabled(value: boolean) {
@@ -244,20 +247,23 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         });
     }
 
-    function resToEnergy(res: any) {
-        let energies = [] as TrackedEnergy[];
-        if (res.resources) {
-            if (res.resources.length) {
-                for (let retrack of res.resources) {
-                    if (retrack.energy) {
-                        energies.push(retrack.energy);
-                    }
-                }
+    async function clearRemote() {
+        if (!playerData) return false;
+        let dbid = playerData.player.dbid;
+        let url = `${process.env.GATSBY_DATACORE_URL}api/clearPlayerResources`;
+        let postBody = { dbid };
+         return fetch(url, {
+            method: "POST",
+            body: JSON.stringify(postBody),
+            headers: {
+                "Content-type": "application/json"
             }
-            else if (res.energy) {
-                energies.push(res.energy);
-            }
-        }
-        return energies;
+        })
+        .then(res => res.json())
+        .catch(e => {
+            console.log(`Could not post remote energy`);
+            console.log(e);
+        })
+
     }
 }
