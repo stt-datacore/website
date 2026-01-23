@@ -15,10 +15,42 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     const [energyLog, setEnergyLog] = useStateWithStorage(`energy_log`, {} as EnergyLog, { rememberForever: true, avoidSessionStorage: true });
     const [energyLogEnabled, setEnergyLogEnabled] = useStateWithStorage(`energy_log_enabled`, {} as EnergyEnabledType, { rememberForever: true });
     const [remoteLogEnabled, setRemoteLogEnabled] = useStateWithStorage(`energy_log_remote_enabled`, {} as EnergyEnabledType, { rememberForever: true });
+    const [energyUpdated, setEnergyUpdated] = React.useState(false);
 
     const { children } = props;
 
     React.useEffect(() => {
+        if (!energyUpdated) return;
+        setEnergyUpdated(false);
+        setTimeout(() => {
+            updateEnergy();
+        }, 50);
+    }, [energyUpdated]);
+
+    const enabled = getEnabledState();
+    const remoteEnabled = getRemoteEnabledState();
+
+    const energyData: IEnergyLogContext = {
+        enabled,
+        log: energyLog,
+        setEnabled,
+        setLog: setEnergyLog,
+        clearLog: clearEnergyLog,
+        setRemoteEnabled,
+        remoteEnabled,
+        searchRemote,
+        updateRemote,
+        energyUpdated,
+        setEnergyUpdated
+    };
+
+    return (<>
+        <EnergyLogContext.Provider value={energyData}>
+            {children}
+        </EnergyLogContext.Provider>
+    </>);
+
+    function updateEnergy() {
         if (energyLogEnabled && playerData && ephemeral && energyLogEnabled[playerData.player.dbid]) {
             if (remoteLogEnabled && remoteLogEnabled[playerData.player.dbid]) {
                 let currlog = energyLog[playerData.player.dbid];
@@ -36,28 +68,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 trackEnergy();
             }
         }
-    }, [playerData, ephemeral, energyLogEnabled, remoteLogEnabled]);
-
-    const enabled = getEnabledState();
-    const remoteEnabled = getRemoteEnabledState();
-
-    const energyData: IEnergyLogContext = {
-        enabled,
-        log: energyLog,
-        setEnabled,
-        setLog: setEnergyLog,
-        clearLog: clearEnergyLog,
-        setRemoteEnabled,
-        remoteEnabled,
-        searchRemote,
-        updateRemote
-    };
-
-    return (<>
-        <EnergyLogContext.Provider value={energyData}>
-            {children}
-        </EnergyLogContext.Provider>
-    </>);
+    }
 
     function trackEnergy() {
         if (playerData && ephemeral) {

@@ -7,6 +7,7 @@ import Announcement from '../../components/announcement';
 import { PlayerInfo } from '../../components/playerdata/playerinfo';
 import { PlayerShareNotifications, PlayerSharePanel } from '../../components/playerdata/playershare';
 import { PlayerGlance } from './playerglance';
+import { EnergyLogContext } from './util';
 
 type DashboardProps = {
 	openInputPanel: () => void;
@@ -17,13 +18,21 @@ type DashboardProps = {
 
 const Dashboard = (props: DashboardProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const energyLogContext = React.useContext(EnergyLogContext);
+	const { setEnergyUpdated, energyUpdated } = energyLogContext;
 	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 	const isMobile = globalContext.isMobile;
-	const { playerData, showPlayerGlance, setShowPlayerGlance } = globalContext.player;
+	const { player } = globalContext;
+	const { playerData, showPlayerGlance, setShowPlayerGlance } = player;
 	const { t } = globalContext.localized;
 	const { activePanel, setActivePanel, narrow, openInputPanel } = props;
 	const [mobileHideOverride, setMobileHideOverride] = React.useState(false);
 	const [hideOverrideHidden, setHideOverrideHidden] = React.useState(false);
+
+	React.useEffect(() => {
+		if (energyUpdated) return;
+		setEnergyUpdated(true);
+	}, [player]);
 
 	return (
 		<React.Fragment>
