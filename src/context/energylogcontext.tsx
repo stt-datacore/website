@@ -183,9 +183,12 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                     for (let eobj of energy) {
                         delete eobj.dbid;
                         eobj.remote = true;
-                        eobj.timestamp = new Date(eobj.timestamp);
                         newlog.push(eobj);
                     }
+                    newlog = newlog.map(nl => {
+                        nl.timestamp = new Date(nl.timestamp);
+                        return nl;
+                    });
                     newlog.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
                     newlog = newlog.filter((l, i) => newlog.findLastIndex(l2 => l.timestamp?.toString() === l2?.timestamp?.toString()) === i);
                     energyLog[dbid] = newlog;
