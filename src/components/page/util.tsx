@@ -42,6 +42,7 @@ export interface EnergyLogEntry {
 
 export interface RemoteEnergyLogEntry extends EnergyLogEntry {
     dbid?: number;
+    resources?: TrackedEnergy;
 }
 
 export type EnergyLog = { [ dbid: string ]: EnergyLogEntry[] };

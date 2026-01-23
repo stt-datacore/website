@@ -183,6 +183,10 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                     for (let eobj of energy) {
                         delete eobj.dbid;
                         eobj.remote = true;
+                        if (eobj.resources) {
+                            eobj.energy = eobj.resources;
+                            delete eobj.resources;
+                        }
                         newlog.push(eobj);
                     }
                     newlog = newlog.map(nl => {
