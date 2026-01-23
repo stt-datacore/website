@@ -38,23 +38,6 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
         }
     }, [playerData, ephemeral, energyLogEnabled, remoteLogEnabled]);
 
-    React.useEffect(() => {
-        if (playerData && energyLog) {
-            let dbid = playerData.player.dbid;
-            let log = energyLog[dbid];
-            if (!log?.length) return;
-            let newlog = [] as EnergyLogEntry[];
-            for (let r of log) {
-                if (r.energy && !Array.isArray(r.energy)) {
-                    newlog.push(r);
-                }
-            }
-            if (newlog.length !== log.length) {
-                setEnergyLog({ ...energyLog, [dbid]: newlog });
-            }
-        }
-    }, [energyLog]);
-
     const enabled = getEnabledState();
     const remoteEnabled = getRemoteEnabledState();
 
