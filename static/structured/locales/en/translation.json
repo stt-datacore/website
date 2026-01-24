@@ -1889,8 +1889,21 @@
         "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
         "daily_final": "Final daily captures",
         "enable": "Enable Resource Tracking",
+        "graphs": {
+            "bar": "Bar Chart",
+            "candles": "Candle Chart",
+            "line": "Line Chart",
+            "pie": "Pie Chart",
+            "select": "Select graph"
+        },
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Remote Search",
+        "sections": {
+            "graph": "Graph View",
+            "graph_description": "View graphs of your resource trends.",
+            "table": "Table View",
+            "table_description": "List your resources with differences and averages."
+        },
         "select_view": "Select view",
         "start_date_hint": "If you do not specify a start date for remote searches, 365 days worth of data is returned, by default.",
         "title": "Resource Tracker",

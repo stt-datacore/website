@@ -3,36 +3,43 @@ import React from "react"
 import { ResourceData, transKeys } from "./utils";
 import themes from "../nivo_themes";
 import { GlobalContext } from "../../context/globalcontext";
+import { ResourceGraphProps } from "./graphpicker";
 
 
-export interface ResourceCandleProps {
-    resources: ResourceData[];
-}
 
-export const ResourceCandles = (props: ResourceCandleProps) => {
+export const ResourceCandles = (props: ResourceGraphProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { resources } = props;
-
-    const { data, maxVal } = React.useMemo(() => {
+    const maxDays = props.maxDays || 14;
+    const { data, maxVal, minVal } = React.useMemo(() => {
         let maxVal = 0;
+        let minVal = -1;
         let data: BoxPlotDatum[] = resources.map(res => {
             let group = res.timestamp.toLocaleDateString();
             if (res.amount > maxVal) maxVal = res.amount;
+            if (minVal == -1 || res.amount < minVal) minVal = res.amount;
             return {
                 group,
                 subgroup: t(`global.item_types.${transKeys[res.resource]}`),
-                value: res.amount
+                value: res.amount,
             }
         });
-        return { data, maxVal };
+        let d = new Date();
+        data = data.filter(rec => {
+            let d2 = new Date(rec.group);
+            let diff = Math.ceil((d.getTime() - d2.getTime()) / (1000 * 24 * 60 * 60));
+            if (diff > maxDays) return false;
+            return true;
+        });
+        return { data, maxVal, minVal };
     }, [resources]);
 
     return (<div style={{width: '70vw', height: '70vw'}}>
         <ResponsiveBoxPlot /* or BoxPlot for fixed dimensions */
             data={data}
             margin={{ top: 60, right: 200, bottom: 80, left: 100 }}
-            minValue={0}
+            minValue={minVal}
             maxValue={maxVal}
             theme={themes.dark as any}
             subGroupBy="subgroup"
