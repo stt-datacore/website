@@ -13,32 +13,10 @@ import { downloadData } from "../../utils/crewutils";
 import { simplejson2csv } from "../../utils/misc";
 import { DateRangePicker } from "../base/daterangepicker";
 import { update } from "lodash-es";
+import { ResourceData, transKeys } from "./utils";
+import { ResourceCandles } from "./rescandle";
 
-export type ResourceViewMode = 'resource' | 'update';
 
-export interface ResourceData {
-    resource: string,
-    amount: number,
-    moving_average: number,
-    difference: number,
-    timestamp: Date,
-    average_difference: number,
-    total_difference: number
-    amount_pct: number,
-    change_pct: number
-}
-
-const transKeys = {
-    money: 'credits',
-    premium_purchasable: 'dilithium',
-    honor: 'honor',
-    premium_earnable: 'merits',
-    shuttle_rental_tokens: 'shuttle_token',
-    chrons: 'chronitons',
-    ism: 'ism',
-    quantum: 'quantum',
-
-}
 
 export const ResourceTracker = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -185,6 +163,12 @@ export const ResourceTracker = () => {
         }
     });
 
+    const pctstyle: React.CSSProperties = {
+        color: 'lightblue',
+        fontSize: '0.8em',
+        fontStyle: 'italic'
+    }
+
     return (
         <div style={bodyArea}>
             <div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
@@ -289,6 +273,9 @@ export const ResourceTracker = () => {
                     </>}
                     />
             )}
+            {enabled && stats?.length &&
+                <ResourceCandles resources={stats} />
+            }
             <input
                 type="file"
                 accept="text/json,application/json"
@@ -312,19 +299,19 @@ export const ResourceTracker = () => {
                     {t(`global.item_types.${transKeys[row.resource]}`)}
                 </Table.Cell>
                 <Table.Cell>
-                    {printValue(row)}<br />{(100 * row.amount_pct).toFixed(1)}%
+                    {printValue(row)}<br /><span style={pctstyle}>{(100 * row.amount_pct).toFixed(1)}%</span>
                 </Table.Cell>
                 <Table.Cell>
                     {Math.round(row.moving_average).toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
-                    {Math.round(row.difference).toLocaleString()}<br />{(100 * (row.change_pct)).toFixed(1)}%
+                    {Math.round(row.difference).toLocaleString()}<br /><span style={pctstyle}>{(100 * row.change_pct).toFixed(1)}%</span>
                 </Table.Cell>
                 <Table.Cell>
                     {Math.round(row.average_difference).toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
-                    {Math.round(row.total_difference).toLocaleString()}
+                    {Math.round(row.total_difference).toLocaleString()}<br /><span style={pctstyle}>{(100 * row.total_change_pct).toFixed(1)}%</span>
                 </Table.Cell>
             </Table.Row>
         )
@@ -380,7 +367,8 @@ export const ResourceTracker = () => {
                     total_difference: 0,
                     moving_average: 0,
                     amount_pct: 0,
-                    change_pct: 0
+                    change_pct: 0,
+                    total_change_pct: 0
                 };
                 return obj;
             });
@@ -435,9 +423,10 @@ export const ResourceTracker = () => {
                 let diffs = rstats.map(stat => stat.difference);
                 stat.average_difference = diffs.slice(0, i + 1).reduce((p, n) => p + n, 0) / (i + 1);
                 if (!high[stat.resource]) continue;
-                stat.amount_pct = stat.amount / high[stat.resource];
+                stat.amount_pct = stat.amount / (low[stat.resource] || 1);
                 if (!stat.amount || stat.amount === low[stat.resource] || i == 0) continue;
                 stat.change_pct = stat.difference / stat.amount;
+                stat.total_change_pct = stat.total_difference / stat.amount;
             }
         }
         return stats;
