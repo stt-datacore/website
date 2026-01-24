@@ -103,7 +103,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                     JSON.stringify(elognew[dbid][elognew[dbid].length - 1].energy) !== JSON.stringify(logEntry)
                 ) {
 
-                    let newobj: any = {
+                    let newobj: EnergyLogEntry = {
                         energy: logEntry,
                         timestamp: ts,
                         remote: remoteEnabled
@@ -115,7 +115,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 }
             }
             else {
-                let newobj: any = {
+                let newobj: EnergyLogEntry = {
                     energy: logEntry,
                     timestamp: ts,
                     remote: remoteEnabled
