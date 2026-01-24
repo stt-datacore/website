@@ -1,22 +1,20 @@
-import React from "react"
-import { GlobalContext } from "../../context/globalcontext"
-import { EnergyLog, EnergyLogContext, EnergyLogEntry } from "../page/util";
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
-import { Button, Checkbox, Dropdown, Icon, Message, Popup, Table } from "semantic-ui-react";
+import React from "react";
+import { isMobile } from "react-device-detect";
+import { Button, Checkbox, Dropdown, Icon, Popup, Step, Table } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
 import { PromptContext } from "../../context/promptcontext";
-import { useStateWithStorage } from "../../utils/storage";
-import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { Filter } from "../../model/game-elements";
-import { printChrons, printCredits, printDilithium, printHonor, printISM, printMerits, printQuantum } from "../retrieval/context";
-import { omniSearchFilter } from "../../utils/omnisearch";
 import { downloadData } from "../../utils/crewutils";
 import { simplejson2csv } from "../../utils/misc";
+import { omniSearchFilter } from "../../utils/omnisearch";
+import { useStateWithStorage } from "../../utils/storage";
 import { DateRangePicker } from "../base/daterangepicker";
-import { update } from "lodash-es";
+import { EnergyLogContext, EnergyLogEntry } from "../page/util";
+import { printChrons, printCredits, printDilithium, printHonor, printISM, printMerits, printQuantum } from "../retrieval/context";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
+import { ResourceGraphPicker } from "./graphpicker";
 import { ResourceData, transKeys } from "./utils";
-import { ResourceCandles } from "./rescandle";
-
-
 
 export const ResourceTracker = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -34,6 +32,7 @@ export const ResourceTracker = () => {
     const [resourceFilter, setResourceFilter] = useStateWithStorage<string[]>(`${dbid}/resource_tracker/filters`, []);
     const [compiledStats, setCompiledStats] = React.useState<ResourceData[]>([]);
     const [dailyFinal, setDailyFinal] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/daily_final`, false);
+    const [displayMode, setDisplayMode] = useStateWithStorage<string>(`${dbid}/resource_tracker/display_mode`, 'table');
     const uploadRef = React.useRef<HTMLInputElement>(null);
 
     const bodyArea: React.CSSProperties = {
@@ -259,7 +258,21 @@ export const ResourceTracker = () => {
                     </div>
                 </div>)
             }
-            {enabled && (
+            {enabled && (<>
+             <Step.Group fluid>
+                    <Step active={displayMode === 'table'} onClick={() => setDisplayMode('table')}
+                        style={{width: isMobile ? undefined : '20%'}}>
+                        <Step.Title>{t('resource_tracker.sections.table')}</Step.Title>
+                        <Step.Description>{t('resource_tracker.sections.table_description')}</Step.Description>
+                    </Step>
+                    <Step active={displayMode === 'graph'} onClick={() => setDisplayMode('graph')}
+                        style={{width: isMobile ? undefined : '20%'}}>
+                        <Step.Title>{t('resource_tracker.sections.graph')}</Step.Title>
+                        <Step.Description>{t('resource_tracker.sections.graph_description')}</Step.Description>
+                    </Step>
+                </Step.Group>
+            </>)}
+            {enabled && displayMode === 'table' && (
                 <SearchableTable
                     config={tableConfig}
                     data={stats}
@@ -273,8 +286,11 @@ export const ResourceTracker = () => {
                     </>}
                     />
             )}
-            {enabled && stats?.length &&
-                <ResourceCandles resources={stats} />
+            {enabled && displayMode === 'graph' &&
+                <ResourceGraphPicker
+                    dbid={dbid}
+                    maxDays={getMaxDays()}
+                    resources={stats} />
             }
             <input
                 type="file"
@@ -337,6 +353,24 @@ export const ResourceTracker = () => {
                 }
             }
         ]);
+    }
+
+    function getMaxDays() {
+        if (!startDate && !endDate) return undefined;
+        let sd = startDate;
+        let ed = endDate;
+
+        if (sd) sd = new Date(sd);
+        if (ed) ed = new Date(ed);
+        ed ??= new Date();
+        if (!sd && ed) {
+            sd = new Date(ed);
+            sd.setDate(sd.getDate() - 14);
+        }
+        else if (!sd) {
+            return undefined;
+        }
+        return Math.ceil((ed.getTime() - sd.getTime()) / (1000 * 60 * 60 * 24));
     }
 
     function askClearLog() {
@@ -504,7 +538,8 @@ export const ResourceTracker = () => {
         }
         else if (playerData) {
             let dbid = playerData.player.dbid;
-            text = JSON.stringify(log[dbid], null, 4);
+            let newlog = { [dbid]: log[dbid] };
+            text = JSON.stringify(newlog, null, 4);
         }
         else {
             return;
