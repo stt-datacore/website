@@ -1888,8 +1888,21 @@
         "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
         "daily_final": "Endgültige tägliche Erfassungen",
         "enable": "Ressourcenverfolgung aktivieren",
+        "graphs": {
+            "bar": "Balkendiagramm",
+            "candles": "Kerzendiagramm",
+            "line": "Liniendiagramm",
+            "pie": "Kreisdiagramm",
+            "select": "Diagramm auswählen"
+        },
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Fernsuche",
+        "sections": {
+            "graph": "Grafikansicht",
+            "graph_description": "Sehen Sie sich Grafiken Ihrer Ressourcenentwicklung an.",
+            "table": "Tabellenansicht",
+            "table_description": "Listen Sie Ihre Ressourcen mit den Unterschieden und Durchschnittswerten auf."
+        },
         "select_view": "Ansicht auswählen",
         "start_date_hint": "Wenn Sie kein Startdatum für die Remote-Suche angeben, werden standardmäßig Daten der letzten 365 Tage zurückgegeben.",
         "title": "Ressourcenverfolgung",
