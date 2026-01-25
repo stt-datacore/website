@@ -3,7 +3,7 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import themes from "../nivo_themes";
 import { ResourceGraphProps } from "./graphpicker";
-import { resVal, transKeys } from "./utils";
+import { printTipRecord, ResourceData, resVal, transKeys } from "./utils";
 
 export const ResourceLine = (props: ResourceGraphProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -21,7 +21,8 @@ export const ResourceLine = (props: ResourceGraphProps) => {
             return {
                 group,
                 currency,
-                value: resVal(res[mode!])
+                value: resVal(res[mode!]),
+                data: res
             }
         });
         let d = new Date();
@@ -33,7 +34,7 @@ export const ResourceLine = (props: ResourceGraphProps) => {
         });
         let recout = [] as any[]
         for (let currency of currencies) {
-            let records = data.filter(df => df.currency === currency).map((rec) => ({ x: rec.group, y: rec.value }));
+            let records = data.filter(df => df.currency === currency).map((rec) => ({ x: rec.group, y: rec.value, data: rec.data }));
             //records = records.filter((r, i) => records.findLastIndex(r2 => r.x.getTime() === r2.x.getTime()) === i);
             recout.push({
                 id: currency,
@@ -51,6 +52,13 @@ export const ResourceLine = (props: ResourceGraphProps) => {
             xScale={{ type: 'time', format: '%Y-%m-%d', nice: true }}
             axisBottom={{ legend: '', legendOffset: 36, tickValues: 'every day', format: '%b %d', }}
             axisLeft={{ legend: '', legendOffset: -40 }}
+            tooltip={(data) => {
+                let rec = (data.point.data as any)?.data as ResourceData;
+                if (rec) {
+                    return printTipRecord(rec, t);
+                }
+                return <></>
+            }}
             pointSize={8}
             curve={'monotoneX'}
             pointBorderWidth={2}
