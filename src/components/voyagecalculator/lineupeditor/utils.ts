@@ -21,6 +21,19 @@ export function getRemainingSkills(crew: IVoyageCrew) {
 	return remain;
 }
 
+export function compByRemaining(a: IVoyageCrew, b: IVoyageCrew) {
+	let arem = getRemainingSkills(a);
+	let brem = getRemainingSkills(b);
+	let c = arem.length < brem.length ? arem.length : brem.length;
+	for (let i = 0; i < c; i++) {
+		let aidx = VoyageSlotOrder.indexOf(arem[i]);
+		let bidx = VoyageSlotOrder.indexOf(brem[i]);
+		let r = aidx - bidx;
+		if (r) return r;
+	}
+	return arem.length - brem.length;
+}
+
 export function getProspectiveConfig(voyageConfig: IVoyageInputConfig, ship: Ship | undefined, crewSlots: IProspectiveCrewSlot[]): IProspectiveConfig {
 	const skillAggregates: BaseSkills = {
 		command_skill: { skill: 'command_skill', core: 0, range_min: 0, range_max: 0 },
