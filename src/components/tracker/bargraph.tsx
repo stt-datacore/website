@@ -3,14 +3,15 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import themes from "../nivo_themes";
 import { ResourceGraphProps } from "./graphpicker";
-import { transKeys } from "./utils";
+import { resVal, transKeys } from "./utils";
 
 export const ResourceBar = (props: ResourceGraphProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { resources } = props;
+    const { resources, mode } = props;
     const maxDays = props.maxDays || 14;
-    const { data, maxVal, minVal, groups } = React.useMemo(() => {
+
+    const { data, groups } = React.useMemo(() => {
         let maxVal = 0;
         let minVal = -1;
         let groups = [] as string[];
@@ -21,7 +22,7 @@ export const ResourceBar = (props: ResourceGraphProps) => {
             return {
                 group,
                 currency,
-                value: res.amount
+                value: resVal(res[mode!])
             }
         });
         let d = new Date();
@@ -49,7 +50,7 @@ export const ResourceBar = (props: ResourceGraphProps) => {
             });
         })
         return { data: Object.values(records), maxVal, minVal, groups };
-    }, [resources]);
+    }, [resources, mode]);
 
     return (<div style={{width: '70vw', height: '70vw'}}>
         <ResponsiveBar /* or BoxPlot for fixed dimensions */

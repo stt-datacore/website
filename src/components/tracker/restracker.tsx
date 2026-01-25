@@ -10,11 +10,10 @@ import { omniSearchFilter } from "../../utils/omnisearch";
 import { useStateWithStorage } from "../../utils/storage";
 import { DateRangePicker } from "../base/daterangepicker";
 import { EnergyLogContext, EnergyLogEntry } from "../page/util";
-import { printChrons, printCredits, printDilithium, printHonor, printISM, printMerits, printQuantum } from "../retrieval/context";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { ResourceGraphPicker } from "./graphpicker";
-import { ResourceData, transKeys } from "./utils";
+import { printResourceValue, ResourceData, transKeys } from "./utils";
 
 export const ResourceTracker = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -315,7 +314,7 @@ export const ResourceTracker = () => {
                     {t(`global.item_types.${transKeys[row.resource]}`)}
                 </Table.Cell>
                 <Table.Cell>
-                    {printValue(row)}<br /><span style={pctstyle}>{(100 * row.amount_pct).toFixed(1)}%</span>
+                    {printResourceValue(row)}<br /><span style={pctstyle}>{(100 * row.amount_pct).toFixed(1)}%</span>
                 </Table.Cell>
                 <Table.Cell>
                     {Math.round(row.moving_average).toLocaleString()}
@@ -470,52 +469,7 @@ export const ResourceTracker = () => {
         let str = typeof stat.timestamp === 'string' ? stat.timestamp : ((new Date(stat.timestamp)).toLocaleDateString());
         return str;
     }
-    function printValue(row: ResourceData) {
-        if (row.resource === 'ism') {
-            return (
-                printISM(row.amount)
-            );
-        }
-        else if (row.resource === 'money') {
-            return (
-                printCredits(row.amount)
-            );
-        }
-        else if (row.resource === 'premium_purchasable') {
-            return (
-                printDilithium(row.amount)
-            );
-        }
-        else if (row.resource === 'honor') {
-            return (
-                printHonor(row.amount)
-            );
-        }
-        else if (row.resource === 'premium_earnable') {
-            return (
-                printMerits(row.amount)
-            );
-        }
-        else if (row.resource === 'shuttle_rental_tokens') {
-            return (
-                <>{(row.amount)}</>
-            );
-        }
-        else if (row.resource === 'chrons') {
-            return (
-                printChrons(row.amount)
-            );
-        }
-        else if (row.resource === 'quantum') {
-            return (
-                printQuantum(row.amount)
-            );
-        } else {
-            return (
-                <>{(row.amount)}</>
-            );
-        }
-    }
+
 
     function exportCSV(clipboard?: boolean) {
         const stats = compiledStats;

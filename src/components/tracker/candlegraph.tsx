@@ -1,28 +1,27 @@
 import { BoxPlotDatum, ResponsiveBoxPlot } from "@nivo/boxplot";
-import React from "react"
-import { ResourceData, transKeys } from "./utils";
-import themes from "../nivo_themes";
+import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
+import themes from "../nivo_themes";
 import { ResourceGraphProps } from "./graphpicker";
-
-
+import { resVal, transKeys } from "./utils";
 
 export const ResourceCandles = (props: ResourceGraphProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { resources } = props;
+    const { resources, mode } = props;
     const maxDays = props.maxDays || 14;
     const { data, maxVal, minVal } = React.useMemo(() => {
         let maxVal = 0;
         let minVal = -1;
         let data: BoxPlotDatum[] = resources.map(res => {
             let group = res.timestamp.toLocaleDateString();
-            if (res.amount > maxVal) maxVal = res.amount;
-            if (minVal == -1 || res.amount < minVal) minVal = res.amount;
+            let n = resVal(res[mode!]);
+            if (n > maxVal) maxVal = n;
+            if (minVal == -1 || n < minVal) minVal = n;
             return {
                 group,
                 subgroup: t(`global.item_types.${transKeys[res.resource]}`),
-                value: res.amount,
+                value: n,
             }
         });
         let d = new Date();
@@ -33,7 +32,7 @@ export const ResourceCandles = (props: ResourceGraphProps) => {
             return true;
         });
         return { data, maxVal, minVal };
-    }, [resources]);
+    }, [resources, mode]);
 
     return (<div style={{width: '70vw', height: '70vw'}}>
         <ResponsiveBoxPlot /* or BoxPlot for fixed dimensions */

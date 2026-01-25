@@ -1905,7 +1905,13 @@
             "candles": "Graphique en chandeliers",
             "line": "Graphique linéaire",
             "pie": "Graphique circulaire",
-            "select": "Sélectionnez un graphique"
+            "select": "Sélectionnez un graphique",
+            "view": {
+                "amount": "Montante",
+                "change_pct": "Variation en pourcentage",
+                "select": "Sélectionner Affichage",
+                "total_change_pct": "Variation en pourcentage totale"
+            }
         },
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Recherche à distance",
