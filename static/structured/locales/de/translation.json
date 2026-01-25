@@ -1893,7 +1893,13 @@
             "candles": "Kerzendiagramm",
             "line": "Liniendiagramm",
             "pie": "Kreisdiagramm",
-            "select": "Diagramm auswählen"
+            "select": "Diagramm auswählen",
+            "view": {
+                "amount": "Menge",
+                "change_pct": "Prozentuale Veränderung",
+                "select": "Ansicht auswählen",
+                "total_change_pct": "Gesamte prozentuale Veränderung"
+            }
         },
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Fernsuche",

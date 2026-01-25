@@ -1894,7 +1894,13 @@
             "candles": "Candle Chart",
             "line": "Line Chart",
             "pie": "Pie Chart",
-            "select": "Select graph"
+            "select": "Select graph",
+            "view": {
+                "amount": "Amount",
+                "change_pct": "Percent Change",
+                "select": "Select view",
+                "total_change_pct": "Total Percent Change"
+            }
         },
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Remote Search",

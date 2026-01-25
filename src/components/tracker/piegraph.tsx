@@ -1,15 +1,14 @@
-import { ResponsiveBar } from "@nivo/bar";
+import { ResponsivePie } from "@nivo/pie";
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import themes from "../nivo_themes";
 import { ResourceGraphProps } from "./graphpicker";
-import { transKeys } from "./utils";
-import { ResponsivePie } from "@nivo/pie";
+import { resVal, transKeys } from "./utils";
 
 export const ResourcePie = (props: ResourceGraphProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { resources } = props;
+    const { mode, resources } = props;
     const maxDays = props.maxDays || 14;
     const { data, maxVal, minVal, groups } = React.useMemo(() => {
         let maxVal = 0;
@@ -22,7 +21,7 @@ export const ResourcePie = (props: ResourceGraphProps) => {
             return {
                 group,
                 currency,
-                value: res.total_change_pct * 100
+                value: resVal(res[mode!])
             }
         });
         let d = new Date();
@@ -50,7 +49,7 @@ export const ResourcePie = (props: ResourceGraphProps) => {
             });
         })
         return { data: Object.values(records), maxVal, minVal, groups };
-    }, [resources]);
+    }, [resources, mode]);
 
     return (<div style={{width: '70vw', height: '70vw'}}>
         <ResponsivePie

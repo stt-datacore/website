@@ -1903,7 +1903,13 @@
             "candles": "Gráfico de velas",
             "line": "Gráfico de líneas",
             "pie": "Gráfico circular",
-            "select": "Seleccionar gráfico"
+            "select": "Seleccionar gráfico",
+            "view": {
+                "amount": "Cantidad",
+                "change_pct": "Cambio porcentual",
+                "select": "Seleccionar vista",
+                "total_change_pct": "Cambio porcentual total"
+            }
         },
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Búsqueda remota",
