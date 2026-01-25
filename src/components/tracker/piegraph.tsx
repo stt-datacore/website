@@ -3,7 +3,7 @@ import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import themes from "../nivo_themes";
 import { ResourceGraphProps } from "./graphpicker";
-import { resVal, transKeys } from "./utils";
+import { printTipRecord, ResourceData, resVal, transKeys } from "./utils";
 
 export const ResourcePie = (props: ResourceGraphProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -21,7 +21,8 @@ export const ResourcePie = (props: ResourceGraphProps) => {
             return {
                 group,
                 currency,
-                value: resVal(res[mode!])
+                value: resVal(res[mode!]),
+                data: res
             }
         });
         let d = new Date();
@@ -33,7 +34,7 @@ export const ResourcePie = (props: ResourceGraphProps) => {
             let currency = rec.currency;
             currgroups[group] ??= {} as any;
             currgroups[group][currency] ??= 0;
-            currgroups[group][currency] = rec.value;
+            currgroups[group][currency] = rec;
             if (minVal == -1 || rec.value < minVal) minVal = rec.value;
             if (rec.value > maxVal) maxVal = rec.value;
 
@@ -45,7 +46,9 @@ export const ResourcePie = (props: ResourceGraphProps) => {
             Object.entries(currencies as any).forEach(([currency, value]) => {
                 records[currency] ??= {};
                 records[currency].label ??= currency;
-                records[currency].value = Math.ceil(value as any);
+                records[currency].value = Math.ceil((value as any).value);
+                records[currency].data = (value as any).data;
+
             });
         })
         return { data: Object.values(records), maxVal, minVal, groups };
@@ -57,6 +60,13 @@ export const ResourcePie = (props: ResourceGraphProps) => {
             value={'value'}
             arcLinkLabel={(data) => data.data.label}
             arcLabel={(data) => `${t('global.n_%', { n: data.value })}`}
+            tooltip={(data) => {
+                let rec = data.datum?.data?.data as ResourceData;
+                if (rec) {
+                    return printTipRecord(rec, t);
+                }
+                return <></>
+            }}
             theme={themes.dark}
             margin={{ top: 180, right: 180, bottom: 180, left: 180 }}
             innerRadius={0.4}

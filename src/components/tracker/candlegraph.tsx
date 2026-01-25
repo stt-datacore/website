@@ -13,7 +13,7 @@ export const ResourceCandles = (props: ResourceGraphProps) => {
     const { data, maxVal, minVal } = React.useMemo(() => {
         let maxVal = 0;
         let minVal = -1;
-        let data: BoxPlotDatum[] = resources.map(res => {
+        let data: BoxPlotDatum[] = resources.map((res, idx) => {
             let group = res.timestamp.toLocaleDateString();
             let n = resVal(res[mode!]);
             if (n > maxVal) maxVal = n;
@@ -22,6 +22,7 @@ export const ResourceCandles = (props: ResourceGraphProps) => {
                 group,
                 subgroup: t(`global.item_types.${transKeys[res.resource]}`),
                 value: n,
+                idx
             }
         });
         let d = new Date();
