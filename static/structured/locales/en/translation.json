@@ -2785,6 +2785,7 @@
             "voyage_long_advice": "For a {{h}} hour voyage you will need {{r}} refills at a cost of {{d}} dilithium (or {{re}} {{global.item_types.voyage_consumable}}.)",
             "with_n_am_left": "with {{n}} AM left"
         },
+        "experimental_calculator_x": "Experimental Calculator '{{x}}'",
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
             "enable_remote_tracking": "Enable remote tracking",
