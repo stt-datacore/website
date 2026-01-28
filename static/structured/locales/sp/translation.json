@@ -2794,6 +2794,7 @@
             "voyage_long_advice": "Para un viaje de {{h}} horas, necesitarás {{r}} recargas a un costo de {{d}} dilitio (o {{re}} {{global.item_types.voyage_consumable}}).",
             "with_n_am_left": "con {{n}} AM restante"
         },
+        "experimental_calculator_x": "Calculadora experimental '{{x}}'",
         "history": {
             "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
             "enable_remote_tracking": "Habilitar el seguimiento remoto",

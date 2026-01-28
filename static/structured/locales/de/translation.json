@@ -2784,6 +2784,7 @@
             "voyage_long_advice": "Für eine {{h}} stündige Reise benötigen Sie {{r}} Nachfüllungen zu einem Preis von {{d}} Dilithium (oder {{re}} {{global.item_types.voyage_consumable}}.)",
             "with_n_am_left": "mit {{n}} AM übrig"
         },
+        "experimental_calculator_x": "Experimenteller Rechner „{{x}}“",
         "history": {
             "description": "Behalten Sie den Überblick über Ihre Reisen, sehen Sie, wie Ihre Laufzeiten im Vergleich zu Ihren ursprünglichen Schätzungen abschneiden, und identifizieren Sie die Crew, die Sie am häufigsten einsetzen.",
             "enable_remote_tracking": "Aktivieren Sie die Fernverfolgung",

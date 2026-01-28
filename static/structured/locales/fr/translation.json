@@ -2796,6 +2796,7 @@
             "voyage_long_advice": "Pour un voyage de {{h}} heures, vous aurez besoin de {{r}} recharges pour un coût de {{d}} dilithium (ou {{re}} {{global.item_types.voyage_consumable}}.)",
             "with_n_am_left": "avec {{n}} AM restante"
         },
+        "experimental_calculator_x": "Calculatrice expérimentale « {{x}} »",
         "history": {
             "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
             "enable_remote_tracking": "Activer le suivi à distance",
