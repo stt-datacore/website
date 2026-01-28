@@ -505,7 +505,6 @@ export function iterateBattle(
         let oppo_crew = work_opponent?.battle_stations?.map(m => m.crew).filter(f => !!f) as CrewMember[];
 
         const borg_boss = fbb_mode && work_opponent.symbol.includes('borg');
-
         opponent_variance ??= 0.2;
 
         defense ??= 0;
@@ -536,7 +535,12 @@ export function iterateBattle(
 
         let allactions = structuredClone([...ship.actions ?? [], ...crew.filter(f => f).map(c => c.action)]) as ChargeAction[];
         let oppo_actions = (work_opponent?.actions?.length || oppo_crew?.length) ? structuredClone([...(work_opponent?.actions ?? []), ...(oppo_crew?.map(c => c.action) ?? [])]) as ChargeAction[] : undefined;
-
+        let bossts = 0;
+        if (borg_boss && work_opponent) {
+            if (oppo_actions?.length && oppo_actions[0].ability?.type === 9) {
+                bossts = (oppo_actions[0].ability as any).arg1 || 3;
+            }
+        }
         if (allactions && econf) {
             allactions.forEach((action) => {
                 action.cooldown += econf.cooldown;
@@ -846,16 +850,16 @@ export function iterateBattle(
                                     }
                                     if (!active[i]) {
                                         if (!inited[i]) {
-                                            if (state_time[i] > allactions[i].initial_cooldown) {
-                                                state_time[i] = allactions[i].initial_cooldown;
+                                            if (a > allactions[i].initial_cooldown) {
+                                                a = allactions[i].initial_cooldown;
                                             }
-                                            return Math.min(3 + state_time[i], allactions[i].initial_cooldown);
+                                            return Math.min(bossts + a, allactions[i].initial_cooldown);
                                         }
                                         else {
-                                            if (state_time[i] > allactions[i].cooldown) {
-                                                state_time[i] = allactions[i].cooldown;
+                                            if (a > allactions[i].cooldown) {
+                                                a = allactions[i].cooldown;
                                             }
-                                            return Math.min(3 + state_time[i], allactions[i].cooldown);
+                                            return Math.min(bossts + a, allactions[i].cooldown);
                                         }
                                     }
                                     return a;
