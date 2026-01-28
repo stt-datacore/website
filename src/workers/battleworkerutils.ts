@@ -623,7 +623,6 @@ export function iterateBattle(
         let uses = allactions.map(a => 0);
         let max_uses = allactions.map(a => a.limit ?? 0);
         let state_time = allactions.map(a => 0);
-        let reset_relief = allactions.map(a => 0);
         let inited = allactions.map(a => false);
         let active = allactions.map(a => false);
         let now_chance = 0;
@@ -721,9 +720,6 @@ export function iterateBattle(
 
         const activate = (action: ChargeAction, actidx: number, oppo = false) => {
             let immediate = false as boolean | number;
-
-            // No matter what, if it becomes ready we are no longer eligible for relief.
-            if (!oppo && fbb_mode) reset_relief[actidx] = 0;
 
             if (action.status === 4) {
                 if ((oppo && cloaked) || (!oppo && oppo_cloaked)) {
@@ -844,10 +840,26 @@ export function iterateBattle(
                     if (oppo) {
                         if (borg_boss) {
                             if (doesHit(o_now_chance, true)) {
-                                state_time = state_time.map((a, i) => active[i] ? a : 0);
-                                if (fbb_mode) {
-                                    reset_relief = reset_relief.map((r, i) => active[i] ? 0 : r + relief_factor);
-                                }
+                                state_time = state_time.map((a, i) => {
+                                    if (allactions[i].charge_phases) {
+                                        resetAction(allactions[i]);
+                                    }
+                                    if (!active[i]) {
+                                        if (!inited[i]) {
+                                            if (state_time[i] > allactions[i].initial_cooldown) {
+                                                state_time[i] = allactions[i].initial_cooldown;
+                                            }
+                                            return Math.min(3 + state_time[i], allactions[i].initial_cooldown);
+                                        }
+                                        else {
+                                            if (state_time[i] > allactions[i].cooldown) {
+                                                state_time[i] = allactions[i].cooldown;
+                                            }
+                                            return Math.min(3 + state_time[i], allactions[i].cooldown);
+                                        }
+                                    }
+                                    return a;
+                                });
                             }
                             else {
                                 return false;
@@ -1036,7 +1048,7 @@ export function iterateBattle(
 
             for (actidx = 0; actidx < act_cnt; actidx++) {
                 action = allactions[actidx];
-                state_time[actidx] += (r_inc + (r_inc * reset_relief[actidx]));
+                state_time[actidx] += r_inc;
 
                 if (!inited[actidx]) {
                     if (!activated && state_time[actidx] >= (action.initial_cooldown - 0.01) + delay()) {
