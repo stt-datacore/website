@@ -168,6 +168,7 @@ export interface CrewMember extends QuipmentScores {
     cap_achiever?: CapAchiever;
     preview?: boolean;
     published?: boolean;
+    npe?: boolean;
 }
 
 export interface EquipmentSlot {

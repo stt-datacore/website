@@ -478,14 +478,12 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	templateCrew.q_bits = origCrew.q_bits ?? 0;
 	templateCrew.date_added = origCrew.date_added;
 	templateCrew.preview = origCrew.preview;
+	templateCrew.npe = origCrew.npe;
 	templateCrew.kwipment = origCrew.kwipment;
 	templateCrew.kwipment_expiration = origCrew.kwipment_expiration;
 
-	if (templateCrew.preview === undefined && origCrew.preview !== undefined) {
-		templateCrew.preview = origCrew.preview;
-	}
-
 	templateCrew.preview ??= false;
+	templateCrew.npe ??= false;
 
 	if (origCrew.ranks) {
 		templateCrew.ranks = origCrew.ranks;
@@ -1727,25 +1725,12 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod
 	let obstr = `${crew.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 	else if (obstr === 'FactionStore') obstr = 'Faction';
-
 	if (long) {
 		obstr = t(`obtained.long.${obstr}`);
-		// if (obstr === 'Voyage' || obstr === 'Gauntlet') obstr += " Exclusive";
-		// else if (obstr === 'WebStore') obstr = 'Web Store';
-		// else if (obstr === 'Faction') obstr = 'Faction Store';
-		// else if (obstr === 'Fuse') obstr = 'Exclusive Fusion';
-		// else if (obstr === 'BossBattle') obstr = 'Captain\'s Bridge';
-		// else if (obstr === 'Collection') obstr = 'Collection Milestone';
-		// else if (obstr === 'Missions') obstr = 'Main Board Mission';
-		// else if (obstr === 'Mega') obstr = 'Recurring Mega';
 	}
 	else {
 		obstr = t(`obtained.short.${obstr}`);
-		// if (obstr === 'BossBattle') obstr = 'Bridge';
-		// else if (obstr === 'Fuse') obstr = 'Fusion';
-		// else if (obstr === 'WebStore') obstr = 'Web Store';
 	}
-
 	return obstr;
 }
 
@@ -1777,7 +1762,7 @@ export function printPortalStatus<T extends CrewMember>(crew: T, t: TranslateMet
 	if (obstr !== "") obstr = ` (${obstr})`;
 	let ob = crew.obtained?.toLowerCase() ?? "Unknown";
 
-	if (showNever && (ob.includes("faction") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
+	if (showNever && (crew.npe || ob.includes("faction") || ob.includes("missions") || ob.includes("fuse") || ob.includes("bossbattle") || ob.includes("gauntlet") || ob.includes("honor") || ob.includes("voyage") || ob.includes("collection"))) {
 		return (withPortal ? `${t('base.in_portal')}: ` : "") + `${t('global.never')}${obstr}`;
 	}
 
