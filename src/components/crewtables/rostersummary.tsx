@@ -64,7 +64,8 @@ type RarityDepthProps = {
 	allCrew: CrewMember[];
 };
 
-const RarityDepth = (props: RarityDepthProps) => {
+const RarityDepth = (ctrl_props: RarityDepthProps) => {
+	const props = { ...ctrl_props };
 	const { t } = React.useContext(GlobalContext).localized;
 	const [rarityData, setRarityData] = React.useState<CrewRoster[] | undefined>(undefined);
 
@@ -218,7 +219,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 						<Table.Cell textAlign='center'>{row.unfrozen > 0 ? row.unfrozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.frozen > 0 ? row.frozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.dupes > 0 ? row.dupes : ''}</Table.Cell>
-						{!!npe && <Table.Cell textAlign='center'>{row.npeOwned && row.npeOwned > 0 ? row.npeOwned : ''}</Table.Cell>}
+						{!!npe && <Table.Cell textAlign='center'>{row.npeOwned || ''}</Table.Cell>}
 					</Table.Row>
 				))}
 			</Table.Body>
