@@ -1807,7 +1807,9 @@ export interface CrewRoster {
   unfrozen: number;
   frozen: number;
   dupes: number;
-
+  npeTotal?: number;
+  npeOwned?: number;
+  npePct?: number;
 }
 export interface ContinuumContainer {
   fill_cap: number;

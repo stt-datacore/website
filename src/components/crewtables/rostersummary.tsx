@@ -64,14 +64,18 @@ type RarityDepthProps = {
 	allCrew: CrewMember[];
 };
 
-const RarityDepth = (props: RarityDepthProps) => {
+const RarityDepth = (ctrl_props: RarityDepthProps) => {
+	const props = { ...ctrl_props };
 	const { t } = React.useContext(GlobalContext).localized;
 	const [rarityData, setRarityData] = React.useState<CrewRoster[] | undefined>(undefined);
 
 	const isImmortal = c => c.level === 100 && c.rarity === c.max_rarity && c.equipment?.length === 4;
 
 	React.useEffect(() => {
-		const myCrew = structuredClone(props.myCrew);
+		const myNpes = props.myCrew.filter(crew => crew.npe);
+		const allNpes = props.allCrew.filter(crew => crew.npe);
+		props.allCrew = props.allCrew.filter(f => !f.npe);
+		const myCrew = structuredClone(props.myCrew.filter(f => !f.npe));
 		const uniqueOwned = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol).length > 0);
 		const uniqueImmortal = props.allCrew.filter(crew => myCrew.filter(mc => mc.symbol === crew.symbol && (mc.immortal > 0 || isImmortal(mc))).length > 0);
 		const anyOwnedCount = myCrew.reduce((prev, curr) => prev + (curr.immortal > 0 ? curr.immortal : 1), 0);
@@ -93,7 +97,10 @@ const RarityDepth = (props: RarityDepthProps) => {
 				immortal: anyImmortalCount,
 				unfrozen: anyUnfrozen.length,
 				frozen: uniqueFrozen.reduce((prev, curr) => prev + curr.immortal, 0),
-				dupes: anyOwnedCount - uniqueOwned.length
+				dupes: anyOwnedCount - uniqueOwned.length,
+				npeOwned: myNpes.length,
+				npeTotal: allNpes.length,
+				npePct: myNpes.length / allNpes.length
 			}
 		);
 		for (let i = 1; i <= 5; i++) {
@@ -139,8 +146,14 @@ const RarityDepth = (props: RarityDepthProps) => {
 };
 
 type RarityDepthTableProps = {
-	data: any[];
+	data: CrewRoster[];
 };
+
+type ReducerType = {
+	data: CrewRoster[];
+	column: string | null;
+	direction: 'ascending' | 'descending' | null;
+}
 
 const RarityDepthTable = (props: RarityDepthTableProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
@@ -148,7 +161,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		column: null,
 		data: props.data,
 		direction: null
-	});
+	} as ReducerType);
 	const { column, data, direction } = state;
 
 	React.useEffect(() => {
@@ -167,14 +180,19 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		{ column: 'frozen', title: t('roster_summary.rarity.columns.frozen'), center: true, reverse: true },
 		{ column: 'dupes', title: t('roster_summary.rarity.columns.dupes'), center: true, reverse: true }
 	];
-
+	const npe = !!data.length && !!data[0].npeOwned;
+	if (npe) {
+		tableConfig.push(
+			{ column: 'npeOwned', title: t('base.npe'), center: true, reverse: true }
+		)
+	}
 	return (
 		<Table sortable celled selectable striped unstackable compact='very'>
 			<Table.Header>
 				<Table.Row>
 					{tableConfig.map((cell, idx) => (
 						<Table.HeaderCell key={idx}
-							sorted={column === cell.column ? direction : null}
+							sorted={column === cell.column ? direction ?? undefined : undefined}
 							onClick={() => dispatch({ type: 'CHANGE_SORT', column: cell.column, reverse: cell.reverse })}
 							textAlign={cell.center ? 'center' : 'left'}
 						>
@@ -194,13 +212,14 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 						</Table.Cell>
 						<Table.Cell textAlign='center'>{row.owned} / {row.total}</Table.Cell>
 						<Table.Cell textAlign='center'>{renderPercentCell(row.ownedPct)}</Table.Cell>
-						<Table.Cell textAlign='center'>{renderPercentCell(row.portalPct)}</Table.Cell>
+						<Table.Cell textAlign='center'>{row.portalPct && renderPercentCell(row.portalPct) || ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.progress}</Table.Cell>
 						<Table.Cell textAlign='center'>{renderPercentCell(row.progressPct)}</Table.Cell>
 						<Table.Cell textAlign='center'>{renderImmortalCell(row.rarity, row.immortal)}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.unfrozen > 0 ? row.unfrozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.frozen > 0 ? row.frozen : ''}</Table.Cell>
 						<Table.Cell textAlign='center'>{row.dupes > 0 ? row.dupes : ''}</Table.Cell>
+						{!!npe && <Table.Cell textAlign='center'>{row.npeOwned || ''}</Table.Cell>}
 					</Table.Row>
 				))}
 			</Table.Body>
@@ -231,7 +250,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		);
 	}
 
-	function reducer(state, action): any {
+	function reducer(state: ReducerType, action: any): ReducerType {
 		switch (action.type) {
 			case 'UPDATE_DATA':
 				const updatedData = action.data.slice();
