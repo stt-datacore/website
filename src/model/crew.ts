@@ -170,6 +170,7 @@ export interface CrewMember extends QuipmentScores {
     published?: boolean;
     requiredChronCost?: number;
     requiredFactionItems?: number;
+    npe?: boolean;
 }
 
 export interface EquipmentSlot {
