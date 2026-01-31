@@ -43,6 +43,15 @@ const ItemsPage = (props: ItemsPageProps) => {
 	const { continuum_missions } = globalContext.core;
 
 	React.useEffect(() => {
+		if (typeof window !== 'undefined') {
+			let search = new URLSearchParams(window.location.search);
+			if (search.has('farm')) {
+				setActiveTabIndex(3);
+			}
+		}
+	}, []);
+
+	React.useEffect(() => {
 		if (!hasPlayer && activeTabIndex === 1) {
 			setActiveTabIndex(0);
 		}
@@ -135,6 +144,7 @@ const ItemsPage = (props: ItemsPageProps) => {
 						pool={playerData!.player.character.items as EquipmentItem[]}
 						ownedItems={true}
 						pageId={'roster'}
+						farmMode={activeTabIndex === 3}
 					>
 						<React.Fragment>
 							<DemandsTable

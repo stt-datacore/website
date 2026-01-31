@@ -6,6 +6,7 @@ import { CryoCollection, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, Transla
 import { navigate } from "gatsby";
 import { GlobalContext } from "../../context/globalcontext";
 import { BuffNames, ImmortalNames, ProspectImmortalNames } from "./crew_preparer";
+import CONFIG from "../CONFIG";
 
 const dormantStyle: React.CSSProperties = {
     background: "transparent",
@@ -68,29 +69,42 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
     if (playerData) {
         ccols = playerData.player.character.cryo_collections.filter(cc => ocols.includes(cc.name));
     }
-    return (<div style={{
-        ... (style ?? {}),
-        cursor: "pointer"
-    }}>
-        {crew.collections?.map((col, idx) => {
-            let prog = 0;
-            let goal = 0;
-            if (showProgress) {
-                let rcol = ccols.find(f => f.name === col && f.milestone.goal != 'n/a');
-                if (rcol) {
-                    prog = rcol.progress as number;
-                    goal = rcol.milestone.goal as number;
-                }
+    return (
+        <div style={{
+            ... (style ?? {}),
+            cursor: "pointer"
+        }}>
+            {crew.collections
+                .map(
+                    (col, idx) => {
+                        let prog = 0;
+                        let goal = 0;
+                        if (showProgress) {
+                            let rcol = ccols.find(f => f.name === col && f.milestone.goal != 'n/a');
+                            if (rcol) {
+                                prog = rcol.progress as number;
+                                goal = rcol.milestone.goal as number;
+                            }
+                        }
+                        let color = 'lightgreen';
+                        if (ocols.includes(col) && goal - prog === 1) color = CONFIG.RARITIES[5].color;
+                        return (
+                            <a
+                                key={"collectionText_" + crew.symbol + idx}
+                                onClick={(e) => dispClick(e, col)}
+                                style={{
+                                    color: ocols.includes(col) ? color : undefined
+                                }}>
+                                {col}&nbsp;
+                                {(!!prog && !!goal) && <span style={{color: 'skyblue'}}>({prog} / {goal})</span>}
+                            </a>
+                        )
+                    }
+                )
+                .reduce((prev, next) => <>{prev}, {next}</>)
             }
-            return (
-                <a
-                    style={{
-                        color: ocols.includes(col) ? 'lightgreen' : undefined
-                    }}
-                    onClick={(e) => dispClick(e, col)} key={"collectionText_" + crew.symbol + idx}>
-                    {col} {(!!prog && !!goal) && <span style={{color: 'skyblue'}}>({prog} / {goal})</span>}
-                </a>)})?.reduce((prev, next) => <>{prev}, {next}</>) ?? <></>}
-    </div>)
+        </div>
+    )
 }
 
 export interface HoverSelectorConfig<T> {

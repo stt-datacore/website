@@ -55,6 +55,18 @@ export const FarmTable = (props: FarmTableProps) => {
 
     const [expanded, setExpanded] = React.useState<FarmSources | undefined>(undefined);
 
+
+	React.useEffect(() => {
+		if (typeof window !== 'undefined' && playerData) {
+			let search = new URLSearchParams(window.location.search);
+			if (search.has('farm')) {
+                setTimeout(() => {
+                    setItemFilter('needed');
+                });
+			}
+		}
+	}, [playerData]);
+
     const { searchText, phrases } = React.useMemo(() => {
         const searchText = selectedItems.join(',')
         const phrase = searchText.toLowerCase().trim();
