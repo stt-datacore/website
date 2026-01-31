@@ -1471,7 +1471,7 @@ export function getOverlap(ship: ShipAction, crew: ShipAction) {
     }
     return {
         seconds: bna.filter(f => f).length,
-        starts: bna.filter((f, x) => !x && f || (f && !bna[x-1])).length,
+        starts: bna.filter((f, x) => (!x && f) || (f && !bna[x-1])).length,
         map: bna
     }
 }
