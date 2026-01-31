@@ -1435,3 +1435,43 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
 
     return false;
 }
+
+export function getOverlap(ship: ShipAction, crew: ShipAction) {
+    if (crew.ability?.condition && (ship.status && ship.status !== crew.ability.condition)) return undefined;
+    let begin = [ship.initial_cooldown, crew.initial_cooldown];
+    let nocond = !crew.ability?.condition;
+    let charge = [ship.cooldown, crew.cooldown];
+    let active = [ship.duration, crew.duration];
+    let now = [0, 0];
+    let up = [-1, -1];
+    let bna: boolean[] = [];
+    bna.length = 180;
+
+    for (let sec = 0; sec < 180; sec++) {
+        for (let a = 0; a < 2; a++) {
+            let aup = up[a];
+            let anow = now[a];
+            if ((aup === -1 && anow >= begin[a]) || (aup === 0 && anow >= charge[a])) {
+                if (!a || up[0] || nocond) {
+                    anow = 0;
+                    aup = 1;
+                }
+            }
+            else if (aup === 1 && anow >= active[a]) {
+                anow = 0;
+                aup = 0;
+            }
+            else {
+                anow++;
+            }
+            up[a] = aup;
+            now[a] = anow;
+        }
+        bna[sec] = up[1] === 1;
+    }
+    return {
+        seconds: bna.filter(f => f).length,
+        starts: bna.filter((f, x) => (!x && f) || (f && x && !bna[x-1])).length,
+        map: bna
+    }
+}
