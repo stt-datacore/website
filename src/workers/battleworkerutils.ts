@@ -1462,11 +1462,13 @@ export function getOverlap(ship: ShipAction, crew: ShipAction) {
                 anow = 0;
                 aup = 0;
             }
+            else {
+                anow++;
+            }
             up[a] = aup;
             now[a] = anow;
-            isup = up && (aup === 1);
         }
-        bna[sec] = isup;
+        bna[sec] = up[1] === 1;
     }
     return bna.filter(f => f).length;
 }
