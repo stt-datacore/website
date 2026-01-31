@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label, Table } from 'semantic-ui-react';
+import { Button, Label, Popup, Table } from 'semantic-ui-react';
 
 import CONFIG from '../../../components/CONFIG';
 
@@ -20,6 +20,9 @@ import { OfferCrew } from '../../../model/offers';
 import { formatShipScore } from '../../ship/utils';
 import { printChrons, printCredits } from '../../retrieval/context';
 import { CollectionDisplay } from '../../item_presenters/presenter_utils';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../../stats/utils';
+import { AvatarView } from '../../item_presenters/avatarview';
+import { navigate } from 'gatsby';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean, cheap?: boolean, ocols?: string[]) => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -36,19 +39,15 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 				return r;
 			}
 		 },
-		 { width: 1, column: 'cab_ov', title: <span>{t('base.cab_power')} <CABExplanation /></span>, reverse: true, tiebreakers: ['cab_ov_rank'] },
-		 //  {
-		// 	width: 1, column: 'ranks.scores.tuvix', title: t('rank_names.tuvix'), reverse: true,
-		// 	customCompare: (a: IRosterCrew, b: IRosterCrew) => {
-		// 		if (a.ranks.scores?.tuvix === undefined && b.ranks.scores?.tuvix === undefined) return 0;
-		// 		else if (a.ranks.scores?.tuvix === undefined) return 1;
-		// 		else if (b.ranks.scores?.tuvix === undefined) return -1;
-		// 		let r = a.ranks.scores.tuvix - b.ranks.scores.tuvix;
-		// 		if (!r) r = (b.cab_ov_rank ?? 0) - (a.cab_ov_rank ?? 0);
-		// 		return r;
-		// 	}
-		//  },
+		 {
+			width: 1,
+			column: 'cab_ov',
+			title: <span>{t('base.cab_power')} <CABExplanation /></span>,
+			reverse: true,
+			tiebreakers: ['cab_ov_rank']
+		},
 	);
+
 	if (tableType !== 'offers') {
 		tableConfig.push({ width: 1, column: 'ranks.voyRank', title: <span>{t('base.voyage')} <VoyageExplanation /></span> })
 	}
@@ -247,18 +246,12 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 
 	return (
 		<React.Fragment>
-			{/* <Table.Cell textAlign='center'>
-				<b style={{color: tierColor}}>{formatTierLabel(crew)}</b>
-			</Table.Cell> */}
 			<Table.Cell textAlign='center'>
 				{renderMainDataScore(crew, absRank)}
 			</Table.Cell>
 			<Table.Cell textAlign='center'>
 				{renderCabColumn(crew)}
 			</Table.Cell>
-			{/* <Table.Cell textAlign='center'>
-				<b style={{color: tuvixColor}}>{crew.ranks.scores?.tuvix ?? 0}</b><br />
-			</Table.Cell> */}
 			{tableType !== 'offers' &&
 			<Table.Cell textAlign='center'>
 				<div style={{cursor:"pointer"}} onClick={(e) => navToSearch(crew)} title={crew.skill_order.map(sk => skillToShort(sk)).reduce((p, n) => p ? `${p}/${n}` : n)}>
@@ -272,7 +265,11 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 					{printChrons(Math.ceil(crew.requiredChronCost || 0))}
 				</Table.Cell>
 				<Table.Cell textAlign='left' width={1}>
-					{crew.requiredFactionItems?.toLocaleString() || '0'}
+					<Popup
+						trigger={<Button onClick={() => navigate(`/items?farm=${crew.id}`)}>{crew.requiredFactionItems?.toLocaleString() || '0'}</Button>}
+						content={drawItemsPopup(crew)}
+						/>
+
 				</Table.Cell>
 				<Table.Cell textAlign='left' width={1}>
 					{printCredits(crew.craftCost)}
@@ -342,6 +339,32 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 
 	function getExpiration(offer: OfferCrew) {
 		return ((new Date((offer.seconds_remain! * 1000) + Date.now()).toLocaleDateString()));
+	}
+
+	function drawItemsPopup(crew: IRosterCrew) {
+		if (!crew.factionItems?.length) return <></>;
+
+		return (
+			<div className='ui segment'
+				style={{...OptionsPanelFlexRow}}
+			>
+				{crew.factionItems!.map((item, idx) => {
+
+					return (
+						<div style={{...OptionsPanelFlexColumn}}>
+							<AvatarView
+								mode='item'
+								item={item}
+								size={48}
+								/>
+							<span style={{fontSize: '0.9em'}}>
+								x{item.count}
+							</span>
+						</div>
+					)
+				})}
+			</div>
+		)
 	}
 
 	function renderOffers(crew: IRosterCrew) {
@@ -434,7 +457,6 @@ export function renderMainDataScore(crew: CrewMember, absRank?: boolean) {
 }
 
 export function renderAnyDataScore(crew: CrewMember, key: keyof (RankScoring & Ranks), t: TranslateMethod, with_rarity = false) {
-
 	if (key === 'ship' || key === 'ship_rank') {
 		return formatShipScore(crew.ranks.scores.ship.kind, crew.ranks.scores.ship.overall, t)
 	}

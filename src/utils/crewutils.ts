@@ -2061,7 +2061,7 @@ export function cheapestFFFE(
 			}
 			return totalCost + ((need - have) * bestChronCost(item.equipment!, skirmish));
 		}, 0);
-
+		let factionItems = [] as IDemand[];
 		let requiredFactionItems = neededItems.reduce((totalItems, item) => {
 			let have = profileItems.find((j: any) => j.symbol === item.symbol)?.quantity || 0;
 			let need = item.count;
@@ -2071,12 +2071,14 @@ export function cheapestFFFE(
 			if (!item.factionOnly) {
 				return totalItems;
 			}
+			factionItems.push(item);
 			return totalItems + (need - have);
 		}, 0);
 		return {
 			...c,
 			requiredChronCost,
 			requiredFactionItems,
+			factionItems,
 			craftCost: needed.craftCost,
 		}
 	}).sort((a: any, b: any) => {
