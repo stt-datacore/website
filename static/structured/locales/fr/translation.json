@@ -274,8 +274,11 @@
             },
             "grade": "Grade",
             "immortal_rewards": "Récompenses pour l'immortalisation",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grade étoile"
+            "star_grade": "Grade étoile",
+            "total_owned": "Total possédé"
         },
         "group": {
             "warning": "La vue des collections groupées affiche uniquement l'équipage possédé si la liste des collections n'est pas filtrée."
@@ -310,6 +313,7 @@
             },
             "show_incomplete_combos": "Afficher les combos incomplets",
             "show_maxed_collections": "Afficher les collections maxées",
+            "show_scoring_columns": "Afficher les colonnes de notation",
             "sort_by_cost": "Trier par coût"
         },
         "panes": {
@@ -667,6 +671,7 @@
             "title": "CAB's FBB Combo Chain Helper"
         },
         "chain_n": "Chaîne #{{n}}",
+        "chain_solved": "Votre flotte a résolu tous les nodules de cette chaîne combo. Sélectionnez un autre boss ou mettez à jour vos données de joueur pour actualiser les batailles actives.",
         "columns": {
             "coverage": "Couverture",
             "crew": "{{base.crew}}",
@@ -821,7 +826,8 @@
             "trait_colors_a": "Couleurs des traits",
             "trait_colors_b": "aident à visualiser la rareté de chaque trait par nodule, par exemple, un trait doré signifie que son équipage est le seul équipage possible avec ce trait dans ce nodule, un trait violet est un trait partagé par 2 équipages possibles dans ce nodule, un le trait bleu est partagé par 3 équipages possibles, etc. Notez que les exceptions alpha potentielles sont toujours orange, quelle que soit la rareté.",
             "trait_numbers_a": "Numéros de traits",
-            "trait_numbers_b": "identifient le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
+            "trait_numbers_b": "identifiez le nombre de nodules restants pour lesquels ce trait est éventuellement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool ne sont jamais une solution ou toujours une solution.",
+            "trait_numbers_b_ori": "identifient le nombre de nodules restants pour lesquels ce trait est probablement une solution, sur la base d'une règle non officielle selon laquelle les traits en double dans le pool sont toujours une solution."
         },
         "undo_solve": "Annuler la résolution",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmé résolu",
@@ -1039,6 +1045,7 @@
         "delete": "Masquer",
         "delete_confirm": "Êtes-vous sûr de vouloir supprimer ces données ?",
         "delete_selected": "Masquer la sélection",
+        "difficulty": "Difficulté",
         "disable": "Désactiver",
         "disabled": "Désactivé",
         "dismiss": "Rejeter",
@@ -1057,6 +1064,8 @@
         "filters": "Filtres",
         "filters_warning": "Certains résultats peuvent être masqués en raison de vos options de recherche actuelles.",
         "fleet": "Flotte",
+        "frequency": "Fréquence",
+        "fuses": "Fusions",
         "group_by": "Par groupe",
         "hidden": "Caché",
         "hide": "Masquer",
@@ -1108,6 +1117,7 @@
         "load_defaults": "Charger les défauts",
         "loading_ellipses": "Chargement ...",
         "loading_please_wait_ellipses": "Chargement. S'il vous plaît, attendez...",
+        "loot": "Butin",
         "lose": "Perdre",
         "map_position": "Position sur la carte",
         "max": "Max",
@@ -1150,6 +1160,8 @@
         "quarter_short": "T",
         "quest": "Quête",
         "recommend_crew": "Recommander des équipiers",
+        "refresh": "Refresh",
+        "refresh_remote": "Actualisation à distance",
         "rename": "Renommer",
         "rerun": "Rediffusion",
         "reserved": "Réservé",
@@ -1166,6 +1178,7 @@
         "search_for_x_by_name": "Rechercher {{x}} par nom",
         "search_items": "Rechercher par article",
         "search_items_ellipses": "Rechercher par article...",
+        "search_remote": "Recherche à distance",
         "select_all": "Tout sélectionner",
         "set_as_default_view": "Définir comme vue par défaut",
         "show": "Montre",
@@ -1178,7 +1191,10 @@
         "sort_by": "Trier par",
         "squadron_leader": "Chef d'escadron",
         "supply_kit_active_n": "Kit de fournitures actif ({{n}} % de réduction)",
+        "sync": "Sync à distance",
+        "sync_remote": "Sync Remote",
         "toggle_layout": "Basculer la mise en page",
+        "total": "Total",
         "type": "Type",
         "uncheck_all": "Décochez tout",
         "unselect_all": "Tout désélectionner",
@@ -1190,6 +1206,7 @@
             "title": "Travail en cours !"
         },
         "x_or_better": "{{x}} ou mieux",
+        "x_or_y": "{{x}} ou {{y}}",
         "yes": "Oui",
         "you_own_n_of_y": "Vous possédez {{n}} de {{y}}."
     },
@@ -1518,7 +1535,8 @@
             "share_profile": "Partager le profil",
             "toggle_coloring": "Changer la coloration des classements",
             "toggle_glance": "Basculer le panneau d'aperçu",
-            "update_player_data": "Mettre à jour les données"
+            "update_player_data": "Mettre à jour les données",
+            "view_profile": "Voir votre profil"
         },
         "roster": {
             "crew": "Équipage",
@@ -1645,6 +1663,7 @@
             "advanceable": "Afficher uniquement les équipiers disposant d'emplacements du quipement non réclamés",
             "buyback": "Afficher les équipiers avec les fusibles dans le puits de rachat",
             "dupes": "Afficher uniquement les équipiers en doubles",
+            "expiring": "Afficher uniquement l'équipage expirant",
             "fe": "Afficher uniquement les non-immortels entièrement équipés",
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",
@@ -1869,6 +1888,48 @@
                 "title": "Pondération du Voyage+",
                 "voyage": "{{rank_names.scores.voyage}}"
             }
+        }
+    },
+    "resource_tracker": {
+        "clear": "Effacer le journal des ressources",
+        "columns": {
+            "average_difference": "Différence moyenne",
+            "difference": "Différence",
+            "moving_average": "Moyenne mobile",
+            "resource": "Ressource",
+            "timestamp": "Horodatage",
+            "total_difference": "Différence totale"
+        },
+        "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
+        "daily_final": "Captures quotidiennes finales",
+        "enable": "Activer le suivi des ressources",
+        "graphs": {
+            "bar": "Graphique en barres",
+            "candles": "Graphique en chandeliers",
+            "line": "Graphique linéaire",
+            "pie": "Graphique circulaire",
+            "select": "Sélectionnez un graphique",
+            "view": {
+                "amount": "Montante",
+                "change_pct": "Variation en pourcentage",
+                "select": "Sélectionner Affichage",
+                "total_change_pct": "Variation en pourcentage totale"
+            }
+        },
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Recherche à distance",
+        "sections": {
+            "graph": "Vue graphique",
+            "graph_description": "Consultez les graphiques illustrant l'évolution de vos ressources.",
+            "table": "Vue tableau",
+            "table_description": "Listez vos ressources en indiquant les différences et les moyennes."
+        },
+        "select_view": "Sélectionner la vue",
+        "start_date_hint": "If you do not specify a start date for remote searches, 365 days worth of data is returned, by default.",
+        "title": "Suivi des ressources",
+        "view": {
+            "by_resource": "Par ressource",
+            "by_update": "Selon la dernière mise à jour"
         }
     },
     "retrieval": {
@@ -2494,7 +2555,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Tout voir comme immortalisé"
+            "as_immortalized": "Tout voir comme immortalisé",
+            "cheapestfffe": "Moins cher EFEÉ"
         },
         "title": "Vues spéciales"
     },
@@ -2737,6 +2799,7 @@
             "voyage_long_advice": "Pour un voyage de {{h}} heures, vous aurez besoin de {{r}} recharges pour un coût de {{d}} dilithium (ou {{re}} {{global.item_types.voyage_consumable}}.)",
             "with_n_am_left": "avec {{n}} AM restante"
         },
+        "experimental_calculator_x": "Calculatrice expérimentale « {{x}} »",
         "history": {
             "description": "Suivez vos voyages, comparez vos temps d'exécution à vos estimations initiales et identifiez l'équipage que vous utilisez le plus souvent.",
             "enable_remote_tracking": "Activer le suivi à distance",
