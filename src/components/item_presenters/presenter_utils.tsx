@@ -88,6 +88,7 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
                         }
                         let color = 'lightgreen';
                         if (ocols.includes(col) && goal - prog === 1) color = CONFIG.RARITIES[5].color;
+                        else if (ocols.includes(col) && goal - prog === 2) color = CONFIG.RARITIES[4].color;
                         return (
                             <a
                                 key={"collectionText_" + crew.symbol + idx}
