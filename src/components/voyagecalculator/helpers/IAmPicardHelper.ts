@@ -202,8 +202,7 @@ export class IAmPicardHelper extends Helper {
 			let entry = {
 				slotId: i,
 				choice: crew,
-				hasTrait: crew?.traits.includes(request.voyageConfig.crew_slots[i].trait),
-				hasBonus: crew?.antimatter_bonus
+				hasTrait: crew?.traits.includes(request.voyageConfig.crew_slots[i].trait)
 			} as VoyageSlotEntry;
 
 			for (let skill in CONFIG.SKILLS) {
@@ -214,11 +213,11 @@ export class IAmPicardHelper extends Helper {
 
 			if (entry.hasTrait)
 				config.startAm += 25;
-			if (entry.hasBonus) {
-				config.startAm += entry.hasBonus;
-			}
+
 			config.startAm += (crew.antimatter_bonus ?? 0);
+
 			entries.push(entry);
+
 			eventCrewBonuses.push(getCrewEventBonus(request.voyageConfig, crew as PlayerCrew));
 		}
 

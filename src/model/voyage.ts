@@ -104,7 +104,6 @@ export interface IProposalEntry {
 	slotId: number;
 	choice: PlayerCrew;
 	hasTrait: boolean | number;
-    hasBonus?: number;
 };
 
 export interface IVoyageHistory {
