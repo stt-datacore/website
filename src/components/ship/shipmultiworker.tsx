@@ -67,8 +67,10 @@ export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  Ship
         this.allResults.sort((a, b) => compareShipResults(a, b, fbb_mode));
         let top = 0;
 
-        if (fbb_mode) top = this.allResults[0].fbb_metric;
-        else top = this.allResults[0].arena_metric;
+        if (this.allResults?.length) {
+            if (fbb_mode) top = this.allResults[0].fbb_metric;
+            else top = this.allResults[0].arena_metric;
+        }
 
         this.allResults.forEach((result) => {
             if (fbb_mode) {
