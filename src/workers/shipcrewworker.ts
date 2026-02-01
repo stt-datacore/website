@@ -2,7 +2,9 @@ import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, Mul
 import { CrewMember } from "../model/crew";
 import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
-import { canSeatAll, iterateBattle } from "./battleworkerutils";
+import { canSeatAll, iterateBattle, scoreLineUp } from "./battleworkerutils";
+import { passesMeta } from "./battleworkermeta";
+import { BossShip } from "../model/boss";
 
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerTransportItem }) => boolean = () => true) => {
@@ -22,6 +24,7 @@ const ShipCrewWorker = {
                 rate,
                 ship,
                 simulate,
+                meta
             } = options;
 
             const opponent = opponents?.length ? opponents[0] : undefined;
@@ -136,9 +139,11 @@ const ShipCrewWorker = {
             const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 30);
 
             var last_high: ShipWorkerTransportItem | null = null;
+            let lqscore = 0;
             var errors = false;
 
             const fbb_mode = battle_mode.startsWith('fbb');
+            let lmode: any = fbb_mode ? opponent?.symbol.includes('borg') ? 'evade' : 'heal' : 'arena';
 
             let c = ship.battle_stations!.length;
             let cbs = [] as number[][];
@@ -159,7 +164,7 @@ const ShipCrewWorker = {
             });
 
             let resultcount = 0;
-
+            lqscore = 0;
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
@@ -178,13 +183,16 @@ const ShipCrewWorker = {
                 }
 
                 if (event_crew && !set.find(f => f.id === event_crew.id)) return false;
-
+                if (meta && !passesMeta(ship, set, meta, fbb_mode ? opponent as BossShip : undefined)) return false;
                 let newseats = canSeatAll(allseat, ship, set, !!ignore_skill);
                 if (!newseats) {
                     return false;
                 }
 
                 let res = newseats.map((set) => {
+                    // let qscore = scoreLineUp(ship, set, lmode);
+                    // if (qscore < lqscore) return;
+                    // lqscore = qscore;
                     let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate, opponent_variance, false, false, false, effects);
                     let attack = processBattleRun(battle_data, set);
 

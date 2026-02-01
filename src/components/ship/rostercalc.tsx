@@ -6,7 +6,7 @@ import { BossEffect, BossShip } from "../../model/boss";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
+import { LineUpMeta, ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 import { getHighest, prepareOne } from "../../utils/crewutils";
 import { formatRunTime } from "../../utils/misc";
 import { AllBosses, bossFromBattleMode, compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
@@ -965,9 +965,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             return;
         }
         if (ships?.length && crew?.length) {
-
-            let max_rarity = ship.rarity;
-            if (battleMode === 'fbb_4') max_rarity = 5;
+            let max_rarity = 5; // ship.rarity;
+            //if (battleMode === 'fbb_4') max_rarity = 5;
 
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             results.length = 0;
@@ -981,7 +980,28 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     }
                 }
             }
-
+            let meta: LineUpMeta | undefined = undefined;
+            if (battleMode.includes('fbb')) {
+                // if (battleConfig.opponent?.symbol?.includes('borg')) {
+                //     if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+                //         meta = 'fbb_0_healer_evasion';
+                //     }
+                //     else {
+                //         meta = 'fbb_1_healer_evasion';
+                //     }
+                // }
+                // else {
+                //     if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+                //         meta = 'fbb_1_healer';
+                //     }
+                //     else {
+                //         meta = 'fbb_2_healer';
+                //     }
+                // }
+            }
+            else {
+                meta = 'arena_boom';
+            }
             const config: ShipWorkerConfig = {
                 event_crew: ccrew ? structuredClone(ccrew) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
@@ -1004,7 +1024,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 fixed_activation_delay: fixedActivationDelay,
                 opponent_variance: variance,
                 rate,
-                effects: applyBossEffects ? battleConfig.effects : undefined
+                effects: applyBossEffects ? battleConfig.effects : undefined,
+                meta: meta ? { meta } : undefined
             };
 
             results.length = 0;
