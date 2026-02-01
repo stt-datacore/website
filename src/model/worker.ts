@@ -299,6 +299,7 @@ export interface IPolestarCrew extends CompactCrew {
     unique: boolean;
 }
 
+
 export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IMutualPolestarWorkerItem> {
     allPolestars: string[];
     crew: IPolestarCrew[];
@@ -308,8 +309,49 @@ export interface IMutualPolestarInternalWorkerConfig extends WorkerConfigBase<IM
     max_rarity?: number;
     non_unique?: number;
 }
+
+export type LineUpMeta =
+    // Standard Arena Line-ups. Damage heavy or crit heavy.
+    'arena_boom' |
+    'arena_crit' |
+    'arena_even' |
+    // Aggressive Arena Line-ups. All damage or all crit.
+    'arena_boom_all' |
+    'arena_crit_all' |
+
+    // Standard Arena Line-ups with one wildcard berth.
+    'arena_boom_wildcard' |
+    'arena_crit_wildcard' |
+
+    // Healer-meta Boss Battles
+    'fbb_1_healer' |
+    'fbb_1_healer_wildcard' |
+    'fbb_2_healer' |
+
+    // Evasion-meta Boss Battles
+    'fbb_1_healer_evasion' |
+    'fbb_1_healer_evasion_wildcard' |
+    'fbb_2_healer_evasion' |
+
+    // Kamakaze Boss Battles
+    'fbb_0_healer' |
+    'fbb_0_healer_evasion' |
+    'fbb_0_healer_wildcard' |
+
+    // Custom
+    'custom';
+
+export type CustomMeta = { type: number, count: number }[];
+
+export interface LineUpMetaConfig {
+    meta: LineUpMeta;
+    label?: string;
+    custom?: CustomMeta;
+}
+
 export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
     ranking_method: ShipRankingMethod,
+    meta?: LineUpMetaConfig;
     event_crew?: CrewMember,
     crew: CrewMember[],
     battle_mode: BattleMode,
@@ -341,7 +383,6 @@ export interface MultiShipWorkerConfig extends ShipWorkerConfigBase {
     ships: Ship[],
 }
 
-
 export interface AttackInstant {
   actions: ShipAction[];
   second: number;
@@ -363,7 +404,6 @@ export interface AttackInstant {
   opponent_cloaked: boolean;
   comes_from: ComesFrom[]
 }
-
 
 export interface ShipWorkerItem {
     id: number;

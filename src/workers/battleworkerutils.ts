@@ -1436,14 +1436,51 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
     return false;
 }
 
-export function scoreSetup(ship: Ship, crew: CrewMember[]) {
+export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'heal' | 'evade') {
     let results = getUpMap(ship, crew);
-    let a_att = results.attack_map.reduce((p, n) => p + n, 0) / results.attack_seconds;
-    let a_eva = results.evasion_map.reduce((p, n) => p + n, 0) / results.evasion_seconds;
-    let a_acc = results.accuracy_map.reduce((p, n) => p + n, 0) / results.accuracy_seconds;
+    let a_att = results.attack_map.reduce((p, n) => p + n, 0);
+    let a_eva = results.evasion_map.reduce((p, n) => p + n, 0);
+    let a_acc = results.accuracy_map.reduce((p, n) => p + n, 0);
+    let ab = ship.actions!.length;
 
-    crew.map(c => c.action).map((a, idx) => a.ability?.type === 1 ? idx : -1).filter(f => f !== -1);
+    let boomidx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 1 ? ab + idx : -1).filter(f => f !== -1);
+    let boomstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && boomidx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
+    let booms = boomstarts.reduce((p, n) => p + n);
+    let critidx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 5 ? ab + idx : -1).filter(f => f !== -1);
+    let critstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && critidx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
+    let crits = critstarts.reduce((p, n) => p + n);
+
+    let hridx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 2 ? ab + idx : -1).filter(f => f !== -1);
+    let hrstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && hridx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
+    let hrs = hrstarts.reduce((p, n) => p + n);
+
+    if (mode === 'heal') {
+        return (a_att * 3) + a_acc + a_eva + hrs + ((booms + crits) / 2);
+    }
+    if (mode === 'evade') {
+        return (a_eva * 3) + (a_att * 2) + a_acc + (hrs * 0.5) + ((booms + crits) / 2);
+    }
+    if (mode === 'arena') {
+        let decloak_penalty = 0;
+        let cloakidx = [...ship.actions!, ...crew.map(c => c.action)].map((a, idx) => a.status === 2 ? idx : -1).filter(f => f !== -1);
+        if (cloakidx.length) {
+            let c = results.up_map.length;
+            let initcloaked = false;
+            let cloak_exp = 0;
+            for (cloak_exp = 0; cloak_exp < c; cloak_exp++) {
+                if (cloakidx.some(idx => results.up_map[cloak_exp][idx] === 1) && !initcloaked) initcloaked = true;
+                else if (cloakidx.some(idx => results.up_map[cloak_exp][idx] === 0) && initcloaked) break;
+            }
+            let first_hit = results.up_map.findIndex((ups, idx) => idx < cloak_exp && ups.some((up, ux) => up && !cloakidx.includes(ux)));
+            if (first_hit !== -1) {
+                decloak_penalty = 0.35 * (cloak_exp - first_hit);
+            }
+        }
+        return ((a_att * 1.75) + (a_acc * 1.25) + a_eva + booms + crits) / (1 + decloak_penalty);
+    }
+    return a_att + a_eva + a_acc + booms + hrs + crits;
 }
+
 export function getUpMap(ship: Ship, crew: CrewMember[]) {
     let actions = [...ship.actions!];
     actions = actions.concat(crew.map(c => c.action));
