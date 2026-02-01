@@ -337,6 +337,7 @@ export const ShipTable = (props: ShipTableProps) => {
 		}
 
 		let pship = mode === 'all' ? playerShips?.find(f => f.symbol === ship.symbol) : undefined;
+		let activated = activeMode && activeMode.ship === ship;
 
 		return (<Table.Row key={idx}>
 			<Table.Cell>
@@ -365,16 +366,33 @@ export const ShipTable = (props: ShipTableProps) => {
 					<div style={{ display: 'flex' }}>
 						{formatShipScore('ship', ship.ranks?.overall, t)}
 					</div>
+					<div>
+						#{ship.ranks!.overall_rank}
+					</div>
 				</Table.Cell>
-				<Table.Cell>
+				<Table.Cell style={{cursor: activated ? 'zoom-in' : 'zoom-out'}}
+							onClick={() => activated ? setActiveMode(undefined) : setActiveMode({ ship, mode: 'arena'})}>
 					<div style={{ display: 'flex' }}>
 						{formatShipScore('ship', ship.ranks?.arena, t)}
 					</div>
+					<div>
+						#{ship.ranks!.arena_rank}
+					</div>
+					{activated && activeMode?.mode === 'arena' && <div>
+						{printTestCrew(ship)}
+					</div>}
 				</Table.Cell>
-				<Table.Cell>
+				<Table.Cell style={{cursor: activated ? 'zoom-in' : 'zoom-out'}}
+							onClick={() => activated ? setActiveMode(undefined) : setActiveMode({ ship, mode: 'fbb', boss: 'all' })}>
 					<div style={{ display: 'flex' }}>
 						{formatShipScore('ship', ship.ranks?.fbb, t)}
 					</div>
+					<div>
+						#{ship.ranks!.fbb_rank}
+					</div>
+					{activated && activeMode?.mode === 'fbb' && activeMode?.boss === 'all' && <div>
+						{printTestCrew(ship, 'all')}
+					</div>}
 				</Table.Cell>
 			</>}
 			{breakoutBosses && (<>
@@ -471,7 +489,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 			return (
 				<div className={'ui label'} style={{width: '200px', margin: '1em 0'}} key={`__deet_head_${deet.boss?.ship_name}_${deet.division}`}>
-					<h4>{deet.boss?.ship_name} {deet.boss?.rarity}*</h4>
+					{!!fbb && <h4>{deet.boss?.ship_name} {deet.boss?.rarity}*</h4>}
 					<div style={{...OptionsPanelFlexColumn, alignItems: 'flex-start', gap: '1em'}}>
 						{deet.crew.map(c => {
 							return (
@@ -505,7 +523,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			ecrew = globalContext.core.crew;
 		}
 		if (fbb && ship.ranks?.divisions.fbb_crew) {
-			let bosses = getBosses(ship).filter(f => f.symbol === fbb);
+			let bosses = getBosses(ship).filter(f => fbb === 'all' || f.symbol === fbb);
 			if (bosses?.length) {
 				return Object.entries(ship.ranks.divisions.fbb_crew).map(([division, crew]) => {
 					return {
