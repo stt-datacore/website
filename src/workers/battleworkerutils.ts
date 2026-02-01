@@ -123,9 +123,10 @@ export const PowerTable = {
 
 export function getShipNumber(raw_value: number) {
     let final = 0;
-    Object.entries(PowerTable).forEach(([condensed, power]) => {
+    for (let [condensed, power] of Object.entries(PowerTable)) {
         if (raw_value >= power) final = Number.parseInt(condensed);
-    });
+        else break;
+    }
     return final;
 }
 
@@ -286,7 +287,6 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
             }
         }
     }
-
 
     // record these seperately in case needed
     let ability = {
@@ -1485,12 +1485,14 @@ export function getUpMap(ship: Ship, crew: CrewMember[]) {
     let attack_map = up_map.map(ups => ups.map((u, i) => u ? attmap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
     let evasion_map = up_map.map(ups => ups.map((u, i) => u ? evamap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
     let accuracy_map = up_map.map(ups => ups.map((u, i) => u ? accmap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let start_map = up_map.map((ups, ux) => ups.map((u, i) => (!i && !!u) || (!!u && !up_map[ux][i-1])));
     let up_seconds = up_map.filter(u => u.some(uu => uu)).length;
     let attack_seconds = attack_map.filter(a => a).length;
     let evasion_seconds = evasion_map.filter(a => a).length;
     let accuracy_seconds = accuracy_map.filter(a => a).length;
     return {
         up_map,
+        start_map,
         attack_map,
         evasion_map,
         accuracy_map,
