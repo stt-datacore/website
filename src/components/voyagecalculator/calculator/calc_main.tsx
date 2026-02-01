@@ -40,7 +40,7 @@ const PlayerCalculator = (props: PlayerCalculatorProps) => {
 	const { useQPConfig } = qpContext;
 
 	const voyageTypePath: string = props.voyageType === 'encounter' ? '/encounter' : '';
-	const defaultCalculator: string = props.voyageType === 'encounter' ? 'ussjohnjay-mvam' : 'iampicard';
+	const defaultCalculator: string = 'ussjohnjay-mvam'; // props.voyageType === 'encounter' ? 'ussjohnjay-mvam' : 'iampicard';
 
 	const [calculator, setCalculator] = useStateWithStorage<string>(
 		`${props.dbid}/voyage/calculator${voyageTypePath}`,
