@@ -341,6 +341,35 @@ export type LineUpMeta =
     // Custom
     'custom';
 
+export const BuiltInMetas: LineUpMeta[] = [
+     // Standard Arena Line-ups. Damage heavy or crit heavy.
+    'arena_boom',
+    'arena_crit',
+    'arena_even',
+    // Aggressive Arena Line-ups. All damage or all crit.
+    'arena_boom_all',
+    'arena_crit_all',
+
+    // Standard Arena Line-ups with one wildcard berth.
+    'arena_boom_wildcard',
+    'arena_crit_wildcard',
+
+    // Healer-meta Boss Battles
+    'fbb_1_healer',
+    'fbb_1_healer_wildcard',
+    'fbb_2_healer',
+
+    // Evasion-meta Boss Battles
+    'fbb_1_healer_evasion',
+    'fbb_1_healer_evasion_wildcard',
+    'fbb_2_healer_evasion',
+
+    // Kamakaze Boss Battles
+    'fbb_0_healer',
+    'fbb_0_healer_evasion',
+    'fbb_0_healer_wildcard'
+];
+
 export type CustomMeta = { type: number, count: number }[];
 
 export interface LineUpMetaConfig {
