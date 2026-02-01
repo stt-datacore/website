@@ -1512,10 +1512,20 @@ export function getUpMap(ship: Ship, crew: CrewMember[]) {
                     upstatus[i] = action.status;
                     now[i] = 0;
                     active[i] = 1;
+                    if (actions[i].ability?.type === 10) {
+                        for (let a = 0; a < alen; a++) {
+                            if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                        }
+                    }
                 }
                 else if (!action.ability?.condition || upstatus.includes(action.ability.condition)) {
                     now[i] = 0;
                     active[i] = 1;
+                    if (actions[i].ability?.type === 10) {
+                        for (let a = 0; a < alen; a++) {
+                            if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                        }
+                    }
                 }
             }
             else if (up[i] === 1 && now[i] >= active[i]) {

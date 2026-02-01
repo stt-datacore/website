@@ -10,8 +10,16 @@ export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfi
 export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | CustomMeta | LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean {
     function cloakcheck() {
         let cloaks = ship.actions!.filter(f => f.status === 2);
+        let cds = ship.actions!.filter(f => f.status === 10);
         if (cloaks.length) {
-            if (!cloaks.every(cloak => crew.every(c => c.action.initial_cooldown >= cloak.initial_cooldown + cloak.duration))) return false;
+            let cnd = 0;
+            if (cds.length) {
+                let fcd = cds.find(f => f.initial_cooldown < cloaks[0].initial_cooldown + cloaks[0].duration);
+                if (fcd) {
+                    cnd = fcd.ability!.amount;
+                }
+            }
+            if (!cloaks.every(cloak => crew.every(c => c.action.initial_cooldown - cnd >= cloak.initial_cooldown + cloak.duration))) return false;
         }
         return true;
     }
