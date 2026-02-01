@@ -123,9 +123,10 @@ export const PowerTable = {
 
 export function getShipNumber(raw_value: number) {
     let final = 0;
-    Object.entries(PowerTable).forEach(([condensed, power]) => {
+    for (let [condensed, power] of Object.entries(PowerTable)) {
         if (raw_value >= power) final = Number.parseInt(condensed);
-    });
+        else break;
+    }
     return final;
 }
 
@@ -286,7 +287,6 @@ export function getInstantPowerInfo(ship: Ship, actions: (ShipAction | false)[],
             }
         }
     }
-
 
     // record these seperately in case needed
     let ability = {
@@ -1436,6 +1436,128 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
     return false;
 }
 
+export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'heal' | 'evade') {
+    let results = getUpMap(ship, crew);
+    let a_att = results.attack_map.reduce((p, n) => p + n, 0);
+    let a_eva = results.evasion_map.reduce((p, n) => p + n, 0);
+    let a_acc = results.accuracy_map.reduce((p, n) => p + n, 0);
+    let ab = ship.actions!.length;
+
+    let boomidx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 1 ? ab + idx : -1).filter(f => f !== -1);
+    let boomstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && boomidx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
+    let booms = boomstarts.reduce((p, n) => p + n);
+    let critidx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 5 ? ab + idx : -1).filter(f => f !== -1);
+    let critstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && critidx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
+    let crits = critstarts.reduce((p, n) => p + n);
+
+    let hridx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 2 ? ab + idx : -1).filter(f => f !== -1);
+    let hrstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && hridx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
+    let hrs = hrstarts.reduce((p, n) => p + n);
+
+    if (mode === 'heal') {
+        return (a_att * 3) + a_acc + a_eva + hrs + ((booms + crits) / 2);
+    }
+    if (mode === 'evade') {
+        return (a_eva * 3) + (a_att * 2) + a_acc + (hrs * 0.5) + ((booms + crits) / 2);
+    }
+    if (mode === 'arena') {
+        let decloak_penalty = 0;
+        let cloakidx = [...ship.actions!, ...crew.map(c => c.action)].map((a, idx) => a.status === 2 ? idx : -1).filter(f => f !== -1);
+        if (cloakidx.length) {
+            let c = results.up_map.length;
+            let initcloaked = false;
+            let cloak_exp = 0;
+            for (cloak_exp = 0; cloak_exp < c; cloak_exp++) {
+                if (cloakidx.some(idx => results.up_map[cloak_exp][idx] === 1) && !initcloaked) initcloaked = true;
+                else if (cloakidx.some(idx => results.up_map[cloak_exp][idx] === 0) && initcloaked) break;
+            }
+            let first_hit = results.up_map.findIndex((ups, idx) => idx < cloak_exp && ups.some((up, ux) => up && !cloakidx.includes(ux)));
+            if (first_hit !== -1) {
+                decloak_penalty = 0.35 * (cloak_exp - first_hit);
+            }
+        }
+        return ((a_att * 1.75) + (a_acc * 1.25) + a_eva + booms + crits) / (1 + decloak_penalty);
+    }
+    return a_att + a_eva + a_acc + booms + hrs + crits;
+}
+
+export function getUpMap(ship: Ship, crew: CrewMember[]) {
+    let actions = [...ship.actions!];
+    actions = actions.concat(crew.map(c => c.action));
+    let up_map = [] as number[][];
+    up_map.length = 180;
+    let begin = actions.map(a => a.initial_cooldown);
+    let charge = actions.map(a => a.cooldown);
+    let active = actions.map(a => a.duration);
+    let now = actions.map(_ => 0);
+    let up = actions.map(_ => -1);
+    let upstatus = actions.map(_ => 0);
+    let alen = actions.length;
+    let amtmap = actions.map(a => {
+        if (a.ability?.type === 0) {
+            return a.bonus_amount + a.ability.amount;
+        }
+        return a.bonus_amount;
+    });
+
+    let attmap = amtmap.map((a, i) => actions[i].bonus_type === 0 ? a : 0);
+    let evamap = amtmap.map((a, i) => actions[i].bonus_type === 1 ? a : 0);
+    let accmap = amtmap.map((a, i) => actions[i].bonus_type === 2 ? a : 0);
+
+    for (let sec = 0; sec < 180; sec++) {
+        for (let i = 0; i < alen; i++) {
+            let action = actions[i];
+            if ((up[i] === -1 && now[i] >= begin[i]) || (up[i] === 0 && now[i] >= charge[i])) {
+                if (action.status) {
+                    upstatus[i] = action.status;
+                    now[i] = 0;
+                    active[i] = 1;
+                    if (actions[i].ability?.type === 10) {
+                        for (let a = 0; a < alen; a++) {
+                            if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                        }
+                    }
+                }
+                else if (!action.ability?.condition || upstatus.includes(action.ability.condition)) {
+                    now[i] = 0;
+                    active[i] = 1;
+                    if (actions[i].ability?.type === 10) {
+                        for (let a = 0; a < alen; a++) {
+                            if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                        }
+                    }
+                }
+            }
+            else if (up[i] === 1 && now[i] >= active[i]) {
+                now[i] = 0;
+                active[i] = 0;
+                upstatus[i] = 0;
+            }
+            now[i]++;
+        }
+        up_map[sec] = [...active];
+    }
+    let attack_map = up_map.map(ups => ups.map((u, i) => u ? attmap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let evasion_map = up_map.map(ups => ups.map((u, i) => u ? evamap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let accuracy_map = up_map.map(ups => ups.map((u, i) => u ? accmap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let start_map = up_map.map((ups, ux) => ups.map((u, i) => (!i && !!u) || (!!u && !up_map[ux][i-1])));
+    let up_seconds = up_map.filter(u => u.some(uu => uu)).length;
+    let attack_seconds = attack_map.filter(a => a).length;
+    let evasion_seconds = evasion_map.filter(a => a).length;
+    let accuracy_seconds = accuracy_map.filter(a => a).length;
+    return {
+        up_map,
+        start_map,
+        attack_map,
+        evasion_map,
+        accuracy_map,
+        up_seconds,
+        attack_seconds,
+        evasion_seconds,
+        accuracy_seconds
+    }
+}
+
 export function getOverlap(ship: ShipAction, crew: ShipAction) {
     if (crew.ability?.condition && (ship.status && ship.status !== crew.ability.condition)) return undefined;
     let begin = [ship.initial_cooldown, crew.initial_cooldown];
@@ -1446,7 +1568,6 @@ export function getOverlap(ship: ShipAction, crew: ShipAction) {
     let up = [-1, -1];
     let bna: boolean[] = [];
     bna.length = 180;
-
     for (let sec = 0; sec < 180; sec++) {
         for (let a = 0; a < 2; a++) {
             let aup = up[a];
@@ -1461,9 +1582,7 @@ export function getOverlap(ship: ShipAction, crew: ShipAction) {
                 anow = 0;
                 aup = 0;
             }
-            else {
-                anow++;
-            }
+            anow++;
             up[a] = aup;
             now[a] = anow;
         }
