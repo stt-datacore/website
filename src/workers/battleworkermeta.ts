@@ -4,10 +4,10 @@ import { Ship } from "../model/ship";
 import { CustomMeta, LineUpMeta, LineUpMetaConfig } from "../model/worker";
 import { getBosses, getCrewDivisions, getShipDivision } from "../utils/shiputils";
 
-export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfig, boss?: BossShip, arena_division?: number): boolean;
-export function passesMeta(ship: Ship, crew: CrewMember[], meta: CustomMeta, boss?: BossShip, arena_division?: number): boolean;
-export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfig, boss?: BossShip, arena_division?: number): boolean;
-export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | CustomMeta | LineUpMetaConfig, boss?: BossShip, arena_division?: number): boolean {
+export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
+export function passesMeta(ship: Ship, crew: CrewMember[], meta: CustomMeta, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
+export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
+export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | CustomMeta | LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean {
     if (typeof meta !== 'string') {
         if (Array.isArray(meta)) {
             return meta.every(m => crew.filter(c => c.action.ability?.type === m.type).length >= m.count);
@@ -37,10 +37,14 @@ export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | Cu
         if (meta.startsWith('arena_crit')) return crew.some(c => c.action?.ability?.type === 5);
         return crew.some(c => c.action?.ability?.type === 2);
     }
-
+    if (!ignore_cloak && meta.startsWith('arena')) {
+        let cloaks = ship.actions!.filter(f => f.status === 2);
+        if (cloaks.length) {
+            if (!cloaks.every(cloak => crew.every(c => c.action.initial_cooldown >= cloak.initial_cooldown + cloak.duration))) return false;
+        }
+    }
     if (meta === 'arena_boom_all') return crew.every(c => c.action?.ability?.type === 1);
     if (meta === 'arena_crit_all') return crew.every(c => c.action?.ability?.type === 5);
-
     if (ship.battle_stations!.length === 2) {
         if (meta === 'arena_boom_wildcard') return crew.some(c => c.action?.ability?.type === 1);
         if (meta.startsWith('arena')) return crew.some(c => c.action?.ability?.type === 1) && crew.some(c => c.action?.ability?.type === 5);
