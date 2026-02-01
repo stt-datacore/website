@@ -6,7 +6,7 @@ import { getBosses, getCrewDivisions, getShipDivision } from "../utils/shiputils
 
 export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
 export function passesMeta(ship: Ship, crew: CrewMember[], meta: CustomMeta, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
-export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
+export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean;
 export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | CustomMeta | LineUpMetaConfig, boss?: BossShip, arena_division?: number, ignore_cloak?: boolean): boolean {
     function cloakcheck() {
         let cloaks = ship.actions!.filter(f => f.status === 2);

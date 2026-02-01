@@ -1436,8 +1436,8 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
     return false;
 }
 
-export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'heal' | 'evade') {
-    let results = getUpMap(ship, crew);
+export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'heal' | 'evade', max = 180) {
+    let results = getUpMap(ship, crew, max);
     let a_att = results.attack_map.reduce((p, n) => p + n, 0);
     let a_eva = results.evasion_map.reduce((p, n) => p + n, 0);
     let a_acc = results.accuracy_map.reduce((p, n) => p + n, 0);
@@ -1445,20 +1445,20 @@ export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'hea
 
     let boomidx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 1 ? ab + idx : -1).filter(f => f !== -1);
     let boomstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && boomidx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
-    let booms = boomstarts.reduce((p, n) => p + n);
+    let booms = boomstarts.reduce((p, n) => p + n, 0);
     let critidx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 5 ? ab + idx : -1).filter(f => f !== -1);
     let critstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && critidx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
-    let crits = critstarts.reduce((p, n) => p + n);
+    let crits = critstarts.reduce((p, n) => p + n, 0);
 
     let hridx = crew.map(c => c.action).map((a, idx) => a.ability?.type === 2 ? ab + idx : -1).filter(f => f !== -1);
     let hrstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && hridx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
-    let hrs = hrstarts.reduce((p, n) => p + n);
+    let hrs = hrstarts.reduce((p, n) => p + n, 0);
 
     if (mode === 'heal') {
-        return (a_att * 3) + a_acc + a_eva + hrs + ((booms + crits) / 2);
+        return (a_att * 4) + a_acc + a_eva + hrs + ((booms + crits) / 2);
     }
     if (mode === 'evade') {
-        return (a_eva * 3) + (a_att * 2) + a_acc + (hrs * 0.5) + ((booms + crits) / 2);
+        return (a_eva * 7) + (a_att * 3) + a_acc + (hrs * 0.5) + ((booms + crits) / 2);
     }
     if (mode === 'arena') {
         let decloak_penalty = 0;
@@ -1481,14 +1481,16 @@ export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'hea
     return a_att + a_eva + a_acc + booms + hrs + crits;
 }
 
-export function getUpMap(ship: Ship, crew: CrewMember[]) {
+export function getUpMap(ship: Ship, crew: CrewMember[], max = 180) {
     let actions = [...ship.actions!];
     actions = actions.concat(crew.map(c => c.action));
     let up_map = [] as number[][];
-    up_map.length = 180;
+    up_map.length = max;
     let begin = actions.map(a => a.initial_cooldown);
     let charge = actions.map(a => a.cooldown);
     let active = actions.map(a => a.duration);
+    let limits = actions.map(a => a.limit || 0);
+    let starts = actions.map(_ => 0);
     let now = actions.map(_ => 0);
     let up = actions.map(_ => -1);
     let upstatus = actions.map(_ => 0);
@@ -1504,26 +1506,30 @@ export function getUpMap(ship: Ship, crew: CrewMember[]) {
     let evamap = amtmap.map((a, i) => actions[i].bonus_type === 1 ? a : 0);
     let accmap = amtmap.map((a, i) => actions[i].bonus_type === 2 ? a : 0);
 
-    for (let sec = 0; sec < 180; sec++) {
+    for (let sec = 0; sec < max; sec++) {
         for (let i = 0; i < alen; i++) {
             let action = actions[i];
             if ((up[i] === -1 && now[i] >= begin[i]) || (up[i] === 0 && now[i] >= charge[i])) {
-                if (action.status) {
-                    upstatus[i] = action.status;
-                    now[i] = 0;
-                    active[i] = 1;
-                    if (actions[i].ability?.type === 10) {
-                        for (let a = 0; a < alen; a++) {
-                            if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                if (!limits[i] || starts[i] < limits[i]) {
+                    if (action.status) {
+                        upstatus[i] = action.status;
+                        now[i] = 0;
+                        active[i] = 1;
+                        starts[i]++;
+                        if (actions[i].ability?.type === 10) {
+                            for (let a = 0; a < alen; a++) {
+                                if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                            }
                         }
                     }
-                }
-                else if (!action.ability?.condition || upstatus.includes(action.ability.condition)) {
-                    now[i] = 0;
-                    active[i] = 1;
-                    if (actions[i].ability?.type === 10) {
-                        for (let a = 0; a < alen; a++) {
-                            if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                    else if (!action.ability?.condition || upstatus.includes(action.ability.condition)) {
+                        now[i] = 0;
+                        active[i] = 1;
+                        starts[i]++;
+                        if (actions[i].ability?.type === 10) {
+                            for (let a = 0; a < alen; a++) {
+                                if (a !== i && !active[a]) now[a] += actions[i].ability!.amount;
+                            }
                         }
                     }
                 }
