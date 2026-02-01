@@ -1436,6 +1436,71 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
     return false;
 }
 
+export function getUpMap(ship: Ship, crew: CrewMember[]) {
+    let actions = [...ship.actions!];
+    actions = actions.concat(crew.map(c => c.action));
+    let up_map = [] as number[][];
+    up_map.length = 180;
+    let begin = actions.map(a => a.initial_cooldown);
+    let charge = actions.map(a => a.cooldown);
+    let active = actions.map(a => a.duration);
+    let now = actions.map(_ => 0);
+    let up = actions.map(_ => -1);
+    let upstatus = actions.map(_ => 0);
+    let alen = actions.length;
+    let amtmap = actions.map(a => {
+        if (a.ability?.type === 0) {
+            return a.bonus_amount + a.ability.amount;
+        }
+        return a.bonus_amount;
+    });
+
+    let attmap = amtmap.map((a, i) => actions[i].bonus_type === 0 ? a : 0);
+    let evamap = amtmap.map((a, i) => actions[i].bonus_type === 1 ? a : 0);
+    let accmap = amtmap.map((a, i) => actions[i].bonus_type === 2 ? a : 0);
+
+    for (let sec = 0; sec < 180; sec++) {
+        for (let i = 0; i < alen; i++) {
+            let action = actions[i];
+            if ((up[i] === -1 && now[i] >= begin[i]) || (up[i] === 0 && now[i] >= charge[i])) {
+                if (action.status) {
+                    upstatus[i] = action.status;
+                    now[i] = 0;
+                    active[i] = 1;
+                }
+                else if (!action.ability?.condition || upstatus.includes(action.ability.condition)) {
+                    now[i] = 0;
+                    active[i] = 1;
+                }
+            }
+            else if (up[i] === 1 && now[i] >= active[i]) {
+                now[i] = 0;
+                active[i] = 0;
+                upstatus[i] = 0;
+            }
+            now[i]++;
+        }
+        up_map[sec] = [...active];
+    }
+    let attack_map = up_map.map(ups => ups.map((u, i) => u ? attmap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let evasion_map = up_map.map(ups => ups.map((u, i) => u ? evamap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let accuracy_map = up_map.map(ups => ups.map((u, i) => u ? accmap[i] : 0).reduce((p, n) => p > n ? p : n, 0));
+    let up_seconds = up_map.filter(u => u.some(uu => uu)).length;
+    let attack_seconds = attack_map.filter(a => a).length;
+    let evasion_seconds = evasion_map.filter(a => a).length;
+    let accuracy_seconds = accuracy_map.filter(a => a).length;
+    return {
+        up_map,
+        attack_map,
+        evasion_map,
+        accuracy_map,
+        up_seconds,
+        attack_seconds,
+        evasion_seconds,
+        accuracy_seconds
+    }
+}
+
 export function getOverlap(ship: ShipAction, crew: ShipAction) {
     if (crew.ability?.condition && (ship.status && ship.status !== crew.ability.condition)) return undefined;
     let begin = [ship.initial_cooldown, crew.initial_cooldown];
@@ -1446,7 +1511,6 @@ export function getOverlap(ship: ShipAction, crew: ShipAction) {
     let up = [-1, -1];
     let bna: boolean[] = [];
     bna.length = 180;
-
     for (let sec = 0; sec < 180; sec++) {
         for (let a = 0; a < 2; a++) {
             let aup = up[a];
@@ -1461,9 +1525,7 @@ export function getOverlap(ship: ShipAction, crew: ShipAction) {
                 anow = 0;
                 aup = 0;
             }
-            else {
-                anow++;
-            }
+            anow++;
             up[a] = aup;
             now[a] = anow;
         }
