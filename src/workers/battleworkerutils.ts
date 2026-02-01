@@ -1436,6 +1436,14 @@ export function canSeatAll(precombined: number[][][], ship: Ship, crew: CrewMemb
     return false;
 }
 
+export function scoreSetup(ship: Ship, crew: CrewMember[]) {
+    let results = getUpMap(ship, crew);
+    let a_att = results.attack_map.reduce((p, n) => p + n, 0) / results.attack_seconds;
+    let a_eva = results.evasion_map.reduce((p, n) => p + n, 0) / results.evasion_seconds;
+    let a_acc = results.accuracy_map.reduce((p, n) => p + n, 0) / results.accuracy_seconds;
+
+    crew.map(c => c.action).map((a, idx) => a.ability?.type === 1 ? idx : -1).filter(f => f !== -1);
+}
 export function getUpMap(ship: Ship, crew: CrewMember[]) {
     let actions = [...ship.actions!];
     actions = actions.concat(crew.map(c => c.action));
