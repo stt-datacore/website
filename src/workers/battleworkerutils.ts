@@ -1081,7 +1081,10 @@ export function iterateBattle(
                     c_boarding = powerInfo.computed.boarding_damage_per_sec / rate;
                     boarding_sec = powerInfo.computed.boarding_damage_per_sec;
                     now_speed = powerInfo.computed.attacks_per_second;
-
+                    if (oppo_powerInfo) {
+                        now_chance = hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion);
+                        o_now_chance = hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss);
+                    }
                     if (activation !== true) {
                         immediates.push({
                             base: (powerInfo.computed.attack.base * activation),
