@@ -64,7 +64,11 @@ export const ResourceTracker = () => {
             const dbid = playerData.player.dbid;
             if (!enabled) return [].slice();
             log[dbid] ??= [];
-            return log[dbid];
+            return log[dbid].sort((a, b) => {
+                if (typeof a.timestamp === 'string') a.timestamp = new Date(a.timestamp);
+                if (typeof b.timestamp === 'string') b.timestamp = new Date(b.timestamp);
+                return a.timestamp.getTime() - b.timestamp.getTime();
+            });
         }
         else {
             return [].slice();
@@ -72,7 +76,6 @@ export const ResourceTracker = () => {
     }, [playerData, log, enabled]);
 
     React.useEffect(() => {
-
         if (enabled) {
             let stats = compileStats();
             setCompiledStats(stats);
@@ -91,19 +94,14 @@ export const ResourceTracker = () => {
         });
     }, [compiledStats, startDate, endDate]);
 
-    const minDate = React.useMemo(() => {
-        if (!compiledStats?.length || remoteEnabled) return undefined;
-        let d = new Date(compiledStats[0].timestamp);
-        d.setDate(d.getDate() - 1);
-        return d;
-    }, [compiledStats]);
-
-    const maxDate = React.useMemo(() => {
-        if (!compiledStats?.length || remoteEnabled) return new Date();
-        let d = new Date(compiledStats[compiledStats.length - 1].timestamp);
-        d.setDate(d.getDate() + 1);
-        return d;
-    }, [compiledStats]);
+    const { minDate, maxDate } = React.useMemo(() => {
+        if (!entries?.length || remoteEnabled) return { minDate: undefined, maxDate: new Date() };
+        let minDate = new Date(entries[0].timestamp);
+        minDate.setDate(minDate.getDate() - 1);
+        let maxDate = new Date(entries[entries.length - 1].timestamp);
+        maxDate.setDate(maxDate.getDate() + 1);
+        return { minDate, maxDate };
+    }, [entries]);
 
     if (!playerData) {
         return (

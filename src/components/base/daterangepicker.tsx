@@ -21,15 +21,27 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const { minDate, maxDate, startDate, endDate, setStartDate, setEndDate } = props;
 
+    const config = React.useMemo(() => {
+        const startValue = getValue('start');
+        const startMin = getMinDate('start');
+        const startMax = getMaxDate('start');
+        const endValue = getValue('end');
+        const endMin = getMinDate('end');
+        const endMax = getMaxDate('end');
+        return { startValue, startMin, startMax, endValue, endMin, endMax };
+    }, [minDate, maxDate, startDate, endDate]);
+
+    const { startValue, startMin, startMax, endValue, endMin, endMax } = config;
+
     return (<>
         <div style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
             <span>{t('global.date_start')}</span>
             <Form.Input
                 style={{minWidth: !isMobile ? '14.25em' : undefined}}
                 type='date'
-                value={getValue('start')}
-                min={getMinDate('start')}
-                max={getMaxDate('start')}
+                value={startValue}
+                min={startMin}
+                max={startMax}
                 onChange={(e, { value }) => setValue(value, 'start')}
             />
         </div>
@@ -38,9 +50,9 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
             <Form.Input
                 style={{minWidth: !isMobile ? '14.25em' : undefined}}
                 type='date'
-                value={getValue('end')}
-                min={getMinDate('end')}
-                max={getMaxDate('end')}
+                value={endValue}
+                min={endMin}
+                max={endMax}
                 onChange={(e, { value }) => setValue(value, 'end')}
             />
         </div>}
@@ -54,8 +66,13 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
             if (d1.getTime() < d2.getTime()) return d1.toISOString().slice(0, 10);
             else return d2.toISOString().slice(0, 10);
         }
-        else if (d1) return d1.toISOString().slice(0, 10);
-        else if (d2) return d2.toISOString().slice(0, 10);
+        if (widget === 'end') {
+            if (d1) return d1.toISOString().slice(0, 10);
+            else if (d2) return d2.toISOString().slice(0, 10);
+        }
+        else {
+            if (d1) return d1.toISOString().slice(0, 10);
+        }
         return undefined;
     }
 
@@ -67,8 +84,13 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
             if (d1.getTime() > d2.getTime()) return d1.toISOString().slice(0, 10);
             else return d2.toISOString().slice(0, 10);
         }
-        else if (d1) return d1.toISOString().slice(0, 10);
-        else if (d2) return d2.toISOString().slice(0, 10);
+        if (widget === 'start') {
+            if (d1) return d1.toISOString().slice(0, 10);
+            else if (d2) return d2.toISOString().slice(0, 10);
+        }
+        else {
+            if (d1) return d1.toISOString().slice(0, 10);
+        }
         return undefined;
     }
 
