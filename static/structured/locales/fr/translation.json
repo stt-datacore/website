@@ -483,6 +483,7 @@
         "custom": {
             "core": "Base",
             "gauntlet": "Gantelet",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Paires de Navettes",
             "voyage": "Voyage"
         },

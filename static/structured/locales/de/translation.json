@@ -475,6 +475,7 @@
         "custom": {
             "core": "Kern",
             "gauntlet": "Herausforderung",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Shuttle-Paare",
             "voyage": "Reise"
         },

@@ -481,6 +481,7 @@
         "custom": {
             "core": "Básica",
             "gauntlet": "Reto",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Pares de Lanzadera",
             "voyage": "Viaje"
         },

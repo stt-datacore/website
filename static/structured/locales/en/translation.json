@@ -475,6 +475,7 @@
         "custom": {
             "core": "Core",
             "gauntlet": "Gauntlet",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Shuttle Pairs",
             "voyage": "Voyage"
         },
