@@ -1655,6 +1655,7 @@
             "fe": "Nur voll ausgestattete Nicht-Unsterbliche anzeigen",
             "fodder": "Nur nicht fusionierte Crew anzeigen",
             "freezable": "Nur einfrierbare Crew anzeigen",
+            "fuse_dupes": "Nur schmelzbare doppelte Crew anzeigen",
             "impact": "Nur Crew anzeigen, die 1 Sicherung benötigt",
             "liminal": "Zeigen Sie nur die Crew, die 1 oder 2 Sicherungen benötigt",
             "mortal": "Nur Nicht-Unsterbliche anzeigen",

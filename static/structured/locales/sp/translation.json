@@ -1665,6 +1665,7 @@
             "fe": "Mostrar solo a los no inmortales completamente equipados",
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
+            "fuse_dupes": "Mostrar solo la tripulación duplicada fusible",
             "impact": "Solo muestra al tripulación que necesita 1 fusible",
             "liminal": "Solo muestra a la tripulación que necesita 1 o 2 fusibles",
             "mortal": "Mostrar sólo a los no inmortales",

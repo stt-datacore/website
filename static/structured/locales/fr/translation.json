@@ -1667,6 +1667,7 @@
             "fe": "Afficher uniquement les non-immortels entièrement équipés",
             "fodder": "Afficher uniquement les équipiers non fusionnés",
             "freezable": "Afficher uniquement les équipiers congelables",
+            "fuse_dupes": "Afficher uniquement les équipiers doubles fusibles",
             "impact": "Afficher uniquement les équipiers ayant besoin d'un fusible",
             "liminal": "Afficher uniquement les équipiers ayant besoin de 1 ou 2 fusibles",
             "mortal": "Afficher uniquement les non-immortels",

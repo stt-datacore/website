@@ -1656,6 +1656,7 @@
             "fe": "Only show fully equipped non-immortals",
             "fodder": "Only show unfused crew",
             "freezable": "Only show freezable crew",
+            "fuse_dupes": "Only show fusible duplicate crew",
             "impact": "Only show crew needing 1 fuse",
             "liminal": "Only show crew needing 1 or 2 fuses",
             "mortal": "Only show non-immortals",
