@@ -115,9 +115,11 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 
     setTimeout(() => {
         if (requestRun) {
-            cancel();
-            runWorker();
             setRequestRun(false);
+            cancel();
+            setTimeout(() => {
+                runWorker();
+            }, 100);
         }
     }, 500);
 
