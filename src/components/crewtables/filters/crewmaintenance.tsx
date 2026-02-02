@@ -18,7 +18,7 @@ type CrewMaintenanceFilterProps = {
 export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { crewFilters, setCrewFilters } = props;
+	const { crewFilters, setCrewFilters, rosterCrew } = props;
 	const [maintenanceFilter, setMaintenanceFilter] = React.useState('');
 
 	const maintenanceOptions = [
@@ -68,7 +68,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 			crewFilters.push({ id: 'maintenance', filterTest: filterByMaintenance });
 		}
 		setCrewFilters([...crewFilters]);
-	}, [maintenanceFilter]);
+	}, [maintenanceFilter, rosterCrew]);
 
 	return (
 		<Form.Field>
