@@ -1526,7 +1526,7 @@
             "toggle_coloring": "Toggle grade coloring",
             "toggle_glance": "Toggle Overview Panel",
             "update_player_data": "Update Player Data",
-            "view_profile": "View Your Profile"
+            "view_profile": "View and Export Profile"
         },
         "roster": {
             "crew": "Crew",
@@ -1731,6 +1731,7 @@
         "download": {
             "complete_spreadsheet": "Complete spreadsheet",
             "crew_table": "Crew Table",
+            "crew_table_all": "Owned and Unowned Crew",
             "item_table": "Item Table",
             "ship_table": "Ship Table"
         },
