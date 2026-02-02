@@ -1537,7 +1537,7 @@
             "toggle_coloring": "Changer la coloration des classements",
             "toggle_glance": "Basculer le panneau d'aperçu",
             "update_player_data": "Mettre à jour les données",
-            "view_profile": "Voir votre profil"
+            "view_profile": "Voir et exporter le profil"
         },
         "roster": {
             "crew": "Équipage",
@@ -1742,6 +1742,7 @@
         "download": {
             "complete_spreadsheet": "Feuille de calcul complète",
             "crew_table": "Tableau de l'équipage",
+            "crew_table_all": "Équipage possédé et non possédé",
             "item_table": "Tableau des éléments",
             "ship_table": "Tableau des vaisseaux"
         },

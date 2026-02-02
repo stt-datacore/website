@@ -1535,7 +1535,7 @@
             "toggle_coloring": "Alternar coloración de rango",
             "toggle_glance": "Alternar panel de un vistazo",
             "update_player_data": "Actualizar datos del jugador",
-            "view_profile": "Ver tu perfil"
+            "view_profile": "Ver y exportar perfil"
         },
         "roster": {
             "crew": "Tripulación",
@@ -1740,6 +1740,7 @@
         "download": {
             "complete_spreadsheet": "Hoja de cálculo completa",
             "crew_table": "Tabla de tripulación",
+            "crew_table_all": "Tripulación propia y ajena",
             "item_table": "Tabla de elementos",
             "ship_table": "Tabla de buques"
         },
