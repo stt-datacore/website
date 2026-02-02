@@ -18,7 +18,7 @@ type CrewMaintenanceFilterProps = {
 export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { crewFilters, setCrewFilters } = props;
+	const { crewFilters, setCrewFilters, rosterCrew } = props;
 	const [maintenanceFilter, setMaintenanceFilter] = React.useState('');
 
 	const maintenanceOptions = [
@@ -35,6 +35,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		{ key: 'threshold', value: 'threshold', text: t('options.roster_maintenance.threshold') },
 		{ key: 'fodder', value: 'fodder', text: t('options.roster_maintenance.fodder') },
 		{ key: 'dupes', value: 'dupes', text: t('options.roster_maintenance.dupes') },
+		{ key: 'fuse_dupes', value: 'fuse_dupes', text: t('options.roster_maintenance.fuse_dupes') },
 		{ key: 'expiring', value: 'expiring', text: t('options.roster_maintenance.expiring') },
 		{ key: 'buyback', value: 'buyback', text: t('options.roster_maintenance.buyback') },
 	];
@@ -53,6 +54,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		if (maintenanceFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (maintenanceFilter === 'fodder' && !crew.expires_in && (crew.max_rarity === 1 || crew.rarity !== 1)) return false;
 		if (maintenanceFilter === 'dupes' && props.rosterCrew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
+		if (maintenanceFilter === 'fuse_dupes' && props.rosterCrew.filter((c) => c.symbol === crew.symbol && !c.immortal).length < 2) return false;
 		if (maintenanceFilter === 'buyback') {
 			if (!globalContext.player.playerData?.buyback_well?.length) return false;
 			if (crew.rarity === crew.max_rarity) return false;
@@ -68,7 +70,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 			crewFilters.push({ id: 'maintenance', filterTest: filterByMaintenance });
 		}
 		setCrewFilters([...crewFilters]);
-	}, [maintenanceFilter]);
+	}, [maintenanceFilter, rosterCrew]);
 
 	return (
 		<Form.Field>
