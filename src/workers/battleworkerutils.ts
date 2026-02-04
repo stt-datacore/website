@@ -1455,7 +1455,7 @@ export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'hea
         return (a_att * 4) + a_acc + a_eva + hrs + ((booms + crits) / 2);
     }
     if (mode === 'evade') {
-        return (a_eva * 7) + (a_att * 3) + a_acc + (hrs * 0.5) + ((booms + crits) / 2);
+        return (a_eva * 3) + (a_att * 3) + a_acc + (hrs * 0.25) + ((booms + crits) / 2);
     }
     if (mode === 'arena') {
         let decloak_penalty = 0;

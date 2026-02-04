@@ -190,9 +190,9 @@ const ShipCrewWorker = {
                 }
 
                 let res = newseats.map((set) => {
-                    let qscore = scoreLineUp(ship, set, lmode);
-                    if (qscore < lqscore) return;
-                    lqscore = qscore;
+                    // let qscore = scoreLineUp(ship, set, lmode);
+                    // if (qscore < lqscore - 12000) return;
+                    // lqscore = qscore;
                     let battle_data = iterateBattle(rate, fbb_mode, ship, set, opponent, defense, offense, time, activation_offsets, fixed_activation_delay, simulate, opponent_variance, false, false, false, effects);
                     let attack = processBattleRun(battle_data, set);
 
