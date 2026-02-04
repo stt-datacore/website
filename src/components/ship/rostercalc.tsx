@@ -982,22 +982,23 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
             let meta: LineUpMeta | undefined = undefined;
             if (battleMode.includes('fbb')) {
-                // if (battleConfig.opponent?.symbol?.includes('borg')) {
-                //     if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
-                //         meta = 'fbb_0_healer_evasion';
-                //     }
-                //     else {
-                //         meta = 'fbb_1_healer_evasion';
-                //     }
-                // }
-                // else {
-                //     if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
-                //         meta = 'fbb_1_healer';
-                //     }
-                //     else {
-                //         meta = 'fbb_2_healer';
-                //     }
-                // }
+                if (battleConfig.opponent?.symbol?.includes('borg')) {
+                    meta = 'fbb_0_healer_evasion';
+                    // if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+                    //     meta = 'fbb_0_healer_evasion';
+                    // }
+                    // else {
+                    //     meta = 'fbb_1_healer_evasion';
+                    // }
+                }
+                else {
+                    if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+                        meta = 'fbb_1_healer';
+                    }
+                    else {
+                        meta = 'fbb_2_healer';
+                    }
+                }
             }
             else {
                 meta = 'arena_boom';
