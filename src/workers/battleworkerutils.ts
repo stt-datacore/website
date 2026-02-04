@@ -569,14 +569,14 @@ export function iterateBattle(
             else {
                 if (oppo) {
                     o_static_sim_hitter += ((o_now_speed / rate) * chance);
-                    if (o_static_sim_hitter >= o_now_speed - (o_now_speed * (opponent_variance ?? 0))) {
+                    if (o_static_sim_hitter >= (1 / o_now_speed) - ((1 / o_now_speed) * (opponent_variance ?? 0))) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
                     static_sim_hitter += ((now_speed / rate) * chance);
-                    if (static_sim_hitter >= now_speed) {
+                    if (static_sim_hitter >= (1 / now_speed)) {
                         static_sim_hitter = 0;
                         return true;
                     }
@@ -850,15 +850,9 @@ export function iterateBattle(
                                     }
                                     if (!active[i]) {
                                         if (!inited[i]) {
-                                            if (a > allactions[i].initial_cooldown) {
-                                                a = allactions[i].initial_cooldown;
-                                            }
                                             return Math.min(bossts + a, allactions[i].initial_cooldown);
                                         }
                                         else {
-                                            if (a > allactions[i].cooldown) {
-                                                a = allactions[i].cooldown;
-                                            }
                                             return Math.min(bossts + a, allactions[i].cooldown);
                                         }
                                     }
