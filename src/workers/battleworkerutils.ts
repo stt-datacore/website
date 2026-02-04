@@ -738,29 +738,28 @@ export function iterateBattle(
                     let current_base = 0;
                     let current_total = 0;
                     let notype = true;
-                    if (action.bonus_type === 0 && (!action.ability || action.ability.type === 0)) {
+
+                    if (action.bonus_type === 0) {
                         current_base = powerInfo?.condensed.base.attack;
                         current_total = powerInfo?.condensed.active.attack;
-                        if (action.ability?.type === 0) {
-                            proposed_boost = action.bonus_amount + action.ability.amount;
-                            notype = false;
-                        }
-                        else {
-                            proposed_boost = action.bonus_amount;
-                        }
                     }
-                    else if (!action.ability) {
-                        if (action.bonus_type === 1) {
-                            current_base = powerInfo?.condensed.base.evasion;
-                            current_total = powerInfo?.condensed.active.evasion;
-                            proposed_boost = action.bonus_amount;
-                        }
-                        else if (action.bonus_type === 2) {
-                            current_base = powerInfo?.condensed.base.accuracy;
-                            current_total = powerInfo?.condensed.active.accuracy;
-                            proposed_boost = action.bonus_amount;
-                        }
+                    if (action.bonus_type === 1) {
+                        current_base = powerInfo?.condensed.base.evasion;
+                        current_total = powerInfo?.condensed.active.evasion;
                     }
+                    else if (action.bonus_type === 2) {
+                        current_base = powerInfo?.condensed.base.accuracy;
+                        current_total = powerInfo?.condensed.active.accuracy;
+                    }
+
+                    if (action.ability?.type === 0) {
+                        proposed_boost = action.bonus_amount + action.ability.amount;
+                        notype = false;
+                    }
+                    else {
+                        proposed_boost = action.bonus_amount;
+                    }
+
                     if (notype) {
                         if (oppo && oppos?.some(s => s && s.bonus_type === action.bonus_type)) {
                             proposed_boost = 0;
@@ -769,6 +768,7 @@ export function iterateBattle(
                             proposed_boost = 0;
                         }
                     }
+
                     let current_boost = current_total - current_base;
 
                     if (proposed_boost <= current_boost) {
