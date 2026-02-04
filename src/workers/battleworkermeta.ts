@@ -117,16 +117,16 @@ export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | Cu
             return ables.filter(f => f === 1).length === 2 && ables.filter(f => f === 5).length === 1;
         }
         if (meta === 'fbb_0_healer_evasion') {
-            return ables.filter(f => f === 1).length === 2 && ables.filter(f => f === 5).length === 2 && types.filter(f => f === 1).length >= 2;
+            return (ables.filter(f => f === 1).length + ables.filter(f => f === 5).length >= 2) && types.filter(f => f === 1).length >= 2;
         }
         if (meta === 'fbb_1_healer') {
-            return ables.filter(f => f === 5).length === 1 && ables.filter(f => f === 1).length === 2 && ables.filter(f => f === 2).length === 1
+            return (ables.filter(f => f === 5).length + ables.filter(f => f === 1).length >= 3) && ables.filter(f => f === 2).length === 1;
         }
         if (meta === 'fbb_1_healer_wildcard') {
             return ables.filter(f => f === 5).length === 1 && ables.filter(f => f === 1).length === 1 && ables.filter(f => f === 2).length === 1;
         }
         if (meta === 'fbb_1_healer_evasion') {
-            return ables.filter(f => f === 5).length === 1 && ables.filter(f => f === 1).length === 2 && ables.filter(f => f === 2).length === 1 && types.filter(f => f === 1).length >= 2;
+            return (ables.filter(f => f === 1).length + ables.filter(f => f === 5).length >= 2) && ables.filter(f => f === 2).length === 1 && types.filter(f => f === 1).length >= 2;
         }
         if (meta === 'fbb_1_healer_evasion_wildcard') {
             return ables.filter(f => f === 5).length === 1 && ables.filter(f => f === 1).length === 1 && ables.filter(f => f === 2).length === 1 && types.filter(f => f === 1).length >= 2;
@@ -135,7 +135,7 @@ export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | Cu
             return ables.filter(f => f === 1).length === 1 && ables.filter(f => f === 5).length === 1 && ables.filter(f => f === 2).length === 2;
         }
         if (meta === 'fbb_2_healer_evasion') {
-            return ables.filter(f => f === 1).length === 1 && ables.filter(f => f === 5).length === 1 && ables.filter(f => f === 2).length === 2 && types.filter(f => f === 1).length >= 2;
+            return (ables.filter(f => f === 1).length + ables.filter(f => f === 5).length >= 2) && ables.filter(f => f === 2).length === 2 && types.filter(f => f === 1).length >= 2;
         }
     }
     return false;
