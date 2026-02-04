@@ -852,16 +852,12 @@ export function iterateBattle(
                                         if (allactions[i].charge_phases) {
                                             resetAction(allactions[i]);
                                         }
-                                        let cmp = 0;
-                                        if (!inited[i]) {
-                                            cmp = allactions[i].initial_cooldown;
-                                        }
-                                        else {
-                                            cmp = allactions[i].cooldown;
-                                        }
-                                        if (a >= cmp) a = cmp;
-                                        a -= bossts;
-                                        if (a < 0) a = 0;
+                                        let max = a;
+                                        if (!inited[i] && a >= allactions[i].initial_cooldown) max = allactions[i].initial_cooldown;
+                                        else if (inited[i] && a >= allactions[i].cooldown) max = allactions[i].cooldown;
+                                        max -= bossts;
+                                        if (max < 0) max = 0;
+                                        a = max;
                                     }
                                     return a;
                                 });
