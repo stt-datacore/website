@@ -2084,7 +2084,7 @@
             },
             "footer_text": "The Owned, % Owned, % Portal, Immortal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.",
             "header_text": "This table breaks down your roster by rarity and shows your progress toward immortalizing all crew in the game.",
-            "immortal_cell_help": "Your achievements in-game may incorrectly report this number as {number}"
+            "immortal_cell_help": "Your achievements in-game may incorrectly report this number as {{number}}"
         },
         "skills": {
             "columns": {

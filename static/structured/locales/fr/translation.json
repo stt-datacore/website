@@ -2095,7 +2095,7 @@
             },
             "footer_text": "Les colonnes Possédé, % Possédé, % Portail, Immortel et % Immortel ne prennent en compte que l'équipage unique. Toutes les autres colonnes prennent en compte vos doublons.",
             "header_text": "Ce tableau décompose votre effectif par rareté et montre votre progression vers l'immortalisation de tous les équipiers du jeu.",
-            "immortal_cell_help": "Vos réalisations dans le jeu peuvent indiquer à tort ce numéro comme {number}"
+            "immortal_cell_help": "Vos réalisations dans le jeu peuvent indiquer à tort ce numéro comme {{number}}"
         },
         "skills": {
             "columns": {
