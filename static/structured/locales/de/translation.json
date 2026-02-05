@@ -2265,6 +2265,16 @@
         },
         "max_attack": "Max. Angriffs",
         "max_level": "Höchstlevel",
+        "metas": {
+            "current_meta": "Aktuelle Spielstrategie",
+            "currents_meta": "Aktuelle Spielstrategien",
+            "custom_meta": "Benutzerdefinierte Spielstrategie",
+            "enable_metas": "Spielstrategien aktivieren",
+            "meta": "Spielstrategie",
+            "metas": "Spielstrategien",
+            "select_meta": "Spielstrategie auswählen",
+            "select_metas": "Spielstrategien auswählen"
+        },
         "min_attack": "Min. Angriffs",
         "offset_adds_warn": "* Aktivierungs-Offsets werden zur anfänglichen Abkühlungszeit der aktuellen Crew hinzugefügt.",
         "opponent_variance": "Gegnervarianz",

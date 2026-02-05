@@ -2275,6 +2275,16 @@
         },
         "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
+        "metas": {
+            "current_meta": "Estrategia principale actual",
+            "currents_meta": "Estrategias principales actuales",
+            "custom_meta": "Estrategia principale personalizada",
+            "enable_metas": "Habilitar estrategias principales",
+            "meta": "La estrategia principale",
+            "metas": "Las estrategias principales",
+            "select_meta": "Seleccione la estrategia principale",
+            "select_metas": "Seleccione las estrategias principales"
+        },
         "min_attack": "Ataque máx.",
         "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
         "opponent_variance": "Variación del oponente",
