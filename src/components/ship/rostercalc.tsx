@@ -9,7 +9,7 @@ import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from ".
 import { LineUpMeta, ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 import { getHighest, prepareOne } from "../../utils/crewutils";
 import { formatRunTime } from "../../utils/misc";
-import { AllBosses, bossFromBattleMode, compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
+import { AllBosses, bossFromBattleMode, compareShipResults, createMetaOptions, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
 import { useStateWithStorage } from "../../utils/storage";
 import { CrewDropDown } from "../base/crewdropdown";
 import CONFIG from "../CONFIG";
@@ -71,15 +71,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [powerDepth, internalSetPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
+    const [metasOpen, setMetasOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
     const [buffUnownedShips, setBuffUnownedShips] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/buffUnownedShips`, true, { rememberForever: true });
     const [applyBossEffects, setApplyBossEffects] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/applyBossEffects`, false, { rememberForever: true });
     const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
-    // const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
-    // const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
-    const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
-    const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0.2, { rememberForever: true });
-    const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
+    const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 5, { rememberForever: true });
+    const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0, { rememberForever: true });
+    const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.4, { rememberForever: true });
     const [maxInitTime, setMaxInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/maxInitTime`, undefined, { rememberForever: true });
     const [minInitTime, setMinInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/minInitTime`, undefined, { rememberForever: true });
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
@@ -87,6 +86,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
     const [advancedPowerSettings, setAdvancedPowerSettings] = useStateWithStorage(`${pageId}/${ship.symbol}/advancedPower`, DefaultAdvancedCrewPower, { rememberForever: true });
     const [progressMsg, setProgressMsg] = React.useState<string>('');
+    const [arenaMetas, setArenaMetas] = useStateWithStorage<LineUpMeta[] | undefined>(`${pageId}/${ship.symbol}/arenaMetas`, [], { rememberForever: true });
+    const [fbbMetas, setFbbMetas] = useStateWithStorage<LineUpMeta[] | undefined>(`${pageId}/${ship.symbol}/fbbMetas`, [], { rememberForever: true });
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
 
@@ -474,6 +475,13 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
 
+    const metaList = React.useMemo(() => {
+        return createMetaOptions((meta) => {
+            if (battleMode.includes('fbb')) return meta.startsWith('fbb');
+            else return !meta.startsWith('fbb');
+        });
+    }, [opponentShip, battleMode]);
+
     return <React.Fragment>
         <div className={'ui segment'} style={{
             display: 'flex',
@@ -647,6 +655,56 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     </div>
                     </>}
                 </div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    margin: '1em',
+                    gap: '1em'
+                }}>
+                    <Accordion style={{ marginTop: '1em' }} fluid>
+                        <Accordion.Title
+                            active={metasOpen}
+                            onClick={() => setMetasOpen(!metasOpen)}
+                        >
+                            <Icon name={metasOpen ? 'caret down' : 'caret right' as SemanticICONS} />
+                            {t('ship.metas.metas')}
+                        </Accordion.Title>
+                        <Accordion.Content active={metasOpen} style={{ textAlign: 'left' }}>
+                            <Grid columns={3} style={{margin: '0em'}}>
+                                <Grid.Column>
+                                    <div style={{ display: 'inline', width: '30%' }}>
+                                        <h4>{t('ship.metas.select_metas')}</h4>
+                                        <Dropdown
+                                            fluid
+                                            disabled={running}
+                                            placeholder={t('ship.metas.select_metas')}
+                                            multiple
+                                            scrolling
+                                            selection
+                                            value={battleMode.includes('fbb') ? fbbMetas : arenaMetas}
+                                            onChange={(e, { value }) => {
+                                                if (battleMode.includes('fbb')) {
+                                                    setFbbMetas(value as any);
+                                                }
+                                                else {
+                                                    setArenaMetas(value as any);
+                                                }
+                                            }}
+                                            options={metaList}
+                                        />
+                                    </div>
+                                </Grid.Column>
+                                <Grid.Column>
+
+                                </Grid.Column>
+                            </Grid>
+                        </Accordion.Content>
+                    </Accordion>
+                </div>
+
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -981,28 +1039,38 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
             let meta: LineUpMeta | undefined = undefined;
-            if (battleMode.includes('fbb')) {
-                if (battleConfig.opponent?.symbol?.includes('borg')) {
-                    meta = 'fbb_0_healer_evasion';
-                    // if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
-                    //     meta = 'fbb_0_healer_evasion';
-                    // }
-                    // else {
-                    //     meta = 'fbb_1_healer_evasion';
-                    // }
-                }
-                else {
-                    if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
-                        meta = 'fbb_1_healer';
-                    }
-                    else {
-                        meta = 'fbb_2_healer';
-                    }
-                }
+            let test_metas: LineUpMeta[] | undefined;
+            if (fbb_mode && fbbMetas?.length) {
+                meta = fbbMetas[0];
+                test_metas = fbbMetas.slice();
             }
-            else {
-                meta = 'arena_boom';
+            else if (arenaMetas?.length) {
+                meta = arenaMetas[0];
+                test_metas = arenaMetas.slice();
             }
+            // if (!current && battleMode.includes('fbb')) {
+            //     if (battleConfig.opponent?.symbol?.includes('borg')) {
+            //         meta = 'fbb_0_healer_evasion';
+            //         // if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+            //         //     meta = 'fbb_0_healer_evasion';
+            //         // }
+            //         // else {
+            //         //     meta = 'fbb_1_healer_evasion';
+            //         // }
+            //     }
+            //     else {
+            //         if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+            //             meta = 'fbb_1_healer';
+            //         }
+            //         else {
+            //             meta = 'fbb_2_healer';
+            //         }
+            //     }
+            // }
+            // else {
+            //     meta = 'arena_boom';
+            // }
+
             const config: ShipWorkerConfig = {
                 event_crew: ccrew ? structuredClone(ccrew) : undefined,
                 ranking_method: fbb_mode ? fbbRankingMethod : rankingMethod,
@@ -1026,7 +1094,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 opponent_variance: variance,
                 rate,
                 effects: applyBossEffects ? battleConfig.effects : undefined,
-                meta: meta ? { meta } : undefined
+                meta: meta ? { meta, test_metas } : undefined
             };
 
             results.length = 0;

@@ -183,7 +183,12 @@ const ShipCrewWorker = {
                 }
 
                 if (event_crew && !set.find(f => f.id === event_crew.id)) return false;
-                if (meta && !passesMeta(ship, set, meta, fbb_mode ? opponent as BossShip : undefined)) return false;
+                if (meta) {
+                    if (meta.test_metas?.length) {
+                        if (!meta.test_metas.some(meta => passesMeta(ship, set, meta, fbb_mode ? opponent as BossShip : undefined))) return false;
+                    }
+                    else if (!passesMeta(ship, set, meta, fbb_mode ? opponent as BossShip : undefined)) return false;
+                }
                 let newseats = canSeatAll(allseat, ship, set, !!ignore_skill);
                 if (!newseats) {
                     return false;

@@ -157,6 +157,26 @@ export function appelate(text: string) {
 	return text.split(" ").map(t => t.split("_")).flat().filter(t => t).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1).toLowerCase()}`).join(" ");
 }
 
+export function decamelify(value: string) {
+	value = value.replace(/_/g, " ");
+	let vm = "";
+	let pch = ""
+	for (let ch of value) {
+		if (ch === " ") {
+			vm += " ";
+		}
+		else if (pch === "" || pch === " ") {
+			vm += ch.toUpperCase();
+		}
+		else {
+			vm += ch.toLowerCase();
+		}
+		pch = ch;
+	}
+	vm = vm.split(" ").map(s => s === 'Fbb' ? 'FBB' : s).join(" ");
+	return vm;
+}
+
 export function translatePseudocolumn(name: string, t: TranslateMethod) {
 	return t(`base.pseudocolumns.${name}`) || "";
 }

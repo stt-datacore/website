@@ -2277,6 +2277,16 @@
         },
         "max_attack": "Attaque max.",
         "max_level": "Niveau maximum",
+        "metas": {
+            "current_meta": "Méta actuelle",
+            "currents_meta": "Métas actuelles",
+            "custom_meta": "Méta personnalisée",
+            "enable_metas": "Activer les métas",
+            "meta": "La méta",
+            "metas": "Les métas",
+            "select_meta": "Sélectionner la méta",
+            "select_metas": "Sélectionner les métas"
+        },
         "min_attack": "Attaque min.",
         "offset_adds_warn": "* Les compensations d'activation s'ajoutent au temps de recharge initial de l'équipier actuel.",
         "opponent_variance": "Variation de l'adversaire",

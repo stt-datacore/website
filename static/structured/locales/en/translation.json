@@ -2266,6 +2266,16 @@
         },
         "max_attack": "Max. Attack",
         "max_level": "Max Level",
+        "metas": {
+            "current_meta": "Current Meta",
+            "currents_meta": "Current Metas",
+            "custom_meta": "Custom Meta",
+            "enable_metas": "Enable Metas",
+            "meta": "Meta",
+            "metas": "Metas",
+            "select_meta": "Select Meta",
+            "select_metas": "Select Metas"
+        },
         "min_attack": "Min. Attack",
         "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
         "opponent_variance": "Opponent variance",
