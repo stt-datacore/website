@@ -981,7 +981,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
             let meta: LineUpMeta | undefined = undefined;
-            if (battleMode.includes('fbb')) {
+            if (!current && battleMode.includes('fbb')) {
                 if (battleConfig.opponent?.symbol?.includes('borg')) {
                     meta = 'fbb_0_healer_evasion';
                     // if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
