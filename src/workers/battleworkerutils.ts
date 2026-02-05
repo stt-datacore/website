@@ -559,23 +559,31 @@ export function iterateBattle(
         let static_sim_hitter = 0;
         let o_static_sim_hitter = 0;
         let last_check_bs = 0;
+        let last_check_bs_o = 0;
 
         const doesHit = (chance: number, oppo?: boolean) => {
-            if (battle_second === last_check_bs) return false;
-            last_check_bs = battle_second;
+            if (oppo) {
+                if (battle_second === last_check_bs_o) return false;
+                last_check_bs_o = battle_second;
+            }
+            else {
+                if (battle_second === last_check_bs) return false;
+                last_check_bs = battle_second;
+
+            }
             if (simulate) {
                 return Math.random() <= chance;
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += ((o_now_speed / rate) * chance);
+                    o_static_sim_hitter += ((o_now_speed * chance) / rate);
                     if (o_static_sim_hitter >= (1 / o_now_speed) - ((1 / o_now_speed) * (opponent_variance ?? 0))) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += ((now_speed / rate) * chance);
+                    static_sim_hitter += ((now_speed * chance) / rate);
                     if (static_sim_hitter >= (1 / now_speed)) {
                         static_sim_hitter = 0;
                         return true;
@@ -762,18 +770,13 @@ export function iterateBattle(
 
                     if (notype) {
                         if (oppo && oppos?.some(s => s && s.bonus_type === action.bonus_type)) {
-                            proposed_boost = 0;
+                            processChargePhases(action, actidx, oppo);
+                            return false;
                         }
                         else if (!oppo && currents?.some(s => s && s.bonus_type === action.bonus_type)) {
-                            proposed_boost = 0;
+                            processChargePhases(action, actidx, oppo);
+                            return false;
                         }
-                    }
-
-                    let current_boost = current_total - current_base;
-
-                    if (proposed_boost <= current_boost) {
-                        processChargePhases(action, actidx, oppo);
-                        return false;
                     }
                 }
 
@@ -845,16 +848,16 @@ export function iterateBattle(
                         if (borg_boss) {
                             if (doesHit(o_now_chance, true)) {
                                 state_time = state_time.map((a, i) => {
-                                    if (allactions[i].charge_phases) {
-                                        resetAction(allactions[i]);
-                                    }
                                     if (!active[i]) {
-                                        if (!inited[i]) {
-                                            return Math.min(bossts + a, allactions[i].initial_cooldown);
+                                        if (allactions[i].charge_phases) {
+                                            resetAction(allactions[i]);
                                         }
-                                        else {
-                                            return Math.min(bossts + a, allactions[i].cooldown);
-                                        }
+                                        let max = a;
+                                        if (!inited[i] && a >= allactions[i].initial_cooldown) max = allactions[i].initial_cooldown;
+                                        else if (inited[i] && a >= allactions[i].cooldown) max = allactions[i].cooldown;
+                                        max -= bossts;
+                                        if (max < 0) max = 0;
+                                        a = max;
                                     }
                                     return a;
                                 });

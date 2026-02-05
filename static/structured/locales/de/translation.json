@@ -2083,7 +2083,7 @@
             },
             "footer_text": "Die Spalten \"Im Besitz\", \"% Im Besitz\", \"% Zeitportal\", \"Unsterblich\" und \"% Unsterblich\" berücksichtigen nur einzigartige Crewmitglieder. Alle anderen Spalten berücksichtigen Ihre Duplikate.",
             "header_text": "Diese Tabelle unterteilt Ihre Liste nach Seltenheitsgrad und zeigt Ihren Fortschritt bei der Unsterblichkeit aller Crewmitglieder im Spiel.",
-            "immortal_cell_help": "Deine Erfolge im Spiel melden diese Zahl möglicherweise fälschlicherweise als {number}"
+            "immortal_cell_help": "Deine Erfolge im Spiel melden diese Zahl möglicherweise fälschlicherweise als {{number}}"
         },
         "skills": {
             "columns": {

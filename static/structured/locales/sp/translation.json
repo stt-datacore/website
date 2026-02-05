@@ -2093,7 +2093,7 @@
             },
             "footer_text": "Las columnas Propiedad, % Propiedad, % Portal, Inmortal y % Inmortal consideran tripulación única únicamente. Todas las demás columnas consideran tus duplicados.",
             "header_text": "Esta tabla desglosa tu lista por rareza y muestra tu progreso para inmortalizar a todos los miembros del equipo en el juego.",
-            "immortal_cell_help": "Es posible que tus logros en el juego informen incorrectamente este número como {number}"
+            "immortal_cell_help": "Es posible que tus logros en el juego informen incorrectamente este número como {{number}}"
         },
         "skills": {
             "columns": {
