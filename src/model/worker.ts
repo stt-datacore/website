@@ -336,6 +336,7 @@ export type LineUpMeta =
     // Kamakaze Boss Battles
     'fbb_0_healer' |
     'fbb_0_healer_evasion' |
+    'fbb_0_healer_2_evasion' |
     'fbb_0_healer_wildcard' |
 
     // Custom
