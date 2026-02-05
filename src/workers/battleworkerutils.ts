@@ -1241,7 +1241,7 @@ export function iterateBattle(
                 if (((fbb_mode || !oppo_cloaked) && !cloaked)) {
                     let mul = oppos?.filter(f => f && f.ability?.type === 11).map(m => (m as ShipAction).ability?.amount).reduce((p, n) => p! + n!, 0) || 0;
                     mul = 1 - (mul / 100);
-                    let actual_attack = (standard_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
+                    let actual_attack = (max_attack * (!oppo_powerInfo ? 1 : hitChance(powerInfo.computed.active.accuracy, oppo_powerInfo.computed.active.evasion)));
                     let outgoing_damage = Math.ceil(actual_attack * mul);
                     outgoing_damage = hitoppo(outgoing_damage);
                     if (!outgoing_damage) {
@@ -1269,10 +1269,10 @@ export function iterateBattle(
                     mul = 1 - (mul / 100);
                     let oppoattack = 0;
                     if (!oppo_powerInfo) {
-                        oppoattack = (oppo_standard_attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
+                        oppoattack = (oppo_max_attack * hitChance(work_opponent.accuracy, powerInfo.computed.active.evasion));
                     }
                     else {
-                        oppoattack = (oppo_standard_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss));
+                        oppoattack = (oppo_max_attack * hitChance(oppo_powerInfo.computed.active.accuracy, powerInfo.computed.active.evasion, borg_boss));
                     }
 
                     let incoming_damage = Math.ceil((oppoattack - (oppoattack * (fbb_mode ? defense : 0))) * mul);
