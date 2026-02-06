@@ -54,7 +54,7 @@ export const CrewMaintenanceFilter = (props: CrewMaintenanceFilterProps) => {
 		if (maintenanceFilter === 'impact' && crew.max_rarity - crew.rarity !== 1) return false;
 		if (maintenanceFilter === 'fodder' && !crew.expires_in && (crew.max_rarity === 1 || crew.rarity !== 1)) return false;
 		if (maintenanceFilter === 'dupes' && props.rosterCrew.filter((c) => c.symbol === crew.symbol).length === 1) return false;
-		if (maintenanceFilter === 'fuse_dupes' && (props.rosterCrew.filter((c) => c.symbol === crew.symbol && !c.immortal && c.rarity < c.max_rarity).length < 2) || crew.immortal) return false;
+		if (maintenanceFilter === 'fuse_dupes' && ((props.rosterCrew.filter((c) => c.symbol === crew.symbol && !c.immortal && c.rarity < c.max_rarity).length < 2) || crew.immortal)) return false;
 		if (maintenanceFilter === 'buyback') {
 			if (!globalContext.player.playerData?.buyback_well?.length) return false;
 			if (crew.rarity === crew.max_rarity) return false;
