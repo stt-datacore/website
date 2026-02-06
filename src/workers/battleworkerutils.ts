@@ -739,6 +739,14 @@ export function iterateBattle(
                     return false;
                 }
             }
+            if (action?.ability?.condition === 2 && !cloaked && !oppo) {
+                processChargePhases(action, actidx, oppo);
+                return false;
+            }
+            else if (action?.ability?.condition === 2 && !oppo_cloaked && oppo) {
+                processChargePhases(action, actidx, oppo);
+                return false;
+            }
 
             if (!action.ability?.condition || action.ability.condition === 64 || currents.some(act => typeof act !== 'boolean' && act.status === action.ability?.condition)) {
                 if (action.comes_from === 'crew' && powerInfo && (!action.ability || action.ability?.type === 0)) {
