@@ -155,6 +155,7 @@
     },
     "buffs": {
         "max_buffs": "Efectos máximas",
+        "max_quipment_buffs_single": "Efectos máximas de quipo (Habilidad principal)",
         "max_quipment_buffs_best": "Efectos máximas de quipo (mejor quipo)",
         "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
         "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)",

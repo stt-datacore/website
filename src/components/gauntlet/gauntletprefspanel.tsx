@@ -90,6 +90,11 @@ export const GauntletPrefsPanel = () => {
             text: t(BuffNames['max'])
         });
         availBuffs.push({
+            key: 'max_quipment',
+            value: 'max_quipment',
+            text: t(BuffNames['max_quipment'])
+        });
+        availBuffs.push({
             key: 'max_quipment_2',
             value: 'max_quipment_2',
             text: t(BuffNames['max_quipment_2'])

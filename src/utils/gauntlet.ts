@@ -604,6 +604,7 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 	}
 	if (maxBuffs && Object.keys(maxBuffs).length) {
 		availBuffs.push('max');
+		availBuffs.push('max_quipment');
 		availBuffs.push('max_quipment_2');
 		availBuffs.push('max_quipment_3');
 	}
@@ -613,7 +614,14 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			crew = calcQLots(crew, allQuipment, buffs, !natural, undefined, "proficiency");
 			let bestQuip = undefined as QuippedPower | undefined;
 			let one = false;
-			if (buffMode === 'max_quipment_2' && crew.best_quipment_1_2) {
+			if (buffMode === 'max_quipment' && crew.best_quipment) {
+				if (crew.ranks.gauntletRank <= 50) {
+					let e = '';
+				}
+				bestQuip = crew.best_quipment;
+				one = true;
+			}
+			else if (buffMode === 'max_quipment_2' && crew.best_quipment_1_2) {
 				bestQuip = crew.best_quipment_1_2
 			}
 			else if (buffMode === 'max_quipment_3' && crew.best_quipment_3) {
@@ -625,11 +633,6 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 			else if (buffMode === 'max_quipment_best' && crew.best_quipment_top) {
 				bestQuip = crew.best_quipment_top;
 			}
-			else if (crew.best_quipment) {
-				bestQuip = crew.best_quipment;
-				one = true;
-			}
-
 			if (bestQuip) {
 				crew.kwipment = [];
 				crew.kwipment_expiration = [0, 0, 0, 0];
@@ -640,12 +643,18 @@ export function calculateGauntlet(config: GauntletCalcConfig) {
 				});
 				while (crew.kwipment.length < 4) crew.kwipment.push(0 as any);
 				crew.kwipment_prospects = true;
-				Object.keys(bestQuip.skills_hash).forEach((skill, idx) => {
-					if (one && idx) return;
-					crew[skill].base = bestQuip.skills_hash[skill].base;
-					crew[skill].min = bestQuip.skills_hash[skill].range_min;
-					crew[skill].max = bestQuip.skills_hash[skill].range_max;
-				});
+				if (one) {
+					let quip = bestQuip.skill_quipment[crew.skill_order[0]];
+					let qbuffs = quip.map(q => getItemBonuses(q));
+					applyCrewBuffs(crew, buffs, false, qbuffs);
+				}
+				else {
+					Object.keys(bestQuip.skills_hash).forEach((skill, idx) => {
+						crew[skill].base = bestQuip.skills_hash[skill].base;
+						crew[skill].min = bestQuip.skills_hash[skill].range_min;
+						crew[skill].max = bestQuip.skills_hash[skill].range_max;
+					});
+				}
 			}
 		}
 	}
