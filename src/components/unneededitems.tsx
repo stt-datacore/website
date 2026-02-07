@@ -68,7 +68,6 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 	const dbid = playerData?.dbid;
 
 	const [sort, setSort] = useStateWithStorage<string>(`${dbid}/unneeded_ship/sort`, '', { rememberForever: true });
-	const [dir, setDir] = useStateWithStorage<number>(`${dbid}/unneeded_ship/sort_direction`, -1, { rememberForever: true });
 
 	if (!playerData || !playerShips) return <></>;
 
@@ -94,12 +93,12 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 			r = a.name.localeCompare(b.name) || (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity;
 		}
 		else if (sort === 'quantity') {
-			r = (a.quantity ?? 0) - (b.quantity ?? 0) || b.name.localeCompare(a.name) || b.rarity - a.rarity;
+			r = (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity || a.name.localeCompare(b.name);
 		}
 		else {
-			r = a.rarity - b.rarity || b.name.localeCompare(a.name) || (b.quantity ?? 0) - (a.quantity ?? 0);
+			r = b.rarity - a.rarity || a.name.localeCompare(b.name) || (a.quantity ?? 0) - (b.quantity ?? 0);
 		}
-		return r * dir;
+		return r;
 	});
 
 	if (fuelList.length === 0) return <></>;
@@ -123,10 +122,6 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 						options={sortOptions}
 						value={sort}
 						onChange={(e, { value }) => setSort(value as any)}
-						/>
-					<Button
-						icon={`sort alphabet ${dir === 1 ? 'descending' : 'ascending'}`}
-						onClick={() => setDir(dir * -1)}
 						/>
 				</div>
 			</div>
