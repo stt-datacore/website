@@ -1,6 +1,6 @@
 import React from "react";
 import { isMobile } from "react-device-detect";
-import { Button, Checkbox, Dropdown, Icon, Popup, Step, Table } from "semantic-ui-react";
+import { Button, Checkbox, Dropdown, Icon, Message, Popup, Step, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { PromptContext } from "../../context/promptcontext";
 import { Filter } from "../../model/game-elements";
@@ -14,12 +14,17 @@ import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { ResourceGraphPicker } from "./graphpicker";
 import { printResourceValue, ResourceData, transKeys } from "./utils";
+import { printHonor, printLegendaryCite } from "../retrieval/context";
 
 export const ResourceTracker = () => {
+
+    const honorDates = generateHonorDates();
+    const daysToNextSale = getDaysToNextSale();
+
     const globalContext = React.useContext(GlobalContext);
     const promptContext = React.useContext(PromptContext);
     const { confirm } = promptContext;
-    const { t } = globalContext.localized;
+    const { t, tfmt } = globalContext.localized;
     const { playerData } = globalContext.player;
     const trackerContext = React.useContext(EnergyLogContext);
     const dbid = playerData?.player.dbid ?? 0;
@@ -165,6 +170,26 @@ export const ResourceTracker = () => {
         fontStyle: 'italic'
     }
 
+    const honorEstimateContent = React.useMemo(() => {
+        if (!enabled || !dailyFinal || (!resourceFilter.includes('honor') && resourceFilter.length) || !stats?.length) return <></>;
+        let i = stats.findLastIndex(f => f.resource === 'honor');
+        if (i === -1) return <></>;
+        let d = daysToNextSale;
+        let h = Math.round(stats[i].average_difference);
+        let c = stats[i].amount;
+        c = Math.round((c + (d * h)) / 40000);
+        return (
+            <Message color='black'>
+                <div style={{ display: 'inline-flex', textWrap: 'nowrap', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-start', gap: '0.25em'}}>
+                    {tfmt('resource_tracker.honor_estimate', {
+                        d: d.toLocaleString(),
+                        h: printHonor(h),
+                        c: printLegendaryCite(c)
+                    })}
+                </div>
+            </Message>)
+    }, [dailyFinal, resourceFilter, stats, enabled]);
+
     return (
         <div style={bodyArea}>
             <div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
@@ -252,6 +277,7 @@ export const ResourceTracker = () => {
                         <div>
                             {t('resource_tracker.start_date_hint')}
                         </div>
+                        {honorEstimateContent}
                     </div>
                 </div>)
             }
@@ -536,5 +562,29 @@ export const ResourceTracker = () => {
             return;
         }
         updateRemote(data).then(() => searchRemote());
+    }
+
+    function generateHonorDates() {
+        const honorDates = [
+            new Date('March 20'),
+            new Date('June 20'),
+            new Date('September 20'),
+            new Date('December 20'),
+        ]
+        let n = new Date();
+        for (let d of honorDates) {
+            d.setFullYear(n.getFullYear());
+            if (d.getTime() < n.getTime()) {
+                d.setFullYear(d.getFullYear() + 1);
+            }
+        }
+        return honorDates;
+    }
+
+    function getDaysToNextSale() {
+        let n = new Date();
+        let dates = honorDates.filter(f => f.getTime() > n.getTime()).map(d => d.getTime()).sort((a, b) => a - b);
+        if (dates?.length) return Math.ceil((dates[0] - n.getTime()) / (1000 * 60 * 60 * 24));
+        else throw new Error("Time no longer exists.");
     }
 }

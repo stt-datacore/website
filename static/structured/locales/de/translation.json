@@ -155,9 +155,9 @@
     },
     "buffs": {
         "max_buffs": "Maximale Buffs",
-        "max_quipment_buffs_single": "Maximale Rüstzeug Buffs (Primäre Fähigkeit)",
         "max_quipment_buffs_best": "Maximale Rüstzeug Buffs (Beste Rüstzeug)",
         "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
+        "max_quipment_buffs_single": "Maximale Rüstzeug Buffs (Primäre Fähigkeit)",
         "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)",
         "no_buffs": "Keine Buffs",
         "player_buffs": "Buffs der Spieler",
@@ -1908,6 +1908,7 @@
                 "total_change_pct": "Gesamte prozentuale Veränderung"
             }
         },
+        "honor_estimate": "Ein Verkauf von Ehren ist in etwa {{d}} Tagen möglich. Bei Ihrer derzeitigen durchschnittlichen Rate von {{h}} Ehre pro Tag haben Sie bis zum Beginn des Verkaufs genügend Ehre gesammelt, um etwa {{c}} Auszeichnungen zu kaufen.",
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Fernsuche",
         "sections": {

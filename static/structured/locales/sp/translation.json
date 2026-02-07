@@ -155,9 +155,9 @@
     },
     "buffs": {
         "max_buffs": "Efectos máximas",
-        "max_quipment_buffs_single": "Efectos máximas de quipo (Habilidad principal)",
         "max_quipment_buffs_best": "Efectos máximas de quipo (mejor quipo)",
         "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
+        "max_quipment_buffs_single": "Efectos máximas de quipo (Habilidad principal)",
         "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)",
         "no_buffs": "Sin efectos",
         "player_buffs": "Efectos de los juegos",
@@ -1918,6 +1918,7 @@
                 "total_change_pct": "Cambio porcentual total"
             }
         },
+        "honor_estimate": "Es posible que haya una venta de honor en aproximadamente {{d}} días. A su ritmo promedio actual de {{h}} puntos de honor por día, habrá ahorrado suficientes puntos de honor para comprar aproximadamente {{c}} condecoraciones cuando comience la venta.",
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Búsqueda remota",
         "sections": {
