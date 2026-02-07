@@ -155,9 +155,9 @@
     },
     "buffs": {
         "max_buffs": "Max buffs",
-        "max_quipment_buffs_single": "Max Quipment Buffs (Primary Skill)",
         "max_quipment_buffs_best": "Max Quipment Buffs (Best Quipment)",
         "max_quipment_buffs_double": "Max Quipment Buffs (Two Skills)",
+        "max_quipment_buffs_single": "Max Quipment Buffs (Primary Skill)",
         "max_quipment_buffs_triple": "Max Quipment Buffs (Three Skills)",
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
@@ -1909,6 +1909,7 @@
                 "total_change_pct": "Total Percent Change"
             }
         },
+        "honor_estimate": "An honor sale is possible in approximately {{d}} days. At your current average rate of {{h}} honor per day, you will have saved enough honor to buy approximately {{c}} citations when the sale begins.",
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Remote Search",
         "sections": {

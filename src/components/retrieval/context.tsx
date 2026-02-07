@@ -32,6 +32,17 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 	</div>
 }
 
+export function printLegendaryCite(quantity: number, t?: TranslateMethod, printCite?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}items_consumables_honorable_citation_item_3.png`;
+
+	return <div
+		title={t ? t('global.item_types.honorable_citation') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printCite ? t('global.item_types.honorable_citation') : ''}</span>
+	</div>
+}
+
 export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
 

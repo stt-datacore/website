@@ -155,9 +155,9 @@
     },
     "buffs": {
         "max_buffs": "Effets maximum",
-        "max_quipment_buffs_single": "Effets maximum de quipement (Compétence principale)",
         "max_quipment_buffs_best": "Effets maximum de quipement (meilleur quipement)",
         "max_quipment_buffs_double": "Effets maximum de quipement (deux compétences)",
+        "max_quipment_buffs_single": "Effets maximum de quipement (Compétence principale)",
         "max_quipment_buffs_triple": "Effets maximum de quipement (trois compétences)",
         "no_buffs": "Aucun effets",
         "player_buffs": "Effets des joueurs",
@@ -1920,6 +1920,7 @@
                 "total_change_pct": "Variation en pourcentage totale"
             }
         },
+        "honor_estimate": "Une vente d'honneur sera possible dans environ {{d}} jours. Au rythme moyen actuel de {{h}} points d'honneur par jour, vous aurez accumulé suffisamment de points d'honneur pour acheter environ {{c}} citations lorsque la vente commencera.",
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Recherche à distance",
         "sections": {
