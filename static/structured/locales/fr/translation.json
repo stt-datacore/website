@@ -1906,8 +1906,9 @@
         },
         "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
         "currency_difference": "Votre différence moyenne en {{x}} est de {{n}}.",
-        "daily_final": "Captures quotidiennes finales",
         "enable": "Activer le suivi des ressources",
+        "final_daily": "Captures quotidiennes finales",
+        "final_weekly": "Captures hebdomadaires finales",
         "graphs": {
             "bar": "Graphique en barres",
             "candles": "Graphique en chandeliers",
@@ -1921,7 +1922,8 @@
                 "total_change_pct": "Variation en pourcentage totale"
             }
         },
-        "honor_estimate": "Une vente d'honneur sera possible dans environ {{d}} jours. Au rythme moyen actuel de {{h}} points d'honneur par jour, vous aurez accumulé suffisamment de points d'honneur pour acheter environ {{c}} citations lorsque la vente commencera.",
+        "honor_estimate": "Une promotion sur l'honneur est possible dans environ {{d}} jours. À votre rythme actuel de {{h}} points d'honneur par jour, vous aurez accumulé suffisamment de points pour acheter environ {{c}} citations lorsque la promotion commencera.",
+        "honor_estimate_weekly": "Une promotion sur l'honneur est possible dans environ {{w}} semaines. À votre rythme actuel de {{h}} points d'honneur par semaine, vous aurez accumulé suffisamment de points pour acheter environ {{c}} citations lorsque la promotion commencera.",
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Recherche à distance",
         "sections": {
