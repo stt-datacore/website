@@ -10,9 +10,10 @@ Calculator Worker(): results =>
 			DataCore(<VoyageTool>) { updateUI } : void
 */
 
+import { Helper, HelperProps } from './Helper';
 import { IAmPicardHelper } from './IAmPicardHelper';
 import { USSJohnJayHelper } from './USSJohnJayHelper';
-import { Helper, HelperProps } from './Helper';
+import { PADDHelper } from './PADDHelper';
 
 export enum CalculatorState {
 	NotStarted,
@@ -30,6 +31,7 @@ export interface CalculatorHelper {
 export const CALCULATORS = {
 	helpers: [
 		{ id: 'ussjohnjay-mvam', name: 'Multi-vector Assault', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'mvam') },
+		{ id: 'voypadd', name: 'PADD', helper: (props: HelperProps) => new PADDHelper(props) },
 		{ id: 'iampicard', name: 'Original', helper: (props: HelperProps) => new IAmPicardHelper(props) },
 		// { id: 'ussjohnjay-idic', name: 'Infinite Diversity', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'idic') }
 	] as CalculatorHelper[],

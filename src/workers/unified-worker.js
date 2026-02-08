@@ -12,6 +12,7 @@ import QuestSolver from './questsolver2.ts';
 import { calcQLots } from '../utils/equipment.ts';
 import ShipCrewWorker from './shipcrewworker.ts';
 import { calculateGauntlet } from '../utils/gauntlet.ts';
+import VoyPADD from './voypadd.ts';
 
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
@@ -92,6 +93,7 @@ self.onmessage = (message) => {
             });
             postResult(result, false);
         }),
+        'voypadd': () => VoyPADD.start(message.data, postResult),
         'gauntlet': () => {
             const gauntlet = calculateGauntlet(message.data.config);
             postResult(gauntlet, false);
