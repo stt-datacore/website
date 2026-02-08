@@ -1905,6 +1905,7 @@
             "total_difference": "Différence totale"
         },
         "confirm": "Êtes-vous sûr de vouloir effacer le journal ? Cette action est irréversible.",
+        "currency_difference": "Votre différence moyenne en {{x}} est de {{n}}.",
         "daily_final": "Captures quotidiennes finales",
         "enable": "Activer le suivi des ressources",
         "graphs": {

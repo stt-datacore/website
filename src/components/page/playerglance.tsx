@@ -415,9 +415,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     return;
                 }
             }
-            const response = await fetch(`${process.env.GATSBY_DATACORE_URL}api/sales`);
-            if (response.ok) {
-                let sale = (await response.json()) as SaleData;
+            const sale = await loadSaleData();
+            if (sale) {
                 setSaleData(sale);
                 setSaleUpdate(new Date());
                 console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
@@ -434,4 +433,10 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             }, 60000);
         }
     }
+}
+
+export async function loadSaleData() {
+    const response = await fetch(`${process.env.GATSBY_DATACORE_URL}api/sales`);
+    let sale = (await response.json()) as SaleData;
+    return sale;
 }
