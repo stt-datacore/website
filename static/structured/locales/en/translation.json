@@ -1894,6 +1894,7 @@
             "total_difference": "Total difference"
         },
         "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
+        "currency_difference": "Your average difference in {{x}} is {{n}}.",
         "daily_final": "Final daily captures",
         "enable": "Enable Resource Tracking",
         "graphs": {

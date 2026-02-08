@@ -15,6 +15,7 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { ResourceGraphPicker } from "./graphpicker";
 import { printResourceValue, ResourceData, transKeys } from "./utils";
 import { printHonor, printLegendaryCite } from "../retrieval/context";
+import { loadSaleData, SaleData } from "../page/playerglance";
 
 export const ResourceTracker = () => {
 
@@ -37,6 +38,7 @@ export const ResourceTracker = () => {
     const [compiledStats, setCompiledStats] = React.useState<ResourceData[]>([]);
     const [dailyFinal, setDailyFinal] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/daily_final`, false);
     const [displayMode, setDisplayMode] = useStateWithStorage<string>(`${dbid}/resource_tracker/display_mode`, 'table');
+    const [saleData, setSaleData] = React.useState<SaleData | undefined>(undefined);
     const uploadRef = React.useRef<HTMLInputElement>(null);
 
     const bodyArea: React.CSSProperties = {
@@ -44,6 +46,10 @@ export const ResourceTracker = () => {
         justifyContent: 'stretch',
         alignItems: 'stretch'
     }
+
+    React.useEffect(() => {
+        getSales();
+    }, []);
 
     React.useEffect(() => {
         if (remoteEnabled && playerData && log && enabled) {
@@ -171,11 +177,25 @@ export const ResourceTracker = () => {
     }
 
     const honorEstimateContent = React.useMemo(() => {
-        if (!enabled || !dailyFinal || (!resourceFilter.includes('honor') && resourceFilter.length) || !stats?.length) return <></>;
+        if (!!saleData?.honor_sale || !enabled || !dailyFinal || (!resourceFilter.includes('honor') && resourceFilter.length) || !stats?.length) return <></>;
         let i = stats.findLastIndex(f => f.resource === 'honor');
         if (i === -1) return <></>;
-        let d = daysToNextSale;
         let h = Math.round(stats[i].average_difference);
+
+        if (h <= 0) {
+            return (
+                <Message color='black'>
+                    <div style={{ display: 'inline-flex', textWrap: 'nowrap', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-start', gap: '0.25em'}}>
+                        {tfmt('resource_tracker.currency_difference', {
+                            x: t(`global.item_types.${transKeys['honor']}`),
+                            n: <span style={{color:'tomato', fontWeight: 'bold'}}>&nbsp;{h.toLocaleString()}</span>
+                        })}
+                    </div>
+                </Message>
+            )
+        }
+
+        let d = daysToNextSale;
         let c = stats[i].amount;
         c = Math.round((c + (d * h)) / 40000);
         return (
@@ -188,7 +208,7 @@ export const ResourceTracker = () => {
                     })}
                 </div>
             </Message>)
-    }, [dailyFinal, resourceFilter, stats, enabled]);
+    }, [dailyFinal, resourceFilter, stats, enabled, saleData]);
 
     return (
         <div style={bodyArea}>
@@ -586,5 +606,12 @@ export const ResourceTracker = () => {
         let dates = honorDates.filter(f => f.getTime() > n.getTime()).map(d => d.getTime()).sort((a, b) => a - b);
         if (dates?.length) return Math.ceil((dates[0] - n.getTime()) / (1000 * 60 * 60 * 24));
         else throw new Error("Time no longer exists.");
+    }
+
+    async function getSales() {
+        let sale = await loadSaleData();
+        if (sale) {
+            setSaleData(sale);
+        }
     }
 }
