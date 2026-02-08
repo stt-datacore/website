@@ -93,7 +93,7 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 			r = a.name.localeCompare(b.name) || (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity;
 		}
 		else if (sort === 'quantity') {
-			r = (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity || a.name.localeCompare(b.name);
+			r = b.rarity - a.rarity || (b.quantity ?? 0) - (a.quantity ?? 0) || a.name.localeCompare(b.name);
 		}
 		else {
 			r = b.rarity - a.rarity || a.name.localeCompare(b.name) || (a.quantity ?? 0) - (b.quantity ?? 0);
