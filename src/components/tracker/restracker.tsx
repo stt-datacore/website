@@ -335,6 +335,10 @@ export const ResourceTracker = () => {
             {enabled && displayMode === 'table' && (
                 <SearchableTable
                     config={tableConfig}
+                    initOptions={{
+                        column: 'timestamp',
+                        direction: 'descending'
+                    }}
                     data={stats}
                     filterRow={filterRows}
                     renderTableRow={renderTableRow}
