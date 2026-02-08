@@ -36,7 +36,8 @@ export const ResourceTracker = () => {
 
     const [resourceFilter, setResourceFilter] = useStateWithStorage<string[]>(`${dbid}/resource_tracker/filters`, []);
     const [compiledStats, setCompiledStats] = React.useState<ResourceData[]>([]);
-    const [dailyFinal, setDailyFinal] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/daily_final`, false);
+    const [finalDaily, setFinalDaily] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/final_daily`, false);
+    const [finalWeekly, setFinalWeekly] = useStateWithStorage<boolean>(`${dbid}/resource_tracker/final_weekly`, false);
     const [displayMode, setDisplayMode] = useStateWithStorage<string>(`${dbid}/resource_tracker/display_mode`, 'table');
     const [saleData, setSaleData] = React.useState<SaleData | undefined>(undefined);
     const uploadRef = React.useRef<HTMLInputElement>(null);
@@ -88,13 +89,12 @@ export const ResourceTracker = () => {
 
     React.useEffect(() => {
         if (enabled) {
-            let stats = compileStats();
-            setCompiledStats(stats);
+            compileStats().then((stats) => setCompiledStats(stats));
         }
         if (!enabled && remoteEnabled) {
             setRemoteEnabled(false);
         }
-    }, [log, enabled, resourceFilter, dailyFinal]);
+    }, [log, enabled, resourceFilter, finalDaily, finalWeekly]);
 
     const stats = React.useMemo(() => {
         return compiledStats.filter(row => {
@@ -113,13 +113,6 @@ export const ResourceTracker = () => {
         maxDate.setDate(maxDate.getDate() + 1);
         return { minDate, maxDate };
     }, [entries]);
-
-    if (!playerData) {
-        return (
-            <div style={bodyArea}>
-            </div>
-        )
-    }
 
     const tableConfig = [] as ITableConfigRow[];
 
@@ -177,7 +170,7 @@ export const ResourceTracker = () => {
     }
 
     const honorEstimateContent = React.useMemo(() => {
-        if (!!saleData?.honor_sale || !enabled || !dailyFinal || (!resourceFilter.includes('honor') && resourceFilter.length) || !stats?.length) return <></>;
+        if (!!saleData?.honor_sale || !enabled || (!finalDaily && !finalWeekly) || (!resourceFilter.includes('honor') && resourceFilter.length) || !stats?.length) return <></>;
         let i = stats.findLastIndex(f => f.resource === 'honor');
         if (i === -1) return <></>;
         let h = Math.round(stats[i].average_difference);
@@ -195,20 +188,28 @@ export const ResourceTracker = () => {
             )
         }
 
-        let d = daysToNextSale;
+        let d = Math.round(daysToNextSale / (finalWeekly ? 7 : 1));
         let c = stats[i].amount;
         c = Math.round((c + (d * h)) / 40000);
         return (
             <Message color='black'>
                 <div style={{ display: 'inline-flex', textWrap: 'nowrap', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-start', gap: '0.25em'}}>
-                    {tfmt('resource_tracker.honor_estimate', {
+                    {tfmt(`resource_tracker.honor_estimate${finalWeekly ? '_weekly' : ''}`, {
                         d: d.toLocaleString(),
+                        w: d.toLocaleString(),
                         h: printHonor(h),
                         c: printLegendaryCite(c)
                     })}
                 </div>
             </Message>)
-    }, [dailyFinal, resourceFilter, stats, enabled, saleData]);
+    }, [finalDaily, resourceFilter, stats, enabled, saleData]);
+
+    if (!playerData) {
+        return (
+            <div style={bodyArea}>
+            </div>
+        )
+    }
 
     return (
         <div style={bodyArea}>
@@ -268,12 +269,28 @@ export const ResourceTracker = () => {
                                 clearable
                                 onChange={(e, { value }) => setResourceFilter(value as string[] || []) }
                                 />
-
-                            <Checkbox
-                                checked={dailyFinal}
-                                onChange={(e, { checked }) => setDailyFinal(!!checked)}
-                                label={t('resource_tracker.daily_final')}
-                            />
+                            <div style={{...OptionsPanelFlexColumn, margin: '1em 0', alignItems: 'flex-start', gap: '0.5em'}}>
+                                <Checkbox
+                                    checked={finalDaily}
+                                    onChange={(e, { checked }) => {
+                                        setFinalDaily(!!checked);
+                                        if (checked && finalWeekly) {
+                                            setFinalWeekly(false);
+                                        }
+                                    }}
+                                    label={t('resource_tracker.final_daily')}
+                                />
+                                <Checkbox
+                                    checked={finalWeekly}
+                                    onChange={(e, { checked }) => {
+                                        setFinalWeekly(!!checked);
+                                        if (checked && finalDaily) {
+                                            setFinalDaily(false);
+                                        }
+                                    }}
+                                    label={t('resource_tracker.final_weekly')}
+                                />
+                            </div>
                         </div>
                         <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', alignItems: 'center'}}>
                             <DateRangePicker
@@ -430,90 +447,107 @@ export const ResourceTracker = () => {
         });
     }
 
-    function compileStats() {
-        let stats = entries.map((entry) => {
-            if (!entry?.energy) return null;
-            entry.timestamp = new Date(entry.timestamp);
-            return Object.keys(entry.energy).map(key => {
-                const obj: ResourceData = {
-                    timestamp: entry.timestamp,
-                    resource: key,
-                    amount: entry.energy[key] ?? 0,
-                    difference: 0,
-                    average_difference: 0,
-                    total_difference: 0,
-                    moving_average: 0,
-                    amount_pct: 0,
-                    change_pct: 0,
-                    total_change_pct: 0
-                };
-                return obj;
+    async function compileStats() {
+        return new Promise<ResourceData[]>((resolve, reject) => {
+            let stats = entries.map((entry) => {
+                if (!entry?.energy) return null;
+                if (!(entry.timestamp instanceof Date))
+                    entry.timestamp = new Date(entry.timestamp);
+                return Object.keys(entry.energy).map(key => {
+                    const obj: ResourceData = {
+                        timestamp: entry.timestamp,
+                        day: dateOf(entry.timestamp),
+                        week: weekOf(entry.timestamp),
+                        resource: key,
+                        amount: entry.energy[key] ?? 0,
+                        difference: 0,
+                        average_difference: 0,
+                        total_difference: 0,
+                        moving_average: 0,
+                        amount_pct: 0,
+                        change_pct: 0,
+                        total_change_pct: 0
+                    };
+                    return obj;
+                });
+            }).filter(f => f !== null).flat();
+
+            stats.sort((a, b) => {
+                let r = a.timestamp.getTime() - b.timestamp.getTime();
+                if (r) return r;
+                r = a.resource.localeCompare(b.resource);
+                return r;
             });
-        }).filter(f => f !== null).flat();
-        stats.sort((a, b) => {
-            let r = a.timestamp.getTime() - b.timestamp.getTime();
-            if (r) return r;
-            r = a.resource.localeCompare(b.resource);
-            return r;
-        });
-        if (dailyFinal) {
-            stats = stats.filter((stat1, idx) => stats.findLastIndex(stat2 => dateOf(stat1) === dateOf(stat2) && stat1.resource === stat2.resource) === idx);
-        }
-        let c = stats.length;
-        let avgs = {} as {[key:string]: number};
-        let firsts = {} as {[key:string]: number};
-        let lastdiff = {} as {[key:string]: number}
-        let lastval = {} as {[key:string]: number};
-        let high = {} as {[key:string]: number};
-        let low = {} as {[key:string]: number};
-        for (let i = 0; i < c; i++) {
-            const stat = stats[i];
-            high[stat.resource] ??= stat.amount;
-            low[stat.resource] ??= stat.amount;
-            avgs[stat.resource] ??= stat.amount;
-            firsts[stat.resource] ??= stat.amount;
-            lastdiff[stat.resource] ??= firsts[stat.resource];
 
-            if (high[stat.resource] < stat.amount) {
-                high[stat.resource] = stat.amount;
+            if (finalWeekly) {
+                stats = stats.filter((stat1, idx) => stats.findLastIndex(stat2 => stat1.week === stat2.week && stat1.resource === stat2.resource) === idx);
+            }
+            if (finalDaily) {
+                stats = stats.filter((stat1, idx) => stats.findLastIndex(stat2 => stat1.day === stat2.day && stat1.resource === stat2.resource) === idx);
             }
 
-            if (low[stat.resource] > stat.amount) {
-                low[stat.resource] = stat.amount;
-            }
-            stat.moving_average = (avgs[stat.resource] + stats[i].amount) / 2;
-            avgs[stat.resource] = stat.moving_average;
-            if (lastval[stat.resource] !== undefined) {
-                stat.difference = stat.amount - lastval[stat.resource];
-            }
-            stat.total_difference = stat.amount - firsts[stat.resource];
-            lastval[stat.resource] = stat.amount;
-            lastdiff[stat.resource] = stat.average_difference;
-        }
-
-        let reslist = [...new Set(stats.map(stat => stat.resource))];
-        for (let res of reslist) {
-            let rstats = stats.filter(f => f.resource === res);
-            c = rstats.length;
+            let c = stats.length;
+            let avgs = {} as {[key:string]: number};
+            let firsts = {} as {[key:string]: number};
+            let lastdiff = {} as {[key:string]: number}
+            let lastval = {} as {[key:string]: number};
+            let high = {} as {[key:string]: number};
+            let low = {} as {[key:string]: number};
             for (let i = 0; i < c; i++) {
-                const stat = rstats[i];
-                let diffs = rstats.map(stat => stat.difference);
-                stat.average_difference = diffs.slice(0, i + 1).reduce((p, n) => p + n, 0) / (i + 1);
-                if (!high[stat.resource]) continue;
-                stat.amount_pct = stat.amount / (low[stat.resource] || 1);
-                if (!stat.amount || stat.amount === low[stat.resource] || i == 0) continue;
-                stat.change_pct = stat.difference / stat.amount;
-                stat.total_change_pct = stat.total_difference / stat.amount;
+                const stat = stats[i];
+                high[stat.resource] ??= stat.amount;
+                low[stat.resource] ??= stat.amount;
+                avgs[stat.resource] ??= stat.amount;
+                firsts[stat.resource] ??= stat.amount;
+                lastdiff[stat.resource] ??= firsts[stat.resource];
+
+                if (high[stat.resource] < stat.amount) {
+                    high[stat.resource] = stat.amount;
+                }
+
+                if (low[stat.resource] > stat.amount) {
+                    low[stat.resource] = stat.amount;
+                }
+                stat.moving_average = (avgs[stat.resource] + stats[i].amount) / 2;
+                avgs[stat.resource] = stat.moving_average;
+                if (lastval[stat.resource] !== undefined) {
+                    stat.difference = stat.amount - lastval[stat.resource];
+                }
+                stat.total_difference = stat.amount - firsts[stat.resource];
+                lastval[stat.resource] = stat.amount;
+                lastdiff[stat.resource] = stat.average_difference;
             }
-        }
-        return stats;
+
+            let reslist = [...new Set(stats.map(stat => stat.resource))];
+            for (let res of reslist) {
+                let rstats = stats.filter(f => f.resource === res);
+                c = rstats.length;
+                for (let i = 0; i < c; i++) {
+                    const stat = rstats[i];
+                    let diffs = rstats.map(stat => stat.difference);
+                    stat.average_difference = diffs.slice(0, i + 1).reduce((p, n) => p + n, 0) / (i + 1);
+                    if (!high[stat.resource]) continue;
+                    stat.amount_pct = stat.amount / (low[stat.resource] || 1);
+                    if (!stat.amount || stat.amount === low[stat.resource] || i == 0) continue;
+                    stat.change_pct = stat.difference / stat.amount;
+                    stat.total_change_pct = stat.total_difference / stat.amount;
+                }
+            }
+            resolve(stats);
+
+        });
     }
 
-    function dateOf(stat: ResourceData) {
-        let str = typeof stat.timestamp === 'string' ? stat.timestamp : ((new Date(stat.timestamp)).toLocaleDateString());
-        return str;
+    function dateOf(ts: Date) {
+        let ds = new Date(ts);
+        return ds.toLocaleDateString();
     }
 
+    function weekOf(ts: Date) {
+        let ds = new Date(ts);
+        ds.setDate(ds.getDate() - ds.getDay());
+        return ds.toLocaleDateString();
+    }
 
     function exportCSV(clipboard?: boolean) {
         const stats = compiledStats;

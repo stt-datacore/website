@@ -1894,8 +1894,9 @@
         },
         "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
         "currency_difference": "Ihre durchschnittliche Differenz an {{x}} beträgt {{n}}.",
-        "daily_final": "Endgültige tägliche Erfassungen",
         "enable": "Ressourcenverfolgung aktivieren",
+        "final_daily": "Endgültige tägliche Erfassungen",
+        "final_weekly": "Endgültige wöchentliche Erfassungen",
         "graphs": {
             "bar": "Balkendiagramm",
             "candles": "Kerzendiagramm",
@@ -1909,7 +1910,8 @@
                 "total_change_pct": "Gesamte prozentuale Veränderung"
             }
         },
-        "honor_estimate": "Ein Verkauf von Ehren ist in etwa {{d}} Tagen möglich. Bei Ihrer derzeitigen durchschnittlichen Rate von {{h}} Ehre pro Tag haben Sie bis zum Beginn des Verkaufs genügend Ehre gesammelt, um etwa {{c}} Auszeichnungen zu kaufen.",
+        "honor_estimate": "Ein Verkauf von Ehre ist in etwa {{d}} Tagen möglich. Bei Ihrer derzeitigen durchschnittlichen Rate von {{h}} Ehre pro Tag haben Sie bis zum Beginn des Verkaufs genügend Ehre gesammelt, um etwa {{c}} Auszeichnungen zu kaufen.",
+        "honor_estimate_weekly": "Ein Verkauf von Ehre ist in etwa {{w}} Wochen möglich. Bei Ihrer aktuellen durchschnittlichen Rate von {{h}} Ehrenpunkten pro Woche haben Sie bis zum Beginn des Verkaufs genügend Ehrenpunkte gesammelt, um etwa {{c}} Auszeichnungen zu kaufen.",
         "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
         "search_remote": "Fernsuche",
         "sections": {

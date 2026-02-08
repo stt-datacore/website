@@ -13,7 +13,9 @@ export interface ResourceData {
     total_difference: number
     amount_pct: number,
     change_pct: number,
-    total_change_pct: number
+    total_change_pct: number,
+    day: string,
+    week: string
 }
 
 export const transKeys = {
