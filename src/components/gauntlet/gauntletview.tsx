@@ -83,12 +83,15 @@ export const GauntletView = (props: GauntletViewProps) => {
         }
     }, [settings, natural, outerGauntlet, filter, buffMode, range_max, playerData]);
 
-	setTimeout(() => {
-		if (requestRun) {
-			runWorker();
-			setRequestRun(false);
-		}
-	}, 500);
+    React.useEffect(() => {
+        if (requestRun) {
+            setTimeout(() => {
+                cancel();
+                runWorker();
+                setRequestRun(false);
+            }, 500);
+        }
+    }, [requestRun]);
 
     return <React.Fragment>
         <div style={{
@@ -155,8 +158,6 @@ export const GauntletView = (props: GauntletViewProps) => {
                 bonusCache,
                 equipmentCache
             } as GauntletCalcConfig;
-
-            cancel();
             internalRunWorker('gauntlet', workconf, workerResults);
         }
     }

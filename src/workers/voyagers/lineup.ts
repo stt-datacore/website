@@ -60,7 +60,7 @@ export class VoyagersLineup {
 			});
 			const traitBonus: number = assignments[i].trait_slots[i];
 			traitsMatched.push(traitBonus > 0 ? 1 : 0);
-			iTotalBonus += traitBonus;
+			iTotalBonus += traitBonus + (assignments[i].antimatter_bonus ?? 0);
 			iTotalVP += assignments[i].event_score;
 			for (let iSkill = 0; iSkill < SKILL_IDS.length; iSkill++) {
 				if (!assignments[i].skills[SKILL_IDS[iSkill]]) continue;

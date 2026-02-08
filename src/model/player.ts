@@ -5,7 +5,7 @@ import { BossBattlesRoot, Energy } from "./boss";
 import { CaptainsBridgeRoot } from "./bridge";
 import { BaseSkills, ComputedSkill, CapAchiever, CrewMember, CrossFuseTarget, EquipmentSlot, IntermediateSkillData, Skill } from "./crew";
 import { ShipAction, ShipBonus } from "./ship";
-import { EquipmentItem } from "./equipment";
+import { EquipmentItem, IDemand } from "./equipment";
 import { Icon } from "./game-elements";
 import { Collection } from "./collections";
 import { ShuttleAdventure, StaticFaction } from "./shuttle";
@@ -19,7 +19,7 @@ export type TranslateMethod = (key: string, options?: { [key: string]: string | 
 
 export type PlayerBuffMode = 'none' | 'player' | 'max' | 'quipment';
 
-export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment_2' | 'max_quipment_3' | 'max_quipment_best';
+export type GauntletPlayerBuffMode = 'none' | 'player' | 'max' | 'quipment' | 'max_quipment' | 'max_quipment_2' | 'max_quipment_3' | 'max_quipment_best';
 
 export type PlayerImmortalMode = 'owned' | 'min' | 2 | 3 | 4 | 'full' | 'frozen' | 'shown_full';
 
@@ -489,6 +489,9 @@ export interface PlayerCrew extends CrewMember, CompactCrew, IntermediateSkillDa
 
   /** Used internally by DataCore, not part of game data */
   local_slots?: EquipmentSlot[];
+
+  /** Used internally by DataCore, not part of game data */
+  factionItems?: IDemand[];
 
   /**
    * Input equipment slots are nested arrays,
@@ -1807,7 +1810,9 @@ export interface CrewRoster {
   unfrozen: number;
   frozen: number;
   dupes: number;
-
+  npeTotal?: number;
+  npeOwned?: number;
+  npePct?: number;
 }
 export interface ContinuumContainer {
   fill_cap: number;

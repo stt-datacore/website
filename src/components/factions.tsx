@@ -11,7 +11,7 @@ import { OptionsPanelFlexRow } from './stats/utils';
 
 type TankingFaction = Faction & { honor_shuttles: number, honor_time: number, tank_shuttles: number, tank_time: number };
 
-const factionImageLocations = {
+export const factionImageLocations = {
     12: 'federation',
     1: 'klingon',
     8: 'bajoran',
@@ -167,7 +167,12 @@ const FactionInfo = (props: ShuttleInfoProps) => {
     function renderTableRow(faction: TankingFaction, index?: number) {
         return (
             <Table.Row key={index}>
-                <Table.Cell><div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', gap: '0.5em'}}><Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />{faction.name}</div></Table.Cell>
+                <Table.Cell>
+                    <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', gap: '0.5em'}}>
+                        <Image floated='left' size='mini' src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
+                        {faction.name}
+                    </div>
+                </Table.Cell>
                 <Table.Cell>{getReputationText(faction.reputation)}</Table.Cell>
                 <Table.Cell>
                     {faction.reputation < 980 && <p>{t('n_successful_missions', { n: faction.honor_shuttles })}</p>}

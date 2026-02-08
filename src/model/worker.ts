@@ -378,6 +378,7 @@ export interface LineUpMetaConfig {
     meta: LineUpMeta;
     label?: string;
     custom?: CustomMeta;
+    test_metas?: LineUpMeta[];
 }
 
 export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {

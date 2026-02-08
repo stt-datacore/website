@@ -12,6 +12,8 @@ import { CrewTarget } from "../hovering/crewhoverstat";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerCrew } from "../../model/player";
 import { CiteOptContext } from "./context";
+import { printAM } from "../retrieval/context";
+import { OptionsPanelFlexColumn } from "../stats/utils";
 
 type SortDirection = 'ascending' | 'descending';
 
@@ -245,7 +247,13 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                         </div>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Popup trigger={<b>{row.amTraits?.length}</b>} content={row.amTraits?.map(tr => globalContext.localized.TRAIT_NAMES[tr]).join(', ')} />
+                                        <Popup trigger={(<div style={{...OptionsPanelFlexColumn, gap: '1em'}}>
+                                            <b>
+                                                {row.amTraits?.length}
+                                            </b>
+                                            {!!row.antimatter_bonus && printAM(row.antimatter_bonus, t)}
+                                            </div>)}
+                                            content={row.amTraits?.map(tr => globalContext.localized.TRAIT_NAMES[tr]).join(', ')} />
                                     </Table.Cell>
                                     <Table.Cell>
                                         {row.collectionsIncreased === undefined ? "N/A" :
@@ -443,7 +451,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                 r = (a.voyagesImproved?.length ?? 0) - (b.voyagesImproved?.length ?? 0);
             }
             else if (sort === 'amTraits' && engine === 'beta_tachyon_pulse') {
-                r = (a.amTraits?.length ?? 0) - (b.amTraits?.length ?? 0);
+                r = ((a.amTraits?.length ?? 0) + ((a.antimatter_bonus ?? 0) / 25)) - ((b.amTraits?.length ?? 0) + ((b.antimatter_bonus ?? 0) / 25));
             }
             else if (sort === 'colIncreased' && engine === 'beta_tachyon_pulse') {
                 r = (a.collectionsIncreased?.length ?? 0) - (b.collectionsIncreased?.length ?? 0);

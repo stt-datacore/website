@@ -153,7 +153,13 @@ const ProfilePageLoader = () => {
 	}
 
 	function fetchProfile(dbid?: string, dbidHash?: string) {
-		if (!dbid && !dbidHash) return;
+		if (!dbid && !dbidHash) {
+			if (globalContext.player.playerData) {
+				setStrippedPlayerData(globalContext.player.playerData);
+				setLastModified(globalContext.player.playerData.calc?.lastModified);
+			}
+			return;
+		}
 		let lastModified: Date | undefined = undefined;
 		let hash = v4();
 		let url: string;
@@ -279,6 +285,7 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 					<Dropdown.Menu>
 						<Dropdown.Item onClick={() => _exportExcel()}>{t('profile.download.complete_spreadsheet')} (XLSX)</Dropdown.Item>
 						<Dropdown.Item onClick={() => _exportCrew()}>{t('profile.download.crew_table')} (CSV)</Dropdown.Item>
+						<Dropdown.Item onClick={() => _exportCrew(true)}>{t('profile.download.crew_table_all')} (CSV)</Dropdown.Item>
 						<Dropdown.Item onClick={() => _exportShips()}>{t('profile.download.ship_table')} (CSV)</Dropdown.Item>
 						<Dropdown.Item onClick={() => _exportItems()}>{t('profile.download.item_table')} (CSV)</Dropdown.Item>
 					</Dropdown.Menu>
@@ -458,11 +465,18 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 		download('datacore.xlsx', blob);
 	}
 
-	function _exportCrew() {
+	function _exportCrew(all?: boolean) {
 		const { playerData } = globalContext.player;
 		const { t } = globalContext.localized;
-
-		let text = playerData ? exportCrew(t, playerData.player.character.crew.concat(playerData.player.character.unOwnedCrew ?? [])) : "";
+		let prepCrew = playerData?.player.character.crew;
+		let text = "";
+		if (playerData && prepCrew) {
+			prepCrew = prepCrew.filter(c => c.immortal !== undefined && c.immortal >= -1);
+			if (all) {
+				prepCrew = prepCrew.concat(playerData.player.character.unOwnedCrew ?? []);
+			}
+			text = exportCrew(t, prepCrew);
+		}
 		downloadData(`data:text/csv;charset=utf-8,${encodeURIComponent(text)}`, 'crew.csv');
 	}
 

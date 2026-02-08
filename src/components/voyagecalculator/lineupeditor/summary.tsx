@@ -371,14 +371,14 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 
 	function renderBonus(crewSlot: IProspectiveCrewSlot): JSX.Element {
 		const controlCrew: PlayerCrew | undefined = control?.config.crew_slots.find(cs => cs.symbol === crewSlot.symbol)?.crew;
-		const controlBonus: number = controlCrew ? getCrewTraitBonus(prospectiveConfig, controlCrew, crewSlot.trait) : 0;
+		const controlBonus: number = controlCrew ? getCrewTraitBonus(prospectiveConfig, controlCrew, crewSlot.trait) + (controlCrew.antimatter_bonus ?? 0): 0;
 
 		const editedSlot: boolean = !crewSlot.crew || (!!controlCrew && controlCrew.id !== crewSlot.crew.id);
 
 		if (!editedSlot)
 			return controlBonus > 0 ? renderAntimatter(controlBonus) : <></>;
 
-		const editedBonus: number = crewSlot.crew ? getCrewTraitBonus(prospectiveConfig, crewSlot.crew, crewSlot.trait) : 0;
+		const editedBonus: number = crewSlot.crew ? getCrewTraitBonus(prospectiveConfig, crewSlot.crew, crewSlot.trait) + (crewSlot.crew.antimatter_bonus ?? 0) : 0;
 
 		return (
 			<NumericDiff

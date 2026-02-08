@@ -37,6 +37,7 @@ import {
     PresenterPluginProps
 } from "./presenter_plugin";
 import { BuffSelector, CollectionDisplay, HoverSelectorConfig, ImmortalSelector, drawBuff, drawImmo } from "./presenter_utils";
+import { printAM } from "../retrieval/context";
 
 const activeStyle: React.CSSProperties = {
     background: "transparent",
@@ -250,7 +251,7 @@ export class CrewPresenter extends React.Component<
     };
 
     readonly shouldShowQuipment = (crew: PlayerCrew) => {
-        if (crew.immortal === -1 && this.validImmortalModes[0] !== 'frozen') return true;
+        if (crew.immortal === -1 || crew.immortal > 0) return true;
         else {
             if (!crew.have) {
                 delete (crew as any).q_bits;
@@ -479,6 +480,7 @@ export class CrewPresenter extends React.Component<
                         {!opponent && !selected && this.renderViewOptions(crew, isMobile)}
                     </div>
                     {this.renderSkills(crew, hover, isMobile)}
+                    {!!crew.antimatter_bonus && this.renderAntimatterBonus(crew)}
                     {this.renderCoolStats(crew)}
                     {this.renderTraits(crew)}
                     {this.renderCollections(crew)}
@@ -759,6 +761,19 @@ export class CrewPresenter extends React.Component<
                 fontSize: '0.8em'
             }}>
                 {getCoolStats(t, crew, false, false, 50, 20, 20)}
+            </div>
+        )
+    }
+
+    renderAntimatterBonus(crew: PlayerCrew) {
+        const { t } = this.context.localized;
+        return (
+            <div style={{
+                marginTop: '0.5em',
+                marginBottom: '0.5em',
+                fontSize: '0.8em'
+            }}>
+                {printAM(crew.antimatter_bonus, t, true, '24px', true)}
             </div>
         )
     }
