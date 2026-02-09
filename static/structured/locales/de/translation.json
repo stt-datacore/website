@@ -95,6 +95,8 @@
         },
         "qp": "RL",
         "quipment": "Rüstzeug",
+        "random": "Zufällig",
+        "randomize": "Zufällig auswählen",
         "rarity": "Seltenheit",
         "release_date": "Debüt",
         "retrieval": "{{retrieval.modes.retrieval}}",

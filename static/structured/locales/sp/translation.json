@@ -95,6 +95,8 @@
         },
         "qp": "QP",
         "quipment": "Quipo",
+        "random": "Aleatorio",
+        "randomize": "Aleatorizar",
         "rarity": "Rareza",
         "release_date": "Debut",
         "retrieval": "{{retrieval.modes.retrieval}}",
