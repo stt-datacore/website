@@ -95,6 +95,8 @@
         },
         "qp": "QP",
         "quipment": "Quipment",
+        "random": "Random",
+        "randomize": "Randomize",
         "rarity": "Rarity",
         "release_date": "Release Date",
         "retrieval": "{{retrieval.modes.retrieval}}",
