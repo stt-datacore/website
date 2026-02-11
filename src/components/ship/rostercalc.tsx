@@ -8,7 +8,7 @@ import { PlayerCrew } from "../../model/player";
 import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
 import { LineUpMeta, ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 import { getHighest, prepareOne } from "../../utils/crewutils";
-import { formatRunTime } from "../../utils/misc";
+import { decamelify, formatRunTime } from "../../utils/misc";
 import { AllBosses, bossFromBattleMode, compareShipResults, createMetaOptions, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
 import { useStateWithStorage } from "../../utils/storage";
 import { CrewDropDown } from "../base/crewdropdown";
@@ -1011,6 +1011,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             </span>
                         </p>
                     </div>}
+                    {!!sug.meta && (
+                        <div>
+                            <p>
+                                {t('ship.metas.meta')}{': '}<br />
+                                <span>
+                                    {decamelify(sug.meta)}
+                                </span>
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
