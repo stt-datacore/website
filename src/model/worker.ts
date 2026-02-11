@@ -455,6 +455,7 @@ export interface ShipWorkerItem {
     attacks?: AttackInstant[];
     win?: boolean;
     reference_battle?: boolean;
+    meta?: LineUpMeta;
 }
 
 export interface ShipWorkerTransportItem {
