@@ -150,7 +150,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     });
     const compatBosses = getBosses(ship);
-    (['pvp', ...compatBosses.map(m => `fbb_${m.id - 1}`)]).forEach((mode) => {
+    (['pvp', ...compatBosses.map(m => `fbb_${m.id}`)]).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         let fbbtext = '';
@@ -163,19 +163,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             else {
                 return;
             }
-            if (ship) {
-                if (rarity === 5 && ship.rarity !== 5) return;
-                if (rarity === 4 && ship.rarity < 4) return;
-                if (rarity === 3 && (ship.rarity < 3 || ship.rarity > 4)) return;
-                if (rarity === 2 && (ship.rarity < 2 || ship.rarity > 4)) return;
-                if (rarity === 1 && ship.rarity > 3) return;
-                if (rarity === 0 && ship.rarity > 2) return;
-            }
         }
         battleModes.push({
             key: mode,
             value: mode,
-            text: fbbtext || (t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity + 1}*` : ''))
+            text: fbbtext || (t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity}*` : ''))
         });
     });
 
@@ -442,12 +434,22 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb_")) {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
-                        if (f && bmode !== battleMode) {
-                            setBattleMode(bmode);
-                            setTimeout(() => {
-                                if (crewStations?.length == f.ship.battle_stations?.length && f.ship.battle_stations?.some((bs, idx) => f.ship.battle_stations![idx].crew?.symbol != crewStations[idx]?.symbol)) {
-                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
+                        if (f) {
+                            if (bmode.startsWith('fbb')) {
+                                let boss = AllBosses.find(f => f.rarity === rarity);
+                                if (boss) {
+                                    bmode = `fbb_${boss.id}`;
                                 }
+                            }
+
+                            if (bmode !== battleMode) {
+                                setBattleMode(bmode);
+                            }
+
+                            setTimeout(() => {
+                                //if (crewStations?.length == f.ship.battle_stations?.length && f.ship.battle_stations?.some((bs, idx) => f.ship.battle_stations![idx].crew?.symbol != crewStations[idx]?.symbol)) {
+                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
+                                //}
                             });
                         }
                     }
@@ -455,6 +457,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 catch {
 
                 }
+            }
+            else {
+                setTimeout(() => staffToCurrentBattleMode());
             }
         }
     }, [ship]);
@@ -476,6 +481,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
 
     const metaList = React.useMemo(() => {
+        staffToCurrentBattleMode();
         return createMetaOptions((meta) => {
             if (battleMode.includes('fbb')) return meta.startsWith('fbb');
             else return !meta.startsWith('fbb');
@@ -1050,11 +1056,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
             let meta: LineUpMeta | undefined = undefined;
             let test_metas: LineUpMeta[] | undefined;
-            if (fbb_mode && fbbMetas?.length) {
+            if (!current && fbb_mode && fbbMetas?.length) {
                 meta = fbbMetas[0];
                 test_metas = fbbMetas.slice();
             }
-            else if (arenaMetas?.length) {
+            else if (!current && arenaMetas?.length) {
                 meta = arenaMetas[0];
                 test_metas = arenaMetas.slice();
             }
@@ -1156,12 +1162,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         cancel();
         setResultIdx(undefined);
         setResults([].slice());
+        setCrewStations(ship.battle_stations!.map(_ => undefined));
         setProgressMsg('');
     }
 
     function updateActiveCrew() {
         if (resultIdx === undefined || !results.length || resultIdx >= results.length) {
-            setCrewStations(ship.battle_stations!.map(bs => undefined));
             return;
         }
         const sug = results[resultIdx];
@@ -1455,5 +1461,30 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
         }
         return newShip;
+    }
+
+    function staffToCurrentBattleMode() {
+        let use = getShipsInUse(globalContext.player);
+        let found = use.filter(u => u.ship.symbol === ship.symbol);
+        if (found.length) {
+            if (battleMode.startsWith('fbb')) {
+                let boss = bossFromBattleMode(battleMode);
+                if (boss) {
+                    let usage = found.find(f => f.battle_mode === `fbb_${boss!.rarity}`);
+                    if (usage) {
+                        setCrewStations(usage.ship.battle_stations!.map(bs => bs.crew as PlayerCrew | undefined))
+                        return;
+                    }
+                }
+            }
+            else {
+                let usage = found.find(f => f.battle_mode === battleMode);
+                if (usage) {
+                    setCrewStations(usage.ship.battle_stations!.map(bs => bs.crew as PlayerCrew | undefined))
+                    return;
+                }
+            }
+        }
+        setCrewStations(ship.battle_stations!.map(_ => undefined));
     }
 }
