@@ -558,7 +558,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
-			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
+			let battle_mode = `fbb_${fbb.id}` as BattleMode;
 			if (!battle_mode) return;
 			ship = structuredClone(ship) as Ship;
 			if (setupToSlots(fbb.setup, ship)) {
@@ -714,7 +714,7 @@ export function refShips(input: ReferenceShip[]): Ship[] {
 export function bossFromBattleMode(mode: BattleMode) {
 	let bm = mode.split("_");
 	if (bm.length === 2) {
-		let bossid = Number(bm[1]) + 1;
+		let bossid = Number(bm[1]);
 		return AllBosses.find(f => f.id === bossid);
 	}
 	return undefined;
