@@ -635,6 +635,7 @@ export const ResourceTracker = () => {
             if (d.getTime() < n.getTime()) {
                 d.setFullYear(d.getFullYear() + 1);
             }
+            if (d.getDay() !== 2) d.setDate(d.getDate() + (6 - (d.getDay() - 3)));
         }
         return honorDates;
     }
