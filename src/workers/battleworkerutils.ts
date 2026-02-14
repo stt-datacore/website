@@ -1466,10 +1466,11 @@ export function scoreLineUp(ship: Ship, crew: CrewMember[], mode: 'arena' | 'hea
         return (a_att * 4) + a_acc + a_eva + hrs + ((booms + crits) / 2);
     }
     if (mode === 'evade') {
-        let sridx = crew.map(c => c.action).map((a, idx) => a.bonus_type === 1 && a.ability?.type === 3 ? ab + idx : -1).filter(f => f !== -1);
+        let sridx = crew.map(c => c.action).map((a, idx) => a.bonus_type === 1 ? ab + idx : -1).filter(f => f !== -1);
         let srstarts = results.start_map.flatMap(starts => starts.map((start, idx) => start && sridx.includes(idx) ? crew[idx].action.ability!.amount : 0)).filter(f => !!f);
         let srs = srstarts.reduce((p, n) => p + n, 0);
-        return (a_eva * 7) + (a_att * 3) + a_acc + (hrs) + ((booms + crits) / 2) + (srs * 2);
+
+        return (a_eva * 4) + (a_att * 3) + a_acc + (hrs) + ((booms + crits) / 2) + (srs * 2);
     }
     if (mode === 'arena') {
         let decloak_penalty = 0;
