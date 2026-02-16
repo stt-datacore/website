@@ -1227,6 +1227,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         const bonus_pref = [0, 2, 1, 3];
 
         max_rarity ??= ship.rarity ?? 5;
+        if (max_rarity > 5) max_rarity = 5;
         const min_rarity = minRarity ?? 1;
         const shipDiv = getShipDivision(ship.rarity);
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
@@ -1262,7 +1263,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (crew.action.ability) {
                 let pass = true;
                 if (battleMode.startsWith("fbb_")) {
-                    let n = Number(battleMode.slice(4)) + 1;
+                    let n = Number(battleMode.slice(4));
                     if (!getBosses(ship, crew).some(boss => boss.id === n)) pass = false;
                 }
                 else if (battleMode === 'pvp') {
