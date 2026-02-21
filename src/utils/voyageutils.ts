@@ -5,25 +5,36 @@ import { AntimatterSeatMap } from '../model/voyage';
 import { Estimate } from "../model/voyage";
 
 export const formatTime = (time: number, t?: TranslateMethod, zeroMin = true): string => {
-
-	let hours = Math.floor(time);
-	let minutes = Math.floor((time-hours)*60);
+	let days = Math.floor(time / 24);
+	let hours = time - (days * 24);
+	let minutes = Math.floor((hours - Math.floor(hours)) * 60);
+	hours = Math.floor(hours);
+	let txt = '';
 	if (zeroMin || minutes) {
 		if (t) {
-			return `${t('duration.n_h_compact', { hours: `${hours}` })} ${t('duration.n_m_compact', { minutes: `${minutes}` })}`;
+			txt = `${t('duration.n_h_compact', { hours: `${hours}` })} ${t('duration.n_m_compact', { minutes: `${minutes}` })}`;
 		}
 		else {
-			return hours+"h " +minutes+"m";
+			txt = hours+"h " +minutes+"m";
 		}
 	}
 	else {
 		if (t) {
-			return `${t('duration.n_h_compact', { hours: `${hours}` })}`;
+			txt = `${t('duration.n_h_compact', { hours: `${hours}` })}`;
 		}
 		else {
-			return hours+"h";
+			txt = hours+"h";
 		}
 	}
+	if (days) {
+		if (t) {
+			txt = `${t('duration.n_d_compact', { days: `${days}` })} ${txt}`;
+		}
+		else {
+			txt = `${days}d ${txt}`;
+		}
+	}
+	return txt;
 };
 
 export const flattenEstimate = (estimate: Estimate): any => {

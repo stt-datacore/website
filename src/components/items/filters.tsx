@@ -56,13 +56,14 @@ export interface ItemsFilterProps {
     ownedItems: boolean;
     children: JSX.Element;
     noRender?: boolean;
+    farmMode?: boolean;
 }
 
 export const ItemsFilterProvider = (props: ItemsFilterProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, useT } = globalContext.localized;
     const { t: hint } = useT('hints');
-    const { children, pageId, pool, ownedItems, noRender } = props;
+    const { children, pageId, pool, ownedItems, noRender, farmMode } = props;
 
     const [filterPool, setFilterPool] = React.useState(pool);
 
@@ -165,6 +166,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 value={masteryFilter}
                 onChange={(e, { value }) => setMasteryFilter(value as number[] ?? [])}
             />}
+            {!farmMode &&
             <div style={{ ...flexCol, alignItems: 'flex-start', gap: '1em' }}>
                 {!!ownedItems && !!setShowUnownedNeeded &&
                     <Checkbox
@@ -182,7 +184,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                             setHideUnneeded(!!checked)
                         }
                     />}
-            </div>
+            </div>}
         </div>}
         <ItemsFilterContext.Provider value={contextData}>
             {children}
@@ -200,8 +202,10 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
             if (itemSourceFilter?.length && "item_sources" in item && item.item_sources) {
                 if (!item.item_sources?.some(s => itemSourceFilter.includes(s.type))) return false;
             }
-            if (ownedItems && !showUnownedNeeded && item.quantity === 0) return false;
-            if (hideUnneeded && (!("needed" in item) || !item.needed)) return false;
+            if (!farmMode) {
+                if (ownedItems && !showUnownedNeeded && item.quantity === 0) return false;
+                if (hideUnneeded && (!("needed" in item) || !item.needed)) return false;
+            }
             return true;
         })
             .map(item => {

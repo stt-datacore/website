@@ -95,6 +95,8 @@
         },
         "qp": "RL",
         "quipment": "Rüstzeug",
+        "random": "Zufällig",
+        "randomize": "Zufällig auswählen",
         "rarity": "Seltenheit",
         "release_date": "Debüt",
         "retrieval": "{{retrieval.modes.retrieval}}",
@@ -157,6 +159,7 @@
         "max_buffs": "Maximale Buffs",
         "max_quipment_buffs_best": "Maximale Rüstzeug Buffs (Beste Rüstzeug)",
         "max_quipment_buffs_double": "Maximale Rüstzeug Buffs (Zwei Fähigkeiten)",
+        "max_quipment_buffs_single": "Maximale Rüstzeug Buffs (Primäre Fähigkeit)",
         "max_quipment_buffs_triple": "Maximale Rüstzeug Buffs (Drei Fähigkeiten)",
         "no_buffs": "Keine Buffs",
         "player_buffs": "Buffs der Spieler",
@@ -274,8 +277,11 @@
             },
             "grade": "Grad",
             "immortal_rewards": "Belohnungen für die Unsterblichkeit",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Sterngrad"
+            "star_grade": "Sterngrad",
+            "total_owned": "Gesamtbesitz"
         },
         "group": {
             "warning": "In der gruppierten Sammlungsansicht werden nur die eigenen Crewmitglieder angezeigt, wenn die Sammlungsliste nicht gefiltert ist."
@@ -310,6 +316,7 @@
             },
             "show_incomplete_combos": "Unvollständige Combos anzeigen",
             "show_maxed_collections": "Maximale Sammlungen anzeigen",
+            "show_scoring_columns": "Punktespalten anzeigen",
             "sort_by_cost": "Nach Kosten sortieren"
         },
         "panes": {
@@ -471,6 +478,7 @@
         "custom": {
             "core": "Kern",
             "gauntlet": "Herausforderung",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Shuttle-Paare",
             "voyage": "Reise"
         },
@@ -659,6 +667,7 @@
             "title": "CAB's FBB Combo Chain Helper"
         },
         "chain_n": "Kette #{{n}}",
+        "chain_solved": "Ihre Flotte hat alle Knoten für diese Combo-Kette gelöst. Wählen Sie einen anderen Boss oder aktualisieren Sie Ihre Spielerdaten, um aktive Schlachten zu aktualisieren.",
         "columns": {
             "coverage": "Abdeckung",
             "crew": "{{base.crew}}",
@@ -804,7 +813,9 @@
             "alpha_exceptions_a": "Alpha-Ausnahmen",
             "alpha_exceptions_b": "sind Crewmitglieder, die aufgrund einer inoffiziellen Regel ausgeschlossen werden könnten, die einige ihrer Eigenschaften namentlich ausschließt. Sie sollten Alpha-Ausnahmen nur ausprobieren, wenn Sie alle anderen aufgelisteten Optionen ausgeschöpft haben.",
             "coverage_a": "Abdeckung",
-            "coverage_b": "identifiziert Crewmitglieder, die Lösungen für mehrere Knoten sein könnten. In der Gruppenansicht werden Crewmitglieder mit Abdeckung kursiv dargestellt; wenn Sie Crewmitglieder priorisieren, bei der Abdeckung werden einige Crewmitglieder ausgeblendet, während andere als mögliche Lösungen für weitere Knoten ausprobiert werden können. In der Crew-Ansicht wird die Anzahl der potenziellen Knoten aufgelistet.",
+            "coverage_b": "identifies crew who might be solutions to multiple nodes, with the number of potential nodes listed alongside the crew. In groups view, if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes.",
+            "coverage_b_ori": "identifiziert Crewmitglieder, die Lösungen für mehrere Knoten sein könnten. In der Gruppenansicht werden Crewmitglieder mit Abdeckung kursiv dargestellt; wenn Sie Crewmitglieder priorisieren, bei der Abdeckung werden einige Crewmitglieder ausgeblendet, während andere als mögliche Lösungen für weitere Knoten ausprobiert werden können. In der Crew-Ansicht wird die Anzahl der potenziellen Knoten aufgelistet.",
+            "coverage_hint": "{{crew}} might be the solution to {{n}} nodes",
             "non_optimals_a": "Nicht-Optimale",
             "non_optimals_b": "sind Crewmitglieder, deren einzige übereinstimmende Eigenschaften eine Teilmenge von Eigenschaften einer anderen möglichen Lösung für diesen Knoten sind. Sie sollten nicht-optimale Crewmitglieder nur ausprobieren, wenn Sie keine optimale Crew besitzen.",
             "one_hand_exception_a": "Einhand-Ausnahmen",
@@ -813,7 +824,8 @@
             "trait_colors_a": "Merkmalsfarben",
             "trait_colors_b": "helfen, die Seltenheit jedes Merkmals pro Knoten zu visualisieren, z. B. bedeutet ein goldenes Merkmal, dass seine Crew die einzig mögliche Crew mit diesem Merkmal in diesem Knoten ist, ein violettes Merkmal ist ein Merkmal, das von 2 möglichen Crewmitgliedern in diesem Knoten geteilt wird, ein blaues Merkmal wird von 3 möglichen Crewmitgliedern geteilt usw. Beachten Sie, dass potenzielle Alpha-Ausnahmen unabhängig von der Seltenheit immer orange sind.",
             "trait_numbers_a": "Merkmalsnummern",
-            "trait_numbers_b": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
+            "trait_numbers_b": "Identifizieren Sie, für wie viele verbleibende Knoten dieses Merkmal möglicherweise eine Lösung darstellt, basierend auf einer inoffiziellen Regel, die besagt, dass doppelte Merkmale im Pool entweder nie oder immer eine Lösung sind.",
+            "trait_numbers_b_ori": "identifizieren, für wie viele verbleibende Knoten dieses Merkmal wahrscheinlich eine Lösung ist, basierend auf einer inoffiziellen Regel, dass doppelte Merkmale im Pool immer eine Lösung sind."
         },
         "undo_solve": "Lösen rückgängig machen",
         "x_y_confirmed_solved": "{{x}}/{{y}} als gelöst bestätigt",
@@ -1031,6 +1043,7 @@
         "delete": "Löschen",
         "delete_confirm": "Möchten Sie diese Daten wirklich löschen?",
         "delete_selected": "Ausgewählte löschen",
+        "difficulty": "Schwierigkeitsgrad",
         "disable": "Deaktivieren",
         "disabled": "Deaktiviert",
         "dismiss": "Abweisen",
@@ -1049,6 +1062,8 @@
         "filters": "Filter",
         "filters_warning": "Aufgrund Ihrer aktuellen Suchoptionen sind einige Ergebnisse möglicherweise ausgeblendet.",
         "fleet": "Flotte",
+        "frequency": "Frequenz",
+        "fuses": "Fusionen",
         "group_by": "Gruppiere nach",
         "hidden": "Versteckt",
         "hide": "Verstecken",
@@ -1100,6 +1115,7 @@
         "load_defaults": "Standards laden",
         "loading_ellipses": "Wird geladen ...",
         "loading_please_wait_ellipses": "Laden, bitte warten...",
+        "loot": "Beute",
         "lose": "Verlieren",
         "map_position": "Kartenposition",
         "max": "Maximal",
@@ -1140,6 +1156,8 @@
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Crew empfehlen",
+        "refresh": "Refresh",
+        "refresh_remote": "Fernaktualisierung",
         "rename": "Umbenennen",
         "rerun": "Wiederholung",
         "reserved": "Reserviert",
@@ -1156,6 +1174,7 @@
         "search_for_x_by_name": "Suche nach {{x}} nach Namen",
         "search_items": "Suche nach Artikel",
         "search_items_ellipses": "Suche nach Artikel...",
+        "search_remote": "Fernbedienung suchen",
         "select_all": "Alle auswählen",
         "set_as_default_view": "Als Standardansicht festlegen",
         "show": "Zeigen",
@@ -1168,7 +1187,10 @@
         "sort_by": "Sortieren nach",
         "squadron_leader": "Geschwaderführer",
         "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
+        "sync": "Sync",
+        "sync_remote": "Fernbedienung sync",
         "toggle_layout": "Layout umschalten",
+        "total": "Gesamt",
         "type": "Typ",
         "uncheck_all": "Deaktivieren Sie alle",
         "unselect_all": "Auswahl aufheben",
@@ -1180,6 +1202,7 @@
             "title": "In Arbeit!"
         },
         "x_or_better": "{{x}} oder besser",
+        "x_or_y": "{{x}} oder {{y}}",
         "yes": "Ja",
         "you_own_n_of_y": "Sie besitzen {{n}} von {{y}}."
     },
@@ -1506,7 +1529,8 @@
             "share_profile": "Profil teilen",
             "toggle_coloring": "Rangfarbgebung umschalten",
             "toggle_glance": "Übersichtsfenster ein-/ausblenden",
-            "update_player_data": "Spielerdaten aktualisieren"
+            "update_player_data": "Spielerdaten aktualisieren",
+            "view_profile": "Profil anzeigen und exportieren"
         },
         "roster": {
             "crew": "Crew",
@@ -1633,9 +1657,11 @@
             "advanceable": "Nur Crew anzeigen, die nicht beanspruchte Plätze für Rüstzeug hat",
             "buyback": "Crew mit Sicherungen im Rückkaufschacht anzeigen",
             "dupes": "Nur doppelte Crew anzeigen",
+            "expiring": "Nur auslaufende Crewmitglieder anzeigen",
             "fe": "Nur voll ausgestattete Nicht-Unsterbliche anzeigen",
             "fodder": "Nur nicht fusionierte Crew anzeigen",
             "freezable": "Nur einfrierbare Crew anzeigen",
+            "fuse_dupes": "Nur schmelzbare doppelte Crew anzeigen",
             "impact": "Nur Crew anzeigen, die 1 Sicherung benötigt",
             "liminal": "Zeigen Sie nur die Crew, die 1 oder 2 Sicherungen benötigt",
             "mortal": "Nur Nicht-Unsterbliche anzeigen",
@@ -1709,6 +1735,7 @@
         "download": {
             "complete_spreadsheet": "Komplette Tabelle",
             "crew_table": "Crew-Tabelle",
+            "crew_table_all": "Eigene und fremde Crew",
             "item_table": "Artikeltabelle",
             "ship_table": "Schiffstabelle"
         },
@@ -1857,6 +1884,52 @@
                 "title": "Reise+ Gewichtung",
                 "voyage": "{{rank_names.scores.voyage}}"
             }
+        }
+    },
+    "resource_tracker": {
+        "clear": "Ressourcenprotokoll löschen",
+        "columns": {
+            "average_difference": "Durchschnittlicher Unterschied",
+            "difference": "Differenz",
+            "moving_average": "Gleitender Durchschnitt",
+            "resource": "Ressource",
+            "timestamp": "Zeitstempel",
+            "total_difference": "Gesamtdifferenz"
+        },
+        "confirm": "Sind Sie sicher, dass Sie das Protokoll löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+        "currency_difference": "Ihre durchschnittliche Differenz an {{x}} beträgt {{n}}.",
+        "enable": "Ressourcenverfolgung aktivieren",
+        "final_daily": "Endgültige tägliche Erfassungen",
+        "final_weekly": "Endgültige wöchentliche Erfassungen",
+        "graphs": {
+            "bar": "Balkendiagramm",
+            "candles": "Kerzendiagramm",
+            "line": "Liniendiagramm",
+            "pie": "Kreisdiagramm",
+            "select": "Diagramm auswählen",
+            "view": {
+                "amount": "Menge",
+                "change_pct": "Prozentuale Veränderung",
+                "select": "Ansicht auswählen",
+                "total_change_pct": "Gesamte prozentuale Veränderung"
+            }
+        },
+        "honor_estimate": "Ein Verkauf von Ehre ist in etwa {{d}} Tagen möglich. Bei Ihrer derzeitigen durchschnittlichen Rate von {{h}} Ehre pro Tag haben Sie bis zum Beginn des Verkaufs genügend Ehre gesammelt, um etwa {{c}} Auszeichnungen zu kaufen.",
+        "honor_estimate_weekly": "Ein Verkauf von Ehre ist in etwa {{w}} Wochen möglich. Bei Ihrer aktuellen durchschnittlichen Rate von {{h}} Ehrenpunkten pro Woche haben Sie bis zum Beginn des Verkaufs genügend Ehrenpunkte gesammelt, um etwa {{c}} Auszeichnungen zu kaufen.",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Fernsuche",
+        "sections": {
+            "graph": "Grafikansicht",
+            "graph_description": "Sehen Sie sich Grafiken Ihrer Ressourcenentwicklung an.",
+            "table": "Tabellenansicht",
+            "table_description": "Listen Sie Ihre Ressourcen mit den Unterschieden und Durchschnittswerten auf."
+        },
+        "select_view": "Ansicht auswählen",
+        "start_date_hint": "Wenn Sie kein Startdatum für die Remote-Suche angeben, werden standardmäßig Daten der letzten 365 Tage zurückgegeben.",
+        "title": "Ressourcenverfolgung",
+        "view": {
+            "by_resource": "Nach Ressource",
+            "by_update": "Laut letzter Aktualisierung"
         }
     },
     "retrieval": {
@@ -2019,7 +2092,7 @@
             },
             "footer_text": "Die Spalten \"Im Besitz\", \"% Im Besitz\", \"% Zeitportal\", \"Unsterblich\" und \"% Unsterblich\" berücksichtigen nur einzigartige Crewmitglieder. Alle anderen Spalten berücksichtigen Ihre Duplikate.",
             "header_text": "Diese Tabelle unterteilt Ihre Liste nach Seltenheitsgrad und zeigt Ihren Fortschritt bei der Unsterblichkeit aller Crewmitglieder im Spiel.",
-            "immortal_cell_help": "Deine Erfolge im Spiel melden diese Zahl möglicherweise fälschlicherweise als {number}"
+            "immortal_cell_help": "Deine Erfolge im Spiel melden diese Zahl möglicherweise fälschlicherweise als {{number}}"
         },
         "skills": {
             "columns": {
@@ -2201,6 +2274,16 @@
         },
         "max_attack": "Max. Angriffs",
         "max_level": "Höchstlevel",
+        "metas": {
+            "current_meta": "Aktuelle Spielstrategie",
+            "currents_meta": "Aktuelle Spielstrategien",
+            "custom_meta": "Benutzerdefinierte Spielstrategie",
+            "enable_metas": "Spielstrategien aktivieren",
+            "meta": "Spielstrategie",
+            "metas": "Spielstrategien",
+            "select_meta": "Spielstrategie auswählen",
+            "select_metas": "Spielstrategien auswählen"
+        },
         "min_attack": "Min. Angriffs",
         "offset_adds_warn": "* Aktivierungs-Offsets werden zur anfänglichen Abkühlungszeit der aktuellen Crew hinzugefügt.",
         "opponent_variance": "Gegnervarianz",
@@ -2482,7 +2565,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Alle als unsterblich ansehen"
+            "as_immortalized": "Alle als unsterblich ansehen",
+            "cheapestfffe": "Günstigste VAVA"
         },
         "title": "Besondere Ansichten"
     },
@@ -2725,6 +2809,7 @@
             "voyage_long_advice": "Für eine {{h}} stündige Reise benötigen Sie {{r}} Nachfüllungen zu einem Preis von {{d}} Dilithium (oder {{re}} {{global.item_types.voyage_consumable}}.)",
             "with_n_am_left": "mit {{n}} AM übrig"
         },
+        "experimental_calculator_x": "Experimenteller Rechner „{{x}}“",
         "history": {
             "description": "Behalten Sie den Überblick über Ihre Reisen, sehen Sie, wie Ihre Laufzeiten im Vergleich zu Ihren ursprünglichen Schätzungen abschneiden, und identifizieren Sie die Crew, die Sie am häufigsten einsetzen.",
             "enable_remote_tracking": "Aktivieren Sie die Fernverfolgung",

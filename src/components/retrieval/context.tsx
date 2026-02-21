@@ -32,6 +32,17 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 	</div>
 }
 
+export function printLegendaryCite(quantity: number, t?: TranslateMethod, printCite?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}items_consumables_honorable_citation_item_3.png`;
+
+	return <div
+		title={t ? t('global.item_types.honorable_citation') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printCite ? t('global.item_types.honorable_citation') : ''}</span>
+	</div>
+}
+
 export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
 
@@ -40,6 +51,17 @@ export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: b
 		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
 		<img src={img} style={{height: '1.5em'}} />
 		<span>{quantity.toLocaleString()} {t && printHonor ? t('global.item_types.honor') : ''}</span>
+	</div>
+}
+
+export function printDilithium(quantity: number, t?: TranslateMethod, printDil?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`;
+
+	return <div
+		title={t ? t('global.item_types.dilithium') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printDil ? t('global.item_types.dilithium') : ''}</span>
 	</div>
 }
 
@@ -76,14 +98,25 @@ export function printIntel(quantity: number, t?: TranslateMethod, printIntel?: b
 	</div>
 }
 
-export function printChrons(quantity: number, t?: TranslateMethod, printChrons?: boolean) {
+export function printAM(quantity?: number, t?: TranslateMethod, printAM?: boolean, imageHeight?: string, withPlus?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}/captains_bridge_antimatter.png`;
+
+	return <div
+		title={t ? t('ship.antimatter') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: imageHeight ?? '1.5em'}} />
+		<span>{!!withPlus && '+'}{quantity?.toLocaleString() || ""} {t && printAM ? t('ship.antimatter') : ''}</span>
+	</div>
+}
+
+export function printChrons(quantity?: number, t?: TranslateMethod, printChrons?: boolean, imageHeight?: string) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.chronitons') : ''}
 		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
-		<img src={img} style={{height: '1.5em'}} />
-		<span>{quantity.toLocaleString()} {t && printChrons ? t('global.item_types.chronitons') : ''}</span>
+		<img src={img} style={{height: imageHeight ?? '1.5em'}} />
+		<span>{quantity?.toLocaleString() || ""} {t && printChrons ? t('global.item_types.chronitons') : ''}</span>
 	</div>
 }
 

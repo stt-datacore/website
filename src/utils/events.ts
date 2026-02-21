@@ -35,7 +35,14 @@ export function getEventData(activeEvent: GameEvent, allCrew: CrewMember[], allS
 		featured_ships: [],
 		bonus_ships: []
 	};
-
+	let ac: Content;
+	if (Array.isArray(activeEvent.content)) {
+		ac = activeEvent.content[0];
+	}
+	else {
+		ac = activeEvent.content;
+	}
+	result.factions = ac?.shuttles?.map(s => s.token);
 	// activeContent holds details about the active phase of a started event or the first phase of an unstarted event
 	let activeContent: Content | undefined = undefined;
 	let mega = activeEvent.threshold_rewards.find(f => f.rewards.some(r => r.type === 1 || r.item_type === 1) && f.points === 25000)?.rewards.find(r => r.type === 1 || r.item_type === 1);
@@ -443,14 +450,17 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 				amount = activeContent.antimatter_bonus_for_featured_crew ?? high;
 			}
 			else {
-				if (activeContent.antimatter_bonus_crew_traits?.some(trait => (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)))) {
-					amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
-				}
-				// activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
-				// 	if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
-				// 		amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
-				// 	}
-				// });
+				// Non-featured event crew get an AM bonus per matching trait
+				activeContent.antimatter_bonus_crew_traits?.forEach(trait => {
+					if (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)) {
+						amount += (activeContent.antimatter_bonus_per_crew_trait ?? low);
+					}
+				});
+
+				// Alternate calculation: Non-featured crew get a fixed AM bonus when matching 1 or more event trait
+				// if (activeContent.antimatter_bonus_crew_traits?.some(trait => (crew.traits.includes(trait) || crew.traits_hidden.includes(trait)))) {
+				// 	amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
+				// }
 			}
 		}
 		else {

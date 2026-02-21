@@ -114,7 +114,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 
 	function renderGroup(group: Variant, idx: number): JSX.Element {
 		return (
-			<Segment key={idx}>
+			<Segment key={`${group.name}_variant_${idx}`}>
 				<div style={{display:'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap'}}>
 					<Header as='h4'>{t('crew_page.variants', { crew: group.name })}</Header>
 					<Form>

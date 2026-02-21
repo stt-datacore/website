@@ -95,6 +95,8 @@
         },
         "qp": "QP",
         "quipment": "Quipment",
+        "random": "Random",
+        "randomize": "Randomize",
         "rarity": "Rarity",
         "release_date": "Release Date",
         "retrieval": "{{retrieval.modes.retrieval}}",
@@ -157,6 +159,7 @@
         "max_buffs": "Max buffs",
         "max_quipment_buffs_best": "Max Quipment Buffs (Best Quipment)",
         "max_quipment_buffs_double": "Max Quipment Buffs (Two Skills)",
+        "max_quipment_buffs_single": "Max Quipment Buffs (Primary Skill)",
         "max_quipment_buffs_triple": "Max Quipment Buffs (Three Skills)",
         "no_buffs": "No buffs",
         "player_buffs": "Player buffs",
@@ -274,8 +277,11 @@
             },
             "grade": "Grade",
             "immortal_rewards": "Immortal Rewards",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Star Grade"
+            "star_grade": "Star Grade",
+            "total_owned": "Total Owned"
         },
         "group": {
             "warning": "The grouped collection view shows only owned crew if the collections list is not filtered."
@@ -310,6 +316,7 @@
             },
             "show_incomplete_combos": "Show incomplete combos",
             "show_maxed_collections": "Show maxed collections",
+            "show_scoring_columns": "Show scoring columns",
             "sort_by_cost": "Sort by cost"
         },
         "panes": {
@@ -471,6 +478,7 @@
         "custom": {
             "core": "Core",
             "gauntlet": "Gauntlet",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Shuttle Pairs",
             "voyage": "Voyage"
         },
@@ -659,6 +667,7 @@
             "title": "CAB's FBB Combo Chain Helper"
         },
         "chain_n": "Chain #{{n}}",
+        "chain_solved": "Your fleet has solved all nodes for this combo chain. Select another boss or update your player data to refresh active battles.",
         "columns": {
             "coverage": "Coverage",
             "crew": "{{base.crew}}",
@@ -804,7 +813,9 @@
             "alpha_exceptions_a": "Alpha exceptions",
             "alpha_exceptions_b": "are crew who might be ruled out based on an unofficial rule that eliminates some of their traits by name. You should only try alpha exceptions if you've exhausted all other listed options.",
             "coverage_a": "Coverage",
-            "coverage_b": "identifies crew who might be solutions to multiple nodes. In groups view, crew with coverage are italicized; if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes. In crew view, the number of potential nodes is listed.",
+            "coverage_b": "identifies crew who might be solutions to multiple nodes, with the number of potential nodes listed alongside the crew. In groups view, if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes.",
+            "coverage_b_ori": "identifies crew who might be solutions to multiple nodes. In groups view, crew with coverage are italicized; if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes. In crew view, the number of potential nodes is listed.",
+            "coverage_hint": "{{crew}} might be the solution to {{n}} nodes",
             "non_optimals_a": "Non-optimals",
             "non_optimals_b": "are crew whose only matching traits are a subset of traits of another possible solution for that node. You should only try non-optimal crew if you don't own any optimal crew.",
             "one_hand_exception_a": "One hand exceptions",
@@ -813,7 +824,8 @@
             "trait_colors_a": "Trait colors",
             "trait_colors_b": "help visualize the rarity of each trait per node, e.g. a gold trait means its crew is the only possible crew with that trait in that node, a purple trait is a trait shared by 2 possible crew in that node, a blue trait is shared by 3 possible crew, etc. Note that potential alpha exceptions are always orange, regardless of rarity.",
             "trait_numbers_a": "Trait numbers",
-            "trait_numbers_b": "identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution."
+            "trait_numbers_b": "identify how many remaining nodes that trait is possibly a solution for, based on an unofficial rule that duplicate traits in the pool are either never a solution or always a solution.",
+            "trait_numbers_b_ori": "identify how many remaining nodes that trait is likely a solution for, based on an unofficial rule that duplicate traits in the pool are always a solution."
         },
         "undo_solve": "Undo Solve",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmed solved",
@@ -1031,6 +1043,7 @@
         "delete": "Delete",
         "delete_confirm": "Are you sure you wish to delete this data?",
         "delete_selected": "Delete Selected",
+        "difficulty": "Difficulty",
         "disable": "Disable",
         "disabled": "Disabled",
         "dismiss": "Dismiss",
@@ -1049,6 +1062,8 @@
         "filters": "Filters",
         "filters_warning": "Some results may be hidden due to your current search options.",
         "fleet": "Fleet",
+        "frequency": "Frequency",
+        "fuses": "Fuses",
         "group_by": "Group by",
         "hidden": "Hidden",
         "hide": "Hide",
@@ -1100,6 +1115,7 @@
         "load_defaults": "Load Defaults",
         "loading_ellipses": "Loading ...",
         "loading_please_wait_ellipses": "Loading. Please wait...",
+        "loot": "Loot",
         "lose": "Lose",
         "map_position": "Map Position",
         "max": "Max",
@@ -1140,6 +1156,8 @@
         "quarter_short": "Q",
         "quest": "Quest",
         "recommend_crew": "Recommend Crew",
+        "refresh": "Refresh",
+        "refresh_remote": "Refresh Remote",
         "rename": "Rename",
         "rerun": "Rerun",
         "reserved": "Reserved",
@@ -1156,6 +1174,7 @@
         "search_for_x_by_name": "Search for {{x}} by name",
         "search_items": "Search items",
         "search_items_ellipses": "Search items...",
+        "search_remote": "Search Remote",
         "select_all": "Select All",
         "set_as_default_view": "Set as default view",
         "show": "Show",
@@ -1168,7 +1187,10 @@
         "sort_by": "Sort by",
         "squadron_leader": "Squadron Leader",
         "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
+        "sync": "Sync",
+        "sync_remote": "Sync Remote",
         "toggle_layout": "Toggle layout",
+        "total": "Total",
         "type": "Type",
         "unassigned": "Unassigned",
         "uncheck_all": "Uncheck all",
@@ -1181,6 +1203,7 @@
             "title": "Work In Progress!"
         },
         "x_or_better": "{{x}} or better",
+        "x_or_y": "{{x}} or {{y}}",
         "yes": "Yes",
         "you_own_n_of_y": "You own {{n}} of {{y}}."
     },
@@ -1507,7 +1530,8 @@
             "share_profile": "Share Profile",
             "toggle_coloring": "Toggle grade coloring",
             "toggle_glance": "Toggle Overview Panel",
-            "update_player_data": "Update Player Data"
+            "update_player_data": "Update Player Data",
+            "view_profile": "View and Export Profile"
         },
         "roster": {
             "crew": "Crew",
@@ -1634,9 +1658,11 @@
             "advanceable": "Only show crew with unclaimed quipment slots",
             "buyback": "Show crew with fuses in buy-back well",
             "dupes": "Only show duplicate crew",
+            "expiring": "Only show expiring crew",
             "fe": "Only show fully equipped non-immortals",
             "fodder": "Only show unfused crew",
             "freezable": "Only show freezable crew",
+            "fuse_dupes": "Only show fusible duplicate crew",
             "impact": "Only show crew needing 1 fuse",
             "liminal": "Only show crew needing 1 or 2 fuses",
             "mortal": "Only show non-immortals",
@@ -1710,6 +1736,7 @@
         "download": {
             "complete_spreadsheet": "Complete spreadsheet",
             "crew_table": "Crew Table",
+            "crew_table_all": "Owned and Unowned Crew",
             "item_table": "Item Table",
             "ship_table": "Ship Table"
         },
@@ -1858,6 +1885,52 @@
                 "title": "Voyage+ Weighting",
                 "voyage": "{{rank_names.scores.voyage}}"
             }
+        }
+    },
+    "resource_tracker": {
+        "clear": "Clear resource log",
+        "columns": {
+            "average_difference": "Average difference",
+            "difference": "Difference",
+            "moving_average": "Moving average",
+            "resource": "Resource",
+            "timestamp": "Timestamp",
+            "total_difference": "Total difference"
+        },
+        "confirm": "Are you sure you wish to clear the log? This cannot be undone.",
+        "currency_difference": "Your average difference in {{x}} is {{n}}.",
+        "enable": "Enable Resource Tracking",
+        "final_daily": "Final daily captures",
+        "final_weekly": "Final weekly captures",
+        "graphs": {
+            "bar": "Bar Chart",
+            "candles": "Candle Chart",
+            "line": "Line Chart",
+            "pie": "Pie Chart",
+            "select": "Select graph",
+            "view": {
+                "amount": "Amount",
+                "change_pct": "Percent Change",
+                "select": "Select view",
+                "total_change_pct": "Total Percent Change"
+            }
+        },
+        "honor_estimate": "An honor sale is possible in approximately {{d}} days. At your current average rate of {{h}} honor per day, you will have saved enough honor to buy approximately {{c}} citations when the sale begins.",
+        "honor_estimate_weekly": "An honor sale is possible in approximately {{w}} weeks. At your current average rate of {{h}} honor per week, you will have saved enough honor to buy approximately {{c}} citations when the sale begins.",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Remote Search",
+        "sections": {
+            "graph": "Graph View",
+            "graph_description": "View graphs of your resource trends.",
+            "table": "Table View",
+            "table_description": "List your resources with differences and averages."
+        },
+        "select_view": "Select view",
+        "start_date_hint": "If you do not specify a start date for remote searches, 365 days worth of data is returned, by default.",
+        "title": "Resource Tracker",
+        "view": {
+            "by_resource": "By resource",
+            "by_update": "By last update"
         }
     },
     "retrieval": {
@@ -2020,7 +2093,7 @@
             },
             "footer_text": "The Owned, % Owned, % Portal, Immortal, and % Immortal columns consider unique crew only. All other columns consider your duplicates.",
             "header_text": "This table breaks down your roster by rarity and shows your progress toward immortalizing all crew in the game.",
-            "immortal_cell_help": "Your achievements in-game may incorrectly report this number as {number}"
+            "immortal_cell_help": "Your achievements in-game may incorrectly report this number as {{number}}"
         },
         "skills": {
             "columns": {
@@ -2202,6 +2275,16 @@
         },
         "max_attack": "Max. Attack",
         "max_level": "Max Level",
+        "metas": {
+            "current_meta": "Current Meta",
+            "currents_meta": "Current Metas",
+            "custom_meta": "Custom Meta",
+            "enable_metas": "Enable Metas",
+            "meta": "Meta",
+            "metas": "Metas",
+            "select_meta": "Select Meta",
+            "select_metas": "Select Metas"
+        },
         "min_attack": "Min. Attack",
         "offset_adds_warn": "* Activation offsets add to the current crew's initial cooldown time.",
         "opponent_variance": "Opponent variance",
@@ -2394,7 +2477,7 @@
             "owned": "{{crew_state.owned}}",
             "percentage": "Crew demand rate",
             "popular_trait": "Most frequent trait",
-            "quantity": "{{global.quantity}}"
+            "quantity": "{{items.columns.quantity}}"
         },
         "last_release": "Last Release",
         "last_sync_timestamp": "Last Sync Timestamp",
@@ -2483,7 +2566,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "View all as immortalized"
+            "as_immortalized": "View all as immortalized",
+            "cheapestfffe": "Cheapest FFFE"
         },
         "title": "Special views"
     },
@@ -2726,6 +2810,7 @@
             "voyage_long_advice": "For a {{h}} hour voyage you will need {{r}} refills at a cost of {{d}} dilithium (or {{re}} {{global.item_types.voyage_consumable}}.)",
             "with_n_am_left": "with {{n}} AM left"
         },
+        "experimental_calculator_x": "Experimental Calculator '{{x}}'",
         "history": {
             "description": "Keep track of your voyages, see how your runtimes compare to your initial estimates, and identify the crew you use most often.",
             "enable_remote_tracking": "Enable remote tracking",
