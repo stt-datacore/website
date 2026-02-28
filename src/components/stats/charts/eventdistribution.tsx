@@ -1,6 +1,6 @@
 import React from "react"
 import { GlobalContext } from "../../../context/globalcontext"
-import { Dropdown } from "semantic-ui-react";
+import { Dropdown, Modal } from "semantic-ui-react";
 import { useStateWithStorage } from "../../../utils/storage";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { PieTooltipProps, ResponsivePie } from "@nivo/pie";
@@ -10,6 +10,8 @@ import { getVariantTraits } from "../../../utils/crewutils";
 import { AvatarView } from "../../item_presenters/avatarview";
 import { Slider } from "../../base/slider";
 import { EventStats, makeTypeBuckets } from "../../../utils/event_stats";
+import { EventInstance } from "../../../model/events";
+import { EventInfoModal, EventModalHeader } from "../../event_info_modal";
 
 export type EventDistributionType = 'event' | 'mega' | 'traits' | 'variants' | 'type' | 'type_series';
 
@@ -28,12 +30,17 @@ type PieSeriesType = {
     data: StatDataEntry;
 }
 
+type EventFilterFunc = (e: EventInstance) => boolean;
+
 export const EventDistributionPicker = (props: DistributionPickerOpts) => {
     const globalContext = React.useContext(GlobalContext);
     const { t, TRAIT_NAMES } = globalContext.localized;
 
     const [type, setType] = useStateWithStorage<EventDistributionType>('stattrends/event_distribution_type', 'event');
     const { event_stats, crew, event_scoring } = globalContext.core;
+    const [modalEvent, setModalEvent] = React.useState<EventInstance | undefined>();
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [eventFilter, setEventFilter] = React.useState<number[] | undefined>();
 
     const eventChoices = [
         { key: 'event', value: 'event', text: t('stat_trends.events.event') },
@@ -83,13 +90,20 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
             />
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1em 0' }}>
-                <div style={{ height: '50vw', width: '100%', border: '2px solid #666', borderRadius: '12px' }}>
+                <div style={{ cursor: 'zoom-in', height: '50vw', width: '100%', border: '2px solid #666', borderRadius: '12px' }}>
                     <ResponsivePie
                         data={chartData}
                         value={'score'}
                         arcLinkLabel={(data) => data.data.label}
                         arcLabel={(data) => `${t('global.n_%', { n: data.value })}`}
                         tooltip={renderTooltip}
+                        onClick={(data) => {
+                            const allowed = data.data.data.events.reverse().slice(0);
+                            const events = allowed.map(e => globalContext.core.event_instances.find(f => f.instance_id === e)).filter(e => e !== undefined);
+                            setEventFilter(allowed);
+                            setModalEvent(events[0]);
+                            setModalOpen(true);
+                        }}
                         theme={themes.dark}
                         margin={{ top: 80, right: 80, bottom: 80, left: 80 }}
                         innerRadius={0.4}
@@ -109,6 +123,36 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                     />
                 </div>
             </div>
+            {!!modalEvent && modalOpen && (eventFilter || !eventFilter) && <>
+				<Modal
+					open
+					size="large"
+					onClose={() => {
+						setModalOpen(false);
+						setModalEvent(undefined);
+                        setEventFilter(undefined);
+					}}
+					closeIcon
+				>
+					<Modal.Header>
+						<EventModalHeader
+							instance={modalEvent}
+							setInstance={setModalEvent}
+                            flip
+                            filter={eventFilter}
+
+							/>
+					</Modal.Header>
+					<Modal.Content scrolling>
+						<EventInfoModal
+							instanceId={modalEvent.instance_id}
+							image={modalEvent.image}
+							hasDetails={modalEvent.event_details}
+							leaderboard={[]}
+						/>
+					</Modal.Content>
+				</Modal>
+			</>}
         </div>
     )
 
@@ -162,7 +206,6 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                     size={64}
                 /></div>}
             </div>
-
     }
 
     function createTraitEventStats() {

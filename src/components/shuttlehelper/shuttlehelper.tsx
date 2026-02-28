@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-import { ShuttleAdventure } from '../../model/shuttle';
+import { ShuttleAdventure, StaticFaction } from '../../model/shuttle';
 import { IEventData, IRosterCrew } from '../../components/eventplanner/model';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
@@ -11,6 +11,8 @@ import { ShuttlersContext, IShuttlersContext } from './context';
 import { Calculator } from './calculator';
 import { QPContext } from '../qpconfig/provider';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { Faction, GameEvent, PlayerData } from '../../model/player';
+import { IEphemeralData } from '../../context/playercontext';
 
 // Use ShuttleHelper when 1) there's no player data, OR 2) there's no active event, OR 3) using allCrew as roster
 //	Shuttles and assignments do NOT persist across sessions
@@ -54,7 +56,8 @@ export const ShuttleHelper = (props: ShuttleHelperProps) => {
 		eventData: props.eventData,
 		activeShuttles,
 		shuttlers, setShuttlers,
-		assigned, setAssigned
+		assigned, setAssigned,
+		eventFactions: getEventFactions(globalContext.core.factions, props.eventData?.factions)
 	};
 
 	return (
@@ -134,7 +137,8 @@ export const EventShuttleHelper = (props: EventShuttleHelperProps) => {
 		eventData: props.eventData,
 		activeShuttles,
 		shuttlers, setShuttlers,
-		assigned, setAssigned
+		assigned, setAssigned,
+		eventFactions: getEventFactions(globalContext.core.factions, props.eventData.factions)
 	};
 
 	return (
@@ -174,7 +178,15 @@ export const EventShuttleHelper = (props: EventShuttleHelperProps) => {
 		});
 		setShuttlers({...shuttlers});
 	}
+
 };
+
+export function getEventFactions(factions: StaticFaction[], ids?: number[]) {
+	if (!ids) return undefined;
+	let factmap = factions.filter(f => f.shuttle_token_id && ids.includes(f.shuttle_token_id));
+	return factmap.map(f => f.shuttle_token_id!);
+}
+
 
 function convertAdventureToShuttle(adventure: ShuttleAdventure, groupId: string): Shuttle {
 	const shuttle = new Shuttle(groupId, adventure.symbol, true);

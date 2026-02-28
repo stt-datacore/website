@@ -7,7 +7,7 @@ import { GlobalContext } from '../context/globalcontext';
 const CiteOptimizerPage = () => {
     const { t } = React.useContext(GlobalContext).localized;
 
-    return <DataPageLayout playerPromptType='require' pageTitle={t('menu.tools.citation_optimizer')} demands={['collections']}>
+    return <DataPageLayout playerPromptType='require' pageTitle={t('menu.tools.citation_optimizer')} demands={['collections', 'event_instances']}>
         <CiteOptComponent />
     </DataPageLayout>
 }

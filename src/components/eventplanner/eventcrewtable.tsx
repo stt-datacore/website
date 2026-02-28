@@ -22,6 +22,7 @@ import { QPContext } from '../qpconfig/provider';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { CrewShipCells, getShipTableConfig } from '../crewtables/views/shipabilities';
+import { QuipmentProspectAccordion, QuipmentProspectList } from '../voyagecalculator/quipment/quipmentprospects';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -69,7 +70,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const tableConfig: ITableConfigRow[] = React.useMemo(() => {
 		const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 		if (phaseType === 'skirmish') {
-			const results = getShipTableConfig(t, false);
+			const results = getShipTableConfig(t, false, false);
 			results.unshift(
 				{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
 				{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
@@ -199,7 +200,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	const canBorrow = phaseType === 'shuttles'
 		&& eventData.seconds_to_start === 0
 		&& playerData?.player.squad.rank !== 'LEADER'
-		&& !!ephemeral?.borrowedCrew.length;
+		&& !!ephemeral?.borrowedCrew?.length;
 
 	// Always calculate new skill numbers from original, unaltered crew list
 	let rosterCrew = structuredClone(props.rosterCrew) as IEventScoredCrew[];
@@ -305,6 +306,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
+			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
 		</React.Fragment>
 	);
 

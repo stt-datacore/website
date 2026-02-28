@@ -214,6 +214,8 @@ export class IAmPicardHelper extends Helper {
 			if (entry.hasTrait)
 				config.startAm += 25;
 
+			config.startAm += (crew.antimatter_bonus ?? 0);
+
 			entries.push(entry);
 
 			eventCrewBonuses.push(getCrewEventBonus(request.voyageConfig, crew as PlayerCrew));

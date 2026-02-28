@@ -17,7 +17,7 @@ const EventPlannerPage = () => {
 	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<DataPageLayout
-			demands={['event_instances', 'episodes']}
+			demands={['event_instances', 'episodes', 'factions']}
 			pageTitle={t('menu.tools.event_planner')}
 			pageDescription={t('event_planner.heading')}
 			playerPromptType='recommend'

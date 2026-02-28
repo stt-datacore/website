@@ -2,13 +2,13 @@ import { Link } from 'gatsby';
 import React from 'react';
 import { Checkbox, Dropdown, Form, Header, Loader } from 'semantic-ui-react';
 
-import CONFIG from '../../components/CONFIG';
-import ProspectPicker from '../../components/prospectpicker';
-import { ITableConfigRow } from '../../components/searchabletable';
-import { GlobalContext } from '../../context/globalcontext';
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { CompletionState, PlayerBuffMode } from '../../model/player';
-import { applyCrewBuffs, oneCrewCopy } from '../../utils/crewutils';
+import { GlobalContext } from '../../context/globalcontext';
+import CONFIG from '../../components/CONFIG';
+import { ITableConfigRow } from '../../components/searchabletable';
+import ProspectPicker from '../../components/prospectpicker';
+import { oneCrewCopy, applyCrewBuffs, cheapestFFFE } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { CrewConfigTable } from './crewconfigtable';
@@ -32,6 +32,7 @@ import { CrewBuffModes, SpecialViewMode, SpecialViews } from './commonoptions';
 import { ObtainedFilter } from './filters/crewobtained';
 import { ReleaseDateFilter } from './filters/crewreleasedate';
 import { CrewSkillOrder } from './filters/crewskillorder';
+import { CheapestFilters, DefaultCheapestOpts } from './filters/cheapestfffe';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import RosterSummary from './rostersummary';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
@@ -253,9 +254,10 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
 	const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
 	const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
+	const [breakoutBosses, setBreakoutBosses] = useStateWithStorage<boolean>('/rosterTable/ships/breakoutBosses', false, { rememberForever: true });
 	const [tableView, setTableView] = useStateWithStorage<TableView>(pageId+'/rosterTable/tableView', getDefaultTable());
 	const [critExpanded, setCritExpanded] = useStateWithStorage(pageId+'/rosterTable/critExpanded', undefined as string | undefined);
-
+	const [cheapest, setCheapest] = useStateWithStorage(pageId+'/rosterTable/special/cheapestfffe/config', structuredClone(DefaultCheapestOpts), { rememberForever: true });
 	const [altBaseLayout, setAltBaseLayout] = useStateWithStorage<boolean | undefined>(pageId+'/rosterTable/altBaseLayout', false, { rememberForever: true });
 	const [activeRarities, setActiveRarities] = React.useState([] as number[]);
 	const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>(undefined);
@@ -303,9 +305,11 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 					ships={playerShips ?? globalContext.core.ships}
 					crewFilters={crewFilters}
 					setCrewFilters={setCrewFilters}
+					breakoutBosses={breakoutBosses}
+					setBreakoutBosses={setBreakoutBosses}
 				/>,
-			tableConfig: getShipTableConfig(t, shipranks),
-			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withranks={shipranks} crew={crew} />
+			tableConfig: getShipTableConfig(t, shipranks, breakoutBosses),
+			renderTableCells: (crew: IRosterCrew) => <CrewShipCells withbosses={breakoutBosses} withranks={shipranks} crew={crew} />
 		},
 		{
 			id: 'dc_ranks',
@@ -492,6 +496,16 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 				/>
 		},
 		{
+			id: 'chepeastfffe',
+			available: specialView === 'cheapestfffe',
+			form:
+				<CheapestFilters
+					key='filter_mycrew_specialview_cheapestfffe'
+					config={cheapest}
+					setConfig={setCheapest}
+				/>
+		},
+		{
 			id: 'ownership',
 			available: playerData && (['offers', 'allCrew', 'buyBack'].includes(rosterType)),
 			form:
@@ -601,7 +615,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	React.useEffect(() => {
 		// Apply roster markups, i.e. add sortable fields to crew
 		prepareCrew();
-	}, [rosterCrew, crewMarkups, rosterConfig]);
+	}, [rosterCrew, crewMarkups, rosterConfig, specialView, cheapest]);
 
 	React.useEffect(() => {
 		const newConfig: RosterConfig = {
@@ -634,11 +648,18 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 			setOwnedSkills(ownedSkills);
 		}
 	}, [preparedCrew]);
-
+	const ocols = [] as string[];
+	if (specialView === 'cheapestfffe') {
+		playerData?.player.character.cryo_collections.forEach(col => {
+			if (col?.milestone?.goal) {
+				ocols.push(col.name);
+			}
+		});
+	}
 	return (
 		<React.Fragment>
 			<Form>
-				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: '1em' }}>
+				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', columnGap: '1em' }}>
 					<Form.Field
 						placeholder={t('crew_views.base')}
 						control={Dropdown}
@@ -688,8 +709,17 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						rosterCrew={preparedCrew}
 						crewFilters={crewFilters}
 						extraSearchContent={view ? view?.extraSearchContent : renderExtraSearchContent()}
-						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers')}
-						renderTableCells={(crew: IRosterCrew) => view?.renderTableCells ? view.renderTableCells(crew) : <CrewBaseCells alternativeLayout={altBaseLayout && rosterType !== 'offers'} tableType={props.tableType} crew={crew} pageId={pageId} />}
+						tableConfig={view?.tableConfig ?? getBaseTableConfig(props.tableType, t, altBaseLayout && rosterType !== 'offers', specialView === 'cheapestfffe', ocols)}
+						renderTableCells={(crew: IRosterCrew) =>
+							view?.renderTableCells ?
+							view.renderTableCells(crew) :
+							<CrewBaseCells
+								pageId={pageId}
+								alternativeLayout={altBaseLayout && rosterType !== 'offers'}
+								tableType={props.tableType}
+								crew={crew}
+								cheap={specialView === 'cheapestfffe'}
+							/>}
 						lockableCrew={lockableCrew}
 						specialView={specialView}
 						loading={isPreparing}
@@ -727,7 +757,20 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 	}
 
 	async function prepareCrew() {
-		const preparedCrew = rosterCrew.map(crew => {
+		let useCrew = rosterCrew;
+		if (specialView === 'cheapestfffe' && !!playerData) {
+			let { candidates } = cheapestFFFE(
+				playerData,
+				globalContext.core.crew,
+				globalContext.core.items,
+				cheapest.max_rarity,
+				cheapest.min_rarity,
+				cheapest.skirmish,
+				cheapest.fuse
+			)
+			useCrew = candidates;
+		}
+		const preparedCrew = useCrew.map(crew => {
 			if (crewMarkups.length > 0) {
 					crewMarkups.forEach(crewMarkup => {
 					crewMarkup.applyMarkup(crew);

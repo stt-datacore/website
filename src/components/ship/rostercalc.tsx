@@ -6,10 +6,10 @@ import { BossEffect, BossShip } from "../../model/boss";
 import { CrewMember } from "../../model/crew";
 import { PlayerCrew } from "../../model/player";
 import { BattleMode, DefaultAdvancedCrewPower, Ship, ShipRankingMethod } from "../../model/ship";
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
+import { LineUpMeta, ShipWorkerConfig, ShipWorkerItem, ShipWorkerTransportItem } from "../../model/worker";
 import { getHighest, prepareOne } from "../../utils/crewutils";
-import { formatRunTime } from "../../utils/misc";
-import { AllBosses, bossFromBattleMode, compareShipResults, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
+import { decamelify, formatRunTime } from "../../utils/misc";
+import { AllBosses, bossFromBattleMode, compareShipResults, createMetaOptions, getBosses, getCrewDivisions, getShipDivision, getShipsInUse } from "../../utils/shiputils";
 import { useStateWithStorage } from "../../utils/storage";
 import { CrewDropDown } from "../base/crewdropdown";
 import CONFIG from "../CONFIG";
@@ -71,15 +71,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [powerDepth, internalSetPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
+    const [metasOpen, setMetasOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
     const [buffUnownedShips, setBuffUnownedShips] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/buffUnownedShips`, true, { rememberForever: true });
     const [applyBossEffects, setApplyBossEffects] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/applyBossEffects`, false, { rememberForever: true });
     const [verbose, setVerbose] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/verbose`, true, { rememberForever: true });
-    // const [simulate, setSimulate] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/simulate`, false, { rememberForever: true });
-    // const [iterations, setIterations] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/simulation_iterations`, 100, { rememberForever: true });
-    const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 1, { rememberForever: true });
-    const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0.2, { rememberForever: true });
-    const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.6, { rememberForever: true });
+    const [rate, setRate] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/rate`, 5, { rememberForever: true });
+    const [variance, setVariance] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/variance`, 0, { rememberForever: true });
+    const [fixedActivationDelay, setFixedActivationDelay] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/fixedActivationDelay`, 0.4, { rememberForever: true });
     const [maxInitTime, setMaxInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/maxInitTime`, undefined, { rememberForever: true });
     const [minInitTime, setMinInitTime] = useStateWithStorage<number | undefined>(`${pageId}/${ship.symbol}/minInitTime`, undefined, { rememberForever: true });
     const [maxIter, setMaxIter] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/maxIter`, 3000000, { rememberForever: true });
@@ -87,6 +86,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [advancedPowerOpen, setAdvancedPowerOpen] = React.useState<boolean>(false);
     const [advancedPowerSettings, setAdvancedPowerSettings] = useStateWithStorage(`${pageId}/${ship.symbol}/advancedPower`, DefaultAdvancedCrewPower, { rememberForever: true });
     const [progressMsg, setProgressMsg] = React.useState<string>('');
+    const [arenaMetas, setArenaMetas] = useStateWithStorage<LineUpMeta[] | undefined>(`${pageId}/${ship.symbol}/arenaMetas`, [], { rememberForever: true });
+    const [fbbMetas, setFbbMetas] = useStateWithStorage<LineUpMeta[] | undefined>(`${pageId}/${ship.symbol}/fbbMetas`, [], { rememberForever: true });
     const battleModes = [] as DropdownItemProps[];
     const fbb_mode = !['skirmish', 'pvp'].includes(battleMode);
 
@@ -149,7 +150,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     });
     const compatBosses = getBosses(ship);
-    (['pvp', ...compatBosses.map(m => `fbb_${m.id - 1}`)]).forEach((mode) => {
+    (['pvp', ...compatBosses.map(m => `fbb_${m.id}`)]).forEach((mode) => {
         if (mode === 'skirmish' && !globalContext.player.ephemeral?.events?.length) return;
         let rarity = 0;
         let fbbtext = '';
@@ -162,19 +163,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             else {
                 return;
             }
-            if (ship) {
-                if (rarity === 5 && ship.rarity !== 5) return;
-                if (rarity === 4 && ship.rarity < 4) return;
-                if (rarity === 3 && (ship.rarity < 3 || ship.rarity > 4)) return;
-                if (rarity === 2 && (ship.rarity < 2 || ship.rarity > 4)) return;
-                if (rarity === 1 && ship.rarity > 3) return;
-                if (rarity === 0 && ship.rarity > 2) return;
-            }
         }
         battleModes.push({
             key: mode,
             value: mode,
-            text: fbbtext || (t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity + 1}*` : ''))
+            text: fbbtext || (t(`ship.${mode.startsWith('fbb') ? 'fbb' : mode}`) + (mode.startsWith('fbb') ? ` ${rarity}*` : ''))
         });
     });
 
@@ -441,12 +434,22 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb_")) {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
-                        if (f && bmode !== battleMode) {
-                            setBattleMode(bmode);
-                            setTimeout(() => {
-                                if (crewStations?.length == f.ship.battle_stations?.length && f.ship.battle_stations?.some((bs, idx) => f.ship.battle_stations![idx].crew?.symbol != crewStations[idx]?.symbol)) {
-                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
+                        if (f) {
+                            if (bmode.startsWith('fbb')) {
+                                let boss = AllBosses.find(f => f.rarity === rarity);
+                                if (boss) {
+                                    bmode = `fbb_${boss.id}`;
                                 }
+                            }
+
+                            if (bmode !== battleMode) {
+                                setBattleMode(bmode);
+                            }
+
+                            setTimeout(() => {
+                                //if (crewStations?.length == f.ship.battle_stations?.length && f.ship.battle_stations?.some((bs, idx) => f.ship.battle_stations![idx].crew?.symbol != crewStations[idx]?.symbol)) {
+                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
+                                //}
                             });
                         }
                     }
@@ -454,6 +457,9 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 catch {
 
                 }
+            }
+            else {
+                setTimeout(() => staffToCurrentBattleMode());
             }
         }
     }, [ship]);
@@ -473,6 +479,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setCrewEstimate(crewcount);
         }
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
+
+    const metaList = React.useMemo(() => {
+        staffToCurrentBattleMode();
+        return createMetaOptions((meta) => {
+            if (battleMode.includes('fbb')) return meta.startsWith('fbb');
+            else return !meta.startsWith('fbb');
+        });
+    }, [opponentShip, battleMode]);
 
     return <React.Fragment>
         <div className={'ui segment'} style={{
@@ -647,6 +661,56 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     </div>
                     </>}
                 </div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    margin: '1em',
+                    gap: '1em'
+                }}>
+                    <Accordion style={{ marginTop: '1em' }} fluid>
+                        <Accordion.Title
+                            active={metasOpen}
+                            onClick={() => setMetasOpen(!metasOpen)}
+                        >
+                            <Icon name={metasOpen ? 'caret down' : 'caret right' as SemanticICONS} />
+                            {t('ship.metas.metas')}
+                        </Accordion.Title>
+                        <Accordion.Content active={metasOpen} style={{ textAlign: 'left' }}>
+                            <Grid columns={3} style={{margin: '0em'}}>
+                                <Grid.Column>
+                                    <div style={{ display: 'inline', width: '30%' }}>
+                                        <h4>{t('ship.metas.select_metas')}</h4>
+                                        <Dropdown
+                                            fluid
+                                            disabled={running}
+                                            placeholder={t('ship.metas.select_metas')}
+                                            multiple
+                                            scrolling
+                                            selection
+                                            value={battleMode.includes('fbb') ? fbbMetas : arenaMetas}
+                                            onChange={(e, { value }) => {
+                                                if (battleMode.includes('fbb')) {
+                                                    setFbbMetas(value as any);
+                                                }
+                                                else {
+                                                    setArenaMetas(value as any);
+                                                }
+                                            }}
+                                            options={metaList}
+                                        />
+                                    </div>
+                                </Grid.Column>
+                                <Grid.Column>
+
+                                </Grid.Column>
+                            </Grid>
+                        </Accordion.Content>
+                    </Accordion>
+                </div>
+
                 <div style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -953,6 +1017,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             </span>
                         </p>
                     </div>}
+                    {!!sug.meta && (
+                        <div>
+                            <p>
+                                {t('ship.metas.meta')}{': '}<br />
+                                <span>
+                                    {decamelify(sug.meta)}
+                                </span>
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -965,9 +1039,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             return;
         }
         if (ships?.length && crew?.length) {
-
-            let max_rarity = ship.rarity;
-            if (battleMode === 'fbb_4') max_rarity = 5;
+            let max_rarity = 5; // ship.rarity;
+            //if (battleMode === 'fbb_4') max_rarity = 5;
 
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             results.length = 0;
@@ -981,6 +1054,38 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     }
                 }
             }
+            let meta: LineUpMeta | undefined = undefined;
+            let test_metas: LineUpMeta[] | undefined;
+            if (!current && fbb_mode && fbbMetas?.length) {
+                meta = fbbMetas[0];
+                test_metas = fbbMetas.slice();
+            }
+            else if (!current && arenaMetas?.length) {
+                meta = arenaMetas[0];
+                test_metas = arenaMetas.slice();
+            }
+            // if (!current && battleMode.includes('fbb')) {
+            //     if (battleConfig.opponent?.symbol?.includes('borg')) {
+            //         meta = 'fbb_0_healer_evasion';
+            //         // if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+            //         //     meta = 'fbb_0_healer_evasion';
+            //         // }
+            //         // else {
+            //         //     meta = 'fbb_1_healer_evasion';
+            //         // }
+            //     }
+            //     else {
+            //         if (ship.actions!.some(a => a.ability?.type === 2 && !a.limit)) {
+            //             meta = 'fbb_1_healer';
+            //         }
+            //         else {
+            //             meta = 'fbb_2_healer';
+            //         }
+            //     }
+            // }
+            // else {
+            //     meta = 'arena_boom';
+            // }
 
             const config: ShipWorkerConfig = {
                 event_crew: ccrew ? structuredClone(ccrew) : undefined,
@@ -1004,7 +1109,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 fixed_activation_delay: fixedActivationDelay,
                 opponent_variance: variance,
                 rate,
-                effects: applyBossEffects ? battleConfig.effects : undefined
+                effects: applyBossEffects ? battleConfig.effects : undefined,
+                meta: meta ? { meta, test_metas } : undefined
             };
 
             results.length = 0;
@@ -1056,12 +1162,12 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         cancel();
         setResultIdx(undefined);
         setResults([].slice());
+        setCrewStations(ship.battle_stations!.map(_ => undefined));
         setProgressMsg('');
     }
 
     function updateActiveCrew() {
         if (resultIdx === undefined || !results.length || resultIdx >= results.length) {
-            setCrewStations(ship.battle_stations!.map(bs => undefined));
             return;
         }
         const sug = results[resultIdx];
@@ -1121,6 +1227,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         const bonus_pref = [0, 2, 1, 3];
 
         max_rarity ??= ship.rarity ?? 5;
+        if (max_rarity > 5) max_rarity = 5;
         const min_rarity = minRarity ?? 1;
         const shipDiv = getShipDivision(ship.rarity);
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
@@ -1156,7 +1263,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (crew.action.ability) {
                 let pass = true;
                 if (battleMode.startsWith("fbb_")) {
-                    let n = Number(battleMode.slice(4)) + 1;
+                    let n = Number(battleMode.slice(4));
                     if (!getBosses(ship, crew).some(boss => boss.id === n)) pass = false;
                 }
                 else if (battleMode === 'pvp') {
@@ -1355,5 +1462,30 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
         }
         return newShip;
+    }
+
+    function staffToCurrentBattleMode() {
+        let use = getShipsInUse(globalContext.player);
+        let found = use.filter(u => u.ship.symbol === ship.symbol);
+        if (found.length) {
+            if (battleMode.startsWith('fbb')) {
+                let boss = bossFromBattleMode(battleMode);
+                if (boss) {
+                    let usage = found.find(f => f.battle_mode === `fbb_${boss!.rarity}`);
+                    if (usage) {
+                        setCrewStations(usage.ship.battle_stations!.map(bs => bs.crew as PlayerCrew | undefined))
+                        return;
+                    }
+                }
+            }
+            else {
+                let usage = found.find(f => f.battle_mode === battleMode);
+                if (usage) {
+                    setCrewStations(usage.ship.battle_stations!.map(bs => bs.crew as PlayerCrew | undefined))
+                    return;
+                }
+            }
+        }
+        setCrewStations(ship.battle_stations!.map(_ => undefined));
     }
 }

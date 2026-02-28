@@ -232,21 +232,48 @@ export const TableView = () => {
 
 	function renderTraitBonus(crew: PlayerCrew, trait: string, for_export?: boolean): JSX.Element {
 		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
-		if (traitBonus === 0) return <></>;
-		let bonusText: string = '';
-		if (traitBonus === 25)
-			bonusText = `${TRAIT_NAMES[trait]} +25 AM`;
-		else
-			bonusText = `+${traitBonus} AM`;
+		const exclusiveBonus: number = crew.antimatter_bonus ?? 0;
+		const totalBonus: number = traitBonus + exclusiveBonus;
+		if (totalBonus === 0) return <></>;
+
 		if (for_export) {
+			let bonusText: string = `+${totalBonus} AM`;
+			if (traitBonus === 25) bonusText = `${TRAIT_NAMES[trait]} +25 AM`;
 			return <>{bonusText}</>;
 		}
+
+		const details: string[] = [];
+		if (traitBonus === 25) {
+			let detail: string = `${TRAIT_NAMES[trait]}`;
+			if (traitBonus !== totalBonus) detail += ` 25`;
+			details.push(detail);
+		}
+		if (exclusiveBonus > 0) {
+			let detail: string = `${t('global.exclusive')}`;
+			if (exclusiveBonus !== totalBonus) detail += ` ${exclusiveBonus}`;
+			details.push(detail);
+		}
+
 		return (
-			<Popup content={bonusText} mouseEnterDelay={POPUP_DELAY} trigger={
-				<span style={{ cursor: 'help' }}>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
-				</span>
-			} />
+			<Popup
+				content={
+					<div style={{ textAlign: 'center' }}>
+						+{totalBonus} AM
+						{details.length > 0 && (
+							<div>
+								({details.join(', ')})
+							</div>
+						)}
+					</div>
+				}
+				mouseEnterDelay={POPUP_DELAY}
+				position='top center'
+				trigger={
+					<span style={{ cursor: 'help' }}>
+						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					</span>
+				}
+			/>
 		);
 	}
 

@@ -42,6 +42,7 @@ const EventsPage = () => {
 				"event_instances",
 				"event_stats",
 				"event_leaderboards",
+				"factions"
 			]}
 		>
 			<EventsPageComponent />

@@ -1,3 +1,4 @@
+import { DropdownItemProps } from 'semantic-ui-react';
 import boss_data from '../../static/structured/boss_data.json';
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
@@ -6,9 +7,9 @@ import { BaseSkillFields, CrewMember } from "../model/crew";
 import { PlayerCrew, Setup } from "../model/player";
 import { BattleMode, BattleStation, PvpDivision, ReferenceShip, Schematics, Ship, ShipAction, ShipInUse, ShipLevel, ShipLevels, ShipLevelStats } from "../model/ship";
 import { ShipTraitNames } from "../model/traits";
-import { ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
+import { BuiltInMetas, ShipWorkerItem, ShipWorkerTransportItem } from "../model/worker";
 import { shipStatSortConfig } from "../utils/crewutils";
-import { ExportField, simplejson2csv } from './misc';
+import { decamelify, ExportField, simplejson2csv } from './misc';
 import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
 
@@ -85,6 +86,26 @@ export const getBosses = (ship?: Ship, crew?: CrewMember) => {
         bosses.push(boss);
     });
     return bosses;
+}
+
+export function createMetaOptions(filter?: string | ((value: string) => boolean)) {
+	return BuiltInMetas
+		.filter(meta => {
+			if (!filter) return true;
+			if (typeof filter === 'string') {
+				return meta.startsWith(filter);
+			}
+			else {
+				return filter(meta);
+			}
+		})
+		.map(meta => {
+			return {
+				key: meta,
+				value: meta,
+				text: decamelify(meta)
+			} as DropdownItemProps
+		});
 }
 
 export function exportShipFields(): ExportField[] {
@@ -537,7 +558,7 @@ export function getShipsInUse(playerContext: PlayerContextData): ShipInUse[] {
 		if (!id) return;
 		let ship = playerContext.playerShips?.find(f => f.id === id);
 		if (ship) {
-			let battle_mode = `fbb_${fbb.id - 1}` as BattleMode;
+			let battle_mode = `fbb_${fbb.id}` as BattleMode;
 			if (!battle_mode) return;
 			ship = structuredClone(ship) as Ship;
 			if (setupToSlots(fbb.setup, ship)) {
@@ -693,7 +714,7 @@ export function refShips(input: ReferenceShip[]): Ship[] {
 export function bossFromBattleMode(mode: BattleMode) {
 	let bm = mode.split("_");
 	if (bm.length === 2) {
-		let bossid = Number(bm[1]) + 1;
+		let bossid = Number(bm[1]);
 		return AllBosses.find(f => f.id === bossid);
 	}
 	return undefined;

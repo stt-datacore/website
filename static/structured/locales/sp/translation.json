@@ -95,6 +95,8 @@
         },
         "qp": "QP",
         "quipment": "Quipo",
+        "random": "Aleatorio",
+        "randomize": "Aleatorizar",
         "rarity": "Rareza",
         "release_date": "Debut",
         "retrieval": "{{retrieval.modes.retrieval}}",
@@ -157,6 +159,7 @@
         "max_buffs": "Efectos máximas",
         "max_quipment_buffs_best": "Efectos máximas de quipo (mejor quipo)",
         "max_quipment_buffs_double": "Efectos máximas de quipo (dos habilidades)",
+        "max_quipment_buffs_single": "Efectos máximas de quipo (Habilidad principal)",
         "max_quipment_buffs_triple": "Efectos máximas de quipo (tres habilidades)",
         "no_buffs": "Sin efectos",
         "player_buffs": "Efectos de los juegos",
@@ -274,8 +277,11 @@
             },
             "grade": "Grado",
             "immortal_rewards": "Recompensas por la inmortalización",
+            "needed": "{{items.columns.needed}}",
+            "progress": "{{collections.panes.progress.title}}",
             "rarity": "{{base.rarity}}",
-            "star_grade": "Grado de estrella"
+            "star_grade": "Grado de estrella",
+            "total_owned": "Total de propiedad"
         },
         "group": {
             "warning": "La vista de colecciones agrupadas muestra solo la tripulación propia si la lista de colecciones no está filtrada."
@@ -310,6 +316,7 @@
             },
             "show_incomplete_combos": "Mostrar combos incompletos",
             "show_maxed_collections": "Mostrar colecciones maximizadas",
+            "show_scoring_columns": "Mostrar columnas de puntuación",
             "sort_by_cost": "Ordenar por costo"
         },
         "panes": {
@@ -477,6 +484,7 @@
         "custom": {
             "core": "Básica",
             "gauntlet": "Reto",
+            "other": "{{crew_utility.columns.reasons_to_keep}}",
             "shuttle_pairs": "Pares de Lanzadera",
             "voyage": "Viaje"
         },
@@ -665,6 +673,7 @@
             "title": "CAB's {{fbb.cab.name}}"
         },
         "chain_n": "Cadena #{{n}}",
+        "chain_solved": "Tu flota ha resuelto todos los nodos de esta cadena combinada. Selecciona otro jefe o actualiza tus datos de jugador para actualizar las batallas activas.",
         "columns": {
             "coverage": "Cobertura",
             "crew": "{{base.crew}}",
@@ -810,7 +819,9 @@
             "alpha_exceptions_a": "Excepciones alfa",
             "alpha_exceptions_b": "son tripulantes que podrían ser excluidos según una regla no oficial que elimina algunos de sus rasgos por nombre. Sólo debes probar las excepciones alfa si has agotado todas las demás opciones enumeradas.",
             "coverage_a": "Cobertura",
-            "coverage_b": "identifica al equipo que podría ser soluciones para múltiples nodos. En la vista de grupos, el equipo con cobertura está en cursiva; si prioriza al equipo con cobertura, algunos miembros del equipo se ocultarán cuando otros puedan probarse como posibles soluciones para más nodos. vista de tripulante, se enumera el número de nodos potenciales.",
+            "coverage_b": "identifies crew who might be solutions to multiple nodes, with the number of potential nodes listed alongside the crew. In groups view, if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes.",
+            "coverage_b_ori": "identifica al equipo que podría ser soluciones para múltiples nodos. En la vista de grupos, el equipo con cobertura está en cursiva; si prioriza al equipo con cobertura, algunos miembros del equipo se ocultarán cuando otros puedan probarse como posibles soluciones para más nodos. vista de tripulante, se enumera el número de nodos potenciales.",
+            "coverage_hint": "{{crew}} might be the solution to {{n}} nodes",
             "non_optimals_a": "No óptimos",
             "non_optimals_b": "son tripulantes cuyos únicos rasgos coincidentes son un subconjunto de rasgos de otra posible solución para ese nódulo. Sólo debes probar una tripulante no óptima si no posees ninguna tripulante óptima.",
             "one_hand_exception_a": "Excepciones de una mano",
@@ -819,7 +830,8 @@
             "trait_colors_a": "Colores característicos",
             "trait_colors_b": "ayudan a visualizar la rareza de cada rasgo por nódulo, por ejemplo, un rasgo dorado significa que su tripulante es la única tripulante posible con ese rasgo en ese nódulo, un rasgo morado es un rasgo compartido por 2 posibles tripulantes en ese nódulo, un El rasgo azul es compartido por 3 posibles tripulantes, etc. Tenga en cuenta que las posibles excepciones alfa siempre son naranjas, independientemente de la rareza.",
             "trait_numbers_a": "Números de rasgos",
-            "trait_numbers_b": "identifican para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
+            "trait_numbers_b": "identifique para cuántos nodos restantes ese rasgo es posiblemente una solución, basándose en una regla no oficial de que los rasgos duplicados en el grupo nunca son una solución o siempre son una solución.",
+            "trait_numbers_b_ori": "identifican para cuántos nodos restantes ese rasgo es probablemente una solución, según una regla no oficial que dice que los rasgos duplicados en el grupo siempre son una solución."
         },
         "undo_solve": "Deshacer resolver",
         "x_y_confirmed_solved": "{{x}}/{{y}} confirmado resuelto",
@@ -1037,6 +1049,7 @@
         "delete": "Ocultar",
         "delete_confirm": "¿Estás seguro de que deseas eliminar estos datos?",
         "delete_selected": "Ocultar seleccionado",
+        "difficulty": "Difficulty",
         "disable": "Desactivar",
         "disabled": "Desactivado",
         "dismiss": "Descartar",
@@ -1055,6 +1068,8 @@
         "filters": "Filtros",
         "filters_warning": "Algunos resultados pueden estar ocultos debido a sus opciones de búsqueda actuales.",
         "fleet": "Flota",
+        "frequency": "Frecuencia",
+        "fuses": "Fusiones",
         "group_by": "Agrupar por",
         "hidden": "Oculto",
         "hide": "Ocultar",
@@ -1106,6 +1121,7 @@
         "load_defaults": "Cargar predeterminadas",
         "loading_ellipses": "Cargando ...",
         "loading_please_wait_ellipses": "Cargando. Espere por favor...",
+        "loot": "Botín",
         "lose": "Perder",
         "map_position": "Posición del mapa",
         "max": "Máximo",
@@ -1148,6 +1164,8 @@
         "quarter_short": "T",
         "quest": "Búsqueda",
         "recommend_crew": "Recomendar tripulantes",
+        "refresh": "Refresh",
+        "refresh_remote": "Actualización remota",
         "rename": "Cambiar nombre",
         "rerun": "Repetición",
         "reserved": "Reservado",
@@ -1164,6 +1182,7 @@
         "search_for_x_by_name": "Buscar {{x}} por nombre",
         "search_items": "Buscar por artículo",
         "search_items_ellipses": "Buscar por artículo...",
+        "search_remote": "Buscar a distancia",
         "select_all": "Seleccionar todo",
         "set_as_default_view": "Establecer como vista predeterminada",
         "show": "Reloj",
@@ -1176,7 +1195,10 @@
         "sort_by": "Ordenar por",
         "squadron_leader": "Líder de escuadrón",
         "supply_kit_active_n": "Kit de suministros activo ({{n}}% de descuento)",
+        "sync": "Sinc",
+        "sync_remote": "Sinc remota",
         "toggle_layout": "Cambiar diseño",
+        "total": "Total",
         "type": "Tipo",
         "uncheck_all": "Desmarcar todo",
         "unselect_all": "Deseleccionar todo",
@@ -1188,6 +1210,7 @@
             "title": "¡Trabajo en progreso!"
         },
         "x_or_better": "{{x}} o mejor",
+        "x_or_y": "{{x}} o {{y}}",
         "yes": "Sí",
         "you_own_n_of_y": "Eres dueño de {{n}} de {{y}}."
     },
@@ -1516,7 +1539,8 @@
             "share_profile": "Compartir perfil",
             "toggle_coloring": "Alternar coloración de rango",
             "toggle_glance": "Alternar panel de un vistazo",
-            "update_player_data": "Actualizar datos del jugador"
+            "update_player_data": "Actualizar datos del jugador",
+            "view_profile": "Ver y exportar perfil"
         },
         "roster": {
             "crew": "Tripulación",
@@ -1643,9 +1667,11 @@
             "advanceable": "Solo mostrar tripulación con espacios no reclamados para quipo",
             "buyback": "Muestra tripulación con fusibles en pozo de recompra",
             "dupes": "Mostrar sólo tripulación duplicada",
+            "expiring": "Mostrar solo la tripulación que está por vencer",
             "fe": "Mostrar solo a los no inmortales completamente equipados",
             "fodder": "Mostrar sólo tripulación no fusionado",
             "freezable": "Mostrar sólo tripulación congelable",
+            "fuse_dupes": "Mostrar solo la tripulación duplicada fusible",
             "impact": "Solo muestra al tripulación que necesita 1 fusible",
             "liminal": "Solo muestra a la tripulación que necesita 1 o 2 fusibles",
             "mortal": "Mostrar sólo a los no inmortales",
@@ -1719,6 +1745,7 @@
         "download": {
             "complete_spreadsheet": "Hoja de cálculo completa",
             "crew_table": "Tabla de tripulación",
+            "crew_table_all": "Tripulación propia y ajena",
             "item_table": "Tabla de elementos",
             "ship_table": "Tabla de buques"
         },
@@ -1867,6 +1894,52 @@
                 "title": "Ponderación del Viaje+",
                 "voyage": "{{rank_names.scores.voyage}}"
             }
+        }
+    },
+    "resource_tracker": {
+        "clear": "Borrar registro de recursos",
+        "columns": {
+            "average_difference": "Diferencia promedio",
+            "difference": "Diferencia",
+            "moving_average": "Media móvil",
+            "resource": "Recurso",
+            "timestamp": "Marca de tiempo",
+            "total_difference": "Diferencia total"
+        },
+        "confirm": "¿Está seguro de que desea borrar el registro? Esta acción no se puede deshacer.",
+        "enable": "Habilitar el seguimiento de recursos",
+        "final_daily": "Capturas diarias finales",
+        "final_weekly": "Capturas semanales finales",
+        "graphs": {
+            "bar": "Gráfico de barras",
+            "candles": "Gráfico de velas",
+            "line": "Gráfico de líneas",
+            "pie": "Gráfico circular",
+            "select": "Seleccionar gráfico",
+            "view": {
+                "amount": "Cantidad",
+                "change_pct": "Cambio porcentual",
+                "select": "Seleccionar vista",
+                "total_change_pct": "Cambio porcentual total"
+            }
+        },
+        "honor_difference": "La diferencia promedio en {{x}} es de {{n}}.",
+        "honor_estimate": "Es posible que haya una venta de Honor en aproximadamente {{d}} días. A su ritmo promedio actual de {{h}} puntos de honor por día, habrá ahorrado suficientes puntos de honor para comprar aproximadamente {{c}} menciones cuando comience la venta.",
+        "honor_estimate_weekly": "Es posible que haya una venta de Honor en aproximadamente {{w}} semanas. A tu ritmo actual de {{h}} puntos de honor por semana, habrás ahorrado suficientes puntos de honor para comprar aproximadamente {{c}} menciones cuando comience la venta.",
+        "remote_tracking": "{{voyage.history.enable_remote_tracking}}",
+        "search_remote": "Búsqueda remota",
+        "sections": {
+            "graph": "Vista de gráfico",
+            "graph_description": "Consulta gráficos con las tendencias de tus recursos.",
+            "table": "Vista de tabla",
+            "table_description": "Enumere sus recursos indicando las diferencias y los promedios."
+        },
+        "select_view": "Seleccionar vista",
+        "start_date_hint": "Si no especifica una fecha de inicio para las búsquedas remotas, por defecto se devuelven los datos correspondientes a los últimos 365 días.",
+        "title": "Rastreador de recursos",
+        "view": {
+            "by_resource": "Por recurso",
+            "by_update": "Según la última actualización"
         }
     },
     "retrieval": {
@@ -2029,7 +2102,7 @@
             },
             "footer_text": "Las columnas Propiedad, % Propiedad, % Portal, Inmortal y % Inmortal consideran tripulación única únicamente. Todas las demás columnas consideran tus duplicados.",
             "header_text": "Esta tabla desglosa tu lista por rareza y muestra tu progreso para inmortalizar a todos los miembros del equipo en el juego.",
-            "immortal_cell_help": "Es posible que tus logros en el juego informen incorrectamente este número como {number}"
+            "immortal_cell_help": "Es posible que tus logros en el juego informen incorrectamente este número como {{number}}"
         },
         "skills": {
             "columns": {
@@ -2211,6 +2284,16 @@
         },
         "max_attack": "Ataque mín.",
         "max_level": "Nivel máximo",
+        "metas": {
+            "current_meta": "Estrategia principale actual",
+            "currents_meta": "Estrategias principales actuales",
+            "custom_meta": "Estrategia principale personalizada",
+            "enable_metas": "Habilitar estrategias principales",
+            "meta": "La estrategia principale",
+            "metas": "Las estrategias principales",
+            "select_meta": "Seleccione la estrategia principale",
+            "select_metas": "Seleccione las estrategias principales"
+        },
         "min_attack": "Ataque máx.",
         "offset_adds_warn": "* Las compensaciones de activación se suman al tiempo de carga inicial de la tripulante actual.",
         "opponent_variance": "Variación del oponente",
@@ -2492,7 +2575,8 @@
     },
     "view_special": {
         "options": {
-            "as_immortalized": "Ver todo como inmortalizado"
+            "as_immortalized": "Ver todo como inmortalizado",
+            "cheapestfffe": "Más barato TFTE"
         },
         "title": "Vistas especiales"
     },
@@ -2735,6 +2819,7 @@
             "voyage_long_advice": "Para un viaje de {{h}} horas, necesitarás {{r}} recargas a un costo de {{d}} dilitio (o {{re}} {{global.item_types.voyage_consumable}}).",
             "with_n_am_left": "con {{n}} AM restante"
         },
+        "experimental_calculator_x": "Calculadora experimental '{{x}}'",
         "history": {
             "description": "Realice un seguimiento de sus viajes, compare sus tiempos de ejecución con sus estimaciones iniciales e identifique la tripulación que utiliza con más frecuencia.",
             "enable_remote_tracking": "Habilitar el seguimiento remoto",

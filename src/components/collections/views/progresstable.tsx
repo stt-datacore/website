@@ -20,15 +20,21 @@ export const ProgressTable = (props: ProgressTableProps) => {
 	const { t } = context.localized;
 	const [rewardFilter, setRewardFilter] = useStateWithStorage<string | undefined>('collectionstool/rewardFilter', undefined);
 	const [showMaxed, setShowMaxed] = useStateWithStorage('collectionstool/showMaxed', false);
+	const [showScores, setShowScores] = useStateWithStorage('collectionstool/showScores', true, { rememberForever: true });
 
 	const tableConfig: ITableConfigRow[] = [
-		{ width: 2, column: 'name', title: 'Collection' },
-		{ width: 1, column: 'owned', title: 'Total Owned', reverse: true },
-		{ width: 1, column: 'progressPct', title: 'Progress', reverse: true },
-		{ width: 1, column: 'needed', title: 'Needed', tiebreakers: ['neededPct'] },
+		{ width: 2, column: 'name', title: t('base.collection') },
+		{ width: 1, column: 'score.score', title: t('base.score'), reverse: true },
+		{ width: 1, column: 'score.details.difficulty', title: t('global.difficulty'), reverse: false },
+		{ width: 1, column: 'score.details.loot_score', title: t('global.loot'), reverse: true },
+		{ width: 1, column: 'owned', title: t('collections.columns.total_owned'), reverse: true },
+		{ width: 1, column: 'progressPct', title: t('collections.columns.progress'), reverse: true },
+		{ width: 1, column: 'needed', title: t('collections.columns.needed'), tiebreakers: ['neededPct'] },
 		{ width: 3, column: 'totalRewards', title: <span>{t('collections.milestone_rewards')} <Popup trigger={<Icon name='help' />} content={t('collections.milestone_rewards_desc')} /></span>, reverse: true }
 	];
-
+	if (!showScores) {
+		tableConfig.splice(1, 3);
+	}
 	// Rewards will test value against literal symbol string, except when prefixed by:
 	//	= Regular expression against symbol, * Special test case
 	const rewardOptions = makeRewards(t);
@@ -55,6 +61,12 @@ export const ProgressTable = (props: ProgressTableProps) => {
 							label={t('collections.options.show_maxed_collections')}
 							checked={showMaxed}
 							onChange={(e, { checked }) => setShowMaxed(checked)}
+						/>
+						<Form.Field
+							control={Checkbox}
+							label={t('collections.options.show_scoring_columns')}
+							checked={showScores}
+							onChange={(e, { checked }) => setShowScores(checked)}
 						/>
 					</Form.Group>
 				</Form>
@@ -128,11 +140,20 @@ export const ProgressTable = (props: ProgressTableProps) => {
 					<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/collections/#${encodeURI(collection.name)}`}>{collection.name}</Link></span>
 					<br/>{collection.simpleDescription}
 				</Table.Cell>
+				{showScores && <>
+					<Table.Cell>{Math.ceil(collection.score.score).toLocaleString()}</Table.Cell>
+					<Table.Cell>{collection.score.details.difficulty}</Table.Cell>
+					<Table.Cell>{collection.score.details.loot_score}</Table.Cell>
+				</>}
 				<Table.Cell textAlign='center'>{collection.owned} / {collection.crew.length}</Table.Cell>
 				<Table.Cell textAlign='center'>{collection.milestone.goal > 0 ? `${collection.progress} / ${collection.milestone.goal}` : 'MAX'}</Table.Cell>
 				<Table.Cell textAlign='center'>{collection.needed}</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<RewardsGrid rewards={rewards} />
+					<RewardsGrid
+						wrap
+						maxCols={4}
+						rewards={rewards}
+					/>
 				</Table.Cell>
 			</Table.Row>
 		);

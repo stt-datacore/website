@@ -2,11 +2,12 @@ import React from 'react';
 import { Modal, Form, Button, Dropdown, Table, DropdownItemProps } from 'semantic-ui-react';
 
 import { VoyageSkills } from '../../model/player';
-import { IVoyageInputConfig } from '../../model/voyage';
+import { AntimatterSeatMap, IVoyageInputConfig } from '../../model/voyage';
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
 import { lookupAMTraitsBySeat } from '../../utils/voyageutils';
 import CONFIG from '../CONFIG';
+import { VoyageSlotOrder } from './lineupeditor/utils';
 
 interface IEditOptions {
 	skills: DropdownItemProps[];
@@ -37,6 +38,14 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 		{ symbol: 'science_officer', name: t('voyage.seats.science_officer'), skill: 'science_skill', trait: '' },
 		{ symbol: 'chief_medical_officer', name: t('voyage.seats.chief_medical_officer'), skill: 'medicine_skill', trait: '' },
 		{ symbol: 'medical_officer', name: t('voyage.seats.medical_officer'), skill: 'medicine_skill', trait: '' }
+	];
+
+	// Renders a lot faster by using known voyage traits rather than calculate list from all possible traits
+	const knownShipTraits: string[] = [
+		'andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
+		'dominion','emp','explorer','federation','ferengi','fighter','freighter','historic','hologram',
+		'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
+		'scout','sikarian','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'
 	];
 
 	const defaultConfig: IVoyageInputConfig = {
@@ -93,9 +102,13 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 					options={presetOptions}
 					onChange={(e, data) => loadPreset(data.value as string)}
 				/>
+				<Button onClick={() => createRandomVoyage()}>
+					{t('base.randomize')}
+				</Button>
 				<Button onClick={() => closeAndApply()}>
 					{t('global.create')}
 				</Button>
+
 			</Modal.Actions>
 		</Modal>
 	);
@@ -121,23 +134,6 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 
 	function renderEditor(): JSX.Element {
 		if (!options) {
-			// Renders a lot faster by using known voyage traits rather than calculate list from all possible traits
-			const knownShipTraits: string[] = [
-				'andorian','battle_cruiser','borg','breen','cardassian','cloaking_device',
-				'dominion','emp','explorer','federation','ferengi','fighter','freighter','historic','hologram',
-				'klingon','malon','maquis','orion_syndicate','pioneer','reman','romulan','ruthless',
-				'scout','sikarian','spore_drive','terran','tholian','transwarp','vulcan','warship','war_veteran','xindi'
-			];
-			const knownCrewTraits: string[] = [
-				'android','astrophysicist','bajoran','borg','brutal',
-				'cardassian','caregiver','civilian','communicator','costumed','crafty','cultural_figure','cyberneticist',
-				'desperate','diplomat','doctor','duelist','exobiology','explorer','federation','ferengi',
-				'gambler','hero','hologram','human','hunter','innovator','inspiring','jury_rigger','klingon',
-				'marksman','maverick','mirror_universe','nurse','pilot','prodigy','resourceful','romantic','romulan',
-				'saboteur','scoundrel','starfleet','survivalist','tactician','telepath','undercover_operative',
-				'veteran','villain','vulcan'
-			];
-
 			const skillsList: DropdownItemProps[] = [];
 			for (let skill in CONFIG.SKILLS) {
 				skillsList.push({
@@ -291,5 +287,31 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 		const crew_slot = crew_slots.find(s => s.symbol === seat);
 		if (crew_slot) crew_slot.trait = value;
 		setVoyageConfig({...voyageConfig, crew_slots});
+	}
+
+	function createRandomVoyage() {
+		let pri = '';
+		let sec = '';
+		let sidx = -1;
+
+		while (pri === sec) {
+			sidx = Math.round(Math.random() * 5);
+			pri = VoyageSlotOrder[sidx];
+			sidx = Math.round(Math.random() * 5);
+			sec = VoyageSlotOrder[sidx];
+		}
+
+		setSkill('primary_skill', pri);
+		setSkill('secondary_skill', sec);
+
+		for (let slot of defaultSlots) {
+			let traits = lookupAMTraitsBySeat(slot.skill);
+			sidx = Math.round(Math.random() * (traits.length - 1));
+			setSeatTrait(slot.symbol, traits[sidx]);
+		}
+
+		sidx = Math.round(Math.random() * (knownShipTraits.length - 1));
+		let shtrait = knownShipTraits[sidx];
+		setShipTrait(shtrait);
 	}
 };

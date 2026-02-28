@@ -10,6 +10,7 @@ import { Navigation } from './navigation';
 import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
 import { AlertContext, AlertProvider } from '../alerts/alertprovider';
+import { EnergyLogContextProvider } from '../../context/energylogcontext';
 
 const DEBUG_MODE = false;
 
@@ -48,13 +49,15 @@ export interface DataPageLayoutProps {
 const MainContent = ({ children, narrowLayout }) => {
 	if (DEBUG_MODE) console.log("MainContent component render");
 
-	return narrowLayout ? (
-		<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
-	) : (
-		<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
-	);
-}
+	return (<>
+		{narrowLayout ? (
+			<Container text style={{ marginTop: '4em', paddingBottom: '2em', marginBottom: '2em' }}>{children}</Container>
+		) : (
+			<Container style={{ marginTop: '4em', marginBottom: '2em' }}>{children}</Container>
+		)}
+	</>);
 
+}
 
 // const getNavigatorLanguage = () => {
 // 	let lang = 'en';
@@ -119,31 +122,33 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 						}
 					}}
 				>
-					<MainContent narrowLayout={narrowLayout}>
-						<Dashboard
-							openInputPanel={() => {
-								setPlayerPanel('input');
-								scrollTo(contentAnchor);
-							}}
-							narrow={narrowLayout ?? false}
-							activePanel={dashboardPanel}
-							setActivePanel={setDashboardPanel}
-						/>
-						<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
-							{(!!pageTitleJSX || !!pageTitle) && (
-								<React.Fragment>
-									<Header as='h2'>{pageTitleJSX || pageTitle}</Header>
-									{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
-								</React.Fragment>
-							)}
-							{!!isReady && <PlayerHeader
-								promptType={playerPromptType ?? 'none'}
-								activePanel={playerPanel}
-								setActivePanel={setPlayerPanel}
-							/>}
-							{renderContents()}
-						</div>
-					</MainContent>
+					<EnergyLogContextProvider>
+						<MainContent narrowLayout={narrowLayout}>
+							<Dashboard
+								openInputPanel={() => {
+									setPlayerPanel('input');
+									scrollTo(contentAnchor);
+								}}
+								narrow={narrowLayout ?? false}
+								activePanel={dashboardPanel}
+								setActivePanel={setDashboardPanel}
+							/>
+							<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
+								{(!!pageTitleJSX || !!pageTitle) && (
+									<React.Fragment>
+										<Header as='h2'>{pageTitleJSX || pageTitle}</Header>
+										{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
+									</React.Fragment>
+								)}
+								{!!isReady && <PlayerHeader
+									promptType={playerPromptType ?? 'none'}
+									activePanel={playerPanel}
+									setActivePanel={setPlayerPanel}
+								/>}
+								{renderContents()}
+							</div>
+						</MainContent>
+					</EnergyLogContextProvider>
 				</Navigation>
 			</div>
 		</AlertProvider>

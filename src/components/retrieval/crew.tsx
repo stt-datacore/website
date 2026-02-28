@@ -8,6 +8,7 @@ import { RarityFilter, CrewTraitFilter } from '../../components/crewtables/commo
 import { ActionableState, IPolestar, IRosterCrew, RetrievableState } from './model';
 import { getComboCost, RetrievalContext } from './context';
 import { RetrievalCrewTable } from './crewtable';
+import { WishlistManager } from './wishlist';
 import { filterTraits } from './utils';
 
 export const RetrievalCrew = () => {
@@ -30,6 +31,8 @@ export const RetrievalCrew = () => {
 
 	const [isPreparing, setIsPreparing] = React.useState<boolean>(true);
 	const [filteredCrew, setFilteredCrew] = React.useState<IRosterCrew[]>([]);
+
+	const [showWishlistModal, setShowWishlistModal] = React.useState<boolean>(false);
 
 	// Calculate roster on updated keystone owned counts (i.e. playerData change) or on polestar tailoring
 	React.useEffect(() => {
@@ -160,6 +163,15 @@ export const RetrievalCrew = () => {
 								value={ownedFilter}
 								onChange={(e, { value }) => setCrewFilter('owned', value as string)}
 							/>
+							{ownedFilter === 'wishlist' && (
+								<Form.Field>
+									<Button	/* Manage Wishlist... */
+										onClick={() => setShowWishlistModal(true)}
+									>
+										Manage Wishlist...
+									</Button>
+								</Form.Field>
+							)}
 							{ownedFilter !== 'unowned' && (
 								<Form.Field
 									control={Checkbox}
@@ -197,6 +209,10 @@ export const RetrievalCrew = () => {
 				</Form.Group>
 			</Form>
 			<RetrievalCrewTable filteredCrew={filteredCrew} />
+			<WishlistManager
+				showModal={showWishlistModal}
+				closePicker={() => setShowWishlistModal(false)}
+			/>
 		</React.Fragment>
 	);
 

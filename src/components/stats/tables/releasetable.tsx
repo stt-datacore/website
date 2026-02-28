@@ -31,6 +31,8 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     const { crew } = globalContext.core;
     const { playerData } = globalContext.player;
 
+    const uniquetxt = t('fbb.crew_lists.customize.options.unique');
+
     React.useEffect(() => {
         if (prefilteredDiffs) {
             setEpochDiffs(prefilteredDiffs);
@@ -71,7 +73,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             reverse: true,
             customCompare: (a: EpochDiff, b: EpochDiff) => {
                 let r = a.epoch_days[0] - b.epoch_days[0];
-                if (!r) r = a.epoch_days[1] - b.epoch_days[1];
+                if (!r && a.epoch_days.length > 1 && b.epoch_days.length > 1) r = a.epoch_days[1] - b.epoch_days[1];
                 return r;
             }
         },
@@ -130,7 +132,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
     function filterRow(row: EpochDiff, filters: SearchString[], filterType?: string) {
 
         if (exactOnly) {
-            let pass = row.crew[0].skill_order.join("") === row.crew[1].skill_order.join("") &&
+            let pass = (row.crew.length < 2 || row.crew[0].skill_order.join("") === row.crew[1].skill_order.join("")) &&
                 row.skills.join() === row.crew[0].skill_order.join();
             if (!pass) return false;
         }
@@ -152,12 +154,19 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
 
         const crews = diff.symbols.map(m => crew.find(f => f.symbol === m)!);
         const fhigh = findHigh(diff.epoch_days[0], diff.skills.slice(0, diff.aggregates[0].length), allHighs, diff.rarity);
-        const newhigh = fhigh?.epoch_day === diff.epoch_days[0];
+        const newhigh = diff.crew[0] !== diff.crew[1] && fhigh?.epoch_day === diff.epoch_days[0];
 
         return <Table.Row key={`passIdf_${idx}`} style={{textAlign: 'center'}}>
-            {[crews[0], crews[1]].map((crew, idx) => {
+            {[crews[0], crews.length > 1 ? crews[1] : crews[0]].map((crew, idx) => {
                     const daydiff = daysFromEpoch - diff.epoch_days[idx];
+                    const unique = (crews[0] === crews[1]);
+                    if (unique && idx === 1) {
+                        return (
+                            <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
 
+                            </Table.Cell>
+                        )
+                    }
                     return (
                         <Table.Cell key={`passIdf_crew_${idx}_${crew}`} style={{textAlign: 'center'}}>
                         <div style={{...flexRow, margin: '1em 0.5em', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
@@ -174,6 +183,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                 </span>
 
                                 {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
+                                {unique && !idx && <Label style={{margin: '0.5em 0'}} color='purple'>{uniquetxt}</Label>}
                                 <div style={{...flexRow, justifyContent: 'space-evenly'}}>
                                     {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                                 </div>

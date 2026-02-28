@@ -15,6 +15,8 @@ import { getBernardsNumber } from '../../../utils/gauntlet';
 import { printPortalStatus } from '../../../utils/crewutils';
 import { categorizeCrewCollections } from '../../../utils/collectionutils';
 import { Collection } from "../../../model/collections";
+import { Ship, ShipInUse } from '../../../model/ship';
+import { getShipsInUse } from '../../../utils/shiputils';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
@@ -35,7 +37,8 @@ const defaultPrefs = {
 		core: 10,
 		shuttle: 10,
 		gauntlet: 10,
-		voyage: 10
+		voyage: 10,
+		other: 20,
 	},
 	prefer_versatile: true,
 	include_base: false,
@@ -66,17 +69,31 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const [ranks, setRanks] = React.useState<PlayerUtilityRanks | undefined>(undefined);
 	const [userPrefs, setUserPrefs] = useStateWithStorage<IUtilityUserPrefs>(dbid+'/utility', defaultPrefs, { rememberForever: true });
 	const [showPane, setShowPane] = React.useState(false);
+	const [shipsInUse, setShipsInUse] = React.useState<ShipInUse[]>([]);
+	const [crewOnShips, setCrewOnShips] = React.useState<IRosterCrew[]>([]);
 
 	const crewReasons = React.useMemo(() => {
 		if (!playerData) return {};
 		const playerCols = playerData.player.character.cryo_collections.filter(f => f.milestone.rewards?.length);
 		const cols = globalContext.core.collections.filter(f => playerCols.some(pc => `${pc.type_id}` == `${f.id}` || `${pc.type_id}` == `${f.type_id}`))
 		const output = {} as {[key:string]: string[]}
+		let shipCrew = [] as IRosterCrew[];
+		if (globalContext?.player) {
+			let ships = getShipsInUse(globalContext.player);
+			setShipsInUse(ships);
+			shipCrew = ships.map(s => s.ship.battle_stations?.map(bs => bs.crew) || []).flat().filter(f => f !== undefined) as IRosterCrew[] || [];
+			shipCrew = shipCrew.concat(playerData.player.character.crew.filter(f => f.passive_status))
+			if (shipCrew.length) {
+				// Single representation of crew, only.
+				shipCrew = shipCrew.filter((c, i) => shipCrew.findIndex(c2 => c2.id === c.id) === i);
+			}
+			setCrewOnShips(shipCrew);
+		}
 		for (let c of rosterCrew) {
-			output[c.id] = reasonsToKeep(c, cols);
+			output[c.id] = reasonsToKeep(c, cols, shipCrew);
 		}
 		return output;
-	}, [rosterCrew, playerData]);
+	}, [rosterCrew, globalContext.player, userPrefs]);
 
 	const addCrewUtility = (crew: IRosterCrew) => {
 		const myRanks = {} as ICrewUtilityRanks;
@@ -164,15 +181,19 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	);
 
 	function renderThresholdForm(): JSX.Element {
+		const cellStyle: React.CSSProperties = {
+			display: 'flex',
+			justifyContent: 'space-between'
+		};
 		return (
 			<Form style={{ textAlign: 'center' }}>
 				<Table collapsing style={{ margin: '0 auto' }}>
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell>{t('crew_utility.custom.core')}:</Table.Cell>
-							<Table.Cell>
+							<Table.Cell style={cellStyle}>
 								<Button.Group size='tiny'>
-									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
+									{[0, 1, 2, 3, 4, 5, 10, 20, 50].map(t =>
 										<Button key={t} content={t} color={getThreshold('core') === t ? 'green' : undefined}
 											onClick={() => setThreshold('core', t)}
 										/>
@@ -182,9 +203,9 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>{t('crew_utility.custom.shuttle_pairs')}:</Table.Cell>
-							<Table.Cell>
+							<Table.Cell style={cellStyle}>
 								<Button.Group size='tiny'>
-									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
+									{[0, 1, 2, 3, 4, 5, 10, 20, 50].map(t =>
 										<Button key={t} content={t} color={getThreshold('shuttle') === t ? 'green' : undefined}
 											onClick={() => setThreshold('shuttle', t)}
 										/>
@@ -194,9 +215,9 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>{t('crew_utility.custom.voyage')}:</Table.Cell>
-							<Table.Cell>
+							<Table.Cell style={cellStyle}>
 								<Button.Group size='tiny'>
-									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
+									{[0, 1, 2, 3, 4, 5, 10, 20, 50].map(t =>
 										<Button key={t} content={t} color={getThreshold('voyage') === t ? 'green' : undefined}
 											onClick={() => setThreshold('voyage', t)}
 										/>
@@ -206,11 +227,23 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>{t('crew_utility.custom.gauntlet')}:</Table.Cell>
-							<Table.Cell>
+							<Table.Cell style={cellStyle}>
 								<Button.Group size='tiny'>
-									{[0, 1, 2, 3, 4, 5, 10, 20].map(t =>
+									{[0, 1, 2, 3, 4, 5, 10, 20, 50].map(t =>
 										<Button key={t} content={t} color={getThreshold('gauntlet') === t ? 'green' : undefined}
 											onClick={() => setThreshold('gauntlet', t)}
+										/>
+									)}
+								</Button.Group>
+							</Table.Cell>
+						</Table.Row>
+						<Table.Row>
+							<Table.Cell>{t('crew_utility.custom.other')}:</Table.Cell>
+							<Table.Cell style={cellStyle}>
+								<Button.Group size='tiny'>
+									{[0, 1, 2, 3, 4, 5, 10, 20, 50].map(t =>
+										<Button key={t} content={t} color={getThreshold('other') === t ? 'green' : undefined}
+											onClick={() => setThreshold('other', t)}
 										/>
 									)}
 								</Button.Group>
@@ -328,30 +361,58 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		setRanks({...ranks});
 	}
 
-	function reasonsToKeep(crew: CrewMember, collections: Collection[]) {
+	function reasonsToKeep(crew: CrewMember, collections: Collection[], crewOnShips: CrewMember[]) {
+		const cutoff = getThreshold('other');
 		let reasons = [] as string[];
-		if (crew.ranks.scores.ship.overall_rank <= 50) {
-			reasons.push(t(`rank_names.scores.ship`))
+		if (crew.ranks.scores.ship.overall_rank <= cutoff ||
+			crew.ranks.scores.ship.arena_rank <= cutoff ||
+			crew.ranks.scores.ship.fbb_rank <= cutoff
+		) {
+			reasons.push(t(`rank_names.scores.ship`));
 		}
-		let nev = t('global.never');
-		let ps = printPortalStatus(crew, t, true, true);
-		if (ps.includes(nev)) {
-			ps = ps.replace(nev, '').trim();
-			reasons.push(`${t('base.never_in_portal')} ${ps}`);
+		if (crewOnShips.some(c => c.id === crew.id)) {
+			reasons.push(t('ship.battle_stations'));
 		}
-		let scores = Object.entries(crew.ranks.scores).filter(([key, value]) => key.includes("_rank") && value <= 50);
+		if (crew.antimatter_bonus) {
+			reasons.push(t('base.antimatter_bonus'));
+		}
+		let scores = Object.entries(crew.ranks.scores).filter(([key, value]) => key.includes("_rank") && value <= cutoff);
 		for (let s of scores) {
-			reasons.push(t(`rank_names.scores.${s[0]}`))
+			let sd = t(`rank_names.scores.${s[0]}`);
+			if (!sd) {
+				sd = t(`rank_names.scores.${s[0].replace('_rank', '')}`);
+			}
+			reasons.push(sd);
 		}
-		const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, collections);
-		if (crew_rewards.length) {
-			reasons.push(t('collections.types.crew_rewarding'));
+		if (crew.ranks.quipment_rank <= cutoff) {
+			reasons.push(t(`rank_names.quipment_score`));
 		}
-		if (stat_buffs.length && stat_buffs.some(sb => sb.size <= 50)) {
-			reasons.push(t('collections.types.stat_boosting'));
+		if (crew.ranks.voyRank <= cutoff || Object.keys(crew.ranks).filter(f => f.startsWith("V_")).some(key => crew.ranks[key] <= cutoff)) {
+			reasons.push(t(`rank_names.scores.voyage`));
 		}
-		if (others.length) {
-			reasons.push(t('collections.types.vanity'));
+		if (crew.ranks.shuttleRank <= cutoff || Object.keys(crew.ranks).filter(f => f.startsWith("B_")).some(key => crew.ranks[key] <= cutoff)) {
+			reasons.push(t(`rank_names.scores.shuttle`));
+		}
+		if (crew.ranks.gauntletRank <= cutoff || Object.keys(crew.ranks).filter(f => f.startsWith("G_")).some(key => crew.ranks[key] <= cutoff)) {
+			reasons.push(t(`rank_names.scores.gauntlet`));
+		}
+		if ("immortal" in crew && crew.immortal === 0) {
+			let nev = t('global.never');
+			let ps = printPortalStatus(crew, t, true, true);
+			if (ps.includes(nev)) {
+				ps = ps.replace(nev, '').trim();
+				reasons.push(`${t('base.never_in_portal')} ${ps}`);
+			}
+			const { crew_rewards, stat_buffs, others } = categorizeCrewCollections(crew, collections);
+			if (crew_rewards.length) {
+				reasons.push(t('collections.types.crew_rewarding'));
+			}
+			if (stat_buffs.length && stat_buffs.some(sb => sb.size <= 50)) {
+				reasons.push(t('collections.types.stat_boosting'));
+			}
+			if (others.length) {
+				reasons.push(t('collections.types.vanity'));
+			}
 		}
 		return reasons.filter(f => !!f).sort();
 	}
@@ -438,7 +499,7 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 	);
 
 	function renderReasonsToKeep(crew: IRosterCrew) {
-		if (crew.immortal) return <>{t('global.na')}</>;
+		//if (crew.immortal) return <>{t('global.na')}</>;
 		if (!crew.markup?.crew_utility?.reasons_to_keep?.length) return <>{t('global.none')}</>;
 		return crew.markup.crew_utility.reasons_to_keep.map((reason, idx) => {
 			let key = `${crew.symbol}_reason_${idx}`;

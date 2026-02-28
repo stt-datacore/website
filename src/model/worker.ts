@@ -378,6 +378,7 @@ export interface LineUpMetaConfig {
     meta: LineUpMeta;
     label?: string;
     custom?: CustomMeta;
+    test_metas?: LineUpMeta[];
 }
 
 export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
@@ -454,6 +455,7 @@ export interface ShipWorkerItem {
     attacks?: AttackInstant[];
     win?: boolean;
     reference_battle?: boolean;
+    meta?: LineUpMeta;
 }
 
 export interface ShipWorkerTransportItem {

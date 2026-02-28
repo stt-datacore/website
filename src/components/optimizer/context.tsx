@@ -9,6 +9,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { GlobalContext } from '../../context/globalcontext';
 import { CiteEngine } from './engines';
 import { printSkillOrder } from '../../utils/crewutils';
+import { IEventData } from '../../model/events';
 
 export interface SymCheck { symbol: string, checked: boolean };
 
@@ -42,6 +43,7 @@ export interface ICitationOptimizerContext {
     results?: CiteEngineResults,
     setResults: (value?: CiteEngineResults) => void;
     crewSkills: { [key: string]: string }
+    eventData?: IEventData;
 };
 
 export const DefaultCiteConfig = {
@@ -72,12 +74,12 @@ export const CiteOptContext = React.createContext<ICitationOptimizerContext>(Def
 export interface CiteOptContextProps {
     pageId: string;
     children: JSX.Element;
+    eventData?: IEventData;
 }
 
 export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
-    const { pageId, children } = props;
+    const { pageId, children, eventData } = props;
 
     if (!globalContext.player.playerData) return <></>;
 
@@ -95,7 +97,6 @@ export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {
         crewSkills[crew.symbol] = sko;
     }
 
-
     const data = {
         results,
         setResults,
@@ -105,12 +106,12 @@ export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {
         setCiteConfig,
         appliedProspects,
         setAppliedProspects,
-        crewSkills
+        crewSkills,
+        eventData
     }
 
     return <CiteOptContext.Provider value={data}>
         {children}
     </CiteOptContext.Provider>
-
 }
 

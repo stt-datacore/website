@@ -67,14 +67,15 @@ export const QuipmentProspectAccordion = (props: QuipmentProspectAccordionProps)
 
 export interface QuipmentProspectListProps {
     crew: PlayerCrew[];
+    no_voyage?: boolean;
 }
 
 export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
 
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { crew } = props;
-    const slots = crew.map((c, idx) => t(`voyage.seats.${CONFIG.VOYAGE_CREW_SLOTS[idx]}`));
+    const { no_voyage, crew } = props;
+    const slots = crew.map((c, idx) => no_voyage ? '' : t(`voyage.seats.${CONFIG.VOYAGE_CREW_SLOTS[idx]}`));
     const quipment = globalContext.core.items.filter(f => f.type === 14 || f.type === 15);
 
     const [items, setItems] = React.useState<ItemWithBonus[]>();
@@ -159,7 +160,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
             }
         }
     ] as ITableConfigRow[];
-
+    if (no_voyage) crewTable.splice(1, 1);
     React.useEffect(() => {
         const { newitems, newrecipes, newref } = compileIngredients();
         const newingredients = [] as EquipmentItem[];
@@ -421,9 +422,9 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                     <span>{row.name}</span>
                 </div>
             </Table.Cell>
-            <Table.Cell>
+            {!no_voyage && <Table.Cell>
                 {slots[crew.indexOf(row)]}
-            </Table.Cell>
+            </Table.Cell>}
             <Table.Cell>
                 <div style={{...flexRow, justifyContent: 'flex-start', flexWrap: 'wrap', gap: '2em'}}>
                 {row.kwipment.map((m) => {

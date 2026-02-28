@@ -2,7 +2,7 @@
   "name": "stt-data-core",
   "description": "STT DataCore",
   "author": "ussjohnjay/ironyWrit",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "license": "MIT",
   "scripts": {
     "check": "tsc --noEmit",
@@ -27,6 +27,7 @@
     "@babel/helpers": "7.27.1",
     "@babel/runtime": "7.27.1",
     "@nivo/bar": "0.88.0",
+    "@nivo/boxplot": "^0.99.0",
     "@nivo/bump": "0.88.0",
     "@nivo/calendar": "0.88.0",
     "@nivo/chord": "0.88.0",

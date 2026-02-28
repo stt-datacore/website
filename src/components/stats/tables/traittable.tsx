@@ -35,7 +35,7 @@ export const TraitStatsTable = () => {
     const [hideOne, setHideOne] = useStateWithStorage<boolean>('stat_trends/traits/hide_one', false, { rememberForever: true });
     const [showVariantTraits, setShowVariantTraits] = useStateWithStorage<boolean>('stat_trends/traits/show_variant_traits', true, { rememberForever: true });
 
-    const [showDive, setShowDive] = useStateWithStorage<TraitStats | undefined>('stat_trends/traits/trait_dive', undefined)
+    const [showDive, setShowDive] = React.useState<TraitStats | undefined>(undefined);
 
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;

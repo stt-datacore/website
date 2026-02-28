@@ -113,7 +113,16 @@ const CrewTable = (props: CrewTableProps) => {
 					</Table.Cell>
 				}
 				<Table.Cell textAlign='center'>
-					{crew.nodes_rarity}
+					{crew.nodes_rarity === 1 && <>{crew.nodes_rarity}</>}
+					{crew.nodes_rarity > 1 && (
+						<Label	/* CREW might be the solution to N nodes */
+							circular
+							title={t('fbb.tips.coverage_hint', { crew: crew.name, n: crew.nodes_rarity })}
+							style={getStyleByRarity(6 - crew.nodes_rarity)}
+						>
+							{crew.nodes_rarity}
+						</Label>
+					)}
 				</Table.Cell>
 				{openNodes.map(node => {
 					return (

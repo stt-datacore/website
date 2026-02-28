@@ -48,7 +48,8 @@ export interface EpochDiff {
     symbols: string[],
     velocity: number,
     rarity: number,
-    crew: CrewMember[]
+    crew: CrewMember[],
+    unique?: boolean
 };
 
 export interface StatsDataSets {

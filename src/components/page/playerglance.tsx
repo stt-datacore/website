@@ -1,38 +1,20 @@
 import { navigate } from "gatsby";
 import React from "react";
-import { Icon, Image, Label } from "semantic-ui-react";
+import { Button, Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { IEphemeralData } from "../../context/playercontext";
-import { ISM_ID, PlayerData, TranslateMethod } from "../../model/player";
+import { PlayerData, TranslateMethod } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
-import { CiteInventory, getOwnedCites } from "../../utils/collectionutils";
 import { mergeItems } from "../../utils/itemutils";
 import { colorToRGBA, printShortDistance } from "../../utils/misc";
-import { getChrons } from "../../utils/playerutils";
 import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
+import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
 
 export interface SaleData {
     slot_sale: boolean;
     honor_sale: boolean;
-}
-
-type AllEnergy = {
-    money: number,
-    premium_purchasable: number,
-    honor: number,
-    premium_earnable: number,
-    shuttle_rental_tokens: number,
-    chrons: number,
-    ism: number,
-    quantum: number | undefined,
-    valor: number | undefined,
-    ownedCites: CiteInventory[],
-    cadet: number,
-    pvp: number,
-    supplyKit: number;
 }
 
 export interface PlayerResource {
@@ -64,6 +46,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const flexRow = OptionsPanelFlexRow;
 
     const globalContext = React.useContext(GlobalContext);
+    const energyLogContext = React.useContext(EnergyLogContext);
+    const { enabled, remoteEnabled, searchRemote } = energyLogContext;
     const { openPlayerPanel, requestDismiss, narrow, t } = props;
 
     const { isMobile } = globalContext;
@@ -114,6 +98,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { supplyKit } = energy;
 
     if (!playerData?.player) return <></>;
+    const dbid = playerData.player.dbid;
 
     return (<div className={'ui segment'}
         style={{
@@ -162,6 +147,11 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
                 {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
                 {shuttleSeconds < 0 && <div style={{color: 'tomato', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
+                {/* {!!enabled && !!remoteEnabled && (
+                    <div style={{flexGrow: 1}}>
+                        <Button style={{float: 'right'}} icon='refresh' />
+                    </div>
+                )} */}
             </div>}
             <div style={{...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
                 {!!saleData?.honor_sale && (
@@ -233,35 +223,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         </div>
     </div>
     )
-
-    function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData): AllEnergy {
-        const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens } = playerData.player;
-
-        const chrons = getChrons(playerData);
-        const ism = playerData?.forte_root.items.find(f => f.id === ISM_ID)?.quantity ?? 0;
-        const quantum = playerData.crew_crafting_root?.energy?.quantity;
-        const valor = ephemeral?.fleetBossBattlesRoot?.fleet_boss_battles_energy?.quantity;
-        const ownedCites = getOwnedCites(playerData?.player.character.items ?? [], false);
-        const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
-        const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
-        const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
-
-        return {
-            money,
-            premium_purchasable,
-            honor,
-            premium_earnable,
-            shuttle_rental_tokens,
-            chrons,
-            ism,
-            quantum,
-            valor,
-            ownedCites,
-            cadet,
-            pvp,
-            supplyKit
-        }
-    }
 
     function createResources(playerData: PlayerData, energy: AllEnergy) {
         let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
@@ -454,9 +415,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     return;
                 }
             }
-            const response = await fetch(`${process.env.GATSBY_DATACORE_URL}api/sales`);
-            if (response.ok) {
-                let sale = (await response.json()) as SaleData;
+            const sale = await loadSaleData();
+            if (sale) {
                 setSaleData(sale);
                 setSaleUpdate(new Date());
                 console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
@@ -475,3 +435,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     }
 }
 
+export async function loadSaleData() {
+    const response = await fetch(`${process.env.GATSBY_DATACORE_URL}api/sales`);
+    let sale = (await response.json()) as SaleData;
+    return sale;
+}
