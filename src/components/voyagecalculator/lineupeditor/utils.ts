@@ -53,6 +53,7 @@ export function getProspectiveConfig(voyageConfig: IVoyageInputConfig, ship: Shi
 				skillAggregates[skill].range_max += crew.skills[skill].range_max;
 			});
 			crewBonus += getCrewTraitBonus(voyageConfig, crew, crewSlot.trait);
+			crewBonus += crew.antimatter_bonus ?? 0;
 		}
 	});
 	const shipBonus: number = ship ? getShipTraitBonus(voyageConfig, ship) : 0;
