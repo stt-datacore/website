@@ -939,6 +939,7 @@
         "owned_status": {
             "any": "Tous les équipiers",
             "fe": "Équipiers possédés et entièrement équipé",
+            "ff": "Équipiers possédés et immortalisés",
             "gauntlet": "Équipiers exclusif gantelet sans propriétaire",
             "maxall": "Tous les équipiers est au maximum",
             "nofe": "Équipiers possédés, pas entièrement équipé",

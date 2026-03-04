@@ -177,6 +177,7 @@ export type OwnedStatus =
     | "nofe"
     | "nofemax"
     | "fe"
+    | "ff"
     | "portal"
     | "gauntlet"
     | "nonportal";

@@ -931,6 +931,7 @@
         "owned_status": {
             "any": "All Crew",
             "fe": "Owned, Fully Equipped Crew",
+            "ff": "Owned, Immortalized Crew",
             "gauntlet": "Unowned, Gauntlet Exclusive Crew",
             "maxall": "All Crew as Maxed",
             "nofe": "Owned, Not Fully Equipped Crew",
