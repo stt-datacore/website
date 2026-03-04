@@ -937,6 +937,7 @@
         "owned_status": {
             "any": "Todas los tripulantes",
             "fe": "Tripulantes propia y totalmente equipada",
+            "ff": "Tripulantes propia y immortalizados",
             "gauntlet": "Tripulantes exclusiva del reto sin propietario",
             "maxall": "Todas de los tripulantes al máximo",
             "nofe": "Tripulantes propias, no totalmente equipada",
