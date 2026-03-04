@@ -931,6 +931,7 @@
         "owned_status": {
             "any": "Alle Crew",
             "fe": "Eigene, voll ausgerüstete Crew",
+            "ff": "Eigene, Unsterblichen Crew",
             "gauntlet": "Unbesessene, Herausforderung-exklusive Crew",
             "maxall": "Alle Crew auf maximal",
             "nofe": "Eigene, nicht vollständig ausgerüstete Crew",
