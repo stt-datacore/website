@@ -75,7 +75,7 @@ export const PortalUpdateTable = () => {
             pageId='portal_update'
             rosterCrew={selCrew}
             setBuffMode={setBuffMode}
-            rosterType="allCrew"
+            rosterType="myCrew"
             />
         </div>)
 

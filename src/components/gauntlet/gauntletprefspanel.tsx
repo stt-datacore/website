@@ -26,6 +26,7 @@ export const GauntletPrefsPanel = () => {
         { key: 'maxall', value: 'maxall', text: t('gauntlet.owned_status.maxall') },
         { key: 'owned', value: 'owned', text: t('gauntlet.owned_status.owned') },
         { key: 'ownedmax', value: 'ownedmax', text: t('gauntlet.owned_status.ownedmax') },
+        { key: 'ff', value: 'ff', text: t('gauntlet.owned_status.ff') },
         { key: 'fe', value: 'fe', text: t('gauntlet.owned_status.fe') },
         { key: 'nofe', value: 'nofe', text: t('gauntlet.owned_status.nofe') },
         { key: 'nofemax', value: 'nofemax', text: t('gauntlet.owned_status.nofemax') },
@@ -88,6 +89,11 @@ export const GauntletPrefsPanel = () => {
             key: 'max',
             value: 'max',
             text: t(BuffNames['max'])
+        });
+        availBuffs.push({
+            key: 'max_quipment',
+            value: 'max_quipment',
+            text: t(BuffNames['max_quipment'])
         });
         availBuffs.push({
             key: 'max_quipment_2',

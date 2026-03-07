@@ -35,7 +35,20 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
 
     const { cancel, runWorker, running } = workerContext;
     const filterContext = React.useContext(ItemsFilterContext);
-    const { available, filterItems, rarityFilter, itemTypeFilter, hideUnneeded, showUnownedNeeded, configureFilters, itemSourceFilter, masteryFilter } = filterContext;
+    const { available, filterItems, rarityFilter, itemTypeFilter, hideUnneeded, showUnownedNeeded, configureFilters, itemSourceFilter, setItemSourceFilter, masteryFilter } = filterContext;
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && playerData) {
+            let pcrew = playerData.player.character.crew;
+            let search = new URLSearchParams(window.location.search);
+            if (search.has('farm')) {
+                let farmable = search.get('farm')!;
+                let ids = farmable.split(',').map(n => pcrew.find(pc => pc.id === Number(n))).filter(c => c !== undefined).map(c => c.id);
+                setCrewFilter(ids);
+                setItemSourceFilter([1]);
+            }
+        }
+    }, [playerData]);
 
     const rosterCrew = React.useMemo(() => {
         if (playerData) {

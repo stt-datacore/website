@@ -5,7 +5,7 @@ import { PolestarCombo } from "../model/keystone";
 import { PlayerCrew } from "../model/player";
 import { AntimatterSeatMap } from "../model/voyage";
 import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";
-import { getSkillOrderStats, getSkillOrderScore, skillSum, crewCopy } from "../utils/crewutils";
+import { getSkillOrderStats, getSkillOrderScore, skillSum, crewCopy, shortToSkill } from "../utils/crewutils";
 import { calcItemDemands } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";
@@ -64,76 +64,37 @@ const BetaTachyon = {
         let { playerData } = config;
 
         function getVoyageImprovements(roster: PlayerCrew[], depth: number) {
-            let skills = Object.keys(CONFIG.SKILLS);
-            let melba = Math.ceil(depth * 1);
-            depth *= 2;
-            const vims = {} as { [key: string]: string[] };
-            let cbs = [] as string[][];
-            roster = roster.filter(c => !c.immortal);
-            for (let sk1 of skills) {
-                for (let sk2 of skills) {
-                    if (sk1 !== sk2) cbs.push([sk1, sk2]);
-                }
-            }
-            for (let voyage of cbs) {
-                const voykey = voyage.map(s => s.replace("_skill", "")).join("/");
-                let filtered = roster.filter(r => {
-                    if (r.skill_order.length < 3) {
-                        return r.skill_order[0] === voyage[0];
-                    }
-                    else {
-                        return r.skill_order.slice(0, 2).some(sko => voyage.includes(sko));
-                    }
-                });
-                const tertbucks = {} as {[key:string]: PlayerCrew[]};
-                for (let c of filtered) {
-                    if (c.skill_order.length < 3) {
-                        if (c.skill_order.length === 2) {
-                            let tert = c.skill_order[1];
-                            tertbucks[tert] ??= [];
-                            tertbucks[tert].push(c)
-                        }
-                    }
-                    else {
-                        let tert = c.skill_order[2];
-                        tertbucks[tert] ??= [];
-                        tertbucks[tert].push(c);
-                    }
-                }
-                let max = 0;
-                Object.keys(tertbucks).forEach(skill => {
-                    if (tertbucks[skill].length > max) {
-                        max = tertbucks[skill].length;
-                    }
-                });
+            const vims = {} as {[key:string]: string[]};
 
-                Object.keys(tertbucks).forEach(skill => {
-                    tertbucks[skill].sort((a, b) => skillSum(Object.values(a.base_skills).slice(0, 2)) - skillSum(Object.values(a.base_skills).slice(0, 2)));
-                    if (tertbucks[skill].length / max < 0.5) {
-                        for (let c of tertbucks[skill]) {
-                            vims[c.symbol] ??= [];
-                            if (!vims[c.symbol].includes(voykey)) {
-                                vims[c.symbol].push(voykey);
-                            }
-                        }
-                        return;
+            let finished = roster.filter(f => f.immortal && f.have);
+            let unfinished = roster.filter(f => !f.immortal && f.have);
+
+            finished.sort((a, b) => a.ranks.voyRank - b.ranks.voyRank);
+            unfinished.sort((a, b) => a.ranks.voyRank - b.ranks.voyRank);
+
+            for (let uc of unfinished) {
+                vims[uc.symbol] = [].slice();
+                let voyranks = Object.keys(uc.ranks).filter(f => f.startsWith("V_"));
+                let trip = uc.ranks.voyTriplet?.name.split('/').map(s => shortToSkill(s.trim())!.replace('_skill', '')!)!;
+                for (let key of voyranks) {
+                    let kparts = key.split("_");
+                    if (kparts.length !== 3) continue;
+                    kparts.splice(0, 1);
+                    let skillkey = `${shortToSkill(kparts[0])}/${shortToSkill(kparts[1])}`.replace(/_skill/g, '');
+                    let fcomp = finished.filter(f => f.ranks[key]);
+                    let ftest = fcomp.filter(f => f.ranks[key] < uc.ranks[key]);
+                    if (ftest.length <= depth) {
+                        vims[uc.symbol].push(skillkey);
                     }
-                    let n = 0;
-                    let m = 0;
-                    for (let c of tertbucks[skill]) {
-                        if (c.immortal) {
-                            m++;
-                            if (m >= melba) break;
-                            else continue;
+                    if (trip?.length === 3) {
+                        fcomp = finished.filter(f => f.ranks?.voyTriplet?.name === uc.ranks.voyTriplet?.name);
+                        ftest = fcomp.filter(f => f.ranks.voyTriplet!.rank < uc.ranks.voyTriplet!.rank);
+                        if (ftest.length <= depth) {
+                            vims[uc.symbol].push(`${trip[0]}/${trip[2]}`);
+                            vims[uc.symbol].push(`${trip[1]}/${trip[2]}`);
                         }
-                        else if (n >= depth) break;
-                        vims[c.symbol] ??= [];
-                        if (!vims[c.symbol].includes(voykey)) {
-                            vims[c.symbol].push(voykey);
-                        }
-                        n++;
                     }
-                });
+                }
             }
             return vims;
         }
@@ -178,7 +139,6 @@ const BetaTachyon = {
             }
 
             function getAMSeats(crew: PlayerCrew | CrewMember) {
-
                 return crew.traits.filter(tn => lookupAMSeatsByTrait(tn).some((sk) => sk in crew && crew[sk].core));
             }
 
@@ -508,8 +468,8 @@ const BetaTachyon = {
                 if (!cf) return -1;
 
                 let so = getSortedSkills(cf);
-                crew.voyagesImproved = [...new Set((vims[crew.symbol] ?? []).concat(makeVoys(crew)))];
-
+                // crew.voyagesImproved = [...new Set((vims[crew.symbol] ?? []).concat(makeVoys(crew)))];
+                crew.voyagesImproved = [...new Set((vims[crew.symbol] ?? []))];
                 let evibe = ((skillScore(so.skills[0]) * 0.35) + (skillScore(so.skills[1]) * 0.25) + (skillScore(so.skills[2]) * 0.15)) / 2.5;
 
                 let icols = playerData.player.character.cryo_collections.filter(f => {
@@ -541,7 +501,7 @@ const BetaTachyon = {
                 crew.amTraits = getAMSeats(crew);
                 crew.score = getDistanceFromTop(cf, topCrew);
                 crew.scoreTrip = getDistanceFromTop(cf, skillOrderCrew);
-
+                crew.voyagesImproved ??= [];
                 if (crew.voyagesImproved?.length) {
                     for (let vi of crew.voyagesImproved) {
                         allGroups[vi] ??= 0;
@@ -551,12 +511,11 @@ const BetaTachyon = {
             }
 
             const polestars = {} as { [key: string]: PolestarCombo[] };
-            const maxgroup = resultCrew.map(rc => (rc.voyagesImproved?.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) ?? 0) / (rc.voyagesImproved?.length ?? 1)).reduce((p, n) => p > n ? p : n, 0);
             resultCrew.forEach((crew) => {
                 polestars[crew.symbol] = findPolestars(crew, allCrew);
                 if (crew.voyagesImproved) {
-                    let crewnum = crew.voyagesImproved.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0) / crew.voyagesImproved.length;
-                    crew.groupSparsity = 1 - (crewnum / maxgroup);
+                    let crewnum = (crew.voyagesImproved.map(vi => allGroups[vi]).reduce((p, n) => p + n, 0)) / crew.voyagesImproved!.length;
+                    crew.groupSparsity = 1 - (crewnum / resultCrew.length);
                 }
                 else {
                     crew.groupSparsity = 0;
@@ -566,16 +525,16 @@ const BetaTachyon = {
             const maxvoy = resultCrew.map(c => c.voyagesImproved?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxev = resultCrew.map(c => c.totalEVContribution ?? 0).reduce((a, b) => a > b ? a : b);
             const maxsparse = resultCrew.map(c => c.groupSparsity ?? 0).reduce((a, b) => a > b ? a : b);
-            const maxam = resultCrew.map(c => c.amTraits?.length ?? 0).reduce((a, b) => a > b ? a : b);
+            const maxam = resultCrew.map(c => (c.amTraits?.length ?? 0)).reduce((a, b) => a > b ? a : b);
             const maxquip = resultCrew.map(c => c.ranks.scores.quipment ?? 0).reduce((a, b) => a > b ? a : b);
             const maxcols = resultCrew.map(c => c.collectionsIncreased?.length ?? 0).reduce((a, b) => a > b ? a : b);
             const maxex = resultCrew.map(c => getSkillOrderScore(c, skill_reports)).reduce((a, b) => a > b ? a : b);
 
-            resultCrew.forEach((crew) => {
-                crew.groupSparsity ??= 0;
-                crew.groupSparsity /= maxsparse;
-                crew.groupSparsity = 1 - crew.groupSparsity;
-            })
+            // resultCrew.forEach((crew) => {
+            //     crew.groupSparsity ??= 0;
+            //     crew.groupSparsity /= maxsparse;
+            //     crew.groupSparsity = 1 - crew.groupSparsity;
+            // })
 
             const scoreCrew = (crew: PlayerCrew) => {
 

@@ -53,6 +53,15 @@ export interface ITableConfigRow {
 	translatePseudocolumn?: (field: string) => string | JSX.Element;
 }
 
+export interface SearchableTableInitOptions {
+	search?: string,
+	filter?: string,
+	column?: string,
+	direction?: 'ascending' | 'descending',
+	rows?: number;
+	page?: number;
+}
+
 export interface SearchableTableProps {
 	id?: string;
 	data: any[];
@@ -63,7 +72,7 @@ export interface SearchableTableProps {
 	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
 
 	noSearch?: boolean;
-	initOptions?: any;
+	initOptions?: SearchableTableInitOptions;
 	tableStyle?: React.CSSProperties;
 	explanation?: React.ReactNode;
 	hideExplanation?: boolean;
@@ -77,7 +86,7 @@ export interface SearchableTableProps {
 	dropDownValue?: string;
 	setDropDownValue?: (value?: string) => void;
 
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.ReactNode;
 
 	pagingOptions?: DropdownItemProps[];
 	defaultPaginationRows?: number;
@@ -107,12 +116,12 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
 		if (props.initOptions) {
-			setSearchFilter(props.initOptions['search'] ?? '');
-			setFilterType(props.initOptions['filter'] ?? 'Any match');
-			setColumn(props.initOptions['column'] ?? undefined);
-			setDirection(props.initOptions['direction'] ?? undefined);
-			setPaginationRows(props.initOptions['rows'] ?? 10);
-			setPaginationPage(props.initOptions['page'] ?? 1);
+			setSearchFilter(props.initOptions.search ?? '');
+			setFilterType(props.initOptions.filter ?? 'Any match');
+			setColumn(props.initOptions.column ?? undefined);
+			setDirection(props.initOptions.direction ?? undefined);
+			setPaginationRows(props.initOptions.rows ?? 10);
+			setPaginationPage(props.initOptions.page ?? 1);
 		}
 	}, [props.initOptions]);
 
