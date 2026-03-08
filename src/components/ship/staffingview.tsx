@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "semantic-ui-react"
+import { Accordion, Button, Checkbox, Grid, Icon, SemanticICONS } from "semantic-ui-react"
 import CrewPicker from "../crewpicker"
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat"
 import { ShipPresenter } from "../item_presenters/ship_presenter"
@@ -20,6 +20,7 @@ import { CrewPreparer } from "../item_presenters/crew_preparer"
 import { OpponentImportComponent } from "./opponent_importer"
 import { PvpOpponent, PvpRoot } from "../../model/pvp"
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat"
+import { ShipStationProspects } from "./staffingprospects"
 
 export interface ShipStaffingProps {
     ship?: Ship;
@@ -64,8 +65,10 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
 
 	const [currentStation, setCurrentStation] = React.useState<number | undefined>(undefined);
+	const [appliedProspects, setAppliedProspects] = useStateWithStorage(`ship_info/applied_prospects`, [] as PlayerCrew[]);
 	const [currentStationCrew, setCurrentStationCrew] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalOptions, setModalOptions] = useStateWithStorage('ship_info/modalOptions', DEFAULT_SHIP_OPTIONS);
+	const [showProspects, setShowProspects] = useStateWithStorage('ship_info/show_prospects', false);
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	React.useEffect(() => {
@@ -74,7 +77,23 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	React.useEffect(() => {
 		setCrew(getCrew());
-	}, [playerData, coreCrew, considerFrozen, considerUnowned, isOpponent])
+	}, [playerData, coreCrew, considerFrozen, considerUnowned, isOpponent, appliedProspects])
+
+	React.useEffect(() => {
+		if (crewStations?.length) {
+			let ch = false;
+			let c = crewStations.length;
+			for (let i = 0; i < c; i++) {
+				if (crewStations[i] && !crew?.some(c => c.id === crewStations[i]?.id)) {
+					crewStations[i] = undefined;
+					ch = true;
+				}
+			}
+			if (ch) {
+				setCrewStations(crewStations.slice());
+			}
+		}
+	}, [crew]);
 
 	React.useEffect(() => {
 		if (ship?.battle_stations) {
@@ -122,6 +141,26 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
             {!!ships?.length && <ShipPicker showStaff={!!pvpData} clearable={isOpponent} pool={ships} selectedShip={ship} setSelectedShip={navigateToShip} />}
             </div>
 			<h3>{t('ship.battle_stations')}</h3>
+
+			{!!playerData && <div style={{...flexCol, width: isMobile ? '100%' : '70%', alignItems: 'flex-start', margin: '1rem 0'}}>
+
+				<Checkbox
+					label={t('ship.lineup.prospect_title')}
+					checked={showProspects}
+					onChange={(e, { checked }) => setShowProspects(!!checked)}
+					/>
+				{!!showProspects && (
+					<div style={{width: '100%', flexGrow: 1, margin: '1rem 0'}}>
+						<ShipStationProspects
+							pageId='ship_staffer'
+							setAppliedProspects={setAppliedProspects}
+							rarities={modalOptions.rarities}
+							targetGroup={`${targetGroup || 'ship_profile'}`}
+							/>
+					</div>
+				)}
+			</div>}
+
 
 			<div style={{
 				display: "flex",
@@ -202,7 +241,6 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		</div>)
 
 	}
-
 
 	function renderCrewCaption(crew: PlayerCrew | CrewMember, bs: BattleStation) {
 		let dskill = !!crew.skill_order.includes(bs.skill);
@@ -307,6 +345,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				results = results.filter(f => !("immortal" in f) || !!f.immortal);
 			}
 		}
+		results = appliedProspects.concat(results as PlayerCrew[]);
 		return results.sort((a, b) => {
 			return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
 		});

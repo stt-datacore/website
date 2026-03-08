@@ -2281,6 +2281,7 @@
         "lineup": {
             "export": "Exporter la liste",
             "header": "Enregistrer, exporter et importer des configurations de combat personnalisées.",
+            "prospect_title": "Éditeur de perspectives de recrutement de personnel de vaisseau",
             "import": "Importer la liste",
             "select": "Sélectionner la liste",
             "title": "Listes de pont personnalisées"

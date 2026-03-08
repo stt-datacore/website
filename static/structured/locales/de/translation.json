@@ -2270,6 +2270,7 @@
             "export": "Liste exportieren",
             "header": "Benutzerdefinierte Kampfkonfigurationen speichern, exportieren und importieren.",
             "import": "Liste importieren",
+            "prospect_title": "Redakteur für Schiffsbesatzungsaussichten",
             "select": "Liste auswählen",
             "title": "Benutzerdefinierte Listen für Schiffsbrücken"
         },

@@ -2280,6 +2280,7 @@
             "export": "Exportar Lista",
             "header": "Guardar, exportar e importar configuraciones de batalla personalizadas.",
             "import": "Importar Lista",
+            "prospect_title": "Mostrar editor de prospectos de personal de buque",
             "select": "Seleccionar lista",
             "title": "Listas de puentes personalizadas"
         },
