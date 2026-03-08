@@ -2271,6 +2271,7 @@
             "export": "Export Lineups",
             "header": "Save, export, and import custom battle configurations.",
             "import": "Import Lineups",
+            "prospect_title": "Show ship staffing prospect editor",
             "select": "Select Lineup",
             "title": "Custom Bridge Lineups"
         },

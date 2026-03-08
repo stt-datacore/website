@@ -6,16 +6,18 @@ import { PlayerCrew } from '../model/player';
 import { LockedProspect } from '../model/game-elements';
 import { DropDownItem } from '../utils/misc';
 import { GlobalContext } from '../context/globalcontext';
+import { CrewTarget } from './hovering/crewhoverstat';
 
 type ProspectPickerProps = {
 	pool: (CrewMember | PlayerCrew)[];
 	prospects: LockedProspect[];
 	setProspects: (prospects: LockedProspect[]) => void;
+	targetGroup?: string;
 };
 
 const ProspectPicker = (props: ProspectPickerProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
-	const { pool, prospects, setProspects } = props;
+	const { pool, prospects, setProspects, targetGroup } = props;
 	enum OptionsState {
 		Uninitialized,
 		Initializing,
@@ -52,7 +54,16 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 				<Table.Body>
 					{prospects.map((p, prospectNum) => (
 						<Table.Row key={prospectNum}>
-							<Table.Cell><img width={24} src={`${process.env.GATSBY_ASSETS_URL}${p.imageUrlPortrait}`} /></Table.Cell>
+							<Table.Cell>
+								{!targetGroup &&
+								<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${p.imageUrlPortrait}`} />
+								}
+								{!!targetGroup &&
+								<CrewTarget targetGroup={targetGroup} inputItem={p as PlayerCrew}>
+									<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${p.imageUrlPortrait}`} />
+								</CrewTarget>
+								}
+							</Table.Cell>
 							<Table.Cell><Link to={`/crew/${p.symbol}/`}>{p.name}</Link></Table.Cell>
 							<Table.Cell>
 								<Rating size='large' icon='star' rating={p.rarity} maxRating={p.max_rarity}

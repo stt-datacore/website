@@ -2282,6 +2282,7 @@
             "export": "Exporter la liste",
             "header": "Enregistrer, exporter et importer des configurations de combat personnalisées.",
             "import": "Importer la liste",
+            "prospect_title": "Éditeur de perspectives de recrutement de personnel de vaisseau",
             "select": "Sélectionner la liste",
             "title": "Listes de pont personnalisées"
         },
