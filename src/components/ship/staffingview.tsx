@@ -36,6 +36,8 @@ export interface ShipStaffingProps {
     setCrewStations: (value: (PlayerCrew | CrewMember | undefined)[]) => void;
     pageId?: string;
     boss?: Ship;
+	appliedProspects: PlayerCrew[];
+	setAppliedProspects: (value: PlayerCrew[]) => void;
 }
 
 export const ShipStaffingView = (props: ShipStaffingProps) => {
@@ -54,7 +56,9 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
         ignoreSkills,
         crewStations,
         setCrewStations,
-		division
+		division,
+		appliedProspects,
+		setAppliedProspects,
     } = props;
 	const [pvpData, setPvpData] = useStateWithStorage(`ship_info/opponents/pvp_${division}`, undefined as PvpRoot | undefined);
 
@@ -65,7 +69,6 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const [crew, setCrew] = React.useState<(PlayerCrew | CrewMember)[] | undefined>(undefined);
 
 	const [currentStation, setCurrentStation] = React.useState<number | undefined>(undefined);
-	const [appliedProspects, setAppliedProspects] = useStateWithStorage(`ship_info/applied_prospects`, [] as PlayerCrew[]);
 	const [currentStationCrew, setCurrentStationCrew] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalOptions, setModalOptions] = useStateWithStorage('ship_info/modalOptions', DEFAULT_SHIP_OPTIONS);
 	const [showProspects, setShowProspects] = useStateWithStorage('ship_info/show_prospects', false);
