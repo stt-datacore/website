@@ -40,6 +40,7 @@ export interface RosterCalcProps {
     opponentShip?: Ship
     asMaxed: boolean;
     setAsMaxed: (value: boolean) => void;
+    appliedProspects: PlayerCrew[];
 }
 
 interface BattleConfig {
@@ -58,7 +59,28 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { running, runWorker, cancel } = multiWorker;
     //const { running, runWorker, cancel } = workerContext;
     const { t, tfmt } = globalContext.localized;
-    const { asMaxed, setAsMaxed, ships, crew, opponentStations, opponentShip, setUseOpponents, crewStations, setCrewStations, pageId, considerFrozen, ignoreSkills, setIgnoreSkills, setConsiderFrozen, considerUnowned, setConsiderUnowned, onlyImmortal, setOnlyImmortal } = props;
+    const {
+        appliedProspects,
+        asMaxed,
+        setAsMaxed,
+        ships,
+        crew,
+        opponentStations,
+        opponentShip,
+        setUseOpponents,
+        crewStations,
+        setCrewStations,
+        pageId,
+        considerFrozen,
+        ignoreSkills,
+        setIgnoreSkills,
+        setConsiderFrozen,
+        considerUnowned,
+        setConsiderUnowned,
+        onlyImmortal,
+        setOnlyImmortal
+    } = props;
+
     const shipIdx = props.shipIdx ?? 0;
     const ship = ships[shipIdx];
     const [windowLoaded, setWindowLoaded] = React.useState(false);
@@ -1323,6 +1345,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
             return true;
         })
+        .concat(appliedProspects)
         .sort((a, b) => {
             let r = 0;
             // check durations
