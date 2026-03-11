@@ -364,6 +364,7 @@
         "consider_frozen": "Considere los tripulantes congeladas",
         "consider_shared": "Considerar los tripulantes compartidas",
         "consider_unowned": "Considere los tripulantes sin propietario",
+        "exclude_bonus": "Excluir los tripulantes con bonificación",
         "exclude_quipped": "Excluir los tripulantes con quipo activo",
         "excluder": {
             "all_event_crew": "Todo del tripulantes del evento",
