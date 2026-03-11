@@ -364,6 +364,7 @@
         "consider_frozen": "Eingefrorene Crew berücksichtigen",
         "consider_shared": "Gemeinsame Crew berücksichtigen",
         "consider_unowned": "Unbesessene Crew berücksichtigen",
+        "exclude_bonus": "Crew mit Bonus ausschließen",
         "exclude_quipped": "Crew mit aktiven Rüstzeugen ausschließen",
         "excluder": {
             "all_event_crew": "Alle Event-Crews",

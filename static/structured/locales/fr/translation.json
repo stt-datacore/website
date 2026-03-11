@@ -364,6 +364,7 @@
         "consider_frozen": "Considérez les équipiers gelés",
         "consider_shared": "Envisagez l'équipier partagé",
         "consider_unowned": "Considérez les équipiers sans propriétaire",
+        "exclude_bonus": "Exclure les équipiers avec un bonus",
         "exclude_quipped": "Exclure les équipiers quipés",
         "excluder": {
             "all_event_crew": "Toute les équipiers de l'événement",

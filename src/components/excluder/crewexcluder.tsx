@@ -262,6 +262,9 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								/>
 
 						</div>
+						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-start'}}>
+							<Button color='blue' onClick={(e) => excludeBonus()}>{t('consider_crew.exclude_bonus')}</Button>
+						</div>
 						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
 							<Popup
 								content={excluder('denote_current')}
@@ -445,6 +448,11 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	function excludeQuipped(list?: number[]) {
 		const quipped = list || props.rosterCrew.filter(f => isQuipped(f)).map(c => c.id);
 		updateExclusions([ ... new Set([...excludedCrewIds, ...quipped])] );
+	}
+
+	function excludeBonus(list?: number[]) {
+		const bonus = list || props.rosterCrew.filter(f => !!f.antimatter_bonus).map(c => c.id);
+		updateExclusions([ ... new Set([...excludedCrewIds, ...bonus])] );
 	}
 
 	function restoreNotedExclusions() {
