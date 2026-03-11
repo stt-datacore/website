@@ -262,9 +262,6 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 								/>
 
 						</div>
-						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-start'}}>
-							<Button color='blue' onClick={(e) => excludeBonus()}>{t('consider_crew.exclude_bonus')}</Button>
-						</div>
 						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
 							<Popup
 								content={excluder('denote_current')}
@@ -345,6 +342,10 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 						}}
 						crewIds={notedExclusions}
 						/>
+						<div style={{...OptionsPanelFlexRow, gap: '0.25em', flexWrap: 'wrap', justifyContent: 'flex-start', marginTop: '0.5em'}}>
+							<Button color='blue' onClick={(e) => excludeBonus()}>{t('consider_crew.exclude_bonus')}</Button>
+						</div>
+
 				</Message.Content>
 			</Message>
 			<Segment attached='bottom'>
