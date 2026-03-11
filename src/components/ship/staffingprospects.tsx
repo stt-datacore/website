@@ -68,12 +68,9 @@ export const ShipStationProspects = (props: ShipStationProspectsProps) => {
 
     function applyProspects() {
 
-        if (!prospects) {
+        if (!prospects || prospects.length === undefined) {
             setProspects([]);
-            return;
-        }
-        else if (prospects.length === undefined) {
-            setProspects([]);
+            setAppliedProspects([].slice());
             return;
         }
 
@@ -117,7 +114,7 @@ export const ShipStationProspects = (props: ShipStationProspectsProps) => {
             }
         });
 
-        setAppliedProspects(outcrew);
+        setAppliedProspects(outcrew.filter(f => !!f));
     }
 
     function setProspects(prospects: LockedProspect[]) {

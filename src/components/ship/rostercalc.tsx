@@ -197,7 +197,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         return {
             key: `_sug_${idx}`,
             value: idx,
-            text: sug.crew.map(c => c.name).join(", "),
+            text: sug.crew.map(c => c?.name || '?').join(", "),
             content: renderBattleResult(sug, idx)
         }
     });
@@ -1468,7 +1468,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         //if (!crew?.length || !ships?.length) return undefined;
         const result = {
             ...input,
-            crew: input.crew.map(id => crew.find(c => c.id === id)!)!,
+            crew: input.crew.map(id => crew.find(c => c.id === id) || appliedProspects.find(c => c.id === id)!)!,
             ship: ships.find(s => s.id === input.ship)!
         }
         return result;
