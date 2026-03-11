@@ -364,6 +364,7 @@
         "consider_frozen": "Consider frozen crew",
         "consider_shared": "Consider shared crew",
         "consider_unowned": "Consider unowned crew",
+        "exclude_bonus": "Exclude bonus crew",
         "exclude_quipped": "Exclude quipped crew",
         "excluder": {
             "all_event_crew": "All event crew",
