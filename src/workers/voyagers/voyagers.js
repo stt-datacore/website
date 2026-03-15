@@ -55,7 +55,7 @@ const forDataCore = (input, output, chewable) => {
 		};
 		// Increase confidence of estimates for thorough, marginal strategies
 		if (['thorough', 'minimum', 'moonshot'].includes(input.strategy))
-			chewableConfig.numSims = 10000;
+			chewableConfig.numSims = 30000;
 		return new Promise((resolve, reject) => {
 			const estimate = chewable(chewableConfig, () => false);
 			// Add antimatter prop here to allow for post-sorting by AM
