@@ -43,7 +43,7 @@ function getEstimate(config, reportProgress = () => true) {
     var currentAm = config.currentAm ?? config.startAm;
 
     // optional input (simulations)
-    var numSims = config.numSims ?? 5000;
+    var numSims = config.numSims ?? 20000;
 
     /**
      * returned estimate
