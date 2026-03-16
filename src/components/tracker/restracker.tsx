@@ -624,10 +624,10 @@ export const ResourceTracker = () => {
 
     function generateHonorDates() {
         const honorDates = [
-            new Date('March 20'),
-            new Date('June 20'),
-            new Date('September 20'),
-            new Date('December 20'),
+            new Date('March 16'),
+            new Date('June 16'),
+            new Date('September 16'),
+            new Date('December 16'),
         ]
         let n = new Date();
         for (let d of honorDates) {
