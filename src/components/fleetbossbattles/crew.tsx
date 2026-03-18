@@ -231,8 +231,7 @@ const ChainCrew = (props: ChainCrewProps) => {
 			<Message style={{ margin: '1em 0' }}>
 				<Message.Content>
 					<Message.Header>{t('fbb.tips.title')}</Message.Header>
-					<p><b>One hand exceptions</b> are crew who might be ruled out based on an unofficial rule that eliminates traits if they are shared by more than a handful of crew.</p>
-					<p><b>{t('fbb.tips.one_hand_exceptions_a')}</b> {t('fbb.tips.one_hand_exceptions_b')}</p>
+					<p><b>{t('fbb.tips.one_hand_exception_a')}</b> {t('fbb.tips.one_hand_exception_b')}</p>
 					<p><b>{t('fbb.tips.alpha_exceptions_a')}</b> {t('fbb.tips.alpha_exceptions_b')}</p>
 					<p><b>{t('fbb.tips.non_optimals_a')}</b> {t('fbb.tips.non_optimals_b')}</p>
 					<p><b>{t('fbb.tips.coverage_a')}</b> {t('fbb.tips.coverage_b')}</p>
