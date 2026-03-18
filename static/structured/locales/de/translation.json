@@ -51,6 +51,7 @@
         "event_crew": "Ereignis-Crew",
         "event_ships": "Ereignis Schiffe",
         "expiration": "Verfallsdatum",
+        "expiring": "Expiring",
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
         "gauntlet": "Herausforderung",
@@ -436,7 +437,11 @@
         "search_by_name": "Suche nach Crewmitgliedern nach Namen",
         "select_crew": "{{crew}} auszuwählen",
         "tip": {
-            "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen."
+            "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen.",
+            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
+            "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
+            "select_multiples": "You can select multiple crew.",
+            "tap_to_toggle": "Tap a crew to toggle."
         }
     },
     "crew_quipment": {
@@ -1191,6 +1196,7 @@
         "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
         "sync": "Sync",
         "sync_remote": "Fernbedienung sync",
+        "toggle_all": "Toggle all",
         "toggle_layout": "Layout umschalten",
         "total": "Gesamt",
         "type": "Typ",
@@ -2071,6 +2077,13 @@
         "wishlist": {
             "add": "Zur Wunschliste hinzufügen.",
             "auto": "Crew wird automatisch zur Wunschliste hinzugefügt.",
+            "delete": "Delete wishlist",
+            "delete_response": "Wishlist deleted!",
+            "export": "Save wishlist to device",
+            "import": "Import wishlist",
+            "import_response": "{{n}} crew added to wishlist!",
+            "manage_ellipses": "Manage Wishlist...",
+            "modal_preface": "Crew on your wishlist are marked {{icon}}.",
             "remove": "Von Wunschliste entfernen."
         },
         "you_own_n_of_the_polestar": "Sie besitzen {{n}} des {{polestar}}."

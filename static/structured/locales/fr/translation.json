@@ -51,6 +51,7 @@
         "event_crew": "Équipiers d'événement",
         "event_ships": "Vaisseaux événementiels",
         "expiration": "Expiration",
+        "expiring": "Expiring",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",
@@ -436,7 +437,11 @@
         "search_by_name": "Rechercher un équipier par nom",
         "select_crew": "Sélectionner {{crew}}",
         "tip": {
-            "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement."
+            "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement.",
+            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
+            "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
+            "select_multiples": "You can select multiple crew.",
+            "tap_to_toggle": "Tap a crew to toggle."
         }
     },
     "crew_quipment": {
@@ -1201,6 +1206,7 @@
         "supply_kit_active_n": "Kit de fournitures actif ({{n}} % de réduction)",
         "sync": "Sync à distance",
         "sync_remote": "Sync Remote",
+        "toggle_all": "Toggle all",
         "toggle_layout": "Basculer la mise en page",
         "total": "Total",
         "type": "Type",
@@ -2083,6 +2089,13 @@
         "wishlist": {
             "add": "Ajouter à la liste de souhaits.",
             "auto": "L'équipier est automatiquement ajouté à la liste de souhaits.",
+            "delete": "Delete wishlist",
+            "delete_response": "Wishlist deleted!",
+            "export": "Save wishlist to device",
+            "import": "Import wishlist",
+            "import_response": "{{n}} crew added to wishlist!",
+            "manage_ellipses": "Manage Wishlist...",
+            "modal_preface": "Crew on your wishlist are marked {{icon}}.",
             "remove": "Supprimer de la liste de souhaits."
         },
         "you_own_n_of_the_polestar": "Vous possédez {{n}} de l'{{polestar}}."

@@ -168,7 +168,7 @@ export const RetrievalCrew = () => {
 									<Button	/* Manage Wishlist... */
 										onClick={() => setShowWishlistModal(true)}
 									>
-										Manage Wishlist...
+										{t('retrieval.wishlist.manage_ellipses')}
 									</Button>
 								</Form.Field>
 							)}

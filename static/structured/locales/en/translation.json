@@ -51,6 +51,7 @@
         "event_crew": "Event Crew",
         "event_ships": "Event Ships",
         "expiration": "Expiration",
+        "expiring": "Expiring",
         "featured_ships": "Featured Ships",
         "featured_traits": "Featured Traits",
         "gauntlet": "Gauntlet",
@@ -436,7 +437,11 @@
         "search_by_name": "Search for crew by name",
         "select_crew": "Select {{crew}}",
         "tip": {
-            "double_tap": "Tip: Double-tap to select a crew more quickly."
+            "double_tap": "Tip: Double-tap to select a crew more quickly.",
+            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
+            "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
+            "select_multiples": "You can select multiple crew.",
+            "tap_to_toggle": "Tap a crew to toggle."
         }
     },
     "crew_quipment": {
@@ -1191,6 +1196,7 @@
         "supply_kit_active_n": "Supply Kit Active ({{n}}% discount)",
         "sync": "Sync",
         "sync_remote": "Sync Remote",
+        "toggle_all": "Toggle all",
         "toggle_layout": "Toggle layout",
         "total": "Total",
         "type": "Type",
@@ -2072,6 +2078,13 @@
         "wishlist": {
             "add": "Add to wishlist.",
             "auto": "Crew is auto wishlisted.",
+            "delete": "Delete wishlist",
+            "delete_response": "Wishlist deleted!",
+            "export": "Save wishlist to device",
+            "import": "Import wishlist",
+            "import_response": "{{n}} crew added to wishlist!",
+            "manage_ellipses": "Manage Wishlist...",
+            "modal_preface": "Crew on your wishlist are marked {{icon}}.",
             "remove": "Remove from wishlist."
         },
         "you_own_n_of_the_polestar": "You own {{n}} of the {{polestar}}."
