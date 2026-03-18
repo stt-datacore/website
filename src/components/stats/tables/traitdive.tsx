@@ -64,6 +64,7 @@ export const TraitDive = (props: TraitDiveProps) => {
             if (pc?.length) {
                 pc.sort((a, b) => b.rarity - a.rarity || b.level - a.level || a.immortal - b.immortal);
                 c.rarity = c.highest_owned_rarity = pc[0].rarity;
+                c.have = true;
             }
             else if (playerData) {
                 c.rarity = 0;
@@ -83,7 +84,7 @@ export const TraitDive = (props: TraitDiveProps) => {
         <Segment
             style={{
                 display: 'grid',
-                gridTemplateAreas: "'trait2 trait2 img' 'hidden1 hidden1 img' 'crew1 crew1 img' 'cols cols img'",
+                gridTemplateAreas: `'trait2 trait2 img' 'hidden1 hidden1 img' 'crew1 crew1 img' ${!!playerData ? "'crew2 crew2 img' 'crew3 crew3 img'" : ''} 'cols cols img'`,
                 gridTemplateColumns: "7em auto auto"
             }}
         >
@@ -113,6 +114,10 @@ export const TraitDive = (props: TraitDiveProps) => {
             </div>
             <StatLabel  style={{gridArea: 'hidden1', padding: '0.5em'}} size="small" title={t('global.hidden')} value={info.hidden ? t('global.yes') : t('global.no')} />
             <StatLabel  style={{gridArea: 'crew1', padding: '0.5em'}} size="small" title={t('base.crew')} value={info.crew.length.toLocaleString()} />
+            {!!playerData && (<>
+                <StatLabel  style={{gridArea: 'crew2', padding: '0.5em'}} size="small" title={t('gauntlet.owned_status.owned')} value={crew.filter(f => f['have']).length.toLocaleString()} />
+                <StatLabel  style={{gridArea: 'crew3', padding: '0.5em'}} size="small" title={t('gauntlet.owned_status.unowned')} value={crew.filter(f => !f['have']).length.toLocaleString()} />
+            </>)}
             {!!info.grade && <StatLabel size="small" style={{gridArea: 'cols', padding: '0.5em'}}
                 title={tfmt('stat_trends.traits.potential_collection_score_n')}
                 value={<span style={{color: gradeToColor(info.grade / 10)}}>

@@ -21,6 +21,8 @@ export interface TraitStats {
     retro?: number,
     grade?: number,
     highest_datascore: CrewMember
+    owned_crew?: number;
+    unowned_crew?: number;
 }
 
 
