@@ -25,6 +25,7 @@ import { skillSum } from '../utils/crewutils';
 import { formatDuration, getItemBonuses, getQuipmentCrew } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
 import { ContinuumMission } from '../model/continuum';
+import { ShipPresenter } from '../components/item_presenters/ship_presenter';
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
 
@@ -41,7 +42,7 @@ interface ItemInfoComponentProps {
 
 const ItemInfoPage = () => {
 	return (
-		<DataPageLayout demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'continuum_missions']}>
+		<DataPageLayout demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'continuum_missions', 'all_ships']}>
 			<ItemInfo />
 		</DataPageLayout>
 
@@ -193,8 +194,9 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 
 	const item = itemData.item;
 
+	const ship = itemData.item.type === 8 ? globalContext.player.playerShips?.find(f => f.symbol === item.symbol.replace("_schematic", "")) || globalContext.core.ships?.find(f => f.symbol === item.symbol.replace("_schematic", "")) : undefined;
 	const haveCount = getHaveCount(item.symbol);
-	const ship = itemData.item.type === 8 ? globalContext.core.ships?.find(f => f.symbol === item.symbol.replace("_schematic", "")) : undefined;
+	const needCount = getNeedCount(item.symbol);
 	const builds = itemData.builds;
 
 	const ltMarginSmall = isMobile ? "0px" : "0.375em";
@@ -204,7 +206,17 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 	const { TRAIT_NAMES } = globalContext.localized;
 
 	const itemFlavor = itemData.item.flavor?.replace(/\<b\>/g, '').replace(/\<\/b\>/g, '');
-
+	const shipText = (() => {
+		if (item.type === 8 && playerData) {
+			let ship = playerData.player.character.ships.find(f => f.symbol === item.symbol.replace('_schematic', ''));
+			if (ship?.max_level && ship.level < ship.max_level) {
+				return `${t('ship.level{{:}}')} ${ship.level + 1} / ${ship.max_level + 1}`
+			}
+		}
+		else {
+			return '';
+		}
+	})();
 	const crewTableCells = [
 		{ width: 2, column: 'data', title: t('items.columns.item_demand_levels') }
 	] as ITableConfigRow[];
@@ -294,6 +306,16 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 							{t('items.columns.owned').toLocaleUpperCase()} ({haveCount})
 						</div>
 					)}
+					{!!needCount && (
+						<div style={{ margin: 0, marginLeft: ltMarginBig, }}>
+							{t('items.columns.needed').toLocaleUpperCase()} ({needCount})
+						</div>
+					)}
+					{!!shipText && (
+						<div style={{ margin: 0, marginLeft: ltMarginBig }}>
+							{shipText}
+						</div>
+					)}
 
 					{!!item.duration &&(
 						<div
@@ -362,7 +384,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 
 			{item.type === 8 && !!ship && (
 				<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
-					<ShipTarget inputItem={ship} targetGroup='item_info_ships'>
+					{/* <ShipTarget inputItem={ship} targetGroup='item_info_ships'>
 						<Link to={`/ship_info?ship=${ship.symbol}`}>
 							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 								<ItemDisplay
@@ -374,7 +396,13 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 								{ship.name}
 							</div>
 						</Link>
-					</ShipTarget>
+					</ShipTarget> */}
+
+					<ShipPresenter
+						openShip={() => navigate('/ship_info?ship='+ship.symbol)}
+						storeName='item_info'
+						hover={false}
+						ship={ship} />
 				</div>
 			)}
 
@@ -574,7 +602,24 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 
 	function getHaveCount(symbol: string) {
 		const { playerData } = globalContext.player;
+		if (!playerData) return 0;
 		return playerData?.player?.character?.items?.find(f => f.symbol === symbol)?.quantity ?? 0;
+	}
+
+	function getNeedCount(symbol: string) {
+		const { playerData } = globalContext.player;
+		if (!playerData) return 0;
+		let x = 0;
+		if (ship?.schematic_gain_cost_next_level) {
+			x = ship.schematic_gain_cost_next_level - (getHaveCount(symbol) ?? 0);
+		}
+		if (x <= 0) {
+			x = (playerData?.player?.character?.items?.find(f => f.symbol === symbol) as any)?.needed ?? 0;
+		}
+
+		if (x < 0) return 0;
+		return x;
+
 	}
 }
 
