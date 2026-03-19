@@ -238,7 +238,17 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         const { bonuses, bonusText } = getItemBonuses(item);
         const ltMargin = 0;
         const traits = this.context.localized.TRAIT_NAMES;
-
+        const shipText = (() => {
+            if (item.type === 8 && playerData) {
+                let ship = playerData.player.character.ships.find(f => f.symbol === item.symbol.replace('_schematic', ''));
+                if (ship?.max_level && ship.level < ship.max_level) {
+                    return `${t('ship.level{{:}}')} ${ship.level + 1} / ${ship.max_level + 1}`
+                }
+            }
+            else {
+                return '';
+            }
+        })();
         return (<div style={{
             fontSize: "12pt",
             display: "flex",
@@ -311,6 +321,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     </div>
 
                     {!!bonusText?.length && renderBonuses(bonuses, "1em", "0.25em")}
+                    {item.type === 8 && <span style={{fontSize: '0.8em'}}>{shipText}</span>}
                 </div>
                 {!!item.duration &&
                     <div
