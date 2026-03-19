@@ -48,7 +48,7 @@ type WishlistManagerProps = {
 };
 
 export const WishlistManager = (props: WishlistManagerProps) => {
-	const { t } = React.useContext(GlobalContext).localized;
+	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const { rosterCrew, wishlist, setWishlist } = React.useContext(RetrievalContext);
 	const { showModal } = props;
 
@@ -142,10 +142,15 @@ export const WishlistManager = (props: WishlistManagerProps) => {
 		if (state.data.length === 0) return <></>;
 		return (
 			<React.Fragment>
-				Crew on your wishlist are marked <Icon name='heart' fitted />. Tap a crew to toggle. You can select multiple crew.
+				{/* Crew on your wishlist are marked <Icon name='heart' fitted />. Tap a crew to toggle. You can select multiple crew. */}
+				{tfmt('retrieval.wishlist.modal_preface', { icon: <Icon name='heart' fitted /> })}
+				{` `}{t('crew_picker.tip.tap_to_toggle')}
+				{` `}{t('crew_picker.tip.select_multiples')}
 				{` `}
-				{state.data.length > 1 && <>Double-tap to add an individual crew more quickly.</>}
-				{state.data.length === 1 && <>Double-tap or press enter to add an individual crew more quickly.</>}
+				{/* Double-tap to add an individual crew more quickly. */}
+				{state.data.length > 1 && <>{t('crew_picker.tip.double_tap_to_add')}</>}
+				{/* Double-tap or press enter to add an individual crew more quickly. */}
+				{state.data.length === 1 && <>{t('crew_picker.tip.double_tap_enter_to_add')}</>}
 			</React.Fragment>
 		);
 	}
@@ -155,7 +160,7 @@ export const WishlistManager = (props: WishlistManagerProps) => {
 			<React.Fragment>
 				{props.powerFiltering && state.data.length > 0 && (
 					<Button	/* Toggle all */
-						content='Toggle all'
+						content={t('global.toggle_all')}
 						onClick={() => toggleAllMatches(state)}
 					/>
 				)}
@@ -239,7 +244,7 @@ const GridCrew = (props: GridCrewProps) => {
 		else if (crew.retrievable === RetrievableState.NonUnique)
 			return <Label color='red'>{t('base.not_uniquely_retrievable')}</Label>;
 		else if (crew.retrievable === RetrievableState.Expiring)
-			return <Label color='black'>Expiring</Label>;
+			return <Label color='black'>{t('base.expiring')}</Label>;
 		return <></>;
 	}
 };
@@ -277,8 +282,8 @@ const FilterOptions = (props: FilterOptionsProps) => {
 					value={filters.retrievable}
 					onChange={(e, { value }) => setFilters({...filters, retrievable: value})}
 				/>
-				<Form.Field	/* Filter by ownership */
-					placeholder='Filter by ownership'
+				<Form.Field	/* Filter by owned status */
+					placeholder={t('hints.filter_by_owned_status')}
 					control={Dropdown}
 					selection
 					clearable
@@ -350,17 +355,17 @@ const ManageOptions = (props: ManageOptionsProps) => {
 			<Form>
 				<Form.Group inline style={{ marginBottom: '0' }}>
 					<Button	/* Save wishlist to device */
-						content='Save wishlist to device'
+						content={t('retrieval.wishlist.export')}
 						icon='download'
 						onClick={() => exportWishlist()}
 					/>
 					<Button	/* Import wishlist */
-						content='Import wishlist'
+						content={t('retrieval.wishlist.import')}
 						icon='upload'
 						onClick={() => inputUploadFile?.click()}
 					/>
 					<Button	/* Delete wishlist */
-						content='Delete wishlist'
+						content={t('retrieval.wishlist.delete')}
 						icon='trash'
 						onClick={() => deleteWishlist()}
 					/>
@@ -404,7 +409,8 @@ const ManageOptions = (props: ManageOptionsProps) => {
 				console.error(e);
 			}
 			finally {
-				setMessage(`${imported} crew added to wishlist!`);
+				/* N crew added to wishlist! */
+				setMessage(t('retrieval.wishlist.import_response', { n: imported }));
 			}
 		};
 		if (event.target.files) {
@@ -415,6 +421,7 @@ const ManageOptions = (props: ManageOptionsProps) => {
 
 	function deleteWishlist(): void {
 		setWishlist([]);
-		setMessage('Wishlist deleted!');
+		/* Wishlist deleted! */
+		setMessage(t('retrieval.wishlist.delete_response'));
 	}
 };

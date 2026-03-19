@@ -255,6 +255,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 						break;
 					case 'all_ships':
 						newData.all_ships = processAllShips(result.json);
+						newData.ships = data.ships;
 						break;
 					case 'portal_log':
 						newData.portal_log = result.json;
