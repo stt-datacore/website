@@ -1,6 +1,6 @@
 import React from "react";
 
-import { GlobalContext } from "../../context/globalcontext";
+import { CLIENT_API_VERSION, GlobalContext } from "../../context/globalcontext";
 import { GauntletRoot } from "../../model/gauntlets";
 import { JsonInputForm } from "../base/jsoninputform";
 import { Notification } from "../page/notification";
@@ -37,7 +37,7 @@ export const GauntletImportComponent = (props: GauntletImporterProps) => {
 
 	function renderCopyPaste(): JSX.Element {
 
-        const PLAYERLINK = 'https://app.startrektimelines.com/gauntlet/status?client_api=30&only_read_state=true';
+        const PLAYERLINK = `https://app.startrektimelines.com/gauntlet/status?client_api=${CLIENT_API_VERSION}&only_read_state=true`;
 
         return (
 			<React.Fragment>

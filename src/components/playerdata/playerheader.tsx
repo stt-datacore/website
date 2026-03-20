@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { GlobalContext } from '../../context/globalcontext';
+import { CLIENT_API_VERSION, GlobalContext } from '../../context/globalcontext';
 import { PlayerData } from '../../model/player';
 import { Notification } from '../../components/page/notification';
 
@@ -87,7 +87,7 @@ const PlayerHeader = (props: PlayerHeaderProps) => {
 			{(activePanel === 'input' || enforceInput) &&
 				<JsonInputForm
 					config={{
-						dataUrl: 'https://app.startrektimelines.com/player?client_api=30&only_read_state=true',
+						dataUrl: `https://app.startrektimelines.com/player?client_api=${CLIENT_API_VERSION}&only_read_state=true`,
 						dataName: t('json_types.player_data'),
 						jsonHint: '{"action":"update","player":',
 						androidFileHint: 'player.json',
