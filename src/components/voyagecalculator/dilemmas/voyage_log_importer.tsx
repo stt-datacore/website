@@ -1,12 +1,10 @@
 import React from "react";
 
-import { GlobalContext } from "../../../context/globalcontext";
+import { CLIENT_API_VERSION, GlobalContext } from "../../../context/globalcontext";
 
+import { VoyageLogRoot } from "../../../model/voyagelog";
 import { JsonInputForm } from "../../base/jsoninputform";
 import { Notification } from "../../page/notification";
-import { FleetDetails } from "../../../model/fleet";
-import { PvpRoot } from "../../../model/pvp";
-import { VoyageLogRoot } from "../../../model/voyagelog";
 
 export interface VoyageLogImporterProps {
     setVoyageLog: (result?: VoyageLogRoot) => void;
@@ -102,7 +100,7 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
                         postValues: {
                             voyage_status_id: voyageId,
                             new_only: false,
-                            client_api: 27
+                            client_api: CLIENT_API_VERSION
                         },
                         dataUrl: VOYAGELINK,
                         dataName: t(`json_types.voyage_log`),

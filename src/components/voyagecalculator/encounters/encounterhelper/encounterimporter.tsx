@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Voyage } from '../../../../model/player';
 import { EncounterStartingSkills, VoyageRefreshData, VoyageRefreshEncounter } from '../../../../model/voyage';
-import { GlobalContext } from '../../../../context/globalcontext';
+import { CLIENT_API_VERSION, GlobalContext } from '../../../../context/globalcontext';
 import { JsonInputForm } from '../../../base/jsoninputform';
 import { Notification } from '../../../page/notification';
 import { IContest, IContestSkill, IEncounter } from '../model';
@@ -72,7 +72,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 					postValues: {
 						'voyage_status_id': voyage.id,
 						'new_only': true,
-						'client_api': 25
+						'client_api': CLIENT_API_VERSION
 					},
 					pasteInMobile: true,
 					dataUrl: DATALINK,
