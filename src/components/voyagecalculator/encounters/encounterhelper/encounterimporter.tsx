@@ -72,7 +72,7 @@ export const EncounterImportComponent = (props: EncounterImportProps) => {
 					postValues: {
 						'voyage_status_id': voyage.id,
 						'new_only': true,
-						'client_api': 25
+						'client_api': 30
 					},
 					pasteInMobile: true,
 					dataUrl: DATALINK,

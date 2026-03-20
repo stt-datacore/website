@@ -102,7 +102,7 @@ export const VoyageLogImportComponent = (props: VoyageLogImporterProps) => {
                         postValues: {
                             voyage_status_id: voyageId,
                             new_only: false,
-                            client_api: 27
+                            client_api: 30
                         },
                         dataUrl: VOYAGELINK,
                         dataName: t(`json_types.voyage_log`),
