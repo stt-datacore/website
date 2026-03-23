@@ -51,7 +51,7 @@
         "event_crew": "Équipiers d'événement",
         "event_ships": "Vaisseaux événementiels",
         "expiration": "Expiration",
-        "expiring": "Expiring",
+        "expiring": "Expire bientôt",
         "featured_ships": "Vaisseaux en vedette",
         "featured_traits": "Caractéristiques en vedette",
         "gauntlet": "Gantelet",
@@ -438,10 +438,10 @@
         "select_crew": "Sélectionner {{crew}}",
         "tip": {
             "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement.",
-            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
-            "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
-            "select_multiples": "You can select multiple crew.",
-            "tap_to_toggle": "Tap a crew to toggle."
+            "double_tap_to_add": "Appuyez deux fois pour ajouter un membre d'équipage plus rapidement.",
+            "double_tap_enter_to_add": "Appuyez deux fois ou appuyez sur Entrée pour ajouter un membre d'équipage plus rapidement.",
+            "select_multiples": "Vous pouvez sélectionner plusieurs membres d'équipage.",
+            "tap_to_toggle": "Appuyez sur un équipier pour basculer."
         }
     },
     "crew_quipment": {
@@ -827,9 +827,9 @@
             "alpha_exceptions_a": "Exceptions alpha",
             "alpha_exceptions_b": "sont des membres d'équipiers qui pourraient être exclus sur la base d'une règle non officielle qui élimine nommément certains de leurs traits. Vous ne devriez essayer les exceptions alpha que si vous avez épuisé toutes les autres options répertoriées.",
             "coverage_a": "Couverture",
-            "coverage_b": "identifies crew who might be solutions to multiple nodes, with the number of potential nodes listed alongside the crew. In groups view, if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes.",
+            "coverage_b": "identifie les membres d'équipage susceptibles de constituer une solution pour plusieurs nodules, le nombre de nodules potentiels étant indiqué à côté de chaque membre. En mode « Groupes », si vous donnez la priorité aux membres disposant d'une couverture, certains d'entre eux seront masqués au profit d'autres pouvant être testés comme solutions potentielles pour un plus grand nombre de nodules.",
             "coverage_b_ori": "identifie les équipiers qui pourrait être une solution pour plusieurs nodules. Dans la vue des groupes, les équipages avec couverture sont en italique ; si vous donnez la priorité aux équipages avec couverture, certains équipages seront masqués tandis que d'autres pourront être essayés comme solutions possibles pour plus de nodules. Dans vue de l'équipage, le nombre de nodules potentiels est répertorié.",
-            "coverage_hint": "{{crew}} might be the solution to {{n}} nodes",
+            "coverage_hint": "{{crew}} pourrait être la solution pour {{n}} nodules",
             "non_optimals_a": "Non optimaux",
             "non_optimals_b": "sont des équipiers dont les seuls traits correspondants sont un sous-ensemble de traits d'une autre solution possible pour ce nodule. Vous ne devriez essayer un équipage non optimal que si vous ne possédez aucun équipage optimal.",
             "one_hand_exception_a": "Exceptions à une main",
@@ -1206,7 +1206,7 @@
         "supply_kit_active_n": "Kit de fournitures actif ({{n}} % de réduction)",
         "sync": "Sync à distance",
         "sync_remote": "Sync Remote",
-        "toggle_all": "Toggle all",
+        "toggle_all": "Tout basculer",
         "toggle_layout": "Basculer la mise en page",
         "total": "Total",
         "type": "Type",
@@ -2089,13 +2089,13 @@
         "wishlist": {
             "add": "Ajouter à la liste de souhaits.",
             "auto": "L'équipier est automatiquement ajouté à la liste de souhaits.",
-            "delete": "Delete wishlist",
-            "delete_response": "Wishlist deleted!",
-            "export": "Save wishlist to device",
-            "import": "Import wishlist",
-            "import_response": "{{n}} crew added to wishlist!",
-            "manage_ellipses": "Manage Wishlist...",
-            "modal_preface": "Crew on your wishlist are marked {{icon}}.",
+            "delete": "Supprimer la liste de souhaits",
+            "delete_response": "Liste de souhaits supprimée !",
+            "export": "Enregistrer la liste de souhaits sur l'appareil",
+            "import": "Importer la liste de souhaits",
+            "import_response": "{{n}} équipier(s) ajouté(s) à la liste de souhaits !",
+            "manage_ellipses": "Gérer la liste de souhaits...",
+            "modal_preface": "Les membres d'équipage figurant sur votre liste de souhaits sont marqués {{icon}}.",
             "remove": "Supprimer de la liste de souhaits."
         },
         "you_own_n_of_the_polestar": "Vous possédez {{n}} de l'{{polestar}}."

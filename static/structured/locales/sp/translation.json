@@ -51,7 +51,7 @@
         "event_crew": "Tripulantes de evento",
         "event_ships": "Buques de eventos",
         "expiration": "Expiración",
-        "expiring": "Expiring",
+        "expiring": "Está por vencer",
         "featured_ships": "Buques destacados",
         "featured_traits": "Características destacadas",
         "gauntlet": "Reto",
@@ -438,10 +438,10 @@
         "select_crew": "Seleccionar {{crew}}",
         "tip": {
             "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente.",
-            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
-            "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
-            "select_multiples": "You can select multiple crew.",
-            "tap_to_toggle": "Tap a crew to toggle."
+            "double_tap_to_add": "Toca dos veces para añadir un miembro de la tripulación individual más rápidamente.",
+            "double_tap_enter_to_add": "Toca dos veces o presiona Enter para añadir un miembro de la tripulación más rápidamente.",
+            "select_multiples": "Puedes seleccionar a varios miembros de la tripulación.",
+            "tap_to_toggle": "Toca uno tripulante para alternar."
         }
     },
     "crew_quipment": {
@@ -825,9 +825,9 @@
             "alpha_exceptions_a": "Excepciones alfa",
             "alpha_exceptions_b": "son tripulantes que podrían ser excluidos según una regla no oficial que elimina algunos de sus rasgos por nombre. Sólo debes probar las excepciones alfa si has agotado todas las demás opciones enumeradas.",
             "coverage_a": "Cobertura",
-            "coverage_b": "identifies crew who might be solutions to multiple nodes, with the number of potential nodes listed alongside the crew. In groups view, if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes.",
+            "coverage_b": "identifica a los miembros de la tripulación que podrían servir como solución para múltiples nodos, indicando junto a ellos el número de nodos potenciales. En la vista de grupos, si prioriza a los miembros con cobertura, algunos de ellos quedarán ocultos cuando otros puedan ser considerados como posibles soluciones para un mayor número de nodos.",
             "coverage_b_ori": "identifica al equipo que podría ser soluciones para múltiples nodos. En la vista de grupos, el equipo con cobertura está en cursiva; si prioriza al equipo con cobertura, algunos miembros del equipo se ocultarán cuando otros puedan probarse como posibles soluciones para más nodos. vista de tripulante, se enumera el número de nodos potenciales.",
-            "coverage_hint": "{{crew}} might be the solution to {{n}} nodes",
+            "coverage_hint": "{{crew}} podría ser la solución para {{n}} nodos",
             "non_optimals_a": "No óptimos",
             "non_optimals_b": "son tripulantes cuyos únicos rasgos coincidentes son un subconjunto de rasgos de otra posible solución para ese nódulo. Sólo debes probar una tripulante no óptima si no posees ninguna tripulante óptima.",
             "one_hand_exception_a": "Excepciones de una mano",
@@ -1204,7 +1204,7 @@
         "supply_kit_active_n": "Kit de suministros activo ({{n}}% de descuento)",
         "sync": "Sinc",
         "sync_remote": "Sinc remota",
-        "toggle_all": "Toggle all",
+        "toggle_all": "Alternar todo",
         "toggle_layout": "Cambiar diseño",
         "total": "Total",
         "type": "Tipo",
@@ -2087,13 +2087,13 @@
         "wishlist": {
             "add": "Añadir a la lista de deseos.",
             "auto": "El tripulante se añade automáticamente a la lista de deseos.",
-            "delete": "Delete wishlist",
-            "delete_response": "Wishlist deleted!",
-            "export": "Save wishlist to device",
-            "import": "Import wishlist",
-            "import_response": "{{n}} crew added to wishlist!",
-            "manage_ellipses": "Manage Wishlist...",
-            "modal_preface": "Crew on your wishlist are marked {{icon}}.",
+            "delete": "Eliminar lista de deseos",
+            "delete_response": "¡Lista de deseos eliminada!",
+            "export": "Guardar lista de deseos en el dispositivo",
+            "import": "Importar lista de deseos",
+            "import_response": "¡{{n}} miembros de la tripulación añadidos a la lista de deseos!",
+            "manage_ellipses": "Gestionar lista de deseos...",
+            "modal_preface": "Los miembros de la tripulación en tu lista de deseos están marcados con {{icon}}.",
             "remove": "Quitar de la lista de deseos."
         },
         "you_own_n_of_the_polestar": "Eres dueño de {{n}} de la {{polestar}}."

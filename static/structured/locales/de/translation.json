@@ -51,7 +51,7 @@
         "event_crew": "Ereignis-Crew",
         "event_ships": "Ereignis Schiffe",
         "expiration": "Verfallsdatum",
-        "expiring": "Expiring",
+        "expiring": "Läuft ab",
         "featured_ships": "Ausgewählte Schiffe",
         "featured_traits": "Ausgewählte Eigenschaften",
         "gauntlet": "Herausforderung",
@@ -438,10 +438,10 @@
         "select_crew": "{{crew}} auszuwählen",
         "tip": {
             "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen.",
-            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
-            "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
-            "select_multiples": "You can select multiple crew.",
-            "tap_to_toggle": "Tap a crew to toggle."
+            "double_tap_to_add": "Tippen Sie zweimal, um ein einzelnes Crew-Mitglied schneller hinzuzufügen.",
+            "double_tap_enter_to_add": "Tippen Sie zweimal oder drücken Sie Enter, um ein einzelnes Crew-Mitglied schneller hinzuzufügen.",
+            "select_multiples": "Sie können mehrere Crewmitglieder auswählen.",
+            "tap_to_toggle": "Tippe auf eine Crew, um umzuschalten."
         }
     },
     "crew_quipment": {
@@ -819,9 +819,9 @@
             "alpha_exceptions_a": "Alpha-Ausnahmen",
             "alpha_exceptions_b": "sind Crewmitglieder, die aufgrund einer inoffiziellen Regel ausgeschlossen werden könnten, die einige ihrer Eigenschaften namentlich ausschließt. Sie sollten Alpha-Ausnahmen nur ausprobieren, wenn Sie alle anderen aufgelisteten Optionen ausgeschöpft haben.",
             "coverage_a": "Abdeckung",
-            "coverage_b": "identifies crew who might be solutions to multiple nodes, with the number of potential nodes listed alongside the crew. In groups view, if you prioritize crew with coverage, some crew will be hidden when others can be tried as possible solutions for more nodes.",
+            "coverage_b": "identifiziert Besatzungsmitglieder, die als Lösungen für mehrere Knoten infrage kommen, wobei die Anzahl der potenziellen Knoten neben dem jeweiligen Besatzungsmitglied aufgeführt ist. In der Gruppenansicht werden – sofern Sie Besatzungsmitglieder mit Abdeckung priorisieren – bestimmte Besatzungsmitglieder ausgeblendet, während andere als mögliche Lösungen für eine größere Anzahl von Knoten getestet werden können.",
             "coverage_b_ori": "identifiziert Crewmitglieder, die Lösungen für mehrere Knoten sein könnten. In der Gruppenansicht werden Crewmitglieder mit Abdeckung kursiv dargestellt; wenn Sie Crewmitglieder priorisieren, bei der Abdeckung werden einige Crewmitglieder ausgeblendet, während andere als mögliche Lösungen für weitere Knoten ausprobiert werden können. In der Crew-Ansicht wird die Anzahl der potenziellen Knoten aufgelistet.",
-            "coverage_hint": "{{crew}} might be the solution to {{n}} nodes",
+            "coverage_hint": "{{crew}} könnte die Lösung für {{n}} Knoten sein",
             "non_optimals_a": "Nicht-Optimale",
             "non_optimals_b": "sind Crewmitglieder, deren einzige übereinstimmende Eigenschaften eine Teilmenge von Eigenschaften einer anderen möglichen Lösung für diesen Knoten sind. Sie sollten nicht-optimale Crewmitglieder nur ausprobieren, wenn Sie keine optimale Crew besitzen.",
             "one_hand_exception_a": "Einhand-Ausnahmen",
@@ -1196,7 +1196,7 @@
         "supply_kit_active_n": "Versorgungskit aktiv ({{n}} % Rabatt)",
         "sync": "Sync",
         "sync_remote": "Fernbedienung sync",
-        "toggle_all": "Toggle all",
+        "toggle_all": "Alle umschalten",
         "toggle_layout": "Layout umschalten",
         "total": "Gesamt",
         "type": "Typ",
@@ -2077,13 +2077,13 @@
         "wishlist": {
             "add": "Zur Wunschliste hinzufügen.",
             "auto": "Crew wird automatisch zur Wunschliste hinzugefügt.",
-            "delete": "Delete wishlist",
-            "delete_response": "Wishlist deleted!",
-            "export": "Save wishlist to device",
-            "import": "Import wishlist",
-            "import_response": "{{n}} crew added to wishlist!",
-            "manage_ellipses": "Manage Wishlist...",
-            "modal_preface": "Crew on your wishlist are marked {{icon}}.",
+            "delete": "Wunschliste löschen",
+            "delete_response": "Wunschliste gelöscht!",
+            "export": "Wunschliste auf dem Gerät speichern",
+            "import": "Wunschliste importieren",
+            "import_response": "{{n}} Crew-Mitglieder zur Wunschliste hinzugefügt!",
+            "manage_ellipses": "Wunschliste verwalten...",
+            "modal_preface": "Crew-Mitglieder auf deiner Wunschliste sind mit {{icon}} markiert.",
             "remove": "Von Wunschliste entfernen."
         },
         "you_own_n_of_the_polestar": "Sie besitzen {{n}} des {{polestar}}."
