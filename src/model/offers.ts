@@ -84,25 +84,38 @@ export interface Obtain {
     spec: string;
 }
 
+export interface ShopItem {
+    symbol: string;
+    reward: Reward;
+    name: string;
+    cost: number;
+    limit: number;
+    is_special: boolean;
+    available_in_days: number;
+    purchased: number;
+    available_amount: number;
+    is_locked: boolean;
+}
+
 export interface SeasonalShop {
-  id: number
-  is_active: boolean
-  run_id: number
-  title: string
-  season_title: string
-  rules: string
-  announcement_text: string
-  announcement_background: Icon
-  event_hub_icon: Icon
-  start_time: string
-  end_time: string
-  daily_limit_without_pass: number
-  daily_limit_with_pass: number
-  conquest_tokens_balance: number
-  conquest_tokens_earned_today: number
-  daily_limit_reset_period: number
-  daily_reset_at: number
-  event_pass_activated: boolean
-  announcement_seen: boolean
-  shop_items: Reward[]
+  id: number;
+  is_active: boolean;
+  run_id: number;
+  title: string;
+  season_title: string;
+  rules: string;
+  announcement_text: string;
+  announcement_background: Icon;
+  event_hub_icon: Icon;
+  start_time: string;
+  end_time: string;
+  daily_limit_without_pass: number;
+  daily_limit_with_pass: number;
+  conquest_tokens_balance: number;
+  conquest_tokens_earned_today: number;
+  daily_limit_reset_period: number;
+  daily_reset_at: number;
+  event_pass_activated: boolean;
+  announcement_seen: boolean;
+  shop_items: ShopItem[];
 }
