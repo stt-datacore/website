@@ -438,8 +438,8 @@
         "select_crew": "Seleccionar {{crew}}",
         "tip": {
             "double_tap": "Consejo: Toca dos veces para seleccionar un equipo más rápidamente.",
-            "double_tap_to_add": "Toca dos veces para añadir un miembro de la tripulación individual más rápidamente.",
             "double_tap_enter_to_add": "Toca dos veces o presiona Enter para añadir un miembro de la tripulación más rápidamente.",
+            "double_tap_to_add": "Toca dos veces para añadir un miembro de la tripulación individual más rápidamente.",
             "select_multiples": "Puedes seleccionar a varios miembros de la tripulación.",
             "tap_to_toggle": "Toca uno tripulante para alternar."
         }
@@ -1097,6 +1097,7 @@
             "cadet_challenges": "Desafíos de cadete",
             "chronitons": "Chronitons",
             "component": "Componente",
+            "conquest_token": "Ficha de Conquista",
             "continuum_qbit": "Q-Bits de Continuo",
             "continuum_quipment": "Quipo de Continuo",
             "credits": "Créditos",
@@ -2161,6 +2162,9 @@
         "honor_sale": "Descuento de honor",
         "slot_sale": "Descuento por espacio de tripulación",
         "title": "Descuentos"
+    },
+    "seasonal": {
+        "seasonal_event_shop": "Tienda del evento estacional"
     },
     "series": {
         "ds9": "Espacio profundo nueve",
