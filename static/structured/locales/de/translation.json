@@ -438,8 +438,8 @@
         "select_crew": "{{crew}} auszuwählen",
         "tip": {
             "double_tap": "Tipp: Tippen Sie doppelt, um schneller eine Crew auszuwählen.",
-            "double_tap_to_add": "Tippen Sie zweimal, um ein einzelnes Crew-Mitglied schneller hinzuzufügen.",
             "double_tap_enter_to_add": "Tippen Sie zweimal oder drücken Sie Enter, um ein einzelnes Crew-Mitglied schneller hinzuzufügen.",
+            "double_tap_to_add": "Tippen Sie zweimal, um ein einzelnes Crew-Mitglied schneller hinzuzufügen.",
             "select_multiples": "Sie können mehrere Crewmitglieder auswählen.",
             "tap_to_toggle": "Tippe auf eine Crew, um umzuschalten."
         }
@@ -1091,6 +1091,7 @@
             "cadet_challenges": "Kadettenherausforderungen",
             "chronitons": "Chronitons",
             "component": "Komponente",
+            "conquest_token": "Eroberungsmarker",
             "continuum_qbit": "Kontinuum R-Bit",
             "continuum_quipment": "Kontinuum Rüstzeug",
             "credits": "Credits",
@@ -2151,6 +2152,9 @@
         "honor_sale": "Ehrenrabatt",
         "slot_sale": "Crewplätze Rabatt",
         "title": "Rabatte"
+    },
+    "seasonal": {
+        "seasonal_event_shop": "Boutique de l'événement saisonnier"
     },
     "series": {
         "ds9": "Deep Space Nine",

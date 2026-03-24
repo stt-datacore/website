@@ -438,8 +438,8 @@
         "select_crew": "Select {{crew}}",
         "tip": {
             "double_tap": "Tip: Double-tap to select a crew more quickly.",
-            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
             "double_tap_enter_to_add": "Double-tap or press enter to add an individual crew more quickly.",
+            "double_tap_to_add": "Double-tap to add an individual crew more quickly.",
             "select_multiples": "You can select multiple crew.",
             "tap_to_toggle": "Tap a crew to toggle."
         }
@@ -1091,6 +1091,7 @@
             "cadet_challenges": "Cadet challenges",
             "chronitons": "Chronitons",
             "component": "Component",
+            "conquest_token": "Conquest Token",
             "continuum_qbit": "Continuum Q-Bit",
             "continuum_quipment": "Continuum Quipment",
             "credits": "Credits",
@@ -2152,6 +2153,9 @@
         "honor_sale": "Honor Sale",
         "slot_sale": "Crew Slot Sale",
         "title": "Sales"
+    },
+    "seasonal": {
+        "seasonal_event_shop": "Seasonal Event Shop"
     },
     "series": {
         "ds9": "Deep Space Nine",

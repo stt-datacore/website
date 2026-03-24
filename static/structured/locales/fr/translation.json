@@ -438,8 +438,8 @@
         "select_crew": "Sélectionner {{crew}}",
         "tip": {
             "double_tap": "Conseil : appuyez deux fois pour sélectionner un équipier plus rapidement.",
-            "double_tap_to_add": "Appuyez deux fois pour ajouter un membre d'équipage plus rapidement.",
             "double_tap_enter_to_add": "Appuyez deux fois ou appuyez sur Entrée pour ajouter un membre d'équipage plus rapidement.",
+            "double_tap_to_add": "Appuyez deux fois pour ajouter un membre d'équipage plus rapidement.",
             "select_multiples": "Vous pouvez sélectionner plusieurs membres d'équipage.",
             "tap_to_toggle": "Appuyez sur un équipier pour basculer."
         }
@@ -1099,6 +1099,7 @@
             "cadet_challenges": "Défis pour cadets",
             "chronitons": "Chronitons",
             "component": "Composant",
+            "conquest_token": "Jeton de conquête",
             "continuum_qbit": "Q-Bits de continuum",
             "continuum_quipment": "Quipement de continuum",
             "credits": "Credits",
@@ -2163,6 +2164,9 @@
         "honor_sale": "Remise d'honneur",
         "slot_sale": "Remise sur les emplacements d'équipage",
         "title": "Remises"
+    },
+    "seasonal": {
+        "seasonal_event_shop": "Seasonal Event Shop"
     },
     "series": {
         "ds9": "Deep Space Nine",
