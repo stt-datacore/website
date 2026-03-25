@@ -14,6 +14,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { TinyStore } from '../utils/tiny';
 import { BuffStatTable, calculateBuffConfig, calculateMaxBuffs } from '../utils/voyageutils';
 import { DataContext, DataProviderProperties } from './datacontext';
+import { SeasonalShop } from '../model/offers';
 
 export type GuildCache = { id: number, slabel: string };
 
@@ -51,6 +52,7 @@ export interface IEphemeralData {
 	archetype_cache: ArchetypeRoot20;
 	objectiveEventRoot: ObjectiveEventRoot;
 	galaxyCooldowns: GalaxyCrewCooldown[];
+	seasonalEventShop?: SeasonalShop;
 	stimpack?: Stimpack;
 	borrowedCrew: BorrowedCrew[];
 };
@@ -169,6 +171,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				objectiveEventRoot: input.objective_event_root ?? {} as ObjectiveEventRoot,
 				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
 				stimpack: input.player.character.stimpack,
+				seasonalEventShop: input.seasonal_event_shop_root,
 				borrowedCrew: [...input.player.character.crew_borrows ?? []]
 			});
 		}

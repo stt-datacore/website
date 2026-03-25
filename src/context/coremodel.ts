@@ -13,6 +13,7 @@ import { StaticFaction } from "../model/shuttle";
 import { Dilemma } from "../model/voyage";
 import { EventStats } from "../utils/event_stats";
 import { BuffStatTable } from "../utils/voyageutils";
+import { SeasonalShop } from "../model/offers";
 
 export interface ICoreData {
 	all_buffs: BuffStatTable;
@@ -42,5 +43,6 @@ export interface ICoreData {
 	ship_schematics: Schematics[];
 	ships: Ship[];
 	topQuipmentScores: QuipmentScores[];
+	seasonal_shop: SeasonalShop;
 	sync_time: Date;
 };
