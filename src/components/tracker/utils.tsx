@@ -27,6 +27,7 @@ export const transKeys = {
     chrons: 'chronitons',
     ism: 'ism',
     quantum: 'quantum',
+    conquest_tokens: 'conquest_token'
 
 }
 

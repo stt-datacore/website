@@ -326,6 +326,7 @@ export const Navigation = (props: NavigationProps) => {
 				{ title: t('menu.game_info.episodes'), link: '/episodes', sidebarRole: 'item' },
 				{ title: t('menu.game_info.events'), link: '/events', sidebarRole: 'item' },
 				{ title: t('menu.game_info.objective_events'), link: '/objective_events', sidebarRole: 'item' },
+				{ title: t('seasonal.seasonal_event_shop'), link: '/seasonal', sidebarRole: 'item' },
 				{ title: t('menu.game_info.voyage_hof'), link: '/hall_of_fame', sidebarRole: 'item' },
 				{ title: t('menu.game_info.ftm_hof'), link: '/ftmhof', sidebarRole: 'item' },
 				{ title: t('menu.game_info.misc_game_stats'), link: "/stats", sidebarRole: 'item' },

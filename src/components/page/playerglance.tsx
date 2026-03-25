@@ -11,6 +11,7 @@ import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
 import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
+import { CONQUEST_CURRENCY_ICON } from "../../pages/seasonal";
 
 export interface SaleData {
     slot_sale: boolean;
@@ -239,7 +240,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             valor,
             ownedCites,
             cadet,
-            pvp
+            pvp,
+            conquest_tokens
         } = energy;
 
         if (revival && coreRevival) {
@@ -317,7 +319,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 quantity: shuttle_rental_tokens ?? 0,
                 imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_shuttle_token.png`,
                 click: (e) => navigate('/shuttlehelper')
+            },
+            {
+                name: t('global.item_types.conquest_token'),
+                quantity: conquest_tokens ?? 0,
+                imageUrl: `${process.env.GATSBY_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
+                click: (e) => navigate('/seasonal')
             }
+
         ] as PlayerResource[];
 
         ownedCites.forEach((cite, idx) => {

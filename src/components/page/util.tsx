@@ -22,7 +22,8 @@ export interface TrackedEnergy {
     premium_earnable: number,
     shuttle_rental_tokens: number,
     chrons: number,
-    ism: number
+    ism: number,
+    conquest_tokens: number
 }
 
 export interface AllEnergy extends TrackedEnergy {
@@ -310,6 +311,7 @@ export function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData):
     const cadet = playerData?.player.character.cadet_tickets?.current ?? 0;
     const pvp = playerData?.player.character.pvp_tickets?.current ?? 0;
     const supplyKit = ephemeral?.stimpack?.energy_discount ?? 0;
+    const conquest_tokens = ephemeral?.seasonalEventShop?.conquest_tokens_balance ?? 0;
 
     return {
         money,
@@ -324,7 +326,8 @@ export function getAllEnergy(playerData: PlayerData, ephemeral: IEphemeralData):
         ownedCites,
         cadet,
         pvp,
-        supplyKit
+        supplyKit,
+        conquest_tokens
     }
 }
 
