@@ -21,7 +21,6 @@ export interface SeasonalEventProps {
 const SeasonalEvent = (props: SeasonalEventProps) => {
 
     const globalContext = React.useContext(GlobalContext);
-    const { ephemeral } = globalContext.player;
     const { t } = globalContext.localized;
 
     return (<DataPageLayout
@@ -44,10 +43,15 @@ const SeasonalEvent = (props: SeasonalEventProps) => {
 const SeasonalEventInfo = () => {
     const globalContext = React.useContext(GlobalContext);
     const { ephemeral } = globalContext.player;
+    const { seasonal_shop } = globalContext.core;
+    const { t } = globalContext.localized;
 
-    let shop_items = ephemeral?.seasonalEventShop?.shop_items || globalContext.core?.seasonal_shop?.shop_items || [];
-
-    if (!shop_items?.length) return (<></>);
+    const shop_items = React.useMemo(() => {
+        if (ephemeral?.seasonalEventShop?.shop_items?.length) {
+            return ephemeral.seasonalEventShop.shop_items;
+        }
+        return seasonal_shop?.shop_items || [];
+    }, [ephemeral, seasonal_shop]);
 
     return (<div>
         <ItemHoverStat targetGroup='seasonal_item' />
@@ -55,7 +59,8 @@ const SeasonalEventInfo = () => {
 
         <div style={{...OptionsPanelFlexRow, justifyContent: 'center', flexWrap: 'wrap', gap: '1.5em'}}>
             {shop_items?.map((item) => {
-                let icon = getIconPath(item.reward.icon!)
+                const purchased = item.purchased > item.limit && item.limit;
+                (item.reward as any).imageUrl = getIconPath(item.reward.icon!, true);
                 return (
                     <div
                         key={`shop_item_${item.symbol}`}
@@ -65,13 +70,13 @@ const SeasonalEventInfo = () => {
                             height: '10em',
                             textAlign: 'center',
                             justifyContent: 'flex-start',
-                            opacity: item.is_locked || item.purchased >= item.limit ? 0.5 : 1
+                            opacity: item.is_locked || purchased ? 0.5 : 1
                             }}>
                         <AvatarView
                             mode={item.reward.type === 1 ? 'crew' : 'item'}
                             targetGroup={item.reward.type === 1 ? 'seasonal_crew' : 'seasonal_item'}
                             size={64}
-                            src={icon}
+                            partialItem={true}
                             item={item.reward as any}
                             />
                         {item.is_locked && (
@@ -79,14 +84,15 @@ const SeasonalEventInfo = () => {
                                 <Icon name='lock' size='large' />
                             </div>
                         )}
-                        {!item.is_locked && item.purchased >= item.limit && (
+                        {!item.is_locked && purchased && (
                             <div style={{marginTop: '-24px', zIndex: 100}}>
                                 <Icon name='check' size='large' color='green' />
                             </div>
                         )}
 
                         <div style={{height: '3.5em'}}>
-                        {item.reward.quantity} {item.name}
+                            {item.reward.quantity > 1 && <>{item.reward.quantity.toLocaleString()}</>} {item.name}
+                            {item.is_locked && <div>{t('duration.n_days', { days: item.available_in_days })}</div>}
                         </div>
                         {printConquest(item.cost)}
                     </div>
