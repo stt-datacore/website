@@ -1834,7 +1834,7 @@
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
         "scores": {
-            "am_seating": "Asientos de antimateria",
+            "am_seating": "Antimateria",
             "collections": "Colecciones",
             "crit": "Crítico elevado",
             "event": "{{obtained.short.Event}}",

@@ -1836,7 +1836,7 @@
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
         "scores": {
-            "am_seating": "Sièges antimatière",
+            "am_seating": "Antimatière",
             "collections": "Collections",
             "crit": "Critique élevée",
             "event": "{{obtained.short.Event}}",

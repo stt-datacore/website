@@ -1825,7 +1825,7 @@
         "quipment_score": "Quipment Score",
         "rank": "Rank",
         "scores": {
-            "am_seating": "Antimatter Seats",
+            "am_seating": "Antimatter",
             "collections": "Collections",
             "crit": "Elevated Crit",
             "event": "{{obtained.short.Event}}",
