@@ -4,6 +4,7 @@ import { IKeystone, IPolestarTailors, IRosterCrew, CrewFilterField } from './mod
 import { MarketAggregation } from '../../model/celestial';
 import { TranslateMethod } from '../../model/player';
 import { KeystoneBase } from "../../model/keystone";
+import { CONQUEST_CURRENCY_ICON } from '../../pages/seasonal';
 
 export interface IRetrievalContext {
 	allKeystones: IKeystone[];	// All keystones (i.e. constellations AND polestars) with quantity owned and polestar odds
@@ -20,6 +21,17 @@ export interface IRetrievalContext {
 	setWishlist: (wishlist: string[]) => void;
 	reloadMarket: () => void;
 };
+
+export function printConquest(quantity: number, t?: TranslateMethod, printTicket?: boolean) {
+	const img = `${process.env.GATSBY_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`;
+
+	return <div
+		title={t ? t('global.item_types.conquest_token') : ''}
+		style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
+		<img src={img} style={{height: '1.5em'}} />
+		<span>{quantity.toLocaleString()} {t && printTicket ? t('global.item_types.conquest_token') : ''}</span>
+	</div>
+}
 
 export function printISM(quantity: number, t?: TranslateMethod, printISM?: boolean) {
 	const img = `${process.env.GATSBY_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`;
