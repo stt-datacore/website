@@ -96,6 +96,7 @@ const SeasonalEventInfo = () => {
 
                             }}>
                         <AvatarView
+                            reward={true}
                             style={{
                                 opacity: item.is_locked || purchased ? 0.5 : 1
                             }}
