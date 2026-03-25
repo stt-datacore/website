@@ -28,14 +28,14 @@ const SeasonalEvent = (props: SeasonalEventProps) => {
         pageTitle={t('seasonal.seasonal_event_shop')}
         playerPromptType='recommend' demands={['seasonal_shop']}>
         <div>
-            <Message warning>
+            {/* <Message warning>
                 <Message.Header>
                     {t('global.work_in_progress.title')}
                 </Message.Header>
                 <Message.Content>
                     {t('global.work_in_progress.heading')}
                 </Message.Content>
-            </Message>
+            </Message> */}
             <SeasonalEventInfo />
         </div>
     </DataPageLayout>);
