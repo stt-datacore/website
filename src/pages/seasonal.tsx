@@ -8,6 +8,7 @@ import { AvatarView } from '../components/item_presenters/avatarview';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { printConquest, printISM } from '../components/retrieval/context';
 import { getIconPath } from '../utils/assets';
+import { formatTime } from '../utils/itemutils';
 
 
 export const SEASONAL_EVENT_ICON = 'items_consumables_seasonal_event_shop_icon.png';
@@ -53,30 +54,55 @@ const SeasonalEventInfo = () => {
         return seasonal_shop?.shop_items || [];
     }, [ephemeral, seasonal_shop]);
 
+    const shop_time = React.useMemo(() => {
+        let edate = new Date(seasonal_shop.end_time);
+        let ndate = new Date();
+        let mremain = edate.getTime() - ndate.getTime();
+        return formatTime(mremain, t);
+    }, [seasonal_shop]);
     return (<div>
         <ItemHoverStat targetGroup='seasonal_item' />
         <CrewHoverStat targetGroup='seasonal_crew' />
+        <h3>{shop_time}</h3>
 
-        <div style={{...OptionsPanelFlexRow, justifyContent: 'center', flexWrap: 'wrap', gap: '1.5em'}}>
+        <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1.5em', alignItems: 'flex-start'}}>
             {shop_items?.map((item) => {
                 const purchased = item.purchased > item.limit && item.limit;
                 (item.reward as any).imageUrl = getIconPath(item.reward.icon!, true);
+                let text = item.reward.name;
+                if (item.reward.type === 1) {
+                    let rcrew = globalContext.core.crew.find(f => f.symbol === item.reward.symbol);
+                    if (rcrew) text = rcrew.name;
+                }
+                else if (item.reward.type === 8) {
+                    let rship = globalContext.core.all_ships.find(f => f.symbol === item.reward.symbol);
+                    if (rship) text = rship.name;
+                }
+                else {
+                    let ritem = globalContext.core.items.find(f => f.symbol === item.reward.symbol);
+                    if (ritem) text = ritem.name;
+                }
                 return (
                     <div
+                        className='ui label'
                         key={`shop_item_${item.symbol}`}
                         style={{
                             ...OptionsPanelFlexColumn,
-                            width: '10em',
-                            height: '10em',
+                            padding: '1em',
+                            width: '13.5em',
+                            height: '13.5em',
                             textAlign: 'center',
                             justifyContent: 'flex-start',
-                            opacity: item.is_locked || purchased ? 0.5 : 1
+
                             }}>
                         <AvatarView
+                            style={{
+                                opacity: item.is_locked || purchased ? 0.5 : 1
+                            }}
+                            crewBackground='rich'
                             mode={item.reward.type === 1 ? 'crew' : 'item'}
                             targetGroup={item.reward.type === 1 ? 'seasonal_crew' : 'seasonal_item'}
                             size={64}
-                            partialItem={true}
                             item={item.reward as any}
                             />
                         {item.is_locked && (
@@ -89,12 +115,19 @@ const SeasonalEventInfo = () => {
                                 <Icon name='check' size='large' color='green' />
                             </div>
                         )}
-
-                        <div style={{height: '3.5em'}}>
-                            {item.reward.quantity > 1 && <>{item.reward.quantity.toLocaleString()}</>} {item.name}
+                        <div style={{height: '3.5em', margin: '0.5em'}}>
+                            {item.reward.quantity > 1 && <>{item.reward.quantity.toLocaleString()}</>} {text}
                             {item.is_locked && <div>{t('duration.n_days', { days: item.available_in_days })}</div>}
                         </div>
-                        {printConquest(item.cost)}
+                        <div>
+                            {printConquest(item.cost)}
+                        </div>
+                        {!!item.limit && !!ephemeral && (<div>
+                            {item.purchased} / {item.limit}
+                        </div>)}
+                        {!ephemeral && (<div>
+                            {item.limit}
+                        </div>)}
                     </div>
                 )
             })}
