@@ -141,15 +141,6 @@ export const StatTrendsComponent = () => {
 
     return (
             <div>
-                <Message color='orange'>
-                    <Message.Header>
-                        {t('global.work_in_progress.title')}
-                    </Message.Header>
-                    <Message.Content>
-                        {t('global.work_in_progress.heading')}
-                    </Message.Content>
-
-                </Message>
                 <CrewHoverStat targetGroup="stat_trends_crew" />
 
                 <Step.Group fluid>
