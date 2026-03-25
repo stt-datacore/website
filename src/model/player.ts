@@ -11,7 +11,7 @@ import { Collection } from "./collections";
 import { ShuttleAdventure, StaticFaction } from "./shuttle";
 import { IVoyageEventContent } from "./voyage";
 import { ArchetypeRoot20 } from "./archetype";
-import { Cost } from "./offers";
+import { Cost, SeasonalShop } from "./offers";
 
 export const ISM_ID = 14152;
 
@@ -49,6 +49,7 @@ export interface PlayerData {
   player: Player;
   fleet_boss_battles_root?: BossBattlesRoot;
   captains_bridge_root?: CaptainsBridgeRoot;
+  seasonal_event_shop_root?: SeasonalShop;
   calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
   archetype_cache?: ArchetypeRoot20;
   [key: string]: any;
