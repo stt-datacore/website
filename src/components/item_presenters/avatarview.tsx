@@ -52,6 +52,9 @@ export interface AvatarViewProps {
     /** For ships, use the schematics icon as opposed to the model icon */
     useSchematicsIcon?: boolean;
 
+    /** Always treat quantity as a reward value */
+    reward?: boolean;
+
     /**
      * True to not process the input item, and to instruct the hover component to do the same.
      * This property only applies to the hover component if partialItem is set to true.
@@ -94,7 +97,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     const items = props.altItems ?? globalContext.core.items;
     const crew = props.altCrew ?? globalContext.core.crew;
     const all_ships = globalContext.core.all_ships;
-    const { passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, size, ignorePlayer, hideRarity, targetGroup } = props;
+    const { reward, passDirect, substitute_kwipment, partialItem, style, quantity, showMaxRarity, size, ignorePlayer, hideRarity, targetGroup } = props;
     const symbol = props.symbol || props.item?.symbol;
     let id = props.id || props.item?.id;
     const crewBackground = props.crewBackground ?? 'normal';
@@ -327,6 +330,9 @@ export const AvatarView = (props: AvatarViewProps) => {
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;
+            }
+            if (reward) {
+                (gen_item as any)['isReward'] = true;
             }
             if (!link && props.link === true && item) {
                 link = `/item_info/?symbol=${item.symbol}`;
