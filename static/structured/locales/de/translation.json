@@ -1824,7 +1824,7 @@
         "quipment_score": "Rüstzeug Werte",
         "rank": "Rang",
         "scores": {
-            "am_seating": "Antimaterie-Sitze",
+            "am_seating": "Antimaterie",
             "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
             "event": "{{obtained.short.Event}}",
