@@ -42,18 +42,20 @@ const SeasonalEventInfo = () => {
     const globalContext = React.useContext(GlobalContext);
     const { ephemeral } = globalContext.player;
 
-    const shop = ephemeral?.seasonalEventShop ?? globalContext.core.seasonal_shop;
+    const shop_items = ephemeral?.seasonalEventShop?.shop_items ?? globalContext.core?.seasonal_shop?.shop_items;
 
-    if (!shop) return (<></>);
+    if (!shop_items) return (<></>);
 
     return (<div>
         <ItemHoverStat targetGroup='seasonal_item' />
 
         <div style={{...OptionsPanelFlexRow, justifyContent: 'center', flexWrap: 'wrap', gap: '0.5em'}}>
-            {shop.shop_items.map((item) => {
+            {shop_items?.map((item) => {
 
                 return (
-                    <div style={{...OptionsPanelFlexColumn, width: '10em', height: '10em', textAlign: 'center', justifyContent: 'flex-start'}}>
+                    <div
+                        key={`shop_item_${item.symbol}`}
+                        style={{...OptionsPanelFlexColumn, width: '10em', height: '10em', textAlign: 'center', justifyContent: 'flex-start'}}>
                         <AvatarView
                             mode='item'
                             targetGroup='seasonal_item'
