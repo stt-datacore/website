@@ -203,10 +203,10 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			sec.loc = 0;
 			sec.children.forEach((tri) => {
 				let name = tri.name
-					.split('>')
-					.map((n) => n.trim())
-					.sort()
-					.join('/');
+					?.split('>')
+					?.map((n) => n.trim())
+					?.sort()
+					?.join('/') || '';
 				let existing = flat_skill_distribution.find((e) => e.name === name);
 				if (existing) {
 					existing.Count += tri.loc;
@@ -259,8 +259,8 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 			demands,
 			honordebt: { ownedStars, totalStars, craftCost },
 			skill_distribution: { name: 'Skills', children: skill_distribution, value: 0, valueGauntlet: 0, loc: 0 } as StatTreeNode,
-			r4_stars: r4owned.map((v, i) => ({ label: makeLabel(i, 4), id: makeLabel(i, 4), value: v })).filter((e) => e.value > 0),
-			r5_stars: r5owned.map((v, i) => ({ label: makeLabel(i, 5), id: makeLabel(i, 5), value: v })).filter((e) => e.value > 0),
+			r4_stars: r4owned?.map((v, i) => ({ label: makeLabel(i, 4), id: makeLabel(i, 4), value: v })).filter((e) => e.value > 0),
+			r5_stars: r5owned?.map((v, i) => ({ label: makeLabel(i, 5), id: makeLabel(i, 5), value: v })).filter((e) => e.value > 0),
 		});
 	}
 
@@ -301,9 +301,9 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let readableHonorDebt = '';
 
 		if (honordebt) {
-			totalHonorDebt = honordebt.totalStars
-				.map((val, idx) => (val - honordebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx])
-				.reduce((a, b) => a + b, 0);
+			totalHonorDebt = honordebt?.totalStars
+				?.map((val, idx) => (val - honordebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx])
+				.reduce((a, b) => a + b, 0) || 0;
 
 			let totalHonorDebtDays = totalHonorDebt / 2000;
 
@@ -317,7 +317,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		let totalChronCost = 0;
 		let factionRec = [] as DemandCounts[];
 		demands.forEach((entry) => {
-			let cost = entry.equipment?.item_sources.map((its: any) => its.avg_cost).filter((cost) => !!cost);
+			let cost = entry.equipment?.item_sources?.map((its: any) => its.avg_cost).filter((cost) => !!cost) ?? [];
 			if (cost && cost.length > 0) {
 				totalChronCost += Math.min(...cost) * entry.count;
 			} else {
@@ -404,7 +404,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 							</Table.Header>
 
 							<Table.Body>
-								{honordebt.totalStars.map((val, idx) => (
+								{honordebt.totalStars?.map((val, idx) => (
 									<Table.Row key={idx}>
 										<Table.Cell>
 											<Header as='h4'>{CONFIG.RARITIES[idx + 1].name}</Header>
@@ -462,7 +462,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 				<h4>Factions with most needed non-mission items</h4>
 				<ul>
-					{factionRec.map((e) => (
+					{factionRec?.map((e) => (
 						<li key={e.name}>
 							{e.name}: {e.count} items
 						</li>
@@ -476,7 +476,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 						checked={this.state.excludeFulfilled}
 					/>
 					<Grid columns={3} centered padded>
-						{demands.map((entry, idx) => (
+						{demands?.map((entry, idx) => (
 							entry?.equipment &&
 							<Grid.Column key={idx}>
 								{<Popup
