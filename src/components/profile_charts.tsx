@@ -72,7 +72,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 
 	componentDidMount() {
 		setTimeout(() => {
-			this.setState({ allcrew: this.props.allCrew, items: this.props.items as EquipmentItem[] }, () => {
+			this.setState({ allcrew: this.props.allCrew.filter(f => !f.preview), items: this.props.items as EquipmentItem[] }, () => {
 				this._calculateStats();
 			});
 		});
@@ -345,7 +345,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 		totalChronCost = Math.floor(totalChronCost);
 
 		return (
-			<ErrorBoundary>
+			// <ErrorBoundary>
 				<>
 				<h3>Owned vs. Not Owned crew per rarity</h3>
 				<div style={{ height: '320px' }}>
@@ -749,7 +749,7 @@ class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
 					</div>
 				</div>
 				</>
-			</ErrorBoundary>
+			// </ErrorBoundary>
 		);
 	}
 }
