@@ -25,9 +25,11 @@ export const TraitStatsTable = () => {
 
     const globalContext = React.useContext(GlobalContext);
     const { t, tfmt, TRAIT_NAMES, COLLECTIONS } = globalContext.localized;
+    const { playerData } = globalContext.player;
     const { crew, collections, keystones, items } = globalContext.core;
     const [stats, setStats] = React.useState<TraitStats[]>([]);
     const [excludeLaunch, setExcludeLaunch] = useStateWithStorage<boolean>('stat_trends/traits/exclude_launch', false, { rememberForever: true });
+    const [ownedStatus, setOwnedStatus] = useStateWithStorage<boolean>('stat_trends/traits/owned_status', false, { rememberForever: true });
     const [showHidden, setShowHidden] = useStateWithStorage<boolean>('stat_trends/traits/show_hidden', false, { rememberForever: true });
     const [showSeries, setShowSeries] = useStateWithStorage<boolean>('stat_trends/traits/show_series', false, { rememberForever: true });
     const [showVisible, setShowVisible] = useStateWithStorage<boolean>('stat_trends/traits/show_visible', true, { rememberForever: true });
@@ -35,7 +37,7 @@ export const TraitStatsTable = () => {
     const [hideOne, setHideOne] = useStateWithStorage<boolean>('stat_trends/traits/hide_one', false, { rememberForever: true });
     const [showVariantTraits, setShowVariantTraits] = useStateWithStorage<boolean>('stat_trends/traits/show_variant_traits', true, { rememberForever: true });
 
-    const [showDive, setShowDive] = useStateWithStorage<TraitStats | undefined>('stat_trends/traits/trait_dive', undefined)
+    const [showDive, setShowDive] = React.useState<TraitStats | undefined>(undefined);
 
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
@@ -107,6 +109,12 @@ export const TraitStatsTable = () => {
                 }
                 let dscrew = [...tcrew].sort((a, b) => b.ranks.scores.overall - a.ranks.scores.overall)[0];
                 let rcrew = tcrew.filter(c => c.date_added.getTime() < d.getTime() - (1000 * 24 * 60 * 60 * 10));
+                let owned_crew = 0;
+                let unowned_crew = 0;
+                if (playerData) {
+                    owned_crew = playerData.player.character.crew.filter(f => f.traits.includes(trait) || f.traits_hidden.includes(trait)).length;
+                    unowned_crew = tcrew.length - owned_crew;
+                }
                 const newtrait: TraitStats = {
                     trait: !hidden && TRAIT_NAMES[trait] || trait,
                     trait_raw: trait,
@@ -122,7 +130,9 @@ export const TraitStatsTable = () => {
                     retro: release ? 0 : rcrew.length,
                     icon: stoneicons[trait],
                     grade: potrec?.count,
-                    highest_datascore: dscrew
+                    highest_datascore: dscrew,
+                    owned_crew,
+                    unowned_crew
                 };
                 if (!hidden || HiddenTraitCols[trait]) {
                     if (HiddenTraitCols[trait]) {
@@ -175,86 +185,99 @@ export const TraitStatsTable = () => {
         setStats(outstats);
     }, [crew, showHidden, showVariantTraits, hideOne, showVisible, excludeLaunch, onlyPotential, showSeries]);
 
-    const potreckey = t('stat_trends.traits.potential_collection_score_n', { n: '' });
-    const tableConfig = [
-        { width: 1, column: 'trait', title: t('stat_trends.trait_columns.trait') },
-        {
-            width: 1,
-            column: 'hidden',
-            title: t('stat_trends.trait_columns.hidden'),
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                if (a.hidden == b.hidden) return a.trait.localeCompare(b.trait)
-                if (!a.hidden) return -1;
-                else if (!b.hidden) return 1;
-                return 0;
-            }
-        },
-        {
-            width: 1,
-            column: 'collection',
-            title: t('stat_trends.trait_columns.collection'),
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                let f1 = potential.find(f => f.trait === a.trait_raw)
-                let f2 = potential.find(f => f.trait === b.trait_raw)
-                if (f1 && f2) {
-                    return f1.count - f2.count
+    const tableConfig = React.useMemo(() => {
+        const tableConfig = [
+            { width: 1, column: 'trait', title: t('stat_trends.trait_columns.trait') },
+            {
+                width: 1,
+                column: 'hidden',
+                title: t('stat_trends.trait_columns.hidden'),
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    if (a.hidden == b.hidden) return a.trait.localeCompare(b.trait)
+                    if (!a.hidden) return -1;
+                    else if (!b.hidden) return 1;
+                    return 0;
                 }
-                else if (f1 && !b.collection) return 1;
-                else if (f1 && b.collection) return -1;
-                else if (f2 && !a.collection) return -1;
-                else if (f2 && a.collection) return 1;
-                return a.collection.localeCompare(b.collection);
-            }
-        },
-        {
-            width: 1,
-            column: 'first_appearance',
-            title: t('stat_trends.trait_columns.first_appearance'),
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                return a.first_appearance.getTime() - b.first_appearance.getTime();
-            }
-        },
-        {
-            width: 1,
-            column: 'first_crew',
-            title: t('stat_trends.trait_columns.first_crew'),
-            reverse: true,
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                return a.first_crew.date_added.getTime() - b.first_crew.date_added.getTime() || a.first_crew.name.localeCompare(b.first_crew.name)
-            }
-        },
-        {
-            width: 1,
-            column: 'launch_crew',
-            title: t('stat_trends.trait_columns.inaugural_crew'),
-            reverse: true,
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                if (a.launch_crew == b.launch_crew) return 0;
-                else if (!a.launch_crew) return 1;
-                else if (!b.launch_crew) return -1;
-                return a.launch_crew.date_added.getTime() - b.launch_crew.date_added.getTime() || a.launch_crew.name.localeCompare(b.launch_crew.name)
-            }
-        },
-        {
-            width: 1,
-            column: 'latest_crew',
-            title: t('stat_trends.trait_columns.latest_crew'),
-            reverse: true,
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                return a.latest_crew.date_added.getTime() - b.latest_crew.date_added.getTime() || a.latest_crew.name.localeCompare(b.latest_crew.name)
-            }
-        },
-        {
-            width: 1,
-            column: 'highest_datascore',
-            reverse: true,
-            title: t('stat_trends.trait_columns.highest_datascore'),
-            customCompare: (a: TraitStats, b: TraitStats) => {
-                return a.highest_datascore.ranks.scores.overall - b.highest_datascore.ranks.scores.overall
-            }
-        },
-        { width: 1, column: 'total_crew', title: t('stat_trends.trait_columns.total_crew'), reverse: true },
-    ] as ITableConfigRow[]
+            },
+            {
+                width: 1,
+                column: 'collection',
+                title: t('stat_trends.trait_columns.collection'),
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    let f1 = potential.find(f => f.trait === a.trait_raw)
+                    let f2 = potential.find(f => f.trait === b.trait_raw)
+                    if (f1 && f2) {
+                        return f1.count - f2.count
+                    }
+                    else if (f1 && !b.collection) return 1;
+                    else if (f1 && b.collection) return -1;
+                    else if (f2 && !a.collection) return -1;
+                    else if (f2 && a.collection) return 1;
+                    return a.collection.localeCompare(b.collection);
+                }
+            },
+            {
+                width: 1,
+                column: 'first_appearance',
+                title: t('stat_trends.trait_columns.first_appearance'),
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    return a.first_appearance.getTime() - b.first_appearance.getTime();
+                }
+            },
+            {
+                width: 1,
+                column: 'first_crew',
+                title: t('stat_trends.trait_columns.first_crew'),
+                reverse: true,
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    return a.first_crew.date_added.getTime() - b.first_crew.date_added.getTime() || a.first_crew.name.localeCompare(b.first_crew.name)
+                }
+            },
+            {
+                width: 1,
+                column: 'launch_crew',
+                title: t('stat_trends.trait_columns.inaugural_crew'),
+                reverse: true,
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    if (a.launch_crew == b.launch_crew) return 0;
+                    else if (!a.launch_crew) return 1;
+                    else if (!b.launch_crew) return -1;
+                    return a.launch_crew.date_added.getTime() - b.launch_crew.date_added.getTime() || a.launch_crew.name.localeCompare(b.launch_crew.name)
+                }
+            },
+            {
+                width: 1,
+                column: 'latest_crew',
+                title: t('stat_trends.trait_columns.latest_crew'),
+                reverse: true,
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    return a.latest_crew.date_added.getTime() - b.latest_crew.date_added.getTime() || a.latest_crew.name.localeCompare(b.latest_crew.name)
+                }
+            },
+            {
+                width: 1,
+                column: 'highest_datascore',
+                reverse: true,
+                title: t('stat_trends.trait_columns.highest_datascore'),
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    return a.highest_datascore.ranks.scores.overall - b.highest_datascore.ranks.scores.overall
+                }
+            },
+            { width: 1, column: 'total_crew', title: t('stat_trends.trait_columns.total_crew'), reverse: true },
+        ] as ITableConfigRow[]
+
+        if (!!playerData && ownedStatus) {
+            const unownedText = t('crew_state.unowned');
+            const ownedText = t('crew_state.owned');
+
+            tableConfig.push(
+                { width: 1, column: 'owned_crew', title: ownedText, reverse: true },
+                { width: 1, column: 'unowned_crew', title: unownedText, reverse: true },
+            )
+        }
+        return tableConfig;
+    }, [playerData, ownedStatus]);
+
 
     if (showDive) {
         return <TraitDive
@@ -298,6 +321,12 @@ export const TraitStatsTable = () => {
                         checked={showSeries}
                         onChange={(e, { checked }) => setShowSeries(!!checked) }
                     />
+                    {!!playerData && (
+                        <Checkbox label={t('gauntlet.owned_status_heading')}
+                            checked={ownedStatus}
+                            onChange={(e, { checked }) => setOwnedStatus(!!checked) }
+                        />
+                    )}
                 </div>
             </div>
             <SearchableTable
@@ -422,6 +451,14 @@ export const TraitStatsTable = () => {
                         <i>({t('stat_trends.traits.retroactively_added_to_n_crew', { n: item.retro.toLocaleString() })})</i>
                     </>}
                 </Table.Cell>
+                {!!playerData && ownedStatus && (<>
+                    <Table.Cell>
+                        {item.owned_crew?.toLocaleString() || ''}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {item.unowned_crew?.toLocaleString() || ''}
+                    </Table.Cell>
+                </>)}
         </Table.Row>
     }
 

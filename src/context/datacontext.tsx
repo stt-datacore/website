@@ -20,6 +20,7 @@ import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
+import { SeasonalShop } from '../model/offers';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -51,6 +52,7 @@ export type ValidDemands =
 	'objective_events' |
 	'portal_log' |
 	'quests' |
+	'seasonal_shop' |
 	'ship_schematics' |
 	'skill_bufs';
 
@@ -97,6 +99,7 @@ const defaultData = {
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	topQuipmentScores: [] as QuipmentScores[],
+	seasonal_shop: {} as SeasonalShop,
 	sync_time: new Date()
 } as ICoreData;
 
@@ -192,6 +195,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			'objective_events',
 			'portal_log',
 			'quests',
+			'seasonal_shop',
 			'ship_schematics',
 			'skill_bufs',
 		] as ValidDemands[];
@@ -208,7 +212,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			if (demand === 'skill_bufs') demand = 'all_buffs';
 			if (valid.includes(demand)) {
 				if (DC_DEBUGGING) console.log(demand);
-				if (data[demand].length === 0 || (['all_buffs', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
+				if (data[demand].length === 0 || (['all_buffs', 'seasonal_shop', 'current_weighting', 'event_scoring', 'maincast'].includes(demand) && !Object.keys(data[demand])?.length)) {
 					unsatisfied.push(demand);
 				}
 			}
@@ -255,6 +259,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 						break;
 					case 'all_ships':
 						newData.all_ships = processAllShips(result.json);
+						newData.ships = data.ships;
 						break;
 					case 'portal_log':
 						newData.portal_log = result.json;

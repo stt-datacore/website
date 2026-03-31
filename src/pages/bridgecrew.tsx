@@ -5,6 +5,7 @@ import * as marked from 'marked';
 
 import { CrewMember } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
+import { GlobalContext } from '../context/globalcontext';
 
 type BridgeCrewPageProps = {
 };
@@ -26,6 +27,9 @@ type BridgePeopleListItem = {
 }
 
 class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState> {
+	static contextType = GlobalContext;
+	declare context: React.ContextType<typeof GlobalContext>;
+
 	state = {
 		peopleList: [],
 		currentSelectedItems: [],
@@ -36,7 +40,15 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 	async componentDidMount() {
 		let response = await fetch('/structured/crew.json');
 		const allcrew = await response.json();
+		let entries = [] as { crew?: CrewMember }[];
 
+		if (this.context.player.playerData) {
+			let cmr = this.context.player.playerData.player.character.crew.filter(f => f.passive_status);
+			if (cmr) {
+				cmr.sort((a, b) => a.passive_index - b.passive_index);
+				entries = cmr.map(crew => ({ crew }));
+			}
+		}
 		let peopleList = [] as BridgePeopleListItem[];
 		allcrew.forEach(crew => {
 			peopleList.push({
@@ -50,7 +62,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 		});
 		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text)),
 
-		this.setState({ allcrew, peopleList }, () => {
+		this.setState({ entries, allcrew, peopleList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has('crew')) {
 				this._selectionChanged(urlParams.getAll('crew'));

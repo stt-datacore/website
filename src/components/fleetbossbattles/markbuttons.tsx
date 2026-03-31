@@ -1,15 +1,13 @@
 import React from 'react';
 import { Header, Icon, Button, Popup, Modal, Grid, Label, SemanticWIDTHS } from 'semantic-ui-react';
 
-import { ListedTraits } from './listedtraits';
-import { getStyleByRarity, suppressDuplicateTraits } from './fbbutils';
-
-import ItemDisplay from '../itemdisplay';
-
 import { BossCrew, NodeMatch, NodeRarity, Optimizer, PossibleCombo, RarityStyle, SolveStatus, Solver, SolverNode, SolverTrait, TraitRarities } from '../../model/boss';
 import { GlobalContext } from '../../context/globalcontext';
 import { TinyShipSkill } from '../item_presenters/shipskill';
 import { AvatarView } from '../item_presenters/avatarview';
+
+import { ListedTraits } from './listedtraits';
+import { getStyleByRarity, suppressDuplicateTraits } from './fbbutils';
 
 interface ISolveOption {
 	key: number;
@@ -166,44 +164,40 @@ export const MarkCrew = (props: MarkCrewProps) => {
 		<React.Fragment>
 			{trigger === 'card' && renderCard()}
 			{trigger === 'trial' && renderTrialButtons()}
-			{showPicker &&
+			{showPicker && (
 				<SolvePicker crew={crew} solver={props.solver} optimizer={props.optimizer}
 					solveNode={props.solveNode} markAsTried={props.markAsTried} setModalIsOpen={setShowPicker}
 				/>
-			}
+			)}
 		</React.Fragment>
 	);
 
 	function renderCard(): JSX.Element {
-		// const imageUrlPortrait: string = crew.imageUrlPortrait ?? `${crew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
-
 		return (
 			<Grid.Column key={crew.symbol} textAlign='center'>
-				<span
-					style={{ display: 'inline-block', cursor: 'pointer' }}
-					// onClick={() => trySolve(false)}
-					>
-					{/* <ItemDisplay
-						src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`}
-						size={60}
-						maxRarity={crew.max_rarity}
-						rarity={crew.highest_owned_rarity ?? 0}
-					/> */}
+				<span style={{ display: 'inline-block', cursor: 'pointer' }}>
 					<AvatarView
 						onClick={() => trySolve(false)}
 						mode='crew'
 						item={crew}
 						passDirect={true}
 						size={60}
-						/>
+					/>
 				</span>
 				<div>
 					<span style={{ cursor: 'pointer' }} onClick={() => trySolve(false)}>
 						{crew.only_frozen && <Icon name='snowflake' />}
 						{crew.only_expiring && <Icon name='warning sign' />}
-						<span style={{ fontStyle: crew.nodes_rarity > 1 ? 'italic' : 'normal' }}>
-							{crew.name}
-						</span>
+						{crew.name}
+						{crew.nodes_rarity > 1 && (
+							<Label	/* CREW might be the solution to N nodes */
+								circular
+								title={t('fbb.tips.coverage_hint', { crew: crew.name, n: crew.nodes_rarity })}
+								style={getStyleByRarity(6 - crew.nodes_rarity)}
+							>
+								{crew.nodes_rarity}
+							</Label>
+						)}
 						{props.optimizer.prefs.solo.shipAbility === 'show' && (
 							<React.Fragment>
 								<br /><TinyShipSkill crew={crew} />

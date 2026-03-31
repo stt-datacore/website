@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
+import { Button, Checkbox, Dropdown, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 
 import { EquipmentItem } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
@@ -11,6 +11,8 @@ import ItemDisplay from '../components/itemdisplay';
 import { mergeItems } from '../utils/itemutils';
 import CONFIG from './CONFIG';
 import { AvatarView } from './item_presenters/avatarview';
+import { useStateWithStorage } from '../utils/storage';
+import { OptionsPanelFlexRow } from './stats/utils';
 
 export const UnneededItems = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -63,6 +65,10 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, playerShips } = globalContext.player;
 
+	const dbid = playerData?.dbid;
+
+	const [sort, setSort] = useStateWithStorage<string>(`${dbid}/unneeded_ship/sort`, '', { rememberForever: true });
+
 	if (!playerData || !playerShips) return <></>;
 
 	const allPlayerShips: Ship[] = playerShips.slice();
@@ -82,18 +88,43 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 			}
 		})
 	).sort((a, b) => {
-		if (a.rarity === b.rarity)
-			return a.name.localeCompare(b.name);
-
-		return b.rarity - a.rarity;
+		let r = 0;
+		if (sort === 'name') {
+			r = a.name.localeCompare(b.name) || (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity;
+		}
+		else if (sort === 'quantity') {
+			r = b.rarity - a.rarity || (b.quantity ?? 0) - (a.quantity ?? 0) || a.name.localeCompare(b.name);
+		}
+		else {
+			r = b.rarity - a.rarity || a.name.localeCompare(b.name) || (a.quantity ?? 0) - (b.quantity ?? 0);
+		}
+		return r;
 	});
 
 	if (fuelList.length === 0) return <></>;
 
+	const sortOptions = [
+		{ key: 'default', value: '', text: t('items.columns.rarity') },
+		{ key: 'quantity', value: 'quantity', text: t('items.columns.quantity') },
+		{ key: 'name', value: 'name', text: t('global.name') },
+	]
+
 	return (
 		<React.Fragment>
 			<Header as='h3'>{CONFIG.REWARDS_ITEM_TYPE[8]} ({fuelList.length})</Header>
-			<p>{tfmt('items_unneeded.ships_maxed_info', { max_text: <b>{t('items_unneeded.ships_maxed')}</b>})}</p>
+			<div style={{...OptionsPanelFlexRow, justifyContent: 'space-between'}}>
+				<p>{tfmt('items_unneeded.ships_maxed_info', { max_text: <b>{t('items_unneeded.ships_maxed')}</b>})}</p>
+				<div style={{...OptionsPanelFlexRow, flexGrow: 1, justifyContent: 'flex-end', gap: '1em', justifySelf: 'flex-end', textAlign: 'right'}}>
+					{t('global.sort_by{{:}}')}&nbsp;
+					<Dropdown
+						clearable
+						placeholder={t('items.columns.rarity')}
+						options={sortOptions}
+						value={sort}
+						onChange={(e, { value }) => setSort(value as any)}
+						/>
+				</div>
+			</div>
 			<FuelGrid fuelList={fuelList} items={props.playerSchematics} />
 		</React.Fragment>
 	);

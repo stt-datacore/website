@@ -33,6 +33,7 @@ export interface IEventData {
 	featured_ships: string[];	/* ONLY featured ships by symbol */
 	featured: string[];	/* ONLY featured crew by symbol */
 	bonusGuessed?: boolean;
+  factions?: number[]
 };
 
 export interface EventInstance {

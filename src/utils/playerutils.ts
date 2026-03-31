@@ -37,6 +37,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
 	delete p.objective_event_root;
     delete p.archetype_cache;
     delete p.item_archetype_cache;
+    delete p.seasonal_event_shop_root;
 
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
@@ -215,10 +216,14 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             favorite: crew.favorite,
             expires_in: crew.expires_in,
             cap_achiever: crew.cap_achiever,
+            passive_index: crew.passive_index,
+            passive_status: crew.passive_status,
+            passive_id: crew.passive_id,
             action: {
                 bonus_amount: crew.action?.bonus_amount,
             },
-            ship_battle: crew.ship_battle
+            ship_battle: crew.ship_battle,
+            antimatter_bonus: crew.antimatter_bonus
         } as PlayerCrew));
 
     let c_stored_immortals = p.player.character.stored_immortals

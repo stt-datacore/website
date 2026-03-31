@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "semantic-ui-react"
+import { Accordion, Button, Checkbox, Grid, Icon, SemanticICONS } from "semantic-ui-react"
 import CrewPicker from "../crewpicker"
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat"
 import { ShipPresenter } from "../item_presenters/ship_presenter"
@@ -9,7 +9,7 @@ import { PlayerCrew } from "../../model/player"
 import { BattleStation, Ship } from "../../model/ship"
 import { findPotentialCrew, getShipDivision, mergeRefShips, setupShip } from "../../utils/shiputils"
 import { useStateWithStorage } from "../../utils/storage"
-import { OptionsPanelFlexColumn } from "../stats/utils"
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils"
 import { getShipBonus, getSkills } from "../../utils/crewutils"
 import CONFIG from "../CONFIG"
 import { getActionColor, getShipBonusIcon } from "../item_presenters/shipskill"
@@ -20,6 +20,7 @@ import { CrewPreparer } from "../item_presenters/crew_preparer"
 import { OpponentImportComponent } from "./opponent_importer"
 import { PvpOpponent, PvpRoot } from "../../model/pvp"
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat"
+import { ShipStationProspects } from "./staffingprospects"
 
 export interface ShipStaffingProps {
     ship?: Ship;
@@ -35,6 +36,8 @@ export interface ShipStaffingProps {
     setCrewStations: (value: (PlayerCrew | CrewMember | undefined)[]) => void;
     pageId?: string;
     boss?: Ship;
+	appliedProspects: PlayerCrew[];
+	setAppliedProspects: (value: PlayerCrew[]) => void;
 }
 
 export const ShipStaffingView = (props: ShipStaffingProps) => {
@@ -53,7 +56,9 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
         ignoreSkills,
         crewStations,
         setCrewStations,
-		division
+		division,
+		appliedProspects,
+		setAppliedProspects,
     } = props;
 	const [pvpData, setPvpData] = useStateWithStorage(`ship_info/opponents/pvp_${division}`, undefined as PvpRoot | undefined);
 
@@ -66,6 +71,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	const [currentStation, setCurrentStation] = React.useState<number | undefined>(undefined);
 	const [currentStationCrew, setCurrentStationCrew] = React.useState<(PlayerCrew | CrewMember)[]>([]);
 	const [modalOptions, setModalOptions] = useStateWithStorage('ship_info/modalOptions', DEFAULT_SHIP_OPTIONS);
+	const [showProspects, setShowProspects] = useStateWithStorage('ship_info/show_prospects', false);
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
 	React.useEffect(() => {
@@ -74,7 +80,23 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	React.useEffect(() => {
 		setCrew(getCrew());
-	}, [playerData, coreCrew, considerFrozen, considerUnowned, isOpponent])
+	}, [playerData, coreCrew, considerFrozen, considerUnowned, isOpponent, appliedProspects])
+
+	React.useEffect(() => {
+		if (crewStations?.length) {
+			let ch = false;
+			let c = crewStations.length;
+			for (let i = 0; i < c; i++) {
+				if (crewStations[i] && !crew?.some(c => c.id === crewStations[i]?.id)) {
+					crewStations[i] = undefined;
+					ch = true;
+				}
+			}
+			if (ch) {
+				setCrewStations(crewStations.slice());
+			}
+		}
+	}, [crew]);
 
 	React.useEffect(() => {
 		if (ship?.battle_stations) {
@@ -92,6 +114,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	}, [ship]);
 
 	const flexCol = OptionsPanelFlexColumn;
+	const flexRow = OptionsPanelFlexRow;
 
     if ((!ship && !isOpponent) || !crew) return context.core.spin(t('spinners.default'));
 
@@ -122,6 +145,26 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
             </div>
 			<h3>{t('ship.battle_stations')}</h3>
 
+			{!!playerData && <div style={{...flexCol, width: isMobile ? '100%' : '70%', alignItems: 'flex-start', margin: '1rem 0'}}>
+
+				<Checkbox
+					label={t('ship.lineup.prospect_title')}
+					checked={showProspects}
+					onChange={(e, { checked }) => setShowProspects(!!checked)}
+					/>
+				{!!showProspects && (
+					<div style={{width: '100%', flexGrow: 1, margin: '1rem 0'}}>
+						<ShipStationProspects
+							pageId='ship_staffer'
+							setAppliedProspects={setAppliedProspects}
+							rarities={modalOptions.rarities}
+							targetGroup={`${targetGroup || 'ship_profile'}`}
+							/>
+					</div>
+				)}
+			</div>}
+
+
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
@@ -134,7 +177,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 					<div key={`${isOpponent ? 'opponent_' : ''}ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
 						<CrewPicker
 							locked={!!pvpData}
-							renderCrewCaption={renderCrewCaption}
+							renderCrewCaption={(crew) => renderCrewCaption(crew, bs)}
 							// isOpen={modalOpen}
 							// setIsOpen={setModalOpen}
 							filterCrew={filterCrew}
@@ -202,8 +245,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	}
 
-
-	function renderCrewCaption(crew: PlayerCrew | CrewMember) {
+	function renderCrewCaption(crew: PlayerCrew | CrewMember, bs: BattleStation) {
+		let dskill = !!crew.skill_order.includes(bs.skill);
 		return (
 			<div style={{
 				display: "flex",
@@ -211,7 +254,10 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				flexDirection: "column",
 				alignItems: "center"
 			}}>
-				<div>{crew.name}</div>
+				<div style={{...flexRow, alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
+					{dskill && <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "16px" }} />}
+					{crew.name}
+				</div>
 				<div style={{
 					color: getActionColor(crew.action.bonus_type)
 				}}>
@@ -263,29 +309,18 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				&& (!modalOptions?.abilities?.length || modalOptions?.abilities?.some((a) => crew.action.ability?.type.toString() === a));
 		});
 
-		// filteredcrew.sort((a, b) => {
-		// 	let r = b.action.bonus_amount - a.action.bonus_amount;
-
-		// 	if (!r) {
-		// 		if (b.action.ability !== undefined && a.action.ability === undefined) return 1;
-		// 		else if (a.action.ability !== undefined && b.action.ability === undefined) return -1;
-
-		// 		if (a.action.ability?.amount && b.action.ability?.amount) {
-		// 			r = b.action.ability.amount - a.action.ability.amount;
-		// 		}
-		// 		if (r) return r;
-
-		// 		r = b.action.initial_cooldown - a.action.initial_cooldown;
-		// 		if (r) return r;
-
-		// 		if (!a.action.limit && b.action.limit) return -1;
-		// 		else if (!b.action.limit && a.action.limit) return 1;
-		// 	}
-
-		// 	return r;
-		// })
 		return filteredcrew.sort((a, b) => {
-			return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
+			let ask = a.skill_order.some(skill => ship?.battle_stations?.some(bs => bs.skill === skill));
+			let bsk = a.skill_order.some(skill => ship?.battle_stations?.some(bs => bs.skill === skill));
+			if ((ask && bsk) || (!ask && !bsk)) {
+				if (a.ranks.scores.ship.arena_rank <= 100 && b.ranks.scores.ship.arena_rank <= 100) {
+					return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
+				}
+				else if (a.ranks.scores.ship.arena_rank <= 100) return -1;
+				else return 1;
+			}
+			else if (ask) return -1;
+			else return 1;
 		});
 	}
 
@@ -313,6 +348,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				results = results.filter(f => !("immortal" in f) || !!f.immortal);
 			}
 		}
+		results = appliedProspects.concat(results as PlayerCrew[]);
 		return results.sort((a, b) => {
 			return b.ranks.scores.ship.arena - a.ranks.scores.ship.arena;
 		});

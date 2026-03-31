@@ -73,6 +73,7 @@ const ShipViewer = (props: ShipViewerProps) => {
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
     const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
 	const [asMaxed, setAsMaxed] = useStateWithStorage<boolean>(`ship_info/asMaxed`, false, { rememberForever: true });
+	const [appliedProspects, setAppliedProspects] = useStateWithStorage(`ship_info/applied_prospects`, [] as PlayerCrew[]);
 
 	const [useOpponents, setUseOpponents] = React.useState<BattleMode | false>(false);
 
@@ -164,6 +165,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 			{!!inputShip && !!crew && <WorkerProvider>
 				<ShipMultiWorker>
 					<ShipRosterCalc
+						appliedProspects={appliedProspects}
 						asMaxed={asMaxed}
 						opponentShip={opponentShip}
 						opponentStations={opponentStations}
@@ -206,6 +208,8 @@ const ShipViewer = (props: ShipViewerProps) => {
 			</>}
 			{activeTabIndex === 0 &&
 			<ShipStaffingView
+				appliedProspects={appliedProspects}
+				setAppliedProspects={setAppliedProspects}
 				asMaxed={asMaxed}
 				considerFrozen={considerFrozen}
 				considerUnowned={considerUnowned}
@@ -222,6 +226,8 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 			{activeTabIndex === 1 &&
 			<ShipStaffingView
+				appliedProspects={appliedProspects}
+				setAppliedProspects={setAppliedProspects}
 				asMaxed={false}
 				considerFrozen={considerFrozen}
 				considerUnowned={considerUnowned}

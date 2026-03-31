@@ -21,6 +21,8 @@ export interface TraitStats {
     retro?: number,
     grade?: number,
     highest_datascore: CrewMember
+    owned_crew?: number;
+    unowned_crew?: number;
 }
 
 
@@ -48,7 +50,8 @@ export interface EpochDiff {
     symbols: string[],
     velocity: number,
     rarity: number,
-    crew: CrewMember[]
+    crew: CrewMember[],
+    unique?: boolean
 };
 
 export interface StatsDataSets {

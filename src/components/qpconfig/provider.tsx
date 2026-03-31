@@ -139,6 +139,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 		}
 
 		if (!useQuipment) return c;
+		newcopy.skills ??= {};
 
 		if (qpConfig.mode === 'best') {
 			newcopy.kwipment = Object.values(useQuipment.skill_quipment[order[0]]).map(q => Number(q.kwipment_id));
@@ -148,7 +149,7 @@ export function applyQuipmentProspect(c: PlayerCrew, quipment: ItemWithBonus[], 
 				min: skill.range_min,
 				max: skill.range_max
 			}
-			newcopy.skills ??= {};
+
 			newcopy.skills[skill.skill] = {
 				...skill
 			}

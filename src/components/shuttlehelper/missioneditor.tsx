@@ -5,6 +5,7 @@ import allFactions from '../../../static/structured/factions.json';
 
 import { Shuttle, ShuttleSeat, IDropdownOption } from './model';
 import CONFIG from '../CONFIG';
+import { ShuttlersContext } from './context';
 
 type MissionEditorProps = {
 	shuttle: Shuttle;
@@ -13,11 +14,13 @@ type MissionEditorProps = {
 };
 
 export const MissionEditor = (props: MissionEditorProps) => {
+	const shuttlersContext = React.useContext(ShuttlersContext);
+	const { eventFactions } = shuttlersContext;
 	const [shuttle, setShuttle] = React.useState<Shuttle>(structuredClone(props.shuttle));
 
 	const isNewMission: boolean = props.shuttle.seats[0].skillA === '';
 
-	const factionOptions: IDropdownOption[] = allFactions.sort((a, b) => a.name.localeCompare(b.name)).map(faction => {
+	const factionOptions: IDropdownOption[] = allFactions.filter(f => !eventFactions || eventFactions.includes(f.shuttle_token_id)).sort((a, b) => a.name.localeCompare(b.name)).map(faction => {
 		return {
 			key: faction.id,
 			value: faction.id,
