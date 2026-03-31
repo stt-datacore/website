@@ -60,10 +60,26 @@ const SeasonalEventInfo = () => {
         let mremain = edate.getTime() - ndate.getTime();
         return formatTime(mremain, t);
     }, [seasonal_shop]);
+
+    const { shop_tokens, shop_title } = React.useMemo(() => {
+        if (ephemeral?.seasonalEventShop) {
+            return { shop_tokens: ephemeral.seasonalEventShop.conquest_tokens_balance, shop_title: `${ephemeral.seasonalEventShop.title} - ${ephemeral.seasonalEventShop.season_title}` };
+        }
+        else {
+            return { shop_tokens: 0, shop_title: `${seasonal_shop.title} - ${seasonal_shop.season_title}` };
+        }
+    }, [ephemeral, seasonal_shop]);
+
     return (<div>
         <ItemHoverStat targetGroup='seasonal_item' />
         <CrewHoverStat targetGroup='seasonal_crew' />
-        <h3>{shop_time}</h3>
+
+        <h3>{shop_title}</h3>
+
+        <div style={{display:'flex', justifyContent:'space-between', alignItems: 'flex-start', fontSize: '1.25rem', marginBottom: '1em'}}>
+            <div>{shop_time}</div>
+            <div>{!!shop_tokens && printConquest(shop_tokens)}</div>
+        </div>
 
         <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1.5em', alignItems: 'flex-start'}}>
             {shop_items?.map((item) => {
