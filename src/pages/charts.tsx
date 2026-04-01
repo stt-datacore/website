@@ -4,9 +4,14 @@ import ProfileCharts from '../components/profile_charts';
 import { GlobalContext } from '../context/globalcontext';
 
 const ChartsPage = () => {
-    return <DataPageLayout pageTitle='My Charts & Stats' demands={['episodes']}>
-        <ChartsContainer />
-    </DataPageLayout>
+    return (
+        <DataPageLayout
+            pageTitle='My Charts & Stats'
+            playerPromptType='require'
+            demands={['episodes', 'items', 'cadet', 'all_buffs', 'all_ships', 'cadet', 'collections']}>
+            <ChartsContainer />
+        </DataPageLayout>
+    )
 }
 
 const ChartsContainer = () => {
