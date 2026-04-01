@@ -31,7 +31,7 @@ export interface CalculatorHelper {
 export const CALCULATORS = {
 	helpers: [
 		{ id: 'ussjohnjay-mvam', name: 'Multi-vector Assault', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'mvam') },
-		{ id: 'voypadd', name: 'PADD', helper: (props: HelperProps) => new PADDHelper(props) },
+		//{ id: 'voypadd', name: 'PADD', helper: (props: HelperProps) => new PADDHelper(props) },
 		{ id: 'iampicard', name: 'Original', helper: (props: HelperProps) => new IAmPicardHelper(props) },
 		// { id: 'ussjohnjay-idic', name: 'Infinite Diversity', helper: (props: HelperProps) => new USSJohnJayHelper(props, 'idic') }
 	] as CalculatorHelper[],
