@@ -9,17 +9,11 @@ const ChartsPage = () => {
             pageTitle='My Charts & Stats'
             playerPromptType='require'
             demands={['episodes', 'items', 'cadet', 'all_buffs', 'all_ships', 'cadet', 'collections']}>
-            <ChartsContainer />
+            <ProfileCharts />
         </DataPageLayout>
     )
 }
 
-const ChartsContainer = () => {
-    const globalContext = React.useContext(GlobalContext);
-    const { items, crew: allCrew } = globalContext.core;
-
-    return <ProfileCharts items={items} allCrew={allCrew} />
-}
 
 export default ChartsPage;
 
