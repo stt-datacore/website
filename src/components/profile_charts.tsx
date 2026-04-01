@@ -1,77 +1,73 @@
-import React, { Component } from 'react';
-import { Checkbox, Popup, Grid, Header, Table, Message } from 'semantic-ui-react';
 import { ResponsiveBar } from '@nivo/bar';
-import { ResponsiveSunburst } from '@nivo/sunburst';
-import { ResponsiveRadar } from '@nivo/radar';
 import { ResponsivePie } from '@nivo/pie';
+import { ResponsiveRadar } from '@nivo/radar';
+import { ResponsiveSunburst } from '@nivo/sunburst';
+import React from 'react';
+import { Checkbox, Grid, Header, Message, Popup, Table } from 'semantic-ui-react';
 
 import ItemSources from '../components/itemsources';
 
 import CONFIG from '../components/CONFIG';
 
-import ErrorBoundary from './errorboundary';
-import themes from './nivo_themes';
-import { sortedStats, insertInStatTree, StatTreeNode } from '../utils/statutils';
-import { demandsPerSlot } from '../utils/equipment';
+import { GlobalContext } from '../context/globalcontext';
+import { CrewMember } from '../model/crew';
 import { DemandCounts, EquipmentItem, IDemand } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
-import { GlobalContext } from '../context/globalcontext';
+import { demandsPerSlot } from '../utils/equipment';
+import { insertInStatTree, sortedStats, StatTreeNode } from '../utils/statutils';
 import { AvatarView } from './item_presenters/avatarview';
-import { CrewMember } from '../model/crew';
+import themes from './nivo_themes';
 
 type ProfileChartsProps = {
 	items: (EquipmentItem | EquipmentItem)[];
 	allCrew: CrewMember[];
 };
-
-type ProfileChartsState = {
-	allcrew?: CrewMember[];
-	items?: EquipmentItem[];
+type HonorDebt = {
+	ownedStars: number[];
+	totalStars: number[];
+	craftCost: number;
+};
+type ProfileChartsConfig = {
 	data_ownership: any[];
 	skill_distribution: StatTreeNode;
 	flat_skill_distribution: StatTreeNode[];
-	includeTertiary: boolean;
-	includeAllCrew: boolean;
 	r4_stars: any[];
 	r5_stars: any[];
 	radar_skill_rarity: any[];
 	radar_skill_rarity_owned: any[];
 	demands: IDemand[];
-	excludeFulfilled: boolean;
-	honordebt?: {
-		ownedStars: number[];
-		totalStars: number[];
-		craftCost: number;
-	};
+	honorDebt?: HonorDebt;
 };
 
 const ProfileCharts = (props: ProfileChartsProps) => {
 
-	const context = React.useContext(GlobalContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { playerData } = globalContext.player;
+	const { items } = props;
+	const allCrew = props.allCrew.filter(f => !f.preview);
 
-	const [state, setState] = React.useState<ProfileChartsState>(
+	const [config, setConfig] = React.useState<ProfileChartsConfig>(
 		{
-			allcrew: props.allCrew,
-			items: props.items,
 			demands: [],
 			data_ownership: [],
 			flat_skill_distribution: [],
 			skill_distribution: {} as StatTreeNode,
-			includeTertiary: false,
 			r4_stars: [],
 			r5_stars: [],
 			radar_skill_rarity: [],
-			radar_skill_rarity_owned: [],
-			honordebt: undefined,
-			excludeFulfilled: false,
-			includeAllCrew: false
+			radar_skill_rarity_owned: []
 		}
 	);
 
+	const [excludeFulfilled, setExcludeFulfilled] = React.useState(false);
+	const [includeAllCrew, setIncludeAllCrew] = React.useState(false);
+	const [includeTertiary, setIncludeTertiary] = React.useState(false);
 
 	React.useEffect(() => {
-		_calculateStats();
-	}, [context.player.playerData, state.excludeFulfilled, state.includeAllCrew, state.includeTertiary]);
+		if (playerData) {
+			_calculateStats();
+		}
+	}, [playerData, excludeFulfilled, includeAllCrew, includeTertiary]);
 
 	const {
 		data_ownership,
@@ -81,59 +77,65 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 		r5_stars,
 		radar_skill_rarity,
 		radar_skill_rarity_owned,
-		honordebt,
-		excludeFulfilled,
-	} = state;
+		demands: inputDemands,
+		honorDebt
+	} = config;
 
-	let { demands } = state;
+	const { totalHonorDebt, readableHonorDebt } = React.useMemo(() => {
+		let totalHonorDebt = 0;
+		let readableHonorDebt = '';
 
-	let totalHonorDebt = 0;
-	let readableHonorDebt = '';
+		if (honorDebt) {
+			totalHonorDebt = honorDebt?.totalStars
+				?.map((val, idx) => (val - honorDebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx])
+				.reduce((a, b) => a + b, 0) || 0;
 
-	if (honordebt) {
-		totalHonorDebt = honordebt?.totalStars
-			?.map((val, idx) => (val - honordebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx])
-			.reduce((a, b) => a + b, 0) || 0;
+			let totalHonorDebtDays = totalHonorDebt / 2000;
 
-		let totalHonorDebtDays = totalHonorDebt / 2000;
+			let years = Math.floor(totalHonorDebtDays / 365);
+			let months = Math.floor((totalHonorDebtDays - years * 365) / 30);
+			let days = totalHonorDebtDays - years * 365 - months * 30;
 
-		let years = Math.floor(totalHonorDebtDays / 365);
-		let months = Math.floor((totalHonorDebtDays - years * 365) / 30);
-		let days = totalHonorDebtDays - years * 365 - months * 30;
+			readableHonorDebt = `${years} years ${months} months ${Math.floor(days)} days`;
+		}
 
-		readableHonorDebt = `${years} years ${months} months ${Math.floor(days)} days`;
-	}
+		return { totalHonorDebt, readableHonorDebt };
+	}, [config]);
 
-	let totalChronCost = 0;
-	let factionRec = [] as DemandCounts[];
+	const { demands, factionRec, totalChronCost } = React.useMemo(() => {
+		let demands = inputDemands;
+		if (!demands) return { demands: null, factionRec: null, totalChronCost: null };
 
-	demands.forEach((entry) => {
-		let cost = entry.equipment?.item_sources?.map((its: any) => its.avg_cost).filter((cost) => !!cost) ?? [];
-		if (cost && cost.length > 0) {
-			totalChronCost += Math.min(...cost) * entry.count;
-		} else {
-			const factions = entry.equipment?.item_sources.filter((e) => e.type === 1);
-			if (factions && factions.length > 0) {
-				let fe = factionRec.find((e: any) => e.name === factions[0].name);
-				if (fe) {
-					fe.count += entry.count;
-				} else {
-					factionRec.push({
-						name: factions[0].name,
-						count: entry.count,
-					});
+		let totalChronCost = 0;
+		let factionRec = [] as DemandCounts[];
+
+		demands.forEach((entry) => {
+			let cost = entry.equipment?.item_sources?.map((its: any) => its.avg_cost).filter((cost) => !!cost) ?? [];
+			if (cost && cost.length > 0) {
+				totalChronCost += Math.min(...cost) * entry.count;
+			} else {
+				const factions = entry.equipment?.item_sources.filter((e) => e.type === 1);
+				if (factions && factions.length > 0) {
+					let fe = factionRec.find((e: any) => e.name === factions[0].name);
+					if (fe) {
+						fe.count += entry.count;
+					} else {
+						factionRec.push({
+							name: factions[0].name,
+							count: entry.count,
+						});
+					}
 				}
 			}
+		});
+
+		if (excludeFulfilled) {
+			demands = demands.filter((d) => d.count > d.have);
 		}
-	});
-
-	if (excludeFulfilled) {
-		demands = demands.filter((d) => d.count > d.have);
-	}
-
-	factionRec = factionRec.sort((a, b) => b.count - a.count).filter((e) => e.count > 0);
-
-	totalChronCost = Math.floor(totalChronCost);
+		factionRec = factionRec.sort((a, b) => b.count - a.count).filter((e) => e.count > 0);
+		totalChronCost = Math.floor(totalChronCost);
+		return { demands, factionRec, totalChronCost };
+	}, [config, excludeFulfilled]);
 
 	return (
 		// <ErrorBoundary>
@@ -183,7 +185,7 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 			</div>
 
 			<h3>Honor debt</h3>
-			{honordebt && (
+			{honorDebt && (
 				<div>
 					<Table basic='very' striped>
 						<Table.Header>
@@ -195,20 +197,20 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 						</Table.Header>
 
 						<Table.Body>
-							{honordebt.totalStars?.map((val, idx) => (
+							{honorDebt.totalStars?.map((val, idx) => (
 								<Table.Row key={idx}>
 									<Table.Cell>
 										<Header as='h4'>{CONFIG.RARITIES[idx + 1].name}</Header>
 									</Table.Cell>
 									<Table.Cell>
-										{val - honordebt.ownedStars[idx]}{' '}
+										{val - honorDebt.ownedStars[idx]}{' '}
 										<span>
 											<i>
-												({honordebt.ownedStars[idx]} / {val})
+												({honorDebt.ownedStars[idx]} / {val})
 											</i>
 										</span>
 									</Table.Cell>
-									<Table.Cell>{(val - honordebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx]}</Table.Cell>
+									<Table.Cell>{(val - honorDebt.ownedStars[idx]) * CONFIG.CITATION_COST[idx]}</Table.Cell>
 								</Table.Row>
 							))}
 						</Table.Body>
@@ -217,7 +219,7 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 							<Table.Row>
 								<Table.HeaderCell />
 								<Table.HeaderCell>
-									Owned {honordebt.ownedStars.reduce((a, b) => a + b, 0)} out of {honordebt.totalStars.reduce((a, b) => a + b, 0)}
+									Owned {honorDebt.ownedStars.reduce((a, b) => a + b, 0)} out of {honorDebt.totalStars.reduce((a, b) => a + b, 0)}
 								</Table.HeaderCell>
 								<Table.HeaderCell>{totalHonorDebt}</Table.HeaderCell>
 							</Table.Row>
@@ -241,9 +243,9 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 					</span>
 				</p>
-				{honordebt && (
+				{honorDebt && (
 					<p>
-						Total number of credits required to craft all the recipes: {honordebt.craftCost}{' '}
+						Total number of credits required to craft all the recipes: {honorDebt.craftCost}{' '}
 						<span style={{ display: 'inline-block' }}>
 							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`} height={14} />
 						</span>
@@ -263,8 +265,8 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 			<div>
 				<Checkbox
 					label='Exclude already fulfilled'
-					onChange={() => setState({ ...state, excludeFulfilled: !excludeFulfilled })}
-					checked={state.excludeFulfilled}
+					onChange={(e, { checked }) => setExcludeFulfilled(!!checked)}
+					checked={excludeFulfilled}
 				/>
 				<Grid columns={3} centered padded>
 					{demands?.map((entry, idx) => (
@@ -405,7 +407,11 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 			</div>
 
 			<h3>Number of stars (fused rarity) for your Super Rare and Legendary crew</h3>
-			<Checkbox label='Include unowned crew' onChange={() => _onIncludeAllCrew()} checked={state.includeAllCrew} />
+			<Checkbox
+				label='Include unowned crew'
+				onChange={(e, { checked }) => setIncludeAllCrew(!!checked)}
+				checked={includeAllCrew}
+			/>
 			<div>
 				<div style={{ height: '320px', width: '50%', display: 'inline-block' }}>
 					<ResponsivePie
@@ -476,7 +482,11 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 			</div>
 
 			<h3>Skill distribution for owned crew (number of characters per skill combos Primary &gt; Secondary)</h3>
-			<Checkbox label='Include tertiary skill' onChange={() => _onIncludeTertiary()} checked={state.includeTertiary} />
+			<Checkbox
+				label='Include tertiary skill'
+				onChange={(e, { checked }) => setIncludeTertiary(!!checked)}
+				checked={includeTertiary}
+			/>
 			<div>
 				<div style={{ height: '420px', width: '50%', display: 'inline-block' }}>
 					<ResponsiveSunburst
@@ -550,8 +560,7 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 		let total = [0, 0, 0, 0, 0];
 		let unowned_portal = [0,0,0,0,0];
 
-		const { playerData } = context.player;
-		const { allcrew, includeTertiary, items, includeAllCrew } = state;
+		const { playerData } = globalContext.player;
 
 		let r4owned = [0, 0, 0, 0];
 		let r5owned = [0, 0, 0, 0, 0];
@@ -586,7 +595,7 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 		let dupeChecker = new Set<string>();
 
 		let skill_distribution = [] as StatTreeNode[];
-		for (let crew of allcrew ?? []) {
+		for (let crew of allCrew ?? []) {
 			let pcrew: PlayerCrew | undefined = undefined;
 
 			// If multiple copies, find the "best one"
@@ -718,28 +727,18 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 			}
 		}
 
-		setState({
-			...state,
+		setConfig({
 			data_ownership,
 			flat_skill_distribution,
 			radar_skill_rarity,
 			radar_skill_rarity_owned,
 			demands,
-			honordebt: { ownedStars, totalStars, craftCost },
+			honorDebt: { ownedStars, totalStars, craftCost },
 			skill_distribution: { name: 'Skills', children: skill_distribution, value: 0, valueGauntlet: 0, loc: 0 } as StatTreeNode,
 			r4_stars: r4owned.map((v, i) => ({ label: makeLabel(i, 4), id: makeLabel(i, 4), value: v })).filter((e) => e.value > 0),
 			r5_stars: r5owned.map((v, i) => ({ label: makeLabel(i, 5), id: makeLabel(i, 5), value: v })).filter((e) => e.value > 0),
 		});
 	}
-
-	function _onIncludeTertiary() {
-		setState({ ...state, includeTertiary: !state.includeTertiary });
-	}
-
-	function _onIncludeAllCrew() {
-		setState({ ...state, includeAllCrew: !state.includeAllCrew });
-    }
-
 }
 
 // class ProfileCharts extends Component<ProfileChartsProps, ProfileChartsState> {
