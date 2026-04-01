@@ -19,8 +19,6 @@ import { AvatarView } from './item_presenters/avatarview';
 import themes from './nivo_themes';
 
 type ProfileChartsProps = {
-	items: (EquipmentItem | EquipmentItem)[];
-	allCrew: CrewMember[];
 };
 type HonorDebt = {
 	ownedStars: number[];
@@ -43,9 +41,6 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 
 	const globalContext = React.useContext(GlobalContext);
 	const { playerData } = globalContext.player;
-	const { items } = props;
-	const allCrew = props.allCrew.filter(f => !f.preview);
-
 	const [config, setConfig] = React.useState<ProfileChartsConfig>(
 		{
 			demands: [],
@@ -68,6 +63,12 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 			_calculateStats();
 		}
 	}, [playerData, excludeFulfilled, includeAllCrew, includeTertiary]);
+
+	const { items, allCrew } = React.useMemo(() => {
+		const items = globalContext.core.items;
+		const allCrew = globalContext.core.crew.filter(f => !f.preview);
+		return { items, allCrew };
+	}, [globalContext.core]);
 
 	const {
 		data_ownership,
@@ -553,14 +554,10 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 		// </ErrorBoundary>
 	);
 
-
-
 	function _calculateStats() {
 		let owned = [0, 0, 0, 0, 0];
 		let total = [0, 0, 0, 0, 0];
 		let unowned_portal = [0,0,0,0,0];
-
-		const { playerData } = globalContext.player;
 
 		let r4owned = [0, 0, 0, 0];
 		let r5owned = [0, 0, 0, 0, 0];
