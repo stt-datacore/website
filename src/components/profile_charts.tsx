@@ -10,8 +10,7 @@ import ItemSources from '../components/itemsources';
 import CONFIG from '../components/CONFIG';
 
 import { GlobalContext } from '../context/globalcontext';
-import { CrewMember } from '../model/crew';
-import { DemandCounts, EquipmentItem, IDemand } from '../model/equipment';
+import { DemandCounts, IDemand } from '../model/equipment';
 import { PlayerCrew } from '../model/player';
 import { demandsPerSlot } from '../utils/equipment';
 import { insertInStatTree, sortedStats, StatTreeNode } from '../utils/statutils';
