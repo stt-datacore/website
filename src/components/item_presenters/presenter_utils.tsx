@@ -1,12 +1,15 @@
 import * as React from "react";
-import { Dropdown } from "semantic-ui-react";
+import { Dropdown, Modal } from "semantic-ui-react";
 import { CrewMember } from "../../model/crew";
 import { CryoCollection, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
 
 import { navigate } from "gatsby";
 import { GlobalContext } from "../../context/globalcontext";
-import { BuffNames, ImmortalNames, ProspectImmortalNames } from "./crew_preparer";
+import { Collection } from "../../model/collections";
+import { formatColString } from "../collections/context";
+import { CollectionDetails } from "../collections/overview_modal";
 import CONFIG from "../CONFIG";
+import { BuffNames, ImmortalNames, ProspectImmortalNames } from "./crew_preparer";
 
 const dormantStyle: React.CSSProperties = {
     background: "transparent",
@@ -41,17 +44,23 @@ export interface CollectionDisplayProps {
     crew: PlayerCrew | CrewMember;
     style?: React.CSSProperties;
     showProgress?: boolean;
+    clickAction?: 'modal' | 'navigate';
 }
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
     const context = React.useContext(GlobalContext);
     const { playerData } = context.player;
-    const { crew, style, showProgress } = props;
+    const { crew, style, showProgress, clickAction } = props;
+    const [modalInstance, setModalInstance] = React.useState(null as Collection | null);
 
     const ocols = [] as string[];
     let ccols = [] as CryoCollection[];
-    const dispClick = (e, col: string) => {
-        navigate("/collections?select=" + encodeURIComponent(col));
+    const dispClick = (e, col: Collection) => {
+        if (clickAction === 'modal') {
+            setModalInstance(col);
+            return;
+        }
+        navigate("/collections?select=" + encodeURIComponent(col.name));
     }
 
     if (!crew.collections?.length) return <></>;
@@ -86,13 +95,14 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
                                 goal = rcol.milestone.goal as number;
                             }
                         }
+                        let ccol = ccols.find(f => f.name === col)!;
                         let color = 'lightgreen';
                         if (ocols.includes(col) && goal - prog === 1) color = CONFIG.RARITIES[5].color;
                         else if (ocols.includes(col) && goal - prog === 2) color = CONFIG.RARITIES[4].color;
                         return (
                             <a
                                 key={"collectionText_" + crew.symbol + idx}
-                                onClick={(e) => dispClick(e, col)}
+                                onClick={(e) => dispClick(e, ccol)}
                                 style={{
                                     color: ocols.includes(col) ? color : undefined
                                 }}>
@@ -104,6 +114,26 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
                 )
                 .reduce((prev, next) => <>{prev}, {next}</>)
             }
+            {(clickAction === 'modal') && modalInstance !== null && (
+				<Modal
+					open
+					size="large"
+					onClose={() => setModalInstance(null)}
+					closeIcon
+				>
+					<Modal.Header>
+						{modalInstance.name}
+					</Modal.Header>
+					<Modal.Description>
+						<div style={{ marginLeft: '1.5em', marginBottom: '1em' }}>
+							{formatColString(modalInstance.description!)}
+						</div>
+					</Modal.Description>
+					<Modal.Content scrolling>
+						<CollectionDetails collection={modalInstance} />
+					</Modal.Content>
+				</Modal>
+			)}
         </div>
     )
 }

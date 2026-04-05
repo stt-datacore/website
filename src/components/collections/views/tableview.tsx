@@ -1,6 +1,6 @@
 import React from "react";
 import { GlobalContext } from "../../../context/globalcontext";
-import { CollectionsContext } from "../context";
+import { CollectionModalContext, CollectionsContext } from "../context";
 import { Popup, Icon, Rating, Table } from "semantic-ui-react";
 import { ItemArchetypeBase, PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
 import { ITableConfigRow, SearchableTable } from "../../searchabletable";
@@ -35,7 +35,10 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 
 	const { t } = globalContext.localized;
 
-	const { mapFilter, setModalInstance, showThisCrew } = colContext;
+	const modalContext = React.useContext(CollectionModalContext);
+	const { setModalInstance } = modalContext;
+
+	const { mapFilter, showThisCrew } = colContext;
 	const { playerCollections, short, topCrewScore, topStarScore, collectionCrew } = props;
 
 	const tableConfig: ITableConfigRow[] = [

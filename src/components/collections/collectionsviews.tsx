@@ -12,7 +12,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import CONFIG from '../CONFIG';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { CollectionsContext } from './context';
+import { CollectionModalContext, CollectionsContext } from './context';
 import { CollectionResearchView } from './views/researchview';
 import { CollectionCombosView } from './views/combosview';
 import CollectionsOverviewComponent from './views/overview';
@@ -44,13 +44,15 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const colContext = React.useContext(CollectionsContext);
 	const workerContext = React.useContext(WorkerContext);
 	const workerRunning = workerContext.running;
+	const modalContext = React.useContext(CollectionModalContext);
+	const { setModalInstance } = modalContext;
 
 	const [colData, setColGroups] = React.useState<CollectionInfo[]>([]);
 	const [colCombos, setColOptimized] = React.useState<CollectionCombo[]>([]);
 	const [costMap, setCostMap] = React.useState<ComboCostMap[]>([]);
 
 	const { playerCollections, collectionCrew, extendedCollections } = props;
-	const { favorited, byCost, showIncomplete, matchMode, costMode, short, mapFilter, setModalInstance, setMapFilter, ownedFilter, rarityFilter, searchFilter, fuseFilter, setCollectionSettings } = colContext;
+	const { favorited, byCost, showIncomplete, matchMode, costMode, short, mapFilter, setMapFilter, ownedFilter, rarityFilter, searchFilter, fuseFilter, setCollectionSettings } = colContext;
 
 	const [initialized, setInitialized] = React.useState(false);
 	const [requestRun, setRequestRun] = React.useState(false);

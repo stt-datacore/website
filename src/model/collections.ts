@@ -114,9 +114,12 @@ export interface ICollectionsContext extends CollectionsToolSettings {
 
     setCollectionSettings: (value: CollectionsToolSettings) => void;
 
+};
+
+export interface CollectionModalContext {
     modalInstance: CollectionModalDisplayOptions | null
     setModalInstance: (value: CollectionModalDisplayOptions | null) => void;
-};
+}
 
 export type CollectionMatchMode = 'normal' | 'exact-only' | 'extended' | 'inexact-only';
 

@@ -5,7 +5,7 @@ import { Progress, Icon, Image } from "semantic-ui-react";
 
 import { ItemArchetypeBase, PlayerCollection, Reward } from "../../../model/player";
 import { CiteInventory, makeCiteNeeds } from "../../../utils/collectionutils";
-import { CollectionsContext, formatColString } from "../context";
+import { CollectionModalContext, CollectionsContext, formatColString } from "../context";
 import { RewardsGrid } from "../../crewtables/rewards";
 
 export interface CollectionCardProps {
@@ -22,8 +22,9 @@ export interface CollectionCardProps {
 
 export const CollectionCard = (props: CollectionCardProps) => {
     const context = React.useContext(GlobalContext);
-    const colContext = React.useContext(CollectionsContext);
-    const { setModalInstance } = colContext;
+    const modalContext = React.useContext(CollectionModalContext);
+    const { setModalInstance } = modalContext;
+
     const { t } = context.localized;
     const { style, ownedCites } = props;
 

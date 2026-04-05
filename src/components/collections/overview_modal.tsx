@@ -1,17 +1,18 @@
 import React from "react"
 import { Container, Image, Tab } from "semantic-ui-react"
+import { GlobalContext } from "../../context/globalcontext"
+import { Collection } from "../../model/collections"
+import { useStateWithStorage } from "../../utils/storage"
 import { CrewHoverStat } from "../hovering/crewhoverstat"
 import { ItemHoverStat } from "../hovering/itemhoverstat"
 import { ShipHoverStat } from "../hovering/shiphoverstat"
-import { PlayerCollection } from "../../model/player"
 import { CollectionCrew } from "./overview_panes/collectioncrew"
 import { CollectionTiers } from "./overview_panes/collectionmilestones"
-import { GlobalContext } from "../../context/globalcontext"
-import { useStateWithStorage } from "../../utils/storage"
+import { PlayerCollection } from "../../model/player"
 
 export interface CollectionDetailsProps {
 	/** The collection to display */
-	collection: PlayerCollection;
+	collection: Collection;
 
 	/** Page Id for storage variables (optional) */
 	pageId?: string;
@@ -23,13 +24,34 @@ export interface CollectionDetailsProps {
 export const CollectionDetails = (props: CollectionDetailsProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { collection, activeTab } = props;
+	const { playerData } = globalContext.player;
+	const { activeTab } = props;
 	const pageId = props.pageId ? props.pageId + "/" : '';
 	const [tab, setTab] = useStateWithStorage(`${pageId}collection_details_modal/active_tab`, props.activeTab || 0, { rememberForever: true });
 	const [scrollY, setScrollY] = useStateWithStorage(`${pageId}collection_details_modal/scroll_y`, undefined as number | undefined);
 	const [oldRef, setOldRef] = React.useState<HTMLElement>();
 	const [shown, setShown] = React.useState(false);
 	const ref = React.createRef<HTMLDivElement>();
+
+	const collection = React.useMemo(() => {
+		let pcol = props.collection as Collection;
+		if (!!pcol.id && pcol.id != pcol.type_id && playerData) {
+			pcol = playerData.player.character.cryo_collections.find(f => f.type_id == pcol.id) as Collection || pcol;
+		}
+		let cc = globalContext.core.collections.find(f => f.id == pcol.type_id || f.id === pcol.id);
+		let ncol = { ...cc || {}, ...pcol } as PlayerCollection;
+		if (!!cc && !!playerData) {
+			if (ncol.milestone.goal !== 'n/a' && ncol.progress !== 'n/a') {
+				ncol.needed = Number(ncol.milestone.goal) - Number(ncol.progress);
+			}
+		}
+		else if (!!ncol.milestone) {
+			ncol.milestone.goal = 'n/a';
+			ncol.progress = 'n/a';
+		}
+		if (!!ncol.id && !!ncol.type_id && ncol.id != ncol.type_id) ncol.id = ncol.type_id;
+		return ncol;
+	}, [props.collection]);
 
 	let image = collection.image?.replace("/collection_vault/", "collection_vault_");
 	if (!image?.endsWith(".png")) image += ".png";
