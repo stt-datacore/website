@@ -22,10 +22,12 @@ import { CrewHoverStat } from '../hovering/crewhoverstat';
 
 type ShipTableProps = {
 	pageId: string;
+	customList?: Ship[];
 	event_ships?: string[];
 	high_bonus?: string[];
 	event_ship_traits?: string[];
 	mode: 'all' | 'owned';
+	hideTools?: boolean
 };
 
 type TestDetails = {
@@ -48,7 +50,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	const { all_ships } = globalContext.core;
 	const { playerData, playerShips } = globalContext.player;
 	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
-	const { mode, pageId, event_ships, high_bonus, event_ship_traits } = props;
+	const { mode, pageId, event_ships, high_bonus, event_ship_traits, customList, hideTools } = props;
 
 	const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/ship_table_filter/rarity`, undefined);
 	const [grantFilter, setGrantFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/grant`, undefined);
@@ -66,7 +68,11 @@ export const ShipTable = (props: ShipTableProps) => {
 	const [activeMode, setActiveMode] = React.useState<ActiveDetails | undefined>();
 
 	React.useEffect(() => {
-		if (playerShips?.length && !!playerData && mode === 'owned') {
+		if (!!playerData && customList !== undefined) {
+			setShips(customList);
+			setShipsInUse(shipsInUse);
+		}
+		else if (playerShips?.length && !!playerData && mode === 'owned') {
 			const merged = playerShips.filter(f => f.owned);
 			const shipsInUse = getShipsInUse(globalContext.player);
 			setShips(merged?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => createEventShip(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0));
@@ -89,7 +95,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			setShips(coreships?.filter(f => event_ships?.includes(f.symbol) ?? true).map(m => createEventShip(m)).sort((a, b) => !!event_ships?.length ? b.antimatter - a.antimatter : 0));
 			setShipsInUse(undefined);
 		}
-	}, [playerData, event_ships, SHIP_TRAIT_NAMES, all_ships, mode, buffMode]);
+	}, [playerData, event_ships, SHIP_TRAIT_NAMES, all_ships, mode, buffMode, customList]);
 
 	React.useEffect(() => {
 		let stations = [...new Set(ships.map(r => r.battle_stations?.length)) ?? []].filter(n => n !== undefined);
@@ -215,8 +221,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	}, [showRanks, t, breakoutBosses]);
 
 	return (<div>
-		{!event_ships?.length &&
-
+		{!event_ships?.length && !hideTools &&
 			<div style={{
 				display: "flex",
 				flexDirection: "column",
@@ -263,11 +268,11 @@ export const ShipTable = (props: ShipTableProps) => {
 					</div>
 				</div>
 			</div>}
-		{!event_ships?.length && !!playerShips && mode === 'owned' &&
+		{!event_ships?.length && !!playerShips && mode === 'owned' && !hideTools &&
 			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '1em', margin: '1em 0' }}>
 				<Checkbox label={t('ship.show.only_in_use')} checked={onlyUsed ?? false} onChange={(e, { checked }) => setOnlyUsed(checked as boolean)} />
 			</div>}
-		{!!event_ships?.length &&
+		{!!event_ships?.length && !hideTools &&
 			<div>
 				<div style={{ margin: '0.25em 0' }}>
 					<b>{t('base.featured_ships{{:}}')} </b>&nbsp;{high_bonus?.map(sym => ships.find(f => f.symbol === sym)?.name || '').join(", ")}

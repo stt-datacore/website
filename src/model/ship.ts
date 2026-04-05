@@ -1,6 +1,7 @@
 import { CrewMember, ShipScores } from "./crew";
 import { Icon } from "./game-elements";
 import { CompletionState, PlayerCrew } from "./player";
+import { LineUpMeta } from "./worker";
 
 export interface Schematics {
   id: number;
@@ -240,3 +241,11 @@ export interface AdvancedCrewPowerConfig {
     setCurrent: (value: AdvancedCrewPower) => void;
 }
 
+export type MetaCacheEntry = {
+    version: number,
+    ship: string,
+    crew: string[],
+    division: number,
+    meta: LineUpMeta,
+    score: number
+}

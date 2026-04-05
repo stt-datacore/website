@@ -9,6 +9,7 @@ import BetaTachyon from './betatachyon.ts';
 import CollectionOptimizer from './collectionworker.ts';
 import ItemsWorker from './itemsworker.ts';
 import QuestSolver from './questsolver2.ts';
+import ShipFinder from './shipfinder.ts';
 import { calcQLots } from '../utils/equipment.ts';
 import ShipCrewWorker from './shipcrewworker.ts';
 import { calculateGauntlet } from '../utils/gauntlet.ts';
@@ -67,8 +68,6 @@ const citeOptimizer = (playerData, allCrew) => {
     });
 };
 
-
-
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = (message) => {
     const postResult = (result, inProgress) => {
@@ -108,6 +107,7 @@ self.onmessage = (message) => {
         },
         'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true)).then(data => postResult(data, false)),
         'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
+        'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))
     };
 
     //console.log(message.data.worker);

@@ -8,7 +8,7 @@ import { KeystoneBase, Polestar, Constellation } from "../model/keystone";
 import { Gauntlet } from "../model/gauntlets";
 import { Mission } from "../model/missions";
 import { ObjectiveEvent } from "../model/player";
-import { BattleStations, ReferenceShip, Schematics, Ship } from "../model/ship";
+import { BattleStations, MetaCacheEntry, ReferenceShip, Schematics, Ship } from "../model/ship";
 import { StaticFaction } from "../model/shuttle";
 import { Dilemma } from "../model/voyage";
 import { EventStats } from "../utils/event_stats";
@@ -18,6 +18,7 @@ import { SeasonalShop } from "../model/offers";
 export interface ICoreData {
 	all_buffs: BuffStatTable;
 	all_ships: ReferenceShip[];
+	battle_metas: MetaCacheEntry[];
 	battle_stations: BattleStations[];
 	cadet: Mission[];
 	collections: Collection[];

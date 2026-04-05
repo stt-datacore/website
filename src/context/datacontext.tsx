@@ -12,7 +12,7 @@ import { KeystoneBase } from "../model/keystone";
 import { Gauntlet } from '../model/gauntlets';
 import { Mission } from '../model/missions';
 import { ObjectiveEvent } from '../model/player';
-import { BattleStations, ReferenceShip, Schematics, Ship } from '../model/ship';
+import { BattleStations, MetaCacheEntry, ReferenceShip, Schematics, Ship } from '../model/ship';
 import { StaticFaction } from '../model/shuttle';
 import { Dilemma } from '../model/voyage';
 import { EventStats } from '../utils/event_stats';
@@ -27,6 +27,7 @@ const DC_DEBUGGING: boolean = false;
 export type ValidDemands =
 	'all_buffs' |
 	'all_ships' |
+	'battle_metas' |
 	'battle_stations' |
 	'cadet' |
 	'collections' |
@@ -74,6 +75,7 @@ interface IDemandResult {
 const defaultData = {
 	all_buffs: {} as BuffStatTable,
 	all_ships: [] as ReferenceShip[],
+	battle_metas: [] as MetaCacheEntry[],
 	battle_stations: [] as BattleStations[],
 	cadet: [] as Mission[],
 	collections: [] as Collection[],
@@ -170,6 +172,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 		const valid = [
 			'all_buffs',
 			'all_ships',
+			'battle_metas',
 			'battle_stations',
 			'cadet',
 			'crew',
