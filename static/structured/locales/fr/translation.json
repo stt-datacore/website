@@ -2220,6 +2220,16 @@
         }
     },
     "ship": {
+        "best_ship": {
+            "title": "Trouveur du Meilleur Vaisseau",
+            "description": "Suggérez les meilleurs vaisseaux à utiliser contre un adversaire donné, en vous basant sur vos données de joueur.",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "fbb": "{{rank_names.fbb_rank}}",
+                "arena": "{{rank_names.arena_rank}}"
+            },
+            "find_ships": "Trouver les Vaisseaux"
+        },
         "accuracy": "Précision",
         "amount": "Montant",
         "antimatter": "Antimatière",

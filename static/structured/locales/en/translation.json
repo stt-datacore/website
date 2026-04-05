@@ -2209,6 +2209,16 @@
         }
     },
     "ship": {
+        "best_ship": {
+            "title": "Best Ship Finder",
+            "description": "Suggest the best ships to use against a given opponent, based on your player data.",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "fbb": "{{rank_names.fbb_rank}}",
+                "arena": "{{rank_names.arena_rank}}"
+            },
+            "find_ships": "Find Ships"
+        },
         "accuracy": "Accuracy",
         "amount": "Amount",
         "antimatter": "Antimatter",

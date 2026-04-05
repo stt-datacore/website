@@ -2218,6 +2218,16 @@
         }
     },
     "ship": {
+        "best_ship": {
+            "title": "Buscador del mejor buque",
+            "description": "Sugiere los mejores buques para usar contra un oponente determinado, basándote en los datos de tu jugador.",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "fbb": "{{rank_names.fbb_rank}}",
+                "arena": "{{rank_names.arena_rank}}"
+            },
+            "find_ships": "Encuentra los buques"
+        },
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",

@@ -2208,6 +2208,16 @@
         }
     },
     "ship": {
+        "best_ship": {
+            "title": "Finder des besten Schiffes",
+            "description": "Schlage die besten Schiffe für den Einsatz gegen einen bestimmten Gegner vor - basierend auf deinen Spielerdaten.",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "fbb": "{{rank_names.fbb_rank}}",
+                "arena": "{{rank_names.arena_rank}}"
+            },
+            "find_ships": "Finde die Schiffe"
+        },
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",

@@ -3,12 +3,13 @@ import DataPageLayout from '../components/page/datapagelayout';
 import { ShipTable } from '../components/ship/shiptable';
 import { GlobalContext } from '../context/globalcontext';
 import { Icon, Step } from 'semantic-ui-react';
+import { BestShipFinder } from '../components/ship/bestships';
 
 const ShipsPage = () => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;
-    const [mode, setMode] = React.useState<'all' | 'owned'>("all");
+    const [mode, setMode] = React.useState<'all' | 'owned' | 'best'>("all");
 
     React.useEffect(() => {
         if (!playerData && mode === 'owned') {
@@ -34,8 +35,15 @@ const ShipsPage = () => {
 						<Step.Description>{t('ship.roster.all')}</Step.Description>
 					</Step.Content>
 				</Step>
+                <Step active={mode === 'best'} onClick={() => setMode('all')}>
+					<Step.Content>
+						<Step.Title>{t('ship.best_ship.title')}</Step.Title>
+						<Step.Description>{t('ship.best_ship.description')}</Step.Description>
+					</Step.Content>
+				</Step>
 			</Step.Group>}
-            <ShipTable pageId='main_ship_table' mode={mode} />
+            {mode !== 'best' && <ShipTable pageId='main_ship_table' mode={mode} />}
+            {mode === 'best' && <BestShipFinder />}
 		</React.Fragment>
     </DataPageLayout>
 }
