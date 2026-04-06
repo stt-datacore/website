@@ -19,6 +19,7 @@ import { BossShip } from '../../model/boss';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
+import { gradeToColor } from '../../utils/crewutils';
 
 type ShipTableProps = {
 	pageId: string;
@@ -28,6 +29,9 @@ type ShipTableProps = {
 	event_ship_traits?: string[];
 	mode: 'all' | 'owned';
 	hideTools?: boolean
+	tierLabel?: string;
+	tierDescending?: boolean;
+	tierColor?: boolean
 };
 
 type TestDetails = {
@@ -50,7 +54,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	const { all_ships } = globalContext.core;
 	const { playerData, playerShips } = globalContext.player;
 	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
-	const { mode, pageId, event_ships, high_bonus, event_ship_traits, customList, hideTools } = props;
+	const { mode, pageId, event_ships, high_bonus, event_ship_traits, customList, hideTools, tierLabel, tierDescending, tierColor } = props;
 
 	const [rarityFilter, setRarityFilter] = useStateWithStorage<number[] | undefined>(`${pageId}/ship_table_filter/rarity`, undefined);
 	const [grantFilter, setGrantFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/grant`, undefined);
@@ -184,6 +188,15 @@ export const ShipTable = (props: ShipTableProps) => {
 		}
 		const conf = [
 			{ width: 3, column: 'name', title: t('ship.ship') },
+		] as ITableConfigRow[];
+
+		if (tierLabel) {
+			conf.push(
+				{ width: 1, column: 'tier', title: tierLabel, reverse: !!tierDescending },
+			);
+		}
+
+		conf.push(
 			{ width: 1, column: 'ranks.overall', title: t('rank_names.ship_rank'), reverse: true },
 			{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
 			{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
@@ -215,8 +228,11 @@ export const ShipTable = (props: ShipTableProps) => {
 					return r;
 				}
 			},
-		] as ITableConfigRow[];
-		if (!showRanks) conf.splice(1, 3);
+		 );
+		if (!showRanks) {
+			if (!!tierLabel) conf.splice(2, 3);
+			else conf.splice(1, 3);
+		}
 		return conf;
 	}, [showRanks, t, breakoutBosses]);
 
@@ -366,6 +382,12 @@ export const ShipTable = (props: ShipTableProps) => {
 					<div style={{ gridArea: 'usages', fontWeight: 'bold' }}>{printUsage(ship)}</div>
 				</div>
 			</Table.Cell>
+			{!!tierLabel && (
+				<Table.Cell>
+					{!tierColor && <div>{ship.tier}</div>}
+					{!!tierColor && <div style={{color: gradeToColor(ship.tier!/100)}}>{ship.tier}</div>}
+				</Table.Cell>
+			)}
 			{showRanks && <>
 				<Table.Cell>
 					<div style={{ display: 'flex' }}>

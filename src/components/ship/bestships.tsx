@@ -3,7 +3,7 @@ import { GlobalContext } from "../../context/globalcontext"
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { Button, Dropdown, DropdownItemProps, Message } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
-import { AllBosses, bossFromBattleMode, createMetaOptions } from "../../utils/shiputils";
+import { AllBosses, bossFromBattleMode, createMetaOptions, getBosses } from "../../utils/shiputils";
 import { Ship } from "../../model/ship";
 import { ShipTable } from "./shiptable";
 import { WorkerContext } from "../../context/workercontext";
@@ -105,6 +105,7 @@ export const BestShipFinder = () => {
             </div>
             <div style={{marginTop: '1em'}}>
                 <Button
+                    disabled={!metas?.length || !battleMode}
                     onClick={() => execWorker()}
                     color='green'>
                     {t('ship.best_ship.find_ships')}
@@ -116,22 +117,38 @@ export const BestShipFinder = () => {
                     hideTools={!ships.length}
                     pageId='best_ships'
                     mode='owned'
+                    tierLabel={t('base.score')}
+                    tierDescending={true}
+                    tierColor={true}
                     customList={ships} />
             </div>
         </div>
     );
 
     function execWorker() {
+        if (!playerShips) return;
+        let loaded_metas = battle_metas.filter(f => metas.includes(f.meta));
+
+        let ships = playerShips.filter(ship => ship.owned);
+        let crew = [...globalContext.core.crew];
+        if (battleMode.includes("fbb")) {
+            let sp = battleMode.split("_");
+            let boss_id = Number(sp[1]);
+            ships = ships.filter(ship => getBosses(ship).some(b => b.id === boss_id));
+            //crew = crew.filter(c => getBosses(undefined, c).some(b => b.id === boss_id));
+        }
         const config = {
             battle_mode: battleMode,
-            metas,
-            ships: playerShips
+            metas: loaded_metas,
+            ships,
+            crew
         }
-
         runWorker('ship_finder', config, (data) => onResults(data));
     }
 
     function onResults(data: any) {
-
+        if (data?.data?.result?.ships) {
+            setShips(data.data.result.ships);
+        }
     }
 }
