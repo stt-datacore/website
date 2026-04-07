@@ -7,7 +7,7 @@ import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { MarketAggregation } from '../model/celestial';
 
-export const CLIENT_API_VERSION = 31;
+export const CLIENT_API_VERSION = 32;
 
 const DEBUG_MODE = false;
 
