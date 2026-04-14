@@ -1,5 +1,5 @@
 ---
-name: Admiral Patrick
+name: '"Admiral" Patrick'
 rarity: 5
 series: ds9
 memory_alpha:

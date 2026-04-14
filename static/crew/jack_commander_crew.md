@@ -1,5 +1,5 @@
 ---
-name: Commander Jack
+name: '"Commander" Jack'
 rarity: 5
 series: ds9
 memory_alpha:
