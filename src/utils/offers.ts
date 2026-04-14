@@ -1,5 +1,7 @@
+import { BeamableStoreRoot, Listing } from "../model/beamable";
 import { CrewMember } from "../model/crew";
 import { DropInfo, Offer, OfferCrew } from "../model/offers";
+import { Reward } from "../model/player";
 
 async function loadOffers(): Promise<Offer[] | undefined> {
 
@@ -8,6 +10,14 @@ async function loadOffers(): Promise<Offer[] | undefined> {
         return (await result.json()) as Offer[];
     }
 
+    return undefined;
+}
+
+async function loadOffers2(): Promise<BeamableStoreRoot | undefined> {
+    let result = await fetch(`${process.env.GATSBY_DATACORE_URL}api/offer_info2`);
+    if (result.ok) {
+        return (await result.json()) as BeamableStoreRoot;
+    }
     return undefined;
 }
 
@@ -123,4 +133,118 @@ function getDropInfo(offer: Offer): DropInfo[] {
     });
 
     return result;
+}
+
+
+
+
+function getDropInfo2(offer: Listing): DropInfo[] {
+    if (!offer.offer.descriptions?.length) return [];
+    const BundleTable = [
+        { name: 'offer_t60', cost: 99.99 },
+        { name: 'offer_t50', cost: 49.99 },
+        { name: 'offer_t25', cost: 24.99 },
+        { name: 'offer_t10', cost: 9.99 },
+        { name: 'offer_t5', cost: 4.99 },
+    ];
+
+    let result = [{
+        count: 1,
+        cost: offer.offer.price.amount || 0,
+        currency: offer.offer.price.symbol
+    }] as DropInfo[];
+
+    if (result[0].cost === 0 && !!offer.offer.price.symbol) {
+        let bt = BundleTable.find(f => f.name === offer.offer.price.symbol);
+        if (bt) {
+            result[0].cost = bt.cost;
+            result[0].currency = 'fiat';
+        }
+    }
+    let droptexts = [...offer.offer.descriptions];
+
+    droptexts.forEach((info_text, idx) => {
+        let drops = info_text!.split("DROP RATES:");
+        if (drops.length <= 1) return;
+        let info = result[idx];
+        info.drop_rates = [];
+        let drop_rates = info.drop_rates;
+
+        if (drops?.length === 2) {
+            drops = drops[1].split("\n").filter(s => s.trim() !== '');
+            let reg = /<#[A-Fa-f0-9]+>(.+)<\/color> (\w+): ([0-9.]+)\%/;
+            for (let drop of drops) {
+                let rx = reg.exec(drop);
+                if (rx?.length && rx.length > 2) {
+                    if (rx[1].includes("/")) {
+                        let r2 = /.*(\d+)\/(\d+).*/;
+                        let rxrare = r2.exec(rx[1]);
+                        if (rxrare?.length && rxrare.length > 2) {
+                            drop_rates.push({
+                                type: rx[2],
+                                rarity: Number(rxrare[2]),
+                                rate: Number(rx[3])
+                            });
+                        } // <#AA2DEB>1/4 Star</color> Crew: 5.06%
+                    }
+                    else {
+                        drop_rates.push({
+                            type: rx[2],
+                            rarity: Number(rx[1].split(" ")[0]),
+                            rate: Number(rx[3])
+                        })
+                    }
+                }
+            }
+        }
+    });
+
+    return result;
+}
+function listingsToCrew(listings: Listing[], crewList: CrewMember[], offerName?: string): OfferCrew[] {
+    let result = [] as OfferCrew[];
+
+    if (offerName) {
+        listings = listings?.filter(f => f.offer.titles[0].toUpperCase().includes(offerName.toUpperCase()));
+    }
+
+    listings?.forEach((offer) => {
+        if (offer.offer.descriptions.length < 2) return;
+        let crew = offer.offer.obtain.map(m => m.spec).filter(f => f.endsWith("_crew")).map(m => crewList.find(fcm => fcm.symbol === m)).filter(fc => !!fc);
+        if (!crew?.length) {
+            let split = offer.offer.descriptions[1].split(/\<[#A-Fa-f0-9]+\>/).map(sp => sp.replace(/\<\/[#A-Za-z0-9]+\>.*/, '').replace(/\n.*/g, '').trim());
+            crew = crewList.filter(f => split.includes(f.name) || (f.name_english && split.includes(f.name_english)));
+        }
+        result.push({
+            name: offer.offer.titles[0],
+            crew,
+            description: offer.offer.descriptions.join(" "),
+            drop_info: getDropInfo2(offer),
+            seconds_remain: offer.secondsRemain || 0
+        });
+    });
+
+    result = result.filter(f => f.crew.length);
+    return result;
+}
+
+function offerSymbol(offer: Listing) {
+    return offer.offer.symbol;
+}
+
+export async function loadOfferCrew2(kcrew: CrewMember[]) {
+    let raw_offers = await loadOffers2();
+    let new_offers = [] as Listing[];
+    if (!raw_offers) return;
+    let seen = {} as {[key:string]: boolean}
+    for (let store of raw_offers.stores) {
+        for (let listing of store.listings) {
+            let offer = listing as Listing;
+            let symbol = offerSymbol(offer);
+            seen[symbol] = true;
+            new_offers.push(offer);
+        }
+    }
+    let loaded_offers = listingsToCrew(new_offers, kcrew);
+    return loaded_offers;
 }

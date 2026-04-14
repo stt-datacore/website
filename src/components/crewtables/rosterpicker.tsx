@@ -7,7 +7,7 @@ import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
 
 import { IRosterCrew, RosterType } from './model';
 import { CrewMember } from '../../model/crew';
-import { loadOfferCrew } from '../../utils/offers';
+import { loadOfferCrew, loadOfferCrew2 } from '../../utils/offers';
 import { appelate } from '../../utils/misc';
 import { OfferCrew } from '../../model/offers';
 import { useStateWithStorage } from '../../utils/storage';
@@ -363,12 +363,14 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				return;
 			}
 
-			const offerData = await loadOfferCrew(globalContext.core.crew) ?? [];
+			const offerData = await loadOfferCrew2(globalContext.core.crew) ?? [];
 			const offers = {} as { [key: string]: OfferCrew[] }
 			offerData.forEach((offer) => {
 				offer.crew.forEach((crew) => {
 					offers[crew.symbol] ??= [];
-					offers[crew.symbol].push(offer);
+					let curr = offers[crew.symbol].find(fc => JSON.stringify(fc.drop_info) == JSON.stringify(offer.drop_info));
+					if (!curr)
+						offers[crew.symbol].push(offer);
 				});
 			})
 			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
