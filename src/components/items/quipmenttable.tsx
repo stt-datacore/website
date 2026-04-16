@@ -20,7 +20,7 @@ export const QuipmentTable = (props: QuipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
     const quipmentContext = React.useContext(QuipmentFilterContext);
     const { t } = globalContext.localized;
-    const { ownedCrew, mode } = props;
+    const { ownedCrew, mode, validSkills } = props;
     const { playerData } = globalContext.player;
 
     const {

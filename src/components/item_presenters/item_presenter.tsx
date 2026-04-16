@@ -40,7 +40,7 @@ export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], 
 
 }
 
-export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod, for_export?: boolean) {
+export function renderBonuses(skills: { [key: string]: Skill & { disabled?: boolean } }, maxWidth?: string, margin?: string, prospect?: boolean, t?: TranslateMethod, for_export?: boolean) {
     const flexCol = OptionsPanelFlexColumn;
 
     if (for_export) {
@@ -51,7 +51,7 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
                 return (
                     <Table.Row
                         title={atext}
-                        key={(skill.skill ?? "") + idx}>
+                        key={'bonus_key_' + (skill.skill ?? "") + idx}>
                         <Table.Cell>
                         <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
                             {CONFIG.SKILLS_SHORT.find(sk => sk.name === skill.skill)?.short}
@@ -77,16 +77,18 @@ export function renderBonuses(skills: { [key: string]: Skill }, maxWidth?: strin
             {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
             {Object.values(skills).map(((skill, idx) => {
                 const atext = CONFIG.SKILLS[skill.skill!];
+                const disabled = !!skill.disabled;
                 return (
                     <div
                         title={atext}
-                        key={(skill.skill ?? "") + idx}
+                        key={'bonus_key_' + (skill.skill ?? "") + idx}
                         style={{
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "flex-start",
                             alignItems: "center",
-                            alignContent: "center"
+                            alignContent: "center",
+                            opacity: disabled ? 0.25 : 1
                         }}
                     >
                         <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>

@@ -33,6 +33,7 @@ export interface EquipmentTableProps {
     maxSelections?: number;
     selectionMode?: boolean;
     ownedColumns?: string[];
+    validSkills?: string[];
 }
 
 export const EquipmentTable = (props: EquipmentTableProps) => {
@@ -291,7 +292,13 @@ export const EquipmentTable = (props: EquipmentTableProps) => {
         }
     }
     function renderBuffs(item: EquipmentItem | EquipmentItem) {
+        const { validSkills } = props;
         const { bonuses } = getItemBonuses(item as EquipmentItem);
+        if (validSkills) {
+            for(let key of Object.keys(bonuses)) {
+                if (!validSkills.includes(key)) bonuses[key].disabled = true;
+            }
+        }
         return renderBonuses(bonuses, "1em", "0.25em");
     }
 

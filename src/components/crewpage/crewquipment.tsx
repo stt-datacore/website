@@ -111,6 +111,7 @@ export const CrewQuipment = (props: CrewQuipmentProps) => {
                 mode='quipment'
                 ownedItems={!!globalContext.player.playerData}
                 ownedCrew={false}
+                validSkills={crew_skills}
                 itemTargetGroup={'crew_quipment'}
                 pageId={'crew_' + crew.symbol}
                 items={quipment} />

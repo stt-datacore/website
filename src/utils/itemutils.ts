@@ -10,7 +10,8 @@ import { ExportField, simplejson2csv } from './misc';
 
 export interface ItemBonusInfo {
     bonusText: string[];
-    bonuses: { [key: string]: Skill };
+    bonuses: { [key: string]: Skill & { disabled?: boolean } };
+
 }
 
 export interface ItemWithBonus {
@@ -205,7 +206,7 @@ export function combineBonuses(bonuses: { [key: string]: Skill }[]) {
 
 export function getItemBonuses(item: EquipmentItem | EquipmentItem): ItemBonusInfo {
     let bonusText = [] as string[];
-    let bonuses = {} as { [key: string]: Skill };
+    let bonuses = {} as { [key: string]: Skill & { disabled?: boolean } };
 
     if (item.bonuses) {
         for (let [key, value] of Object.entries(item.bonuses)) {
