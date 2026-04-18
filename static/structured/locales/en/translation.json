@@ -2209,16 +2209,6 @@
         }
     },
     "ship": {
-        "best_ship": {
-            "title": "Best Ship Finder",
-            "description": "Suggest the best ships to use against a given opponent, based on your player data.",
-            "opponent": "{{gauntlet.opponent_table.opponent}}",
-            "opponent_modes": {
-                "fbb": "{{rank_names.fbb_rank}}",
-                "arena": "{{rank_names.arena_rank}}"
-            },
-            "find_ships": "Find Ships"
-        },
         "accuracy": "Accuracy",
         "amount": "Amount",
         "antimatter": "Antimatter",
@@ -2227,6 +2217,16 @@
         "attack_speed": "Attack Speed",
         "battle_mode": "Battle mode",
         "battle_stations": "Battle Stations",
+        "best_ship": {
+            "description": "Suggest the best ships to use against a given opponent, based on your player data.",
+            "find_ships": "Find Ships",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "arena": "{{rank_names.arena_rank}}",
+                "fbb": "{{rank_names.fbb_rank}}"
+            },
+            "title": "Best Ship Finder"
+        },
         "bonus_ability": "Bonus Ability",
         "boost": "Boost",
         "boosts": "Boosts",
@@ -2249,6 +2249,7 @@
             "generating_permutations_ellipses": "Generating permutations ...",
             "icon_activation_offset": "{{icon}} Activation Offset",
             "ignore_skill": "Ignore skills",
+            "ignore_triggers": "Ignore triggers",
             "iterations": "Iterations",
             "max_init": "Max init time",
             "max_iterations": "Max iterations",

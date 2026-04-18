@@ -71,6 +71,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
 	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
+	const [ignoreTriggers, setIgnoreTriggers] = useStateWithStorage<boolean>(`ship_info/ignoreTriggers`, false);
     const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
 	const [asMaxed, setAsMaxed] = useStateWithStorage<boolean>(`ship_info/asMaxed`, false, { rememberForever: true });
 	const [appliedProspects, setAppliedProspects] = useStateWithStorage(`ship_info/applied_prospects`, [] as PlayerCrew[]);
@@ -176,6 +177,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 						crew={crew}
 						crewStations={crewStations}
 						ignoreSkills={ignoreSkills}
+						ignoreTriggers={ignoreTriggers}
 						onlyImmortal={onlyImmortal}
 						pageId={'shipInfo'}
 						setAsMaxed={setAsMaxed}
@@ -183,6 +185,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 						setConsiderUnowned={setConsiderUnowned}
 						setCrewStations={setCrewStations}
 						setIgnoreSkills={setIgnoreSkills}
+						setIgnoreTriggers={setIgnoreTriggers}
 						setOnlyImmortal={setOnlyImmortal}
 						ships={[inputShip]}
 					/>
@@ -215,6 +218,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				considerUnowned={considerUnowned}
 				crewStations={crewStations}
 				ignoreSkills={ignoreSkills}
+				ignoreTriggers={ignoreTriggers}
 				isOpponent={false}
 				onlyImmortal={onlyImmortal}
 				pageId={'shipInfo'}

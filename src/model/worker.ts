@@ -403,6 +403,7 @@ export interface ShipWorkerConfigBase extends WorkerConfigBase<ShipWorkerItem> {
     effects?: BossEffect[];
     max_duration?: number;
     ignore_skill?: boolean;
+    ignore_triggers?: boolean;
     activation_offsets?: number[];
     opponent_variance?: number;
 }

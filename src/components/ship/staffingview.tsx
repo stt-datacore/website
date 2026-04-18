@@ -30,6 +30,7 @@ export interface ShipStaffingProps {
     considerFrozen: boolean;
     considerUnowned: boolean;
     ignoreSkills: boolean;
+	ignoreTriggers: boolean;
     onlyImmortal: boolean;
     isOpponent?: boolean;
     crewStations: (PlayerCrew | CrewMember | undefined)[];
@@ -54,6 +55,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
         considerUnowned,
         onlyImmortal,
         ignoreSkills,
+		ignoreTriggers,
         crewStations,
         setCrewStations,
 		division,
@@ -283,6 +285,11 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 						{getShipBonus(t, crew.action, undefined, true)}
 					</span>
 				</div>
+				{!!crew.action?.ability?.condition && (
+					<div>
+						{CONFIG.SHIP_BATTLE_GRANTS[crew.action.ability!.condition]}
+					</div>
+				)}
 				<div>
 					{crew.action.initial_cooldown}s {crew.action.duration}s {crew.action.cooldown}s
 				</div>
@@ -424,7 +431,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 		const inputShip = ship;
 
 		let newCrew: (PlayerCrew | CrewMember)[] = getCrew().filter((crew) => ignoreSkills || getSkills(crew).includes(skill)) ?? [];
-		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false, undefined, boss?.id);
+		if (inputShip) newCrew = findPotentialCrew(inputShip, newCrew, false, undefined, boss?.id, ignoreTriggers);
 
 		setCurrentStation(index);
 		setCurrentStationCrew(newCrew);

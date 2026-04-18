@@ -34,6 +34,8 @@ export interface RosterCalcProps {
     setConsiderUnowned: (value: boolean) => void;
     ignoreSkills: boolean;
     setIgnoreSkills: (value: boolean) => void;
+    ignoreTriggers: boolean;
+    setIgnoreTriggers: (value: boolean) => void;
     useOpponents: BattleMode | false;
     setUseOpponents: (value: BattleMode | false) => void;
     opponentStations: (PlayerCrew | CrewMember | undefined)[],
@@ -74,6 +76,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         considerFrozen,
         ignoreSkills,
         setIgnoreSkills,
+        ignoreTriggers,
+        setIgnoreTriggers,
         setConsiderFrozen,
         considerUnowned,
         setConsiderUnowned,
@@ -431,7 +435,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                     let search = playerCrew.filter(f => f.symbol === symbol);
                     if (search.length) {
                         let best = getHighest(search)!;
-                        if (ignoreSkills || ship.battle_stations?.some(bs => best.skill_order.includes(bs.skill))) {
+                        if ((ignoreSkills || ship.battle_stations?.some(bs => best.skill_order.includes(bs.skill))) &&
+                            (ignoreTriggers || !best.action.ability?.condition || ship.actions?.some(act => act.status === best.action.ability?.condition))) {
                             newcrew.push(best);
                         }
                     }
@@ -443,7 +448,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             }
             setEventCrew(newcrew);
         }
-    }, [currentEvent, ignoreSkills])
+    }, [currentEvent, ignoreSkills, ignoreTriggers]);
 
     React.useEffect(() => {
         if (typeof window !== 'undefined' && playerShips && !windowLoaded && ship) {
@@ -768,7 +773,14 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         value={t('ship.calc.ignore_skill')}
                                         checked={ignoreSkills}
                                         onChange={(e, { checked }) => setIgnoreSkills(checked as boolean)} />
-
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Checkbox
+                                        disabled={running}
+                                        label={t('ship.calc.ignore_triggers')}
+                                        value={t('ship.calc.ignore_triggers')}
+                                        checked={ignoreTriggers}
+                                        onChange={(e, { checked }) => setIgnoreTriggers(checked as boolean)} />
                                 </Grid.Column>
                                 {!!globalContext.player.playerData && <>
                                     {fbb_mode && <Grid.Column>
@@ -787,7 +799,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                             checked={considerFrozen}
                                             onChange={(e, { checked }) => setConsiderFrozen(checked as boolean)} />
                                     </Grid.Column>
-
                                     <Grid.Column>
                                         <Checkbox
                                             disabled={running}
@@ -1124,6 +1135,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 offense: battleConfig.offense,
                 get_attacks: !!current,
                 ignore_skill: ignoreSkills,
+                ignore_triggers: ignoreTriggers,
                 verbose,
                 max_iterations: !exhaustiveMode ? BigInt(maxIter) : undefined,
                 activation_offsets: activationOffsets,
@@ -1273,7 +1285,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 if (crew.action.initial_cooldown < minInitTime) return false;
             }
             if (!ignoreSkills && !crew.skill_order.some(skill => ship.battle_stations?.some(bs => bs.skill === skill))) return false;
-            if (crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
+            if (!ignoreTriggers && !!crew.action.ability?.condition && !ship.actions?.some(act => act.status === crew.action.ability?.condition)) return false;
 
             // if (action_types?.length) {
             //     if (!action_types.some(at => crew.action.bonus_type === at)) return false;
@@ -1311,7 +1323,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 return pass;
             }
             else {
-                return false;
+                return true;
             }
         })
         .filter((crew) => {
@@ -1389,8 +1401,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
                     if (a.action.ability?.condition || b.action.ability?.condition) {
                         if (battleConfig.opponent?.actions?.length) {
-                            let apa = battleConfig.opponent.actions.some(act => (act.status || 0) == (a.action.ability?.condition || 0));
-                            let bpa = battleConfig.opponent.actions.some(act => (act.status || 0) == (b.action.ability?.condition || 0));
+                            let apa = battleConfig.opponent.actions.some(act => ignoreTriggers || (act.status || 0) == (a.action.ability?.condition || 0));
+                            let bpa = battleConfig.opponent.actions.some(act => ignoreTriggers || (act.status || 0) == (b.action.ability?.condition || 0));
                             if ((apa && bpa) || (!apa && !bpa)) return 0;
                             if (apa) return -1;
                             if (bpa) return 1;

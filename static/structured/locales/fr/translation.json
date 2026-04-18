@@ -2220,16 +2220,6 @@
         }
     },
     "ship": {
-        "best_ship": {
-            "title": "Trouveur du Meilleur Vaisseau",
-            "description": "Suggérez les meilleurs vaisseaux à utiliser contre un adversaire donné, en vous basant sur vos données de joueur.",
-            "opponent": "{{gauntlet.opponent_table.opponent}}",
-            "opponent_modes": {
-                "fbb": "{{rank_names.fbb_rank}}",
-                "arena": "{{rank_names.arena_rank}}"
-            },
-            "find_ships": "Trouver les Vaisseaux"
-        },
         "accuracy": "Précision",
         "amount": "Montant",
         "antimatter": "Antimatière",
@@ -2238,6 +2228,16 @@
         "attack_speed": "Vitesse d'Attaque",
         "battle_mode": "Mode de combat",
         "battle_stations": "Stations de combat",
+        "best_ship": {
+            "description": "Suggérez les meilleurs vaisseaux à utiliser contre un adversaire donné, en vous basant sur vos données de joueur.",
+            "find_ships": "Trouver les Vaisseaux",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "arena": "{{rank_names.arena_rank}}",
+                "fbb": "{{rank_names.fbb_rank}}"
+            },
+            "title": "Trouveur du Meilleur Vaisseau"
+        },
         "bonus_ability": "Capacité Bonus",
         "boost": "Augmentation",
         "boosts": "Augmentations",
@@ -2260,6 +2260,7 @@
             "generating_permutations_ellipses": "Génération de permutations...",
             "icon_activation_offset": "{{icon}} Décalage d'activation",
             "ignore_skill": "Ignorer les compétences",
+            "ignore_triggers": "Ignorer les déclencheurs",
             "iterations": "Itérations",
             "max_init": "Temps d'initialisation maximum",
             "max_iterations": "Itérations max.",

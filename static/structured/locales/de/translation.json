@@ -2208,16 +2208,6 @@
         }
     },
     "ship": {
-        "best_ship": {
-            "title": "Finder des besten Schiffes",
-            "description": "Schlage die besten Schiffe für den Einsatz gegen einen bestimmten Gegner vor - basierend auf deinen Spielerdaten.",
-            "opponent": "{{gauntlet.opponent_table.opponent}}",
-            "opponent_modes": {
-                "fbb": "{{rank_names.fbb_rank}}",
-                "arena": "{{rank_names.arena_rank}}"
-            },
-            "find_ships": "Finde die Schiffe"
-        },
         "accuracy": "Genauigkeit",
         "amount": "Menge",
         "antimatter": "Antimaterie",
@@ -2226,6 +2216,16 @@
         "attack_speed": "Angriffsgeschwindigkeit",
         "battle_mode": "Kampfmodus",
         "battle_stations": "Kampfstationen",
+        "best_ship": {
+            "description": "Schlage die besten Schiffe für den Einsatz gegen einen bestimmten Gegner vor - basierend auf deinen Spielerdaten.",
+            "find_ships": "Finde die Schiffe",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "arena": "{{rank_names.arena_rank}}",
+                "fbb": "{{rank_names.fbb_rank}}"
+            },
+            "title": "Finder des besten Schiffes"
+        },
         "bonus_ability": "Bonusfähigkeit",
         "boost": "Verstärkung",
         "boosts": "Verstärkungen",
@@ -2247,7 +2247,8 @@
             "fixed_delay_msg": "Muss eine Zahl zwischen 0,2 und 0,6 sein",
             "generating_permutations_ellipses": "Permutationen werden generiert ...",
             "icon_activation_offset": "{{icon}} Aktivierungsoffset",
-            "ignore_skill": "Ignorieren Sie die Fähigkeiten",
+            "ignore_skill": "Fähigkeiten ignorieren",
+            "ignore_triggers": "Auslöser ignorieren",
             "iterations": "Iterationen",
             "max_init": "Maximale Initialisierungszeit",
             "max_iterations": "Max. Iterationen",

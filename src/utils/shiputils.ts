@@ -440,7 +440,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
  * @param seat Optional. Get only crew for the specified seat (skill). If the seat doesn't exist on the ship, an empty array is returned.
  * @returns An array of all crew.
  */
-export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined, fbb?: number) {
+export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)[], onlyTriggers: boolean = false, seats?: BaseSkillFields[] | string[] | undefined, fbb?: number, ignoreTriggers: boolean = false) {
 	// first, get only the crew with the specified traits.
 	console.log("Find Potential Crew For " + ship.name);
 	if (seats?.length && !seats.some((seat) => ship.battle_stations?.some(bs => bs.skill === seat))) return [];
@@ -469,13 +469,13 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 	if (bscrew) {
 		bscrew = bscrew.filter(crew => {
 			if ((grants?.length ?? 0) == 0) {
-				return (crew.action.ability?.condition ?? 0) === 0;
+				return (crew.action.ability?.condition ?? 0) === 0 || ignoreTriggers;
 			}
 			else if (onlyTriggers) {
 				return grants?.some(grant => grant.status === crew.action.ability?.condition);
 			}
 			else {
-				return ((crew.action.ability?.condition ?? 0) === 0) || grants?.some(grant => grant.status === crew.action.ability?.condition);
+				return ((crew.action.ability?.condition ?? 0) === 0) || ignoreTriggers || grants?.some(grant => grant.status === crew.action.ability?.condition);
 			}
 
 		});

@@ -17,6 +17,7 @@ const ShipCrewWorker = {
                 event_crew,
                 fixed_activation_delay,
                 ignore_skill,
+                ignore_triggers,
                 max_iterations,
                 offense,
                 opponents,
@@ -63,7 +64,8 @@ const ShipCrewWorker = {
                 ship.battle_stations?.forEach((bs) => {
                     for (let c of crew_set) {
                         if (!result_crew.includes(c)) {
-                            if (c.skill_order.includes(bs.skill) || ignore_skill) {
+                            if ((c.skill_order.includes(bs.skill) || ignore_skill) &&
+                                (!c.action?.ability?.condition || !!ignore_triggers || ship.actions?.some(act => act.status === c.action.ability?.condition))) {
                                 result_crew.push(c);
                                 break;
                             }

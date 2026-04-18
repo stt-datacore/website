@@ -2218,16 +2218,6 @@
         }
     },
     "ship": {
-        "best_ship": {
-            "title": "Buscador del mejor buque",
-            "description": "Sugiere los mejores buques para usar contra un oponente determinado, basándote en los datos de tu jugador.",
-            "opponent": "{{gauntlet.opponent_table.opponent}}",
-            "opponent_modes": {
-                "fbb": "{{rank_names.fbb_rank}}",
-                "arena": "{{rank_names.arena_rank}}"
-            },
-            "find_ships": "Encuentra los buques"
-        },
         "accuracy": "Precisión",
         "amount": "Cantidad",
         "antimatter": "Antimateria",
@@ -2236,6 +2226,16 @@
         "attack_speed": "Velocidad de ataque",
         "battle_mode": "Modo de batalla",
         "battle_stations": "Estaciones de batalla",
+        "best_ship": {
+            "description": "Sugiere los mejores buques para usar contra un oponente determinado, basándote en los datos de tu jugador.",
+            "find_ships": "Encuentra los buques",
+            "opponent": "{{gauntlet.opponent_table.opponent}}",
+            "opponent_modes": {
+                "arena": "{{rank_names.arena_rank}}",
+                "fbb": "{{rank_names.fbb_rank}}"
+            },
+            "title": "Buscador del mejor buque"
+        },
         "bonus_ability": "Habilidad Bonus",
         "boost": "Aumento",
         "boosts": "Aumentos",
@@ -2258,6 +2258,7 @@
             "generating_permutations_ellipses": "Generando permutaciones...",
             "icon_activation_offset": "{{icon}} Compensación de activación",
             "ignore_skill": "Ignora las habilidades",
+            "ignore_triggers": "Ignorar los desencadenantes",
             "iterations": "Iteraciones",
             "max_init": "Tiempo máximo de inicio",
             "max_iterations": "Iteraciones máx.",
