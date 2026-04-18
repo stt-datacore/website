@@ -237,6 +237,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				considerUnowned={considerUnowned}
 				crewStations={opponentStations}
 				ignoreSkills={ignoreSkills}
+				ignoreTriggers={ignoreTriggers}
 				isOpponent={true}
 				onlyImmortal={onlyImmortal}
 				pageId={'opponentInfo'}
