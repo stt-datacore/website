@@ -79,6 +79,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 					{renderCrewVP()}
 					{renderTraitBonus()}
 				</div>
+				{renderExclusiveBonus()}
 				{renderCritTraitBonus()}
 				{showSkills && (
 					<CrewVoyageSkills
@@ -115,11 +116,23 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		);
 	}
 
+	function renderExclusiveBonus() {
+		const exclusiveBonus: number = crew.antimatter_bonus ?? 0;
+		if (exclusiveBonus === 0) return <></>;
+		else return (
+			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+				<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
+					<img src={`${process.env.GATSBY_ASSETS_URL}captains_bridge_antimatter.png`} style={{ height: '1em' }} />
+					<span>{t('global.exclusive')}</span>
+					<span>+{exclusiveBonus}</span>
+				</div>
+			</div>
+		);
+	}
+
 	function renderTraitBonus(): JSX.Element {
 		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
-		const exclusiveBonus: number = crew.antimatter_bonus ?? 0;
-		const totalBonus: number = traitBonus + exclusiveBonus;
-		if (totalBonus === 0) return <></>;
+		if (traitBonus === 0) return <></>;
 
 		return (
 			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -127,22 +140,13 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.5em' }}>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 						<span>{TRAIT_NAMES[trait]}</span>
-						{traitBonus !== totalBonus && (
-							<span>+25</span>
-						)}
+						<span>+25</span>
 					</div>
 				)}
 				{traitBonus > 0 && traitBonus !== 25 && (
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
 						<span>+{traitBonus}</span>
 						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
-					</div>
-				)}
-				{exclusiveBonus > 0 && (
-					<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}captains_bridge_antimatter.png`} style={{ height: '1em' }} />
-						<span>{t('global.exclusive')}</span>
-						<span>+{exclusiveBonus}</span>
 					</div>
 				)}
 			</div>
