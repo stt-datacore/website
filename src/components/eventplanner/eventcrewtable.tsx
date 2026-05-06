@@ -80,7 +80,18 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		else {
 			const results = [
 				{ width: 3, column: 'name', title: t('event_planner.table.columns.crew'), pseudocolumns: ['name', 'max_rarity', 'level'] },
-				{ width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true },
+				{
+					width: 1, column: 'bonus', title: t('event_planner.table.columns.bonus'), reverse: true,
+					customCompare: (a: IRosterCrew, b: IRosterCrew) => {
+						let r = a.bonus - b.bonus;
+
+						if (r === 0 && phaseType === 'voyage') {
+							r = a.ranks.gauntletRank - b.ranks.gauntletRank;
+						}
+						return r;
+					}
+
+				},
 				{ width: 1, column: 'bestSkill.score', title: t('event_planner.table.columns.best'), reverse: true },
 			] as ITableConfigRow[];
 

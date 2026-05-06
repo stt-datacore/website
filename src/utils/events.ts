@@ -462,6 +462,9 @@ function getBonus(crew: IEventScoredCrew, eventData: IEventData, low: number, hi
 				// 	amount = (activeContent.antimatter_bonus_per_crew_trait ?? low);
 				// }
 			}
+			if (crew.antimatter_bonus) {
+				amount += crew.antimatter_bonus;
+			}
 		}
 		else {
 			if (eventData.featured.includes(crew.symbol))
