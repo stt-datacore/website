@@ -153,7 +153,7 @@ export const Worfle = () => {
 					iconUrl = '/media/vault.png';
 					break;
 				case 'trait':
-					iconUrl = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+					iconUrl = `${process.env.REACT_ASSETS_URL}items_keystones_${trait}.png`;
 					break;
 				case 'variant':
 					iconUrl = '/media/crew_icon.png';

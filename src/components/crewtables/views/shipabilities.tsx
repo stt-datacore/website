@@ -6,16 +6,16 @@ import CONFIG from '../../../components/CONFIG';
 
 import { RarityFilter } from '../../../components/crewtables/commonoptions';
 
-import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, mapToRankings } from '../../../utils/crewutils';
-import { Ship } from '../../../model/ship';
-import { AllBosses, ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 import { AbilityUses, AdvantagePicker, BonusPicker, ShipAbilityPicker, ShipAbilityRankPicker, ShipPicker, ShipSeatPicker, TriggerPicker } from '../../../components/crewtables/shipoptions';
 import { DEFAULT_MOBILE_WIDTH } from '../../../components/hovering/hoverstat';
+import { Ship } from '../../../model/ship';
+import { ShipSkillRanking, ShipStatMap, createShipStatMap, getShipBonus, getShipChargePhases, getSkills, mapToRankings } from '../../../utils/crewutils';
+import { AllBosses, ShipPickerFilter, findPotentialCrew, printTriggers } from '../../../utils/shiputils';
 
 import { ICrewFilter, IRosterCrew } from '../../../components/crewtables/model';
 import { ITableConfigRow } from '../../../components/searchabletable';
 import { GlobalContext } from '../../../context/globalcontext';
-import { BossDetails, CrewMember } from '../../../model/crew';
+import { CrewMember } from '../../../model/crew';
 import { TranslateMethod } from '../../../model/player';
 import { formatShipScore } from '../../ship/utils';
 

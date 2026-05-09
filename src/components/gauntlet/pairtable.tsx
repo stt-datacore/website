@@ -34,7 +34,7 @@ export const GauntletPairTable = (props: GauntletPairTableProps) => {
             skilluse = skill.skill;
         }
 
-        return `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skilluse}.png`;
+        return `${process.env.REACT_ASSETS_URL}atlas/icon_${skilluse}.png`;
     }
 
 

@@ -1,20 +1,18 @@
 import React from 'react';
-import { Link } from 'gatsby';
-import { Table, Rating, Checkbox, Button } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { Rating, Table } from 'semantic-ui-react';
 
-import { InitialOptions, LockedProspect } from '../../model/game-elements';
-import { GlobalContext } from '../../context/globalcontext';
-import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
+import { ITableConfigRow, SearchableTable } from '../../components/searchabletable';
+import { GlobalContext } from '../../context/globalcontext';
+import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
-import { IRosterCrew, RosterType, ICrewFilter } from './model';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { printAM } from '../retrieval/context';
 import { descriptionLabel, SpecialViews } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
-import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { OptionsPanelFlexRow } from '../stats/utils';
-import { CompletionState } from '../../model/player';
-import { printAM, printChrons } from '../retrieval/context';
+import { ICrewFilter, IRosterCrew, RosterType } from './model';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -23,10 +21,10 @@ type CrewConfigTableProps = {
 	rosterCrew: IRosterCrew[];
 	crewFilters: ICrewFilter[];
 	tableConfig?: ITableConfigRow[];
-	renderTableCells?: (crew: IRosterCrew) => JSX.Element;
+	renderTableCells?: (crew: IRosterCrew) => React.ReactNode;
 	lockableCrew?: LockedProspect[];
 	loading?: boolean;
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.ReactNode;
 	specialView?: SpecialViews;
 };
 
@@ -112,7 +110,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: IRosterCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<IRosterCrew | null | undefined>> | undefined = undefined): JSX.Element {
+	function renderTableRow(crew: IRosterCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<IRosterCrew | null | undefined>> | undefined = undefined): React.ReactNode {
 		const attributes = {
 			positive: highlighted
 		};
@@ -136,7 +134,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

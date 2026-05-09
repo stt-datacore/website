@@ -924,7 +924,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                         return <div key={`battle_station_${idx}`} style={{ display: 'flex', alignItems: 'center', gap: '1em', justifyContent: 'center' }}>
                                             <div style={{height: '32px', display:'flex', alignItems: 'center'}}>
                                                 ({idx+1})&nbsp;{tfmt('ship.calc.icon_activation_offset', {
-                                                    icon: <img key={skillName} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillName}.png`} style={{width: '16px', margin: '0.5em'}} />
+                                                    icon: <img key={skillName} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skillName}.png`} style={{width: '16px', margin: '0.5em'}} />
                                                 })}
                                             </div>
                                             <Input
@@ -982,7 +982,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             <div style={{ display: 'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em' }}>
                 {sug.crew.map((crew, idx) => <div style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
 
-                    <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+                    <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 
                     {crew.name}
                 </div>)}

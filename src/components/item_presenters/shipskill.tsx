@@ -107,8 +107,8 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
         const withActionBorder = (this.props as ShipSkillProps).withActionBorder ?? isShip;
         const { withActionIcons, grouped } = this.props;
 
-        const drawBullets = (actions: number): JSX.Element[] => {
-            let elems: JSX.Element[] = [];
+        const drawBullets = (actions: number): React.ReactNode[] => {
+            let elems: React.ReactNode[] = [];
             for (let i = 0; i < actions; i++) {
                 elems.push(
                     <img
@@ -352,7 +352,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                             padding: 0,
                                             margin: "0"}}
                                             title={action.source}
-                                        src={`${process.env.GATSBY_ASSETS_URL}${action.icon?.file?.slice(1).replace(/\//g, "_")}.png`}
+                                        src={`${process.env.REACT_ASSETS_URL}${action.icon?.file?.slice(1).replace(/\//g, "_")}.png`}
                                         />
                                 </div>
                             </div>

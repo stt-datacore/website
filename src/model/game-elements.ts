@@ -34,7 +34,7 @@ export interface RarityOptions {
   key: string;
   value?: string | null | undefined;
   text: string;
-  content?: string | JSX.Element;
+  content?: string | React.ReactNode;
 }
 
 
@@ -47,7 +47,7 @@ export interface RetrievalOption {
   key: string | 0;
   value: string | 0;
   text: string;
-  image?: AvatarIcon; // image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }}];
+  image?: AvatarIcon; // image: { avatar: true, src: `${process.env.REACT_ASSETS_URL}${c.imageUrlPortrait}` }}];
 }
 
 // export interface FuseGroup {

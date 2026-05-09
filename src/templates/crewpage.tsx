@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet as HelmetDep } from 'react-helmet';
 import { Image, Divider, Rating, Button, Icon } from 'semantic-ui-react';
-import { graphql, navigate } from 'gatsby';
 
 import { ClassicPresenter } from '../components/item_presenters/classic_presenter';
 
@@ -16,6 +15,7 @@ import { Polestars } from '../components/crewpage/polestars';
 import { CrewVariants } from '../components/crewpage/crewvariants';
 import { CrewQuipment } from '../components/crewpage/crewquipment';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
+import { useParams } from 'react-router-dom';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 
@@ -23,36 +23,37 @@ export interface CrewPageOptions {
 	key: string;
 	text: string;
 	value: string;
-	content: JSX.Element;
+	content: React.ReactNode;
 }
 
 type StaticCrewPageProps = {
-	data: {
-		site: {
-			siteMetadata: {
-				titleTemplate: string;
-				defaultTitle: string;
-				defaultDescription: string;
-				baseUrl: string;
-			}
-		};
-		markdownRemark: {
-			html: string;
-			frontmatter: {
-				name: string;
-				memory_alpha: string;
-				bigbook_tier?: number;
-				events?: number;
-				in_portal?: boolean;
-				published: boolean;
-			};
-			rawMarkdownBody: string;
-		};
-		crewJson: any;
-	};
-	location: {
-		pathname: string;
-	}
+	// crew: string;
+	// data: {
+	// 	site: {
+	// 		siteMetadata: {
+	// 			titleTemplate: string;
+	// 			defaultTitle: string;
+	// 			defaultDescription: string;
+	// 			baseUrl: string;
+	// 		}
+	// 	};
+	// 	markdownRemark: {
+	// 		html: string;
+	// 		frontmatter: {
+	// 			name: string;
+	// 			memory_alpha: string;
+	// 			bigbook_tier?: number;
+	// 			events?: number;
+	// 			in_portal?: boolean;
+	// 			published: boolean;
+	// 		};
+	// 		rawMarkdownBody: string;
+	// 	};
+	// 	crewJson: any;
+	// };
+	// location: {
+	// 	pathname: string;
+	// }
 };
 
 const StaticCrewPage = (props: StaticCrewPageProps) => {
@@ -121,9 +122,8 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	}
 
 	render() {
-		const { location } = this.props.props;
-		const { markdownRemark, site: { siteMetadata } } = this.props.props.data;
-
+		const { crew_symbol } = useParams();
+		const location = `${document.location}`;
 
 		if (this.context.player.playerData?.player?.character?.crew?.length) {
 			this.ownedCrew = this.context.player.playerData.player.character.crew;
@@ -138,11 +138,11 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 
 		const { comments } = this.state;
 		const { TRAIT_NAMES, CREW_ARCHETYPES } = this.context.localized;
-		let hasBigBookEntry = markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
+		let hasBigBookEntry = false; // markdownRemark && markdownRemark.frontmatter && markdownRemark.frontmatter.published;
 
 		const userName = this._getCurrentUsername();
 
-		const symbol = this.props.props.location.pathname.replace("/crew/", "").replace("/", "");
+		const symbol = crew_symbol; // this.props.props.location.pathname.replace("/crew/", "").replace("/", "");
 
 		const crew = (this.context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
 		//const crewFind = this.context.core.crew.find(f => f.symbol === crew.symbol);
@@ -181,14 +181,14 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 		const Helmet = HelmetDep as any;
 		return (
 			<>
-				<Helmet titleTemplate={siteMetadata.titleTemplate} defaultTitle={siteMetadata.defaultTitle}>
+				<Helmet titleTemplate={`${crew.name}`} defaultTitle={`STT DataCore`}>
 					<title>{crew.name}</title>
 					<meta property='og:type' content='website' />
-					<meta property='og:title' content={`${crew.name} - ${siteMetadata.defaultTitle}`} />
+					<meta property='og:title' content={`${crew.name} - ${`STT`}`} />
 					<meta property='og:site_name' content='DataCore' />
-					<meta property='og:image' content={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-					<meta property='og:description' content={markdownRemark.rawMarkdownBody.trim() || siteMetadata.defaultDescription} />
-					<meta property='og:url' content={`${siteMetadata.baseUrl}${location.pathname}`} />
+					<meta property='og:image' content={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
+					<meta property='og:description' content={`${crew.name} - ${`STT`}`} />
+					<meta property='og:url' content={`${location}`} />
 				</Helmet>
 				<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
 					<h2 style={{ display: "flex", flexDirection: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "column" : "row", alignItems: "center" }}>
@@ -237,7 +237,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 									width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%",
 									marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
 								}}
-									src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
+									src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlFullBody}`}
 									alt={crew.name}
 								/>
 								{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig) && (<i style={{ textAlign: "center", fontSize: "0.8em", color: "gray" }}>{"(double-click to enlarge)"}</i>)}
@@ -249,8 +249,8 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 							flexGrow: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : 1,
 							flexDirection: "column",
 						}}>
-							<ClassicPresenter crew={crew} markdownRemark={markdownRemark} />
-							{false &&
+							<ClassicPresenter crew={crew} markdownRemark={``} />
+							{/* {false &&
 								<div style={{ margin: '1em 0', textAlign: 'right' }}>
 									{(crew.immortal !== undefined && crew.immortal !== CompletionState.DisplayAsImmortalStatic) &&
 										(<h3><a style={{ color: 'lightgreen', cursor: "pointer" }} onClick={(e) => navigate("/playertools?tool=crew&search=" + crew.name)} title="Click to see crew in roster">OWNED</a></h3>)
@@ -261,23 +261,11 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 										</Button>
 									}
 								</div>
-							}
+							} */}
 						</div>
 					</div>
 				</div>
 				<Divider horizontal hidden />
-				{hasBigBookEntry && (
-					<React.Fragment>
-						<div dangerouslySetInnerHTML={{ __html: markdownRemark.html }} />
-						{/* {!!crew.markdownInfo &&
-							<div style={{ textAlign: "right" }}>
-								<i style={{ fontSize: "0.85em" }}>- {crew.markdownInfo.author} ({(new Date(crew.markdownInfo.modified)).toLocaleDateString()})</i>
-							</div>} */}
-						{/* <div style={{ marginTop: '1em', textAlign: 'right' }}>
-							— <a href={`https://www.bigbook.app/crew/${crew.symbol}`}>The Big Book of Behold Advice</a>
-						</div> */}
-					</React.Fragment>
-				)}
 				<ItemHoverStat targetGroup={'crew_quipment'} />
 				<Divider horizontal hidden style={{ marginTop: '4em' }} />
 				<EquipmentBuilds crew={crew} />
@@ -295,7 +283,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	async _saveComment(symbol: string, token: string) {
 		const { commentMarkdown } = this.state;
 
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/savecomment`, {
+		fetch(`${process.env.REACT_DATACORE_URL}api/savecomment`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
@@ -311,38 +299,13 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 			});
 	}
 
-	_addProspect(crew: any): void {
-		const linkUrl = '/playertools?tool=crew';
-		const linkState = {
-			prospect: [crew.symbol]
-		};
-		navigate(linkUrl, { state: linkState });
-	}
+	// _addProspect(crew: any): void {
+	// 	const linkUrl = '/playertools?tool=crew';
+	// 	const linkState = {
+	// 		prospect: [crew.symbol]
+	// 	};
+	// 	navigate(linkUrl, { state: linkState });
+	// }
 }
 
 export default StaticCrewPage;
-
-export const query = graphql`
-	query($slug: String!) {
-		site {
-			siteMetadata {
-				defaultTitle: title
-				titleTemplate
-				defaultDescription: description
-				baseUrl
-			}
-		}
-		markdownRemark(fields: { slug: { eq: $slug } }) {
-			rawMarkdownBody
-			html
-			frontmatter {
-				name
-				memory_alpha
-				bigbook_tier
-				events
-				in_portal
-				published
-			}
-		}
-	}
-`;

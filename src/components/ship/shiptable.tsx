@@ -1,7 +1,7 @@
 import React from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Table } from 'semantic-ui-react';
 
-import { navigate } from 'gatsby';
+import { navigate } from '../../context/globalcontext';
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerBuffMode } from '../../model/player';
 import { Ship, ShipInUse } from '../../model/ship';
@@ -313,7 +313,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	function printUsage(ship: Ship) {
 		let usages = shipsInUse?.filter(f => f.ship.id === ship.id);
-		let texts = [] as JSX.Element[];
+		let texts = [] as React.ReactNode[];
 		if (usages?.length) {
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {
@@ -372,7 +372,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				>
 					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 						<ShipTarget inputItem={ship} targetGroup={`${pageId}/ship_hover`}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+							<img width={48} src={`${process.env.REACT_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 						</ShipTarget>
 					</div>
 					<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>

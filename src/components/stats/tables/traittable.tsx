@@ -1,25 +1,21 @@
-import React from "react"
-import { GlobalContext } from "../../../context/globalcontext"
-import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { Checkbox, Table } from "semantic-ui-react";
-import { computePotentialColScores, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, HiddenTraitCols } from "../utils";
-import { approxDate } from "../itemdateutils";
-import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
-import { AvatarView } from "../../item_presenters/avatarview";
+import 'moment/locale/fr';
+import React from "react";
+import { Checkbox, Table } from "semantic-ui-react";
+import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
+import { getVariantTraits, gradeToColor } from "../../../utils/crewutils";
 import { omniSearchFilter } from "../../../utils/omnisearch";
 import { useStateWithStorage } from "../../../utils/storage";
-import { getVariantTraits, gradeToColor, oneCrewCopy } from "../../../utils/crewutils";
-import { getIconPath } from "../../../utils/assets";
-import { TraitStats } from "../model";
-import { TraitDive } from "./traitdive";
-import { renderMainDataScore } from "../../crewtables/views/base";
 import CONFIG from "../../CONFIG";
-import { EquipmentItem } from "../../../model/equipment";
-import { ICoreData } from "../../../context/coremodel";
-import { colSpecialDate, getItemDateEstimates } from "../itemdateutils";
+import { renderMainDataScore } from "../../crewtables/views/base";
+import { AvatarView } from "../../item_presenters/avatarview";
+import { ITableConfigRow, SearchableTable } from "../../searchabletable";
+import { approxDate, colSpecialDate, getItemDateEstimates } from "../itemdateutils";
+import { TraitStats } from "../model";
+import { computePotentialColScores, GameEpoch, HiddenTraitCols, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { TraitDive } from "./traitdive";
 
 export const TraitStatsTable = () => {
 
@@ -373,7 +369,7 @@ export const TraitStatsTable = () => {
                         {CONFIG.SERIES.includes(item.trait_raw) &&
                             <img
                                 style={{ height: '2em'}}
-                                src={`${process.env.GATSBY_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
+                                src={`${process.env.REACT_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
                         }
                     </div>
                 </Table.Cell>

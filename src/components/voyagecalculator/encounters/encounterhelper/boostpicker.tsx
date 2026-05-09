@@ -110,7 +110,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		</Popup>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.ReactNode {
 		if (!assignedBoost) {
 			return (
 				<Button /* Add a boost */
@@ -130,7 +130,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderGroups(): JSX.Element {
+	function renderGroups(): React.ReactNode {
 		const groups: string[] = [];
 		boostOptions.forEach(option => {
 			if (!groups.includes(option.type))
@@ -156,7 +156,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderGroup(type: string): JSX.Element {
+	function renderGroup(type: string): React.ReactNode {
 		const options: IChampionBoost[] = boostOptions.filter(option => option.type === type);
 		if (options.length === 0) return <></>;
 		return (
@@ -199,7 +199,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderQuantity(boost: IChampionBoost): JSX.Element {
+	function renderQuantity(boost: IChampionBoost): React.ReactNode {
 		let symbol: string = '';
 		if (boost.type === 'voyage_crit_boost')
 			symbol = `voyage_crit_boost_${boost.rarity}`;
@@ -223,7 +223,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 			onBoostSelected({ type, rarity });
 	}
 
-	function renderRelevantToggle(): JSX.Element {
+	function renderRelevantToggle(): React.ReactNode {
 		return (
 			<Form style={{ textAlign: 'center' }}>
 				<Form.Field	/* Only show relevant boosts */
@@ -236,7 +236,7 @@ export const BoostPicker = (props: BoostPickerProps) => {
 		);
 	}
 
-	function renderActions(): JSX.Element {
+	function renderActions(): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '1em' }}>
 				{assignedBoost && (
@@ -292,12 +292,12 @@ function getBoostShort(boost: IChampionBoost): string {
 
 function getTypeImg(type: string): string {
 	if (type === 'voyage_crit_boost')
-		return `${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`;
-	return `${process.env.GATSBY_ASSETS_URL}atlas/icon_${type}.png`;
+		return `${process.env.REACT_ASSETS_URL}atlas/crit_icon_gauntlet.png`;
+	return `${process.env.REACT_ASSETS_URL}atlas/icon_${type}.png`;
 }
 
 function getConsumableImg(type: string, rarity: number): string {
 	if (type === 'voyage_crit_boost')
-		return `${process.env.GATSBY_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
-	return `${process.env.GATSBY_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
+		return `${process.env.REACT_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
+	return `${process.env.REACT_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
 }

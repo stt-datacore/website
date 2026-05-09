@@ -365,7 +365,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		return excludedCrewIds.filter(f => quipped.includes(f));
 	}
 
-	function renderExcludedCrew(): JSX.Element {
+	function renderExcludedCrew(): React.ReactNode {
 		const visibleExcludedCrew = [] as IVoyageCrew[];
 		excludedCrewIds.forEach(crewId => {
 			const crew = props.preExcludedCrew.find(crew => crew.id === crewId);
@@ -427,10 +427,10 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 		)
 	}
 
-	function renderCrewLabel(crew: IVoyageCrew): JSX.Element {
+	function renderCrewLabel(crew: IVoyageCrew): React.ReactNode {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
-				<Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+				<Image spaced='right' src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 				{crew.kwipment?.some(q => q || q[1]) &&
 					<QuipmentPopover ignoreProspects={true} crew={crew} showQuipment={true} />
 				}
@@ -527,14 +527,14 @@ const CrewExcluderModal = (props: CrewExcluderModalProps) => {
 		/>
 	);
 
-	function renderCaption(crew: CrewMember | PlayerCrew): JSX.Element {
+	function renderCaption(crew: CrewMember | PlayerCrew): React.ReactNode {
 		return <div style={{...OptionsPanelFlexColumn, gap: '0.5em'}}>
 			<CrewItemsView nonInteractive={true} itemSize={24} crew={crew} quipment={true} />
 			<span>{crew.name}</span>
 		</div>
 	}
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.ReactNode {
 		return (
 			<Button color='blue'>
 				<Icon name='zoom-in' />

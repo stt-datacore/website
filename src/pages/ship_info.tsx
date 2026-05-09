@@ -5,7 +5,7 @@ import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { GlobalContext } from '../context/globalcontext';
-import { navigate } from 'gatsby';
+import { Navigate } from 'react-router-dom';
 import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
@@ -30,7 +30,7 @@ const ShipInfoPage = () => {
 			ship_key = urlParams.get('symbol') ?? undefined;
 		}
 		if (!ship_key) {
-			navigate('/ships');
+			Navigate({ to: '/ships' });
 			return;
 		}
 		setShipKey(ship_key);
@@ -137,7 +137,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				}
 			}
 			else {
-				navigate("/ships");
+				Navigate({ to: "/ships" });
 			}
 		}
 	}, [ships, shipKey]);

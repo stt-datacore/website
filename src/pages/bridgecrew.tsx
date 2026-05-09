@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Header, Dropdown, Grid, Rating, Divider, Form, Segment, Image } from 'semantic-ui-react';
-import { Link } from 'gatsby';
-import * as marked from 'marked';
 
 import { CrewMember } from '../model/crew';
 import DataPageLayout from '../components/page/datapagelayout';
@@ -55,7 +53,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				key: crew.symbol,
 				value: crew.symbol,
 				imageUrlFullBody: crew.imageUrlFullBody,
-				image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}` },
+				image: { avatar: true, src: `${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}` },
 				text: `${crew.short_name} (${crew.name})`,
 				max_rarity: crew.max_rarity
 			} as BridgePeopleListItem);
@@ -108,7 +106,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				<div style={{ height: '500px', overflow: 'hidden', textAlign: 'center', padding: '25px', backgroundColor: '#203147', border: '2px solid lightblue' }}>
 					<Header as='h3'>Bridge Crew</Header>
 					{this.state.entries.map((entry, idx) => (
-							<img src={`${process.env.GATSBY_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
+							<img src={`${process.env.REACT_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
 					))}
 				</div>
 				</React.Fragment>

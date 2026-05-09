@@ -73,7 +73,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         this.tiny.setValue<boolean>('ship', value, true);
     }
 
-    render(): JSX.Element {
+    render(): React.ReactNode {
         const { ship: ship, touched, tabs, showIcon } = this.props;
         const { mobileWidth } = this.state;
         const { SHIP_TRAIT_NAMES } = this.context.localized;
@@ -155,7 +155,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                 <div style={{ display: "flex", flexDirection: "column"}}>
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
                         <img
-                            src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+                            src={`${process.env.REACT_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
                             style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
                         />
                     </div>
@@ -169,7 +169,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 return <img
                                     key={`${bs.skill}_key_${ship.symbol}_${idx}`}
                                     style={{height: '1em'}}
-                                    src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
+                                    src={`${process.env.REACT_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
                             })}
                             {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />

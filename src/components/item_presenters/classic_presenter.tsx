@@ -52,7 +52,7 @@ const defaultFields = [
 
 export interface IFieldOverride {
 	field: ValidField;
-	override: (crew: CrewMember, compact?: boolean) => JSX.Element;
+	override: (crew: CrewMember, compact?: boolean) => React.ReactNode;
 };
 
 export interface IFieldScale {
@@ -78,7 +78,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	const myCrew = playerData ? playerData.player.character.crew : undefined;
 
 	const fields = props.fields ?? defaultFields;
-	const elements = [] as JSX.Element[];
+	const elements = [] as React.ReactNode[];
 	if (!crew.cap_achiever && myCrew) {
 		let fc = myCrew.find(f => f.symbol === crew.symbol);
 		if (fc?.cap_achiever) {
@@ -185,12 +185,12 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+				<img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 			</span>{' '}
 			<b>{crewDemands.totalChronCost}</b>
 			{', '}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
+				<img src={`${process.env.REACT_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 			</span>{' '}
 			<b>{crewDemands.craftCost}</b>
 		</div>
@@ -432,7 +432,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 		</Accordion>
 	);
 
-	function renderTableHeader(): JSX.Element {
+	function renderTableHeader(): React.ReactNode {
 		const baseSkills = Object.entries(crew.base_skills)
 			.filter(skill => !!skill[1])
 			.sort((a, b) => b[1].core - a[1].core);
@@ -442,7 +442,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 					<Table.HeaderCell />
 					{baseSkills.map(skill =>
 						<Table.HeaderCell key={skill[0]} textAlign='center'>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
+							<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
 						</Table.HeaderCell>
 					)}
 				</Table.Row>
@@ -450,11 +450,11 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 		)
 	}
 
-	function renderSkillData(sk: SkillData): JSX.Element {
+	function renderSkillData(sk: SkillData): React.ReactNode {
 		return renderTableRow(sk.rarity, sk.base_skills);
 	}
 
-	function renderTableRow(rarity: number, skills: BaseSkills): JSX.Element {
+	function renderTableRow(rarity: number, skills: BaseSkills): React.ReactNode {
 		debasedCrew.base_skills = skills;
 		Object.keys(debasedCrew.base_skills).map(skill => {
 			if (!debasedCrew.base_skills[skill])

@@ -85,7 +85,7 @@ function EventInformationTab(props: { eventData: GameEvent, lastEvent?: GameEven
 				.sort((a, b) => crew.base_skills[a].core > crew.base_skills[b].core ? -1 : 1)
 				.map(skill => ({
 					key: skill,
-					imageUrl: `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`
+					imageUrl: `${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`
 				})),
 			traits: crew.traits.map(t => TRAIT_NAMES[t]),
 		} as CrewCardBrief;

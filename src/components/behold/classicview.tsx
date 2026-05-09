@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link, navigate } from 'gatsby';
+import { Link } from 'react-router-dom';
 import { Grid, Card, Label, Image, Button, Icon, Rating, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
-import { GlobalContext } from '../../context/globalcontext';
+import { GlobalContext, navigate } from '../../context/globalcontext';
 import { ClassicPresenter, Skills, IFieldOverride } from '../../components/item_presenters/classic_presenter';
 import { marked } from 'marked';
 
@@ -82,7 +82,7 @@ const CardCrew = (props: CardCrewProps) => {
 					<Icon name='x' color='red' style={{ cursor: 'pointer' }} />
 				</Label>
 				<Card.Content>
-					<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} floated='right' size='small' />
+					<Image src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlFullBody}`} floated='right' size='small' />
 					<Card.Header>
 						<Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
 					</Card.Header>

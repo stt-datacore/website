@@ -22,7 +22,7 @@ export const ProficiencyRanges = (props: ProficiencyRangesProps) => {
 					{skills.sort((a, b) => sort ? b.range_max - a.range_max : 0).map(skill => (
 						<Table.Row key={skill.skill}>
 							<Table.Cell textAlign='center'>
-								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+								<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 							</Table.Cell>
 							<Table.Cell textAlign='center' style={{ whiteSpace: 'nowrap' }}>
 								{skill.range_min}-{skill.range_max}
@@ -39,7 +39,7 @@ export const ProficiencyRanges = (props: ProficiencyRangesProps) => {
 			{skills.sort((a, b) => sort ? b.range_max - a.range_max : 0).map(skill => (
 				<div key={skill.skill} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '.5em' }}>
 					<div style={{ width: '2em' }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+						<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 					</div>
 					<div>
 						{skill.range_max > 0 && <>{skill.range_min}-{skill.range_max}</>}

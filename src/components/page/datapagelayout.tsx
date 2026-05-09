@@ -1,5 +1,5 @@
 import React from 'react';
-import { withPrefix, graphql, useStaticQuery } from 'gatsby';
+
 import { Helmet as HelmetDep } from 'react-helmet';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -15,7 +15,7 @@ import { EnergyLogContextProvider } from '../../context/energylogcontext';
 const DEBUG_MODE = false;
 
 export interface DataPageLayoutProps {
-	children: JSX.Element;
+	children: React.ReactNode;
 
 	pageId?: string;
 
@@ -23,13 +23,13 @@ export interface DataPageLayoutProps {
 	 * Title of the page, for use in both datapage header, title, and meta tags
 	 */
 	pageTitle?: string;
-	pageTitleJSX?: JSX.Element;
+	pageTitleJSX?: React.ReactNode;
 
 	/**
 	 * One or two-sentence description of the page, for use in both datapage header and meta tags
 	 */
 	pageDescription?: string;
-	pageDescriptionJSX?: JSX.Element;
+	pageDescriptionJSX?: React.ReactNode;
 
 	/**
 	 * Default demands are crew, items, all_ships, all_buffs, and cadet
@@ -110,15 +110,15 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 					description={pageDescription}
 				/>
 				<Navigation
-					sidebarTarget={topAnchor}
+					sidebarTarget={topAnchor as any}
 					requestPanel={(target: string, panel: string | undefined) => {
 						if (target === 'player') {
 							setPlayerPanel(panel);
-							if (panel) scrollTo(contentAnchor);
+							if (panel) scrollTo(contentAnchor as any);
 						}
 						else if (target === 'dashboard') {
 							setDashboardPanel(panel);
-							if (panel) scrollTo(topAnchor);
+							if (panel) scrollTo(topAnchor as any);
 						}
 					}}
 				>
@@ -127,7 +127,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 							<Dashboard
 								openInputPanel={() => {
 									setPlayerPanel('input');
-									scrollTo(contentAnchor);
+									scrollTo(contentAnchor as any);
 								}}
 								narrow={narrowLayout ?? false}
 								activePanel={dashboardPanel}
@@ -154,7 +154,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		</AlertProvider>
 	);
 
-	function renderContents(): JSX.Element {
+	function renderContents(): React.ReactNode {
 		if (DEBUG_MODE) console.log("renderContents()");
 		return (
 			<React.Fragment>
@@ -186,21 +186,24 @@ type DataPageHelmetProps = {
 
 const DataPageHelmet = (props: DataPageHelmetProps) => {
 	const { title, description } = props;
-	const data = useStaticQuery(graphql`
-		query {
-			site {
-				siteMetadata {
-					defaultTitle: title
-					titleTemplate
-					defaultDescription: description
-					baseUrl
-				}
+	const baseUrl = `${location?.protocol}${location?.host}`;
+	const data = {
+		site: {
+			siteMetadata: {
+				defaultTitle: title,
+				titleTemplate: '',
+				defaultDescription: description,
+				baseUrl
 			}
 		}
-	`);
+	}
 
 	if (DEBUG_MODE) console.log("Helmet component render");
 	const Helmet = HelmetDep as any;
+	function withPrefix(arg0: string): string | undefined {
+		return arg0;
+	}
+
 	return (
 		<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
 			{title && <title>{title}</title>}

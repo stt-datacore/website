@@ -93,7 +93,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		columns.push(
 			{
 				id: 'crit_potential',
-				title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+				title: <img src={`${process.env.REACT_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 				align: 'center',
 				sortField: { id: 'crit_potential.length', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => renderCritPotential(datum as IProficientCrew)
@@ -109,7 +109,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 			id: skill,
 			title: (
 				<React.Fragment>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 					{!skills.includes(skill) && <Icon name='arrow alternate circle right outline' fitted />}
 				</React.Fragment>
 			),
@@ -143,13 +143,13 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		/>
 	);
 
-	function renderPreface(): JSX.Element {
+	function renderPreface(): React.ReactNode {
 		return (
 			<React.Fragment>
 				{tfmt('voyage.contests.notes.simulate_contestant', {
 					skills: <>{
 						skills.map(skill => (
-							<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.2em', verticalAlign: 'middle' }} className='invertibleIcon' />
+							<img key={skill} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.2em', verticalAlign: 'middle' }} className='invertibleIcon' />
 						))
 					}</>
 				})}
@@ -159,7 +159,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 						{` `}
 						{tfmt('voyage.contests.notes.crit_icon', {
 							img: (
-								<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+								<img src={`${process.env.REACT_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 							)
 						})}
 					</span>
@@ -168,7 +168,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderCrewLabel(crew: PlayerCrew): JSX.Element {
+	function renderCrewLabel(crew: PlayerCrew): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', alignItems: 'center' }}>
 				<CrewLabel crew={crew} />
@@ -177,12 +177,12 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderContestScore(crew: IProficientCrew): JSX.Element {
+	function renderContestScore(crew: IProficientCrew): React.ReactNode {
 		if (crew.scored_contest === 0) return <></>;
 		return <>{crew.scored_contest}</>;
 	}
 
-	function renderCritPotential(crew: IProficientCrew): JSX.Element {
+	function renderCritPotential(crew: IProficientCrew): React.ReactNode {
 		if (crew.crit_potential.length === 0) return <></>;
 		const title: string = crew.crit_potential.map(critTrait => TRAIT_NAMES[critTrait]).join(', ');
 		return (
@@ -192,7 +192,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		);
 	}
 
-	function renderCrewProficiency(crew: PlayerCrew, skill: string): JSX.Element {
+	function renderCrewProficiency(crew: PlayerCrew, skill: string): React.ReactNode {
 		const crewSkill: Skill | undefined = crew.skills[skill];
 		if (!crewSkill) return <></>;
 		let min: number = crewSkill.range_min;

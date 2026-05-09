@@ -52,7 +52,7 @@ const RosterSummary = (props: RosterSummaryProps) => {
 		</Modal>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.ReactNode {
 		return (
 			<Button icon='calculator' content={t('roster_summary.title')} size='large' />
 		)
@@ -226,7 +226,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		</Table>
 	);
 
-	function renderPercentCell(value: number): JSX.Element {
+	function renderPercentCell(value: number): React.ReactNode {
 		if (value === 1) return <Icon name='check' color='green' />;
 		return (
 			<React.Fragment>
@@ -235,7 +235,7 @@ const RarityDepthTable = (props: RarityDepthTableProps) => {
 		);
 	}
 
-	function renderImmortalCell(rarity: number, immortal: number): JSX.Element {
+	function renderImmortalCell(rarity: number, immortal: number): React.ReactNode {
 		if (immortal === 0) return <></>;
 		return (
 			<React.Fragment>
@@ -532,7 +532,7 @@ const SkillDepthTable = (props: SkillDepthTableProps) => {
 					<Table.Row key={row.key}>
 						<Table.Cell>
 							{row.skills.map(skill => (
-								<img key={skill} alt={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', padding: '0 2px' }} />
+								<img key={skill} alt={skill} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', padding: '0 2px' }} />
 							))}
 						</Table.Cell>
 						<Table.Cell textAlign='center'>{row.owned} / {row.total}</Table.Cell>

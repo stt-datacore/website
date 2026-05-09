@@ -1,8 +1,7 @@
 import React from 'react';
-import { Form, Dropdown, DropdownItemProps } from 'semantic-ui-react';
+import { Dropdown, DropdownItemProps, Form } from 'semantic-ui-react';
 
-import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
-import { printPortalStatus } from '../../../utils/crewutils';
+import { ICrewFilter, IRosterCrew } from '../../../components/crewtables/model';
 import { GlobalContext } from '../../../context/globalcontext';
 
 type ObtainedFilterProps = {

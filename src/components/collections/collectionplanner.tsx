@@ -141,7 +141,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
 
 	const crewAnchor = React.useRef<HTMLDivElement>(null);
 
-	if (checkAnchor(crewAnchor)) return <></>;
+	if (crewAnchor.current && checkAnchor(crewAnchor as any)) return <></>;
 
 	const playerCollections = React.useMemo(() => {
 		const playerCollections: PlayerCollection[] = tempcol?.filter((col) => {

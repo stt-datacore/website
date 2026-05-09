@@ -30,7 +30,7 @@ export const SkillToggler = (props: SkillTogglerProps) => {
 						color={value.includes(skill) ? 'blue' : undefined}
 						onClick={() => toggleSkill(skill)}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em' }} />
+						<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em' }} />
 					</Button>
 				))}
 			</Button.Group>

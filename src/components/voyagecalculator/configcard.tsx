@@ -24,7 +24,7 @@ import { addCrewToHistory, addVoyageToHistory, createTrackableCrew, createCheckp
 type ConfigCardProps = {
 	configSource: 'player' | 'custom';
 	voyageConfig: IVoyageInputConfig;
-	renderToggle: () => JSX.Element;
+	renderToggle: () => React.ReactNode;
 };
 
 export const ConfigCard = (props: ConfigCardProps) => {
@@ -106,7 +106,7 @@ const RunningShipIcon = (props: RunningShipIconProps) => {
 	if (shipIcon === '') return <></>;
 
 	return (
-		<Image floated='left' size='tiny' src={`${process.env.GATSBY_ASSETS_URL}${shipIcon}`} />
+		<Image floated='left' size='tiny' src={`${process.env.REACT_ASSETS_URL}${shipIcon}`} />
 	);
 };
 
@@ -122,11 +122,11 @@ const ConfigSkills = (props: ConfigSkillsProps) => {
 	return (
 		<Label.Group size='big'>
 			<Label>
-				<Image size='mini' spaced='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.primary_skill}.png`} />
+				<Image size='mini' spaced='right' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${voyageConfig.skills.primary_skill}.png`} />
 				{CONFIG.SKILLS[voyageConfig.skills.primary_skill]}
 			</Label>
 			<Label>
-				<Image size='mini' spaced='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${voyageConfig.skills.secondary_skill}.png`} />
+				<Image size='mini' spaced='right' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${voyageConfig.skills.secondary_skill}.png`} />
 				{CONFIG.SKILLS[voyageConfig.skills.secondary_skill]}
 			</Label>
 			{voyageConfig.ship_trait !== '' && (

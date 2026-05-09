@@ -223,7 +223,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		}
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.ReactNode {
 		return (
 			<AlternatePickerOptions
 				filters={filters} setFilters={setFilters}
@@ -234,15 +234,15 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		);
 	}
 
-	function renderGridCrew(datum: IEssentialData): JSX.Element {
+	function renderGridCrew(datum: IEssentialData): React.ReactNode {
 		return <CrewPortrait crew={datum as IAlternateCrewData} />;
 	}
 
-	function renderSkillHeader(skill: string): JSX.Element {
+	function renderSkillHeader(skill: string): React.ReactNode {
 		const crewCount: number = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill)).length;
 		return (
 			<span title={t('voyage.editor.n_viable_crew', { n: crewCount })}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 				{` `}({crewCount})
@@ -250,12 +250,12 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		);
 	}
 
-	function renderReplacement(): JSX.Element {
+	function renderReplacement(): React.ReactNode {
 		if (!targeting) return <></>;
-		const seat: JSX.Element = (
+		const seat: React.ReactNode = (
 			<React.Fragment>
 				<img
-					src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`}
+					src={`${process.env.REACT_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`}
 					style={{ height: '1em' }}
 					className='invertibleIcon'
 				/>
@@ -283,17 +283,17 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		);
 	}
 
-	function renderCrewAssignment(crew: IAlternateCrewData): JSX.Element {
+	function renderCrewAssignment(crew: IAlternateCrewData): React.ReactNode {
 		if (crew.assigned_slot < 0 || crew.assigned_slot >= 12) return <></>;
 		const slottedSkills: string[] = [
 			'command_skill', 'diplomacy_skill', 'security_skill',
 			'engineering_skill', 'science_skill', 'medicine_skill'
 		];
 		const skillSlot: number = Math.floor(crew.assigned_slot/2);
-		return <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+		return <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 	}
 
-	function renderCrewStatus(crew: IAlternateCrewData): JSX.Element {
+	function renderCrewStatus(crew: IAlternateCrewData): React.ReactNode {
 		if (crew.immortal > 0) {
 			return (
 				<Icon	/* Unfreeze crew */
@@ -418,7 +418,7 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 					<Icon name='info circle' />
 					<span style={{ marginRight: '1em' }}>
 						{tfmt('voyage.editor.targeting_message', {
-							seat: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)}</>
+							seat: <><img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)}</>
 						})}
 					</span>
 					<Button	/* Cancel */

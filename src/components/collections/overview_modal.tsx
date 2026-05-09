@@ -1,5 +1,5 @@
 import React from "react"
-import { Container, Image, Tab } from "semantic-ui-react"
+import { Container, Image, Tab, TabPane } from "semantic-ui-react"
 import { GlobalContext } from "../../context/globalcontext"
 import { Collection } from "../../model/collections"
 import { useStateWithStorage } from "../../utils/storage"
@@ -66,17 +66,17 @@ export const CollectionDetails = (props: CollectionDetailsProps) => {
 		{
 			menuItem: t('base.crew'),
 			render: () => (
-				<Tab.Pane attached={false}>
+				<TabPane attached={false}>
 					<CollectionCrew collection={collection} />
-				</Tab.Pane>
+				</TabPane>
 			),
 		},
 		{
 			menuItem: t('collections.milestones'),
 			render: () => (
-				<Tab.Pane attached={false}>
+				<TabPane attached={false}>
 					<CollectionTiers collection={collection} />
-				</Tab.Pane>
+				</TabPane>
 			),
 		},
 	];
@@ -89,7 +89,7 @@ export const CollectionDetails = (props: CollectionDetailsProps) => {
 		<div ref={ref}>
 			<div className="ui segment">
 				<Image
-					src={`${process.env.GATSBY_ASSETS_URL}${image}`}
+					src={`${process.env.REACT_ASSETS_URL}${image}`}
 					fluid
 				/>
 			</div>

@@ -1,16 +1,15 @@
 import React from 'react';
-import { Table, Rating } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
+import { Rating, Table } from 'semantic-ui-react';
 
-import { CrewMember } from '../../model/crew';
-import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
-import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
-import CABExplanation from '../explanations/cabexplanation';
 import CONFIG from '../../components/CONFIG';
-import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { formatTierLabel } from '../../utils/crewutils';
+import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
+import { ITableConfigRow, SearchableTable } from '../../components/searchabletable';
 import { GlobalContext } from '../../context/globalcontext';
+import { CrewMember } from '../../model/crew';
+import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { renderMainDataScore } from '../crewtables/views/base';
+import CABExplanation from '../explanations/cabexplanation';
 
 type TableViewProps = {
 	selectedCrew: string[];
@@ -48,14 +47,14 @@ export const TableView = (props: TableViewProps) => {
 		//{ width: 1, column: 'events', title: 'Events', reverse: true },
 		{ width: 1, column: 'unique_polestar_combos.length', title: <>{tfmt('behold_helper.columns.unique_retrievals')}</>, reverse: true, tiebreakers: ['in_portal'] },
 		{ width: 1, column: 'factionOnlyTotal', title: <>{tfmt('behold_helper.columns.faction_items')}<br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
-		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
-		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> }
+		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
+		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.REACT_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> }
 	];
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({
 			width: 1,
 			column: `${skill.name}`,
-			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
 			reverse: true
 		});
 	});
@@ -76,7 +75,7 @@ export const TableView = (props: TableViewProps) => {
 		</div>
 	);
 
-	function renderTableRow(crew: CrewMember, idx: number): JSX.Element {
+	function renderTableRow(crew: CrewMember, idx: number): React.ReactNode {
 		let bestGPair = '', bestGRank = 1000;
 		Object.keys(crew.ranks).forEach(key => {
 			if (key.slice(0, 1) === 'G') {
@@ -99,7 +98,7 @@ export const TableView = (props: TableViewProps) => {
 						}}>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget targetGroup='beholdsPage' inputItem={crew}>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

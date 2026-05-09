@@ -300,7 +300,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 <img
                                     onClick={(e) => imageClick(e, crew)}
                                     width={48}
-                                    src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                    src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 />
                             </CrewTarget>
                             {crew.immortal > 0 &&

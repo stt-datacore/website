@@ -270,7 +270,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 					style={{
 						margin: isMobile ? '0 0 0.25em 0' : '0.25em 0 0 0'
 					}}
-					src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+					src={`${process.env.REACT_ASSETS_URL}${item.imageUrl}`}
 					size={128}
 				/>
 				<div style={{
@@ -388,7 +388,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 						<Link to={`/ship_info?ship=${ship.symbol}`}>
 							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 								<ItemDisplay
-									src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+									src={`${process.env.REACT_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
 									size={128}
 									rarity={ship.rarity}
 									maxRarity={ship.rarity}
@@ -414,7 +414,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 								<img
 									title={"Chronitons"}
 									style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }}
-									src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`}
+									src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`}
 								/>
 								{item.recipe.craftCost.toLocaleString()}
 							</>)
@@ -478,7 +478,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 		</div>
 	);
 
-	function renderTableCells(row: IRosterCrew): JSX.Element {
+	function renderTableCells(row: IRosterCrew): React.ReactNode {
 		if (itemData?.item?.kwipment) {
 			const item = itemData?.item;
 			const wb = getItemBonuses(item);

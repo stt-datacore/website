@@ -17,7 +17,7 @@ export const CrewPortrait = (props: CrewPortraitProps) => {
 		<React.Fragment>
 			<Image>
 				<div>
-					<img src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`} width='72px' height='72px' />
+					<img src={`${process.env.REACT_ASSETS_URL}${imageUrlPortrait}`} width='72px' height='72px' />
 				</div>
 			</Image>
 			<div>{crew.name}</div>

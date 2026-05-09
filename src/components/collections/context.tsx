@@ -58,7 +58,7 @@ export const CollectionModalContext = React.createContext<ICollectionModalContex
 export interface CollectionFiltersProviderProps {
     pageId: string;
     playerCollections: PlayerCollection[];
-    children: JSX.Element;
+    children: React.ReactNode;
 }
 export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) => {
     const { children, pageId } = props;
@@ -215,7 +215,7 @@ export const CollectionModalService = (props: { children: React.ReactNode }) => 
  * @param className Optional className to include on the output DIV (comes before style in rendering)
  * @param linkFunc Optional on-click function
  * @param linkValue Optional value (parsed contents used otherwise)
- * @returns {JSX.Element} Formatted collection description
+ * @returns {React.ReactNode} Formatted collection description
  */
 export const formatColString = (text: string, style?: React.CSSProperties, className?: string, linkFunc?: (value: string) => void, linkValue?: string) => {
 	const greg = new RegExp(/(.+)\<([A-Fa-f0-9#]+)\>\<b\>(.+)\<\/b\>\<\/color\>(.+)/);

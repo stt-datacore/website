@@ -89,7 +89,7 @@ export const ProspectiveSummary = (props: ProspectiveSummaryProps) => {
 		</Modal>
 	);
 
-	function renderTopLines(): JSX.Element {
+	function renderTopLines(): React.ReactNode {
 		if (!prospectiveEstimate) return <></>;
 		return (
 			<React.Fragment>
@@ -150,7 +150,7 @@ interface IToplines {
 	title: string;
 	currentValue: number;
 	baselineValue: number;
-	renderValue?: (value: number) => JSX.Element;
+	renderValue?: (value: number) => React.ReactNode;
 };
 
 type ToplinesComparedProps = {
@@ -308,7 +308,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		</React.Fragment>
 	);
 
-	function renderSimpleTable(crewSlots: IProspectiveCrewSlot[]): JSX.Element {
+	function renderSimpleTable(crewSlots: IProspectiveCrewSlot[]): React.ReactNode {
 		return (
 			<Table selectable striped unstackable compact>
 				<Table.Body>
@@ -331,7 +331,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 								onClick={() => onClick(cs)}
 							>
 								<Table.Cell textAlign='center'>
-									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+									<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${cs.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 								</Table.Cell>
 								<Table.Cell>
 									{renderCrew(cs)}
@@ -347,7 +347,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		);
 	}
 
-	function renderCrew(crewSlot: IProspectiveCrewSlot): JSX.Element {
+	function renderCrew(crewSlot: IProspectiveCrewSlot): React.ReactNode {
 		const controlCrew: PlayerCrew | undefined = control?.config.crew_slots.find(cs => cs.symbol === crewSlot.symbol)?.crew;
 		const editedSlot: boolean = !crewSlot.crew || (!!controlCrew && controlCrew.id !== crewSlot.crew.id);
 		return (
@@ -369,7 +369,7 @@ const ProspectiveCrewSlots = (props: ProspectiveCrewSlotsProps) => {
 		);
 	}
 
-	function renderBonus(crewSlot: IProspectiveCrewSlot): JSX.Element {
+	function renderBonus(crewSlot: IProspectiveCrewSlot): React.ReactNode {
 		const controlCrew: PlayerCrew | undefined = control?.config.crew_slots.find(cs => cs.symbol === crewSlot.symbol)?.crew;
 		const controlBonus: number = controlCrew ? getCrewTraitBonus(prospectiveConfig, controlCrew, crewSlot.trait) + (controlCrew.antimatter_bonus ?? 0): 0;
 
@@ -447,18 +447,18 @@ const ProspectiveProficiency = (props: ProspectiveProficiencyProps) => {
 	);
 };
 
-function renderAntimatter(value: number): JSX.Element {
+function renderAntimatter(value: number): React.ReactNode {
 	return (
 		<React.Fragment>
-			{value} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+			{value} <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 		</React.Fragment>
 	);
 }
 
-function renderVP(value: number): JSX.Element {
+function renderVP(value: number): React.ReactNode {
 	return (
 		<React.Fragment>
-			{value.toLocaleString()} <img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+			{value.toLocaleString()} <img src={`${process.env.REACT_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 		</React.Fragment>
 	);
 }

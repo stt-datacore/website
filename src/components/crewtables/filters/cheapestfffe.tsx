@@ -1,8 +1,7 @@
-import React from "react"
+import React from "react";
+import { Checkbox, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
 import CONFIG from "../../CONFIG";
-import { Checkbox, Dropdown, DropdownItemProps } from "semantic-ui-react";
-import { OptionsPanelFlexColumn } from "../../stats/utils";
 
 
 export interface CheapestConfig {

@@ -80,8 +80,8 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		const briefSepInit = <>&nbsp;</>;
 		const briefSepFinal = <><br /></>;
 		const textDec = "";
-		let res = [] as JSX.Element[];
-		let eps = {} as {[key:string]: JSX.Element};
+		let res = [] as React.ReactNode[];
+		let eps = {} as {[key:string]: React.ReactNode};
 
 		if (this.context.core.episodes) {
 			this.context.core.episodes.forEach(e => {

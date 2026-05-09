@@ -43,7 +43,7 @@ export interface SettingsModalProps {
     updatePresets: (value: EditObject[]) => void;
     config: SettingsModalConfig;
     fields: SettingsFieldConfig[];
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.ReactNode;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 };
@@ -58,7 +58,7 @@ export function settingsToPermalink(page: string, settings: EditObject, fields: 
         }
     }
     let host = "";
-    if (!globalThis.window) host = (process.env.GATSBY_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (process.env.REACT_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
     return `${host}${page}?${params.toString()}`;
 }
@@ -160,7 +160,7 @@ const SettingsEditorModal = (props: SettingsModalProps) => {
     const { confirm } = promptContext;
 	const { config, presets, updatePresets, page, fields } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-	const inputRef = React.createRef<Input>();
+	const inputRef = React.createRef<HTMLElement>();
     const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... makeDefaultObject(fields), ... config.current });
     const [showCopied, setShowCopied] = React.useState(false);
 
@@ -243,7 +243,7 @@ const SettingsEditorModal = (props: SettingsModalProps) => {
 		</Modal>
 	);
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.ReactNode {
         const defaultObj = makeDefaultObject(fields);
         const rowStyle = {
             display: "flex",
@@ -318,7 +318,7 @@ const SettingsEditorModal = (props: SettingsModalProps) => {
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.ReactNode {
 		return (
         <Button>
             {t('global.advanced_settings')}

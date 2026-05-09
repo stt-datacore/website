@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, Grid, Divider, Header, Button, Form, TextArea, Message, Accordion, Label, Icon, Dimmer, Loader, SemanticICONS } from 'semantic-ui-react';
-import { iOS, mobileCheck } from '../../utils/misc';
+import { Accordion, Button, Card, Dimmer, Divider, Form, Grid, Header, Icon, Label, Loader, Message, SemanticICONS, TextArea } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
+import { iOS, mobileCheck } from '../../utils/misc';
 
 export interface JsonImportConfig {
     dataUrl: string;
@@ -144,7 +144,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 		if (el) el.click();
 	}
 
-	function renderCopyPaste(): JSX.Element {
+	function renderCopyPaste(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Header icon>
@@ -205,7 +205,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 		);
 	}
 
-	function renderUpload(): JSX.Element {
+	function renderUpload(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Header icon>
@@ -234,7 +234,7 @@ export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) =>
 					type='file'
 					onChange={(e) => handleFileUpload(e)}
 					style={{ display: 'none' }}
-					ref={e => inputUploadFile = e}
+					ref={e => inputUploadFile = e as any}
 				/>
 				<Accordion style={{ marginTop: '1em' }}>
 					<Accordion.Title

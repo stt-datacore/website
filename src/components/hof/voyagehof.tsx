@@ -120,7 +120,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
             return;
         }
 
-        fetch(`${process.env.GATSBY_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${this.state.glanceDays}`)
+        fetch(`${process.env.REACT_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${this.state.glanceDays}`)
             .then((response) => response.json())
             .then((rawVoyages: RawVoyageRecord[]) => {
                 let codict = {} as { [key: string]: RawVoyageRecord }
@@ -148,7 +148,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     componentDidMount() {
-        fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry?type=voyage`)
+        fetch(`${process.env.REACT_DATACORE_URL}api/telemetry?type=voyage`)
             .then((response) => response.json())
             .then((voyageStats) => {
                 const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;

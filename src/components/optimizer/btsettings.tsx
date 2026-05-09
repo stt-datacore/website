@@ -52,7 +52,7 @@ export interface BetaTachyonSettingsProps {
     presets: BetaTachyonSettings[];
     updatePresets: (value: BetaTachyonSettings[]) => void;
     config: BetaTachyonSettingsConfig;
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.ReactNode;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 };
@@ -81,7 +81,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
 
     let host = "";
 
-    if (!globalThis.window) host = (process.env.GATSBY_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (process.env.REACT_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
 
     return `${host}cite-opt?${params.toString()}`;
@@ -320,7 +320,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		</Modal>
 	);
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.ReactNode {
 
         const rowStyle = {
             display: "flex",
@@ -391,7 +391,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.ReactNode {
 		return (
         <Button>
             {t('global.advanced_settings')}

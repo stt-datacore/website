@@ -142,7 +142,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 												altItems={items}
 												targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
 												symbol={reward.symbol}
-												src={`${process.env.GATSBY_ASSETS_URL}${img}`}
+												src={`${process.env.REACT_ASSETS_URL}${img}`}
 												quantity={reward.quantity}
 											/>
 											<div style={{textAlign: 'center'}}>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</div>
@@ -183,7 +183,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 			value: reward.symbol,
 			text: arch?.name ?? reward.name,
 			content: !icons ? undefined : (<div title={arch?.name ?? reward.full_name ?? reward.name} style={{ display: "flex", flexDirection: "row", width: "24px", alignItems: "center" }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}${getImageName(reward)}`} style={{ height: "24px", marginRight: "0.25em" }} />
+				<img src={`${process.env.REACT_ASSETS_URL}${getImageName(reward)}`} style={{ height: "24px", marginRight: "0.25em" }} />
 				{arch?.name ?? reward.full_name ?? reward.name}
 			</div>)
 		}

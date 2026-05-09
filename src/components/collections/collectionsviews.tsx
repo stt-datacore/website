@@ -9,19 +9,18 @@ import { PlayerCollection, PlayerCrew } from '../../model/player';
 import { navToCrewPage } from '../../utils/nav';
 import { useStateWithStorage } from '../../utils/storage';
 
+import { WorkerContext } from '../../context/workercontext';
+import { Collection } from "../../model/collections";
 import CONFIG from '../CONFIG';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { CollectionPrefs } from './collectionprefs';
 import { CollectionModalContext, CollectionsContext } from './context';
-import { CollectionResearchView } from './views/researchview';
 import { CollectionCombosView } from './views/combosview';
 import CollectionsOverviewComponent from './views/overview';
 import { ProgressTable } from './views/progresstable';
-import { WorkerContext } from '../../context/workercontext';
-import { CollectionPrefs } from './collectionprefs';
+import { CollectionResearchView } from './views/researchview';
 import { CollectionTableView } from './views/tableview';
-import { TinyStore } from '../../utils/tiny';
-import { Collection } from "../../model/collections";
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];

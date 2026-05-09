@@ -278,13 +278,13 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const isLocked = locked.includes(row.id);
 
         const skillimg = row.requirements.map((r) => {
-            let skill_icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${r}.png`;
+            let skill_icon = `${process.env.REACT_ASSETS_URL}atlas/icon_${r}.png`;
             return <div style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
                 <img src={skill_icon} style={{width: '24px'}} />
             </div>
         });
 
-        const skillcontent = [] as JSX.Element[];
+        const skillcontent = [] as React.ReactNode[];
 
         for (let img of skillimg) {
             if (skillcontent.length) skillcontent.push(<div style={{width: '24px'}}>{combo_txt}</div>);
@@ -292,14 +292,14 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         }
 
         const traitimg = row.bonus_traits.map((trait) => {
-            let trait_icon = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+            let trait_icon = `${process.env.REACT_ASSETS_URL}items_keystones_${trait}.png`;
             return <div style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
                 <img src={trait_icon} style={{height: '24px'}} />
                 {TRAIT_NAMES[trait]}
             </div>
         });
 
-        const traitcontent = [] as JSX.Element[];
+        const traitcontent = [] as React.ReactNode[];
 
         for (let img of traitimg) {
             traitcontent.push(img);
@@ -577,7 +577,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         return tfmt('global.n_total_x', {
             n: cost.toLocaleString(),
             x: <div style={{...flexRow, gap: '0.25em'}}>
-                <img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} style={{height:'24px'}} />
+                <img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} style={{height:'24px'}} />
                 {t('global.item_types.chronitons')}
             </div>
         });

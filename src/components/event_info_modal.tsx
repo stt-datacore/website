@@ -99,7 +99,7 @@ export function EventInfoModal(props: EventInfoModalProps) {
 	return (
 		<Container style={{ padding: '1em' }}>
 			<Image
-				src={`${process.env.GATSBY_ASSETS_URL}${image}`}
+				src={`${process.env.REACT_ASSETS_URL}${image}`}
 				fluid
 			/>
 			<Tab

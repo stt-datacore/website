@@ -405,7 +405,7 @@
 // 		</Modal>
 // 	);
 
-// 	function filterCheckbox(p: Polestar): JSX.Element {
+// 	function filterCheckbox(p: Polestar): React.ReactNode {
 // 		return (
 // 			<Grid.Column key={p.id}>
 // 				<Checkbox
@@ -419,7 +419,7 @@
 // 		)
 // 	}
 
-// 	function filterCheckboxGroupHeader(t: string): JSX.Element {
+// 	function filterCheckboxGroupHeader(t: string): React.ReactNode {
 // 		let group = grouped.find(group => group.title === t);
 // 		let groupLink = (group ? (<Button style={{ marginLeft: '1em' }} size='mini' onClick={() => checkGroup(t, group?.anyDisabled ?? true)}>{group.anyDisabled ? 'Check' : 'Uncheck'} All</Button>) : (<></>));
 // 		return (
@@ -429,8 +429,8 @@
 // 		)
 // 	}
 
-// 	function createFilterCheckboxes(): JSX.Element[] {
-// 		const checkboxes = [] as JSX.Element[];
+// 	function createFilterCheckboxes(): React.ReactNode[] {
+// 		const checkboxes = [] as React.ReactNode[];
 // 		grouped.map((group) => {
 // 			if(group.polestars.length > 0) {
 // 				checkboxes.push(filterCheckboxGroupHeader(group.title));
@@ -522,7 +522,7 @@
 // 		</Modal>
 // 	);
 
-// 	function renderContent(): JSX.Element {
+// 	function renderContent(): React.ReactNode {
 // 		if (!modalIsOpen) return (<></>);
 
 // 		if (!allKeystones || !allKeystones.length) {
@@ -585,7 +585,7 @@
 // 		setControl([...unretrievable]);
 // 	}
 
-// 	function renderPolestarFinder(): JSX.Element {
+// 	function renderPolestarFinder(): React.ReactNode {
 // 		const polestarTable: ITableConfigRow[] = [
 // 			{ width: 2, column: 'name', title: 'Polestar' },
 // 			{ width: 1, column: 'crew_count', title: 'Crew in Portal', reverse: true },
@@ -688,7 +688,7 @@
 // 		return meetsAnyCondition;
 // 	}
 
-// 	function renderPolestarRow(polestar: Polestar, idx: number): JSX.Element {
+// 	function renderPolestarRow(polestar: Polestar, idx: number): React.ReactNode {
 // 		return (
 // 			<Table.Row key={polestar.symbol}
 // 				style={{ cursor: activePolestar != polestar.symbol ? 'zoom-in' : 'zoom-out' }}
@@ -704,7 +704,7 @@
 // 						}}
 // 					>
 // 						<div style={{ gridArea: 'icon' }}>
-// 							<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
+// 							<img width={24} src={`${process.env.REACT_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 // 						</div>
 // 						<div style={{ gridArea: 'stats' }}>
 // 							<span style={{ fontWeight: 'bolder', fontSize: '1.1em' }}>{polestar.short_name}</span>
@@ -723,7 +723,7 @@
 // 		);
 // 	}
 
-// 	function renderCrewMessage(data: Polestar[]): JSX.Element {
+// 	function renderCrewMessage(data: Polestar[]): React.ReactNode {
 // 		if (activeCrew == '') return (<></>);
 
 // 		const crew = allCrew.find(c => c.symbol === activeCrew);
@@ -796,14 +796,14 @@
 // 		);
 // 	}
 
-// 	function renderPolestarsInline(polestars: Polestar[]): JSX.Element[] {
+// 	function renderPolestarsInline(polestars: Polestar[]): React.ReactNode[] {
 // 		var mp = polestars.map((p, pdx) => (
 // 				<span key={pdx} onClick={() => setActivePolestar(p.symbol) }>
 // 					<b>{p.short_name}</b>{pdx < polestars.length-1 ? ',' : ''}
 // 				</span>
 // 				));
 
-// 		let retval: JSX.Element[] = [];
+// 		let retval: React.ReactNode[] = [];
 // 		let i = 0;
 // 		for (var cm of mp) {
 // 			if (i++) retval.push(<> </>);
@@ -813,7 +813,7 @@
 // 		return retval;
 // 	}
 
-// 	function renderConstellationMessage(data: Polestar[]): JSX.Element {
+// 	function renderConstellationMessage(data: Polestar[]): React.ReactNode {
 // 		if (activeConstellation == '') return (<></>);
 
 // 		const constellation = allKeystones.find(k => k.symbol === activeConstellation) as Constellation | undefined;
@@ -830,7 +830,7 @@
 // 		);
 // 	}
 
-// 	function renderPolestarDetail(): JSX.Element {
+// 	function renderPolestarDetail(): React.ReactNode {
 // 		const polestar = allKeystones.find(k => k.symbol === activePolestar) as Polestar ?? {} as Polestar;
 // 		polestar.loaned = addedPolestars.filter(added => added === polestar.symbol).length;
 
@@ -858,7 +858,7 @@
 // 		);
 // 	}
 
-// 	function renderPolestarsFromConstellation(constellation: Constellation, polestars: Polestar[]): JSX.Element {
+// 	function renderPolestarsFromConstellation(constellation: Constellation, polestars: Polestar[]): React.ReactNode {
 // 		const clarify = activeCrew != '' ? 'a needed' : 'an unowned';
 
 // 		return (
@@ -869,7 +869,7 @@
 // 				{
 // 					polestars.map((p, pdx) => (
 // 						<Grid.Column key={pdx} width={2} textAlign='center' onClick={() => setActivePolestar(p.symbol)}>
-// 							<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${p.icon.file.slice(1).replace(/\//g, '_')}`} />
+// 							<img width={32} src={`${process.env.REACT_ASSETS_URL}${p.icon.file.slice(1).replace(/\//g, '_')}`} />
 // 							<br /><b>{p.short_name}</b><br /><small>({(1/constellation.keystones.length*100).toFixed(1)}%)</small>
 // 						</Grid.Column>
 // 					))
@@ -880,7 +880,7 @@
 // 		);
 // 	}
 
-// 	function renderConstellationsWithPolestar(polestar: Polestar): JSX.Element {
+// 	function renderConstellationsWithPolestar(polestar: Polestar): React.ReactNode {
 // 		const constellations = [] as Constellation[];
 // 		ownedConstellations.filter(k => k.keystones.includes(polestar.id))
 // 			.forEach(k => {
@@ -906,7 +906,7 @@
 // 		);
 // 	}
 
-// 	function renderNewRetrievals(polestar: Polestar): JSX.Element {
+// 	function renderNewRetrievals(polestar: Polestar): React.ReactNode {
 // 		const ownedPlus = structuredClone(ownedPolestars);
 // 		ownedPlus.push({...polestar, quantity: 1});
 // 		const newRetrievables = getRetrievable(control, ownedPlus).filter(c => c.in_portal);
@@ -926,7 +926,7 @@
 // 					{newRetrievables.sort((a, b) => a.name.localeCompare(b.name)).map((crew, cdx) => (
 // 						<Grid.Column key={crew.symbol} width={2} textAlign='center' onClick={() => setAsActive('crew', crew.symbol) }>
 // 							<ItemDisplay
-// 								src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+// 								src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`}
 // 								size={64}
 // 								maxRarity={crew.max_rarity}
 // 								rarity={crew.highest_owned_rarity ?? 0}
@@ -1008,7 +1008,7 @@
 // 		const options: RetrievalOptions = { initialized: false, list: [] };
 // 		if (props.value != '') {
 // 			const c = props.crew.find(c => c.symbol === props.value);
-// 			if (c) options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }}];
+// 			if (c) options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.REACT_ASSETS_URL}${c.imageUrlPortrait}` }}];
 // 			else options.list = [{ key: 0, value: 0, text: 'Loading...' }];
 // 		}
 // 		else {
@@ -1021,7 +1021,7 @@
 // 		let crewList = [...props.crew];
 // 		let newOptions: RetrievalOptions = {
 // 			list: crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-// 				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}` }};
+// 				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.REACT_ASSETS_URL}${c.imageUrlPortrait}` }};
 // 			}),
 // 			initialized: true
 // 		}
@@ -1068,7 +1068,7 @@
 // 	setAlgo: (value: string) => void;
 // };
 
-// const AlgoExplain = (props: { comboCount?: number }): JSX.Element => {
+// const AlgoExplain = (props: { comboCount?: number }): React.ReactNode => {
 // 	const comboCount = props.comboCount;
 // 	let pt: number | undefined = undefined;
 // 	let st: string | undefined = undefined;
@@ -1132,7 +1132,7 @@
 
 
 
-// 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): JSX.Element {
+// 	function renderTableRow(crew: PlayerCrew, idx: number, playerData: PlayerData): React.ReactNode {
 // 		const buffConfig = dataContext.player.buffConfig;
 // 		const [comboCount, ] = getCombos(crew);
 
@@ -1149,7 +1149,7 @@
 // 					>
 // 						<div style={{ gridArea: 'icon' }}>
 // 							<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
-// 								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+// 								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 // 							</CrewTarget>
 // 						</div>
 // 						<div style={{ gridArea: 'stats' }}>
@@ -1239,7 +1239,7 @@
 // 		return result;
 // 	}
 
-// 	function showCombosForCrew(crew: CrewMember, algo: string): JSX.Element {
+// 	function showCombosForCrew(crew: CrewMember, algo: string): React.ReactNode {
 // 		if (activeCrew !== crew.symbol) return (<></>);
 
 // 		let [comboCount, combos] = getCombos(crew, true);
@@ -1424,7 +1424,7 @@
 // 		return fuseGroups;
 // 	}
 
-// 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): JSX.Element {
+// 	function showCollectionsForCrew(crew: CrewMember | PlayerCrew): React.ReactNode {
 // 		if (activeCollections !== crew.symbol || crew.collections.length == 0)
 // 			return (<b>{crew.collections.length}</b>);
 
@@ -1508,7 +1508,7 @@
 // 						<Grid.Row key={'combo'+cdx}>
 // 							{combo.map((polestar, pdx) => (
 // 								<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
-// 									<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestar?.icon.file.slice(1).replace(/\//g, '_')}`} />
+// 									<img width={32} src={`${process.env.REACT_ASSETS_URL}${polestar?.icon.file.slice(1).replace(/\//g, '_')}`} />
 // 									<br />{polestar?.short_name}
 // 									<br /><small>({polestar?.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar?.quantity})</small>
 // 								</Grid.Column>

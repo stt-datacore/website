@@ -21,7 +21,7 @@ export interface CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     quipment?: boolean;
-    printNA?: string | JSX.Element;
+    printNA?: string | React.ReactNode;
     targetGroup?: string;
     locked?: boolean;
     vertical?: boolean;
@@ -249,7 +249,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
-    expiration?: string | JSX.Element;
+    expiration?: string | React.ReactNode;
     vertical: boolean;
     itemSize?: number;
     mobileSize?: number;
@@ -287,12 +287,12 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
             itemSymbol={equipment?.symbol}
             allItems={globalContext.core.items}
             playerData={globalContext.player.playerData}
-            src={`${process.env.GATSBY_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            src={`${process.env.REACT_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
             size={itemSize}
             maxRarity={equipment?.rarity ?? 0}
             rarity={equipment?.rarity ?? 0}
         />
-        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
+        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.REACT_ASSETS_URL}atlas/lock_icon.png`}/>}
         </div>
     </div>)
 

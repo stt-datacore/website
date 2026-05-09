@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import { Segment, Header, Grid, Table, Pagination, Dropdown, Checkbox, Icon, Button } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
@@ -94,7 +94,7 @@ export const Polestars = (props: PolestarsProps) => {
 		return findPolestars(crew, globalContext.core.crew);
 	}
 
-	function renderConstellation(): JSX.Element {
+	function renderConstellation(): React.ReactNode {
 		if (!constellation) return <></>;
 		return (
 			<Segment>
@@ -106,7 +106,7 @@ export const Polestars = (props: PolestarsProps) => {
 							let archdata = ITEM_ARCHETYPES[kk.symbol];
 							return (<Grid.Column key={idx} textAlign='center'>
 								<div style={{...flexCol, gap: '0.5em', justifyContent: 'space-evenly'}}>
-									<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
+									<img width={48} src={`${process.env.REACT_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
 									<Link to={`/?search=trait:${archdata?.name || kk.short_name}`}>
 									<span style={{ fontWeight: 'bolder' }}>
 										{archdata?.name || kk.short_name}
@@ -287,7 +287,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 		</Segment>
 	</>);
 
-	function renderComboGrid(polestarCombo: PolestarCombo): JSX.Element {
+	function renderComboGrid(polestarCombo: PolestarCombo): React.ReactNode {
 		const comboColumns = polestarCombo.polestars.map((trait, idx) => {
 			const polestar = crewPolestars.find((op) => filterTraits(op, trait));
 			// Catch when optimal combos include a polestar that isn't yet in DataCore's keystones list
@@ -296,7 +296,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 			const polestarFile = polestar ? polestar.icon.file : '/items_keystones_'+trait+'.png';
 			return (
 				<Grid.Column key={idx} textAlign='center' mobile={8} tablet={5} computer={4}>
-					<img width={32} src={`${process.env.GATSBY_ASSETS_URL}${polestarFile.slice(1).replace(/\//g, '_')}`} />
+					<img width={32} src={`${process.env.REACT_ASSETS_URL}${polestarFile.slice(1).replace(/\//g, '_')}`} />
 					<br />{polestarName}
 					{showPrices && <div style={{display: 'flex', justifyContent: 'center'}}>{printISM(market[polestar?.id ?? ""]?.low ?? 0)}</div>}
 				</Grid.Column>

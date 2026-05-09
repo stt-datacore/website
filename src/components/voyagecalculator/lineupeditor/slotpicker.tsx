@@ -159,7 +159,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	columns.push(
 		{
 			id: 'antimatter',
-			title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+			title: <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 			align: 'center',
 			sortField: { id: 'diff_antimatter', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_antimatter`]} />
@@ -228,7 +228,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		}
 	}
 
-	function renderPreface(): JSX.Element {
+	function renderPreface(): React.ReactNode {
 		const currentSlot: IProspectiveCrewSlot | undefined = prospectiveConfig.crew_slots.find(cs => cs.crew?.id === alternateCrew.id);
 		return (
 			<React.Fragment	/* Select a voyage seat. Any existing crew in that seat will be replaced by CREW, resulting in the listed changes to the prospective voyage. */>
@@ -242,7 +242,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderGridSlot(datum: IEssentialData): JSX.Element {
+	function renderGridSlot(datum: IEssentialData): React.ReactNode {
 		return (
 			<GridAlternateSlot
 				alternateSlot={datum as IAlternateSlotData}
@@ -252,17 +252,17 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderSkillHeader(skill: string): JSX.Element {
+	function renderSkillHeader(skill: string): React.ReactNode {
 		return (
 			<React.Fragment>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+				<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 			</React.Fragment>
 		);
 	}
 
-	function renderSlotName(datum: IAlternateSlotData): JSX.Element {
+	function renderSlotName(datum: IAlternateSlotData): React.ReactNode {
 		return (
 			<React.Fragment>
 				<div style={{ fontWeight: 'bold' }}>
@@ -273,7 +273,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderCrewSwap(alternateCrew: PlayerCrew, slottedCrew: PlayerCrew | undefined): JSX.Element {
+	function renderCrewSwap(alternateCrew: PlayerCrew, slottedCrew: PlayerCrew | undefined): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				{slottedCrew && <AvatarView mode='crew' item={slottedCrew} size={40} />}
@@ -284,7 +284,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 		);
 	}
 
-	function renderEstimate(datum: IAlternateSlotData): JSX.Element {
+	function renderEstimate(datum: IAlternateSlotData): React.ReactNode {
 		if (!datum.estimate) return <Icon loading name='spinner' />;
 		return (
 			<React.Fragment>
@@ -304,8 +304,8 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 
 type GridAlternateSlotProps = {
 	alternateSlot: IAlternateSlotData;
-	renderCrewSwap: (slottedCrew: PlayerCrew | undefined) => JSX.Element;
-	renderEstimate: (datum: IAlternateSlotData) => JSX.Element;
+	renderCrewSwap: (slottedCrew: PlayerCrew | undefined) => React.ReactNode;
+	renderEstimate: (datum: IAlternateSlotData) => React.ReactNode;
 };
 
 const GridAlternateSlot = (props: GridAlternateSlotProps) => {
@@ -336,7 +336,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 		</React.Fragment>
 	);
 
-	function renderDiffsAsTable(): JSX.Element {
+	function renderDiffsAsTable(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<div style={{ overflowX: 'auto' }}>
@@ -349,7 +349,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 									<b>{t('base.voyage')}</b>
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+									<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 								</Table.Cell>
 								<Table.Cell /* Estimate */
 									textAlign='center'
@@ -377,7 +377,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 							<Table.Row>
 								{diffSkills.map(skill => (
 									<Table.Cell key={skill} textAlign='center'>
-										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+										<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 										{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 										{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 									</Table.Cell>

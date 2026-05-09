@@ -1,12 +1,11 @@
 import React, { PureComponent } from 'react';
-import { Header, Popup, Modal, Grid, Icon, Button } from 'semantic-ui-react';
+import { Button, Grid, Header, Icon, Modal, Popup } from 'semantic-ui-react';
 
-import ItemDisplay from '../../components/itemdisplay';
 import ItemSources from '../../components/itemsources';
 
-import { calculateCrewDemands } from '../../utils/equipment';
 import CONFIG from '../../components/CONFIG';
 import { GlobalContext } from '../../context/globalcontext';
+import { calculateCrewDemands } from '../../utils/equipment';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
 import { AvatarView } from '../item_presenters/avatarview';
 
@@ -42,7 +41,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Estimated chroniton cost{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+							<img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>{' '}
 						<b>{totalChronCost}</b>
 						<Popup
@@ -66,7 +65,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Build cost{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
+							<img src={`${process.env.REACT_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 						</span>{' '}
 						<b>{craftCost}</b>
 					</p>
@@ -94,7 +93,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 												// 	itemSymbol={entry.equipment.symbol}
 												// 	targetGroup='crew_page_items'
 												// 	style={{marginRight: "0.5em"}}
-												// 	src={`${process.env.GATSBY_ASSETS_URL}${entry.equipment.imageUrl}`}
+												// 	src={`${process.env.REACT_ASSETS_URL}${entry.equipment.imageUrl}`}
 												// 	size={48}
 												// 	maxRarity={entry.equipment.rarity}
 												// 	rarity={entry.equipment.rarity}

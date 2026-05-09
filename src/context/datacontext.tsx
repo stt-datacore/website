@@ -1,4 +1,4 @@
-import { navigate } from 'gatsby';
+import { Navigate } from 'react-router-dom';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { v4 } from 'uuid';
@@ -58,13 +58,13 @@ export type ValidDemands =
 	'skill_bufs';
 
 export interface DataProviderProperties {
-	children: JSX.Element;
+	children: React.ReactNode;
 };
 
 export interface ICoreContext extends ICoreData {
 	ready: (demands: ValidDemands[], onReady: () => void) => void;
 	reset: () => boolean;
-	spin: (message?: string) => JSX.Element;
+	spin: (message?: string) => React.ReactNode;
 };
 
 interface IDemandResult {
@@ -481,7 +481,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	if (!allCrew?.length) {
-		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
+		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${process.env.REACT_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
 	}
 
 	const rndcrew_pass1 = (allCrew.filter((a: CrewMember) => a.traits_hidden.includes(symbol) && a.max_rarity >= 4) ?? []) as CrewMember[];
@@ -500,7 +500,7 @@ export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	const idx = Math.floor(Math.random() * (rndcrew.length - 1));
 	const q = rndcrew[idx];
 	const img = q.imageUrlFullBody;
-	const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
+	const fullurl = `${process.env.REACT_ASSETS_URL}${img}`;
 
-	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
+	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => Navigate({ to: "/crew/" + q.symbol })} />
 }

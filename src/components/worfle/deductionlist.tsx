@@ -21,10 +21,10 @@ export const DeductionList = (props: DeductionListProps) => {
 		</Label.Group>
 	);
 
-	function renderLabel(deduction: IDeduction): JSX.Element {
-		let label: JSX.Element = <></>;
+	function renderLabel(deduction: IDeduction): React.ReactNode {
+		let label: React.ReactNode = <></>;
 		if (deduction.field === 'skills') {
-			label = <><img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
+			label = <><img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${deduction.value}.png`} style={{ height: '1em' }} /></>;
 		}
 		else {
 			const option: IDeductionOption | undefined = deductionOptions.find(option =>

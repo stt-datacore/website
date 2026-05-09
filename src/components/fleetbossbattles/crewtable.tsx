@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Rating, Label, Icon } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 
 import { MarkCrew } from './markbuttons';
 import { ListedTraits } from './listedtraits';
@@ -81,7 +81,7 @@ const CrewTable = (props: CrewTableProps) => {
 		</>
 	);
 
-	function renderTableRow(crew: BossCrew, _idx: number): JSX.Element {
+	function renderTableRow(crew: BossCrew, _idx: number): React.ReactNode {
 		return (
 			<Table.Row key={crew.symbol}>
 				<Table.Cell>
@@ -95,7 +95,7 @@ const CrewTable = (props: CrewTableProps) => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget targetGroup='fbb' inputItem={crew} >
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
@@ -145,7 +145,7 @@ const CrewTable = (props: CrewTableProps) => {
 		}
 	}
 
-	function descriptionLabel(crew: BossCrew): JSX.Element {
+	function descriptionLabel(crew: BossCrew): React.ReactNode {
 		return (
 			<div>
 				{optimizer.prefs.spotter.onehand === 'flag' && crew.onehand_rule.compliant === 0 && <Label style={{ background: '#ddd', color: '#333' }}>{t('fbb.crew_lists.customize.options.one_hand_exception')}</Label>}
@@ -177,7 +177,7 @@ const CrewTable = (props: CrewTableProps) => {
 		return isOptimal;
 	}
 
-	function renderTraits(crew: BossCrew, index: number, traitRarity: TraitRarities): JSX.Element {
+	function renderTraits(crew: BossCrew, index: number, traitRarity: TraitRarities): React.ReactNode {
 		const node = openNodes.find(open => open.index === index);
 		if (!node) return (<></>);
 

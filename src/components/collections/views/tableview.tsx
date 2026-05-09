@@ -1,22 +1,21 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Icon, Popup, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
-import { CollectionModalContext, CollectionsContext } from "../context";
-import { Popup, Icon, Rating, Table } from "semantic-ui-react";
-import { ItemArchetypeBase, PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
-import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { compareRewards, rewardsFilterGetRewards } from "../../../utils/collectionutils";
-import { Link } from "gatsby";
-import { numberToGrade, gradeToColor } from "../../../utils/crewutils";
-import { descriptionLabel } from "../../crewtables/commonoptions";
-import { quantityLabel, RewardsGrid } from "../../crewtables/rewards";
-import { CrewTarget } from "../../hovering/crewhoverstat";
 import { WorkerContext } from "../../../context/workercontext";
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
-import { AvatarView } from "../../item_presenters/avatarview";
-import { getMilestoneRewards } from "../../../utils/itemutils";
 import { EquipmentItem } from "../../../model/equipment";
+import { ItemArchetypeBase, PlayerCollection, PlayerCrew, Reward } from "../../../model/player";
 import { getIconPath } from "../../../utils/assets";
+import { compareRewards, rewardsFilterGetRewards } from "../../../utils/collectionutils";
+import { gradeToColor, numberToGrade } from "../../../utils/crewutils";
+import { getMilestoneRewards } from "../../../utils/itemutils";
+import { quantityLabel, RewardsGrid } from "../../crewtables/rewards";
 import { renderMainDataScore } from "../../crewtables/views/base";
+import { CrewTarget } from "../../hovering/crewhoverstat";
+import { AvatarView } from "../../item_presenters/avatarview";
+import { ITableConfigRow, SearchableTable } from "../../searchabletable";
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
+import { CollectionModalContext, CollectionsContext } from "../context";
 
 
 export interface CollectionTableProps {
@@ -104,7 +103,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			/>}
 		</React.Fragment>)
 
-	function renderCrewRow(crew: PlayerCrew, idx: number): JSX.Element {
+	function renderCrewRow(crew: PlayerCrew, idx: number): React.ReactNode {
 		const unmaxed = crew.unmaxedIds?.map(id => { return playerCollections.find(pc => pc.id === id) });
 		const tabledProgress = unmaxed?.sort((a, b) => (a?.needed ?? 0) - (b?.needed ?? 0)).map(collection => {
 			if (!collection) return <></>
@@ -148,7 +147,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget inputItem={crew} targetGroup='collectionsTarget'>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
@@ -212,7 +211,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 		return -r;
 	}
 
-	function descriptionLabel(crew: any): JSX.Element {
+	function descriptionLabel(crew: any): React.ReactNode {
 		if (crew.immortal > 0) {
 			return (
 				<div>
@@ -245,7 +244,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 			migroups[col.milestone.goal] = reward;
 		}
 
-		const mirender = [] as JSX.Element[];
+		const mirender = [] as React.ReactNode[];
 		const flexRow = OptionsPanelFlexRow;
 		const flexCol = OptionsPanelFlexColumn;
 

@@ -9,7 +9,7 @@ export interface PolestarWorkerResults extends IWorkerResults<IPolestarWorkerIte
 }
 
 export interface PolestarMultiWorkerProps {
-    children: JSX.Element;
+    children: React.ReactNode;
     playerData: PlayerData;
 }
 
@@ -23,7 +23,8 @@ export interface PolestarMultiWorkerState extends IMultiWorkerState {
 export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProps, PolestarMultiWorkerState, IMultiWorkerConfig<IPolestarWorkerConfig, IPolestarWorkerItem>, IPolestarWorkerConfig, IPolestarWorkerItem> {
     protected itemPassAccepted: boolean = false;
     protected createWorker(): Worker {
-        return new Worker(new URL('../../workers/polestar-worker.js', import.meta.url))
+        //return new Worker(new URL('../../workers/polestar-worker.js', import.meta.url))
+        return new Worker(new URL('../../workers/polestar-worker.js', location.origin))
     }
 
     constructor(props: PolestarMultiWorkerProps) {

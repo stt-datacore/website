@@ -1,21 +1,18 @@
 import React from "react"
-import { ITableConfigRow, SearchableTable } from "../../searchabletable"
-import { TraitStats } from "../model"
+import { Button, Segment } from "semantic-ui-react"
 import { GlobalContext } from "../../../context/globalcontext"
-import { CrewBaseCells, getBaseTableConfig } from "../../crewtables/views/base"
-import { CrewMember, Skill } from "../../../model/crew"
-import { Button, Card, Container, Item, Label, Segment, Table } from "semantic-ui-react"
-import { IRosterCrew } from "../../retrieval/model"
-import { omniSearchFilter } from "../../../utils/omnisearch"
-import { Filter } from "../../../model/game-elements"
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils"
-import { CrewBuffModes } from "../../crewtables/commonoptions"
-import { useStateWithStorage } from "../../../utils/storage"
+import { Skill } from "../../../model/crew"
 import { PlayerBuffMode } from "../../../model/player"
-import { applyCrewBuffs, crewCopy, gradeToColor, skillAdd } from "../../../utils/crewutils"
-import { CrewConfigTable } from "../../crewtables/crewconfigtable"
+import { applyCrewBuffs, crewCopy, gradeToColor } from "../../../utils/crewutils"
+import { useStateWithStorage } from "../../../utils/storage"
 import CONFIG from "../../CONFIG"
+import { CrewBuffModes } from "../../crewtables/commonoptions"
+import { CrewConfigTable } from "../../crewtables/crewconfigtable"
+import { CrewBaseCells, getBaseTableConfig } from "../../crewtables/views/base"
+import { IRosterCrew } from "../../retrieval/model"
 import { StatLabel } from "../../statlabel"
+import { TraitStats } from "../model"
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils"
 
 
 
@@ -108,7 +105,7 @@ export const TraitDive = (props: TraitDiveProps) => {
                     {CONFIG.SERIES.includes(info.trait_raw) &&
                     <img
                         style={{ height: '4em', margin: '0.25em', gridArea: 'img', alignSelf: 'flex-start'}}
-                        src={`${process.env.GATSBY_DATACORE_URL}/media/series/${info.trait_raw}.png`} />
+                        src={`${process.env.REACT_DATACORE_URL}/media/series/${info.trait_raw}.png`} />
                 }
                 </div>
             </div>

@@ -1,20 +1,20 @@
 import React from 'react';
-import { Step, Icon, Label, Message } from 'semantic-ui-react';
+import { Icon, Label, Message, Step } from 'semantic-ui-react';
 
-import { PlayerCrew, CompactCrew, CompletionState, PlayerBuffMode, CryoCollection } from '../../model/player';
 import { GlobalContext } from '../../context/globalcontext';
-import { oneCrewCopy, applyCrewBuffs, getSkills } from '../../utils/crewutils';
+import { CompactCrew, CompletionState, CryoCollection, PlayerBuffMode, PlayerCrew } from '../../model/player';
+import { applyCrewBuffs, getSkills, oneCrewCopy } from '../../utils/crewutils';
 
-import { IRosterCrew, RosterType } from './model';
+import { navigate } from '../../context/globalcontext';
 import { CrewMember } from '../../model/crew';
-import { loadOfferCrew, loadOfferCrew2 } from '../../utils/offers';
-import { appelate } from '../../utils/misc';
 import { OfferCrew } from '../../model/offers';
+import { appelate } from '../../utils/misc';
+import { loadOfferCrew2 } from '../../utils/offers';
 import { useStateWithStorage } from '../../utils/storage';
 import { AlertContext } from '../alerts/alertprovider';
-import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { navigate } from 'gatsby';
+import { AvatarView } from '../item_presenters/avatarview';
+import { IRosterCrew, RosterType } from './model';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -78,7 +78,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	}, [buffMode]);
 
 	const hasBuyBack = !!playerData?.buyback_well?.length;
-	const steps = [] as JSX.Element[];
+	const steps = [] as React.ReactNode[];
 	const buyFuses = getFusesInBuybackWell();
 	const buyUnowned = getUnownedInBuybackWell();
 	const buyWatched = getWatchedInBuybackWell();
@@ -94,7 +94,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	const offersJSX = (
 		<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
-			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
+			<img src={`${process.env.REACT_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
 			<Step.Content>
 				<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
 				{rosterType === 'offers' &&
@@ -119,7 +119,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		if (hasBuyBack) {
 			steps.push(
 				<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
+					<img src={`${process.env.REACT_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
 					<Step.Content>
 						<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
 						<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
@@ -201,7 +201,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</>
 	);
 
-	function drawAlert(crew: PlayerCrew, message: string | JSX.Element, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
+	function drawAlert(crew: PlayerCrew, message: string | React.ReactNode, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
 		let one = false;
 		if (cols.length) {
 			for (let c of cols) {
@@ -233,7 +233,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						targetGroup='alerts'
 						/>
 				</div>
-				<img src={`${process.env.GATSBY_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
+				<img src={`${process.env.REACT_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
 				<Message
 					key={`buyback_${crew.symbol}+${idx}`}
 					style={{

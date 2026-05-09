@@ -87,7 +87,7 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
 
     componentDidUpdate(): void {
         if (this.props.inputItem) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
+            const url = `${process.env.REACT_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
             if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();
@@ -130,7 +130,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         return false;
     }
 
-    protected renderContent = (): JSX.Element =>  {
+    protected renderContent = (): React.ReactNode =>  {
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }

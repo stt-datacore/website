@@ -15,7 +15,7 @@ interface IThemeOption {
 	eligible: number;
 	collectionCount?: number;
 	onSelect: () => void;
-	notes?: JSX.Element;
+	notes?: React.ReactNode;
 };
 
 interface IThemeCategory {
@@ -60,7 +60,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		</Message>
 	);
 
-	function renderModal(): JSX.Element {
+	function renderModal(): React.ReactNode {
 		return (
 			<CrewThemePicker
 				themes={themes}
@@ -90,7 +90,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				category: "Collections",
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
-			let notes: JSX.Element | undefined = undefined;
+			let notes: React.ReactNode | undefined = undefined;
 			if (collection.crew && collection.crew.length < 12)
 				notes = <><Icon name='warning sign' color='red' />Theme impossible because there aren't enough crew in this collection yet.</>;
 			else
@@ -129,7 +129,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		// 		collectionCount: crewIds.length,
 		// 		onSelect: () => filterByCrewIds(crewIds)
 		// 	} as IThemeOption;
-		// 	let notes: JSX.Element | undefined = undefined;
+		// 	let notes: React.ReactNode | undefined = undefined;
 		// 	if (crewIds.length < 12)
 		// 		notes = <><Icon name='warning sign' color='red' />Theme impossible because there aren't enough crew in this collection yet.</>;
 		// 	else
@@ -516,7 +516,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		return simple.slice(0, 1).toUpperCase() + simple.slice(1);
 	}
 
-	function getThemeNotes(eligibleCount: number): JSX.Element | undefined {
+	function getThemeNotes(eligibleCount: number): React.ReactNode | undefined {
 		if (eligibleCount < 12)
 			return <><Icon name='warning sign' color='red' />Theme ineligible because you don't have enough crew available.</>;
 		else if (eligibleCount < 20)
@@ -576,7 +576,7 @@ const CrewThemePicker = (props: CrewThemePickerProps) => {
 		</Modal>
 	);
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.ReactNode {
 		if (!selectedTheme) return <Button icon='paint brush' content='Themed Voyages...' />;
 		return (
 			<Button floated='right' content='Choose a different voyage theme...' />
@@ -730,7 +730,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 		</React.Fragment>
 	);
 
-	function renderTableRow(row: IThemeOption): JSX.Element {
+	function renderTableRow(row: IThemeOption): React.ReactNode {
 		const isHighlighted = highlightedTheme?.key === row.key;
 		return (
 			<Table.Row key={row.key}

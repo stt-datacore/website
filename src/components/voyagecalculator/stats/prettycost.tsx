@@ -29,7 +29,7 @@ export const PrettyCost = (props: PrettyCostProps) => {
 						justifyContent: "left"
 					}}>
 						<div style={{width: "32px"}}>
-						<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}${revivals.imageUrl}`} />
+						<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.REACT_ASSETS_URL}${revivals.imageUrl}`} />
 						</div>
 						<span>{idx} / {revivals.quantity} {t('global.item_types.voyage_consumable')}</span>
 					</div>
@@ -43,7 +43,7 @@ export const PrettyCost = (props: PrettyCostProps) => {
 					justifyContent: "left"
 				}}>
 					<div style={{width: "32px"}}>
-					<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} />
+					<img style={{height:"24px", margin:"0.5em"}} src={`${process.env.REACT_ASSETS_URL}atlas/pp_currency_icon.png`} />
 					</div>
 					<span>{cost} {t('global.item_types.dilithium')}</span>
 				</div>

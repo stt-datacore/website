@@ -13,7 +13,7 @@ import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { ReferenceShip, Ship } from "../../../model/ship";
 import { formatTime } from "../../../utils/voyageutils";
-import { navigate } from "gatsby";
+import { navigate } from "../../../context/globalcontext";
 import { gradeColorsDisabled, gradeToColor } from "../../../utils/crewutils";
 import { Reward } from "../../../model/player";
 

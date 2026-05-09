@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { GlobalContext } from '../../context/globalcontext';
-import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
-import NavigationSettings, { NavigationSettingsConfig } from '../page/settings';
 import { Dropdown, Icon } from 'semantic-ui-react';
-import { useStateWithStorage } from '../../utils/storage';
+import { GlobalContext } from '../../context/globalcontext';
 import { AlertContext } from '../alerts/alertprovider';
+import NavigationSettings, { NavigationSettingsConfig } from '../page/settings';
+import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
 
 type PlayerMenuProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
@@ -13,7 +12,7 @@ type PlayerMenuProps = {
 	navConfig?: NavigationSettingsConfig;
 };
 
-export const PlayerMenu = (props: PlayerMenuProps): JSX.Element => {
+export const PlayerMenu = (props: PlayerMenuProps): React.ReactNode => {
 	const globalContext = React.useContext(GlobalContext);
 	const alertContext = React.useContext(AlertContext);
 	const { setAlertOpen, config: alertConfig, drawAlertModal, setRestoreHiddenAlerts } = alertContext;

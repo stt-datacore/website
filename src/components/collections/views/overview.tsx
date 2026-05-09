@@ -1,17 +1,16 @@
 import React from 'react';
-import { Label, Modal, Grid, Segment, Input, Icon, Image, Popup, Dropdown, Button } from 'semantic-ui-react';
+import { Button, Dropdown, Grid, Icon, Input, Label, Modal, Segment } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../../context/globalcontext';
-import { MilestoneBuff, PlayerCollection } from '../../../model/player';
-import { CollectionDetails } from '../overview_modal';
-import { formatColString } from '../context';
-import { getAllStatBuffs } from '../../../utils/collectionutils';
-import { getIconPath } from '../../../utils/assets';
 import { Collection } from "../../../model/collections";
-import { LazyImage } from '../../lazyimage';
-import { gradeToColor, numberToGrade } from '../../../utils/crewutils';
-import { OptionsPanelFlexRow } from '../../stats/utils';
+import { MilestoneBuff, PlayerCollection } from '../../../model/player';
+import { getIconPath } from '../../../utils/assets';
+import { getAllStatBuffs } from '../../../utils/collectionutils';
 import { useStateWithStorage } from '../../../utils/storage';
+import { LazyImage } from '../../lazyimage';
+import { OptionsPanelFlexRow } from '../../stats/utils';
+import { formatColString } from '../context';
+import { CollectionDetails } from '../overview_modal';
 
 export const CollectionsOverview = () => {
 	const globalContext = React.useContext(GlobalContext);
@@ -101,7 +100,7 @@ export const CollectionsOverview = () => {
 										</div>
 									</Label>
 									<LazyImage
-										src={`${process.env.GATSBY_ASSETS_URL}${colInfo.image}`}
+										src={`${process.env.REACT_ASSETS_URL}${colInfo.image}`}
 										size="large"
 										// onError={e => e.target.style.visibility = 'hidden'}
 									/>

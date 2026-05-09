@@ -6,7 +6,7 @@ import { getComboCountBig } from "../../utils/misc";
 import { MultiWorkerBase } from "../base/multiworkerbase";
 
 export interface ShipMultiWorkerProps {
-    children: JSX.Element;
+    children: React.ReactNode;
 }
 
 export interface ShipMultiWorkerStatus extends IMultiWorkerStatus<ShipWorkerTransportItem> {
@@ -45,7 +45,8 @@ export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  Ship
     }
 
     protected createWorker(): Worker {
-        return new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
+        //return new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
+        return new Worker(new URL('../../workers/battle-worker.js', location.origin));
     }
     protected getRunConfig(options: ShipMultiWorkerConfig): ShipWorkerConfig {
         let fbb_mode = options.fbb_mode;

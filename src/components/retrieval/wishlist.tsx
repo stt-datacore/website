@@ -119,7 +119,7 @@ export const WishlistManager = (props: WishlistManagerProps) => {
 		props.closePicker();
 	}
 
-	function renderOptions(state: IDataPickerState): JSX.Element {
+	function renderOptions(state: IDataPickerState): React.ReactNode {
 		return (
 			<React.Fragment>
 				{props.powerFiltering && (
@@ -138,7 +138,7 @@ export const WishlistManager = (props: WishlistManagerProps) => {
 		);
 	}
 
-	function renderPreface(state: IDataPickerState): JSX.Element {
+	function renderPreface(state: IDataPickerState): React.ReactNode {
 		if (state.data.length === 0) return <></>;
 		return (
 			<React.Fragment>
@@ -155,7 +155,7 @@ export const WishlistManager = (props: WishlistManagerProps) => {
 		);
 	}
 
-	function renderActions(state: IDataPickerState): JSX.Element {
+	function renderActions(state: IDataPickerState): React.ReactNode {
 		return (
 			<React.Fragment>
 				{props.powerFiltering && state.data.length > 0 && (
@@ -220,7 +220,7 @@ const GridCrew = (props: GridCrewProps) => {
 		<React.Fragment>
 			<Image>
 				<div>
-					<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+					<img src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 				</div>
 				{isSelected && (
 					<Label corner='right' color='pink' icon='heart' />
@@ -236,7 +236,7 @@ const GridCrew = (props: GridCrewProps) => {
 		</React.Fragment>
 	);
 
-	function renderRetrieval(crew: IRosterCrew): JSX.Element {
+	function renderRetrieval(crew: IRosterCrew): React.ReactNode {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)
@@ -374,7 +374,7 @@ const ManageOptions = (props: ManageOptionsProps) => {
 						type='file'
 						onChange={e => handleFileUpload(e)}
 						style={{ display: 'none' }}
-						ref={e => inputUploadFile = e}
+						ref={e => inputUploadFile = e as any}
 					/>
 				</Form.Group>
 			</Form>

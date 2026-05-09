@@ -1,14 +1,13 @@
 import React from 'react';
-import { Link } from 'gatsby';
-import { Segment, Header, Grid, Dropdown, Form } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { Dropdown, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewMember } from '../../model/crew';
 import { Variant } from '../../model/game-elements';
-import { GlobalContext } from '../../context/globalcontext';
-import ItemDisplay from '../../components/itemdisplay';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { crewVariantIgnore, getShortNameFromTrait, getVariantTraits } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { AvatarView } from '../item_presenters/avatarview';
 
 type CrewVariantsProps = {
@@ -112,7 +111,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 		</React.Fragment>
 	);
 
-	function renderGroup(group: Variant, idx: number): JSX.Element {
+	function renderGroup(group: Variant, idx: number): React.ReactNode {
 		return (
 			<Segment key={`${group.name}_variant_${idx}`}>
 				<div style={{display:'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap'}}>

@@ -81,7 +81,7 @@
 // 		</Card>
 // 	);
 
-// 	function renderCopyPaste(): JSX.Element {
+// 	function renderCopyPaste(): React.ReactNode {
 // 		return (
 // 			<React.Fragment>
 // 				<Header icon>
@@ -137,7 +137,7 @@
 // 		);
 // 	}
 
-// 	function renderUpload(): JSX.Element {
+// 	function renderUpload(): React.ReactNode {
 // 		return (
 // 			<React.Fragment>
 // 				<Header icon>

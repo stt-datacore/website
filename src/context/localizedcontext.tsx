@@ -15,12 +15,12 @@ import { allLevelsToLevelStats } from '../utils/shiputils';
 //import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
-	children?: JSX.Element;
+	children?: React.ReactNode;
 };
 
 export type SupportedLanguage = 'en' | 'sp' | 'de' | 'fr';
 
-export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | JSX.Element }) => JSX.Element;
+export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | React.ReactNode }) => React.ReactNode;
 
 export type UseTMethod = (prefix: string) => { t: TranslateMethod, tfmt: JSXTranslateMethod };
 
@@ -570,7 +570,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element | number }): JSX.Element {
+	function tfmt(v: string, opts?: { [key: string]: string | React.ReactNode | number }): React.ReactNode {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
@@ -582,13 +582,13 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		try {
 			if (!webStringMap && !fallbackMap) return <>{v}</>;
 			let inparts = getParts(v);
-			let output = [] as JSX.Element[];
+			let output = [] as React.ReactNode[];
 			for (let v2 of inparts) {
 				if (v2 === '{{:}}') v2 = 'global.colon';
 				let obj = webStringMap[v2] ?? fallbackMap[v2];
 				if (opts && typeof obj === 'string') {
 					let parts = getParts(obj);
-					let finals = [] as JSX.Element[];
+					let finals = [] as React.ReactNode[];
 					for (let part of parts) {
 						if (part === '\n') {
 							finals.push(<br />);
@@ -673,7 +673,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			return t(`${usePrefix}.${key}`, options);
 		}
 
-		const newFmtFnc = (key: string, options?: {[key:string]: string | JSX.Element | number }) => {
+		const newFmtFnc = (key: string, options?: {[key:string]: string | React.ReactNode | number }) => {
 			return tfmt(`${usePrefix}.${key}`, options);
 		}
 

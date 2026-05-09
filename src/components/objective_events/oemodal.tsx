@@ -114,7 +114,7 @@ export const OEModal = (props: OEModalProps) => {
                     <div className="ui segment" style={{ margin: 'auto', padding: (toolActive && Tool) ? '0.5em 1em 1em 1em' : undefined }}>
                         {(!toolActive || !Tool) && <img
                             style={{ height: '300px', width: '500px', margin: 'auto' }}
-                            src={`${process.env.GATSBY_ASSETS_URL}${getIconPath(activeEventInfo.image, true)}`}
+                            src={`${process.env.REACT_ASSETS_URL}${getIconPath(activeEventInfo.image, true)}`}
                         />}
                         {!!toolActive && !!Tool && !!activeArchetype &&
                             <div style={{ width: '500px', height: '300px' }}>

@@ -44,13 +44,13 @@ export interface SortConfig {
 export interface ITableConfigRow {
 	width: number;
 	column?: string;
-	title: string | JSX.Element;
+	title: string | React.ReactNode;
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
 	tiebreakers_reverse?: boolean[];
 	customCompare?: (a: any, b: any, config: IConfigSortData) => number;
-	translatePseudocolumn?: (field: string) => string | JSX.Element;
+	translatePseudocolumn?: (field: string) => string | React.ReactNode;
 }
 
 export interface SearchableTableInitOptions {
@@ -69,7 +69,7 @@ export interface SearchableTableProps {
 	config: ITableConfigRow[];
 	overflowX?: 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto';
 
-	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
+	renderTableRow: (row: any, idx?: number, isActive?: boolean) => React.ReactNode;
 
 	noSearch?: boolean;
 	initOptions?: SearchableTableInitOptions;
@@ -79,7 +79,7 @@ export interface SearchableTableProps {
 	showFilterOptions?: boolean;
 	showPermalink?: boolean;
 	lockable?: any[];
-	zeroMessage?: (searchFilter: string) => JSX.Element;
+	zeroMessage?: (searchFilter: string) => React.ReactNode;
 
 	toolCaption?: string;
 	dropDownChoices?: string[];
@@ -166,7 +166,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		setPaginationPage(1);
 	}
 
-	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | undefined): JSX.Element {
+	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | undefined): React.ReactNode {
 		return (
 			<Table.Row>
 				{props.config.map((cell, idx) => (
@@ -190,7 +190,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		);
 	}
 
-	function renderPermalink(): JSX.Element {
+	function renderPermalink(): React.ReactNode {
 		// Will not catch custom options (e.g. highlight)
 		const params = new URLSearchParams();
 		if (searchFilter != '') params.append('search', searchFilter);
@@ -662,7 +662,7 @@ export const prettyCrewColumnTitle = (column: string) => {
 	return column;
 };
 
-function renderDefaultZeroMessage(): JSX.Element {
+function renderDefaultZeroMessage(): React.ReactNode {
 	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<Message icon>
@@ -675,7 +675,7 @@ function renderDefaultZeroMessage(): JSX.Element {
 	);
 }
 
-function renderDefaultExplanation(): JSX.Element {
+function renderDefaultExplanation(): React.ReactNode {
 	return (
 		<div>
 			<p>

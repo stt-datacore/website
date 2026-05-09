@@ -46,7 +46,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 		</React.Fragment>
 	);
 
-	function renderCrewBonusesTable(): JSX.Element {
+	function renderCrewBonusesTable(): React.ReactNode {
 		return (
 			<Table collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
@@ -56,7 +56,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 		);
 	}
 
-	function renderAntimatterRow(): JSX.Element {
+	function renderAntimatterRow(): React.ReactNode {
 		return (
 			<Table.Row key={`aggregate_antimatter_row`}>
 				<Table.Cell>{t('ship.antimatter')}</Table.Cell>
@@ -79,13 +79,13 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 					{!ship && <span>{voyageConfig.max_hp}</span>}
 				</Table.Cell>
 				{!for_export && <Table.Cell className='iconic' textAlign='center'>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+					<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 				</Table.Cell>}
 			</Table.Row>
 		);
 	}
 
-	function renderAggregateTable(skills: string[]): JSX.Element {
+	function renderAggregateTable(skills: string[]): React.ReactNode {
 		return (
 			<Table id={export_id} collapsing celled selectable striped unstackable compact='very' style={{ margin: '0 auto' }}>
 				<Table.Body>
@@ -101,7 +101,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 										<b>{Math.round(agg)}</b>
 									</Table.Cell>
 									{!for_export && <Table.Cell className='iconic' textAlign='center'>
-										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+										<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
 									</Table.Cell>}
 								</Table.Row>
 							);
@@ -121,7 +121,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 										</span>
 									</Table.Cell>
 									{!for_export && <Table.Cell className='iconic' textAlign='center'>
-										<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+										<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
 									</Table.Cell>}
 								</Table.Row>
 							);

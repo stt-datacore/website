@@ -1,5 +1,4 @@
 import React from 'react';
-import { graphql } from 'gatsby';
 import { Header, Divider } from 'semantic-ui-react';
 import DataPageLayout from '../components/page/datapagelayout';
 
@@ -26,24 +25,3 @@ const Announcements = ({ data: { allMarkdownRemark } }) => {
 };
 
 export default Announcements;
-
-export const pageQuery = graphql`
-	query AnnouncementsPageQuery {
-	  allMarkdownRemark(
-		filter: {fields: {source: {eq: "announcements"}}}
-		limit: 20
-    	sort: {frontmatter: {date: DESC}}
-	  ) {
-		edges {
-		  node {
-		    id
-			html
-			frontmatter {
-			  title
-			  date
-			}
-		  }
-		}
-	  }
-	}
-`;

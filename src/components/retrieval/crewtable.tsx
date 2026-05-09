@@ -1,6 +1,6 @@
 import React from 'react';
 import { Label, Message, Rating, Table } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
@@ -112,7 +112,7 @@ const CrewRow = (props: CrewRowProps) => {
 				>
 					<div style={{ gridArea: 'icon' }}>
 						<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</CrewTarget>
 					</div>
 					<div style={{ gridArea: 'stats' }}>
@@ -132,7 +132,7 @@ const CrewRow = (props: CrewRowProps) => {
 		</Table.Row>
 	);
 
-	function renderDefaultCells(): JSX.Element {
+	function renderDefaultCells(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Table.Cell textAlign='center'>
@@ -162,11 +162,11 @@ const CrewRow = (props: CrewRowProps) => {
 		);
 	}
 
-	function renderQuipment(crew: IRosterCrew): JSX.Element {
+	function renderQuipment(crew: IRosterCrew): React.ReactNode {
 		return renderAnyDataScore(crew, 'quipment', t);
 	}
 
-	function renderRetrieval(crew: IRosterCrew): JSX.Element {
+	function renderRetrieval(crew: IRosterCrew): React.ReactNode {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)

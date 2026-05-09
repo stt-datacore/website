@@ -1,17 +1,12 @@
 import React from "react";
-import { Grid, Message, Segment, Form, Checkbox } from "semantic-ui-react";
+import { Checkbox, Form, Grid, Message, Segment } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
-import { QuippedPower } from "../../../model/crew";
-import { PlayerCrew } from "../../../model/player";
 import { IVoyageCrew } from "../../../model/voyage";
-import { oneCrewCopy, qbitsToSlots } from "../../../utils/crewutils";
-import { calcQLots } from "../../../utils/equipment";
-import { getItemWithBonus, ItemWithBonus } from "../../../utils/itemutils";
+import { CrewExcluder } from "../../excluder/crewexcluder";
+import { QuipmentProspectsOptions } from "../../qpconfig/options";
 import { OptionsPanelFlexColumn } from "../../stats/utils";
 import { CalculatorContext } from "../context";
-import { CrewExcluder } from "../../excluder/crewexcluder";
 import { CrewThemes } from "../crewthemes";
-import { QuipmentProspectsOptions } from "../../qpconfig/options";
 import { UserPrefsContext } from "./userprefs";
 
 export type CrewOptionsProps = {

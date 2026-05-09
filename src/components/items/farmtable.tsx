@@ -30,7 +30,7 @@ export interface FarmTableProps {
     excludedSourceTypes?: number[];
     textStyle?: React.CSSProperties;
     eventData?: IEventData;
-    renderExpanded?: (row: FarmSources) => JSX.Element;
+    renderExpanded?: (row: FarmSources) => React.ReactNode;
 }
 
 export const FarmTable = (props: FarmTableProps) => {
@@ -78,7 +78,7 @@ export const FarmTable = (props: FarmTableProps) => {
     const flexRow = OptionsPanelFlexRow;
 
     const eps = React.useMemo(() => {
-        let res = [] as JSX.Element[];
+        let res = [] as React.ReactNode[];
         let eps = {} as {[key:string]: string};
 
         if (episodes) {
@@ -309,7 +309,7 @@ export const FarmTable = (props: FarmTableProps) => {
                             }}>
                             <ItemTarget inputItem={item} targetGroup={hover_target}>
                                 <ItemDisplay
-                                    src={`${process.env.GATSBY_ASSETS_URL}${item?.imageUrl}`}
+                                    src={`${process.env.REACT_ASSETS_URL}${item?.imageUrl}`}
                                     size={48}
                                     allItems={allItems}
                                     itemSymbol={item!.symbol}

@@ -36,7 +36,7 @@ export const QuipmentPopover = (props: QuipmentPopoverProps) => {
             trigger={
                 <div style={{...flexCol, margin: 0, padding: 0}}>
                     <div style={{ cursor: 'help', display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}>
-                        <img src={`${process.env.GATSBY_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+                        <img src={`${process.env.REACT_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ marginLeft: "0.25em", marginRight: "0.25em", height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
                         {!!crew.kwipment_prospects && <Icon name='add' size='tiny' />}
                     </div>
                 </div>

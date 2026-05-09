@@ -113,7 +113,7 @@ export const PolestarProspectsModal = () => {
 		</Modal>
 	);
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.ReactNode {
 		if (!modalIsOpen) return <></>;
 
 		if (activePolestar !== '')
@@ -122,7 +122,7 @@ export const PolestarProspectsModal = () => {
 		return renderPolestarFinder();
 	}
 
-	function renderPolestarFinder(): JSX.Element {
+	function renderPolestarFinder(): React.ReactNode {
 
 		const constellationList = [
 			{ key: 'none', value: '', text: t('retrieval.prospects.show_all_polestars') }
@@ -207,7 +207,7 @@ export const PolestarProspectsModal = () => {
 		return meetsAnyCondition;
 	}
 
-	function renderPolestarRow(polestar: IPolestarData, idx: number): JSX.Element {
+	function renderPolestarRow(polestar: IPolestarData, idx: number): React.ReactNode {
 		return (
 			<Table.Row key={polestar.symbol}
 				style={{ cursor: activePolestar !== polestar.symbol ? 'zoom-in' : 'zoom-out' }}
@@ -225,7 +225,7 @@ export const PolestarProspectsModal = () => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={24} src={`${process.env.GATSBY_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
+							<img width={24} src={`${process.env.REACT_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.1em' }}>{polestar.short_name}</span>
@@ -252,7 +252,7 @@ export const PolestarProspectsModal = () => {
 		);
 	}
 
-	function renderConstellationMessage(data: IPolestar[]): JSX.Element {
+	function renderConstellationMessage(data: IPolestar[]): React.ReactNode {
 		if (activeConstellation === '') return <></>;
 
 		const constellation = allKeystones.find(k => k.symbol === activeConstellation) as IConstellation | undefined;
@@ -275,7 +275,7 @@ export const PolestarProspectsModal = () => {
 		);
 	}
 
-	function renderPolestarDetail(): JSX.Element {
+	function renderPolestarDetail(): React.ReactNode {
 		const polestar = allKeystones.find(k => k.symbol === activePolestar) as IPolestarData | undefined;
 		if (!polestar) return <></>;
 
@@ -314,7 +314,7 @@ export const PolestarProspectsModal = () => {
 		);
 	}
 
-	function renderUnlockableCrew(polestar: IPolestar): JSX.Element {
+	function renderUnlockableCrew(polestar: IPolestar): React.ReactNode {
 		const allPolestars = allKeystones.filter(k => k.type === 'keystone') as IPolestar[];
 		const ownedPolestars = allPolestars.filter(polestar => polestar.owned > 0);
 		const unlockableCrew = rosterCrew.filter(crew =>

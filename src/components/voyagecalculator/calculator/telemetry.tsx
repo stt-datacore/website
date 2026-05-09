@@ -4,7 +4,7 @@ import {
 	Form,
 	Message
 } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 
 import { CrewMember } from '../../../model/crew';
 import { PlayerData } from '../../../model/player';
@@ -93,7 +93,7 @@ export function sendCalcResultTelemetry(
 	};
 
 	try {
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+		fetch(`${process.env.REACT_DATACORE_URL}api/telemetry`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

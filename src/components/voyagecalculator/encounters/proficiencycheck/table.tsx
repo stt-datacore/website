@@ -68,7 +68,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 			},
 			{
 				id: 'crit_potential',
-				title: <img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+				title: <img src={`${process.env.REACT_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 				align: 'center',
 				sortField: { id: 'crit_potential.length', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => renderCritPotential(datum as IProficientCrew)
@@ -113,25 +113,25 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		</React.Fragment>
 	);
 
-	function renderSkillHeader(skills: string[], crewCount: number): JSX.Element {
+	function renderSkillHeader(skills: string[], crewCount: number): React.ReactNode {
 		return (
 			<span title={t('voyage.contests.n_viable_crew', { n: crewCount })}>
 				{skills.map(skill => (
-					<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					<img key={skill} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				))}
 				{` `}({crewCount})
 			</span>
 		);
 	}
 
-	function renderCrewSkills(crew: IProficientCrew): JSX.Element {
+	function renderCrewSkills(crew: IProficientCrew): React.ReactNode {
 		const skills = Object.keys(crew.skills).map(skill => {
 			return {...crew.skills[skill], skill};
 		});
 		return <ProficiencyRanges skills={skills} sort />;
 	}
 
-	function renderCritPotential(crew: IProficientCrew): JSX.Element {
+	function renderCritPotential(crew: IProficientCrew): React.ReactNode {
 		if (crew.crit_potential.length === 0) return <></>;
 		const title: string = crew.crit_potential.map(critTrait => TRAIT_NAMES[critTrait]).join(', ');
 		return (
@@ -141,7 +141,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		);
 	}
 
-	function renderContestScore(crew: IProficientCrew, skillId: string): JSX.Element {
+	function renderContestScore(crew: IProficientCrew, skillId: string): React.ReactNode {
 		const scoredSkill: IScoredSkill = crew.scored_skills[skillId];
 		if (scoredSkill.score === 0) return <></>;
 		return (

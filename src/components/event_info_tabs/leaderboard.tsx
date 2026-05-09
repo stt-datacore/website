@@ -3,7 +3,7 @@ import { Message, Table } from 'semantic-ui-react';
 
 import { getIconPath } from '../../utils/assets';
 import { GlobalContext } from '../../context/globalcontext';
-import { glob } from 'fs';
+
 import { Leaderboard } from '../../model/events';
 
 type LiveType = 'na' | 'live' | 'not_live';
@@ -62,7 +62,7 @@ function LeaderboardTab(props: { leaderboard: Leaderboard[], instanceId?: number
 									<div style={{ gridArea: 'icon' }}>
 										<img
 											width={48}
-											src={member.avatar ? getIconPath(member.avatar) : `${process.env.GATSBY_ASSETS_URL}crew_portraits_cm_empty_sm.png`}
+											src={member.avatar ? getIconPath(member.avatar) : `${process.env.REACT_ASSETS_URL}crew_portraits_cm_empty_sm.png`}
 										/>
 									</div>
 									<div style={{ gridArea: 'stats' }}>

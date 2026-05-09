@@ -11,7 +11,7 @@ import { SemanticWIDTHS } from 'semantic-ui-react';
 export interface CustomFieldDef {
 	field: string;
 	text: string;
-	format?: (value: any, context: any) => string | React.JSX.Element;
+	format?: (value: any, context: any) => string | React.ReactNode;
 	width?: SemanticWIDTHS;
 	reverse?: boolean,
     customCompare?: (a: any, b: any) => number;
@@ -89,7 +89,7 @@ export function printRequiredTraits(
     item: EquipmentItem,
     trait_names: { [key: string]: string },
     t?: TranslateMethod
-): JSX.Element {
+): React.ReactNode {
     if (item.kwipment) {
         if (item.traits_requirement?.length) {
             let req = item.traits_requirement!;
@@ -150,7 +150,7 @@ export interface FlavorConfig {
 export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipmentItem, config: FlavorConfig) {
     const { localized, crew: inputCrew } = config;
     const { t, tfmt } = localized;
-    let output = [] as JSX.Element[];
+    let output = [] as React.ReactNode[];
 
     let flavor = item.flavor ?? "";
     if (flavor.startsWith("Equippable by:")) {

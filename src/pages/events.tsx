@@ -177,7 +177,7 @@ const EventsPageComponent = (props: EventsPageComponentProps) => {
 										)}
 									</Label>
 									<LazyImage
-										src={`${process.env.GATSBY_ASSETS_URL}${eventInfo.image}`}
+										src={`${process.env.REACT_ASSETS_URL}${eventInfo.image}`}
 										size="large"
 										style={{maxHeight: '159px'}}
 										onError={(e) => (e.target.style.visibility = "hidden")}
@@ -612,7 +612,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 		let instance = event_instances.find(f => f.instance_id === stat.instance_id);
 		let url = '';
 		if (instance?.image) {
-			url = `${process.env.GATSBY_ASSETS_URL}${instance.image}`;
+			url = `${process.env.REACT_ASSETS_URL}${instance.image}`;
 		}
 		if (stat.event_name === 'The Darkest Timeline') {
 			console.log("here");

@@ -33,7 +33,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
         { width: 2, column: 'challenge_key', title: 'Challenges' }
     ]
 
-    const renderTableCells = (row: IRosterCrew): JSX.Element => {
+    const renderTableCells = (row: IRosterCrew): React.ReactNode => {
         let crew = row as IQuestCrew;
 
         crew.challenges ??= [];
@@ -133,7 +133,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                                         gridTemplateColumns: '32px auto'
                                     }}>
                                         <div style={{ gridArea: 'image', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                            <img style={{ height: '16px' }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                                            <img style={{ height: '16px' }} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
                                         </div>
                                         <div style={{ gridArea: 'text' }}>
                                             <b>{challenge.name}</b>

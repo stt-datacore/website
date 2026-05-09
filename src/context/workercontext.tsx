@@ -9,7 +9,7 @@ export interface IWorkerContext {
 }
 
 export interface WorkerProviderProps {
-    children: JSX.Element;
+    children: React.ReactNode;
 }
 
 export interface WorkerProviderState {

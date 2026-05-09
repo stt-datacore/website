@@ -159,7 +159,7 @@ export const LootCrewTable = () => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget inputItem={crew} targetGroup={dbidPrefix + 'targetClass'}>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

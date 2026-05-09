@@ -1,5 +1,5 @@
 
-import { navigate } from 'gatsby';
+import { navigate } from '../../context/globalcontext';
 import * as lz from 'lz-string';
 import React from 'react';
 import { Container, Dropdown, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
@@ -79,7 +79,7 @@ const energyLogDefaults = {
 export const EnergyLogContext = React.createContext(energyLogDefaults);
 
 export interface NavItem {
-	title?: string | JSX.Element,
+	title?: string | React.ReactNode,
     textTitle?: string,
 	link?: string,
 	tooltip?: string,
@@ -89,7 +89,7 @@ export interface NavItem {
 	subMenu?: NavItem[];
 	checkVisible?: (data: NavItem) => boolean;
 	customAction?: (e: Event, data: NavItem) => void;
-	customRender?: (data: NavItem) => JSX.Element;
+	customRender?: (data: NavItem) => React.ReactNode;
     sidebarRole?: 'item' | 'heading' | 'separator';
     optionKey?: string;
 }
@@ -210,7 +210,7 @@ function formatItem(page: NavItem, style?: React.CSSProperties) {
     )
 }
 
-export const createSubMenu = (title: string | JSX.Element | undefined, children: NavItem[], verticalLayout: boolean = false, page?: NavItem, recursed?: boolean) => {
+export const createSubMenu = (title: string | React.ReactNode | undefined, children: NavItem[], verticalLayout: boolean = false, page?: NavItem, recursed?: boolean) => {
     //const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     const header = typeof title === 'string' ? undefined : title;
     const text = typeof title === 'string' ? title : undefined;

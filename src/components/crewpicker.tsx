@@ -13,7 +13,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	setOptions: (value: T) => void;
 	defaultOptions: T;
 
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.ReactNode;
 	beforeOpen?: (data: any, options: T) => void;
 	pickerModal: typeof OptionsModal<T>;
 	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
@@ -22,7 +22,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	isOpen?: boolean;
 
 	hoverBoundingClient?: boolean;
-	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => JSX.Element | string;
+	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => React.ReactNode | string;
 	contextData?: any;
 
 	locked?: boolean;
@@ -127,7 +127,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.ReactNode {
 		return (
 			<Button fluid size='big' color='blue'>
 				<Icon name='zoom-in' />
@@ -136,7 +136,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		);
 	}
 
-	function renderGrid(): JSX.Element {
+	function renderGrid(): React.ReactNode {
 		const { filterCrew, renderCrewCaption } = props;
 		if (!modalIsOpen) return (<></>);
 
@@ -163,7 +163,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
 
-								<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={60} height={60} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
 
 							<div>{renderCrewCaption ? renderCrewCaption(crew) : crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
@@ -320,7 +320,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 		);
 // 	}
 
-// 	protected renderTrigger(): JSX.Element {
+// 	protected renderTrigger(): React.ReactNode {
 // 		const { isDefault } = this.state;
 
 // 		return (

@@ -30,7 +30,7 @@ export const OEPicker = () => {
                     <Grid.Column key={`_objective-${oe.symbol}`}>
                         <Segment style={{cursor: 'pointer'}} onClick={() => setActive(oe)}>
                             <div style={{padding: '1em', paddingBottom: '3em'}}>
-                                <img style={{height: '300px', width: '500px'}} src={`${process.env.GATSBY_ASSETS_URL}${getIconPath(oe.image, true)}`} />
+                                <img style={{height: '300px', width: '500px'}} src={`${process.env.REACT_ASSETS_URL}${getIconPath(oe.image, true)}`} />
                             </div>
                             <Label attached="bottom">
                                 <h3>

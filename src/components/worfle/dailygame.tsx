@@ -201,7 +201,7 @@ export const DailyGame = () => {
 		setStats({... stats});
 	}
 
-	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): JSX.Element {
+	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): React.ReactNode {
 		return (
 			<DailyShare
 				gameTime={gameTime}
@@ -212,7 +212,7 @@ export const DailyGame = () => {
 		);
 	}
 
-	function renderStats(): JSX.Element {
+	function renderStats(): React.ReactNode {
 		if (stats.plays === 0) return <></>;
 		if (!showStats)
 			return (
@@ -257,7 +257,7 @@ export const DailyGame = () => {
 		);
 	}
 
-	function renderResetTime(): JSX.Element {
+	function renderResetTime(): React.ReactNode {
 		if (!showStats || solveState === SolveState.Unsolved) return <></>;
 
 		const formatTime = (seconds: number) => {
@@ -286,7 +286,7 @@ const DailyShare = (props: DailyShareProps) => {
 	const { gameTime, solveState, evaluatedGuesses, hintCount } = props;
 
 	const GAME_NAME = 'Worfle';
-	const GAME_URL = `${process.env.GATSBY_DATACORE_URL}crewchallenge`;
+	const GAME_URL = `${process.env.REACT_DATACORE_URL}crewchallenge`;
 
 	const formatEvaluation = (evaluation: number) => {
 		if (evaluation === EvaluationState.Exact)
