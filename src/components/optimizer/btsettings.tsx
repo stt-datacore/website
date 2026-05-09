@@ -81,7 +81,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
 
     let host = "";
 
-    if (!globalThis.window) host = (process.env.REACT_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (process.env.REACT_APP_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
 
     return `${host}cite-opt?${params.toString()}`;
@@ -225,7 +225,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
     const { confirm } = promptContext;
 	const { config, presets, updatePresets } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-	const inputRef = React.createRef<Input>();
+	const inputRef = React.createRef<HTMLInputElement>();
     const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... DefaultBetaTachyonSettings, ... config.current });
 
     const [showCopied, setShowCopied] = React.useState(false);

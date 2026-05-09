@@ -67,7 +67,7 @@ export const GridView = () => {
 						<Table.Cell width={1} className='iconic'>
 							{shipData.shipBonus > 0 &&
 								<span style={{ cursor: 'help' }}>
-									<Popup content={`+${shipData.shipBonus} AM`} mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
+									<Popup content={`+${shipData.shipBonus} AM`} mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
 							}
 						</Table.Cell>

@@ -1,5 +1,5 @@
 import { DropdownItemProps } from 'semantic-ui-react';
-import boss_data from '../../static/structured/boss_data.json';
+import boss_data from '../static/structured/boss_data.json';
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { BossShip } from '../model/boss';

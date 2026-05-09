@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Table, Icon, Dropdown, Input, Button, Grid, Modal, Divider } from 'semantic-ui-react';
 
-import allFactions from '../../../static/structured/factions.json';
+import allFactions from '../../static/structured/factions.json';
 
 import { Shuttle, ShuttleSeat, IDropdownOption } from './model';
 import CONFIG from '../CONFIG';

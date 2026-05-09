@@ -5,10 +5,10 @@
     "version": "4.0.0",
     "license": "MIT",
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
+        "test": "react-app-rewired test",
+        "eject": "react-app-rewired eject"
     },
     "dependencies": {
         "@nivo/bar": "^0.99.0",
@@ -23,6 +23,7 @@
         "@nivo/radar": "^0.99.0",
         "@nivo/sunburst": "^0.99.0",
         "@nivo/swarmplot": "^0.99.0",
+        "@testing-library/react": "^16.3.2",
         "color-convert": "^3.0.1",
         "cypress": "^15.14.2",
         "easymde": "^2.18.0",
@@ -76,7 +77,12 @@
         ]
     },
     "devDependencies": {
+        "@babel/cli": "^7.28.6",
+        "@babel/core": "^7.29.0",
+        "@babel/preset-env": "^7.29.5",
+        "@babel/preset-typescript": "^7.28.5",
         "@types/color-convert": "^3.0.1",
+        "@types/jest": "^30.0.0",
         "@types/localforage": "^0.0.34",
         "@types/node": "^16.7.13",
         "@types/react": "^19.0.0",
@@ -86,6 +92,8 @@
         "@types/tinycolor2": "^1.4.6",
         "@types/uuid": "^11.0.0",
         "dotenv": "^17.4.2",
+        "jest": "^30.4.2",
+        "react-app-rewired": "^2.2.1",
         "showdown": "^2.1.0",
         "start-server-and-test": "^3.0.2",
         "typescript": "^5.7.3"

@@ -1,4 +1,3 @@
-import { Link, navigate } from 'gatsby';
 import React from 'react';
 import { Checkbox, Grid, Header, Icon, Message, Popup, Table } from 'semantic-ui-react';
 
@@ -18,7 +17,7 @@ import { printRequiredTraits } from '../components/items/utils';
 import ItemSources from '../components/itemsources';
 import DataPageLayout from '../components/page/datapagelayout';
 import { ITableConfigRow } from '../components/searchabletable';
-import { GlobalContext } from '../context/globalcontext';
+import { GlobalContext, navigate } from '../context/globalcontext';
 import { EquipmentItem, IDemand } from '../model/equipment';
 import { CompletionState, PlayerCrew } from '../model/player';
 import { skillSum } from '../utils/crewutils';
@@ -270,7 +269,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 					style={{
 						margin: isMobile ? '0 0 0.25em 0' : '0.25em 0 0 0'
 					}}
-					src={`${process.env.REACT_ASSETS_URL}${item.imageUrl}`}
+					src={`${process.env.REACT_APP_ASSETS_URL}${item.imageUrl}`}
 					size={128}
 				/>
 				<div style={{
@@ -388,7 +387,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 						<Link to={`/ship_info?ship=${ship.symbol}`}>
 							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 								<ItemDisplay
-									src={`${process.env.REACT_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+									src={`${process.env.REACT_APP_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
 									size={128}
 									rarity={ship.rarity}
 									maxRarity={ship.rarity}
@@ -414,7 +413,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 								<img
 									title={"Chronitons"}
 									style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }}
-									src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`}
+									src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`}
 								/>
 								{item.recipe.craftCost.toLocaleString()}
 							</>)

@@ -73,7 +73,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 								item={equipment}
 								/>
 							// <ItemDisplay
-							// 	src={`${process.env.REACT_ASSETS_URL}${equipment.imageUrl}`}
+							// 	src={`${process.env.REACT_APP_ASSETS_URL}${equipment.imageUrl}`}
 							// 	size={48}
 							// 	maxRarity={equipment.rarity}
 							// 	rarity={equipment.rarity}
@@ -128,7 +128,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 								<Popup
 									trigger={
 										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
-											<img src={`${process.env.REACT_ASSETS_URL}${recipeEntry.imageUrl}`} />x{entry.count}
+											<img src={`${process.env.REACT_APP_ASSETS_URL}${recipeEntry.imageUrl}`} />x{entry.count}
 										</Label>
 									}
 									header={CONFIG.RARITIES[recipeEntry.rarity].name + ' ' + recipeEntry.name}

@@ -186,7 +186,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 					<meta property='og:type' content='website' />
 					<meta property='og:title' content={`${crew.name} - ${`STT`}`} />
 					<meta property='og:site_name' content='DataCore' />
-					<meta property='og:image' content={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
+					<meta property='og:image' content={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} />
 					<meta property='og:description' content={`${crew.name} - ${`STT`}`} />
 					<meta property='og:url' content={`${location}`} />
 				</Helmet>
@@ -237,7 +237,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 									width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%",
 									marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
 								}}
-									src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlFullBody}`}
+									src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlFullBody}`}
 									alt={crew.name}
 								/>
 								{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !this.state.itemBig) && (<i style={{ textAlign: "center", fontSize: "0.8em", color: "gray" }}>{"(double-click to enlarge)"}</i>)}
@@ -283,7 +283,7 @@ class StaticCrewComponent extends Component<StaticCrewComponentProps, StaticCrew
 	async _saveComment(symbol: string, token: string) {
 		const { commentMarkdown } = this.state;
 
-		fetch(`${process.env.REACT_DATACORE_URL}api/savecomment`, {
+		fetch(`${process.env.REACT_APP_DATACORE_URL}api/savecomment`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

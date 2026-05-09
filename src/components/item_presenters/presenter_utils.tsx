@@ -3,7 +3,7 @@ import { Dropdown, Modal } from "semantic-ui-react";
 import { CrewMember } from "../../model/crew";
 import { CryoCollection, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
 
-import { navigate } from "gatsby";
+import { navigate } from "../../context/globalcontext";
 import { GlobalContext } from "../../context/globalcontext";
 import { Collection } from "../../model/collections";
 import { formatColString } from "../collections/context";

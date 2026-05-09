@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Image, Label, Popup, Tab } from 'semantic-ui-react';
+import { Button, Container, Image, Label, Popup, Tab, TabPane } from 'semantic-ui-react';
 
 import EventInformationTab from './event_info_tabs/event_information';
 import ThresholdRewardsTab from './event_info_tabs/threshold_rewards';
@@ -55,25 +55,25 @@ export function EventInfoModal(props: EventInfoModalProps) {
 		{
 			menuItem: t('event_info.tabs.info.title'),
 			render: () => (
-				<Tab.Pane attached={false}>
+				<TabPane attached={false}>
 					{eventData ? <EventInformationTab lastEvent={lastEvent || undefined} eventData={eventData} /> : <div></div>}
-				</Tab.Pane>
+				</TabPane>
 			),
 		},
 		{
 			menuItem: t('event_info.threshold_rewards'),
 			render: () => (
-				<Tab.Pane attached={false}>
+				<TabPane attached={false}>
 					{eventData ? <ThresholdRewardsTab eventData={eventData} /> : <div></div>}
-				</Tab.Pane>
+				</TabPane>
 			),
 		},
 		{
 			menuItem: t('event_info.ranked_rewards'),
 			render: () => (
-				<Tab.Pane attached={false}>
+				<TabPane attached={false}>
 					{eventData ? <RankedRewardsTab eventData={eventData} /> : <div></div>}
-				</Tab.Pane>
+				</TabPane>
 			),
 		},
 	];
@@ -82,9 +82,9 @@ export function EventInfoModal(props: EventInfoModalProps) {
 		{
 			menuItem: t('event_info.leaderboard'),
 			render: () => (
-				<Tab.Pane attached={false}>
+				<TabPane attached={false}>
 					<LeaderboardTab leaderboard={leaderboard} instanceId={eventData?.instance_id} />
-				</Tab.Pane>
+				</TabPane>
 			),
 		},
 	];
@@ -99,7 +99,7 @@ export function EventInfoModal(props: EventInfoModalProps) {
 	return (
 		<Container style={{ padding: '1em' }}>
 			<Image
-				src={`${process.env.REACT_ASSETS_URL}${image}`}
+				src={`${process.env.REACT_APP_ASSETS_URL}${image}`}
 				fluid
 			/>
 			<Tab

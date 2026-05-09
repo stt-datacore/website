@@ -93,7 +93,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                         return <React.Fragment key={'trait_' + idx + t.trait}><br/><i>{localized.TRAIT_NAMES[t.trait]} (+{t.bonuses[mastery]})</i></React.Fragment>
                     })}</i></>
                 }
-                <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
                 {!!rewards &&
                     <div>
                         {claimed && <div style={{ marginBottom: '0.5em', fontStyle: 'italic', color: 'lightgreen' }}>(Claimed)</div>}

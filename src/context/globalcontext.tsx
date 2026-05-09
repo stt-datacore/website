@@ -44,7 +44,7 @@ const defaultGlobal: IDefaultGlobal = {
 	reloadMarket: () => false,
 };
 
-export function navigate(to: string, options?: { state?: any }) {
+export function navigate(to: string, options?: any) {
 	Navigate({ to, ...options });
 }
 

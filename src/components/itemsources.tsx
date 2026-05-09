@@ -2,8 +2,6 @@ import React, { PureComponent } from 'react';
 
 import MissionCost from './missioncost';
 import { EquipmentItemSource } from '../model/equipment';
-import { Link } from 'gatsby';
-import CONFIG from './CONFIG';
 import { TinyStore } from '../utils/tiny';
 import { GlobalContext } from '../context/globalcontext';
 import { Quest } from '../model/missions';

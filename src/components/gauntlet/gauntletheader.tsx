@@ -171,7 +171,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                         size={64}
                         maxRarity={featuredCrew.max_rarity}
                         rarity={featuredCrew.max_rarity}
-                        src={`${process.env.REACT_ASSETS_URL}${featuredCrew.imageUrlPortrait}`}
+                        src={`${process.env.REACT_APP_ASSETS_URL}${featuredCrew.imageUrlPortrait}`}
                         allCrew={globalContext.core.crew}
                         playerData={globalContext.player.playerData}
                         targetGroup='gauntletsHover'

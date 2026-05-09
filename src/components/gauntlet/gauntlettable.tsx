@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link } from "gatsby";
+import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, Pagination, Popup, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
 
 import { GlobalContext } from "../../context/globalcontext";
@@ -300,7 +300,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 <img
                                     onClick={(e) => imageClick(e, crew)}
                                     width={48}
-                                    src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                    src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 />
                             </CrewTarget>
                             {crew.immortal > 0 &&

@@ -8,7 +8,7 @@ import { Checkbox, Icon, Table } from "semantic-ui-react";
 import { omniSearchFilter } from "../../utils/omnisearch";
 import { Filter } from "../../model/game-elements";
 import CONFIG from "../CONFIG";
-import { navigate } from "gatsby";
+import { navigate } from "../../context/globalcontext";
 import { exportItemsAlt, getItemBonuses, getItemWithBonus, ItemWithBonus } from "../../utils/itemutils";
 import { renderBonuses } from "../item_presenters/item_presenter";
 import { AvatarView } from "../item_presenters/avatarview";

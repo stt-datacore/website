@@ -219,7 +219,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-			<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em' }} />
+			<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em' }} />
 			<div
 				className="ui segment button"
 				style={{
@@ -234,10 +234,10 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				}}>
 				{!!crewStations[idx] && (
 					<CrewTarget inputItem={crewStations[idx]} targetGroup={`${targetGroup || 'ship_profile'}`}>
-						<img src={`${process.env.REACT_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
 					</CrewTarget>
 				) ||
-					<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
+					<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
 				}
 			</div>
 
@@ -255,7 +255,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				alignItems: "center"
 			}}>
 				<div style={{...flexRow, alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
-					{dskill && <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "16px" }} />}
+					{dskill && <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "16px" }} />}
 					{crew.name}
 				</div>
 				<div style={{

@@ -230,7 +230,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                                 {/* <CrewTarget inputItem={crew} targetGroup="voyagehof">
                                              <img
                                                  width={48}
-                                                 src={`${process.env.REACT_ASSETS_URL}/${crew?.imageUrlPortrait}`}
+                                                 src={`${process.env.REACT_APP_ASSETS_URL}/${crew?.imageUrlPortrait}`}
                                              />
                                         </CrewTarget> */}
                                             </div>
@@ -265,7 +265,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                                     return (<div
                                                         title={`${seat.crewCount.toLocaleString()} voyages.`}
                                                         key={`${idx}_${crew.symbol}_seat_${seat.seat_skill}`} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
-                                                        <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${seat.seat_skill}.png`}
+                                                        <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${seat.seat_skill}.png`}
                                                             style={{ height: "24px", margin: "0.5em" }} />
 
                                                         <div>{Math.round(100 * (seat.crewCount / crew.crewCount))}%</div>
@@ -277,7 +277,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                             const quip = context.core.items.find(f => f.kwipment_id === key);
 
                                             return <div key={`${key}_${value}_${crew.symbol}`} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'left'}}>
-                                                {!!quip && <><img style={{height: "1.5em"}} src={`${process.env.REACT_ASSETS_URL}${quip.imageUrl}`} />
+                                                {!!quip && <><img style={{height: "1.5em"}} src={`${process.env.REACT_APP_ASSETS_URL}${quip.imageUrl}`} />
                                                 <span>{quip.name} - {value.toLocaleString()}</span>
                                                 </>
                                                 }
@@ -292,7 +292,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                                 let equipment = value.equipment;
                                                 return <div style={{ width: 'calc(32px + 0.5em)', marginTop: '0.25em', marginBottom: '0.25em', display: 'flex', flexDirection: 'column', justifyItems: 'center', gap: "0.25em", alignItems: 'center' }}>
                                                     {equipment && <ItemDisplay
-                                                        src={`${process.env.REACT_ASSETS_URL}${equipment.imageUrl}`}
+                                                        src={`${process.env.REACT_APP_ASSETS_URL}${equipment.imageUrl}`}
                                                         size={32}
                                                         targetGroup="voyagehofitem"
                                                         itemSymbol={equipment.symbol}

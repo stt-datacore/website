@@ -160,7 +160,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						>
 							{eventData.activeContent?.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
 							{eventData.activeContent?.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
-							<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+							<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 						</span>,
 					reverse: true,
 					customCompare:
@@ -190,8 +190,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			column: customColumn,
 			title:
 				<span>
-					<img alt='Skill' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${customSkills[0]}.png`} style={{ height: '1.1em' }} />
-					+<img alt='Skill' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${customSkills[1]}.png`} style={{ height: '1.1em' }} />
+					<img alt='Skill' src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${customSkills[0]}.png`} style={{ height: '1.1em' }} />
+					+<img alt='Skill' src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${customSkills[1]}.png`} style={{ height: '1.1em' }} />
 				</span>,
 			reverse: true
 		});
@@ -338,7 +338,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					>
 						<div style={{ gridArea: 'icon', display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
 							<CrewTarget targetGroup='eventTarget' inputItem={crew} >
-								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 							{crew.statusIcon && <Icon style={{ margin: '0 0 0.5em -0.5em' }} name={crew.statusIcon} />}
 						</div>
@@ -359,13 +359,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					<React.Fragment>
 						<Table.Cell textAlign='center'>
 							<b>{scoreLabel(crew.bestSkill.score)}</b>
-							<br /><img alt='Skill' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
+							<br /><img alt='Skill' src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 						</Table.Cell>
 						{eventData.activeContent?.content_type !== 'voyage' && <Table.Cell textAlign='center'>
 							{!!crew.bestPair.score && <>
 							<b>{scoreLabel(crew.bestPair.score)}</b>
-							<br /><img alt='Skill' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
-							{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
+							<br /><img alt='Skill' src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
+							{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 							</>}
 						</Table.Cell>}
 						{eventData.activeContent?.content_type === 'voyage' && (<>
@@ -539,7 +539,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 							<Table.HeaderCell />
 							{matrixSkills.map((skill, cellId) => (
 								<Table.HeaderCell key={cellId} width={2} textAlign='center'>
-									<img alt={`${skill.name}`} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
+									<img alt={`${skill.name}`} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
 								</Table.HeaderCell>
 							))}
 						</Table.Row>
@@ -547,7 +547,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					<Table.Body>
 						{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 							<Table.Row key={rowId}>
-								<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
+								<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
 								{matrixSkills.map((skillB, cellId) => {
 									let cbkey = [skillA.name, skillB.name].sort().join("");
 									let cbs = comboSeen[cbkey];
@@ -594,9 +594,9 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 									justifyContent: 'center',
 									gap: '0.5em'
 								}}>
-									<img alt={`${skillA.name}`} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} />
+									<img alt={`${skillA.name}`} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} />
 									<span>&nbsp;/&nbsp;</span>
-									<img alt={`${skillB.name}`} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skillB.name}.png`} style={{ height: '1.1em' }} />
+									<img alt={`${skillB.name}`} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skillB.name}.png`} style={{ height: '1.1em' }} />
 								</div>
 								{renderCell(skillA.name, skillB.name, cbs || !vis, isMobile)}
 							</div>;
@@ -632,14 +632,14 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			if (!isMobile)
 				return (
 					<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer', opacity: invisible ? "0" : undefined }} onClick={() => handleClick(skillA, skillB)}>
-						<img width={48} src={`${process.env.REACT_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
+						<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
 						<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
 					</Table.Cell>
 				);
 			else
 			return (
 				<div key={key} style={{ display: 'inline', cursor: 'pointer', opacity: invisible ? "0" : undefined, textAlign: 'center' }} onClick={() => handleClick(skillA, skillB)}>
-					<img width={48} src={`${process.env.REACT_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
+					<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
 					<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
 				</div>
 			);

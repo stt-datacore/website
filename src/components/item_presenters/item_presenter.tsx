@@ -1,4 +1,4 @@
-import { navigate } from "gatsby";
+import { navigate } from "../../context/globalcontext";
 import React, { Component } from "react";
 import { Grid, Header, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -92,7 +92,7 @@ export function renderBonuses(skills: { [key: string]: Skill & { disabled?: bool
                         }}
                     >
                         <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
-                            <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                            <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
                         </div>
                         <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
                         <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
@@ -267,7 +267,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
                     <AvatarView
-                        //src={`${process.env.REACT_ASSETS_URL}${item.imageUrl}`}
+                        //src={`${process.env.REACT_APP_ASSETS_URL}${item.imageUrl}`}
                         size={compact ? 128 : 128}
                         //rarity={item.rarity}
                         //maxRarity={item.rarity}
@@ -417,7 +417,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                             }}>
                                             <a onClick={(e) => navClick(e, ingitem)} style={{ cursor: "pointer" }} title={ingitem.name}>
                                                 <ItemDisplay
-                                                    src={`${process.env.REACT_ASSETS_URL}${ingitem.imageUrl}`}
+                                                    src={`${process.env.REACT_APP_ASSETS_URL}${ingitem.imageUrl}`}
                                                     rarity={ingitem.rarity}
                                                     maxRarity={ingitem.rarity}
                                                     size={48}

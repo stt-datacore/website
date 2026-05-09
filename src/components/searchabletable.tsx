@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { useStateWithStorage } from '../utils/storage';
 
-import SearchString from 'search-string/src/searchString';
+import SearchString from 'search-string';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
@@ -663,6 +663,7 @@ export const prettyCrewColumnTitle = (column: string) => {
 };
 
 function renderDefaultZeroMessage(): React.ReactNode {
+	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<Message icon>

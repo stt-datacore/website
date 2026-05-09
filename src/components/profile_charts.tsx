@@ -240,14 +240,14 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 				<p>
 					Total chroniton cost to farm all these items: {totalChronCost}{' '}
 					<span style={{ display: 'inline-block' }}>
-						<img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 					</span>
 				</p>
 				{honorDebt && (
 					<p>
 						Total number of credits required to craft all the recipes: {honorDebt.craftCost}{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`${process.env.REACT_ASSETS_URL}atlas/soft_currency_icon.png`} height={14} />
+							<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/soft_currency_icon.png`} height={14} />
 						</span>
 					</p>
 				)}
@@ -1139,14 +1139,14 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 // 					<p>
 // 						Total chroniton cost to farm all these items: {totalChronCost}{' '}
 // 						<span style={{ display: 'inline-block' }}>
-// 							<img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+// 							<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 // 						</span>
 // 					</p>
 // 					{honordebt && (
 // 						<p>
 // 							Total number of credits required to craft all the recipes: {honordebt.craftCost}{' '}
 // 							<span style={{ display: 'inline-block' }}>
-// 								<img src={`${process.env.REACT_ASSETS_URL}atlas/soft_currency_icon.png`} height={14} />
+// 								<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/soft_currency_icon.png`} height={14} />
 // 							</span>
 // 						</p>
 // 					)}

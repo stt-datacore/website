@@ -106,7 +106,7 @@ export const Polestars = (props: PolestarsProps) => {
 							let archdata = ITEM_ARCHETYPES[kk.symbol];
 							return (<Grid.Column key={idx} textAlign='center'>
 								<div style={{...flexCol, gap: '0.5em', justifyContent: 'space-evenly'}}>
-									<img width={48} src={`${process.env.REACT_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
+									<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${kk.icon.file.slice(1).replace(/\//g, '_')}`} />
 									<Link to={`/?search=trait:${archdata?.name || kk.short_name}`}>
 									<span style={{ fontWeight: 'bolder' }}>
 										{archdata?.name || kk.short_name}
@@ -296,7 +296,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 			const polestarFile = polestar ? polestar.icon.file : '/items_keystones_'+trait+'.png';
 			return (
 				<Grid.Column key={idx} textAlign='center' mobile={8} tablet={5} computer={4}>
-					<img width={32} src={`${process.env.REACT_ASSETS_URL}${polestarFile.slice(1).replace(/\//g, '_')}`} />
+					<img width={32} src={`${process.env.REACT_APP_ASSETS_URL}${polestarFile.slice(1).replace(/\//g, '_')}`} />
 					<br />{polestarName}
 					{showPrices && <div style={{display: 'flex', justifyContent: 'center'}}>{printISM(market[polestar?.id ?? ""]?.low ?? 0)}</div>}
 				</Grid.Column>

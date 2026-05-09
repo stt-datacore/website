@@ -9,7 +9,7 @@ const GauntletSettingsPopup = <T extends OptionsBase>(props: GauntletSettingsPro
     const { t, tfmt } = globalContext.localized;
     const { config } = props;
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const inputRef = React.createRef<Input>();
+    const inputRef = React.createRef<HTMLInputElement>();
 
     const [workConf, setWorkConf] = React.useState(config);
     const [innerSettings, setInnerSettings] = React.useState<InternalSettings>(config.current);

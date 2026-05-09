@@ -211,7 +211,7 @@ export const SlotHelperMiniTool = (props: SlotHelperProps) => {
             <Table.Row key={`${row.id}_${row.symbol}_slots_mini_helper`}>
                 <Table.Cell>
                     <div style={{...flexRow, gap: '0.5em'}}>
-                    <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${row.skill_order[0]}.png`} style={{width: '18px'}} />
+                    <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${row.skill_order[0]}.png`} style={{width: '18px'}} />
                     <span style={{fontSize: '0.8em'}}>
                         {Math.ceil(skillSum(row[row.skill_order[0]]))}
                     </span>

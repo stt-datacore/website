@@ -62,7 +62,7 @@ function LeaderboardTab(props: { leaderboard: Leaderboard[], instanceId?: number
 									<div style={{ gridArea: 'icon' }}>
 										<img
 											width={48}
-											src={member.avatar ? getIconPath(member.avatar) : `${process.env.REACT_ASSETS_URL}crew_portraits_cm_empty_sm.png`}
+											src={member.avatar ? getIconPath(member.avatar) : `${process.env.REACT_APP_ASSETS_URL}crew_portraits_cm_empty_sm.png`}
 										/>
 									</div>
 									<div style={{ gridArea: 'stats' }}>

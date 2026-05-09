@@ -1,22 +1,23 @@
 import React from "react";
-import { graphql, useStaticQuery, navigate } from "gatsby";
+
 import { Message, Icon, Button, SemanticCOLORS } from "semantic-ui-react";
 
 import { useStateWithStorage } from "../utils/storage";
+import { navigate } from "../context/globalcontext";
 
 const DAYS_TO_EXPIRE = 7;
 
 const Announcement = () => {
     const [readyToAnnounce, setReadyToAnnounce] = React.useState<boolean>(false);
 
-    const [dismissAnnouncement, setDismissAnnouncement] 
+    const [dismissAnnouncement, setDismissAnnouncement]
         = useStateWithStorage<Date | undefined>
         (
-            "dismissAnnouncement", 
-            undefined, 
-            { 
-                rememberForever: true, 
-                onInitialize: () => setReadyToAnnounce(true) 
+            "dismissAnnouncement",
+            undefined,
+            {
+                rememberForever: true,
+                onInitialize: () => setReadyToAnnounce(true)
             }
         );
 
@@ -42,30 +43,30 @@ const LastAnnouncement = (props: LastAnnouncementProps) => {
 
     const [dateNow, setDateNow] = React.useState<Date>(new Date());
 
-    const data = useStaticQuery(graphql`
-    query AnnouncementQuery {
-      allMarkdownRemark(
-        limit: 1
-        sort: { frontmatter: { date: DESC } }
-        filter: { fields: { source: { eq: "announcements" } } }
-      ) {
-        edges {
-          node {
-            html
-            frontmatter {
-              title
-              class
-              icon
-              date
-            }
-            excerpt(format: HTML)
-          }
-        }
-      }
-    }
-  `);
+//     const data = useStaticQuery(graphql`
+//     query AnnouncementQuery {
+//       allMarkdownRemark(
+//         limit: 1
+//         sort: { frontmatter: { date: DESC } }
+//         filter: { fields: { source: { eq: "announcements" } } }
+//       ) {
+//         edges {
+//           node {
+//             html
+//             frontmatter {
+//               title
+//               class
+//               icon
+//               date
+//             }
+//             excerpt(format: HTML)
+//           }
+//         }
+//       }
+//     }
+//   `);
 
-    const announcements = data.allMarkdownRemark.edges;
+    const announcements = [] as any[]; // data.allMarkdownRemark.edges;
     if (announcements.length === 0) return <></>;
 
     const announcement = announcements[0].node;

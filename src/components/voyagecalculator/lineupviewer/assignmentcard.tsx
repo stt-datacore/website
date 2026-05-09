@@ -111,7 +111,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em', flexWrap: 'nowrap' }}>
 				<span>+{t('global.n_%', { n: crewVP * 100 })}</span>
-				<img src={`${process.env.REACT_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
+				<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>
 		);
 	}
@@ -122,7 +122,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		else return (
 			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
-					<img src={`${process.env.REACT_ASSETS_URL}captains_bridge_antimatter.png`} style={{ height: '1em' }} />
+					<img src={`${process.env.REACT_APP_ASSETS_URL}captains_bridge_antimatter.png`} style={{ height: '1em' }} />
 					<span>{t('global.exclusive')}</span>
 					<span>+{exclusiveBonus}</span>
 				</div>
@@ -138,7 +138,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				{traitBonus === 25 && (
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.5em' }}>
-						<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 						<span>{TRAIT_NAMES[trait]}</span>
 						<span>+25</span>
 					</div>
@@ -146,7 +146,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 				{traitBonus > 0 && traitBonus !== 25 && (
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
 						<span>+{traitBonus}</span>
-						<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 					</div>
 				)}
 			</div>
@@ -159,7 +159,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 			if (traits?.length) {
 				return (
 					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '.5em' }}>
-						<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em' }} className='invertibleIcon' />
 						<span>{traits?.map(trait => TRAIT_NAMES[trait]).join(", ")}</span>
 					</div>
 				)

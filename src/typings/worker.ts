@@ -5,7 +5,8 @@ export class UnifiedWorker {
 
     private ensureWorker() {
         if (!this.instance && typeof window !== 'undefined') {
-            this.instance = new Worker(new URL('../workers/unified-worker.js', import.meta.url));
+            //this.instance = new Worker(new URL('../workers/unified-worker.js', import.meta.url));
+            this.instance = new Worker(new URL('../workers/unified-worker.js', document.location.origin));
         }
     }
 

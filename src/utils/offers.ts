@@ -5,7 +5,7 @@ import { Reward } from "../model/player";
 
 async function loadOffers(): Promise<Offer[] | undefined> {
 
-    let result = await fetch(`${process.env.REACT_DATACORE_URL}api/offer_info`);
+    let result = await fetch(`${process.env.REACT_APP_DATACORE_URL}api/offer_info`);
     if (result.ok) {
         return (await result.json()) as Offer[];
     }
@@ -14,7 +14,7 @@ async function loadOffers(): Promise<Offer[] | undefined> {
 }
 
 async function loadOffers2(): Promise<BeamableStoreRoot | undefined> {
-    let result = await fetch(`${process.env.REACT_DATACORE_URL}api/offer_info2`);
+    let result = await fetch(`${process.env.REACT_APP_DATACORE_URL}api/offer_info2`);
     if (result.ok) {
         return (await result.json()) as BeamableStoreRoot;
     }

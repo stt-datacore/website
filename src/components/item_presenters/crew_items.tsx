@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { navigate } from 'gatsby';
+import { navigate } from '../../context/globalcontext';
 import { Label, Progress } from 'semantic-ui-react';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
@@ -287,12 +287,12 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
             itemSymbol={equipment?.symbol}
             allItems={globalContext.core.items}
             playerData={globalContext.player.playerData}
-            src={`${process.env.REACT_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            src={`${process.env.REACT_APP_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
             size={itemSize}
             maxRarity={equipment?.rarity ?? 0}
             rarity={equipment?.rarity ?? 0}
         />
-        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.REACT_ASSETS_URL}atlas/lock_icon.png`}/>}
+        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.REACT_APP_ASSETS_URL}atlas/lock_icon.png`}/>}
         </div>
     </div>)
 

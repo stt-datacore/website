@@ -33,7 +33,8 @@ const ItemsWorker = {
 		return result;
 	},
 	paraDispatch: async (config: ParaDemandConfig): Promise<ICrewDemands | undefined> => {
-		const worker = new Worker(new URL('./parademand', import.meta.url));
+		//const worker = new Worker(new URL('./parademand', import.meta.url));
+		const worker = new Worker(new URL('./parademand', document.location.origin));
 		worker.postMessage({
 			id: 'para-item-demands',
 			config

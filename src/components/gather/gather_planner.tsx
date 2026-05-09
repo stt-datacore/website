@@ -281,7 +281,7 @@ const GatherTable = (props: GatherTableProps) => {
                             }}>
                             <ItemTarget inputItem={item} targetGroup={hover_target}>
                                 <ItemDisplay
-                                    src={`${process.env.REACT_ASSETS_URL}${item?.imageUrl}`}
+                                    src={`${process.env.REACT_APP_ASSETS_URL}${item?.imageUrl}`}
                                     size={48}
                                     allItems={items}
                                     itemSymbol={item!.symbol}

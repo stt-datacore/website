@@ -113,7 +113,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                     size="large"
                                 />
                                 <img
-                                    src={`${process.env.REACT_ASSETS_URL}atlas/icon_${challenge.skill}.png`}
+                                    src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${challenge.skill}.png`}
                                     style={{ height: `1.5em`, margin: "0.25em" }}
                                 />
                                 {(config.ignoreChallenges?.includes(challenge.id) && (
@@ -161,7 +161,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                         itemSymbol={c.symbol}
                                         playerData={context.player.playerData}
                                         allCrew={context.core.crew}
-                                        src={`${process.env.REACT_ASSETS_URL}${c.imageUrlPortrait}`}
+                                        src={`${process.env.REACT_APP_ASSETS_URL}${c.imageUrlPortrait}`}
                                         size={64}
                                         rarity={c.rarity}
                                         maxRarity={c.max_rarity}

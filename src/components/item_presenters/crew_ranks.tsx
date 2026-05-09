@@ -1,4 +1,5 @@
-import { Link, navigate } from 'gatsby';
+import { navigate } from '../../context/globalcontext';
+import { Link } from 'react-router-dom';
 import React from 'react';
 import { Accordion, Divider, Header, Icon, Segment, SemanticICONS, SemanticWIDTHS, Statistic } from 'semantic-ui-react';
 

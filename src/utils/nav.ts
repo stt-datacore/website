@@ -1,4 +1,4 @@
-import { navigate } from "gatsby";
+import { navigate } from "../context/globalcontext";
 import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
 

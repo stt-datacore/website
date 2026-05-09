@@ -89,7 +89,7 @@ export const CollectionDetails = (props: CollectionDetailsProps) => {
 		<div ref={ref}>
 			<div className="ui segment">
 				<Image
-					src={`${process.env.REACT_ASSETS_URL}${image}`}
+					src={`${process.env.REACT_APP_ASSETS_URL}${image}`}
 					fluid
 				/>
 			</div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Icon, Form, Dropdown, Button, Message } from 'semantic-ui-react';
 
-import allFactions from '../../../static/structured/factions.json';
+import allFactions from '../../static/structured/factions.json';
 import { ShuttleAdventure } from '../../model/shuttle';
 
 import { Shuttle, ShuttleSeat, ITableColumn, ITableData } from './model';

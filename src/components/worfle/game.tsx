@@ -140,7 +140,7 @@ export const Game = (props: GameProps) => {
 			options.push({
 				id: options.length + 1,
 				name: `${CONFIG.SKILLS[skill]}`,
-				iconUrl: `${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`,
+				iconUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`,
 				field: 'skills',
 				value: skill
 			});

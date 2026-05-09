@@ -3,7 +3,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import { CrewMember } from "../../model/crew";
 import { calculateBuffConfig } from "../../utils/voyageutils";
 import CONFIG from "../CONFIG";
-import { Link } from "gatsby";
+import { Link } from "react-router-dom";
 import { Table, Rating, Popup, Checkbox, Pagination, Dropdown } from "semantic-ui-react";
 import { printSkillOrder, gradeToColor, numberToGrade, printPortalStatus } from "../../utils/crewutils";
 import { appelate } from "../../utils/misc";
@@ -204,7 +204,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                             <img
                                                 onClick={(e) => imageClick(e, crew)}
                                                 width={48}
-                                                src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                                src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
                                             />
                                         </CrewTarget>
                                     </div>
@@ -283,7 +283,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                                         <img
                                                             title={appelate(mskill)}
                                                             key={"skimage" + idx + mskill}
-                                                            src={`${process.env.REACT_ASSETS_URL}atlas/icon_${mskill}.png`}
+                                                            src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${mskill}.png`}
                                                             style={{
                                                                 maxHeight: "1.5em",
                                                                 maxWidth: "1.5em",

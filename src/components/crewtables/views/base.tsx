@@ -163,7 +163,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 			tableConfig.push({
 				width: 1,
 				column: `${skill.name}.core`,
-				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
 				reverse: true
 			});
 		});
@@ -446,7 +446,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 							style={{...labelStyle, gridArea: 'b', padding: '0.25em 1em'}}
 						>
 						{di.cost}
-						<img src={`${process.env.REACT_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
 						</div>
 						<div style={{gridArea: 'c'}}><span>{t('base.expiration')}{t('global.colon')}{getExpiration(offer)}</span></div>
 

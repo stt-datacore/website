@@ -242,7 +242,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		const crewCount: number = prospectiveConfig.crew_slots.filter(f => f.crew?.skill_order.includes(skill)).length;
 		return (
 			<span title={t('voyage.editor.n_viable_crew', { n: crewCount })}>
-				<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 				{` `}({crewCount})
@@ -255,7 +255,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		const seat: React.ReactNode = (
 			<React.Fragment>
 				<img
-					src={`${process.env.REACT_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`}
+					src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`}
 					style={{ height: '1em' }}
 					className='invertibleIcon'
 				/>
@@ -290,7 +290,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 			'engineering_skill', 'science_skill', 'medicine_skill'
 		];
 		const skillSlot: number = Math.floor(crew.assigned_slot/2);
-		return <img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+		return <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${slottedSkills[skillSlot]}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 	}
 
 	function renderCrewStatus(crew: IAlternateCrewData): React.ReactNode {
@@ -418,7 +418,7 @@ const AlternatePickerOptions = (props: AlternatePickerOptionsProps) => {
 					<Icon name='info circle' />
 					<span style={{ marginRight: '1em' }}>
 						{tfmt('voyage.editor.targeting_message', {
-							seat: <><img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)}</>
+							seat: <><img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${targeting.slot.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon'/> {t(`voyage.seats.${targeting.slot.symbol}`)}</>
 						})}
 					</span>
 					<Button	/* Cancel */

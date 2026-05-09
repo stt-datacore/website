@@ -140,7 +140,7 @@ export const Contestant = (props: ContestantProps) => {
 							<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 								<span>
 									<img
-										src={`${process.env.REACT_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+										src={`${process.env.REACT_APP_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
 										style={{ height: '1.1em', verticalAlign: 'middle' }}
 										className='invertibleIcon'
 									/>
@@ -185,7 +185,7 @@ export const Contestant = (props: ContestantProps) => {
 					<Grid columns='equal' verticalAlign='middle'>
 						<Grid.Column textAlign='center'>
 							<img
-								src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`}
+								src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`}
 								style={{ height: '1.5em' }}
 								className='invertibleIcon'
 							/>
@@ -215,7 +215,7 @@ export const Contestant = (props: ContestantProps) => {
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 					<span>
 						<img
-							src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`}
+							src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`}
 							style={{ height: '1.1em', verticalAlign: 'middle' }}
 							className='invertibleIcon'
 						/>

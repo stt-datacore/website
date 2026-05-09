@@ -1,7 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+//import './polyfills';
+import './styles/semantic.slate.css';
+//import './styles/theming';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import UnneededItemsPage from './pages/unneeded';
 import VoyagePage from './pages/voyage';
 import VoyageHistoryPage from './pages/voyagehistory';

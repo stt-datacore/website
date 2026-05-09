@@ -238,7 +238,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 			<React.Fragment>
 				<Image>
 					<div style={{ opacity: isGuessed ? .5 : 1 }}>
-						<img src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 					</div>
 					{isGuessed && (
 						<Label corner='right' color='red' icon='x' />
@@ -259,7 +259,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 						<Label>
 							<div>
 								{crew.skill_order.map(skill => (
-									<img key={skill} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
+									<img key={skill} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
 								))}
 							</div>
 						</Label>

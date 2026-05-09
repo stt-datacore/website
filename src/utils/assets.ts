@@ -23,7 +23,7 @@ export function getIconPath(icon: IconObject, relative?: boolean) {
         return file;
     }
     else {
-        return `${process.env.REACT_ASSETS_URL}${file}`;
+        return `${process.env.REACT_APP_ASSETS_URL}${file}`;
     }
 
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import { Segment, Accordion, Table, Rating, Icon, SemanticICONS, Modal, Label, Button } from 'semantic-ui-react';
 
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
@@ -185,12 +185,12 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+				<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 			</span>{' '}
 			<b>{crewDemands.totalChronCost}</b>
 			{', '}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${process.env.REACT_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
+				<img src={`${process.env.REACT_APP_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 			</span>{' '}
 			<b>{crewDemands.craftCost}</b>
 		</div>
@@ -442,7 +442,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 					<Table.HeaderCell />
 					{baseSkills.map(skill =>
 						<Table.HeaderCell key={skill[0]} textAlign='center'>
-							<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
+							<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
 						</Table.HeaderCell>
 					)}
 				</Table.Row>

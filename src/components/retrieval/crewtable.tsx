@@ -112,7 +112,7 @@ const CrewRow = (props: CrewRowProps) => {
 				>
 					<div style={{ gridArea: 'icon' }}>
 						<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
-							<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</CrewTarget>
 					</div>
 					<div style={{ gridArea: 'stats' }}>

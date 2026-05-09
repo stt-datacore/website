@@ -1,4 +1,4 @@
-import { navigate } from "gatsby";
+import { navigate } from "../../context/globalcontext";
 import * as React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
@@ -160,7 +160,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidUpdate(): void {
         const di = this.tiny.getRapid<PlayerCrew | undefined>('displayItem', undefined);
         if (di) {
-            const url = `${process.env.REACT_ASSETS_URL}${di.imageUrlFullBody}`;
+            const url = `${process.env.REACT_APP_ASSETS_URL}${di.imageUrlFullBody}`;
             toDataURL(url, () => {});
         }
     }
@@ -168,7 +168,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidMount(): void {
         const di = this.props.inputItem;
         if (di) {
-            const url = `${process.env.REACT_ASSETS_URL}${di.imageUrlFullBody}`;
+            const url = `${process.env.REACT_APP_ASSETS_URL}${di.imageUrlFullBody}`;
             window.setTimeout(() => {
                 const img = new Image()
                 img.src = url;

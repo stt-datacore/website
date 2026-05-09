@@ -1,4 +1,4 @@
-import { navigate } from "gatsby"
+import { navigate } from "../../../context/globalcontext"
 import React from "react"
 import { Button, Rating, Table } from "semantic-ui-react"
 import { GlobalContext } from "../../../context/globalcontext"
@@ -135,7 +135,7 @@ export const FuseHelperMiniTool = (props: FuseHelperProps) => {
                     style={{ width: '32px', padding: 4 }}
                     onClick={() => navigate('/cite-opt')}
                     >
-                        <img src={`${process.env.REACT_ASSETS_URL}atlas/star_reward.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
+                        <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/star_reward.png`} style={{ height: '24px', alignSelf: 'flex-end' }} />
                 </Button>
                 <Button
                     style={{ width: '32px', padding: 4 }}

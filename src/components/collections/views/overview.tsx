@@ -100,7 +100,7 @@ export const CollectionsOverview = () => {
 										</div>
 									</Label>
 									<LazyImage
-										src={`${process.env.REACT_ASSETS_URL}${colInfo.image}`}
+										src={`${process.env.REACT_APP_ASSETS_URL}${colInfo.image}`}
 										size="large"
 										// onError={e => e.target.style.visibility = 'hidden'}
 									/>

@@ -74,7 +74,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 					{voyageConfig.skills.primary_skill === currentData.skill && <Icon name='star' color='yellow' style={{ marginLeft: '.5em' }} />}
 					{voyageConfig.skills.secondary_skill === currentData.skill && <Icon name='star' color='grey' style={{ marginLeft: '.5em' }} />}
 					{highlighted && <Icon name='check' style={{marginLeft: '0.2em'}} />}
-					<Image floated='right' src={`${process.env.REACT_ASSETS_URL}atlas/icon_${currentData.skill}.png`} style={{ height: '1.5em' }} />
+					<Image floated='right' src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${currentData.skill}.png`} style={{ height: '1.5em' }} />
 				</Message.Header>
 			</Message>
 			<Segment attached>
@@ -182,7 +182,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 					<span key={pairedSkill.skill}>
 						{pairedSkill.change === 'gained' && <Icon name='plus' color='green' />}
 						{pairedSkill.change === 'lost' && <Icon name='minus' color='red' />}
-						<img src={`${process.env.REACT_ASSETS_URL}atlas/icon_${pairedSkill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${pairedSkill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 					</span>
 				))}
 			</div>

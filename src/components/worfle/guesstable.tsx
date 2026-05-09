@@ -111,7 +111,7 @@ const GuessRow = (props: GuessRowProps) => {
 					)}
 					<div style={{ display: 'flex', alignItems: 'center', columnGap: '1em' }}>
 						<div>
-							<img src={`${process.env.REACT_ASSETS_URL}${evaluatedGuess.crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+							<img src={`${process.env.REACT_APP_ASSETS_URL}${evaluatedGuess.crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 						</div>
 						<div style={{ fontSize: '1.25em' }}>
 							{evaluatedGuess.crew.name}
@@ -160,7 +160,7 @@ const GuessRow = (props: GuessRowProps) => {
 	function renderSkillCell(index: number): React.ReactNode {
 		if (index >= evaluatedGuess.crew.skill_order.length) return <Icon name='minus' />;
 		const skill: string = evaluatedGuess.crew.skill_order[index];
-		return <img alt={skill} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '2em' }} />;
+		return <img alt={skill} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '2em' }} />;
 	}
 
 	function styleRow(): React.CSSProperties {

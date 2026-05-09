@@ -47,14 +47,14 @@ export const TableView = (props: TableViewProps) => {
 		//{ width: 1, column: 'events', title: 'Events', reverse: true },
 		{ width: 1, column: 'unique_polestar_combos.length', title: <>{tfmt('behold_helper.columns.unique_retrievals')}</>, reverse: true, tiebreakers: ['in_portal'] },
 		{ width: 1, column: 'factionOnlyTotal', title: <>{tfmt('behold_helper.columns.faction_items')}<br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
-		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
-		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.REACT_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> }
+		{ width: 1, column: 'totalChronCost', title: <><img src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`} alt='Chroniton' style={{ height: '1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> },
+		{ width: 1, column: 'craftCost', title: <><img src={`${process.env.REACT_APP_ASSETS_URL}currency_sc_currency_0.png`} alt='Credit' style={{ height: '1.1em' }} /><br /><small>{tfmt('behold_helper.columns.build_cost')}</small></> }
 	];
 	CONFIG.SKILLS_SHORT.forEach((skill) => {
 		tableConfig.push({
 			width: 1,
 			column: `${skill.name}`,
-			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
 			reverse: true
 		});
 	});
@@ -98,7 +98,7 @@ export const TableView = (props: TableViewProps) => {
 						}}>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget targetGroup='beholdsPage' inputItem={crew}>
-								<img width={48} src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

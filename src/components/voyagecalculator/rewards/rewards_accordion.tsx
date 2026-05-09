@@ -204,12 +204,12 @@ export const VoyageStatsRewardsTitle = (props: VoyageStatsRewardTitleProps): Rea
             {`${t('base.rewards')}: ${bestCrewCount} ${bestRarity}* `}&nbsp;
             {` ${chrons.toLocaleString()} `}
             <img
-                src={`${process.env.REACT_ASSETS_URL}atlas/energy_icon.png`}
+                src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`}
                 style={{ width: '16px', verticalAlign: 'text-bottom' }}
             />&nbsp;&nbsp;
             {` ${honor.toLocaleString()} `}
             <img
-                src={`${process.env.REACT_ASSETS_URL}currency_honor_currency_0.png`}
+                src={`${process.env.REACT_APP_ASSETS_URL}currency_honor_currency_0.png`}
                 style={{ width: '16px', verticalAlign: 'text-bottom' }}
             />
 
@@ -217,7 +217,7 @@ export const VoyageStatsRewardsTitle = (props: VoyageStatsRewardTitleProps): Rea
                 <span> ({tfmt('voyage.or_n_h_if_dupes_dismissed', {
                     n: dupeHonor.toLocaleString(),
                     h: <img
-                        src={`${process.env.REACT_ASSETS_URL}currency_honor_currency_0.png`}
+                        src={`${process.env.REACT_APP_ASSETS_URL}currency_honor_currency_0.png`}
                         style={{ width: '16px', verticalAlign: 'text-bottom' }}
                     />
                 })})

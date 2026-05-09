@@ -507,7 +507,7 @@
 // 									<div style={{margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
 // 									<ItemDisplay
 // 										size={64}
-// 										src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`}
+// 										src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
 // 										rarity={crew.rarity}
 // 										maxRarity={crew.max_rarity}
 // 										targetGroup='citationTarget'
@@ -786,7 +786,7 @@
 // 												<img
 // 													onClick={(e) => imageClick(e, crew)}
 // 													width={48}
-// 													src={`${process.env.REACT_ASSETS_URL}${crew.imageUrlPortrait}`}
+// 													src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
 // 													/>
 // 											</CrewTarget>
 // 										</div>
@@ -858,7 +858,7 @@
 // 													<img
 // 														title={appelate(mskill)}
 // 														key={"skimage"+idx+mskill}
-// 														src={`${process.env.REACT_ASSETS_URL}atlas/icon_${mskill}.png`}
+// 														src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${mskill}.png`}
 // 														style={{
 // 															maxHeight: "1.5em",
 // 															maxWidth: "1.5em",
