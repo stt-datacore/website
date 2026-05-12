@@ -1,14 +1,14 @@
-import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
 import {
-    CollectionInfo,
+    ColComboMap,
     CollectionCombo,
+    CollectionInfo,
     CollectionWorkerConfig,
     CollectionWorkerResult,
-    ColComboMap,
     ComboCostMap,
 } from "../model/collections";
 import { PlayerCollection, PlayerCrew } from "../model/player";
-import { getPermutations, makeAllCombos } from "../utils/misc";
+import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
+import { makeAllCombos } from "../utils/misc";
 
 function makeOptimizedCombos(colCombos: CollectionCombo, playerCollections: PlayerCollection[]) {
     let cname = colCombos.collection.name;

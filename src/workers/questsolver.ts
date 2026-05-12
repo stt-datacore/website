@@ -1,5 +1,4 @@
-import CONFIG from "../components/CONFIG";
-import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
+import { BaseSkills, CrewMember } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Jackpot, MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
@@ -7,7 +6,7 @@ import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult, ThreeSolve
 import { getNodePaths, makeNavMap } from "../utils/episodes";
 import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
-import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, checkReward, ItemWithBonus, sortItemsWithBonus, getItemWithBonus } from "../utils/itemutils";
+import { addItemBonus, getItemBonuses, getItemWithBonus, getPossibleQuipment, ItemBonusInfo, sortItemsWithBonus } from "../utils/itemutils";
 import { applyCrewBuffs } from "./betatachyon";
 
 function newQuip(crew: IQuestCrew) {

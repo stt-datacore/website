@@ -1,11 +1,10 @@
 import CONFIG from "../components/CONFIG";
-import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { Collection } from "../model/collections";
+import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
 import { PolestarCombo } from "../model/keystone";
 import { PlayerCrew } from "../model/player";
-import { AntimatterSeatMap } from "../model/voyage";
 import { BetaTachyonRunnerConfig, CiteData, SkillOrderRarity } from "../model/worker";
-import { getSkillOrderStats, getSkillOrderScore, skillSum, crewCopy, shortToSkill } from "../utils/crewutils";
+import { getSkillOrderScore, getSkillOrderStats, shortToSkill } from "../utils/crewutils";
 import { calcItemDemands } from "../utils/equipment";
 import { ItemWithBonus, getItemWithBonus } from "../utils/itemutils";
 import { findPolestars } from "../utils/retrieval";

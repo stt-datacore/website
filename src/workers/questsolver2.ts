@@ -1,15 +1,14 @@
 import CONFIG from "../components/CONFIG";
-import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
+import { BaseSkills } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
-import { Jackpot, MissionChallenge, MissionTraitBonus } from "../model/missions";
-import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
+import { Jackpot, MissionChallenge } from "../model/missions";
 import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult, ThreeSolveResult } from "../model/worker";
-import { applyCrewBuffs, crewCopy, skillSum } from "../utils/crewutils";
+import { applyCrewBuffs, skillSum } from "../utils/crewutils";
 import { getNodePaths, makeNavMap } from "../utils/episodes";
-import { calcItemDemands, calcQLots, canBuildItem, deductDemands, reverseDeduction, sortCrewByQuipment } from "../utils/equipment";
+import { calcQLots, sortCrewByQuipment } from "../utils/equipment";
 
-import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, checkReward, ItemWithBonus, sortItemsWithBonus, getItemWithBonus, mergeItems } from "../utils/itemutils";
-import { checkIsProspect, createQuipmentInventoryPool, fillInQuipment } from "../utils/quipment_tools";
+import { getItemWithBonus, mergeItems } from "../utils/itemutils";
+import { createQuipmentInventoryPool, fillInQuipment } from "../utils/quipment_tools";
 
 function qbitsToSlots(q_bits: number | undefined) {
     // 100/200/500/1300

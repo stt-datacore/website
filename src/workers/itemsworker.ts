@@ -1,4 +1,3 @@
-import localforage from "localforage";
 import { CrewMember } from "../model/crew";
 import { EquipmentItem, ICrewDemands } from "../model/equipment";
 import { PlayerCrew } from "../model/player";
@@ -6,7 +5,6 @@ import { EquipmentWorkerConfig, EquipmentWorkerResults } from "../model/worker";
 import { mergeDemands } from "../utils/equipment";
 import { binaryLocate, mergeItems } from "../utils/itemutils";
 import { ParaDemandConfig } from "./parademand";
-
 
 const ItemsWorker = {
 	splitCrew: (crew: (PlayerCrew | CrewMember)[]) => {

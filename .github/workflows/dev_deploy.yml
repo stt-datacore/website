@@ -40,8 +40,8 @@ jobs:
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
         run: |
-          yarn install
-          yarn run build
+          yarn
+          npm run build
 
       # Install our SSH Key into build server
       - name: Install SSH key
@@ -53,4 +53,4 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Rsync over ssh
         run: |
-          rsync -avz --progress --delete ./public/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/
+          rsync -avz --progress --delete ./build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/

@@ -1,10 +1,10 @@
-import { ShipWorkerConfig, ShipWorkerItem, ShipWorkerResults, AttackInstant, MultiShipWorkerConfig, ShipWorkerTransportItem, LineUpMeta } from "../model/worker";
+import { BossShip } from "../model/boss";
 import { CrewMember } from "../model/crew";
+import { AttackInstant, LineUpMeta, MultiShipWorkerConfig, ShipWorkerConfig, ShipWorkerResults, ShipWorkerTransportItem } from "../model/worker";
 import { getComboCountBig, getPermutations } from "../utils/misc";
 import { compareShipResults } from "../utils/shiputils";
-import { canSeatAll, iterateBattle, scoreLineUp } from "./battleworkerutils";
 import { passesMeta } from "./battleworkermeta";
-import { BossShip } from "../model/boss";
+import { canSeatAll, iterateBattle } from "./battleworkerutils";
 
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerTransportItem }) => boolean = () => true) => {

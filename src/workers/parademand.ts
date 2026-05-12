@@ -1,10 +1,7 @@
-import localforage from "localforage";
 import { CrewMember } from "../model/crew";
 import { EquipmentItem, ICrewDemands } from "../model/equipment";
 import { PlayerCrew } from "../model/player";
 import { calculateRosterDemands } from "../utils/equipment";
-import itemCache from '../static/structured/items.json';
-const items = itemCache as EquipmentItem[];
 
 export interface ParaDemandConfig {
     crew: (CrewMember | PlayerCrew)[],
@@ -14,6 +11,9 @@ export interface ParaDemandConfig {
 
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = async (message: { data: { id: string; config: ParaDemandConfig; }; }) => {
+    const itemCache = await fetch('../static/structured/items.json');
+    const items = (await itemCache.json()) as EquipmentItem[];
+
     const id = message.data.id;
     const postResult = (result: ICrewDemands | undefined, inProgress: boolean) => {
         postMessage({ result, inProgress, id });
