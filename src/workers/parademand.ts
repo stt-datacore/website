@@ -11,7 +11,7 @@ export interface ParaDemandConfig {
 
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = async (message: { data: { id: string; config: ParaDemandConfig; }; }) => {
-    const itemCache = await fetch('../static/structured/items.json');
+    const itemCache = await fetch('/static/structured/items.json');
     const items = (await itemCache.json()) as EquipmentItem[];
 
     const id = message.data.id;
