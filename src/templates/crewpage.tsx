@@ -27,50 +27,20 @@ export interface CrewPageOptions {
 	content: React.ReactNode;
 }
 
-type StaticCrewPageProps = {
-	// crew: string;
-	// data: {
-	// 	site: {
-	// 		siteMetadata: {
-	// 			titleTemplate: string;
-	// 			defaultTitle: string;
-	// 			defaultDescription: string;
-	// 			baseUrl: string;
-	// 		}
-	// 	};
-	// 	markdownRemark: {
-	// 		html: string;
-	// 		frontmatter: {
-	// 			name: string;
-	// 			memory_alpha: string;
-	// 			bigbook_tier?: number;
-	// 			events?: number;
-	// 			in_portal?: boolean;
-	// 			published: boolean;
-	// 		};
-	// 		rawMarkdownBody: string;
-	// 	};
-	// 	crewJson: any;
-	// };
-	// location: {
-	// 	pathname: string;
-	// }
-};
-
-const StaticCrewPage = (props: StaticCrewPageProps) => {
+const StaticCrewPage = () => {
 	const { crew_symbol } = useParams();
+
+	React.useEffect(() => {
+		if (typeof window !== 'undefined') {
+			window.scrollTo(0, 0);
+		}
+	}, [crew_symbol]);
 
 	return (
 		<DataPageLayout pageTitle={''} demands={['all_buffs', 'episodes', 'crew', 'items', 'cadet', 'keystones', 'event_instances']} narrowLayout={false}>
 			<StaticCrewContent crew_symbol={crew_symbol} />
 		</DataPageLayout>
 	);
-};
-
-type StaticCrewComponentState = {
-	commentMarkdown: string;
-	comments: any[];
-	itemBig: boolean;
 };
 
 interface StaticCrewComponentProps {
