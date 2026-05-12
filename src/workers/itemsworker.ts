@@ -7,8 +7,6 @@ import { mergeDemands } from "../utils/equipment";
 import { binaryLocate, mergeItems } from "../utils/itemutils";
 import { ParaDemandConfig } from "./parademand";
 
-import itemCache from '../static/structured/items.json';
-const items = itemCache as EquipmentItem[];
 
 const ItemsWorker = {
 	splitCrew: (crew: (PlayerCrew | CrewMember)[]) => {
@@ -53,6 +51,9 @@ const ItemsWorker = {
 	},
     processItems: (config: EquipmentWorkerConfig) => {
         return new Promise<EquipmentWorkerResults>(async (resolve, reject) => {
+			let itemCache = await fetch('../static/structured/items.json');
+			const items = (await itemCache.json()) as EquipmentItem[];
+
             const { playerData, crewFilter, excludePrimary } = config;
 			const data = mergeItems(playerData?.player.character.items ?? [], items).map(d => ({...d, needed: 0 })) as EquipmentItem[];
             const catalog = [ ...items ].sort((a, b) => a.symbol.localeCompare(b.symbol));

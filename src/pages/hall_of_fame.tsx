@@ -19,6 +19,11 @@ class HallOfFamePage extends PureComponent<HallOfFamePageProps, HallOfFamePageSt
 		this.setState({...this.state, navLink: link, navOptions: options });
 	}
 
+	constructor(props: HallOfFamePageProps) {
+		super(props);
+		this.state = {};
+	}
+
 	render() {
 
 
