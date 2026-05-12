@@ -15,14 +15,16 @@ type HallOfFamePageState = {
 
 class HallOfFamePage extends PureComponent<HallOfFamePageProps, HallOfFamePageState> {
 
-	navigate(link: string, options?: NavigateOptions) {
+	readonly navigate = (link: string, options?: NavigateOptions) => {
 		this.setState({...this.state, navLink: link, navOptions: options });
 	}
 
 	render() {
-		const { navLink, navOptions } = this.state;
 
-		if (navLink) {
+
+		if (this?.state?.navLink) {
+			const { navLink, navOptions } = this.state;
+
 			return (
 				<Navigate to={navLink} replace={navOptions?.replace} />
 			)

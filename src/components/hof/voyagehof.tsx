@@ -186,7 +186,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const { t: hof } = useT('hof');
 
-        if (!this.state.voyageStats || !allCrew) {
+        if (!this.state?.voyageStats || !allCrew) {
             return (
                 <div className="ui medium centered text active inline loader">
                     {t('spinners.hof')}
