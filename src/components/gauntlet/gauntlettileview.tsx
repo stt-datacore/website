@@ -9,6 +9,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CrewPresenter } from "../item_presenters/crew_presenter";
 import { GauntletSkill } from "../item_presenters/gauntletskill";
 import { ShipSkill } from "../item_presenters/shipskill";
+import { useNavigate } from "react-router-dom";
 
 export interface GauntletTileViewProps {
     gauntlet: Gauntlet;
@@ -21,6 +22,7 @@ export interface GauntletTileViewProps {
 export const GauntletTileView = (props: GauntletTileViewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const gauntletContext = React.useContext(GauntletContext);
+    const navigate = useNavigate();
 
     const { gauntlets, pane, config, setConfig } = gauntletContext;
     const { t } = globalContext.localized;
@@ -135,6 +137,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                     width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"
                 }}>
                     <CrewPresenter
+                        navigate={navigate}
                         width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : "100%"}
                         imageWidth="50%"
                         plugins={[GauntletSkill, ShipSkill]}
@@ -167,6 +170,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                         margin: "0"
                     }}>
                         <CrewPresenter
+                            navigate={navigate}
                             hideStats
                             compact
                             proficiencies

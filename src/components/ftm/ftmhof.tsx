@@ -165,18 +165,6 @@ export const FTMHof = () => {
             });
     }, [cached_log, refreshInc]);
 
-    if (error) {
-        return (
-            <Message negative>
-                <Message.Header>
-                    {t('global.error')}
-                </Message.Header>
-                <Message.Content>
-                    {error}
-                </Message.Content>
-            </Message>
-        )
-    }
 
     const tableConfig = React.useMemo(() => {
         if (groupBy === 'player') {
@@ -218,6 +206,19 @@ export const FTMHof = () => {
         </div>
     }
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+    if (error) {
+        return (
+            <Message negative>
+                <Message.Header>
+                    {t('global.error')}
+                </Message.Header>
+                <Message.Content>
+                    {error}
+                </Message.Content>
+            </Message>
+        )
+    }
 
     return (<React.Fragment>
         <SearchableTable

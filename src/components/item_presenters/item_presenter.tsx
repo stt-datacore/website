@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import React, { Component } from "react";
 import { Grid, Header, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -16,6 +15,7 @@ import { OptionsPanelFlexColumn } from "../stats/utils";
 import { AvatarView } from "./avatarview";
 import { CrewItemsView } from "./crew_items";
 import { PresenterProps } from "./ship_presenter";
+import { Navigate, NavigateOptions } from "react-router-dom";
 
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew, for_export?: boolean) {
@@ -115,6 +115,8 @@ export interface ItemPresenterProps extends PresenterProps {
 
 export interface ItemPresenterState {
     mobileWidth: number;
+    navLink?: string,
+    navOptions?: NavigateOptions;
 }
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
@@ -122,6 +124,10 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
     declare context: React.ContextType<typeof GlobalContext>;
 
     tiny: TinyStore;
+
+    private navigate(link: string, options?: NavigateOptions) {
+        this.setState({...this.state, navLink: link, navOptions: options });
+    }
 
     constructor(props: ItemPresenterProps) {
         super(props);
@@ -148,11 +154,16 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         const { item: item, touched, tabs, showIcon } = this.props;
         const { playerData } = this.context.player;
         const { items } = this.context.core;
-        const { mobileWidth } = this.state;
+        const { mobileWidth, navLink, navOptions } = this.state;
         const compact = this.props.compact ?? this.props.hover;
         const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
+        if (navLink) {
+            return (
+                <Navigate to={navLink} replace={navOptions?.replace} />
+            )
+        }
         if (!item) {
             return <></>
         }
@@ -213,7 +224,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
             if (crew) mt = false;
             return (<>
                 {crew && <div
-                    onClick={(e) => navigate("/crew/" + crew.symbol)}
+                    onClick={(e) => this.navigate("/crew/" + crew.symbol)}
                     style={{
                         cursor: "pointer",
                         textAlign: "center",

@@ -6,7 +6,7 @@ import { CrewPresenter } from '../../components/item_presenters/crew_presenter';
 import { ClassicPresenter } from '../../components/item_presenters/classic_presenter';
 import { DEFAULT_MOBILE_WIDTH } from '../../components/hovering/hoverstat';
 import { marked } from 'marked';
-import { navigate } from '../../context/globalcontext';
+import { useNavigate } from 'react-router-dom';
 
 type StandardViewProps = {
 	selectedCrew: string[];
@@ -15,6 +15,7 @@ type StandardViewProps = {
 };
 
 export const StandardView = (props: StandardViewProps) => {
+	const navigate = useNavigate();
 	const { selectedCrew } = props;
 
 	const data = [] as CrewMember[];
@@ -36,6 +37,7 @@ export const StandardView = (props: StandardViewProps) => {
 			{data.map((crew, index) => (
 				<div key={crew.symbol}>
 					<CrewPresenter
+						navigate={navigate}
 						width={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '100%'}
 						imageWidth={window.innerWidth < DEFAULT_MOBILE_WIDTH ? undefined : '50%'}
 						selfRender={true}

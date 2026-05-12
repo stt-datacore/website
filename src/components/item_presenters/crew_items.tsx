@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { navigate } from '../../context/globalcontext';
 import { Label, Progress } from 'semantic-ui-react';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
@@ -12,6 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { getRealCrewLevel } from '../../utils/equipment';
+import { useNavigate } from 'react-router-dom';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -261,6 +261,7 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
 export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
 
     const globalContext = props.context;
+    const navigate = useNavigate();
 
     const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration } = props;
 

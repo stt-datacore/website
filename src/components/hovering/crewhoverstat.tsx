@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import * as React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
@@ -9,6 +8,7 @@ import { CrewPreparer } from "../item_presenters/crew_preparer";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import { toDataURL } from "../item_presenters/shipskill";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { NavigateFunction } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -294,6 +294,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
         if (this.checkBorder()) {
             if (isWindow) window.setTimeout(() => this.checkBorder(undefined, true));
         }
+
         const { targetGroup, openCrew, plugins, pluginData } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
         const compact = true;
@@ -303,7 +304,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
             this.cancelled = false;
             if (isWindow) window.setTimeout(() => this.deactivate());
         }
-
+        const navigate = this.navigate;
         const navClick = () => {
             if (!displayItem) return;
 
@@ -314,7 +315,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
                 const { buffConfig, playerData } = this.context.player;
                 const { crew: allCrew } = this.context.core;
                 if (playerData && "player" in playerData) {
-                    navToCrewPage(displayItem);
+                    navToCrewPage(displayItem, navigate as NavigateFunction);
                 }
                 else {
                     navigate("/crew/" + displayItem.symbol);
@@ -328,6 +329,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
         }
 
         return displayItem ? (<CrewPresenter
+                        navigate={navigate as NavigateFunction}
                         plugins={plugins}
                         pluginData={pluginData}
                         close={() => closeClick()}

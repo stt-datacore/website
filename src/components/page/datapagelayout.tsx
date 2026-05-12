@@ -186,7 +186,7 @@ type DataPageHelmetProps = {
 
 const DataPageHelmet = (props: DataPageHelmetProps) => {
 	const { title, description } = props;
-	const baseUrl = `${location?.protocol}${location?.host}`;
+	const baseUrl = `${document.location.origin}`;
 	const data = {
 		site: {
 			siteMetadata: {
@@ -201,7 +201,7 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 	if (DEBUG_MODE) console.log("Helmet component render");
 	const Helmet = HelmetDep as any;
 	function withPrefix(arg0: string): string | undefined {
-		return arg0;
+		return "/" + arg0;
 	}
 
 	return (
@@ -214,8 +214,6 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 			<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
 			<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
 			<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
-			<script src={withPrefix('styles/theming.js')} type='text/javascript' />
-			<script src={withPrefix('polyfills.js')} type='text/javascript' />
 		</Helmet>
 	);
 };

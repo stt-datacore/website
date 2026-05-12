@@ -1,4 +1,3 @@
-import { navigate } from "../../../context/globalcontext"
 import React from "react"
 import { Button, Rating, Table } from "semantic-ui-react"
 import { GlobalContext } from "../../../context/globalcontext"
@@ -11,6 +10,7 @@ import { renderMainDataScore } from "../../crewtables/views/base"
 import { AvatarView } from "../../item_presenters/avatarview"
 import { ITableConfigRow, SearchableTable } from "../../searchabletable"
 import { OptionsPanelFlexRow } from "../../stats/utils"
+import { useNavigate } from "react-router-dom"
 
 interface FuseHelperProps {
     data: ObjectiveArchetype,
@@ -28,6 +28,7 @@ export const LevelHelperMiniTool = (props: { data: ObjectiveArchetype }) => {
 
 export const FuseHelperMiniTool = (props: FuseHelperProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
     const { t } = globalContext.localized;
     const { ephemeral, playerData } = globalContext.player;
     const { data, allow_ff, no_max } = props;

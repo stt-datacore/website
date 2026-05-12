@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Grid, Card, Label, Image, Button, Icon, Rating, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
-import { GlobalContext, navigate } from '../../context/globalcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { ClassicPresenter, Skills, IFieldOverride } from '../../components/item_presenters/classic_presenter';
 import { marked } from 'marked';
 
@@ -43,6 +43,7 @@ type CardCrewProps = {
 
 const CardCrew = (props: CardCrewProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
 	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, index } = props;

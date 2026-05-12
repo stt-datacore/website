@@ -22,7 +22,7 @@ import { printChrons, printCredits } from '../../retrieval/context';
 import { CollectionDisplay } from '../../item_presenters/presenter_utils';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../../stats/utils';
 import { AvatarView } from '../../item_presenters/avatarview';
-import { navigate } from '../../../context/globalcontext';
+import { useNavigate } from 'react-router-dom';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean, cheap?: boolean, ocols?: string[], discovery?: boolean) => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -258,6 +258,8 @@ type CrewCellProps = {
 export const CrewBaseCells = (props: CrewCellProps) => {
 	const { crew, tableType, absRank, alternativeLayout, cheap, discovery } = props;
 	const { t } = React.useContext(GlobalContext).localized;
+	const navigate = useNavigate();
+
 	const tiny = TinyStore.getStore("index");
 
 	const navToSearch = (crew: IRosterCrew) => {

@@ -23,8 +23,8 @@ export interface PolestarMultiWorkerState extends IMultiWorkerState {
 export class PolestarMultiWorker extends MultiWorkerBase<PolestarMultiWorkerProps, PolestarMultiWorkerState, IMultiWorkerConfig<IPolestarWorkerConfig, IPolestarWorkerItem>, IPolestarWorkerConfig, IPolestarWorkerItem> {
     protected itemPassAccepted: boolean = false;
     protected createWorker(): Worker {
-        //return new Worker(new URL('../../workers/polestar-worker.js', import.meta.url))
-        return new Worker(new URL('../../workers/polestar-worker.js', location.origin))
+        return new Worker(new URL('../../workers/polestar-worker.js', import.meta.url))
+        //return new Worker(new URL('../../workers/polestar-worker.js', document.location.origin))
     }
 
     constructor(props: PolestarMultiWorkerProps) {

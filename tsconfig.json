@@ -11,8 +11,8 @@
             "dom.iterable",
             "esnext"
         ],
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "esnext",
+        "moduleResolution": "node",
         "noEmit": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,
@@ -20,7 +20,7 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "esnext"
+        "target": "es2020"
     },
     "exclude": [
       "node_modules",

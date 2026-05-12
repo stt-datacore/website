@@ -81,15 +81,15 @@ export const CitationOptimizerConfigProvider = (props: CiteOptContextProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { pageId, children, eventData } = props;
 
-    if (!globalContext.player.playerData) return <></>;
-
-    const { dbid } = globalContext.player.playerData.player;
+    const dbid = globalContext.player.playerData?.player.dbid ?? '';
 
     const [citeConfig, setCiteConfig] = useStateWithStorage<CiteConfig>(`${dbid}/${pageId}/cite_opt/config`, DefaultCiteConfig, { rememberForever: true });
     const [engine, setEngine] = useStateWithStorage<CiteEngine>(`${dbid}/${pageId}/cite_opt/engine`, 'beta_tachyon_pulse', { rememberForever: true });
     const [appliedProspects, setAppliedProspects] = React.useState<PlayerCrew[]>([]);
 
     const [results, setResults] = React.useState<CiteEngineResults | undefined>();
+
+    if (!globalContext.player.playerData) return <></>;
 
     const crewSkills = {} as { [key: string]: string };
     for (let crew of globalContext.core.crew) {

@@ -6,7 +6,7 @@ import { DefaultLocalizedData, LocalizedContext, ILocalizedData, TranslatedCore 
 import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { MarketAggregation } from '../model/celestial';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export const CLIENT_API_VERSION = 32;
 
@@ -43,10 +43,6 @@ const defaultGlobal: IDefaultGlobal = {
 	readyLocalizedCore: () => {},
 	reloadMarket: () => false,
 };
-
-export function navigate(to: string, options?: any) {
-	Navigate({ to, ...options });
-}
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal);
 

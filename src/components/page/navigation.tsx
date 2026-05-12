@@ -1,5 +1,4 @@
 import React from 'react';
-import { navigate } from "../../context/globalcontext";
 import { Menu, Dropdown, Icon, Sidebar, Grid, Container } from "semantic-ui-react";
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
@@ -10,6 +9,7 @@ import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 import { SupportedLanguage, getBrowserLanguage } from '../../context/localizedcontext';
 import { AlertContext } from '../alerts/alertprovider';
+import { useNavigate } from 'react-router-dom';
 
 
 type NavigationProps = {
@@ -57,6 +57,7 @@ function getLanguageFullName(lang?: SupportedLanguage) {
 export const Navigation = (props: NavigationProps) => {
 	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
 
 	const { t, language, setPreferredLanguage } = globalContext.localized;
 
@@ -267,7 +268,7 @@ export const Navigation = (props: NavigationProps) => {
 			sidebarRole: 'heading',
 			subMenu: toolsSubMenu,
 			checkVisible: () => !isMobile,
-			customRender: (data) => renderColumnsMenu(data, 2)
+			customRender: (data) => renderColumnsMenu(data, navigate, 2)
 		},
 		{
 			title: t('menu.tools_title'),
@@ -447,10 +448,10 @@ export const Navigation = (props: NavigationProps) => {
 					menuItems.push(page.customRender(page));
 				}
 				else if (page.subMenu) {
-					menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
+					menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate));
 				}
 				else {
-					menuItems.push(drawMenuItem(page));
+					menuItems.push(drawMenuItem(page, navigate));
 				}
 			}
 			else {
@@ -458,10 +459,10 @@ export const Navigation = (props: NavigationProps) => {
 					sidebarItems.push(page.customRender(page));
 				}
 				else if (page.subMenu) {
-					sidebarItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, true));
+					sidebarItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate, true));
 				}
 				else {
-					sidebarItems.push(drawMenuItem(page));
+					sidebarItems.push(drawMenuItem(page, navigate));
 				}
 			}
 		}
@@ -470,10 +471,10 @@ export const Navigation = (props: NavigationProps) => {
 				menuItems.push(page.customRender(page));
 			}
 			else if (page.subMenu) {
-				menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
+				menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate));
 			}
 			else {
-				menuItems.push(drawMenuItem(page));
+				menuItems.push(drawMenuItem(page, navigate));
 			}
 		}
 	}
@@ -491,19 +492,19 @@ export const Navigation = (props: NavigationProps) => {
 			rightItems.push(page.customRender(page));
 		}
 		else if (page.subMenu) {
-			rightItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
+			rightItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate));
 		}
 		else {
-			rightItems.push(drawMenuItem(page));
+			rightItems.push(drawMenuItem(page, navigate));
 		}
 	}
 
 	if (!isMobile) {
-		rightItems.unshift(createSubMenu(t('menu.about_title'), about));
+		rightItems.unshift(createSubMenu(t('menu.about_title'), about, navigate));
 
 	}
 	else {
-		sidebarItems.push(createSubMenu(t('menu.about_title'), about, true));
+		sidebarItems.push(createSubMenu(t('menu.about_title'), about, navigate, true));
 	}
 
 	if (typeof windowGlobal !== 'undefined') {

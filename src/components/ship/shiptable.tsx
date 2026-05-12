@@ -1,7 +1,6 @@
 import React from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Table } from 'semantic-ui-react';
 
-import { navigate } from '../../context/globalcontext';
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerBuffMode } from '../../model/player';
 import { Ship, ShipInUse } from '../../model/ship';
@@ -20,6 +19,7 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { gradeToColor } from '../../utils/crewutils';
+import { useNavigate } from 'react-router-dom';
 
 type ShipTableProps = {
 	pageId: string;
@@ -51,6 +51,8 @@ type Ownership = 'owned' | 'unowned';
 
 export const ShipTable = (props: ShipTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const { all_ships } = globalContext.core;
 	const { playerData, playerShips } = globalContext.player;
 	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;

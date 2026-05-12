@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import React, { Component } from "react";
 import {
     Button,
@@ -40,6 +39,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     readonly setGlance = (crew?: string[]) => {
+        const { navigate } = this.props;
         crew = crew?.filter(f => !!f?.length && f !== 'undefined');
 
         if (crew?.length) {
@@ -79,6 +79,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
 
     readonly clickCrew = (crew?: string) => {
         let current = [ ... this.state.crewSymbol ?? [] ];
+        const { navigate } = this.props;
         if (crew) {
             if (!current.includes(crew)) {
                 current.push(crew);

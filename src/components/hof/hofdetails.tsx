@@ -6,12 +6,12 @@ import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
 import ItemDisplay from "../itemdisplay";
 import { VoyageHOFState } from "../../model/hof";
-import { navigate } from "../../context/globalcontext";
 import themes from "../nivo_themes";
 
 import { ResponsiveSunburst } from "@nivo/sunburst";
 import { StatTreeNode } from "../../utils/statutils";
 import { ResponsivePie } from "@nivo/pie";
+import { useNavigate } from "react-router-dom";
 
 export const formatNumber = (
     value: number,
@@ -46,6 +46,7 @@ export const HofDetails = (props: HofDetailsProps) => {
     const context = React.useContext(GlobalContext);
     const { t, tfmt, useT } = context.localized;
     const { t: details } = useT('hof.details');
+    const navigate = useNavigate();
 
     const { voyageStats, glanceDays, rawVoyages } = props.hofState;
     const crewSymbol = props.hofState.crewSymbol?.filter(

@@ -8,9 +8,9 @@ import { ItemTarget } from "../hovering/itemhoverstat";
 import { CrewTarget } from "../hovering/crewhoverstat";
 import { Ship } from "../../model/ship";
 import { ShipTarget } from "../hovering/shiphoverstat";
-import { navigate } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
 import { getIconPath } from "../../utils/assets";
+import { useNavigate } from "react-router-dom";
 
 export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
@@ -93,6 +93,8 @@ export interface BasicItem {
 export const AvatarView = (props: AvatarViewProps) => {
     const shipRichClr = '#091220';
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
+
     const { playerData } = globalContext.player;
     const items = props.altItems ?? globalContext.core.items;
     const crew = props.altCrew ?? globalContext.core.crew;

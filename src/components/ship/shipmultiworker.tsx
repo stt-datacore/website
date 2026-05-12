@@ -45,8 +45,8 @@ export class ShipMultiWorker extends MultiWorkerBase<ShipMultiWorkerProps,  Ship
     }
 
     protected createWorker(): Worker {
-        //return new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
-        return new Worker(new URL('../../workers/battle-worker.js', location.origin));
+        return new Worker(new URL('../../workers/battle-worker.js', import.meta.url));
+        //return new Worker(new URL('../../workers/battle-worker.js', document.location.origin));
     }
     protected getRunConfig(options: ShipMultiWorkerConfig): ShipWorkerConfig {
         let fbb_mode = options.fbb_mode;

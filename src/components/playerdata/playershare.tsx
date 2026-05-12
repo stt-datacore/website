@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link} from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { Card, Label, Icon, Button, Form, Checkbox, Popup } from 'semantic-ui-react';
 
-import { GlobalContext, navigate } from '../../context/globalcontext';
+import { GlobalContext } from '../../context/globalcontext';
 import { Notification } from '../../components/page/notification';
 import { useStateWithStorage } from '../../utils/storage';
 import { exportCrew, downloadData } from '../../utils/crewutils';
@@ -44,6 +44,7 @@ type PlayerShareNotificationsProps = {
 
 export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) => {
 	const globalContext = React.useContext(GlobalContext);
+
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
@@ -253,6 +254,8 @@ type PlayerProfileUploaderProps = {
 
 const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const { t, tfmt } = globalContext.localized;
 	const { strippedPlayerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;

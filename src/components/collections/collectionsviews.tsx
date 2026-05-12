@@ -21,6 +21,7 @@ import CollectionsOverviewComponent from './views/overview';
 import { ProgressTable } from './views/progresstable';
 import { CollectionResearchView } from './views/researchview';
 import { CollectionTableView } from './views/tableview';
+import { useNavigate } from 'react-router-dom';
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
@@ -37,6 +38,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const { topCrewScore, topStarScore } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
+	const navigate = useNavigate();
 
 	const { playerData } = globalContext.player;
 
@@ -294,7 +296,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				{tabPanes[tabIndex].render(workerRunning)}
 			</>
 			}
-			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew)} targetGroup='collectionsTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
 	);

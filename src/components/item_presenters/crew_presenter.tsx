@@ -16,7 +16,6 @@ import CrewStat from "./crewstat";
 import { PresenterProps } from "./ship_presenter";
 import { ShipSkill } from "./shipskill";
 
-import { navigate } from "../../context/globalcontext";
 import { Image } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { getCoolStats } from "../../utils/misc";
@@ -303,7 +302,7 @@ export class CrewPresenter extends React.Component<
         if (this.props.openCrew) {
             this.props.openCrew(crew);
         } else {
-            navigate("/crew/" + crew.symbol);
+            this.props.navigate("/crew/" + crew.symbol);
         }
     };
 

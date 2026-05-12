@@ -3,13 +3,13 @@ import { Dropdown, Modal } from "semantic-ui-react";
 import { CrewMember } from "../../model/crew";
 import { CryoCollection, PlayerBuffMode, PlayerCrew, PlayerImmortalMode, TranslateMethod } from "../../model/player";
 
-import { navigate } from "../../context/globalcontext";
 import { GlobalContext } from "../../context/globalcontext";
 import { Collection } from "../../model/collections";
 import { formatColString } from "../collections/context";
 import { CollectionDetails } from "../collections/overview_modal";
 import CONFIG from "../CONFIG";
 import { BuffNames, ImmortalNames, ProspectImmortalNames } from "./crew_preparer";
+import { useNavigate } from "react-router-dom";
 
 const dormantStyle: React.CSSProperties = {
     background: "transparent",
@@ -49,6 +49,8 @@ export interface CollectionDisplayProps {
 
 export const CollectionDisplay = (props: CollectionDisplayProps) => {
     const context = React.useContext(GlobalContext);
+    const navigate = useNavigate();
+
     const { playerData } = context.player;
     const { crew, style, showProgress, clickAction } = props;
     const [modalInstance, setModalInstance] = React.useState(null as Collection | null);

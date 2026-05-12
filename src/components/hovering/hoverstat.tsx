@@ -1,6 +1,7 @@
 import React from "react";
 import * as uuid from 'uuid';
 import { TinyStore } from "../../utils/tiny";
+import { Navigate, NavigateFunction, NavigateOptions } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -21,6 +22,7 @@ export interface HoverStatProps {
      * The target group (required to bind)
      */
     targetGroup: string;
+
     offset?: Coord;
     windowEdgeMinPadding?: Coord;
     boxStyle?: React.CSSProperties;
@@ -71,10 +73,14 @@ export interface HoverStatState<T> {
     boxStyle: React.CSSProperties;
     mobileWidth: number;
     displayItem?: T;
+    navTarget?: string;
+    navOptions?: NavigateOptions
 }
 
 export interface HoverStatTargetState {
     targetId: string;
+    navTarget?: string;
+    navOptions?: NavigateOptions
 }
 
 /**
@@ -107,6 +113,10 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 
     protected set cancelled(value: boolean) {
         this.tiny.setValue('cancelled', value);
+    }
+
+    protected navigate(link: string, navOptions?: NavigateOptions) {
+        this.setState({...this.state, navTarget: link, navOptions });
     }
 
     /**
@@ -142,7 +152,13 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 
     render(): React.ReactNode {
         const { targetGroup, children } = this.props;
+        const { navTarget, navOptions } = this.state;
 
+        if (navTarget) {
+            return (
+                <Navigate to={navTarget} replace={navOptions?.replace} />
+            )
+        }
         return (
             <div className={targetGroup}
                  onDoubleClick={(e) => this.containerEnter(e)}
@@ -192,6 +208,10 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
      */
     protected abstract renderContent(): React.ReactNode;
 
+    readonly navigate = (link: string, navOptions?: NavigateOptions) => {
+        this.setState({ navTarget: link, navOptions });
+    }
+
     constructor(props: TProps) {
         super(props);
         this.tiny = TinyStore.getStore(props.targetGroup);
@@ -226,7 +246,12 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     }
 
     render() {
-        const { divId, boxStyle } = this.state;
+        const { divId, boxStyle, navTarget, navOptions } = this.state;
+        if (navTarget) {
+            return (
+                <Navigate to={navTarget} replace={navOptions?.replace} />
+            )
+        }
         const renderContent = this.renderContent;
         const me = this;
 

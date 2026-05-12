@@ -5,7 +5,6 @@ import { GlobalContext } from '../../context/globalcontext';
 import { CompactCrew, CompletionState, CryoCollection, PlayerBuffMode, PlayerCrew } from '../../model/player';
 import { applyCrewBuffs, getSkills, oneCrewCopy } from '../../utils/crewutils';
 
-import { navigate } from '../../context/globalcontext';
 import { CrewMember } from '../../model/crew';
 import { OfferCrew } from '../../model/offers';
 import { appelate } from '../../utils/misc';
@@ -15,6 +14,7 @@ import { AlertContext } from '../alerts/alertprovider';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { AvatarView } from '../item_presenters/avatarview';
 import { IRosterCrew, RosterType } from './model';
+import { useNavigate } from 'react-router-dom';
 
 type RosterPickerProps = {
 	rosterType: RosterType;
@@ -25,6 +25,8 @@ type RosterPickerProps = {
 
 export const RosterPicker = (props: RosterPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const { config: alertConfig, setRestoreHiddenAlerts, restoreHiddenAlerts } = React.useContext(AlertContext);
 	const { t, COLLECTIONS } = globalContext.localized;
 	const { maxBuffs } = globalContext;

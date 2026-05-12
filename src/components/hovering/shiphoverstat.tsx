@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CompletionState } from "../../model/player";
@@ -6,6 +5,7 @@ import { Ship } from "../../model/ship";
 import CONFIG from "../CONFIG";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { NavigateFunction } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -185,7 +185,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
 
         const navClick = () => {
             if (!displayItem) return;
-            navigate('/ship_info?ship=' + displayItem.symbol);
+            this.navigate('/ship_info?ship=' + displayItem.symbol);
         }
 
         const onClose = () => {
@@ -193,6 +193,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
         }
 
         return displayItem ? (<ShipPresenter
+                        navigate={this.navigate as NavigateFunction}
                         mobileWidth={mobileWidth}
                         close={() => onClose()}
                         openShip={(ship) => navClick()}

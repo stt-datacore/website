@@ -17,7 +17,7 @@ import { printRequiredTraits } from '../components/items/utils';
 import ItemSources from '../components/itemsources';
 import DataPageLayout from '../components/page/datapagelayout';
 import { ITableConfigRow } from '../components/searchabletable';
-import { GlobalContext, navigate } from '../context/globalcontext';
+import { GlobalContext } from '../context/globalcontext';
 import { EquipmentItem, IDemand } from '../model/equipment';
 import { CompletionState, PlayerCrew } from '../model/player';
 import { skillSum } from '../utils/crewutils';
@@ -25,6 +25,7 @@ import { formatDuration, getItemBonuses, getQuipmentCrew } from '../utils/itemut
 import { useStateWithStorage } from '../utils/storage';
 import { ContinuumMission } from '../model/continuum';
 import { ShipPresenter } from '../components/item_presenters/ship_presenter';
+import { useNavigate } from 'react-router-dom';
 
 export interface CrewLevel { crew: PlayerCrew, level: number, owned: boolean };
 
@@ -50,6 +51,8 @@ const ItemInfoPage = () => {
 
 const ItemInfo = (props: ItemInfoComponentProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const { setHeader } = props;
 	const [itemData, setItemData] = React.useState<EquipmentItemData>();
 	const [errorMessage, setErrorMessage] = React.useState<string>('');
@@ -398,6 +401,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 					</ShipTarget> */}
 
 					<ShipPresenter
+						navigate={navigate}
 						openShip={() => navigate('/ship_info?ship='+ship.symbol)}
 						storeName='item_info'
 						hover={false}

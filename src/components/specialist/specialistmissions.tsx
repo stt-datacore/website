@@ -126,8 +126,6 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         },
     ] as ITableConfigRow[];
 
-    if (!eventData.activeContent?.missions?.length) return <></>;
-
     const flexRow = OptionsPanelFlexRow;
     const flexCol = OptionsPanelFlexColumn;
 
@@ -162,6 +160,8 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         if (!currentMission) return [];
         return missionCrew.filter(f => f.mission !== currentMission.id).map(c => c.crew);
     }, [currentMission, missionCrew]);
+
+    if (!eventData.activeContent?.missions?.length) return <></>;
 
     return <React.Fragment>
         <h2>{t('event_planner.specialist_missions')}</h2>

@@ -1,9 +1,12 @@
+import { NavigateFunction } from "react-router-dom";
 import { RankMode } from "../utils/misc";
 import { RawVoyageRecord } from "../utils/voyageutils";
 import { EquipmentItem } from "./equipment";
 import { TranslateMethod } from "./player";
 
-export interface VoyageHOFProps {};
+export interface VoyageHOFProps {
+    navigate: NavigateFunction;
+};
 
 export type HOFViewModes = 'rankings' | 'details';
 

@@ -44,7 +44,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     /* Global Data Check & Initialization */
 
     const context = React.useContext(GlobalContext);
-    if (!context.player.playerData) return <></>
+
     const { t } = context.localized;
     const { continuum_missions } = context.core;
 
@@ -510,6 +510,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
             mastery,
         } as QuestFilterConfig);
     }, [missionConfig, quest, highlighted]);
+
+    if (!context.player.playerData) return <></>;
 
     return (
         <>

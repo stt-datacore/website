@@ -15,6 +15,7 @@ import { CrewPresenter } from "../item_presenters/crew_presenter";
 import { applyCrewBuffs, oneCrewCopy, qbitsToSlots } from "../../utils/crewutils";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { calcItemDemands, canBuildItem } from "../../utils/equipment";
+import { useNavigate } from "react-router-dom";
 
 
 type CrewType = 'all' | 'quippable' | 'owned' | 'frozen' | 'quipped';
@@ -75,6 +76,7 @@ export interface QuipmentFilterProps {
 
 export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
     const { t } = globalContext.localized;
     const { children, pageId, ownedItems, noRender, initCrew } = props;
     const { mode, setMode } = props;
@@ -420,6 +422,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                 }}
             >
                 <CrewPresenter
+                    navigate={navigate}
                     selfRender
                     quipmentMode
                     hideStats

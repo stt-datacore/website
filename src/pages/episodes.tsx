@@ -1,5 +1,4 @@
 import React from 'react';
-import { navigate } from '../context/globalcontext';
 import { Item } from 'semantic-ui-react';
 
 import { Mission } from '../model/missions';
@@ -7,10 +6,11 @@ import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
 
 import { getEpisodeName } from '../utils/episodes';
+import { useNavigate } from 'react-router-dom';
 
 const EpisodesPage = () => {
 	const globalContext = React.useContext(GlobalContext);
-
+	const navigate = useNavigate();
 	const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
 	const foreColor = theme === 'dark' ? 'white' : 'black';
 

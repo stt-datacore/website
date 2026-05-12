@@ -8,7 +8,6 @@ import { Checkbox, Icon, Table } from "semantic-ui-react";
 import { omniSearchFilter } from "../../utils/omnisearch";
 import { Filter } from "../../model/game-elements";
 import CONFIG from "../CONFIG";
-import { navigate } from "../../context/globalcontext";
 import { exportItemsAlt, getItemBonuses, getItemWithBonus, ItemWithBonus } from "../../utils/itemutils";
 import { renderBonuses } from "../item_presenters/item_presenter";
 import { AvatarView } from "../item_presenters/avatarview";
@@ -16,6 +15,7 @@ import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ItemsFilterContext } from "./filters";
 import { downloadData, skillSum } from "../../utils/crewutils";
 import { PlayerResource } from "../page/playerglance";
+import { useNavigate } from "react-router-dom";
 
 export interface EquipmentTableProps {
     pageId: string;
@@ -38,6 +38,7 @@ export interface EquipmentTableProps {
 
 export const EquipmentTable = (props: EquipmentTableProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
 
     const { t } = globalContext.localized;
     const { playerData } = globalContext.player;

@@ -37,7 +37,7 @@ const IndexPage = (props: IndexPageProps) => {
 	tiny.subscribe((name) => {
 		if (name === "search") {
 			let search = tiny.getRapid<string>('search') ?? '';
-			history.pushState({}, "", "/?search=" + search);
+			window.history.pushState({}, "", "/?search=" + search);
 			window.setTimeout(() => {
 				setSearchExtra(search);
 			});

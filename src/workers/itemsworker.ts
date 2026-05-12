@@ -7,7 +7,7 @@ import { mergeDemands } from "../utils/equipment";
 import { binaryLocate, mergeItems } from "../utils/itemutils";
 import { ParaDemandConfig } from "./parademand";
 
-import itemCache from '../../static/structured/items.json';
+import itemCache from '../static/structured/items.json';
 const items = itemCache as EquipmentItem[];
 
 const ItemsWorker = {
@@ -33,8 +33,8 @@ const ItemsWorker = {
 		return result;
 	},
 	paraDispatch: async (config: ParaDemandConfig): Promise<ICrewDemands | undefined> => {
-		//const worker = new Worker(new URL('./parademand', import.meta.url));
-		const worker = new Worker(new URL('./parademand', document.location.origin));
+		const worker = new Worker(new URL('./parademand', import.meta.url));
+		//const worker = new Worker(new URL('./parademand', document.location.origin));
 		worker.postMessage({
 			id: 'para-item-demands',
 			config

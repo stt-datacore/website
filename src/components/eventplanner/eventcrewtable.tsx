@@ -12,7 +12,7 @@ import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { crewGender, isQuipped, qbitsToSlots } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
 import { SkillPicker } from '../base/skillpicker';
@@ -33,6 +33,8 @@ type EventCrewTableProps = {
 
 export const EventCrewTable = (props: EventCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const qpContext = React.useContext(QPContext);
 	const { t } = globalContext.localized;
 	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
@@ -58,13 +60,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	React.useEffect(() => {
 		setInitOptions({});
 	}, [eventData, phaseIndex]);
-
-	if (eventData.bonus.length === 0)
-		return (
-			<div style={{ marginTop: '1em' }}>
-				{t('event_planner.table.featured_crew_not_identified')}
-			</div>
-		);
 
 	const tableConfig: ITableConfigRow[] = React.useMemo(() => {
 		const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
@@ -177,6 +172,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			return results;
 		}
 	}, [eventData, phaseIndex]);
+
+	if (eventData.bonus.length === 0)
+		return (
+			<div style={{ marginTop: '1em' }}>
+				{t('event_planner.table.featured_crew_not_identified')}
+			</div>
+		);
 
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
@@ -314,7 +316,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				showFilterOptions={true}
 				lockable={props.lockable}
 			/>
-			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='eventTarget' />
+			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
 			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
 		</React.Fragment>

@@ -1,8 +1,6 @@
+// import './App.css';
+// import './polyfills';
 import React from 'react';
-import './App.css';
-//import './polyfills';
-import './styles/semantic.slate.css';
-//import './styles/theming';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import UnneededItemsPage from './pages/unneeded';
 import VoyagePage from './pages/voyage';

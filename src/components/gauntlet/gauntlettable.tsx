@@ -41,7 +41,7 @@ export interface GauntletTableProps {
 export const GauntletCrewTable = (props: GauntletTableProps) => {
     const { filter, pageId, gauntlet, gauntlets, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
     const { t, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-    if (!data) return <></>;
+
 
     const targetGroup = `${pageId}_gauntletTable`;
 
@@ -188,6 +188,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
     React.useEffect(() => {
         setCrew(rosterizeCrew(data));
     }, [sortKey, sortDirection, elevated, data]);
+
+    if (!data) return <></>;
 
     const flexCol = OptionsPanelFlexColumn;
     const flexRow = OptionsPanelFlexRow;

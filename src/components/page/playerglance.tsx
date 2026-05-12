@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import React from "react";
 import { Button, Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -12,6 +11,7 @@ import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
 import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
 import { CONQUEST_CURRENCY_ICON } from "../../pages/seasonal";
+import { useNavigate } from "react-router-dom";
 
 export interface SaleData {
     slot_sale: boolean;
@@ -41,6 +41,7 @@ type ShuttleData = {
 }
 
 export const PlayerGlance = (props: PlayerGlanceProps) => {
+    const navigate = useNavigate();
     const [saleUpdate, setSaleUpdate] = useStateWithStorage<Date | undefined>('stt_sale_data_update', undefined);
     const [saleData, setSaleData] = useStateWithStorage<SaleData | undefined>('stt_sale_data', undefined);
 

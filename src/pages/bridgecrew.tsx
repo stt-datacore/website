@@ -58,7 +58,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				max_rarity: crew.max_rarity
 			} as BridgePeopleListItem);
 		});
-		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text)),
+		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text));
 
 		this.setState({ entries, allcrew, peopleList }, () => {
 			let urlParams = new URLSearchParams(window.location.search);

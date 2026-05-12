@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EquipmentItem } from "../../model/equipment";
@@ -6,14 +5,15 @@ import { mergeItems } from "../../utils/itemutils";
 import CONFIG from "../CONFIG";
 import { ItemPresenter } from "../item_presenters/item_presenter";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { NavigateFunction } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
 export interface ItemHoverStatProps extends HoverStatProps {
     disableBuffs?: boolean;
-    navigate?: (symbol: string) => void;
     crewTargetGroup?: string;
     compact?: boolean;
+    navigate?: (link: string) => void;
 }
 
 export interface ItemHoverStatState extends HoverStatState<EquipmentItem> {
@@ -135,7 +135,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
 
-        const { crewTargetGroup, targetGroup } = this.props;
+        const { crewTargetGroup, targetGroup, navigate } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
 
         const compact = this.props.compact ?? true;
@@ -153,7 +153,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
                 this.props.navigate(altItem.symbol);
             }
             else {
-                navigate('/item_info?symbol=' + altItem.symbol, { replace: false });
+                this.navigate('/item_info?symbol=' + altItem.symbol, { replace: false });
             }
             this.deactivate();
 
@@ -165,6 +165,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         }
 
         return displayItem ? (<ItemPresenter
+            navigate={this.navigate as NavigateFunction}
             compact={compact}
             crewTargetGroup={crewTargetGroup}
             mobileWidth={mobileWidth}

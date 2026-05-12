@@ -5,6 +5,7 @@ import { GlobalContext } from '../../context/globalcontext';
 import { AlertContext } from '../alerts/alertprovider';
 import NavigationSettings, { NavigationSettingsConfig } from '../page/settings';
 import { NavItem, createSubMenu, renderSubmenuItem } from '../page/util';
+import { useNavigate } from 'react-router-dom';
 
 type PlayerMenuProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
@@ -15,6 +16,8 @@ type PlayerMenuProps = {
 export const PlayerMenu = (props: PlayerMenuProps): React.ReactNode => {
 	const globalContext = React.useContext(GlobalContext);
 	const alertContext = React.useContext(AlertContext);
+	const navigate = useNavigate();
+
 	const { setAlertOpen, config: alertConfig, drawAlertModal, setRestoreHiddenAlerts } = alertContext;
 
 	const { t } = globalContext.localized;
@@ -69,7 +72,7 @@ export const PlayerMenu = (props: PlayerMenuProps): React.ReactNode => {
 						<NavigationSettings
 							key='menusettings'
 							config={props.navConfig}
-							renderTrigger={() => renderSubmenuItem(data, undefined, !props.vertical)}
+							renderTrigger={() => renderSubmenuItem(data, navigate, undefined, !props.vertical)}
 							isOpen={modalOpen} setIsOpen={setModalOpen}
 						/>
 					);
@@ -114,7 +117,7 @@ export const PlayerMenu = (props: PlayerMenuProps): React.ReactNode => {
 				if (alertConfig) {
 					return (
 						<React.Fragment key={'submenu_alert_modal'}>
-							{drawAlertModal(() => renderSubmenuItem(data, undefined, !props.vertical))}
+							{drawAlertModal(() => renderSubmenuItem(data, navigate, undefined, !props.vertical))}
 						</React.Fragment>
 					)
 				}
@@ -145,7 +148,7 @@ export const PlayerMenu = (props: PlayerMenuProps): React.ReactNode => {
 		return (
 			<React.Fragment>
 				{playerMenu.filter(item => item.checkVisible && item.checkVisible(item)).map((item) => {
-					return item.customRender ? item.customRender(item) : renderSubmenuItem(item);
+					return item.customRender ? item.customRender(item) : renderSubmenuItem(item, navigate);
 				})}
 			</React.Fragment>
 		);
@@ -154,7 +157,7 @@ export const PlayerMenu = (props: PlayerMenuProps): React.ReactNode => {
 		const items = playerMenu.filter(item => item.checkVisible ? item.checkVisible(item) : true);
 		return (
 			<React.Fragment>
-				{createSubMenu(playerData?.player.character.display_name ?? '', items)}
+				{createSubMenu(playerData?.player.character.display_name ?? '', items, navigate)}
 			</React.Fragment>
 		);
 	}

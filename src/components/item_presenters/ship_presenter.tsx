@@ -1,4 +1,3 @@
-import { navigate } from "../../context/globalcontext";
 import React, { Component } from "react";
 import { Rating } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -8,10 +7,12 @@ import { printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ShipSkill } from "./shipskill";
+import { NavigateFunction } from "react-router-dom";
 
 export interface PresenterProps {
     hover: boolean;
     storeName: string;
+    navigate: NavigateFunction;
     disableBuffs?: boolean;
     mobileWidth?: number;
     forceVertical?: boolean;
@@ -74,7 +75,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     }
 
     render(): React.ReactNode {
-        const { ship: ship, touched, tabs, showIcon } = this.props;
+        const { ship: ship, touched, tabs, showIcon, navigate } = this.props;
         const { mobileWidth } = this.state;
         const { SHIP_TRAIT_NAMES } = this.context.localized;
 

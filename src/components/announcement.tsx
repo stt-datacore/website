@@ -3,7 +3,7 @@ import React from "react";
 import { Message, Icon, Button, SemanticCOLORS } from "semantic-ui-react";
 
 import { useStateWithStorage } from "../utils/storage";
-import { navigate } from "../context/globalcontext";
+import { useNavigate } from "react-router-dom";
 
 const DAYS_TO_EXPIRE = 7;
 
@@ -40,7 +40,7 @@ type LastAnnouncementProps = {
 
 const LastAnnouncement = (props: LastAnnouncementProps) => {
     const { dismissAnnouncement, setDismissAnnouncement } = props;
-
+    const navigate = useNavigate();
     const [dateNow, setDateNow] = React.useState<Date>(new Date());
 
 //     const data = useStaticQuery(graphql`
