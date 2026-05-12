@@ -78,7 +78,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     }
 
     readonly clickCrew = (crew?: string) => {
-        let current = [ ... this.state.crewSymbol ?? [] ];
+        let current = [ ...this.state.crewSymbol ?? [] ];
         const { navigate } = this.props;
         if (crew) {
             if (!current.includes(crew)) {
@@ -91,11 +91,11 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
         current = current?.filter(f => !!f?.length && f !== 'undefined');
         if (current?.length === 0) {
             navigate("/hall_of_fame");
-            this.setState({ ... this.state, crewSymbol: undefined, viewMode: 'rankings' })
+            this.setState({ ...this.state, crewSymbol: undefined, viewMode: 'rankings' })
         }
         else {
             navigate(`/hall_of_fame?crew=${current?.join(",")}`);
-            this.setState({ ... this.state, crewSymbol: current, viewMode: 'details' })
+            this.setState({ ...this.state, crewSymbol: current, viewMode: 'details' })
         }
 
     }
@@ -106,7 +106,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
 
         if (!allCrew || !voyageStats) return [];
 
-        let pcn = [ ... new Set(Object.values(voyageStats).map(v => (v instanceof Date || typeof v === 'string') ? undefined : v.map(q => q.crewSymbol)).flat().filter(f => !!f)) ];
+        let pcn = [ ...new Set(Object.values(voyageStats).map(v => (v instanceof Date || typeof v === 'string') ? undefined : v.map(q => q.crewSymbol)).flat().filter(f => !!f)) ];
         return allCrew
                     .filter(f => pcn.includes(f.symbol))
                     .sort((a, b) => {
@@ -117,7 +117,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
     readonly loadCrew = (crew: string[]) => {
 
         if (!crew?.length) {
-            this.setState({ ... this.state, rawVoyages: undefined, viewMode: 'rankings' });
+            this.setState({ ...this.state, rawVoyages: undefined, viewMode: 'rankings' });
             return;
         }
 
@@ -132,7 +132,7 @@ class VoyageHOF extends Component<VoyageHOFProps, VoyageHOFState> {
                     codict[voy.voyageDate.getTime().toString()] = voy;
                 })
                 rawVoyages = Object.values(codict);
-                this.setState({ ... this.state, rawVoyages, viewMode: 'details' });
+                this.setState({ ...this.state, rawVoyages, viewMode: 'details' });
             });
 
     }

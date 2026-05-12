@@ -318,7 +318,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			/>
 			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
-			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
+			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[...new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
 		</React.Fragment>
 	);
 
@@ -526,7 +526,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
 
-	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
+	const matrixSkills = halfMatrix ? [ ...CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
 	const comboSeen = {} as { [key: string]: boolean };
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 

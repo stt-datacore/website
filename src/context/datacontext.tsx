@@ -165,7 +165,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 	);
 
 	function ready(demands: ValidDemands[] = [], onReady: () => void): void {
-		demands = [ ... demands ];
+		demands = [ ...demands ];
 		// Not ready if any valid demands are being processed
 		if (isReadying) return;
 		// Fetch only if valid demand is not already satisfied

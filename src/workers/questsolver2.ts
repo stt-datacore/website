@@ -209,7 +209,7 @@ const QuestSolver = {
                         }
                     }
 
-                    let crewids = [... new Set(Object.values(skillmap).map(m => m.id))];
+                    let crewids = [...new Set(Object.values(skillmap).map(m => m.id))];
                     let touched = [] as string[];
 
                     while (crewids.length > 3) {
@@ -259,7 +259,7 @@ const QuestSolver = {
                             if (skillmap[q2]) delete skillmap[q2];
                             else delete skillmap[q1];
                         }
-                        crewids = [... new Set(Object.values(skillmap).map(m => m.id))];
+                        crewids = [...new Set(Object.values(skillmap).map(m => m.id))];
                     }
 
                     pmcrew = crewids.map(c => crew.find(f => f.id === c)!);

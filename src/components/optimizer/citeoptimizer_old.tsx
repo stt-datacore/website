@@ -100,8 +100,8 @@
 // 			},
 // 			settingsOpen: false,
 // 			betaTachyonSettings: {
-// 				... DefaultBetaTachyonSettings,
-// 				... this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', DefaultBetaTachyonSettings) ?? DefaultBetaTachyonSettings
+// 				...DefaultBetaTachyonSettings,
+// 				...this.tiny.getValue<BetaTachyonSettings>('betaTachyonSettings', DefaultBetaTachyonSettings) ?? DefaultBetaTachyonSettings
 // 			},
 // 			skoMap: {},
 // 			crewSkills: {},
@@ -169,7 +169,7 @@
 // 			}
 // 		});
 
-// 		this.setState({ ... this.state, appliedProspects: outcrew, citeData: undefined });
+// 		this.setState({ ...this.state, appliedProspects: outcrew, citeData: undefined });
 // 		setTimeout(() =>{
 // 			const { citeMode } = this.state;
 // 			this.runWorker(citeMode);
@@ -180,7 +180,7 @@
 // 		return this.state.settingsOpen;
 // 	}
 // 	readonly setSettingsOpen = (value: boolean) => {
-// 		this.setState({ ... this.state, settingsOpen: value });
+// 		this.setState({ ...this.state, settingsOpen: value });
 // 	}
 
 // 	readonly setSettings = (value: BetaTachyonSettings) => {
@@ -204,7 +204,7 @@
 
 // 			}
 
-// 			this.setState({ ... this.state, crewSkills: crewsk });
+// 			this.setState({ ...this.state, crewSkills: crewsk });
 
 // 			if (this.state.prospects.length && this.state.appliedProspects.length !== this.state.prospects.length) {
 // 				this.applyProspects();
@@ -230,7 +230,7 @@
 // 	readonly setEngine = (engine: CiteEngine) => {
 // 		if (this.state.citeMode?.engine !== engine) {
 // 			this.tiny.setValue('engine', engine, true);
-// 			this.setState({ ... this.state, citeMode: { ... this.state.citeMode, engine: engine }, citeData: null });
+// 			this.setState({ ...this.state, citeMode: { ...this.state.citeMode, engine: engine }, citeData: null });
 // 		}
 // 	}
 
@@ -256,7 +256,7 @@
 // 			fpros.push(fi);
 // 		}
 
-// 		this.setState({ ... this.state, checks: fpros });
+// 		this.setState({ ...this.state, checks: fpros });
 // 	}
 
 // 	readonly getChecked = (crew: PlayerCrew | string) => {
@@ -515,7 +515,7 @@
 // 										allCrew={this.context.core.crew}
 // 										playerData={this.context.player.playerData}
 // 										/>
-// 										<b onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: crew.name })}
+// 										<b onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: crew.name })}
 // 											style={{
 // 											cursor: "pointer",
 // 											margin:"0.5em 0 0 0",
@@ -529,7 +529,7 @@
 // 											<span
 // 											title={"Click to see only voyages involving this crew member"}
 // 											style={{cursor: "pointer", margin:"0", textDecoration: "underline"}}
-// 											 onClick={(e) => setCiteMode({ ... citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
+// 											 onClick={(e) => setCiteMode({ ...citeMode ?? {}, nameFilter: "voyage:" + crew.name })}
 // 											>{crew.voyagesImproved?.length} Voyages, </span>
 // 											{Math.ceil(crew.totalEVContribution ?? 0)} Total EV
 // 										</i>
@@ -547,7 +547,7 @@
 // 	}
 
 // 	setSort = (key?: string) => {
-// 		this.setState({ ... this.state, sort: key });
+// 		this.setState({ ...this.state, sort: key });
 // 	}
 
 // 	setDirection = (key?: 'ascending' | 'descending') => {
@@ -995,7 +995,7 @@
 // 		const [preFilterData, setCiteData] = this.createStateAccessors<CiteData | undefined>('citeData');
 
 // 		let compact = true;
-// 		const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ... preFilterData?.crewToCite ?? [] ], crewToTrain: [ ... preFilterData?.crewToTrain ?? [] ] } as CiteData;
+// 		const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [ ...preFilterData?.crewToCite ?? [] ], crewToTrain: [ ...preFilterData?.crewToTrain ?? [] ] } as CiteData;
 
 // 		workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
 // 		workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
@@ -1201,7 +1201,7 @@
 // 								multiple={false}
 // 								rarityFilter={citeMode?.rarities ?? []}
 // 								setRarityFilter={(data) => {
-// 									this.setState({ ...this.state, citeMode: { ... citeMode ?? {}, rarities: data }, citeData: null });
+// 									this.setState({ ...this.state, citeMode: { ...citeMode ?? {}, rarities: data }, citeData: null });
 // 								}}
 // 								/>
 // 						</div>
@@ -1209,7 +1209,7 @@
 // 							<PortalFilter
 // 								portalFilter={citeMode?.portal}
 // 								setPortalFilter={(data) => {
-// 									setCiteMode({ ... citeMode ?? {}, portal: data });
+// 									setCiteMode({ ...citeMode ?? {}, portal: data });
 // 								}}
 // 								/>
 // 						</div>
@@ -1217,7 +1217,7 @@
 // 							<Input
 // 								label={"Search"}
 // 								value={citeMode.nameFilter}
-// 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, nameFilter: value })}
+// 								onChange={(e, { value }) => setCiteMode({ ...citeMode ?? {}, nameFilter: value })}
 // 								/>
 // 							<i className='delete icon'
 // 								title={"Clear Searches and Comparison Marks"}
@@ -1226,7 +1226,7 @@
 // 									marginLeft: "0.75em"
 // 								}}
 // 								onClick={(e) => {
-// 										setCiteMode({ ... citeMode ?? {}, nameFilter: '' });
+// 										setCiteMode({ ...citeMode ?? {}, nameFilter: '' });
 // 										window.setTimeout(() => {
 // 											this.setState({ ...this.state, checks: undefined });
 // 										});
@@ -1243,7 +1243,7 @@
 // 								clearable
 // 								placeholder={"Filter by primary skill"}
 // 								value={citeMode.priSkills}
-// 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, priSkills: value as string[] })}
+// 								onChange={(e, { value }) => setCiteMode({ ...citeMode ?? {}, priSkills: value as string[] })}
 // 								/>
 // 						</div>
 // 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -1253,7 +1253,7 @@
 // 								clearable
 // 								placeholder={"Filter by secondary skill"}
 // 								value={citeMode.secSkills}
-// 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, secSkills: value as string[] })}
+// 								onChange={(e, { value }) => setCiteMode({ ...citeMode ?? {}, secSkills: value as string[] })}
 // 								/>
 // 						</div>
 // 						<div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -1263,7 +1263,7 @@
 // 								clearable
 // 								placeholder={"Filter by voyage seating"}
 // 								value={citeMode.seatSkills}
-// 								onChange={(e, { value }) => setCiteMode({ ... citeMode ?? {}, seatSkills: value as string[] })}
+// 								onChange={(e, { value }) => setCiteMode({ ...citeMode ?? {}, seatSkills: value as string[] })}
 // 								/>
 // 						</div>
 

@@ -30,8 +30,8 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
         if (Array.isArray(node)) {
 
-            let highGaunt = [ ... new Set(node.filter(f => f.contest_data?.traits.some(t => crew.traits.includes(t))).map(t => t.contest_data?.traits ?? [])) ];
-            highGaunt = [ ... new Set(highGaunt.map(m => m.join("_"))) ].map(m => m.split("_"));
+            let highGaunt = [ ...new Set(node.filter(f => f.contest_data?.traits.some(t => crew.traits.includes(t))).map(t => t.contest_data?.traits ?? [])) ];
+            highGaunt = [ ...new Set(highGaunt.map(m => m.join("_"))) ].map(m => m.split("_"));
             let critters = {} as { [key: string]: number };
 
             for (let gaunt of highGaunt) {

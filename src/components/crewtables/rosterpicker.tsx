@@ -387,7 +387,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					}
 				});
 			});
-			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
+			const crewMap = [ ...new Set((offerData)?.map(c => c.crew).flat()) ];
 
 			rosterCrew = rosterizeAllCrew(crewMap, offers);
 			setOfferCrew([...rosterCrew]);
@@ -439,7 +439,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 
 			const crewman = {
-				... oneCrewCopy(crew),
+				...oneCrewCopy(crew),
 				//id: crewmanId++,
 				have: true
 			} as IRosterCrew;
@@ -467,7 +467,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		let crewmanId = 1;
 		(alternativeCrew ?? globalContext.core.crew).forEach(crew => {
 			const crewman = {
-				... oneCrewCopy(crew),
+				...oneCrewCopy(crew),
 				id: crewmanId++,
 				immortal: CompletionState.DisplayAsImmortalStatic,
 				level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
@@ -501,7 +501,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					min: crew.base_skills[skill].range_min,
 				}
 				crewman.skills ??= {};
-				if (!(skill in crewman.skills)) crewman.skills[skill] = { ... crew.base_skills[skill] };
+				if (!(skill in crewman.skills)) crewman.skills[skill] = { ...crew.base_skills[skill] };
 			}
 
 			if (buffMode === 'player' && playerData && playerBuffs) {

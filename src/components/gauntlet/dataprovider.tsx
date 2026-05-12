@@ -27,7 +27,7 @@ export interface IGauntletContext {
 }
 
 const DefaultUserPrefs: GauntletUserPrefs = {
-	settings: { ... DefaultAdvancedGauntletSettings },
+	settings: { ...DefaultAdvancedGauntletSettings },
 	buffMode: 'player',
 	range_max: 0,
 	filter: {

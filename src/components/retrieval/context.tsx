@@ -155,7 +155,7 @@ export function sortCombosByCost(combos: string[][], allKeystones: IKeystone[], 
 	let pricemap = [] as { total: number, sell_count: number, combo: string[] }[];
 	let mul = direction === 'ascending' ? 1 : -1;
 	combos.forEach((combo) => {
-		pricemap.push({ ... getComboCost(combo, allKeystones, market, unowned_only), combo });
+		pricemap.push({ ...getComboCost(combo, allKeystones, market, unowned_only), combo });
 	});
 	pricemap.sort((a, b) => {
 		let r = (a.total - b.total) * mul;
@@ -169,7 +169,7 @@ export function sortCombosBySellCount(combos: string[][], allKeystones: IKeyston
 	let pricemap = [] as { total: number, sell_count: number, combo: string[] }[];
 	let mul = direction === 'ascending' ? 1 : -1;
 	combos.forEach((combo) => {
-		pricemap.push({ ... getComboCost(combo, allKeystones, market, unowned_only), combo });
+		pricemap.push({ ...getComboCost(combo, allKeystones, market, unowned_only), combo });
 	});
 	pricemap.sort((a, b) => {
 		let r = (a.sell_count - b.sell_count) * mul;

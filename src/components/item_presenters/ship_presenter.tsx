@@ -43,7 +43,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     constructor(props: ShipPresenterProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 

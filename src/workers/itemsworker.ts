@@ -49,7 +49,7 @@ const ItemsWorker = {
 	},
     processItems: (config: EquipmentWorkerConfig) => {
         return new Promise<EquipmentWorkerResults>(async (resolve, reject) => {
-			let itemCache = await fetch('../static/structured/items.json');
+			let itemCache = await fetch('/structured/items.json');
 			const items = (await itemCache.json()) as EquipmentItem[];
 
             const { playerData, crewFilter, excludePrimary } = config;
@@ -147,7 +147,7 @@ const ItemsWorker = {
 								eq.needed = item.count;
 								eq.factionOnly = item.equipment?.item_sources?.every(i => i.type === 1) ?? item.factionOnly;
 								eq.quantity = 0;
-								eq.demandCrew = [ ... item.crewSymbols ];
+								eq.demandCrew = [ ...item.crewSymbols ];
 								data.push(eq);
 								data.sort((a, b) => a.symbol.localeCompare(b.symbol));
 							}

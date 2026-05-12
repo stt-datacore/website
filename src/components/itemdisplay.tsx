@@ -50,7 +50,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		}
 
 		const divStyle = {
-			... (this.props.style ?? {}),
+			...(this.props.style ?? {}),
 			position: 'relative',
 			display: 'flex',
 			flexDirection: "column",

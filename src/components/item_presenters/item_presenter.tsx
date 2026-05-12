@@ -132,7 +132,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
     constructor(props: ItemPresenterProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 

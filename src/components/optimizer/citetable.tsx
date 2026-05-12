@@ -493,11 +493,11 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
     }
 
     function setDirection(direction: SortDirection) {
-        setSortConfig({ ... sortConfig, direction });
+        setSortConfig({ ...sortConfig, direction });
     }
 
     function setSort(sort: string) {
-        setSortConfig({ ... sortConfig, sort });
+        setSortConfig({ ...sortConfig, sort });
     }
 
 

@@ -59,11 +59,11 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
             const fi = playerData?.player?.character?.items?.find(f => f.symbol === dataIn?.symbol);
             const ci = items?.find(f => f.symbol === dataIn.symbol);
             if (fi && ci) {
-                dataOut = { ... ci, ... mergeItems([fi],[ci])[0] as EquipmentItem };
+                dataOut = { ...ci, ...mergeItems([fi],[ci])[0] as EquipmentItem };
             }
             else if (ci) {
                 if (dataOut) {
-                    dataOut = { ...dataOut, ... mergeItems([dataOut], [ci])[0] as EquipmentItem };
+                    dataOut = { ...dataOut, ...mergeItems([dataOut], [ci])[0] as EquipmentItem };
                 }
                 else {
                     dataOut = ci;
@@ -71,7 +71,7 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
             }
 
             if (dataIn && dataOut && !dataOut?.demandCrew?.length && !!dataIn?.demandCrew?.length) {
-                dataOut.demandCrew = [ ... dataIn.demandCrew ];
+                dataOut.demandCrew = [ ...dataIn.demandCrew ];
             }
         }
         if (dataIn?.needed && dataOut){
@@ -109,7 +109,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
     constructor(props: ItemHoverStatProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
     }
@@ -122,7 +122,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             let mr = item.rarity ?? 0;
             let clr = CONFIG.RARITIES[mr].color ?? 'gray';
             if (boxStyle.borderColor !== clr) {
-                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ...this.state, boxStyle: { ...boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }

@@ -257,7 +257,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 			|| options.rarities.length !== this.props.options.rarities.length || !this.props.options.rarities.every(r => options.rarities.includes(r));
 
 // 		if (this.state.isDefault != isDefault || this.state.isDirty != isDirty) {
-// 			this.setState({ ... this.state, isDefault, isDirty });
+// 			this.setState({ ...this.state, isDefault, isDirty });
 // 		}
 // 	}
 
@@ -345,11 +345,11 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 	}
 
 // 	protected setOptions(value: any) {
-// 		this.setState({ ... this.state, options: value });
+// 		this.setState({ ...this.state, options: value });
 // 	}
 
 // 	protected setModalIsOpen(value: boolean) {
-// 		this.setState({ ... this.state, modalIsOpen: value });
+// 		this.setState({ ...this.state, modalIsOpen: value });
 // 	}
 // };
 

@@ -348,8 +348,8 @@ export const CelestialMarket = (props: { dbid?: string }) => {
 
     function getKeystonesForCrew(crewlist: CrewMember[], ignore_owned: boolean) {
         let rarities = [...new Set(crewlist.map(m => `rarity_${m.max_rarity}_keystone`))];
-        let skills = [... new Set(crewlist.map(m => m.skill_order).flat().map(s => `${s}_keystone`))];
-        let traits = [... new Set(crewlist.map(m => ownedFilter === 'needed_unique' ? m.unique_polestar_combos?.flat() ?? [] : m.traits).flat().map(s => `${s}_keystone`))];
+        let skills = [...new Set(crewlist.map(m => m.skill_order).flat().map(s => `${s}_keystone`))];
+        let traits = [...new Set(crewlist.map(m => ownedFilter === 'needed_unique' ? m.unique_polestar_combos?.flat() ?? [] : m.traits).flat().map(s => `${s}_keystone`))];
         let compiled = traits.concat(rarities).concat(skills);
         let needed = allKeystones.filter(f => compiled.includes(f.symbol) && (!f.owned || ignore_owned)).map(m => m.symbol);
         return [...new Set(needed)];
@@ -455,7 +455,7 @@ const PopularCrew = (props: { allListings: CelestialMarketListing[] }) => {
             .slice(0, top);
 
         let tpop = globalContext.core.crew.map(fc => {
-            fc.unique_polestar_combos = fc.unique_polestar_combos?.map(m => ([... new Set(m)]))
+            fc.unique_polestar_combos = fc.unique_polestar_combos?.map(m => ([...new Set(m)]))
             let cbs = (fc.unique_polestar_combos ?? []).map(unc => {
                 let ft = unc.filter(z => keys.includes(z));
                 return {

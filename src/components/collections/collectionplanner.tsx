@@ -34,8 +34,8 @@ export const CollectionPlanner = () => {
 		}) || [];
 
 		if (owned.length > 0) {
-			crew.action = { ... owned[0].action };
-			crew.ship_battle = { ... owned[0].ship_battle };
+			crew.action = { ...owned[0].action };
+			crew.ship_battle = { ...owned[0].ship_battle };
 			crew.immortal = owned[0].immortal;
 			if ((owned[0].level == 100 && owned[0].rarity == owned[0].max_rarity && (!owned[0].equipment || owned[0].equipment?.length == 4))) {
 				crew.immortal = CompletionState.Immortalized;
@@ -333,7 +333,7 @@ const CollectionsUI = (props: CollectionsUIProps) => {
         });
 
         result.milestone = {
-            ... result.milestone,
+            ...result.milestone,
             goal: mergedCount,
             buffs: Object.values(mergedBuffs),
             rewards: Object.values(mergedRewards)

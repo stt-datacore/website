@@ -188,7 +188,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
     constructor(props: CrewHoverStatProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         };
     }
@@ -201,7 +201,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
             let mr = crew.max_rarity;
             let clr = CONFIG.RARITIES[mr].color;
             if (boxStyle.borderColor !== clr) {
-                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ...this.state, boxStyle: { ...boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }

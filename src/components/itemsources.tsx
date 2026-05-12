@@ -54,7 +54,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		newstate.briefs[name] = value;
 		this.tiny.setValue('whole_state', newstate);
 		window.setTimeout(() => {
-			this.setState({ ... newstate });
+			this.setState({ ...newstate });
 		})
 
 	}

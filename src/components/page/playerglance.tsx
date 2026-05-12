@@ -207,13 +207,13 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 justifyContent: isMobile || narrow ? 'center' : 'flex-start',
                 gap: '1em'
             }}>
-                {resources.map(res => {
+                {resources.map((res, idx) => {
                     if (res.customRender) {
                         return res.customRender(res);
                     }
                     let click = res.click;
                     return (
-                        <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.name}`} style={{ cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => click ? click(e) : 0}>
+                        <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.name}+${idx}`} style={{ cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => click ? click(e) : 0}>
                             <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 {res.imageUrl && <Image size={'tiny'} avatar src={res.imageUrl} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />}
                             </div>

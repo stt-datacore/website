@@ -240,7 +240,7 @@ export class CrewPreparer {
                 let cm: CrewMember | undefined = undefined;
                 cm = context.core.crew.find(c => c.symbol === dataIn.symbol);
                 if (cm) {
-                    cm = { ... cm} as PlayerCrew;
+                    cm = { ...cm} as PlayerCrew;
                     cm.kwipment = dataIn.kwipment;
                     cm.kwipment_expiration = dataIn.kwipment_expiration;
                     cm.q_bits = dataIn.q_bits;

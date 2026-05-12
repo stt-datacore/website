@@ -149,7 +149,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     if (partialItem && props.item) {
-        gen_item = { ... gen_item ?? {}, ... props.item };
+        gen_item = { ...gen_item ?? {}, ...props.item };
     }
 
     if (!gen_item) return <></>
@@ -159,7 +159,7 @@ export const AvatarView = (props: AvatarViewProps) => {
 
     const divStyle = {
         cursor: props.link || props.onClick ? 'pointer' : undefined,
-        ... (style ?? {}),
+        ...(style ?? {}),
         position: 'relative',
         display: 'flex',
         flexDirection: "column",
@@ -310,7 +310,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 item = { ...citem } as EquipmentItem;
             }
             else if (pitem) {
-                item = { ... pitem } as EquipmentItem;
+                item = { ...pitem } as EquipmentItem;
             }
             if (item && citem) {
                 item.demandCrew = citem.demandCrew;
@@ -325,7 +325,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 }
             }
             if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
-                item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
+                item = { ...item, ...globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
             if (item && gen_item.rarity) item.rarity = gen_item.rarity;
             if (item && !src) src = `${process.env.REACT_APP_ASSETS_URL}${item.imageUrl}`;

@@ -1,5 +1,4 @@
 import { DropdownItemProps } from 'semantic-ui-react';
-import boss_data from '../static/structured/boss_data.json';
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { BossShip } from '../model/boss';
@@ -13,9 +12,10 @@ import { decamelify, ExportField, simplejson2csv } from './misc';
 import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
 
-const BossData = (() => {
+const BossData = await (async () => {
 	let res = [] as BossShip[];
-	let bd = boss_data as any as BossShip[];
+	let boss_req = await fetch('/structured/boss_data.json');
+	let bd = (await boss_req.json()) as BossShip[];
 	let groups = {} as {[key:string]: BossShip[]};
 	for (let boss of bd) {
 		groups[boss.symbol] ??= [];
@@ -285,7 +285,7 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 		if (!traits_named?.length) traits_named = undefined;
 
 		if (owned) {
-			ship = { ...ship, ... owned, level: player_direct ? owned.level : owned.level + 1 };
+			ship = { ...ship, ...owned, level: player_direct ? owned.level : owned.level + 1 };
 
 			if (owned.actions) {
 				ship.actions = structuredClone(owned.actions) as ShipAction[];
@@ -375,7 +375,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
 			schematic.ship.shield_regen = owned.shield_regen;
 			schematic.ship.shields = owned.shields;
 			if (owned.battle_stations?.length) {
-				schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
+				schematic.ship.battle_stations = [ ...owned.battle_stations ?? []];
 			}
 
 			if (owned.actions) {
@@ -388,7 +388,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
 			if (schematic.ship.levels) {
 				let h = highestLevel(schematic.ship);
 				if (schematic.ship.max_level && h === schematic.ship.max_level + 1 && schematic.ship.levels[`${h}`].hull) {
-					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
+					schematic.ship = { ...schematic.ship, ...schematic.ship.levels[`${h}`] };
 					schematic.ship.attack = schematic.ship.levels![`${h}`].attack_power * power;
 					schematic.ship.accuracy = schematic.ship.levels![`${h}`].accuracy_power * power;
 					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power * power;

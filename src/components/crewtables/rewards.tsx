@@ -124,7 +124,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 							const img = needs?.length ? reward.icon?.file : getImageName(reward);
 							checkReward(items, reward, !!needs?.length);
 							if (reward.symbol && ITEM_ARCHETYPES[reward.symbol]) {
-								reward = { ... reward, ... ITEM_ARCHETYPES[reward.symbol]};
+								reward = { ...reward, ...ITEM_ARCHETYPES[reward.symbol]};
 							}
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>

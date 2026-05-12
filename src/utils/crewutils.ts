@@ -1836,7 +1836,7 @@ export function powerSum(skills: Skill[]): { [key: string]: Skill } {
 	skills.forEach((skill) => {
 		if (!skill.skill) return;
 		if (!output[skill.skill]) {
-			output[skill.skill] = { ... skill };
+			output[skill.skill] = { ...skill };
 		}
 		else {
 			output[skill.skill] = skillAdd(output[skill.skill], skill) as Skill;

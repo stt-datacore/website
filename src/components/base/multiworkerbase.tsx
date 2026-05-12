@@ -137,7 +137,7 @@ export abstract class MultiWorkerBase<TProps extends MultiWorkerProps, TState ex
 
             if (leftover < 0n) leftover = 0n;
 
-            let use_workers = [ ... this.workers ];
+            let use_workers = [ ...this.workers ];
 
             if (total <= 100n) {
                 perworker = total;

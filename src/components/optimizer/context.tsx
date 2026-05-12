@@ -60,7 +60,7 @@ export const DefaultCiteConfig = {
 export const DefaultOptimizerContextData = {
     engine: 'beta_tachyon_pulse',
     setEngine: () => false,
-    citeConfig: { ... DefaultCiteConfig },
+    citeConfig: { ...DefaultCiteConfig },
     setCiteConfig: () => false,
     appliedProspects: [],
     setAppliedProspects: () => false,

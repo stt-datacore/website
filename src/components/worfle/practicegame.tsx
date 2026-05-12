@@ -234,7 +234,7 @@ const CustomRules = (props: CustomRulesProps) => {
 						</span>
 					)}
 					{isDefault && (
-						<span /* Use custom rules... */>
+						<span /* Use custom rules...*/>
 							Use custom rules...
 						</span>
 					)}

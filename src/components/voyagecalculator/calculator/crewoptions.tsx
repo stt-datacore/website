@@ -30,7 +30,7 @@ export const CrewOptions = (props: CrewOptionsProps) => {
 	const [consideredCount, setConsideredCount] = React.useState<number>(0);
 
 	const setExcludedCrewIds = (ids: number[]) => {
-		internalSetExcludedCrewIds([ ... new Set(ids) ]);
+		internalSetExcludedCrewIds([ ...new Set(ids) ]);
 	};
 
 	React.useEffect(() => {

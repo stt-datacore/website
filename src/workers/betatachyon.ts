@@ -196,13 +196,13 @@ const BetaTachyon = {
                     skills: [],
                 } as CrewSkill;
                 if (sk.length > 0 && sk[0].skill) {
-                    output.skills.push({ ... sk[0] });
+                    output.skills.push({ ...sk[0] });
                 }
                 if (sk.length > 1 && sk[1].skill) {
-                    output.skills.push({ ... sk[1] });
+                    output.skills.push({ ...sk[1] });
                 }
                 if (!forceTwo && (sk.length > 2 && sk[2].skill)) {
-                    output.skills.push({ ... sk[2] });
+                    output.skills.push({ ...sk[2] });
                 }
 
                 return output;

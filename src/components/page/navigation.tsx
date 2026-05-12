@@ -385,7 +385,7 @@ export const Navigation = (props: NavigationProps) => {
 				let fopt = popts.find(o => o.optionKey === actmnu[xkey]);
 				if (fopt) {
 					pages[p] = {
-						... fopt,
+						...fopt,
 						title: undefined,
 						optionKey: undefined,
 						tooltip: fopt.textTitle ?? (typeof fopt.title === 'string' ? fopt.title : ''),

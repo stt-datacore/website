@@ -210,7 +210,7 @@ const CollectionOptimizer = {
                 col.crew = eligCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
             });
 
-            const workingCrew = [... new Set(colInfo.map((col: LocalCollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
+            const workingCrew = [...new Set(colInfo.map((col: LocalCollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
             normalCollectionSort(workingCrew);
 
             workingCrew.forEach((crew) => {

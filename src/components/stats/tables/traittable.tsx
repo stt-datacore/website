@@ -351,7 +351,7 @@ export const TraitStatsTable = () => {
 
         return <Table.Row key={`traitSetIdx_${idx}`}>
                 <Table.Cell>
-                    <div style={{... flexCol, gap: '0.5em', cursor: 'zoom-in', alignItems: 'flex-start'}} onClick={() => setShowDive(item)}>
+                    <div style={{...flexCol, gap: '0.5em', cursor: 'zoom-in', alignItems: 'flex-start'}} onClick={() => setShowDive(item)}>
                         <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
                             {!!item.icon && <img src={item.icon} style={{height: '32px'}} />}
                             <span>{item.trait}</span>

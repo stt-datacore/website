@@ -1,8 +1,6 @@
 import React from 'react';
 import { StrictTableProps, Table } from 'semantic-ui-react';
 
-import allFactions from '../../static/structured/factions.json';
-
 import ItemDisplay from '../../components/itemdisplay';
 import { useStateWithStorage } from '../../utils/storage';
 
@@ -133,6 +131,9 @@ type MissionFactionViewProps = {
 };
 
 export const MissionFactionView = (props: MissionFactionViewProps) => {
+	const globalContext = React.useContext(GlobalContext);
+	const { factions: allFactions } = globalContext.core;
+
 	const faction = allFactions.find(af => af.id === props.factionId);
 	if (!faction) return <></>;
 	return <img alt={faction.name} src={`${process.env.REACT_APP_ASSETS_URL}${faction.icon}`} style={{ height: `${props.size}em` }} />;

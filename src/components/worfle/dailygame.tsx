@@ -198,7 +198,7 @@ export const DailyGame = () => {
 			stats.guesses.fail++;
 			stats.streak = 0;
 		}
-		setStats({... stats});
+		setStats({...stats});
 	}
 
 	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): React.ReactNode {

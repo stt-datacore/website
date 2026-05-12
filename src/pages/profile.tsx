@@ -594,7 +594,7 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 // 					if (isWindow) window.setTimeout(() => {
 // 						if (me.props.props.setPlayerData) {
 // 							me.props.props.setPlayerData(playerData);
-// 							me.setState({... this.state, lastModified : lastModified, dbid: serverResponse.dbid.toString() });
+// 							me.setState({...this.state, lastModified : lastModified, dbid: serverResponse.dbid.toString() });
 // 							if (me.props.props.setLastModified) {
 // 								me.props.props.setLastModified(lastModified);
 // 							}

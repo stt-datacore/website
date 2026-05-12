@@ -44,7 +44,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
             const data = gauntlet.allCrew;
             const elev = { ...elevated };
 
-            let uniques = [... new Set(gauntlets.map(g => g.contest_data?.traits?.sort() ?? []).map(f => f.sort().join("_")))].map(after => after.split("_"));
+            let uniques = [...new Set(gauntlets.map(g => g.contest_data?.traits?.sort() ?? []).map(f => f.sort().join("_")))].map(after => after.split("_"));
 
             for (let c of data) {
                 let elcrit = uniques.map(f => arrayIntersect(f, c.traits)?.length).filter(f => f > 1)?.length ?? 0;

@@ -251,7 +251,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					name: crew.name,
 					short_name: crew.short_name,
 					flavor: crew.flavor,
-					action: { ... crew.action }
+					action: { ...crew.action }
 				};
 			});
 
@@ -400,7 +400,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessCrewTranslations<T extends CrewMember>(crew: T[], translation: IGameStrings): T[] | undefined {
 		if (crew.length && translation.CREW_ARCHETYPES) {
 			return crew.map((crew) => {
-				crew = { ... crew };
+				crew = { ...crew };
 
 				const arch: ICrewArchetype | undefined = translation.CREW_ARCHETYPES[crew.symbol];
 				if (arch) {
@@ -440,7 +440,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessItemTranslations(items: EquipmentItem[], translation: IGameStrings): EquipmentItem[] | undefined {
 		if (items.length && translation.ITEM_ARCHETYPES) {
 			return items.map((item) => {
-				item = { ... item };
+				item = { ...item };
 				let arch = translation.ITEM_ARCHETYPES[item.symbol];
 				let oldName = item.name;
 				if (!item.name_english) item.name_english = oldName;
@@ -459,7 +459,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], all_ships: ReferenceShip[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[], ReferenceShip[]] | [undefined, undefined, undefined] {
 		if ((ship_schematics.length || all_ships.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
 			let result1 = ignoreSchematics ? [] : ship_schematics.map((ship) => {
-				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? structuredClone(ship.ship.actions) : undefined }};
+				ship = { ...ship, ship: { ...ship.ship, actions: ship.ship.actions ? structuredClone(ship.ship.actions) : undefined }};
 				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
 				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
 				ship.ship.traits_named = ship.ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -473,7 +473,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				return ship;
 			});
 			let result2 = ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? structuredClone(ship.actions): undefined };
+				ship = { ...ship, actions: ship.actions ? structuredClone(ship.actions): undefined };
 				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -487,7 +487,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				return ship;
 			});
 			let result3 = ignoreSchematics ? [] : all_ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? structuredClone(ship.actions) : [] };
+				ship = { ...ship, actions: ship.actions ? structuredClone(ship.actions) : [] };
 				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);

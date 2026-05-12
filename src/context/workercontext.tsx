@@ -39,7 +39,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
             callback: null,
             worker: null,
             context: {
-                ... DefaultContextData,
+                ...DefaultContextData,
                 cancel: () => this.cancel(true),
                 runWorker: this.runWorker
             },
@@ -51,14 +51,14 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
 
     private readonly clearState = () => {
         this.setState({
-            ... this.state,
+            ...this.state,
             extraCallbacks: [].slice(),
             workerName: null,
             config: null,
             callback: null,
             worker: null,
             context: {
-                ... this.state.context,
+                ...this.state.context,
                 running: false,
                 runningWorker: null
             }});
@@ -107,13 +107,13 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
 
         const worker = this.createWorker();
         this.setState({
-            ... this.state,
+            ...this.state,
             worker,
             workerName,
             config,
             callback,
             context: {
-                ... this.state.context,
+                ...this.state.context,
                 running: true,
                 runningWorker: workerName
             }});

@@ -78,7 +78,7 @@ export const CollectionsOverview = () => {
 				{collections.map(colInfo => {
 					const stats = getAllStatBuffs(colInfo);
 					if (COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]) {
-						colInfo = { ...colInfo, ... COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
+						colInfo = { ...colInfo, ...COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
 					}
 
 					if (!collectionMatches(colInfo)) return <></>

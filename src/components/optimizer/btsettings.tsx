@@ -93,7 +93,7 @@ export function permalinkToSettings(t: TranslateMethod) {
     if (!params.size) return undefined;
 
     let newConfig = {
-        ... DefaultBetaTachyonSettings,
+        ...DefaultBetaTachyonSettings,
         improved: Number.parseFloat(params.get("imp") ?? DefaultBetaTachyonSettings.improved.toString()),
         power: Number.parseFloat(params.get("pow") ?? DefaultBetaTachyonSettings.power.toString()),
         citeEffort: Number.parseFloat(params.get("cite") ?? DefaultBetaTachyonSettings.citeEffort.toString()),
@@ -226,7 +226,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 	const { config, presets, updatePresets } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<HTMLInputElement>();
-    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... DefaultBetaTachyonSettings, ... config.current });
+    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ...DefaultBetaTachyonSettings, ...config.current });
 
     const [showCopied, setShowCopied] = React.useState(false);
 
@@ -367,7 +367,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                             style={key === 'name' ? nameStyle : inputStyle}
                             placeholder="Value"
                             value={innerSettings[key]}
-                            onChange={(e, { value }) => setCurrent({ ... innerSettings, [key]: value })}>
+                            onChange={(e, { value }) => setCurrent({ ...innerSettings, [key]: value })}>
                         </Input>
                     </div>)
                 })}

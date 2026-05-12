@@ -42,7 +42,7 @@ export const HiddenTraitCols = {
 };
 
 export function getRGBSkillColors() {
-    const output = { ... SkillColors };
+    const output = { ...SkillColors };
     Object.keys(output).forEach((key) => {
         let res = convert.hex.rgb(output[key].slice(1));
         output[key] = `rgb(${res[0]},${res[1]},${res[2]})`
@@ -722,7 +722,7 @@ export function fillGaps(data: EpochItem[]) {
             }
             else if (prevrec) {
                 let prevchunk = prevrec;
-                let newrec = { ... prevchunk };
+                let newrec = { ...prevchunk };
 
                 newrec.epoch_day = m;
                 // newrec.prev = prevchunk;
