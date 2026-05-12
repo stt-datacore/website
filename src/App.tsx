@@ -44,7 +44,7 @@ import { GlobalProvider } from './context/globalcontext';
 import { LocalizedProvider } from './context/localizedcontext';
 import { PlayerProvider } from './context/playercontext';
 import { PromptProvider } from './context/promptcontext';
-import StaticCrewPage from './templates/crewpage';
+import CrewDetailsPage from './templates/crewpage';
 
 function App() {
   return (
@@ -57,7 +57,7 @@ function App() {
                 <React.Fragment>
                   <Routes>
                     <Route path="/" element={<IndexPage location={`${window.location}`} />} />
-                    <Route path="/crew/:crew_symbol" element={<StaticCrewPage />} />
+                    <Route path="/crew/:crew_symbol" element={<CrewDetailsPage />} />
                     <Route path="/achievements" element={<OtherPage />} />
                     <Route path="/announcements" element={<Announcements data={{ allMarkdownRemark: { a: 0 } }} />} />
                     <Route path="/behold" element={<BeholdsPage location={`${window.location}`} />} />
