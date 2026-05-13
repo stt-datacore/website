@@ -103,8 +103,6 @@ function App() {
                       <Route path="/unneeded" element={<UnneededItemsPage />} />
                       <Route path="/voyage" element={<VoyagePage />} />
                       <Route path="/voyagehistory" element={<VoyageHistoryPage />} />
-
-                      {/* <Route path="/" element={<Home />} /> */}
                     </Routes>
                   </Suspense>
                 </React.Fragment>
