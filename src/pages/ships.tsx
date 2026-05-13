@@ -36,12 +36,12 @@ const ShipsPage = () => {
 						<Step.Description>{t('ship.roster.all')}</Step.Description>
 					</Step.Content>
 				</Step>
-                <Step active={mode === 'best'} onClick={() => setMode('best')}>
+                {/* <Step active={mode === 'best'} onClick={() => setMode('best')}>
 					<Step.Content>
 						<Step.Title>{t('ship.best_ship.title')}</Step.Title>
 						<Step.Description>{t('ship.best_ship.description')}</Step.Description>
 					</Step.Content>
-				</Step>
+				</Step> */}
 			</Step.Group>}
             {!playerData && <ShipTable pageId='main_ship_table' mode={'all'} />}
             {(mode !== 'best' && !!playerData) && <ShipTable pageId='main_ship_table' mode={mode} />}
