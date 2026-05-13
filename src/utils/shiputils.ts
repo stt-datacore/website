@@ -11,7 +11,9 @@ import { shipStatSortConfig } from "../utils/crewutils";
 import { decamelify, ExportField, simplejson2csv } from './misc';
 import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
+
 import boss_data from '../static/structured/boss_data.json';
+
 const BossData = ( () => {
 	let res = [] as BossShip[];
 	let bd = boss_data as any as BossShip[];
