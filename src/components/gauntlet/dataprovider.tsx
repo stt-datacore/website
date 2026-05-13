@@ -27,7 +27,7 @@ export interface IGauntletContext {
 }
 
 const DefaultUserPrefs: GauntletUserPrefs = {
-	settings: { ... DefaultAdvancedGauntletSettings },
+	settings: { ...DefaultAdvancedGauntletSettings },
 	buffMode: 'player',
 	range_max: 0,
 	filter: {
@@ -62,7 +62,7 @@ const DefaultGauntletContext: IGauntletContext = {
 export const GauntletContext = React.createContext(DefaultGauntletContext);
 
 export interface GauntletContextProviderProps {
-    children: JSX.Element;
+    children: React.ReactNode;
 }
 
 export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
@@ -89,9 +89,10 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     const [featuredGauntlet, setFeaturedGauntlet] = React.useState<Gauntlet | undefined>(undefined);
 
     const [apiGauntlet, setApiGauntlet] = React.useState<Gauntlet | undefined>(undefined);
+    const [ready, setReady] = React.useState(false);
 
-    const [gauntlets, setGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
-    const [uniqueGauntlets, setUniqueGauntlets] = React.useState<Gauntlet[]>(globalContext.core.gauntlets);
+    const [gauntlets, setGauntlets] = React.useState<Gauntlet[]>([]);
+    const [uniqueGauntlets, setUniqueGauntlets] = React.useState<Gauntlet[]>([]);
     const [pairGroups, setPairGroups] = React.useState<PairGroup[] | undefined>(undefined);
 
     React.useEffect(() => {
@@ -110,15 +111,17 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     }, [pane, playerData]);
 
     React.useEffect(() => {
-        if (outerGauntlets?.length) {
-            if (apiGauntlet && !compGauntlet(outerGauntlets[0], apiGauntlet)) {
-                setGauntlets([apiGauntlet, ...outerGauntlets]);
-            }
-            else {
-                setGauntlets([...outerGauntlets]);
-            }
+        if (!ready) return;
+        if (apiGauntlet && outerGauntlets?.length && !compGauntlet(outerGauntlets[0], apiGauntlet)) {
+            setGauntlets([apiGauntlet, ...outerGauntlets]);
         }
-    }, [apiGauntlet, outerGauntlets]);
+        else if (apiGauntlet) {
+            setGauntlets([apiGauntlet, ...outerGauntlets.slice(1)]);
+        }
+        else {
+            setGauntlets([...outerGauntlets]);
+        }
+    }, [ready]);
 
     React.useEffect(() => {
         if (gauntlets?.length) {
@@ -179,7 +182,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     }
 
     function refreshApiGauntlet() {
-        loadFromApi().then((gauntlet) => setApiGauntlet(gauntlet));
+        loadFromApi().then((gauntlet) => setApiGauntlet(gauntlet)).catch(() => setApiGauntlet(undefined)).finally(() => setReady(true));
     }
 
     function setPane(pane: GauntletPane) {
