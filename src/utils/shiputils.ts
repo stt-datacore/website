@@ -11,11 +11,10 @@ import { shipStatSortConfig } from "../utils/crewutils";
 import { decamelify, ExportField, simplejson2csv } from './misc';
 import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
-
-const BossData = await (async () => {
+import boss_data from '../static/structured/boss_data.json';
+const BossData = ( () => {
 	let res = [] as BossShip[];
-	let boss_req = await fetch('/structured/boss_data.json');
-	let bd = (await boss_req.json()) as BossShip[];
+	let bd = boss_data as any as BossShip[];
 	let groups = {} as {[key:string]: BossShip[]};
 	for (let boss of bd) {
 		groups[boss.symbol] ??= [];
