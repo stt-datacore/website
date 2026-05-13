@@ -96,7 +96,9 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     }
 
     private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean): void => {
+        console.log('Worker provider runWorker enter.');
         if (subscribeIfRunning && this.state.context.running) {
+            console.log('Worker provider runWorker already running.');
             let ecb = [...this.state.extraCallbacks];
             if (!ecb.includes(callback)) {
                 ecb.push(callback);
@@ -122,6 +124,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     componentDidUpdate(prevProps: Readonly<WorkerProviderProps>, prevState: Readonly<WorkerProviderState>, snapshot?: any): void {
         const { workerName: name, config, worker } = this.state;
         if (worker && config) {
+            console.log('Worker post message START.');
             worker.postMessage({
                 worker: name,
                 config
