@@ -9,6 +9,10 @@ import { PlayerProvider } from './context/playercontext';
 import { PromptProvider } from './context/promptcontext';
 import { Icon } from 'semantic-ui-react';
 
+import markdown_pages from './static/structured/markdown_pages.json';
+import { MarkdownRoot } from './model/mdpages';
+import { populateSlugs } from './utils/mdpageutils';
+
 const UnneededItemsPage = lazy(() => import('./pages/unneeded'));
 const VoyagePage = lazy(() => import('./pages/voyage'));
 const VoyageHistoryPage = lazy(() => import('./pages/voyagehistory'));
@@ -47,6 +51,7 @@ const FleetPage = lazy(() => import('./pages/fleet'));
 const FTMHofPage = lazy(() => import('./pages/ftmhof'));
 const ShipsPage = lazy(() => import('./pages/ships'));
 const CrewDetailsPage = lazy(() => import('./templates/crewpage'));
+const MarkdownPage = lazy(() => import('./components/mdpage'));
 
 const RootSpin = (props: { message?: string }) => {
   let { message } = props;
@@ -55,12 +60,22 @@ const RootSpin = (props: { message?: string }) => {
 };
 
 function App() {
+
+  const markdownRoot = markdown_pages as any as MarkdownRoot;
+
+  const announcements = markdownRoot.announcements;
+  const pages = markdownRoot.pages;
+
+  populateSlugs(announcements);
+  populateSlugs(pages);
+  const announcement = announcements.length ? announcements[0] : undefined;
+
   return (
     <BrowserRouter>
       <DataProvider>
         <PlayerProvider>
           <LocalizedProvider>
-            <GlobalProvider>
+            <GlobalProvider announcement={announcement} extraPages={pages}>
               <PromptProvider>
                 <React.Fragment>
                   <Suspense fallback={<RootSpin />}>
@@ -68,7 +83,7 @@ function App() {
                       <Route index path="/" element={<IndexPage location={`${window.location}`} />} />
                       <Route path="/crew/:crew_symbol" element={<CrewDetailsPage />} />
                       <Route path="/achievements" element={<OtherPage />} />
-                      <Route path="/announcements" element={<Announcements data={{ allMarkdownRemark: { a: 0 } }} />} />
+                      <Route path="/announcements" element={<Announcements announcements={announcements} />} />
                       <Route path="/behold" element={<BeholdsPage location={`${window.location}`} />} />
                       <Route path="/bridgecrew" element={<BridgeCrewPage />} />
                       <Route path="/charts" element={<ChartsPage />} />
@@ -103,6 +118,15 @@ function App() {
                       <Route path="/unneeded" element={<UnneededItemsPage />} />
                       <Route path="/voyage" element={<VoyagePage />} />
                       <Route path="/voyagehistory" element={<VoyageHistoryPage />} />
+                      {pages.map((page) => {
+                          return (
+                            <Route path={`/${page.slug}`}
+                              element={
+                                <MarkdownPage fullpage node={page} prefix='pages' />
+                              }
+                            />
+                          )
+                      })}
                     </Routes>
                   </Suspense>
                 </React.Fragment>

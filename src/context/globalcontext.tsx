@@ -7,12 +7,15 @@ import { BuffStatTable } from "../utils/voyageutils";
 import { DEFAULT_MOBILE_WIDTH } from '../components/hovering/hoverstat';
 import { MarketAggregation } from '../model/celestial';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { MarkdownEntry } from '../model/mdpages';
 
 export const CLIENT_API_VERSION = 32;
 
 const DEBUG_MODE = false;
 
 interface GlobalProviderProperties {
+	announcement?: MarkdownEntry;
+	extraPages?: MarkdownEntry[];
 	children: React.ReactNode;
 };
 
@@ -31,6 +34,8 @@ export interface IDefaultGlobal {
 	readyLocalizedCore: (demands: ValidDemands[], onReady: () => void) => void;
 	market: MarketAggregation;
 	reloadMarket: () => void;
+	announcement?: MarkdownEntry;
+	extraPages?: MarkdownEntry[]
 };
 
 const defaultGlobal: IDefaultGlobal = {
@@ -42,6 +47,8 @@ const defaultGlobal: IDefaultGlobal = {
 	market: {},
 	readyLocalizedCore: () => {},
 	reloadMarket: () => false,
+	announcement: undefined,
+	extraPages: []
 };
 
 export const GlobalContext = React.createContext<IDefaultGlobal>(defaultGlobal);
@@ -50,7 +57,7 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
     const core = React.useContext(DataContext);
     const player = React.useContext(PlayerContext);
 	const localized = React.useContext(LocalizedContext);
-	const { children } = props;
+	const { children, announcement, extraPages } = props;
 
 	const [localizedCore, setLocalizedCore ] = React.useState<ICoreContext>(core);
 	const [localizedPlayer, setLocalizedPlayer] = React.useState<PlayerContextData>(player);
@@ -98,7 +105,9 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		isMobile,
 		market,
 		readyLocalizedCore,
-		reloadMarket
+		reloadMarket,
+		announcement,
+		extraPages
 	};
 
 	return (

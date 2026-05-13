@@ -1,24 +1,16 @@
 import React from 'react';
-import { Header, Divider } from 'semantic-ui-react';
+import MarkdownPage from '../components/mdpage';
 import DataPageLayout from '../components/page/datapagelayout';
+import { MarkdownEntry } from '../model/mdpages';
 
-const Announcements = ({ data: { allMarkdownRemark } }) => {
-	const announcements = allMarkdownRemark.edges;
-
+const Announcements = (props: { announcements: MarkdownEntry[] }) => {
+	const announcements = props.announcements;
 	return (
 		<DataPageLayout pageTitle='DataCore Announcements'>
 			<React.Fragment>
-			{announcements.map(({ node }) => {
-				const datePosted = new Date(node.frontmatter.date);
-				return (
-					<div key={node.id}>
-						<Header>{node.frontmatter.title}</Header>
-						<p>{datePosted.toLocaleDateString()}</p>
-						<div dangerouslySetInnerHTML={{ __html: node.html }} />
-						<Divider />
-					</div>
-				);
-			})}
+			{announcements.map((node) =>
+				<MarkdownPage node={node} prefix={'announcements'} />
+			)}
 			</React.Fragment>
 		</DataPageLayout>
 	);
