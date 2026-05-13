@@ -5,7 +5,7 @@
     "version": "4.0.0",
     "license": "MIT",
     "scripts": {
-        "start": "PORT=8881 node mdgen && react-app-rewired start",
+        "start": "node mdgen && PORT=8881  react-app-rewired start",
         "build": "node mdgen && react-app-rewired build",
         "test": "react-app-rewired test",
         "eject": "react-app-rewired eject"
