@@ -503,6 +503,15 @@ export const ResourceTracker = () => {
                 low[stat.resource] ??= stat.amount;
                 avgs[stat.resource] ??= stat.amount;
                 firsts[stat.resource] ??= stat.amount;
+                if (finalDaily && c >= 90 && i === c - 90) {
+                    firsts[stat.resource] = stat.amount;
+                    lastdiff[stat.resource] = firsts[stat.resource];
+                }
+                else if (finalWeekly && c >= 12 && i === c - 12) {
+                    firsts[stat.resource] = stat.amount;
+                    lastdiff[stat.resource] = firsts[stat.resource];
+                }
+
                 lastdiff[stat.resource] ??= firsts[stat.resource];
 
                 if (high[stat.resource] < stat.amount) {
@@ -599,8 +608,10 @@ export const ResourceTracker = () => {
                 if (dbid) {
                     log[dbid] ??= [].slice();
                     let newlog = inlog.concat(log[dbid]);
-                    newlog = newlog.filter((obj, i) => newlog.findIndex(obj2 => obj.timestamp.getTime() == obj2.timestamp.getTime()) === i);
+                    newlog = newlog.filter((obj, i) => newlog.findIndex(obj2 => (new Date(obj.timestamp)).getTime() == (new Date(obj2.timestamp)).getTime()) === i);
                     newlog.sort((a, b) => {
+                        if (typeof a.timestamp === 'string') a.timestamp = new Date(a.timestamp);
+                        if (typeof b.timestamp === 'string') b.timestamp = new Date(b.timestamp);
                         let r = a.timestamp.getTime() - b.timestamp.getTime();
                         return r;
                     });
