@@ -11,4 +11,6 @@ export interface MarkdownEntry {
     file: string;
     name?: string;
     title?: string;
+    slug?: string;
+    date?: string;
 }

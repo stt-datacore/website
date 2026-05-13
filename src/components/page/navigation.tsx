@@ -58,7 +58,7 @@ export const Navigation = (props: NavigationProps) => {
 	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 	const globalContext = React.useContext(GlobalContext);
 	const navigate = useNavigate();
-
+	const { extraPages } = globalContext;
 	const { t, language, setPreferredLanguage } = globalContext.localized;
 
     const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
@@ -396,7 +396,7 @@ export const Navigation = (props: NavigationProps) => {
 		}
 	}
 
-	const otherPages = useOtherPages();
+	const otherPages = (extraPages ?? []).filter(page => page.slug !== 'about' && !page.bigbook_section);
 	const about = [
 		{ title: 'About DataCore', link: '/about', sidebarRole: 'item' },
 		{ title: 'Announcements', link: '/announcements', sidebarRole: 'item' }
@@ -425,7 +425,7 @@ export const Navigation = (props: NavigationProps) => {
 
 	otherPages.map((page) => {
 		about.push(
-			{ title: page.title, link: page.slug, sidebarRole: 'item' }
+			{ title: page.title, link: '/' + page.slug, sidebarRole: 'item' }
 		);
 	});
 
