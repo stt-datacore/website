@@ -121,6 +121,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
         else {
             setGauntlets([...outerGauntlets]);
         }
+        setReady(false);
     }, [ready]);
 
     React.useEffect(() => {
