@@ -22,10 +22,6 @@ function scanForMarkdown(dir) {
     let i = 0;
     for (let file of allmd) {
         let sp = file.split("/");
-
-        // We neither want nor need the crew pages:
-        if (sp[0] === 'crew') continue;
-
         org[sp[0]] ??= [];
         org[sp[0]].push({
             file: sp[1]
@@ -53,5 +49,6 @@ function scanForMarkdown(dir) {
         }
         i++;
     }
+    delete org.crew;
     fs.writeFileSync('./static/structured/markdown_pages.json', JSON.stringify(org, null, 4));
 })();
