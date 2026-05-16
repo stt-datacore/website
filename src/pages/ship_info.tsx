@@ -5,7 +5,7 @@ import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { GlobalContext } from '../context/globalcontext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
@@ -19,22 +19,14 @@ const ShipInfoPage = () => {
 	const { t } = globalContext.localized
 
 	const [shipKey, setShipKey] = React.useState<string | undefined>();
+	const { ship_symbol } = useParams();
 
 	React.useEffect(() => {
-		let ship_key: string | undefined = undefined;
-		const urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('ship')) {
-			ship_key = urlParams.get('ship') ?? undefined;
-		}
-		if (!ship_key && urlParams.has('symbol')) {
-			ship_key = urlParams.get('symbol') ?? undefined;
-		}
-		if (!ship_key) {
-			Navigate({ to: '/ships' });
-			return;
-		}
-		setShipKey(ship_key);
-	}, []);
+		setShipKey(ship_symbol);
+		if (typeof window !== 'undefined') {
+			window.scrollTo(0, 0);
+;		}
+	}, [ship_symbol]);
 
 	return <DataPageLayout pageTitle={t('pages.ship_info')}>
 		<div>
@@ -44,7 +36,6 @@ const ShipInfoPage = () => {
 			{/* <ShipProfile /> */}
 		</div>
 	</DataPageLayout>
-
 }
 
 interface ShipViewerProps {

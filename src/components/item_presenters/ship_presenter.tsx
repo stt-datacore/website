@@ -162,7 +162,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"16px"}}>
                         {!showIcon && <div
-                            onClick={() => navigate(`/ship_info/?ship=${ship.symbol}`)}
+                            onClick={() => navigate(`/ship/?ship=${ship.symbol}`)}
                             style={{
                                 cursor: 'pointer',
                                 display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: 'center' }}>

@@ -189,7 +189,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Don't render any text while localizations are still loading
 	//if (!language) return <span><Icon loading name='spinner' /> Loading translations...</span>;
-	if (!language) return <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>&nbsp;<Icon name='500px' /></div>;
+	if (!language) return <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>&nbsp;<Icon name='spinner' /></div>;
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,

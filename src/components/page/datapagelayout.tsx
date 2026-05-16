@@ -2,15 +2,15 @@ import React from 'react';
 
 import { Helmet as HelmetDep } from 'react-helmet';
 
-import { GlobalContext } from '../../context/globalcontext';
 import { ValidDemands } from '../../context/datacontext';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { Container, Header } from 'semantic-ui-react';
-import { Navigation } from './navigation';
-import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
-import { AlertContext, AlertProvider } from '../alerts/alertprovider';
 import { EnergyLogContextProvider } from '../../context/energylogcontext';
+import { AlertProvider } from '../alerts/alertprovider';
+import Dashboard from './dashboard';
+import { Navigation } from './navigation';
 
 const DEBUG_MODE = false;
 
@@ -72,10 +72,9 @@ const MainContent = ({ children, narrowLayout }) => {
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	const alertContext = React.useContext(AlertContext);
-	const { drawAlertModal } = alertContext;
+	const { t } = globalContext.localized;
 
-	const { children, pageId, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
+	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -159,7 +158,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		return (
 			<React.Fragment>
 				{!isReady &&
-					<div className='ui medium centered text active inline loader'>{notReadyMessage ?? 'Loading data...'}</div>
+					<div className='ui medium centered text active inline loader'>{notReadyMessage ?? t('spinners.default')}</div>
 				}
 				{isReady &&
 					<React.Fragment>
