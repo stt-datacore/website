@@ -23,7 +23,7 @@ const MarkdownPage = (props: { node: MarkdownEntry, prefix: string, excerpt?: bo
 
 	if (excerpt) {
 		return (
-			<div key={`${node}_${prefix}___${node.file}`}>
+			<div key={`${node}_${prefix}___${node.file}`} style={{fontSize: '1.2rem'}}>
 				<div dangerouslySetInnerHTML={{ __html: html }} />
 			</div>
 		)
@@ -31,7 +31,7 @@ const MarkdownPage = (props: { node: MarkdownEntry, prefix: string, excerpt?: bo
 	if (fullpage) {
 		return (
 			<DataPageLayout pageTitle={node.title}>
-				<div key={`${node}_${prefix}___${node.file}`}>
+				<div key={`${node}_${prefix}___${node.file}`} style={{fontSize: '1.2rem'}}>
 					<div dangerouslySetInnerHTML={{ __html: html }} />
 				</div>
 			</DataPageLayout>

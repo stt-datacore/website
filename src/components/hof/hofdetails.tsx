@@ -44,11 +44,11 @@ interface Seats {
 
 export const HofDetails = (props: HofDetailsProps) => {
     const context = React.useContext(GlobalContext);
-    const { t, tfmt, useT } = context.localized;
+    const { t, useT } = context.localized;
     const { t: details } = useT('hof.details');
     const navigate = useNavigate();
 
-    const { voyageStats, glanceDays, rawVoyages } = props.hofState;
+    const { glanceDays, rawVoyages } = props.hofState;
     const crewSymbol = props.hofState.crewSymbol?.filter(
         (f) => !!f?.length && f !== "undefined"
     );
