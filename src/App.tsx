@@ -134,8 +134,7 @@ function App() {
                       <Route path="/testpage" element={<TestPage />} />
                       <Route path="/unneeded" element={<UnneededItemsPage />} />
                       <Route path="/voyage" element={<VoyagePage />} />
-                      <Route path="/voyagehistory" element={<VoyageHistoryPage />}
-                      />
+                      <Route path="/voyagehistory" element={<VoyageHistoryPage />} />
                       {pages.map((page) => {
                             return (
                                 <Route path={`/${page.slug}`}
