@@ -185,7 +185,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
 
         const navClick = () => {
             if (!displayItem) return;
-            this.navigate('/ship_info?ship=' + displayItem.symbol);
+            this.navigate('/ship/' + displayItem.symbol);
         }
 
         const onClose = () => {

@@ -331,7 +331,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 }
                 else if ("attack" in selObj) {
                     let s = selObj as ReferenceShip;
-                    navigate(`http://localhost:81/ship_info/?ship=${s.symbol}`);
+                    navigate(`http://localhost:81/ship/?ship=${s.symbol}`);
                 }
             }
         }
