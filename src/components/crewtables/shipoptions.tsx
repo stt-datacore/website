@@ -84,7 +84,7 @@ export const ShipPicker = (props: ShipPickerProps) => {
 
     React.useEffect(() => {
         setShip(selectedShip?.id);
-    }, [filteredShips]);
+    }, [filteredShips, selectedShip]);
 
     const poolList = filteredShips?.map((c) => (
 		{
