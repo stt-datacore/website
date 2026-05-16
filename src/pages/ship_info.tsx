@@ -5,7 +5,7 @@ import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { GlobalContext } from '../context/globalcontext';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
@@ -20,6 +20,7 @@ const ShipInfoPage = () => {
 
 	const [shipKey, setShipKey] = React.useState<string | undefined>();
 	const { ship_symbol } = useParams();
+	const navigate = useNavigate();
 
 	React.useEffect(() => {
 		setShipKey(ship_symbol);
@@ -28,14 +29,18 @@ const ShipInfoPage = () => {
 ;		}
 	}, [ship_symbol]);
 
-	return <DataPageLayout pageTitle={t('pages.ship_info')}>
-		<div>
-			{!!shipKey && <ShipViewer ship={shipKey} setShip={setShipKey} />}
-			{!shipKey && globalContext.core.spin(t('spinners.default'))}
+	return (
+		<DataPageLayout pageTitle={t('pages.ship_info')}>
+			<div>
+				{!!shipKey && <ShipViewer ship={shipKey} setShip={navToShip} />}
+				{!shipKey && globalContext.core.spin(t('spinners.default'))}
+			</div>
+		</DataPageLayout>
+	);
 
-			{/* <ShipProfile /> */}
-		</div>
-	</DataPageLayout>
+	function navToShip(ship: string) {
+		navigate(`/ship/${ship}`)
+	}
 }
 
 interface ShipViewerProps {
@@ -71,6 +76,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	const [activeTabIndex, setActiveTabIndex] = React.useState<number>(0);
 	const [oldMaxed, setOldMaxed] = React.useState(false);
+	const [oldShip, setOldShip] = React.useState('');
 
 	React.useEffect(() => {
 		if (inputShip) {
@@ -86,8 +92,9 @@ const ShipViewer = (props: ShipViewerProps) => {
 	React.useEffect(() => {
 		const c = inputShip?.battle_stations?.length ?? 0;
 		if (inputShip && crewStations) {
-			if (asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs?.id == ship.battle_stations![i]?.crew?.id)) return;
+			if (oldShip === inputShip?.symbol && asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs?.id == ship.battle_stations![i]?.crew?.id)) return;
 			setShip(setupShip(inputShip, crewStations));
+			setOldShip(inputShip.symbol);
 			setOldMaxed(asMaxed);
 		}
 	}, [crewStations]);
