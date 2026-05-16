@@ -4,7 +4,7 @@ import VoyageHOF from '../components/hof/voyagehof';
 import DataPageLayout from '../components/page/datapagelayout';
 import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
-import { Navigate, NavigateFunction, NavigateOptions, To } from 'react-router-dom';
+import { Navigate, NavigateFunction, NavigateOptions, To, useNavigate, useParams } from 'react-router-dom';
 
 type HallOfFamePageProps = {};
 
@@ -13,39 +13,25 @@ type HallOfFamePageState = {
 	navOptions?: NavigateOptions;
 };
 
-class HallOfFamePage extends PureComponent<HallOfFamePageProps, HallOfFamePageState> {
+const HallOfFamePage = (props: HallOfFamePageProps) => {
 
-	readonly navigate = (link: string, options?: NavigateOptions) => {
-		this.setState({...this.state, navLink: link, navOptions: options });
+	const params = useParams();
+
+	const navigate = useNavigate();
+
+	return (
+		<DataPageLayout>
+			<React.Fragment>
+				<CrewHoverStat targetGroup='voyagehof' />
+				<ItemHoverStat activationDelay={250} compact targetGroup='voyagehofitem' />
+				<VoyageHOF navigate={(link: any) => innerNavigate(link)} crew_symbols={params?.crew_symbols} />
+			</React.Fragment>
+		</DataPageLayout>
+	);
+
+	function innerNavigate(link: string) {
+		navigate(link, { replace: true });
 	}
-
-	constructor(props: HallOfFamePageProps) {
-		super(props);
-		this.state = {};
-	}
-
-	render() {
-
-
-		if (this?.state?.navLink) {
-			const { navLink, navOptions } = this.state;
-
-			return (
-				<Navigate to={navLink} replace={navOptions?.replace} />
-			)
-		}
-		return (
-			<DataPageLayout>
-				<React.Fragment>
-					<CrewHoverStat targetGroup='voyagehof' />
-					<ItemHoverStat activationDelay={250} compact targetGroup='voyagehofitem' />
-					<VoyageHOF navigate={this.navigate as NavigateFunction} />
-				</React.Fragment>
-			</DataPageLayout>
-		);
-	}
-
-
 }
 
 export default HallOfFamePage;

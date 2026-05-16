@@ -117,6 +117,7 @@ function App() {
                       <Route path="/fleet" element={<FleetPage />} />
                       <Route path="/ftmhof" element={<FTMHofPage />} />
                       <Route path="/gauntlets" element={<GauntletsPage />} />
+                      <Route path="/hall_of_fame/:crew_symbols" element={<HallOfFamePage />} />
                       <Route path="/hall_of_fame" element={<HallOfFamePage />} />
                       <Route path="/item_info" element={<ItemInfoPage />} />
                       <Route path="/items" element={<ItemsPage />} />
