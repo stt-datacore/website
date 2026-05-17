@@ -41,7 +41,7 @@
         "react-helmet": "^6.1.0",
         "react-intersection-observer": "^10.0.3",
         "react-router-dom": "^7.7.0",
-        "react-scripts": "5.0.1",
+        "react-scripts": "^5.0.1",
         "search-string": "^4.1.0",
         "seedrandom": "^3.0.5",
         "semantic-ui-css": "^2.5.0",
