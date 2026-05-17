@@ -2,49 +2,66 @@ import React from "react";
 import { ContinuumMission } from "../../model/continuum";
 import { RemoteQuestStore } from "./continuum_helper";
 import { GlobalContext } from "../../context/globalcontext";
-import { Quest } from "../../model/missions";
+import { Mission, Quest } from "../../model/missions";
 import { Notification } from "../page/notification";
 import { QuestImportComponent } from "./quest_importer";
 import { useStateWithStorage } from "../../utils/storage";
 
-
-
-
 export interface MissionProviderData {
-    mission?: ContinuumMission;
+    mission?: Mission | ContinuumMission;
     remoteQuests: RemoteQuestStore[];
     errorMsg?: string;
     quest?: Quest;
     setQuest: (value?: Quest) => void;
+    clearRemoteQuests: () => void;
+    setErrorMsg: (value?: string) => void;
     currentHasRemote: boolean;
     setCurrentHasRemote: (value: boolean) => void,
     getRemoteQuestFlags: () => boolean[] | undefined
 }
 
-const DefaultMissionProviderData = {
+export const DefaultMissionProviderData = {
     remoteQuests: [],
     setQuest: () => false,
+    clearRemoteQuests: () => false,
+    setErrorMsg: () => false,
     setCurrentHasRemote: () => false,
     currentHasRemote: false,
     getRemoteQuestFlags: () => undefined
 } as MissionProviderData;
 
-export const ContinuumMissionContext = React.createContext(DefaultMissionProviderData);
+export const MissionContext = React.createContext(DefaultMissionProviderData);
 
-interface ContinuumMissionProviderProps {
+export interface MissionProviderProps {
+    continuum?: boolean;
+    mission?: Mission | ContinuumMission;
     children: React.ReactNode;
 }
 
-export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) => {
+export const MissionProvider = (props: MissionProviderProps) => {
     const { children } = props;
+    const { mission: externalMission, continuum } = props;
+
+    const is_continuum = React.useMemo(() => {
+        let is_continuum = !!continuum;
+        if (externalMission && ("discover_date" in externalMission)) {
+            is_continuum = true;
+        }
+        else if (externalMission && !("discover_date" in externalMission)) {
+            is_continuum = false;
+        }
+        return is_continuum;
+    }, [externalMission, continuum]);
+
+    const prefix = `${is_continuum ? 'continuum' : 'mission'}`;
 
     const globalContext = React.useContext(GlobalContext);
 
-    const [mission, internalSetMission] = React.useState<ContinuumMission | undefined>();
-    const [remoteQuests, setRemoteQuests] = useStateWithStorage<RemoteQuestStore[]>('continuum/remoteQuests', [], { rememberForever: true, compress: true });
+    const [mission, internalSetMission] = React.useState<Mission | ContinuumMission | undefined>(externalMission);
+    const [remoteQuests, setRemoteQuests] = useStateWithStorage<RemoteQuestStore[]>(`${prefix}/remoteQuests`, [], { rememberForever: true, compress: true });
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
-    const [questId, setQuestId] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
-    const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
+    const [questId, setQuestId] = useStateWithStorage(`${prefix}/questIndex`, undefined as number | undefined);
+    const [quest, setQuest] = useStateWithStorage<Quest | undefined>(`${prefix}/currentQuest`, undefined);
 
     const [currentHasRemote, setCurrentHasRemote] = React.useState<boolean>(false);
 
@@ -55,11 +72,10 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
         continuum_missions[continuum_missions.length - 1].discover_date
     );
 
-    const missionId = continuum_missions[continuum_missions.length - 1].id;
-    const missionUrl = `/structured/continuum/${missionId}.json`;
-
     React.useEffect(() => {
-        fetchRemoteMission();
+        if (is_continuum) {
+            fetchRemoteMission();
+        }
     }, [])
 
     const data: MissionProviderData = {
@@ -68,14 +84,18 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
         errorMsg,
         quest,
         setQuest,
+        setErrorMsg,
         currentHasRemote,
         setCurrentHasRemote,
-        getRemoteQuestFlags
+        getRemoteQuestFlags,
+        clearRemoteQuests
     }
 
+    if (!globalContext.player.playerData) return <></>;
+
     return (
-        <ContinuumMissionContext.Provider value={data}>
-            <React.Fragment>
+        <MissionContext.Provider value={data}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'stretch', gap: '1em'}}>
                 <Notification
                     header={t('global.work_in_progress.title')}
                     content={
@@ -93,15 +113,20 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
                     quest={quest}
                     questId={quest?.id}
                     setError={setErrorMsg}
-                    clearQuest={clearRemote}
+                    clearQuest={clearRemoteQuests}
                 />
 
                 {!mission ? globalContext.core.spin(t('spinners.please_wait')) : children}
-            </React.Fragment>
-        </ContinuumMissionContext.Provider>
+            </div>
+        </MissionContext.Provider>
     )
 
     function fetchRemoteMission() {
+        if (!is_continuum) return;
+
+        const missionId = continuum_missions[continuum_missions.length - 1].id;
+        const missionUrl = `/structured/continuum/${missionId}.json`;
+
         fetch(missionUrl)
             .then((response) => response.json())
             .then((result: ContinuumMission) => {
@@ -136,7 +161,7 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
                     }
                 }
                 if (!result?.discover_date) {
-                    result.discover_date = mission?.discover_date ?? mostRecentDate;
+                    result.discover_date = (mission as ContinuumMission)?.discover_date ?? mostRecentDate;
                 }
 
                 if (typeof result.discover_date === 'string') {
@@ -151,8 +176,8 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
             });
    }
 
-    function clearRemote() {
-        setRemoteQuests([]);
+    function clearRemoteQuests() {
+        setRemoteQuests([].slice());
     }
 
     function setRemoteQuest(quest?: Quest) {
@@ -197,17 +222,20 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
         return mission?.quests?.map(q => false);
     }
 
-    function setMission(value?: ContinuumMission) {
+    function setMission(value?: Mission | ContinuumMission) {
+
         if (!value) {
             internalSetMission(undefined);
             return;
         }
 
-        if (!value.discover_date) {
-            value.discover_date = mostRecentDate;
-        }
-        else if (typeof value.discover_date === 'string') {
-            value.discover_date = new Date(value.discover_date);
+        if ("discover_date" in value) {
+            if (!value.discover_date) {
+                value.discover_date = mostRecentDate;
+            }
+            else if (typeof value.discover_date === 'string') {
+                value.discover_date = new Date(value.discover_date);
+            }
         }
 
         if (remoteQuests.length) {
@@ -222,8 +250,7 @@ export const ContinuumMissionProvider = (props: ContinuumMissionProviderProps) =
         }
 
         internalSetMission(value);
+        setQuest(value.quests![0]);
    }
-
-
 
 }
