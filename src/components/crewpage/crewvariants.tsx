@@ -21,15 +21,18 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 	const { traits_hidden, short_name } = props;
 
 	const [variants, setVariants] = React.useState<Variant[]>([] as Variant[]);
-	const [byDate, setByDate] = useStateWithStorage('crewVariantSort', false, { rememberForever: true });
+	const [sortType, setSortType] = useStateWithStorage<string | boolean>('crewVariantSort', 'name', { rememberForever: true });
 
 	const sortTraitGroup = (crew: CrewMember[]) => {
 		crew.sort(((a, b) => {
 			if (a.max_rarity === b.max_rarity) {
-				if (byDate && a.date_added && b.date_added) {
+				if (sortType === 'date' && a.date_added && b.date_added) {
 					if (typeof a.date_added === 'string') a.date_added = new Date(a.date_added);
 					if (typeof b.date_added === 'string') b.date_added = new Date(b.date_added);
 					return a.date_added.getTime() - b.date_added.getTime();
+				}
+				else if (sortType === 'datascore') {
+					return a.ranks.scores.overall - b.ranks.scores.overall;
 				}
 				else {
 					return a.name.localeCompare(b.name);
@@ -38,6 +41,13 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			return a.max_rarity - b.max_rarity;
 		}))
 	}
+
+	React.useEffect(() => {
+		if (typeof sortType === 'boolean') {
+			if (sortType) setSortType('date');
+			else setSortType('name');
+		}
+	}, [sortType]);
 
 	React.useEffect(() => {
 		const variants = [] as Variant[];
@@ -89,19 +99,24 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			variants.push(addvar);
 		}
 		setVariants([...variants]);
-	}, [byDate]);
+	}, [sortType]);
 
 	if (variants.length === 0) return (<></>);
 
 	const sortOptions = [{
 		key: 'name',
-		value: false,
+		value: 'name',
 		text: t('global.name')
 	},
 	{
 		key: 'date',
-		value: true,
+		value: 'date',
 		text: t('base.release_date')
+	},
+	{
+		key: 'datascore',
+		value: 'datascore',
+		text: t('rank_names.datascore')
 	}];
 
 	return (
@@ -121,8 +136,8 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 							control={Dropdown}
 							label={`${t('global.sort_by')}${t('global.colon')}`}
 							options={sortOptions}
-							value={byDate}
-							onChange={(e, { value }) => setByDate(value as boolean)}
+							value={sortType}
+							onChange={(e, { value }) => setSortType(value as boolean)}
 							inline
 						/>
 					</Form>
