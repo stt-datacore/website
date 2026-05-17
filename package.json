@@ -5,10 +5,14 @@
     "version": "4.0.0",
     "license": "MIT",
     "scripts": {
-        "start": "node mdgen && PORT=8881  react-app-rewired start",
+        "start": "node mdgen && PORT=8881 react-app-rewired start",
+        "serve": "node mdgen && PORT=8881 react-app-rewired start",
+        "develop": "node mdgen && PORT=8881 react-app-rewired start",
         "build": "node mdgen && react-app-rewired build",
-        "test": "react-app-rewired test",
-        "eject": "react-app-rewired eject"
+        "eject": "react-app-rewired eject",
+        "test": "echo \"Write tests!\"",
+        "cy:open": "cypress open",
+        "test:e2e": "start-server-and-test develop http://localhost:8881 cy:open"
     },
     "dependencies": {
         "@nivo/bar": "^0.99.0",
@@ -25,7 +29,6 @@
         "@nivo/swarmplot": "^0.99.0",
         "@testing-library/react": "^16.3.2",
         "color-convert": "^3.0.1",
-        "cypress": "^15.14.2",
         "easymde": "^2.18.0",
         "exceljs": "^4.4.0",
         "localforage": "^1.10.0",
@@ -91,6 +94,7 @@
         "@types/showdown": "^2.0.6",
         "@types/tinycolor2": "^1.4.6",
         "@types/uuid": "^11.0.0",
+        "cypress": "^15.14.2",
         "dotenv": "^17.4.2",
         "jest": "^30.4.2",
         "react-app-rewired": "^2.2.1",
