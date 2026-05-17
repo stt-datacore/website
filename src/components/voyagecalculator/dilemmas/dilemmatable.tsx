@@ -86,7 +86,8 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         setEligble(eligible);
         setInverse(inverse);
         if (dilemmas.some(d => d.narrative) && playerData) {
-            setMaxRun(2 * ((dilemmas.length - inverse.length) + 1));
+            let invact = inverse.filter(i => !i.dilemma.narrative);
+            setMaxRun(2 * ((dilemmas.length - invact.length)));
         }
         else {
             setMaxRun(0);
