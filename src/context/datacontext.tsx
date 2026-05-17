@@ -21,6 +21,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
 import { SeasonalShop } from '../model/offers';
+import { RootSpin } from '../components/rootspin';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -143,12 +144,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
-		return (<span><Icon loading name='spinner' /> {message}</span>);
+		return <RootSpin message={message} />
 	};
 
 	if (!tsAck || !syncConfig) return spin();
-
-	const { token: syncToken } = syncConfig;
 
 	const providerValue = {
 		...data,
