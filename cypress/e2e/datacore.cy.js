@@ -8,7 +8,7 @@ describe('Home page', () => {
 
     cy.get('h2').contains('Crew Stats');
     cy.get('th').contains('Crew').click();
-    cy.get('tbody>tr').eq(0).contains('"Bullseye" Kyle');
+    cy.get('tbody>tr').eq(0).contains('"Admiral" Patrick');
   });
 });
 
