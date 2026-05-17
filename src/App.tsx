@@ -13,6 +13,7 @@ import { StandardFlexRow } from "./cssdef";
 import { MarkdownRoot } from "./model/mdpages";
 import markdown_pages from "./static/structured/markdown_pages.json";
 import { populateSlugs } from "./utils/mdpageutils";
+import { RootSpin } from "./components/rootspin";
 
 const UnneededItemsPage = lazy(() => import("./pages/unneeded"));
 const VoyagePage = lazy(() => import("./pages/voyage"));
@@ -53,29 +54,6 @@ const FTMHofPage = lazy(() => import("./pages/ftmhof"));
 const ShipsPage = lazy(() => import("./pages/ships"));
 const CrewDetailsPage = lazy(() => import("./templates/crewpage"));
 const MarkdownPage = lazy(() => import("./components/mdpage"));
-
-const RootSpin = (props: { message?: string }) => {
-    let { message } = props;
-    // Can use this here because is called from within global context.
-    const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
-    let loc_msg = t("spinners.please_wait");
-
-    return (
-        <div
-            style={{
-                ...StandardFlexRow,
-                width: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: "5em 0",
-                fontSize: "1.2rem",
-            }}
-        >
-            <Icon loading name="spinner" /> {message || loc_msg}
-        </div>
-    );
-};
 
 function App() {
   const markdownRoot = markdown_pages as any as MarkdownRoot;
