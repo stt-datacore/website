@@ -116,7 +116,7 @@ function App() {
                       <Route path="/voyagehistory" element={<VoyageHistoryPage />} />
                       {pages.map((page) => {
                             return (
-                                <Route path={`/${page.slug}`}
+                                <Route path={`/${page.slug}`} key={`__markdown_slug_${page.slug}`}
                                     element={(
                                         <MarkdownPage fullpage node={page} prefix="pages" />
                                     )}
