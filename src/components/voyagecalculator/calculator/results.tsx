@@ -148,7 +148,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 									{tfmt('voyage.estimate.projected_vp', {
 										n: <b>{proposal.estimate.vpDetails.total_vp.toLocaleString()}</b>
 									})}
-									{` `}<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
+									{` `}<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
 									{` `}{tfmt('voyage.estimate.event_crew_bonus', {
 										n: <b>+{t('global.n_%', { n: Math.round((proposal.eventCrewBonus ?? 0) * 100) })}</b>
 									})}

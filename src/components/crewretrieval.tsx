@@ -704,7 +704,7 @@
 // 						}}
 // 					>
 // 						<div style={{ gridArea: 'icon' }}>
-// 							<img width={24} src={`${process.env.REACT_APP_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
+// 							<img width={24} src={`${import.meta.env.VITE_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 // 						</div>
 // 						<div style={{ gridArea: 'stats' }}>
 // 							<span style={{ fontWeight: 'bolder', fontSize: '1.1em' }}>{polestar.short_name}</span>
@@ -869,7 +869,7 @@
 // 				{
 // 					polestars.map((p, pdx) => (
 // 						<Grid.Column key={pdx} width={2} textAlign='center' onClick={() => setActivePolestar(p.symbol)}>
-// 							<img width={32} src={`${process.env.REACT_APP_ASSETS_URL}${p.icon.file.slice(1).replace(/\//g, '_')}`} />
+// 							<img width={32} src={`${import.meta.env.VITE_ASSETS_URL}${p.icon.file.slice(1).replace(/\//g, '_')}`} />
 // 							<br /><b>{p.short_name}</b><br /><small>({(1/constellation.keystones.length*100).toFixed(1)}%)</small>
 // 						</Grid.Column>
 // 					))
@@ -926,7 +926,7 @@
 // 					{newRetrievables.sort((a, b) => a.name.localeCompare(b.name)).map((crew, cdx) => (
 // 						<Grid.Column key={crew.symbol} width={2} textAlign='center' onClick={() => setAsActive('crew', crew.symbol) }>
 // 							<ItemDisplay
-// 								src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
+// 								src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
 // 								size={64}
 // 								maxRarity={crew.max_rarity}
 // 								rarity={crew.highest_owned_rarity ?? 0}
@@ -1008,7 +1008,7 @@
 // 		const options: RetrievalOptions = { initialized: false, list: [] };
 // 		if (props.value != '') {
 // 			const c = props.crew.find(c => c.symbol === props.value);
-// 			if (c) options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.REACT_APP_ASSETS_URL}${c.imageUrlPortrait}` }}];
+// 			if (c) options.list = [{ key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}${c.imageUrlPortrait}` }}];
 // 			else options.list = [{ key: 0, value: 0, text: 'Loading...' }];
 // 		}
 // 		else {
@@ -1021,7 +1021,7 @@
 // 		let crewList = [...props.crew];
 // 		let newOptions: RetrievalOptions = {
 // 			list: crewList.sort((a, b) => a.name.localeCompare(b.name)).map(c => {
-// 				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${process.env.REACT_APP_ASSETS_URL}${c.imageUrlPortrait}` }};
+// 				return { key: c.symbol, value: c.symbol, text: c.name, image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}${c.imageUrlPortrait}` }};
 // 			}),
 // 			initialized: true
 // 		}
@@ -1149,7 +1149,7 @@
 // 					>
 // 						<div style={{ gridArea: 'icon' }}>
 // 							<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
-// 								<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} />
+// 								<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 // 							</CrewTarget>
 // 						</div>
 // 						<div style={{ gridArea: 'stats' }}>
@@ -1508,7 +1508,7 @@
 // 						<Grid.Row key={'combo'+cdx}>
 // 							{combo.map((polestar, pdx) => (
 // 								<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
-// 									<img width={32} src={`${process.env.REACT_APP_ASSETS_URL}${polestar?.icon.file.slice(1).replace(/\//g, '_')}`} />
+// 									<img width={32} src={`${import.meta.env.VITE_ASSETS_URL}${polestar?.icon.file.slice(1).replace(/\//g, '_')}`} />
 // 									<br />{polestar?.short_name}
 // 									<br /><small>({polestar?.loaned ? `${polestar.quantity-polestar.loaned} +${polestar.loaned} added` : polestar?.quantity})</small>
 // 								</Grid.Column>

@@ -25,7 +25,7 @@ const EpisodesPage = () => {
 						<Item key={episode.symbol}>
 							<Item.Image
 								size="tiny"
-								src={`${process.env.REACT_APP_ASSETS_URL}${episode.episode_portrait
+								src={`${import.meta.env.VITE_ASSETS_URL}${episode.episode_portrait
 										? episode.episode_portrait.file.slice(1).replace('/', '_') + '.png'
 										: 'crew_full_body_cm_empty_full.png'
 									}`}

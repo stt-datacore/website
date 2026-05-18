@@ -127,7 +127,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
                     return <Table.Row key={`${opponent.name}_${idx}_${opponent.player_id}`}>
                         <Table.Cell>
                             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                                <img className="ui segment" style={{ margin: "4px 8px", borderRadius: "6px", height: "72px" }} src={`${process.env.REACT_APP_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent?.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
+                                <img className="ui segment" style={{ margin: "4px 8px", borderRadius: "6px", height: "72px" }} src={`${import.meta.env.VITE_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent?.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
                                 {opponent.name}
                             </div>
                         </Table.Cell>

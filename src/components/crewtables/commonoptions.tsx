@@ -77,7 +77,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				key: trait,
 				value: trait,
 				text: TRAIT_NAMES[trait],
-				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.REACT_APP_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
+				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${import.meta.env.VITE_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		// [ ...CONFIG.SERIES].reverse().forEach(series => {

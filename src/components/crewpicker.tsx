@@ -163,7 +163,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
 
-								<img width={60} height={60} src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={60} height={60} src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 
 							<div>{renderCrewCaption ? renderCrewCaption(crew) : crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>

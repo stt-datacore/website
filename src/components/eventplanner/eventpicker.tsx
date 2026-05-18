@@ -170,7 +170,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					onChange={(e, { value }) => setEventIndex(value as number)}
 				/>
 			</Form>
-			<Image size='large' src={`${process.env.REACT_APP_ASSETS_URL}${eventData.image}`} />
+			<Image size='large' src={`${import.meta.env.VITE_ASSETS_URL}${eventData.image}`} />
 			<div>{eventData.description}</div>
 			{phaseList.length > 1 && (
 				<div style={{ margin: '1em 0' }}>
@@ -374,7 +374,7 @@ export const EventFactions = (props: FeatureToolProps & { vertical?: boolean, im
 			{facts.map(faction => {
 				if (!faction) return <></>;
 				return (<div key={`${faction.id}_${faction.home_system}_eventpicker`} style={{...OptionsPanelFlexRow, alignItems: 'center', gap: '0.5em'}}>
-					<img alt={`${faction.name}`} style={{margin: 0, height: props.imgSize ?? '48px'}} src={`${process.env.REACT_APP_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
+					<img alt={`${faction.name}`} style={{margin: 0, height: props.imgSize ?? '48px'}} src={`${import.meta.env.VITE_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
 					<div>{faction.name}</div>
 				</div>)
 			})}

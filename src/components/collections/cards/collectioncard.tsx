@@ -76,7 +76,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
             >
                 <Image
                     size="medium"
-                    src={`${process.env.REACT_APP_ASSETS_URL}${playerCol.image?.replace(
+                    src={`${import.meta.env.VITE_ASSETS_URL}${playerCol.image?.replace(
                         "/collection_vault/",
                         "collection_vault_"
                     )}.png`}
@@ -135,7 +135,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                             <i style={{ fontSize: "0.9em" }}>
                                 {t('collections.citation_cost_to_next')}:
                                 <img
-                                    src={`${process.env.REACT_APP_ASSETS_URL}currency_honor_currency_0.png`}
+                                    src={`${import.meta.env.VITE_ASSETS_URL}currency_honor_currency_0.png`}
                                     style={{ width: "16px", verticalAlign: "text-bottom" }}
                                 />
                                 {neededCost.toLocaleString()}
@@ -155,7 +155,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                                             }}
                                         >
                                             <img
-                                                src={`${process.env.REACT_APP_ASSETS_URL}currency_honor_currency_0.png`}
+                                                src={`${import.meta.env.VITE_ASSETS_URL}currency_honor_currency_0.png`}
                                                 style={{
                                                     width: "16px",
                                                     verticalAlign: "text-bottom",

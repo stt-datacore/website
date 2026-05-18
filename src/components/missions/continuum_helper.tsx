@@ -610,7 +610,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 >
 
                                 <ItemDisplay
-                                        src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                        src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                         size={64}
                                         rarity={crew.rarity ?? crew.max_rarity}
                                         maxRarity={crew.max_rarity}

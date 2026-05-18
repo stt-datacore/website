@@ -288,12 +288,12 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
             itemSymbol={equipment?.symbol}
             allItems={globalContext.core.items}
             playerData={globalContext.player.playerData}
-            src={`${process.env.REACT_APP_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            src={`${import.meta.env.VITE_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
             size={itemSize}
             maxRarity={equipment?.rarity ?? 0}
             rarity={equipment?.rarity ?? 0}
         />
-        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.REACT_APP_ASSETS_URL}atlas/lock_icon.png`}/>}
+        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${import.meta.env.VITE_ASSETS_URL}atlas/lock_icon.png`}/>}
         </div>
     </div>)
 

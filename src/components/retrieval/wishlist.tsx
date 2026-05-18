@@ -220,7 +220,7 @@ const GridCrew = (props: GridCrewProps) => {
 		<React.Fragment>
 			<Image>
 				<div>
-					<img src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+					<img src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 				</div>
 				{isSelected && (
 					<Label corner='right' color='pink' icon='heart' />
