@@ -20,7 +20,7 @@ export default defineConfig([
     },
     rules: {
       'prefer-const': 'off',
-      'no-unused-vars': 'off',
+      'no-unused-vars': 'warn',
       'no-extra-boolean-cast': 'off',
       'no-constant-binary-expression': 'off',
       '@typescript-eslint/no-unused-vars': 'off',

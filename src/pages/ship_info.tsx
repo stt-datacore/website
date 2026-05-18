@@ -13,12 +13,10 @@ import { useStateWithStorage } from '../utils/storage';
 import { ShipMultiWorker } from '../components/ship/shipmultiworker';
 import { ShipStaffingView } from '../components/ship/staffingview';
 import { Step } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized
-
 	const [shipKey, setShipKey] = React.useState<string | undefined>();
 	const { ship_symbol } = useParams();
 	const navigate = useNavigate();
@@ -152,17 +150,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 		}
 		return undefined;
 	}, [ship]);
-
 	return (<>
-		{/* <Helmet titleTemplate={`STT DataCore - ${inputShip?.name ? inputShip.name : 'Ship Info'}`} defaultTitle={`STT DataCore - ${inputShip?.name ? inputShip.name : 'Ship Info'}`}>
-			<title>{`${inputShip?.name ? inputShip.name : 'Ship Info'}`}</title>
-			<meta property='og:type' content='website' />
-			<meta property='og:title' content={`${inputShip?.name ? inputShip.name : 'Ship Info'} - ${`STT`}`} />
-			<meta property='og:site_name' content='DataCore' />
-			<meta property='og:image' content={`${process.env.VITE_ASSETS_URL}${inputShip?.icon?.file.slice(1).replace('/', '_')}`} />
-			<meta property='og:description' content={`${inputShip?.name ? inputShip.name : 'Ship Info'} - ${`STT`}`} />
-			<meta property='og:url' content={`${location}`} />
-		</Helmet> */}
 		<div style={{
 			display: "flex",
 			width: "100%",
