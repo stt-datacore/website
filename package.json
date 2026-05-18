@@ -45,7 +45,7 @@
     "cy:open": "cypress open",
     "develop": "node mdgen && vite --port=8881",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "node mdgen && vite preview",
     "serve": "node mdgen && vite --port=8881",
     "start": "node mdgen && vite --port=8881",
     "test:e2e": "start-server-and-test develop http://localhost:8881 cy:open",
