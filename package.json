@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "node mdgen && tsc -b && vite build",
     "cy:open": "cypress open",
     "develop": "node mdgen && vite --port=8881",
     "lint": "eslint .",
