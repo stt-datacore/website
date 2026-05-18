@@ -97,7 +97,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 
 	return (
 		<>
-			<Helmet titleTemplate={`${crew.name}`} defaultTitle={`STT DataCore`}>
+			<Helmet titleTemplate={`STT DataCore - ${crew.name}`} defaultTitle={`STT DataCore`}>
 				<title>{crew.name}</title>
 				<meta property='og:type' content='website' />
 				<meta property='og:title' content={`${crew.name} - ${`STT`}`} />
