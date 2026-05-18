@@ -507,7 +507,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function makeWebstringMap(translations: Object, current?: { [key: string]: string }, currentName?: string): { [key: string]: string } {
+	function makeWebstringMap(translations: object, current?: { [key: string]: string }, currentName?: string): { [key: string]: string } {
 		current ??= {};
 		currentName ??= '';
 
