@@ -7,6 +7,7 @@ export default defineConfig({
   base: '/',
   publicDir: 'static',
   build: {
+    assetsDir: 'chunks',
     outDir: 'build'
   }
 })
