@@ -2968,6 +2968,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/moment@npm:^2.13.0":
+  version: 2.13.0
+  resolution: "@types/moment@npm:2.13.0"
+  dependencies:
+    moment: "*"
+  checksum: 0bb9e73c0c961a1112ba67773779c3a84edca5063660e79f8b104bc0857dc53447f93e7ac3df78924d17e7e0a87c9ccc9e87505308798c9495ac6de278af7305
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 25.8.0
   resolution: "@types/node@npm:25.8.0"
@@ -7127,7 +7136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.30.1":
+"moment@npm:*, moment@npm:^2.30.1":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
@@ -8454,6 +8463,7 @@ __metadata:
     "@types/color-convert": ^3.0.1
     "@types/jest": ^30.0.0
     "@types/localforage": ^0.0.34
+    "@types/moment": ^2.13.0
     "@types/node": ^24.12.3
     "@types/react": ^19.2.14
     "@types/react-dom": ^19.2.3
