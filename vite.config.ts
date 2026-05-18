@@ -16,6 +16,9 @@ export default defineConfig(({ mode }) => {
   processEnv['process.env.NODE_ENV'] = JSON.stringify(mode)
 
   return {
+    server: {
+      open: false
+    },
     plugins: [react()],
     base: '/',
     publicDir: 'static',
