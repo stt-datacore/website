@@ -41,7 +41,7 @@ export const OEInfo = (props: OEInfoProps) => {
 
             let img = '';
             if (oearch.target && !type) {
-                img = `${process.env.REACT_APP_ASSETS_URL}`;
+                img = `${import.meta.env.VITE_ASSETS_URL}`;
                 if ('symbol' in oearch.target && oearch.target.symbol.endsWith('_series')) {
                     img = `/media/series/${oearch.target.symbol.replace("_series", "")}.png`;
                 }
@@ -108,7 +108,7 @@ export const OEInfo = (props: OEInfoProps) => {
                                                     else if (reward.type === 8) type = 'ship';
                                                     else type = 'item';
                                                     (reward as any).isReward = true;
-                                                    let src = `${process.env.REACT_APP_ASSETS_URL}${getIconPath(reward.icon!, true)}`
+                                                    let src = `${import.meta.env.VITE_ASSETS_URL}${getIconPath(reward.icon!, true)}`
                                                     if (!(reward as any).imageUrl) {
                                                         (reward as any).imageUrl = getIconPath(reward.icon!, true);
                                                     }

@@ -225,7 +225,7 @@ export const PolestarProspectsModal = () => {
 						}}
 					>
 						<div style={{ gridArea: 'icon' }}>
-							<img width={24} src={`${process.env.REACT_APP_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
+							<img width={24} src={`${import.meta.env.VITE_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 						</div>
 						<div style={{ gridArea: 'stats' }}>
 							<span style={{ fontWeight: 'bolder', fontSize: '1.1em' }}>{polestar.short_name}</span>

@@ -53,7 +53,7 @@ export const CrewFinder = (props: CrewFinderProps) => {
 			trigger:
 				<span style={{ whiteSpace: 'nowrap' }}>
 					{bestRank.skills.map(skill => (
-						<img key={skill} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+						<img key={skill} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
 					))}
 					{` `}<span style={{ verticalAlign: 'middle' }}>{bestRank.rank}</span>
 				</span>

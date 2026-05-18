@@ -16,7 +16,7 @@ import { ChainSolver } from './chainsolver';
 
 const SIMULATE_API: boolean = false;
 
-const API_URL: string | undefined = process.env.REACT_APP_DATACORE_URL;
+const API_URL: string | undefined = import.meta.env.VITE_DATACORE_URL;
 const DEFAULT_POLL: number = 60;	// In seconds
 
 enum FetchState {

@@ -171,7 +171,7 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 							gap: '0.5em',
 							//color: green ? 'lightgreen' : undefined,
 							gridArea: 'skill'}}>
-							{skills.map((skill) => <img key={`skill_img_quest_picker_${skill}`} style={{height: "16px"}} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} />)}
+							{skills.map((skill) => <img key={`skill_img_quest_picker_${skill}`} style={{height: "16px"}} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} />)}
 						</div>
 					</div>
 				}}

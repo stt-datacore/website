@@ -99,7 +99,7 @@ export function EventInfoModal(props: EventInfoModalProps) {
 	return (
 		<Container style={{ padding: '1em' }}>
 			<Image
-				src={`${process.env.REACT_APP_ASSETS_URL}${image}`}
+				src={`${import.meta.env.VITE_ASSETS_URL}${image}`}
 				fluid
 			/>
 			<Tab

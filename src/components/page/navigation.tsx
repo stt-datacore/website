@@ -26,15 +26,15 @@ function printLang(lang?: SupportedLanguage) {
 function getLanguageIcon(lang?: SupportedLanguage) {
 	switch (lang) {
 		case 'en':
-			return `${process.env.REACT_APP_ASSETS_URL}atlas/flag_english_icon.png`;
+			return `${import.meta.env.VITE_ASSETS_URL}atlas/flag_english_icon.png`;
 		case 'de':
-			return `${process.env.REACT_APP_ASSETS_URL}atlas/flag_german_icon.png`;
+			return `${import.meta.env.VITE_ASSETS_URL}atlas/flag_german_icon.png`;
 		case 'fr':
-			return `${process.env.REACT_APP_ASSETS_URL}atlas/flag_french_icon.png`;
+			return `${import.meta.env.VITE_ASSETS_URL}atlas/flag_french_icon.png`;
 		case 'sp':
-			return `${process.env.REACT_APP_ASSETS_URL}atlas/flag_spanish_icon.png`;
+			return `${import.meta.env.VITE_ASSETS_URL}atlas/flag_spanish_icon.png`;
 		default:
-			return `${process.env.REACT_APP_ASSETS_URL}atlas/flag_english_icon.png`;
+			return `${import.meta.env.VITE_ASSETS_URL}atlas/flag_english_icon.png`;
 
 	}
 }
@@ -86,7 +86,7 @@ export const Navigation = (props: NavigationProps) => {
 	// 	props.requestPanel(target, panel);
 	// 	setOpenBar(false);
 	// }
-	let portrait = `${process.env.REACT_APP_ASSETS_URL}${globalContext.player.playerData?.player?.character?.crew_avatar
+	let portrait = `${import.meta.env.VITE_ASSETS_URL}${globalContext.player.playerData?.player?.character?.crew_avatar
 		? (globalContext.player.playerData?.player?.character?.crew_avatar?.portrait?.file ?? globalContext.player.playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
 		: 'crew_portraits_cm_empty_sm.png'}`;
 
@@ -103,7 +103,7 @@ export const Navigation = (props: NavigationProps) => {
 		// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
 		{ optionKey: 'event', src: '/media/event.png', title: t('menu.tools.event_planner'), link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
 		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: t('menu.tools.gauntlet'), link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-		{ optionKey: 'cite', src: `${process.env.REACT_APP_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.tools.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		{ optionKey: 'cite', src: `${import.meta.env.VITE_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.tools.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 		{ optionKey: 'voyage', src: "/media/voyage.png", title: t('menu.tools.voyage_calculator'), link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 		{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: t('menu.tools.voyage_history'), link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 		{ optionKey: 'collection', src: '/media/vault.png', title: t('menu.tools.collection_planner'), link: "/collections", sidebarRole: 'item' },	// Collections added v4
@@ -138,7 +138,7 @@ export const Navigation = (props: NavigationProps) => {
 			}
 		},
 		{
-			src: `${process.env.REACT_APP_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
+			src: `${import.meta.env.VITE_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
 			title: isMobile ? undefined : t('menu.player.import_player_data_ellipses'),
 			customAction: () => props.requestPanel('player', 'input'),
 			checkVisible: (data) => {
@@ -287,7 +287,7 @@ export const Navigation = (props: NavigationProps) => {
 		// 			src: '/media/crew_icon.png',
 		// 			subMenu: [
 		// 				{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
-		// 				{ optionKey: 'cite', src: `${process.env.REACT_APP_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		// 				{ optionKey: 'cite', src: `${import.meta.env.VITE_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 		// 				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
 		// 				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
 		// 			]

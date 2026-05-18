@@ -352,7 +352,7 @@ export class ShipSkill extends PresenterPlugin<Ship | PlayerCrew | CrewMember, S
                                             padding: 0,
                                             margin: "0"}}
                                             title={action.source}
-                                        src={`${process.env.REACT_APP_ASSETS_URL}${action.icon?.file?.slice(1).replace(/\//g, "_")}.png`}
+                                        src={`${import.meta.env.VITE_ASSETS_URL}${action.icon?.file?.slice(1).replace(/\//g, "_")}.png`}
                                         />
                                 </div>
                             </div>

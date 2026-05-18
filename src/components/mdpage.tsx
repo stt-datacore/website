@@ -1,16 +1,13 @@
 import { marked } from "marked";
 import React from "react";
-import { Header, Divider } from "semantic-ui-react";
+import { Divider, Header } from "semantic-ui-react";
 import { MarkdownEntry } from "../model/mdpages";
 import { stripFrontMatter } from "../utils/mdpageutils";
 import DataPageLayout from "./page/datapagelayout";
-import { GlobalContext } from "../context/globalcontext";
 
 const MarkdownPage = (props: { node: MarkdownEntry, prefix: string, excerpt?: boolean, fullpage?: boolean }) => {
 	const { node, prefix, excerpt, fullpage } = props;
 	const [html, setHtml] = React.useState<string>('');
-	const globalContext = React.useContext(GlobalContext);
-	const { t } = globalContext.localized;
 
 	const datePosted = new Date(node.date ?? new Date());
 

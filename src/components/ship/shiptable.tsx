@@ -374,7 +374,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				>
 					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 						<ShipTarget inputItem={ship} targetGroup={`${pageId}/ship_hover`}>
-							<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+							<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 						</ShipTarget>
 					</div>
 					<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>

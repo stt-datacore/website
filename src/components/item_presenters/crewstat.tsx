@@ -39,7 +39,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 					...this.props.gridStyle
 				}}>
 				<div style={{ gridArea: 'icon' }}>
-					<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
+					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
 				</div>
 				{!!stats && (
 					<React.Fragment>
@@ -60,7 +60,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 						</div>}
 						{!!quipmentMode &&
 						<div style={{ gridArea: 'crits', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-							<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
+							<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
 							<span style={{ fontWeight: 'bolder', fontSize: `${scale}em` }}>
 								{stats.core! + stats.range_min!}-{stats.core! + stats.range_max!}
 							</span>

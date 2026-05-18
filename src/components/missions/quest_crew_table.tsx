@@ -133,7 +133,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                                         gridTemplateColumns: '32px auto'
                                     }}>
                                         <div style={{ gridArea: 'image', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                            <img style={{ height: '16px' }} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
+                                            <img style={{ height: '16px' }} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
                                         </div>
                                         <div style={{ gridArea: 'text' }}>
                                             <b>{challenge.name}</b>

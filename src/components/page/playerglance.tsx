@@ -135,14 +135,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             }}
                 onClick={() => navigate('/eventplanner')}
                 title={currentEvent.name}>
-                <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '2em', margin: 0 }} />
+                <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '2em', margin: 0 }} />
                 <h3 style={{ margin: 0 }}>
                     {currentEvent.victory_points?.toLocaleString()}&nbsp;{t('shuttle_helper.event.vp')}
                 </h3>
                 <h3 style={{ margin: 0 }}>
                     &nbsp;&mdash;&nbsp;
                 </h3>
-                {!!currentEventCrew && <img src={`${process.env.REACT_APP_ASSETS_URL}${currentEventCrew.imageUrlPortrait}`} style={{ height: '2em', margin: 0 }} />}
+                {!!currentEventCrew && <img src={`${import.meta.env.VITE_ASSETS_URL}${currentEventCrew.imageUrlPortrait}`} style={{ height: '2em', margin: 0 }} />}
                 <h3 style={{ margin: 0 }}>
                     {currentEvent.name}
                 </h3>
@@ -167,7 +167,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                             padding: '0.25em 0.75em',
                             backgroundColor: colorToRGBA(CONFIG.RARITIES[5].color, 0.3)
                         }}>
-                        <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/honor_currency.png`} style={{height: '24px'}} />
+                        <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/honor_currency.png`} style={{height: '24px'}} />
                         {t('sales.honor_sale')}
                     </div>
                 )}
@@ -182,7 +182,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                             padding: '0.25em 0.75em',
                             backgroundColor: colorToRGBA(CONFIG.RARITIES[4].color, 0.3)
                         }}>
-                        <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '24px'}} />
+                        <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '24px'}} />
                         {t('sales.slot_sale')}
                     </div>
                 )}
@@ -193,7 +193,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                             gap: '0.5em',
                             margin: '0'
                         }}>
-                        <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
+                        <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/loot_crate_open.png`} style={{height: '24px'}} />
                         {t('global.supply_kit_active_n', { n: supplyKit })}
                     </div>
                 )}
@@ -252,28 +252,28 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             revival = coreRevival;
         }
 
-        const honorimg = `${process.env.REACT_APP_ASSETS_URL}atlas/honor_currency.png`;
+        const honorimg = `${import.meta.env.VITE_ASSETS_URL}atlas/honor_currency.png`;
 
         let resources = [
             {
                 name: t('global.item_types.chronitons'),
                 quantity: chrons,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/energy_icon.png`
             },
             {
                 name: t('global.item_types.credits'),
                 quantity: money,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/soft_currency_icon.png`
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`
             },
             {
                 name: t('global.item_types.dilithium'),
                 quantity: premium_purchasable,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/pp_currency_icon.png`
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`
             },
             {
                 name: t('global.item_types.merits'),
                 quantity: premium_earnable ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/pe_currency_icon.png`
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`
             },
             {
                 name: t('global.item_types.honor'),
@@ -283,48 +283,48 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             {
                 name: t('global.item_types.valor'),
                 quantity: valor ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
                 click: (e) => navigate('/fbb')
             },
             {
                 name: t('global.item_types.quantum'),
                 quantity: quantum ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
                 click: (e) => navigate('/retrieval')
             },
             {
                 name: t('global.item_types.interstellar_medium'),
                 quantity: ism ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
                 click: (e) => navigate('/retrieval')
             },
             {
                 name: t('global.item_types.arena_tickets'),
                 quantity: pvp,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/fleetmarker_icon.png`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`,
                 click: (e) => navigate('/ships')
             },
             {
                 name: t('global.item_types.cadet_challenge_tickets'),
                 quantity: cadet,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/cadet_icon.png`
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/cadet_icon.png`
             },
             {
                 name: t('global.item_types.voyage_consumable'),
                 quantity: revival?.quantity ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}${revival?.imageUrl ?? (revival.icon ? getIconPath(revival.icon, true) : '')}`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival.icon ? getIconPath(revival.icon, true) : '')}`,
                 click: (e) => navigate('/voyage')
             },
             {
                 name: t('global.item_types.shuttle_token'),
                 quantity: shuttle_rental_tokens ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}atlas/icon_shuttle_token.png`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`,
                 click: (e) => navigate('/shuttlehelper')
             },
             {
                 name: t('global.item_types.conquest_token'),
                 quantity: conquest_tokens ?? 0,
-                imageUrl: `${process.env.REACT_APP_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
+                imageUrl: `${import.meta.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
                 click: (e) => navigate('/seasonal')
             }
 
@@ -334,7 +334,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             if (idx === 0) return;
             if (cite.quantity <= 0 && idx !== 5) return;
             let item = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality${idx}`);
-            const img = `${process.env.REACT_APP_ASSETS_URL}${item?.imageUrl}`;
+            const img = `${import.meta.env.VITE_ASSETS_URL}${item?.imageUrl}`;
 
             if (cite.quantity > 0) {
                 resources.push({
@@ -350,7 +350,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         });
 
         const cite = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality5`);
-        const cite5img = `${process.env.REACT_APP_ASSETS_URL}${cite?.imageUrl}`;
+        const cite5img = `${import.meta.env.VITE_ASSETS_URL}${cite?.imageUrl}`;
         const p_cites = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
 
         resources.push({
@@ -446,7 +446,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 }
 
 export async function loadSaleData() {
-    const response = await fetch(`${process.env.REACT_APP_DATACORE_URL}api/sales`);
+    const response = await fetch(`${import.meta.env.VITE_DATACORE_URL}api/sales`);
     let sale = (await response.json()) as SaleData;
     return sale;
 }

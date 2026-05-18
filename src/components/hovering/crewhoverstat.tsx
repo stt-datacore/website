@@ -160,7 +160,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidUpdate(): void {
         const di = this.tiny.getRapid<PlayerCrew | undefined>('displayItem', undefined);
         if (di) {
-            const url = `${process.env.REACT_APP_ASSETS_URL}${di.imageUrlFullBody}`;
+            const url = `${import.meta.env.VITE_ASSETS_URL}${di.imageUrlFullBody}`;
             toDataURL(url, () => {});
         }
     }
@@ -168,7 +168,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidMount(): void {
         const di = this.props.inputItem;
         if (di) {
-            const url = `${process.env.REACT_APP_ASSETS_URL}${di.imageUrlFullBody}`;
+            const url = `${import.meta.env.VITE_ASSETS_URL}${di.imageUrlFullBody}`;
             window.setTimeout(() => {
                 const img = new Image()
                 img.src = url;

@@ -354,7 +354,7 @@ export const VoyageHOF = (props: VoyageHOFProps) => {
             return;
         }
 
-        fetch(`${process.env.REACT_APP_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${glanceDays}`)
+        fetch(`${import.meta.env.VITE_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${glanceDays}`)
             .then((response) => response.json())
             .then((rawVoyages: RawVoyageRecord[]) => {
                 let codict = {} as { [key: string]: RawVoyageRecord }
@@ -371,7 +371,7 @@ export const VoyageHOF = (props: VoyageHOFProps) => {
     }
 
     function loadVoyageHOF() {
-        fetch(`${process.env.REACT_APP_DATACORE_URL}api/telemetry?type=voyage`)
+        fetch(`${import.meta.env.VITE_DATACORE_URL}api/telemetry?type=voyage`)
             .then((response) => response.json())
             .then((voyageStats) => {
                 const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
@@ -492,7 +492,7 @@ export const VoyageHOF = (props: VoyageHOFProps) => {
 //             return;
 //         }
 
-//         fetch(`${process.env.REACT_APP_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${this.state.glanceDays}`)
+//         fetch(`${import.meta.env.VITE_DATACORE_URL}api/voyagesByCrew?opand=1&crew=${crew.join(",")}&days=${this.state.glanceDays}`)
 //             .then((response) => response.json())
 //             .then((rawVoyages: RawVoyageRecord[]) => {
 //                 let codict = {} as { [key: string]: RawVoyageRecord }
@@ -519,7 +519,7 @@ export const VoyageHOF = (props: VoyageHOFProps) => {
 //     }
 
 //     componentDidMount() {
-//         fetch(`${process.env.REACT_APP_DATACORE_URL}api/telemetry?type=voyage`)
+//         fetch(`${import.meta.env.VITE_DATACORE_URL}api/telemetry?type=voyage`)
 //             .then((response) => response.json())
 //             .then((voyageStats) => {
 //                 const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;

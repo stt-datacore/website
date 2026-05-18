@@ -532,7 +532,7 @@ const SkillDepthTable = (props: SkillDepthTableProps) => {
 					<Table.Row key={row.key}>
 						<Table.Cell>
 							{row.skills.map(skill => (
-								<img key={skill} alt={skill} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', padding: '0 2px' }} />
+								<img key={skill} alt={skill} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', padding: '0 2px' }} />
 							))}
 						</Table.Cell>
 						<Table.Cell textAlign='center'>{row.owned} / {row.total}</Table.Cell>

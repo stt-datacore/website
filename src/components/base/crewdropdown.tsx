@@ -50,7 +50,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                             }}
                         >
                             <img
-                                src={`${process.env.REACT_APP_ASSETS_URL}${c.imageUrlPortrait}`}
+                                src={`${import.meta.env.VITE_ASSETS_URL}${c.imageUrlPortrait}`}
                                 style={{
                                     height: "32px",
                                     gridArea: "img",

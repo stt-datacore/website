@@ -322,7 +322,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 		return (
 			<DataPageLayout pageTitle={event_data.ev_inst.event_name}>
 				<React.Fragment>
-				<Image size='large' src={`${process.env.REACT_APP_ASSETS_URL}${event_data.ev_inst.image}`} />
+				<Image size='large' src={`${import.meta.env.VITE_ASSETS_URL}${event_data.ev_inst.image}`} />
 
 				{this.renderEventDetails()}
 
@@ -352,7 +352,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 										<div style={{ gridArea: 'icon' }}>
 											<img
 												width={48}
-												src={`${process.env.REACT_APP_ASSETS_URL}${member.avatar ? member.avatar.file.slice(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
+												src={`${import.meta.env.VITE_ASSETS_URL}${member.avatar ? member.avatar.file.slice(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 											/>
 										</div>

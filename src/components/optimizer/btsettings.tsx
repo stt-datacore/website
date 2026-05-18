@@ -81,7 +81,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
 
     let host = "";
 
-    if (!globalThis.window) host = (process.env.REACT_APP_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (import.meta.env.VITE_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
 
     return `${host}cite-opt?${params.toString()}`;

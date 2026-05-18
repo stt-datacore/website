@@ -136,7 +136,7 @@ export const MissionFactionView = (props: MissionFactionViewProps) => {
 
 	const faction = allFactions.find(af => af.id === props.factionId);
 	if (!faction) return <></>;
-	return <img alt={faction.name} src={`${process.env.REACT_APP_ASSETS_URL}${faction.icon}`} style={{ height: `${props.size}em` }} />;
+	return <img alt={faction.name} src={`${import.meta.env.VITE_ASSETS_URL}${faction.icon}`} style={{ height: `${props.size}em` }} />;
 };
 
 type SeatSkillViewProps = {
@@ -149,11 +149,11 @@ export const SeatSkillView = (props: SeatSkillViewProps) => {
 	if (!seat.skillA) return <></>;
 	return (
 		<span style={{ whiteSpace: 'nowrap' }}>
-			<img alt={seat.skillA} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${seat.skillA}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+			<img alt={seat.skillA} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${seat.skillA}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 			{seat.skillB && (
 				<React.Fragment>
 					<span style={{ padding: '0 .3em' }}>{t(`global.${seat.operand.toLowerCase()}`).toUpperCase()}</span>
-					<img alt={seat.skillB} src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${seat.skillB}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+					<img alt={seat.skillB} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${seat.skillB}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 				</React.Fragment>
 			)}
 		</span>
@@ -170,7 +170,7 @@ export const SeatCrewView = (props: SeatCrewViewProps) => {
 	return (
 		<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'/* , justifyContent: 'center' */ }}>
 			<ItemDisplay
-				src={`${process.env.REACT_APP_ASSETS_URL}${imageUrlPortrait}`}
+				src={`${import.meta.env.VITE_ASSETS_URL}${imageUrlPortrait}`}
 				size={32}
 				maxRarity={crew.max_rarity}
 				rarity={crew.rarity}

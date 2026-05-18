@@ -369,7 +369,7 @@ export const TraitStatsTable = () => {
                         {CONFIG.SERIES.includes(item.trait_raw) &&
                             <img
                                 style={{ height: '2em'}}
-                                src={`${process.env.REACT_APP_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
+                                src={`${import.meta.env.VITE_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
                         }
                     </div>
                 </Table.Cell>

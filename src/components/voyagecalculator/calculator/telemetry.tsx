@@ -93,7 +93,7 @@ export function sendCalcResultTelemetry(
 	};
 
 	try {
-		fetch(`${process.env.REACT_APP_DATACORE_URL}api/telemetry`, {
+		fetch(`${import.meta.env.VITE_DATACORE_URL}api/telemetry`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'
