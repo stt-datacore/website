@@ -224,8 +224,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				title: t('ship.level'),
 				reverse: true,
 				customCompare: (a, b) => {
-					let r = 0;
-					r = (a.max_level ?? 0) - (b.max_level ?? 0);
+					let r = (a.max_level ?? 0) - (b.max_level ?? 0);
 					if (!r) r = (a.level ?? 0) - (b.level ?? 0);
 					return r;
 				}

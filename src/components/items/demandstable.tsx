@@ -66,3 +66,5 @@ export const DemandsTable = (props: DemandsTableProps) => {
             />
     }
 }
+
+export default DemandsTable;
