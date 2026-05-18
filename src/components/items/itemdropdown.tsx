@@ -27,7 +27,7 @@ export const ItemDropDown = (props: ItemDropDownProps) => {
                 value: `${item.symbol}`,
                 text: `${item.rarity}* ${item.name}`,
                 content: icons ? (<div style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
-                    <img style={{height: '24px'}} src={`${process.env.REACT_APP_ASSETS_URL}${item.imageUrl}`}/>
+                    <img style={{height: '24px'}} src={`${import.meta.env.VITE_ASSETS_URL}${item.imageUrl}`}/>
                     <span>{`${item.rarity}* ${item.name}`}</span>
                 </div>) : undefined
             });

@@ -1,19 +1,18 @@
 /* eslint-disable */
-//unified-worker.js
-import voymod from './voymod.js';
-import transwarp from './transwarp.js';
-import sporedrive from './sporedrive.js';
-import VoyagersWorker from './voyagers.ts';
-import Optimizer from './optimizer.js';
-import BetaTachyon from './betatachyon.ts';
-import CollectionOptimizer from './collectionworker.ts';
-import ItemsWorker from './itemsworker.ts';
-import QuestSolver from './questsolver2.ts';
-import ShipFinder from './shipfinder.ts';
-import { calcQLots } from '../utils/equipment.ts';
-import ShipCrewWorker from './shipcrewworker.ts';
-import { calculateGauntlet } from '../utils/gauntlet.ts';
-import VoyPADD from './voypadd.ts';
+import voymod from './voymod';
+import transwarp from './transwarp';
+import sporedrive from './sporedrive';
+import VoyagersWorker from './voyagers';
+import Optimizer from './optimizer';
+import BetaTachyon from './betatachyon';
+import CollectionOptimizer from './collectionworker';
+import ItemsWorker from './itemsworker';
+import QuestSolver from './questsolver2';
+import ShipFinder from './shipfinder';
+import { calcQLots } from '../utils/equipment';
+import ShipCrewWorker from './shipcrewworker';
+import { calculateGauntlet } from '../utils/gauntlet';
+import VoyPADD from './voypadd';
 
 // This worker can estimate a single lineup from input config
 const voyageEstimate = (config, progress) => {
@@ -69,11 +68,13 @@ const citeOptimizer = (playerData, allCrew) => {
 };
 
 // eslint-disable-next-line no-restricted-globals
-self.onmessage = (message) => {
-    const postResult = (result, inProgress) => {
+self.onmessage = (message: any) => {
+    const postResult = (result: any, inProgress?: boolean) => {
         postMessage({ result, inProgress });
         if (!inProgress) self.close();
+        return inProgress;
     };
+    console.log('Unified Worker has been started.');
     const messageHandlers = {
         'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
@@ -105,7 +106,7 @@ self.onmessage = (message) => {
             });
             postResult(crew, false);
         },
-        'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true)).then(data => postResult(data, false)),
+        'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true) || false).then(data => postResult(data, false)),
         'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
         'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))
     };

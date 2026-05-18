@@ -102,7 +102,7 @@ export const RosterTable = (props: RosterTableProps) => {
 				const crew = globalContext.core.crew.find(crew => crew.symbol === prospect.symbol);
 				if (crew) {
 					const crewman = {
-						... oneCrewCopy(crew),
+						...oneCrewCopy(crew),
 						id: rosterPlusProspects.length,
 						prospect: true,
 						have: false,
@@ -660,9 +660,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	React.useEffect(() => {
 		if (preparedCrew) {
-			const maxedSkills = [... new Set(preparedCrew.filter(f => f.have && f.any_immortal).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			const maxedSkills = [...new Set(preparedCrew.filter(f => f.have && f.any_immortal).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
 			setMaxedSkills(maxedSkills);
-			const ownedSkills = [... new Set(preparedCrew.filter(f => f.have).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			const ownedSkills = [...new Set(preparedCrew.filter(f => f.have).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
 			setOwnedSkills(ownedSkills);
 		}
 	}, [preparedCrew]);

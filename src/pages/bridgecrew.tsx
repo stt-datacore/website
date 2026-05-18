@@ -53,7 +53,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				key: crew.symbol,
 				value: crew.symbol,
 				imageUrlFullBody: crew.imageUrlFullBody,
-				image: { avatar: true, src: `${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}` },
+				image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}` },
 				text: `${crew.short_name} (${crew.name})`,
 				max_rarity: crew.max_rarity
 			} as BridgePeopleListItem);
@@ -106,7 +106,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				<div style={{ height: '500px', overflow: 'hidden', textAlign: 'center', padding: '25px', backgroundColor: '#203147', border: '2px solid lightblue' }}>
 					<Header as='h3'>Bridge Crew</Header>
 					{this.state.entries.map((entry, idx) => (
-							<img src={`${process.env.REACT_APP_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
+							<img src={`${import.meta.env.VITE_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
 					))}
 				</div>
 				</React.Fragment>

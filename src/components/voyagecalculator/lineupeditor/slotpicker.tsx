@@ -159,7 +159,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	columns.push(
 		{
 			id: 'antimatter',
-			title: <img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+			title: <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 			align: 'center',
 			sortField: { id: 'diff_antimatter', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_antimatter`]} />
@@ -255,7 +255,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	function renderSkillHeader(skill: string): React.ReactNode {
 		return (
 			<React.Fragment>
-				<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+				<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 				{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 			</React.Fragment>
@@ -349,7 +349,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 									<b>{t('base.voyage')}</b>
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+									<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 								</Table.Cell>
 								<Table.Cell /* Estimate */
 									textAlign='center'
@@ -377,7 +377,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 							<Table.Row>
 								{diffSkills.map(skill => (
 									<Table.Cell key={skill} textAlign='center'>
-										<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+										<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 										{calculatorContext.voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 										{calculatorContext.voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 									</Table.Cell>

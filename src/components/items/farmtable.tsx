@@ -103,7 +103,7 @@ export const FarmTable = (props: FarmTableProps) => {
     }, [episodes]);
 
     React.useEffect(() => {
-        const distinctItems = [... new Set(sources.map(m => m.items).flat().map(m => m.symbol))]
+        const distinctItems = [...new Set(sources.map(m => m.items).flat().map(m => m.symbol))]
             .map(m => globalContext.core.items.find(f => f.symbol === m)!)
             .sort((a, b) => {
                 let r = a.name.localeCompare(b.name);
@@ -309,7 +309,7 @@ export const FarmTable = (props: FarmTableProps) => {
                             }}>
                             <ItemTarget inputItem={item} targetGroup={hover_target}>
                                 <ItemDisplay
-                                    src={`${process.env.REACT_APP_ASSETS_URL}${item?.imageUrl}`}
+                                    src={`${import.meta.env.VITE_ASSETS_URL}${item?.imageUrl}`}
                                     size={48}
                                     allItems={allItems}
                                     itemSymbol={item!.symbol}

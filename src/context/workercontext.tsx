@@ -39,7 +39,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
             callback: null,
             worker: null,
             context: {
-                ... DefaultContextData,
+                ...DefaultContextData,
                 cancel: () => this.cancel(true),
                 runWorker: this.runWorker
             },
@@ -51,14 +51,14 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
 
     private readonly clearState = () => {
         this.setState({
-            ... this.state,
+            ...this.state,
             extraCallbacks: [].slice(),
             workerName: null,
             config: null,
             callback: null,
             worker: null,
             context: {
-                ... this.state.context,
+                ...this.state.context,
                 running: false,
                 runningWorker: null
             }});
@@ -96,7 +96,9 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     }
 
     private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean): void => {
+        console.log('Worker provider runWorker enter.');
         if (subscribeIfRunning && this.state.context.running) {
+            console.log('Worker provider runWorker already running.');
             let ecb = [...this.state.extraCallbacks];
             if (!ecb.includes(callback)) {
                 ecb.push(callback);
@@ -107,13 +109,13 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
 
         const worker = this.createWorker();
         this.setState({
-            ... this.state,
+            ...this.state,
             worker,
             workerName,
             config,
             callback,
             context: {
-                ... this.state.context,
+                ...this.state.context,
                 running: true,
                 runningWorker: workerName
             }});
@@ -122,6 +124,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     componentDidUpdate(prevProps: Readonly<WorkerProviderProps>, prevState: Readonly<WorkerProviderState>, snapshot?: any): void {
         const { workerName: name, config, worker } = this.state;
         if (worker && config) {
+            console.log('Worker post message START.');
             worker.postMessage({
                 worker: name,
                 config

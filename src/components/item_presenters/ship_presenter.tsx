@@ -43,7 +43,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     constructor(props: ShipPresenterProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
@@ -156,13 +156,13 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                 <div style={{ display: "flex", flexDirection: "column"}}>
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
                         <img
-                            src={`${process.env.REACT_APP_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+                            src={`${import.meta.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
                             style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
                         />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"16px"}}>
                         {!showIcon && <div
-                            onClick={() => navigate(`/ship_info/?ship=${ship.symbol}`)}
+                            onClick={() => navigate(`/ship/?ship=${ship.symbol}`)}
                             style={{
                                 cursor: 'pointer',
                                 display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: 'center' }}>
@@ -170,7 +170,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 return <img
                                     key={`${bs.skill}_key_${ship.symbol}_${idx}`}
                                     style={{height: '1em'}}
-                                    src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
+                                    src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
                             })}
                             {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />

@@ -238,7 +238,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         if (!globalContext.player.playerData) return [];
         const { crew } = globalContext.player.playerData.player.character;
         let m = crew.filter(c => !!c.immortal).map(m => m.symbol);
-        return [ ... new Set(m) ];
+        return [ ...new Set(m) ];
     }
 
 	function runWorker() {

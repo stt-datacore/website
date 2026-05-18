@@ -41,7 +41,7 @@ export const TableView = () => {
 		(async () => {
 			const newstuff = {} as { [key: string]: string }
 			for (let a of assignments) {
-				let imgurl = `${process.env.REACT_APP_ASSETS_URL}${a.crew.imageUrlPortrait}`;
+				let imgurl = `${import.meta.env.VITE_ASSETS_URL}${a.crew.imageUrlPortrait}`;
 				newstuff[a.name] = await loadAndScaleImage(imgurl, 0.2);
 			}
 			setAssignmentImages(newstuff);
@@ -107,7 +107,7 @@ export const TableView = () => {
 						<Table.Cell width={2} className='iconic' style={{ fontSize: `${compact ? '1em' : '1.1em'}` }}>
 							{ship.traits?.includes(voyageConfig.ship_trait) &&
 								<span style={{ cursor: 'help' }}>
-									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
+									<Popup content='+150 AM' mouseEnterDelay={POPUP_DELAY} trigger={<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />} />
 								</span>
 							}
 						</Table.Cell>
@@ -177,7 +177,7 @@ export const TableView = () => {
 								{!!for_export &&
 									(<React.Fragment>
 										<Table.Cell>
-											<img src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`} style={{height: '48px'}} />
+											<img src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} style={{height: '48px'}} />
 											{/* <AvatarView
 												src={imgdata}
 												mode='crew'
@@ -203,7 +203,7 @@ export const TableView = () => {
 									{!for_export && isQuipped(crew) && (
 										<Popup wide content={renderKwipmentBonus((crew.kwipment as number[][]).map(q => typeof q === 'number' ? q : q[1]), globalContext.core.items, crew.kwipment_prospects, t)} mouseEnterDelay={POPUP_DELAY} trigger={
 											<span style={{ cursor: 'help' }}>
-												<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+												<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/ContinuumUnlock.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 											</span>
 										} />
 									)}
@@ -270,7 +270,7 @@ export const TableView = () => {
 				position='top center'
 				trigger={
 					<span style={{ cursor: 'help' }}>
-						<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+						<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 					</span>
 				}
 			/>
@@ -288,7 +288,7 @@ export const TableView = () => {
 		return (
 			<Popup content={bonusText} mouseEnterDelay={POPUP_DELAY} trigger={
 				<span style={{ cursor: 'help' }}>
-					<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				</span>
 			} />
 		);

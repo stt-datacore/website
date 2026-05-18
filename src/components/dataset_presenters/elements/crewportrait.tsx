@@ -17,7 +17,7 @@ export const CrewPortrait = (props: CrewPortraitProps) => {
 		<React.Fragment>
 			<Image>
 				<div>
-					<img src={`${process.env.REACT_APP_ASSETS_URL}${imageUrlPortrait}`} width='72px' height='72px' />
+					<img src={`${import.meta.env.VITE_ASSETS_URL}${imageUrlPortrait}`} width='72px' height='72px' />
 				</div>
 			</Image>
 			<div>{crew.name}</div>

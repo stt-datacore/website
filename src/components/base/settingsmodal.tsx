@@ -58,7 +58,7 @@ export function settingsToPermalink(page: string, settings: EditObject, fields: 
         }
     }
     let host = "";
-    if (!globalThis.window) host = (process.env.REACT_APP_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (import.meta.env.VITE_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
     return `${host}${page}?${params.toString()}`;
 }
@@ -161,7 +161,7 @@ const SettingsEditorModal = (props: SettingsModalProps) => {
 	const { config, presets, updatePresets, page, fields } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
 	const inputRef = React.createRef<HTMLElement>();
-    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... makeDefaultObject(fields), ... config.current });
+    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ...makeDefaultObject(fields), ...config.current });
     const [showCopied, setShowCopied] = React.useState(false);
 
 	React.useEffect(() => {
@@ -293,7 +293,7 @@ const SettingsEditorModal = (props: SettingsModalProps) => {
                                 style={key === 'name' ? nameStyle : inputStyle}
                                 placeholder="Value"
                                 value={innerSettings[key]}
-                                onChange={(e, { value }) => setCurrent({ ... innerSettings, [key]: value })}>
+                                onChange={(e, { value }) => setCurrent({ ...innerSettings, [key]: value })}>
                             </Input>
                         </div>
                     );

@@ -150,7 +150,7 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 		const renderSkillIcon = (skill: string) => {
 			return (
 				<img
-					src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`}
+					src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 					style={{ height: '1.1em', verticalAlign: 'middle' }}
 					className='invertibleIcon'
 				/>
@@ -344,7 +344,7 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 					<span>
 						<img
-							src={`${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`}
+							src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 							style={{ height: '1.1em', verticalAlign: 'middle' }}
 							className='invertibleIcon'
 						/>

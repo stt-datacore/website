@@ -41,7 +41,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): React.ReactNode =
         padding: "0.25em 1em",
         paddingTop: index < (collection?.needed ?? 0) ? '0.75em' : undefined,
         borderRadius: "5px",
-        ... ((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
+        ...((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
     };
 
     const compactStyle: React.CSSProperties = {
@@ -55,7 +55,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): React.ReactNode =
         padding: "0.25em 1em",
         paddingTop: index < (collection?.needed ?? 0) ? '0.75em' : undefined,
         borderRadius: "5px",
-        ... ((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
+        ...((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
     };
 
     return (<div

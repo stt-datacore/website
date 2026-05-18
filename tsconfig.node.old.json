@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "types": ["node"],
+        "target": "ESNext",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "outDir": "./build",
+        "strict": true,
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "noImplicitAny": false,
+        "skipLibCheck": true,
+        "jsx": "react-jsx",
+        "baseUrl": ".",
+        "paths": {
+            "*": ["node_modules/*"]
+        }
+    },
+    "include": ["scripts/**/*.ts"],
+    "exclude": ["node_modules", "src/**/*.tsx"]
+  }

@@ -272,7 +272,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 					style={{
 						margin: isMobile ? '0 0 0.25em 0' : '0.25em 0 0 0'
 					}}
-					src={`${process.env.REACT_APP_ASSETS_URL}${item.imageUrl}`}
+					src={`${import.meta.env.VITE_ASSETS_URL}${item.imageUrl}`}
 					size={128}
 				/>
 				<div style={{
@@ -387,10 +387,10 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 			{item.type === 8 && !!ship && (
 				<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 					{/* <ShipTarget inputItem={ship} targetGroup='item_info_ships'>
-						<Link to={`/ship_info?ship=${ship.symbol}`}>
+						<Link to={`/ship/${ship.symbol}`}>
 							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center" }}>
 								<ItemDisplay
-									src={`${process.env.REACT_APP_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+									src={`${import.meta.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
 									size={128}
 									rarity={ship.rarity}
 									maxRarity={ship.rarity}
@@ -402,7 +402,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 
 					<ShipPresenter
 						navigate={navigate}
-						openShip={() => navigate('/ship_info?ship='+ship.symbol)}
+						openShip={() => navigate('/ship/'+ship.symbol)}
 						storeName='item_info'
 						hover={false}
 						ship={ship} />
@@ -417,7 +417,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 								<img
 									title={"Chronitons"}
 									style={{ width: "1.5em", margin: 0, padding: 0, marginBottom: "2px" }}
-									src={`${process.env.REACT_APP_ASSETS_URL}atlas/energy_icon.png`}
+									src={`${import.meta.env.VITE_ASSETS_URL}atlas/energy_icon.png`}
 								/>
 								{item.recipe.craftCost.toLocaleString()}
 							</>)

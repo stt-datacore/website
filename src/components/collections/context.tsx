@@ -26,7 +26,7 @@ const DefaultConfig = {
 } as CollectionsToolSettings;
 
 const DefaultData = {
-    ... DefaultConfig,
+    ...DefaultConfig,
     setMapFilter: () => null,
     setSearchFilter: () => null,
     setRarityFilter: () => null,
@@ -66,8 +66,8 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
     const [collectionSettings, setCollectionSettings] = useStateWithStorage(pageId +'/collectionSettings', DefaultConfig, { rememberForever: true });
 
     const data = {
-        ... DefaultConfig,
-        ... collectionSettings,
+        ...DefaultConfig,
+        ...collectionSettings,
         setMapFilter,
         setSearchFilter,
         setRarityFilter,
@@ -117,55 +117,55 @@ export const CollectionFilterProvider = (props: CollectionFiltersProviderProps) 
     }
 
     function setTierFilter(tierFilter: number) {
-        setCollectionSettings({ ... collectionSettings, tierFilter })
+        setCollectionSettings({ ...collectionSettings, tierFilter })
     }
 
     function setOwnedFilter(ownedFilter: string) {
-        setCollectionSettings({ ... collectionSettings, ownedFilter })
+        setCollectionSettings({ ...collectionSettings, ownedFilter })
     }
 
     function setFuseFilter(fuseFilter: string) {
-        setCollectionSettings({ ... collectionSettings, fuseFilter })
+        setCollectionSettings({ ...collectionSettings, fuseFilter })
     }
 
     function setRarityFilter(rarityFilter: number[]) {
-        setCollectionSettings({ ... collectionSettings, rarityFilter })
+        setCollectionSettings({ ...collectionSettings, rarityFilter })
     }
 
     function setSearchFilter(searchFilter: string) {
-        setCollectionSettings({ ... collectionSettings, searchFilter })
+        setCollectionSettings({ ...collectionSettings, searchFilter })
     }
 
 	function setCostMode(costMode: "normal" | "sale") {
-        setCollectionSettings({ ... collectionSettings, costMode })
+        setCollectionSettings({ ...collectionSettings, costMode })
     }
 
     function setMapFilter(mapFilter: CollectionFilterOptions) {
-        setCollectionSettings({ ... collectionSettings, mapFilter })
+        setCollectionSettings({ ...collectionSettings, mapFilter })
     }
 
 	function setShort(short: boolean) {
-        setCollectionSettings({ ... collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
+        setCollectionSettings({ ...collectionSettings, short, mapFilter: { ...collectionSettings.mapFilter, rewardFilter: [] } });
     }
 
 	function setMatchMode(matchMode: CollectionMatchMode) {
-        setCollectionSettings({ ... collectionSettings, matchMode, mapFilter: { ...collectionSettings.mapFilter } })
+        setCollectionSettings({ ...collectionSettings, matchMode, mapFilter: { ...collectionSettings.mapFilter } })
     }
 
 	function setShowIncomplete(showIncomplete: boolean) {
-        setCollectionSettings({ ... collectionSettings, showIncomplete, mapFilter: { ...collectionSettings.mapFilter } })
+        setCollectionSettings({ ...collectionSettings, showIncomplete, mapFilter: { ...collectionSettings.mapFilter } })
     }
 
     function setByCost(byCost: boolean) {
-        setCollectionSettings({ ... collectionSettings, byCost, mapFilter: { ...collectionSettings.mapFilter } })
+        setCollectionSettings({ ...collectionSettings, byCost, mapFilter: { ...collectionSettings.mapFilter } })
 	}
 
 	function setFavorited(favorited: boolean) {
-        setCollectionSettings({ ... collectionSettings, favorited, mapFilter: { ...collectionSettings.mapFilter } })
+        setCollectionSettings({ ...collectionSettings, favorited, mapFilter: { ...collectionSettings.mapFilter } })
 	}
 
     function setHardFilter(hardFilter: boolean) {
-        setCollectionSettings({ ... collectionSettings, hardFilter, mapFilter: { ...collectionSettings.mapFilter } })
+        setCollectionSettings({ ...collectionSettings, hardFilter, mapFilter: { ...collectionSettings.mapFilter } })
 	}
 
 }

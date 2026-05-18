@@ -479,7 +479,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
     function renderItem(item: IEssentialData, isSelected: boolean) {
         let crew = item as CrewMember | PlayerCrew;
         return <div className={'ui segment'} style={{ ...flexCol, height: '100%', gap: '0.5em', backgroundColor: isSelected ? 'royalblue' : undefined }}>
-            <img src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
+            <img src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                 style={{ height: '64px' }}
             />
             <span>{crew.name}</span>

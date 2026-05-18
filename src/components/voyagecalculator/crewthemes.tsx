@@ -184,8 +184,8 @@ export const CrewThemes = (props: CrewThemesProps) => {
 		};
 
 		const topCrew = [] as string[];
-		let trips = [... new Set(props.rosterCrew.map(c => c.ranks.voyTriplet?.name ?? ''))].filter(f => f != '');
-		let ranks = [... new Set(props.rosterCrew.map(c => Object.keys(c.ranks).filter(key => key.startsWith("V_") || key.startsWith("B_"))).flat())];
+		let trips = [...new Set(props.rosterCrew.map(c => c.ranks.voyTriplet?.name ?? ''))].filter(f => f != '');
+		let ranks = [...new Set(props.rosterCrew.map(c => Object.keys(c.ranks).filter(key => key.startsWith("V_") || key.startsWith("B_"))).flat())];
 		for(let trip of trips) {
 			let testCrew = props.rosterCrew.filter(f => f.ranks.voyTriplet?.name === trip);
 			if (!!testCrew?.length) {
@@ -214,7 +214,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			}
 		}
 
-		// let traits = [ ... new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
+		// let traits = [ ...new Set(globalContext.core.crew.map(c => c.traits_named).flat()) ].sort();
 		// console.log(traits);
 
 
@@ -487,7 +487,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 				name: custom.name,
 				description: custom.description,
 				category: custom.category,
-				keywords: ['custom', ... custom.keywords],
+				keywords: ['custom', ...custom.keywords],
 				eligible: eligibleIds.length,
 				onSelect: () => filterByCrewIds(crewIds)
 			} as IThemeOption;
@@ -496,7 +496,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			themes.push(theme);
 		});
 
-		const categories = [ ... new Set(themes.map(c => c.category)) ].sort().map(name => {
+		const categories = [ ...new Set(themes.map(c => c.category)) ].sort().map(name => {
 			return {
 				name,
 				themes: themes.filter(t => t.category === name)
@@ -643,7 +643,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 	const filteredCategories = categories
 		.filter(f => !activeCategories?.length || activeCategories.includes(f.name))
 		.map((cat) => ({
-		... cat,
+		...cat,
 		themes: cat.themes.filter(f => filteredData.some(fs => fs.name === f.name))
 	}));
 

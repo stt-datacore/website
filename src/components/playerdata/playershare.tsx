@@ -113,7 +113,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const [dbidCopied, setDBIDCopied] = React.useState(false);
     if (!playerData) return (<></>);
 
-	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`) : (!!dbidHash ? `${process.env.REACT_APP_DATACORE_URL}profile/?hash=${dbidHash}` : `${process.env.REACT_APP_DATACORE_URL}profile/?dbid=${dbid}`);
+	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`) : (!!dbidHash ? `${import.meta.env.VITE_DATACORE_URL}profile/?hash=${dbidHash}` : `${import.meta.env.VITE_DATACORE_URL}profile/?dbid=${dbid}`);
 	const isUploading = uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate;
 
 	return (
@@ -325,7 +325,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	function uploadProfile(): void {
 		let dbid = strippedPlayerData?.player.dbid;
 		if (dbid) {
-			fetch(`${process.env.REACT_APP_DATACORE_URL}api/profile?dbid=${dbid}&short_crew=1`)
+			fetch(`${import.meta.env.VITE_DATACORE_URL}api/profile?dbid=${dbid}&short_crew=1`)
 				.then((result) => result.json())
 				.then((short_crew: ShortCrew) => {
 					if (setNewCrew) {
@@ -346,7 +346,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	function continueUpload(): void {
 		let jsonBody = JSON.stringify(strippedPlayerData);
 
-		fetch(`${process.env.REACT_APP_DATACORE_URL}api/postProfile`, {
+		fetch(`${import.meta.env.VITE_DATACORE_URL}api/postProfile`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

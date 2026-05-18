@@ -42,7 +42,7 @@ export const HelperMode = (props: HelperModeProps) => {
 
 	return (
 		<Message icon>
-			<img src={`${process.env.REACT_APP_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
+			<img src={`${import.meta.env.VITE_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
 			<Message.Content>
 				<p>{t('shuttle_helper.mode.heading')}:</p>
 				<Form style={{ marginTop: '1em' }}>
@@ -84,7 +84,7 @@ export const HelperMode = (props: HelperModeProps) => {
 			label = 'Shuttle missions and recommendations will NOT be saved by the shuttle helper.';
 		return (
 			<Message icon>
-				<img src={`${process.env.REACT_APP_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
+				<img src={`${import.meta.env.VITE_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
 				<Message.Content>
 					{label}
 				</Message.Content>

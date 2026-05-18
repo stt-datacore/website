@@ -96,7 +96,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	const offersJSX = (
 		<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
-			<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
+			<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
 			<Step.Content>
 				<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
 				{rosterType === 'offers' &&
@@ -121,7 +121,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		if (hasBuyBack) {
 			steps.push(
 				<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
-					<img src={`${process.env.REACT_APP_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
+					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
 					<Step.Content>
 						<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
 						<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
@@ -235,7 +235,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						targetGroup='alerts'
 						/>
 				</div>
-				<img src={`${process.env.REACT_APP_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
+				<img src={`${import.meta.env.VITE_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
 				<Message
 					key={`buyback_${crew.symbol}+${idx}`}
 					style={{
@@ -387,7 +387,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					}
 				});
 			});
-			const crewMap = [ ... new Set((offerData)?.map(c => c.crew).flat()) ];
+			const crewMap = [ ...new Set((offerData)?.map(c => c.crew).flat()) ];
 
 			rosterCrew = rosterizeAllCrew(crewMap, offers);
 			setOfferCrew([...rosterCrew]);
@@ -439,7 +439,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			}
 
 			const crewman = {
-				... oneCrewCopy(crew),
+				...oneCrewCopy(crew),
 				//id: crewmanId++,
 				have: true
 			} as IRosterCrew;
@@ -467,7 +467,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		let crewmanId = 1;
 		(alternativeCrew ?? globalContext.core.crew).forEach(crew => {
 			const crewman = {
-				... oneCrewCopy(crew),
+				...oneCrewCopy(crew),
 				id: crewmanId++,
 				immortal: CompletionState.DisplayAsImmortalStatic,
 				level: playerData?.player.character.max_level ?? 100, // crew.max_level,   /* this property does not exist on core.crew!!! */,
@@ -501,7 +501,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 					min: crew.base_skills[skill].range_min,
 				}
 				crewman.skills ??= {};
-				if (!(skill in crewman.skills)) crewman.skills[skill] = { ... crew.base_skills[skill] };
+				if (!(skill in crewman.skills)) crewman.skills[skill] = { ...crew.base_skills[skill] };
 			}
 
 			if (buffMode === 'player' && playerData && playerBuffs) {

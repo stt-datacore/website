@@ -32,7 +32,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 
 	React.useEffect(() => {
 		if (options.state !== OptionsState.Uninitialized) {
-			setOptions({ ... options, state: OptionsState.Uninitialized });
+			setOptions({ ...options, state: OptionsState.Uninitialized });
 		}
 	}, [pool]);
 
@@ -56,11 +56,11 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 						<Table.Row key={prospectNum}>
 							<Table.Cell>
 								{!targetGroup &&
-								<img width={24} src={`${process.env.REACT_APP_ASSETS_URL}${p.imageUrlPortrait}`} />
+								<img width={24} src={`${import.meta.env.VITE_ASSETS_URL}${p.imageUrlPortrait}`} />
 								}
 								{!!targetGroup &&
 								<CrewTarget targetGroup={targetGroup} inputItem={p as PlayerCrew}>
-									<img width={24} src={`${process.env.REACT_APP_ASSETS_URL}${p.imageUrlPortrait}`} />
+									<img width={24} src={`${import.meta.env.VITE_ASSETS_URL}${p.imageUrlPortrait}`} />
 								</CrewTarget>
 								}
 							</Table.Cell>
@@ -91,7 +91,7 @@ const ProspectPicker = (props: ProspectPickerProps) => {
 					{
 						key: c.symbol,
 						value: c.symbol,
-						image: { avatar: true, src: `${process.env.REACT_APP_ASSETS_URL}${c.imageUrlPortrait}` },
+						image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}${c.imageUrlPortrait}` },
 						text: c.name
 					} as DropDownItem
 				));

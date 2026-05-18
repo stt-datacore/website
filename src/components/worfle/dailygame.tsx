@@ -198,7 +198,7 @@ export const DailyGame = () => {
 			stats.guesses.fail++;
 			stats.streak = 0;
 		}
-		setStats({... stats});
+		setStats({...stats});
 	}
 
 	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): React.ReactNode {
@@ -286,7 +286,7 @@ const DailyShare = (props: DailyShareProps) => {
 	const { gameTime, solveState, evaluatedGuesses, hintCount } = props;
 
 	const GAME_NAME = 'Worfle';
-	const GAME_URL = `${process.env.REACT_APP_DATACORE_URL}crewchallenge`;
+	const GAME_URL = `${import.meta.env.VITE_DATACORE_URL}crewchallenge`;
 
 	const formatEvaluation = (evaluation: number) => {
 		if (evaluation === EvaluationState.Exact)

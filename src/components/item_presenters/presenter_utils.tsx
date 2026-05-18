@@ -82,7 +82,7 @@ export const CollectionDisplay = (props: CollectionDisplayProps) => {
     }
     return (
         <div style={{
-            ... (style ?? {}),
+            ...(style ?? {}),
             cursor: "pointer"
         }}>
             {crew.collections

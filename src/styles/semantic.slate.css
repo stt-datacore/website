@@ -1246,7 +1246,7 @@ legend {
   -webkit-box-direction: normal;
   -ms-flex-direction: row;
   flex-direction: row;
-  background: none !important;
+  background: transparent !important;
   padding: 0px !important;
   border: none !important;
   -webkit-box-shadow: none !important;
@@ -7942,7 +7942,7 @@ i.icon {
 }
 
 i.icon:before {
-  background: none !important;
+  background: transparent !important;
 }
 
 /*******************************
@@ -16099,7 +16099,7 @@ a.ui.basic.black.label:hover {
 --------------------*/
 
 .ui.basic.label {
-  background: none #FFFFFF;
+  background: transparent #FFFFFF;
   border: 1px solid #52575C;
   color: rgba(255, 255, 255, 0.9);
   -webkit-box-shadow: none;
@@ -16110,7 +16110,7 @@ a.ui.basic.black.label:hover {
 
 a.ui.basic.label:hover {
   text-decoration: none;
-  background: none #FFFFFF;
+  background: transparent #FFFFFF;
   color: #fff;
   -webkit-box-shadow: 1px solid #52575C;
   box-shadow: 1px solid #52575C;
@@ -16645,7 +16645,7 @@ ol.ui.list ol li,
 .ui.menu .ui.list .list > .item:before,
 .ui.menu .ui.list > .item:before {
   border: none;
-  background: none;
+  background: transparent;
 }
 
 .ui.menu .ui.list .list > .item:first-child,
@@ -18364,7 +18364,7 @@ ol.ui.horizontal.list li:before,
   margin: 0em;
   padding-left: 0em;
   padding-right: 0em;
-  background: none transparent;
+  background: transparent transparent;
   border-radius: 0px;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -18861,7 +18861,7 @@ ol.ui.horizontal.list li:before,
 --------------------*/
 
 .ui.basic.segment {
-  background: none transparent;
+  background: transparent transparent;
   -webkit-box-shadow: none;
   box-shadow: none;
   border: none;
@@ -23636,7 +23636,7 @@ ol.ui.horizontal.list li:before,
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background: none;
+  background: transparent;
   padding: 0.91428571em 1.14285714em;
   text-transform: none;
   color: rgba(255, 255, 255, 0.9);
@@ -23948,7 +23948,7 @@ ol.ui.horizontal.list li:before,
 /* Menu divider shouldnt apply */
 
 .ui.menu .list .item:before {
-  background: none !important;
+  background: transparent !important;
 }
 
 /*--------------
@@ -24104,7 +24104,7 @@ Floated Menu / Item
 
 .ui.vertical.menu .item {
   display: block;
-  background: none;
+  background: transparent;
   border-top: none;
   border-right: none;
 }
@@ -24160,7 +24160,7 @@ Floated Menu / Item
 }
 
 .ui.vertical.menu .menu .item {
-  background: none;
+  background: transparent;
   padding: 0.5em 1.33333333em;
   font-size: 0.83809524em;
 /*  color: #7A8288; */
@@ -24215,7 +24215,7 @@ Floated Menu / Item
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
   border: none;
-  background: none transparent;
+  background: transparent transparent;
   border-bottom: 1px solid #52575C;
 }
 
@@ -24278,7 +24278,7 @@ Floated Menu / Item
 /* Bottom Vertical Tabular */
 
 .ui.bottom.tabular.menu {
-  background: none transparent;
+  background: transparent transparent;
   border-radius: 0em;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -24287,7 +24287,7 @@ Floated Menu / Item
 }
 
 .ui.bottom.tabular.menu .item {
-  background: none;
+  background: transparent;
   border-left: 1px solid transparent;
   border-right: 1px solid transparent;
   border-bottom: 1px solid transparent;
@@ -24305,7 +24305,7 @@ Floated Menu / Item
 /* Vertical Tabular (Left) */
 
 .ui.vertical.tabular.menu {
-  background: none transparent;
+  background: transparent transparent;
   border-radius: 0em;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -24314,7 +24314,7 @@ Floated Menu / Item
 }
 
 .ui.vertical.tabular.menu .item {
-  background: none;
+  background: transparent;
   border-left: 1px solid transparent;
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
@@ -24332,7 +24332,7 @@ Floated Menu / Item
 /* Vertical Right Tabular */
 
 .ui.vertical.right.tabular.menu {
-  background: none transparent;
+  background: transparent transparent;
   border-radius: 0em;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -24342,7 +24342,7 @@ Floated Menu / Item
 }
 
 .ui.vertical.right.tabular.menu .item {
-  background: none;
+  background: transparent;
   border-right: 1px solid transparent;
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
@@ -24416,7 +24416,7 @@ Floated Menu / Item
 ---------------*/
 
 .ui.secondary.menu {
-  background: none;
+  background: transparent;
   margin-left: -0.38095238em;
   margin-right: -0.38095238em;
   border-radius: 0em;
@@ -24435,7 +24435,7 @@ Floated Menu / Item
   border: none;
   padding: 0.76190476em 0.91428571em;
   margin: 0em 0.38095238em;
-  background: none;
+  background: transparent;
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
   border-radius: 0.3047619rem;
@@ -24452,7 +24452,7 @@ Floated Menu / Item
 .ui.secondary.menu .header.item {
   border-radius: 0em;
   border-right: none;
-  background: none transparent;
+  background: transparent transparent;
 }
 
 /* Image */
@@ -24703,7 +24703,7 @@ Floated Menu / Item
 ---------------*/
 
 .ui.text.menu {
-  background: none transparent;
+  background: transparent transparent;
   border-radius: 0px;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -25408,7 +25408,7 @@ Floated Menu / Item
 .ui.borderless.menu .item:before,
 .ui.borderless.menu .item .menu .item:before,
 .ui.menu .borderless.item:before {
-  background: none !important;
+  background: transparent !important;
 }
 
 /*-------------------
@@ -25604,7 +25604,7 @@ Floated Menu / Item
   left: 50%;
   -webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);
   transform: translateX(-50%) translateY(-50%) rotate(45deg);
-  background: none;
+  background: transparent;
   margin: 0.5px 0em 0em;
   width: 0.60952381em;
   height: 0.60952381em;
@@ -26743,7 +26743,7 @@ Floated Menu / Item
 
   .ui.table:not(.unstackable) tr > th,
   .ui.table:not(.unstackable) tr > td {
-    background: none;
+    background: transparent;
     border: none !important;
     padding: 0.25em 0.75em !important;
     -webkit-box-shadow: none !important;
@@ -27008,7 +27008,7 @@ Floated Menu / Item
 
   .ui[class*="tablet stackable"].table tr > th,
   .ui[class*="tablet stackable"].table tr > td {
-    background: none;
+    background: transparent;
     border: none !important;
     padding: 0.25em 0.75em;
     -webkit-box-shadow: none !important;
@@ -28339,7 +28339,7 @@ Floated Menu / Item
   flex-grow: 1;
   border: none;
   border-top: 1px solid rgba(34, 36, 38, 0.1);
-  background: none;
+  background: transparent;
   margin: 0em;
   padding: 1em 1em;
   -webkit-box-shadow: none;
@@ -28613,7 +28613,7 @@ Floated Menu / Item
   flex-grow: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
   position: static;
-  background: none;
+  background: transparent;
   width: auto;
   margin: 0em 0em;
   padding: 0.75em 1em;
@@ -29320,7 +29320,7 @@ a.ui.card:hover,
 
 .ui.comments .comment {
   position: relative;
-  background: none;
+  background: transparent;
   margin: 0.5em 0em 0em;
   padding: 0.5em 0em 0em;
   border: none;
@@ -29351,7 +29351,7 @@ a.ui.card:hover,
 .ui.comments .comment .comments .comment {
   border: none;
   border-top: none;
-  background: none;
+  background: transparent;
 }
 
 /*--------------
@@ -29608,7 +29608,7 @@ a.ui.card:hover,
   width: 100%;
   padding: 0.22857143rem 0em;
   margin: 0em;
-  background: none;
+  background: transparent;
   border-top: none;
 }
 
@@ -29640,7 +29640,7 @@ a.ui.card:hover,
   font-size: 1.5em;
   width: 100%;
   padding: 0.25em;
-  background: none;
+  background: transparent;
   border: none;
   border-radius: none;
   color: #999;
@@ -29759,7 +29759,7 @@ a.ui.card:hover,
 
 .ui.feed > .event > .content .extra {
   margin: 0.5em 0em 0em;
-  background: none;
+  background: transparent;
   padding: 0em;
   color: rgba(255, 255, 255, 0.9);
 }
@@ -29790,7 +29790,7 @@ a.ui.card:hover,
   display: inline-block;
   font-size: 0.83809524em;
   margin: 0.5em 0em 0em;
-  background: none;
+  background: transparent;
   border: none;
   border-radius: 0;
   -webkit-box-shadow: none;
@@ -29992,7 +29992,7 @@ a.ui.card:hover,
   -webkit-box-flex: 1;
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;
-  background: none;
+  background: transparent;
   margin: 0em;
   padding: 0em;
   -webkit-box-shadow: none;
@@ -30199,7 +30199,7 @@ a.ui.card:hover,
 .ui.items > .item .extra {
   display: block;
   position: relative;
-  background: none;
+  background: transparent;
   margin: 0.5rem 0em 0em;
   width: 100%;
   padding: 0em 0em 0em;
@@ -32772,7 +32772,7 @@ select.ui.dropdown {
 /* Search Dropdown */
 
 .ui.search.dropdown > input.search {
-  background: none transparent !important;
+  background: transparent transparent !important;
   border: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -35037,7 +35037,7 @@ a.ui.nag {
   box-shadow: none;
 }
 
-[data-tooltip][data-inverted]:after .header {
+[data-tooltip][data-inverted] .header::after {
   background-color: none;
   color: #FFFFFF;
 }
@@ -36579,7 +36579,7 @@ a.ui.nag {
 .ui.search > .results .result .image {
   float: right;
   overflow: hidden;
-  background: none;
+  background: transparent;
   width: 5em;
   height: 3em;
   border-radius: 0.25em;
@@ -40311,7 +40311,7 @@ body.pushable > .pusher {
 /*******************************
          Site Overrides
 *******************************/
-/* 
+/*
 .flipscroll-container {
   overflow-x: scroll;
   overflow-y: auto;

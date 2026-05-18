@@ -286,7 +286,7 @@
 // 		if (paste) {
 // 			const fullPaste = paste.getData('text');
 // 			setFullInput(fullPaste);
-// 			setDisplayedInput(`${fullPaste.slice(0, 300)} [ ... ] ${fullPaste.slice(-100)}\n/* Note that DataCore is intentionally displaying less data here to speed up the process */`);
+// 			setDisplayedInput(`${fullPaste.slice(0, 300)} [ ...] ${fullPaste.slice(-100)}\n/* Note that DataCore is intentionally displaying less data here to speed up the process */`);
 // 			event.preventDefault();
 // 			return false;
 // 		}

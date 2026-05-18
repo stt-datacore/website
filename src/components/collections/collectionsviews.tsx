@@ -86,7 +86,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				if (findcol) {
 					const msel = selnum = findcol.id;
 					if (!mapFilter?.collectionsFilter?.includes(msel)) {
-						setMapFilter({ ... (mapFilter ?? {}), collectionsFilter: [msel]});
+						setMapFilter({ ...(mapFilter ?? {}), collectionsFilter: [msel]});
 						window.setTimeout(() => {
 							window.history.replaceState({}, document.title, "/collections");
 							setTabIndex(3);
@@ -313,7 +313,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			playerCollections,
 			playerData: globalContext.player.playerData,
 			filterProps: {
-				mapFilter: offPageSelect ? { ... mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
+				mapFilter: offPageSelect ? { ...mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
 				searchFilter,
 				rarityFilter,
 				fuseFilter,

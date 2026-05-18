@@ -78,7 +78,7 @@ export const CollectionsOverview = () => {
 				{collections.map(colInfo => {
 					const stats = getAllStatBuffs(colInfo);
 					if (COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]) {
-						colInfo = { ...colInfo, ... COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
+						colInfo = { ...colInfo, ...COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
 					}
 
 					if (!collectionMatches(colInfo)) return <></>
@@ -100,7 +100,7 @@ export const CollectionsOverview = () => {
 										</div>
 									</Label>
 									<LazyImage
-										src={`${process.env.REACT_APP_ASSETS_URL}${colInfo.image}`}
+										src={`${import.meta.env.VITE_ASSETS_URL}${colInfo.image}`}
 										size="large"
 										// onError={e => e.target.style.visibility = 'hidden'}
 									/>

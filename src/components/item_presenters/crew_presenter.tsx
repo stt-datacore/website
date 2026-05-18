@@ -435,7 +435,7 @@ export class CrewPresenter extends React.Component<
                     >
                         {!showPortrait && (
                             <img
-                                src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlFullBody}`}
+                                src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`}
                                 style={{
                                     height: hover ? (isMobile ? "15em" : "19em") : (compact ? "14em" : "25em"),
                                     marginRight: "8px",
@@ -444,7 +444,7 @@ export class CrewPresenter extends React.Component<
                         )}
                         {showPortrait && (
                             <img
-                                src={`${process.env.REACT_APP_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 style={{
                                     width: compact ? "5em" : "10em",
                                     marginRight: "8px",

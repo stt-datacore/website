@@ -51,7 +51,7 @@ export const TraitSelectorComponent = (props: TraitSelectorProps) => {
         textAlign: 'center',
         flexWrap: 'wrap',
         gap: "0.25em",
-        ... style ?? {},
+        ...style ?? {},
     }}>
         {traits.map((trait) => {
             let tf = preformatted ? trait : localized.TRAIT_NAMES[trait];

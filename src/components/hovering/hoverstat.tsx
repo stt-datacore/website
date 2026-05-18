@@ -223,7 +223,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             divId: "hoverstat__popover_" + uuid.v4().replace(/-/g, ""),
             touchToggled: false,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
-            boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ... this.props.boxStyle ?? {}} as React.CSSProperties
+            boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ...this.props.boxStyle ?? {}} as React.CSSProperties
         } as TState;
 
         this.hoverDelay = props.activationDelay ?? 0;
@@ -238,7 +238,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     protected propertyChanged = (key: string): void => {
         if (key === 'cancelled') return;
         else if (key === 'displayItem') {
-            this.setState({ ... this.state, displayItem: this.tiny.getRapid('displayItem')});
+            this.setState({ ...this.state, displayItem: this.tiny.getRapid('displayItem')});
         }
         else {
             this.forceUpdate();
@@ -294,7 +294,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
      */
     protected resizer = (e: any) => {
         this.forceUpdate();
-        // this.state = { ... this.state };
+        // this.state = { ...this.state };
         // if (this.currentTarget) {
         //     this.activate(this.currentTarget);
         // }
@@ -403,8 +403,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             y -= modalBounds.y;
         }
 
-        let off = { ... this.targetOffset };
-        let pad = { ... this.windowEdgeMinPadding };
+        let off = { ...this.targetOffset };
+        let pad = { ...this.windowEdgeMinPadding };
 
         if (target.clientWidth >= 64) {
             off.x += ((target.clientWidth / 2));

@@ -12,7 +12,7 @@ export function drawTraits(traits: string[], TRAIT_NAMES: TraitNames, style?: Re
     const flexRow = OptionsPanelFlexRow;
 
     const traitimg = traits.map((trait) => {
-        let trait_icon = `${process.env.REACT_APP_ASSETS_URL}items_keystones_${trait}.png`;
+        let trait_icon = `${import.meta.env.VITE_ASSETS_URL}items_keystones_${trait}.png`;
         return <div style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
             <img src={trait_icon} style={{height: `${iconSize}px`}} />
             {TRAIT_NAMES[trait]}
@@ -48,7 +48,7 @@ export function drawSkills(skills: string[], t: TranslateMethod, combo?: 'and' |
     })();
 
     const skillimg = skills.map((skill) => {
-        let skill_icon = `${process.env.REACT_APP_ASSETS_URL}atlas/icon_${skill}.png`;
+        let skill_icon = `${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
         return <div title={CONFIG.SKILLS[skill]} style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
             <img src={skill_icon} style={{width: `${iconSize}px`}} />
             {!!names && <span>{CONFIG.SKILLS[skill]}</span>}

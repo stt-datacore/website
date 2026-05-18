@@ -169,7 +169,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
             <Table.Row key={index}>
                 <Table.Cell>
                     <div style={{...OptionsPanelFlexRow, justifyContent: 'flex-start', gap: '0.5em'}}>
-                        <Image floated='left' size='mini' src={`${process.env.REACT_APP_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
+                        <Image floated='left' size='mini' src={`${import.meta.env.VITE_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
                         {faction.name}
                     </div>
                 </Table.Cell>

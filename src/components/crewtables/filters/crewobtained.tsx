@@ -19,7 +19,7 @@ export const ObtainedFilter = (props: ObtainedFilterProps) => {
 
 	const [obtainedFilter, setObtainedFilter] = React.useState<string[] | undefined>(undefined as string[] | undefined);
 
-    const availObtained = [... new Set(crew.map(m => m.obtained)) ].sort();
+    const availObtained = [...new Set(crew.map(m => m.obtained)) ].sort();
 
 	const portalFilterOptions = [] as DropdownItemProps[];
 

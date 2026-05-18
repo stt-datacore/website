@@ -319,10 +319,10 @@ export const ShipTable = (props: ShipTableProps) => {
 		if (usages?.length) {
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
 				}
 				else if (usage.battle_mode === 'pvp') {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
 				}
 			}
 		}
@@ -356,7 +356,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	function renderTableRow(ship: Ship, idx?: number) {
 		const navToShip = (ship: Ship) => {
-			navigate('/ship_info?ship=' + ship.symbol);
+			navigate('/ship/' + ship.symbol);
 		}
 
 		let pship = mode === 'all' ? playerShips?.find(f => f.symbol === ship.symbol) : undefined;
@@ -374,7 +374,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				>
 					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 						<ShipTarget inputItem={ship} targetGroup={`${pageId}/ship_hover`}>
-							<img width={48} src={`${process.env.REACT_APP_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+							<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 						</ShipTarget>
 					</div>
 					<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>

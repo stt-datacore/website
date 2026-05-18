@@ -49,7 +49,7 @@ export const RewardFilter = (props: RewardFilterProps) => {
                                 content:
                                     <div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
                                         <img
-                                            src={`${process.env.REACT_APP_ASSETS_URL}${ca.imageUrlPortrait}`}
+                                            src={`${import.meta.env.VITE_ASSETS_URL}${ca.imageUrlPortrait}`}
                                             style={{height:'2em', marginRight:"0.5em"}} />
                                         {ca.name}
                                     </div>

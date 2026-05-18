@@ -58,12 +58,12 @@ const NavigationSettings = <T extends OptionsBase>(props: NavigationSettingsProp
 	}, [props.isOpen]);
 
     const setMobileCurrent = (current: string[]) => {
-        setWorkConf({ ... workConf, mobileCurrent: current });
+        setWorkConf({ ...workConf, mobileCurrent: current });
     }
 
 
     const setCurrent = (current: string[]) => {
-        setWorkConf({ ... workConf, current: current });
+        setWorkConf({ ...workConf, current: current });
     }
 
     const toggleOption = (value: boolean, option: string, mobile: boolean) => {
