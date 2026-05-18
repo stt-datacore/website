@@ -1,6 +1,6 @@
 import { marked } from "marked";
 import React from "react";
-import { Divider, Header } from "semantic-ui-react";
+import { Divider, Header, Message } from "semantic-ui-react";
 import { MarkdownEntry } from "../model/mdpages";
 import { stripFrontMatter } from "../utils/mdpageutils";
 import DataPageLayout from "./page/datapagelayout";
@@ -36,8 +36,14 @@ const MarkdownPage = (props: { node: MarkdownEntry, prefix: string, excerpt?: bo
 	}
 	return (
 		<div key={`${node}_${prefix}___${node.file}`}>
-			<Header>{node.title}</Header>
-			<p>{datePosted.toLocaleDateString()}</p>
+			<Message>
+				<Message.Header>
+					<Header>{node.title}</Header>
+				</Message.Header>
+				<Message.Content>
+					<p>{datePosted.toLocaleDateString()}</p>
+				</Message.Content>
+			</Message>
 			<div dangerouslySetInnerHTML={{ __html: html }} />
 			<Divider />
 		</div>

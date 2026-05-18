@@ -10,6 +10,12 @@ export function stripFrontMatter(md: string, excerpt?: boolean) {
                 return parts[0];
             }
         }
+        else {
+            parts = remainder.split("<!-- end -->");
+            if (parts.length >= 2) {
+                return parts.slice(1).join(" ");
+            }
+        }
         return remainder;
     }
     return md;
