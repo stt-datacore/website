@@ -68,7 +68,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 			},
 			{
 				id: 'crit_potential',
-				title: <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+				title: <img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 				align: 'center',
 				sortField: { id: 'crit_potential.length', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => renderCritPotential(datum as IProficientCrew)
@@ -117,7 +117,7 @@ export const ProficiencyTable = (props: ProficiencyTableProps) => {
 		return (
 			<span title={t('voyage.contests.n_viable_crew', { n: crewCount })}>
 				{skills.map(skill => (
-					<img key={skill} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					<img key={skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				))}
 				{` `}({crewCount})
 			</span>

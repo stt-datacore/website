@@ -92,13 +92,13 @@ export const FTMHof = () => {
 
     React.useEffect(() => {
         let ach_res: AchieverDetails[] | null = null;
-        fetch(`${import.meta.env.VITE_DATACORE_URL}api/cap-achievers`)
+        fetch(`${process.env.VITE_DATACORE_URL}api/cap-achievers`)
             .then(response => response.json())
             .then((input: Achiever[] | null) => {
                 if (!input?.length) input = cached_log;
                 const players = [...new Set(input.map(d => d.player_name))];
                 ach_res = input;
-                return fetch(`${import.meta.env.VITE_DATACORE_URL}api/players-by-name`, {
+                return fetch(`${process.env.VITE_DATACORE_URL}api/players-by-name`, {
                     method: 'POST',
                     headers: {
                         "Content-type": "application/json"
@@ -296,7 +296,7 @@ export const FTMHof = () => {
             return (<Table.Row>
                 <Table.Cell>
                     <div style={{ ...flexRow, justifyContent: 'flex-start', gap: '1em', fontWeight: 'bold', fontSize: '1.2em' }}>
-                        {!!row.avatar && <img style={{ height: '48px' }} src={`${import.meta.env.VITE_ASSETS_URL}${row.avatar}`} />}
+                        {!!row.avatar && <img style={{ height: '48px' }} src={`${process.env.VITE_ASSETS_URL}${row.avatar}`} />}
                         {!!row.dbid && <a href={`/profile?dbid=${row.dbid}`}>{row.player_name}</a>}
                         {!row.dbid && <>{row.player_name}</>}
                     </div>
@@ -350,7 +350,7 @@ export const FTMHof = () => {
             return (<Table.Row>
                 <Table.Cell>
                     <div style={{ ...flexRow, justifyContent: 'flex-start', gap: '1em', fontWeight: 'bold', fontSize: '1.2em' }}>
-                        {!!row.avatar && <img style={{ height: '48px' }} src={`${import.meta.env.VITE_ASSETS_URL}${row.avatar}`} />}
+                        {!!row.avatar && <img style={{ height: '48px' }} src={`${process.env.VITE_ASSETS_URL}${row.avatar}`} />}
                         {!!row.dbid && <a href={`/profile?dbid=${row.dbid}`}>{row.player_name}</a>}
                         {!row.dbid && <>{row.player_name}</>}
                     </div>
@@ -412,7 +412,7 @@ export const FTMHof = () => {
         data.ftms.forEach((crew) => {
             d.push(`<tr>
                 <td>
-                <img src="${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}" height=48 style="height: 48px">
+                <img src="${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}" height=48 style="height: 48px">
                 </td>
                 <td>
                 ${crew.name}
@@ -435,7 +435,7 @@ export const FTMHof = () => {
         data.forEach(row => {
             let atext = '';
             if (row.avatar) {
-                atext = `<img style="height: 48px" height=48 src="${import.meta.env.VITE_ASSETS_URL}${row.avatar}" />`;
+                atext = `<img style="height: 48px" height=48 src="${process.env.VITE_ASSETS_URL}${row.avatar}" />`;
             }
             if (!row.crew) {
                 row.crew = globalContext.core.crew.find(f => f.archetype_id === row.crew_archetype_id);
@@ -445,7 +445,7 @@ export const FTMHof = () => {
                     <td>${atext}</td>
                     <td>${row.player_name}</td>
                     <td>
-                        <img style="height: 48px" height=48 src="${import.meta.env.VITE_ASSETS_URL}${row.crew!.imageUrlPortrait}" />
+                        <img style="height: 48px" height=48 src="${process.env.VITE_ASSETS_URL}${row.crew!.imageUrlPortrait}" />
                     </td>
                     <td>${row.crew!.name}</td>
                     <td>${row.date.toLocaleString()}</td>

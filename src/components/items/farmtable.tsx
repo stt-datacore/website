@@ -309,7 +309,7 @@ export const FarmTable = (props: FarmTableProps) => {
                             }}>
                             <ItemTarget inputItem={item} targetGroup={hover_target}>
                                 <ItemDisplay
-                                    src={`${import.meta.env.VITE_ASSETS_URL}${item?.imageUrl}`}
+                                    src={`${process.env.VITE_ASSETS_URL}${item?.imageUrl}`}
                                     size={48}
                                     allItems={allItems}
                                     itemSymbol={item!.symbol}

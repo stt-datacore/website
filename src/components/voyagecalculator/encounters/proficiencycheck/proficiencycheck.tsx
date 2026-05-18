@@ -65,7 +65,7 @@ export const ProficiencyCheck = (props: ProficiencyCheckProps) => {
 			<React.Fragment>
 				<div>
 					{t('voyage.contests.notes.scores')}{` `}
-					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />{` `}{t('voyage.contests.notes.crit_icon')}
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />{` `}{t('voyage.contests.notes.crit_icon')}
 				</div>
 				<div style={{ margin: '1em 0' }}>
 					<Form>

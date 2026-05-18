@@ -430,7 +430,7 @@ export const CrewExcluder = (props: CrewExcluderProps) => {
 	function renderCrewLabel(crew: IVoyageCrew): React.ReactNode {
 		return (
 			<Label key={crew.id} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center' }}>
-				<Image spaced='right' src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+				<Image spaced='right' src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 				{crew.kwipment?.some(q => q || q[1]) &&
 					<QuipmentPopover ignoreProspects={true} crew={crew} showQuipment={true} />
 				}

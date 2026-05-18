@@ -47,7 +47,7 @@ export interface RetrievalOption {
   key: string | 0;
   value: string | 0;
   text: string;
-  image?: AvatarIcon; // image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}${c.imageUrlPortrait}` }}];
+  image?: AvatarIcon; // image: { avatar: true, src: `${process.env.VITE_ASSETS_URL}${c.imageUrlPortrait}` }}];
 }
 
 // export interface FuseGroup {

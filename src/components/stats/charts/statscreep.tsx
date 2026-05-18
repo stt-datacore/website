@@ -528,7 +528,7 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
 //             return <></>
 //         }
 //         else {
-//             return <div style={{zIndex: 100}}><img src={`${import.meta.env.VITE_ASSETS_URL}${f.imageUrlPortrait}`}
+//             return <div style={{zIndex: 100}}><img src={`${process.env.VITE_ASSETS_URL}${f.imageUrlPortrait}`}
 //                     style={{height: '20px', borderRadius: '10px'}} />
 //                     </div>
 //         }

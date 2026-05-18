@@ -90,17 +90,17 @@ export const ShipPicker = (props: ShipPickerProps) => {
 		{
 			key: c.symbol + c.id.toString(),
 			value: c.id,
-			image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
+			image: { avatar: true, src: `${process.env.VITE_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png` },
 			text: c.name,
 			title: CONFIG.RARITIES[c.rarity].name + ` ${t('ship.ship')} / ${t('ship.attack')} ${c.attack?.toLocaleString()} / ${t('ship.shields')} ${c.shields?.toLocaleString()} / ${t('ship.hull')} ${c.hull?.toLocaleString()}`,
 			content: (
 				<div style={{...flexRow, justifyContent: 'flex-start', gap: '1em', display: 'inline-flex', flexWrap: 'wrap'}}>
-					{/* <img src={`${import.meta.env.VITE_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png`} style={{height: '24px'}} /> */}
+					{/* <img src={`${process.env.VITE_ASSETS_URL}${c.icon?.file.slice(1).replace('/', '_')}.png`} style={{height: '24px'}} /> */}
 					<div style={{width: '10em'}}>
 						{c.name}
 					</div>
 					{!!props.showStaff && c.battle_stations?.map((bs, i) => {
-						return <img key={`${bs.crew?.symbol}_staff_${c.id}_${i}`} src={`${import.meta.env.VITE_ASSETS_URL}${bs.crew?.imageUrlPortrait}`} style={{height:'24px'}} />
+						return <img key={`${bs.crew?.symbol}_staff_${c.id}_${i}`} src={`${process.env.VITE_ASSETS_URL}${bs.crew?.imageUrlPortrait}`} style={{height:'24px'}} />
 					})}
 				</div>
 			)
@@ -246,7 +246,7 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 				<span style={{margin: "0.25em"}}>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())}</span>
 			</div>
 			</>),
-			//image: { avatar: true, src: `${import.meta.env.VITE_ASSETS_URL}atlas/icon_${c}.png` },
+			//image: { avatar: true, src: `${process.env.VITE_ASSETS_URL}atlas/icon_${c}.png` },
 			text: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString()),
 			title: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())
 		} as DropDownItem))
@@ -320,7 +320,7 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 						active={selectedSeats.includes(c)}
                         title={formatTitle ? formatTitle(c, selectedSeats.includes(c)) : CONFIG.SKILLS[c]}
 					>
-						<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${c}.png`} style={{width: "1em"}} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${c}.png`} style={{width: "1em"}} />
 					</Menu.Item>)
 				)}
 			</Menu>

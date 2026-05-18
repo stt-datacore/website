@@ -174,7 +174,7 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     }
 
     async function loadFromApi(): Promise<Gauntlet | undefined> {
-        return fetch(`${import.meta.env.VITE_DATACORE_URL}api/gauntlet_info`)
+        return fetch(`${process.env.VITE_DATACORE_URL}api/gauntlet_info`)
             .then((result) => result.json())
             .then((json) => ({ ...json, fromApi: true, date: moment(new Date()).utc(false).toISOString() } as Gauntlet))
             .catch((e) =>

@@ -41,7 +41,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Estimated chroniton cost{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+							<img src={`${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 						</span>{' '}
 						<b>{totalChronCost}</b>
 						<Popup
@@ -65,7 +65,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 					<p>
 						Build cost{' '}
 						<span style={{ display: 'inline-block' }}>
-							<img src={`${import.meta.env.VITE_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
+							<img src={`${process.env.VITE_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 						</span>{' '}
 						<b>{craftCost}</b>
 					</p>
@@ -93,7 +93,7 @@ class CrewFullEquipTree extends PureComponent<CrewFullEquipTreeProps> {
 												// 	itemSymbol={entry.equipment.symbol}
 												// 	targetGroup='crew_page_items'
 												// 	style={{marginRight: "0.5em"}}
-												// 	src={`${import.meta.env.VITE_ASSETS_URL}${entry.equipment.imageUrl}`}
+												// 	src={`${process.env.VITE_ASSETS_URL}${entry.equipment.imageUrl}`}
 												// 	size={48}
 												// 	maxRarity={entry.equipment.rarity}
 												// 	rarity={entry.equipment.rarity}

@@ -272,7 +272,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 					<div style={{ gridArea: 'icon' }}>
 						<img
 							width={48}
-							src={`${import.meta.env.VITE_ASSETS_URL}${memberIcons[member.dbid] || 'crew_portraits_cm_empty_sm.png'}`}
+							src={`${process.env.VITE_ASSETS_URL}${memberIcons[member.dbid] || 'crew_portraits_cm_empty_sm.png'}`}
 						/>
 					</div>
 					<div style={{ gridArea: 'stats' }}>
@@ -357,7 +357,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		if (!inputFleet || !playerData || !dbids?.length) {
 			return;
 		}
-		fetch(`${import.meta.env.VITE_DATACORE_URL}api/fleet_info`, {
+		fetch(`${process.env.VITE_DATACORE_URL}api/fleet_info`, {
 				method: 'POST',
 				body: JSON.stringify({ dbids: dbids }),
 				headers: {

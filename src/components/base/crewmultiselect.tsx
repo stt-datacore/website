@@ -123,7 +123,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
                     if (!crew) return <></>;
                     return (
                         <Label key={crew.id} style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
-                            <Image spaced='right' src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+                            <Image spaced='right' src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
                             {crew.name}
                             <Icon name='delete' onClick={() => cancelSelection(crew.id)} />
                         </Label>
@@ -159,7 +159,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
             <React.Fragment>
                 <Image>
                     <div style={{ opacity:  1 }}>
-                        <img src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
+                        <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
                     </div>
                     {isSelected && (
                         <Label corner='right' color='green' icon='check' />

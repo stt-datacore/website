@@ -480,7 +480,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	if (!allCrew?.length) {
-		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${import.meta.env.VITE_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
+		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${process.env.VITE_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
 	}
 
 	const rndcrew_pass1 = (allCrew.filter((a: CrewMember) => a.traits_hidden.includes(symbol) && a.max_rarity >= 4) ?? []) as CrewMember[];
@@ -499,7 +499,7 @@ export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	const idx = Math.floor(Math.random() * (rndcrew.length - 1));
 	const q = rndcrew[idx];
 	const img = q.imageUrlFullBody;
-	const fullurl = `${import.meta.env.VITE_ASSETS_URL}${img}`;
+	const fullurl = `${process.env.VITE_ASSETS_URL}${img}`;
 
 	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => Navigate({ to: "/crew/" + q.symbol })} />
 }

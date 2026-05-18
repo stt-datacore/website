@@ -147,7 +147,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget inputItem={crew} targetGroup='collectionsTarget'>
-								<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

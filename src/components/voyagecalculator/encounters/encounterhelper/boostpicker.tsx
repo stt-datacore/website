@@ -292,12 +292,12 @@ function getBoostShort(boost: IChampionBoost): string {
 
 function getTypeImg(type: string): string {
 	if (type === 'voyage_crit_boost')
-		return `${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`;
-	return `${import.meta.env.VITE_ASSETS_URL}atlas/icon_${type}.png`;
+		return `${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`;
+	return `${process.env.VITE_ASSETS_URL}atlas/icon_${type}.png`;
 }
 
 function getConsumableImg(type: string, rarity: number): string {
 	if (type === 'voyage_crit_boost')
-		return `${import.meta.env.VITE_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
-	return `${import.meta.env.VITE_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
+		return `${process.env.VITE_ASSETS_URL}items_consumables_voyage_crit_boost.png`;
+	return `${process.env.VITE_ASSETS_URL}items_consumables_${type.replace('_skill', '')}_consumable_${rarity}.png`;
 }

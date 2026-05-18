@@ -79,7 +79,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 					{!ship && <span>{voyageConfig.max_hp}</span>}
 				</Table.Cell>
 				{!for_export && <Table.Cell className='iconic' textAlign='center'>
-					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 				</Table.Cell>}
 			</Table.Row>
 		);
@@ -101,7 +101,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 										<b>{Math.round(agg)}</b>
 									</Table.Cell>
 									{!for_export && <Table.Cell className='iconic' textAlign='center'>
-										<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+										<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
 									</Table.Cell>}
 								</Table.Row>
 							);
@@ -121,7 +121,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 										</span>
 									</Table.Cell>
 									{!for_export && <Table.Cell className='iconic' textAlign='center'>
-										<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
+										<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${entry}.png`} style={{ height: '1em', verticalAlign: 'middle' }} />
 									</Table.Cell>}
 								</Table.Row>
 							);

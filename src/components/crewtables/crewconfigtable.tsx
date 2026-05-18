@@ -134,7 +134,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
-								<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

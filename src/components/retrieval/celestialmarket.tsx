@@ -268,7 +268,7 @@ export const CelestialMarket = (props: { dbid?: string }) => {
                     alignItems: 'center'
                 }}>
                     <ItemTarget inputItem={{ ...keystone as any, quantity: keystone.owned }} passDirect={true} targetGroup="celestial_market_items">
-                        <img style={{ gridArea: 'img', height: '48px' }} src={`${import.meta.env.VITE_ASSETS_URL}${keystone.imageUrl}`} />
+                        <img style={{ gridArea: 'img', height: '48px' }} src={`${process.env.VITE_ASSETS_URL}${keystone.imageUrl}`} />
                     </ItemTarget>
                     <span style={{ gridArea: 'text' }}>
                         {/* {!!isadded && <Icon name='add circle' color='blue' />} */}

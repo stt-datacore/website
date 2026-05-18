@@ -87,7 +87,7 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
 
     componentDidUpdate(): void {
         if (this.props.inputItem) {
-            const url = `${import.meta.env.VITE_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
+            const url = `${process.env.VITE_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
             if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();

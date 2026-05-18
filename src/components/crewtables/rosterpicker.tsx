@@ -96,7 +96,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	const offersJSX = (
 		<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
-			<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
+			<img src={`${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
 			<Step.Content>
 				<Step.Title>{t('pages.crew_view_modes.current_offers.name')}
 				{rosterType === 'offers' &&
@@ -121,7 +121,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		if (hasBuyBack) {
 			steps.push(
 				<Step active={rosterType === 'buyBack'} onClick={() => setRosterType('buyBack')}>
-					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/honor_currency.png`} style={{ width: '3em', marginRight: '1em' }} />
 					<Step.Content>
 						<Step.Title>{t('pages.crew_view_modes.buyback_well.name')}</Step.Title>
 						<Step.Description>{t('pages.crew_view_modes.buyback_well.description')}</Step.Description>
@@ -235,7 +235,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						targetGroup='alerts'
 						/>
 				</div>
-				<img src={`${import.meta.env.VITE_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
+				<img src={`${process.env.VITE_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
 				<Message
 					key={`buyback_${crew.symbol}+${idx}`}
 					style={{

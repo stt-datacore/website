@@ -89,7 +89,7 @@ export const CollectionDetails = (props: CollectionDetailsProps) => {
 		<div ref={ref}>
 			<div className="ui segment">
 				<Image
-					src={`${import.meta.env.VITE_ASSETS_URL}${image}`}
+					src={`${process.env.VITE_ASSETS_URL}${image}`}
 					fluid
 				/>
 			</div>

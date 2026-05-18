@@ -127,7 +127,7 @@ const ProfilePageLoader = () => {
 		else if (urlParams.has('discord') && window.location.hash !== '') {
 			let discordUsername = urlParams.get('discord');
 			let discordDiscriminator = window.location.hash.replace('#', '');
-			fetch(`${import.meta.env.VITE_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
+			fetch(`${process.env.VITE_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
 				.then(response => {
 					return response.json();
 				})
@@ -164,10 +164,10 @@ const ProfilePageLoader = () => {
 		let hash = v4();
 		let url: string;
 		if (dbidHash) {
-			url = `${import.meta.env.VITE_DATACORE_URL}api/getProfile?dbidhash=${dbidHash}&h=${hash}`
+			url = `${process.env.VITE_DATACORE_URL}api/getProfile?dbidhash=${dbidHash}&h=${hash}`
 		}
 		else {
-			url = `${import.meta.env.VITE_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
+			url = `${process.env.VITE_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
 		}
 		const fetchUrl = url;
 		fetch(fetchUrl)
@@ -543,7 +543,7 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 // 		else if (urlParams.has('discord') && window.location.hash !== '') {
 // 			let discordUsername = urlParams.get('discord');
 // 			let discordDiscriminator = window.location.hash.replace('#', '');
-// 			fetch(`${import.meta.env.VITE_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
+// 			fetch(`${process.env.VITE_DATACORE_URL}api/get_dbid_from_discord?username=${discordUsername}&discriminator=${discordDiscriminator}`)
 // 				.then(response => {
 // 					return response.json();
 // 				})
@@ -576,10 +576,10 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 // 			let url: string;
 
 // 			if (dbidHash) {
-// 				url = `${import.meta.env.VITE_DATACORE_URL}api/getProfile?dbidhash=${dbidHash}&h=${hash}`
+// 				url = `${process.env.VITE_DATACORE_URL}api/getProfile?dbidhash=${dbidHash}&h=${hash}`
 // 			}
 // 			else {
-// 				url = `${import.meta.env.VITE_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
+// 				url = `${process.env.VITE_DATACORE_URL}api/getProfile?dbid=${dbid}&h=${hash}`;
 // 			}
 
 // 			const fetchUrl = url;

@@ -49,7 +49,7 @@ export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: 
                 gridTemplateColumns: "52px 100px",
                 opacity: disabled ? disabledOpacity : undefined
             }}>
-                <img style={{ height: '24px', gridArea: "image", margin: '0 auto' }} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
+                <img style={{ height: '24px', gridArea: "image", margin: '0 auto' }} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${pair[0].skill}.png`} />
                 <div style={{
                     gridArea: "power",
                     margin: "0.5em",
@@ -67,7 +67,7 @@ export const formatPair = (pair: Skill[], style?: React.CSSProperties, debuff?: 
                     gridTemplateColumns: "52px 100px",
                     opacity: disabled ? disabledOpacity : undefined
                 }}>
-                    <img style={{ height: '24px', gridArea: "image", margin: '0 auto' }} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
+                    <img style={{ height: '24px', gridArea: "image", margin: '0 auto' }} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${pair[1].skill}.png`} />
                     <div style={{
                         gridArea: "power",
                         margin: "0.5em",
@@ -212,7 +212,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                                 alignItems: "center"
                             }}>
                                 {opponent?.name}
-                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${import.meta.env.VITE_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
+                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${process.env.VITE_ASSETS_URL}${opponent?.icon?.file ? getIconPath(opponent.icon, true) : 'crew_portraits_cm_empty_sm.png'}`} />
                             </div>
                             <span>
                                 [{opponent?.level}]
@@ -232,7 +232,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                                 alignItems: "center"
                             }}>
                                 {context.player.playerData?.player.character.display_name}
-                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${import.meta.env.VITE_ASSETS_URL}${myIcon}`} />
+                                <img className="ui" style={{ margin: "4px 8px", borderRadius: "3px", height: "16px" }} src={`${process.env.VITE_ASSETS_URL}${myIcon}`} />
                             </div>
                             <span>
                                 [{context.player.playerData?.player.character.level}]
@@ -337,7 +337,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                                     width: "4em",
                                     alignItems: "center"
                                 }}>
-                                <img style={{ margin: "0 0.25em", maxHeight: "1em" }} src={`${import.meta.env.VITE_ASSETS_URL}atlas/anomally_icon.png`} />
+                                <img style={{ margin: "0 0.25em", maxHeight: "1em" }} src={`${process.env.VITE_ASSETS_URL}atlas/anomally_icon.png`} />
                                 {Math.round(crewPairScore?.score ?? 0).toLocaleString()}
                             </div>}
 
@@ -358,7 +358,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                     {"immortal" in crew && crew.have && (!isImmortal(crew) && <span title={"Owned (Not Immortalized)"}>{crew.level}</span>)}
                     {(isOpponent) &&
                         <span>
-                            <img title={"Opponent (" + opponent?.name + ")"} style={{ height: "16px" }} src={`${import.meta.env.VITE_ASSETS_URL}atlas/warning_icon.png`} />
+                            <img title={"Opponent (" + opponent?.name + ")"} style={{ height: "16px" }} src={`${process.env.VITE_ASSETS_URL}atlas/warning_icon.png`} />
                         </span>}
 
                     {!("immortal" in crew) || !(crew.have) && !(isOpponent) &&

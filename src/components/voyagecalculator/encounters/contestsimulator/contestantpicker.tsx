@@ -93,7 +93,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 		columns.push(
 			{
 				id: 'crit_potential',
-				title: <img src={`${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+				title: <img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
 				align: 'center',
 				sortField: { id: 'crit_potential.length', firstSort: 'descending' },
 				renderCell: (datum: IEssentialData) => renderCritPotential(datum as IProficientCrew)
@@ -109,7 +109,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 			id: skill,
 			title: (
 				<React.Fragment>
-					<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 					{!skills.includes(skill) && <Icon name='arrow alternate circle right outline' fitted />}
 				</React.Fragment>
 			),
@@ -149,7 +149,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 				{tfmt('voyage.contests.notes.simulate_contestant', {
 					skills: <>{
 						skills.map(skill => (
-							<img key={skill} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.2em', verticalAlign: 'middle' }} className='invertibleIcon' />
+							<img key={skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.2em', verticalAlign: 'middle' }} className='invertibleIcon' />
 						))
 					}</>
 				})}
@@ -159,7 +159,7 @@ export const ContestantPicker = (props: ContestantPickerProps) => {
 						{` `}
 						{tfmt('voyage.contests.notes.crit_icon', {
 							img: (
-								<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+								<img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 							)
 						})}
 					</span>

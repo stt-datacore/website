@@ -204,7 +204,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                             <img
                                                 onClick={(e) => imageClick(e, crew)}
                                                 width={48}
-                                                src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                                src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                             />
                                         </CrewTarget>
                                     </div>
@@ -283,7 +283,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
                                                         <img
                                                             title={appelate(mskill)}
                                                             key={"skimage" + idx + mskill}
-                                                            src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${mskill}.png`}
+                                                            src={`${process.env.VITE_ASSETS_URL}atlas/icon_${mskill}.png`}
                                                             style={{
                                                                 maxHeight: "1.5em",
                                                                 maxWidth: "1.5em",

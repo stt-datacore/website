@@ -102,7 +102,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 				<meta property='og:type' content='website' />
 				<meta property='og:title' content={`${crew.name} - ${`STT`}`} />
 				<meta property='og:site_name' content='DataCore' />
-				<meta property='og:image' content={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+				<meta property='og:image' content={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 				<meta property='og:description' content={`${crew.name} - ${`STT`}`} />
 				<meta property='og:url' content={`${location}`} />
 			</Helmet>
@@ -152,7 +152,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%",
 								marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
 							}}
-								src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`}
+								src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`}
 								alt={crew.name}
 							/>
 							{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !itemBig) && (<i style={{ textAlign: "center", fontSize: "0.8em", color: "gray" }}>{"(double-click to enlarge)"}</i>)}

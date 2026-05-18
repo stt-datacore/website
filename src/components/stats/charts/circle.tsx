@@ -200,7 +200,7 @@ export const StatsCircleChart = (props: GraphPropsCommon) => {
                 ...style
             }}>
                 {skills.map((skill, i) => {
-                    let icon = `${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
+                    let icon = `${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
                     let name = `${shorts[i]}`;
                     return (
                         <div
