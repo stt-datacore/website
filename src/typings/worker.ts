@@ -1,4 +1,4 @@
-export type WorkerName = 'lots-worker.ts' | 'gauntlet-worker.ts' | 'equipment-worker.ts';
+export type WorkerName = 'lots-worker.ts' | 'gauntlet-worker.ts' | 'equipment-worker.ts' | 'cite-worker.ts';
 
 export class UnifiedWorker {
 
@@ -19,6 +19,9 @@ export class UnifiedWorker {
             }
             else if (this.worker === 'equipment-worker.ts') {
                 this.instance = new Worker(new URL('../workers/equipment-worker.ts', import.meta.url), { type: 'module' });
+            }
+            else if (this.worker === 'cite-worker.ts') {
+                this.instance = new Worker(new URL('../workers/cite-worker.ts', import.meta.url), { type: 'module' });
             }
             else {
                 this.instance = new Worker(new URL('../workers/unified-worker.ts', import.meta.url), { type: 'module' });

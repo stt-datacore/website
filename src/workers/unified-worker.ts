@@ -1,10 +1,7 @@
-/* eslint-disable */
 import voymod from './voymod';
 import transwarp from './transwarp';
 import sporedrive from './sporedrive';
 import VoyagersWorker from './voyagers';
-import Optimizer from './optimizer';
-import BetaTachyon from './betatachyon';
 import CollectionOptimizer from './collectionworker';
 import QuestSolver from './questsolver2';
 import ShipFinder from './shipfinder';
@@ -27,43 +24,6 @@ const voyageEstimateExtended = (config, progress) => {
     });
 };
 
-/**
- *
- * @param {import('../model/player.js').PlayerData} playerData
- * @param {import('../model/crew.js').CrewMember[]} allCrew
- * @returns
- */
-const citeOptimizer = (playerData, allCrew) => {
-    /**
-     * @param {import('../model/player.js').PlayerCrew} c
-     */
-    const isImmortal = (c) => {
-        return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;
-    }
-    return new Promise((resolve, reject) => {
-        if (playerData.citeMode && playerData.citeMode.rarities?.length) {
-            playerData = structuredClone(playerData);
-            playerData.player.character.crew = playerData.player.character.crew
-                .filter((crew) => playerData.citeMode.rarities.includes(crew.max_rarity));
-        }
-        Optimizer.assessCrewRoster(playerData, allCrew);
-        Optimizer.sortVoyageRankings();
-        Optimizer.findCurrentBestCrew();
-        Optimizer.findBestForRarity();
-        Optimizer.findCrewToTrain();
-        Optimizer.findEVContributionOfCrewToTrain();
-        Optimizer.sortCrewToTrain();
-        Optimizer.findBestCitedCrew();
-        Optimizer.findCrewToCite();
-        Optimizer.findEVContributionOfCrewToCite();
-        Optimizer.sortCrewToCite();
-        resolve({
-            crewToCite: Optimizer.rankedCrewToCite,
-            crewToTrain: Optimizer.rankedCrewToTrain
-        });
-    });
-};
-// eslint-disable-next-line no-restricted-globals
 self.onmessage = (message: any) => {
     const postResult = (result: any, inProgress?: boolean) => {
         postMessage({ result, inProgress });
@@ -78,9 +38,7 @@ self.onmessage = (message: any) => {
         'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
-        'citeOptimizer': () => citeOptimizer(message.data.config.playerData, message.data.config.allCrew).then(data => postResult(data, false)),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
-        'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
         'iampicard': () => voymod().then(mod => {
             let result = mod.calculate(JSON.stringify(message.data), res => {
