@@ -116,7 +116,7 @@ function App() {
                             return (
                                 <Route path={`/${page.slug}`} key={`__markdown_slug_${page.slug}`}
                                     element={(
-                                        <MarkdownPage fullpage node={page} prefix="pages" />
+                                        <MarkdownPage no_cache={true} fullpage node={page} prefix="pages" />
                                     )}
                                 />
                             );
