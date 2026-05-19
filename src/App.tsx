@@ -61,7 +61,7 @@ function App() {
 
   populateSlugs(announcements);
   populateSlugs(pages);
-  const announcement = announcements.length ? announcements[0] : undefined;
+  const announcement = announcements.length ? structuredClone(announcements[0]) : undefined;
 
   return (
     <BrowserRouter>

@@ -9,7 +9,7 @@ const Announcements = (props: { announcements: MarkdownEntry[] }) => {
 		<DataPageLayout pageTitle='DataCore Announcements'>
 			<React.Fragment>
 			{announcements.map((node) =>
-				<MarkdownPage key={`__announcement_${node.file}`} node={node} prefix={'announcements'} />
+				<MarkdownPage no_cache={true} key={`__announcement_${node.file}`} node={node} prefix={'announcements'} />
 			)}
 			</React.Fragment>
 		</DataPageLayout>
