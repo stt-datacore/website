@@ -93,18 +93,7 @@ self.onmessage = (message: any) => {
             postResult(result, false);
         }),
         'voypadd': () => VoyPADD.start(message.data, postResult),
-        'gauntlet': () => {
-            const gauntlet = calculateGauntlet(message.data.config);
-            postResult(gauntlet, false);
-        },
         'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
-        'qpower': () => {
-            const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;
-            crew.forEach((crew) => {
-                calcQLots(crew, quipment, buffs, max_qbits, slots, mode);
-            });
-            postResult(crew, false);
-        },
         'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true) || false).then(data => postResult(data, false)),
         'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
         'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))

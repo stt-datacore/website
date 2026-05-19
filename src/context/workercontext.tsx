@@ -3,7 +3,7 @@ import { UnifiedWorker } from "../typings/worker";
 
 export interface IWorkerContext {
     cancel: () => void;
-    runWorker: (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean) => void,
+    runWorker: (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: string) => void,
     running: boolean;
     runningWorker: string | null
 }
@@ -88,14 +88,14 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
         this.cancel(true);
     }
 
-    private readonly createWorker = () => {
+    private readonly createWorker = (file?: string) => {
         this.cancel();
-        const worker = new UnifiedWorker();
+        const worker = new UnifiedWorker(file);
         worker.addEventListener('message', this.workerMessage);
         return worker;
     }
 
-    private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean): void => {
+    private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: string): void => {
         console.log('Worker provider runWorker enter.');
         if (subscribeIfRunning && this.state.context.running) {
             console.log('Worker provider runWorker already running.');
@@ -107,7 +107,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
             return;
         }
 
-        const worker = this.createWorker();
+        const worker = this.createWorker(file);
         this.setState({
             ...this.state,
             worker,
