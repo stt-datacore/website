@@ -121,6 +121,9 @@ export const FTMHof = () => {
                             crew: c
                         }
                     }
+                    else {
+                        return undefined;
+                    }
                     ftm.date = new Date(ftm.date);
                     let p = players.find(player => player.captainName.toLowerCase() == ftm.player_name.toLowerCase());
                     if (p) {
@@ -153,7 +156,7 @@ export const FTMHof = () => {
                     counts[ftm.player_name] ??= 0;
                     counts[ftm.player_name]++;
                     return ftm;
-                });
+                }).filter(f => f !== undefined);
                 for (let ftm of newftms) {
                     ftm.total = counts[ftm.player_name];
                 }
