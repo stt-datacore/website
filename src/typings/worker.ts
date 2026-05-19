@@ -2,7 +2,7 @@
 export class UnifiedWorker {
 
     private instance: Worker | undefined = undefined;
-    private worker: string = '../workers/unified-worker';
+    private worker: string | undefined = undefined;
 
     constructor(worker?: string) {
         if (worker) this.worker = `../workers/${worker}`;
@@ -10,7 +10,12 @@ export class UnifiedWorker {
 
     private ensureWorker() {
         if (!this.instance && typeof window !== 'undefined') {
-            this.instance = new Worker(new URL(this.worker, import.meta.url), { type: 'module' });
+            if (this.worker) {
+                this.instance = new Worker(new URL(this.worker, import.meta.url), { type: 'module' });
+            }
+            else {
+                this.instance = new Worker(new URL('../workers/unified-worker.ts', import.meta.url), { type: 'module' });
+            }
             //this.instance = new Worker(new URL('../workers/unified-worker.js', document.location.origin));
 
             // Error logging.

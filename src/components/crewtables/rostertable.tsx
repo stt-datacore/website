@@ -373,7 +373,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						currentWorker.terminate();
 					}
 
-					let worker = new UnifiedWorker('lots-worker');
+					let worker = new UnifiedWorker('lots-worker.ts');
 					worker.addEventListener('message', (result) => {
 						resolve(result.data.result);
 					});

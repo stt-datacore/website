@@ -159,7 +159,7 @@ export const GauntletView = (props: GauntletViewProps) => {
                 bonusCache,
                 equipmentCache
             } as GauntletCalcConfig;
-            internalRunWorker('gauntlet', workconf, workerResults, undefined, 'gauntlet-worker');
+            internalRunWorker('gauntlet', workconf, workerResults, undefined, 'gauntlet-worker.ts');
         }
         else {
             console.log("outerGauntlet is missing when runWorker() is called.");
