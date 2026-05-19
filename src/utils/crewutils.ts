@@ -12,7 +12,7 @@ import { TinyStore } from './tiny';
 import { demandsPerSlot } from './equipment';
 
 const tiny = TinyStore.getStore(`global_playerSettings`);
-export var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+export let gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
 tiny.subscribe((key) => {
 	if (key === 'noGradeColors') {
 		gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;

@@ -7,6 +7,17 @@ export class UnifiedWorker {
         if (!this.instance && typeof window !== 'undefined') {
             this.instance = new Worker(new URL('../workers/unified-worker', import.meta.url), { type: 'module' });
             //this.instance = new Worker(new URL('../workers/unified-worker.js', document.location.origin));
+
+            // Error logging.
+            // this.instance.onerror = (e) => {
+            //     console.error(e);
+            // }
+            // this.instance.onmessageerror = (e) => {
+            //     console.error(e);
+            // };
+            // this.instance.onmessage = (msg) => {
+            //     console.log(msg);
+            // };
         }
     }
 

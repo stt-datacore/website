@@ -57,7 +57,7 @@ export const ObtainedFilter = (props: ObtainedFilterProps) => {
 				selection
 				multiple={true}
 				options={portalFilterOptions}
-				value={obtainedFilter}
+				value={obtainedFilter || [].slice()}
 				onChange={(e, { value }) => setObtainedFilter(value as string[] | undefined)}
 				closeOnChange
 			/>
