@@ -4,14 +4,17 @@ export class UnifiedWorker {
     private instance: Worker | undefined = undefined;
     private worker: string | undefined = undefined;
 
-    constructor(worker?: string) {
-        if (worker) this.worker = `../workers/${worker}`;
+    constructor(worker?: 'lots-worker.ts' | 'gauntlet-worker.ts') {
+        if (worker) this.worker = `${worker}`;
     }
 
     private ensureWorker() {
         if (!this.instance && typeof window !== 'undefined') {
-            if (this.worker) {
-                this.instance = new Worker(new URL(this.worker, import.meta.url), { type: 'module' });
+            if (this.worker === 'gauntlet-worker.ts') {
+                this.instance = new Worker(new URL('../workers/gauntlet-worker.ts', import.meta.url), { type: 'module' });
+            }
+            else if (this.worker === 'lots-worker.ts') {
+                this.instance = new Worker(new URL('../workers/lots-worker.ts', import.meta.url), { type: 'module' });
             }
             else {
                 this.instance = new Worker(new URL('../workers/unified-worker.ts', import.meta.url), { type: 'module' });
