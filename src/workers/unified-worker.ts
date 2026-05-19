@@ -66,24 +66,6 @@ const citeOptimizer = (playerData, allCrew) => {
         });
     });
 };
-self.addEventListener('error', (event) => {
-  console.error('[worker global error]', {
-    message: event.message,
-    filename: event.filename,
-    lineno: event.lineno,
-    colno: event.colno,
-    error: event.error
-  });
-
-  self.postMessage({
-    type: 'worker-error',
-    message: event.message,
-    filename: event.filename,
-    lineno: event.lineno,
-    colno: event.colno,
-    stack: event.error?.stack
-  });
-});
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = (message: any) => {
     const postResult = (result: any, inProgress?: boolean) => {
