@@ -43,11 +43,11 @@
   "scripts": {
     "build": "node mdgen && tsc -b && vite build",
     "cy:open": "cypress open",
-    "develop": "node mdgen && vite --port=8881",
+    "develop": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",
     "lint": "eslint .",
     "preview": "node mdgen && vite preview",
-    "serve": "node mdgen && vite --port=8881",
-    "start": "node mdgen && vite --port=8881",
+    "serve": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",
+    "start": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",
     "test:e2e": "start-server-and-test develop http://localhost:8881 cy:open",
     "test": "echo \"Write tests!\""
   },

@@ -1,10 +1,11 @@
+export type WorkerName = 'lots-worker.ts' | 'gauntlet-worker.ts' | 'equipment-worker.ts';
 
 export class UnifiedWorker {
 
     private instance: Worker | undefined = undefined;
     private worker: string | undefined = undefined;
 
-    constructor(worker?: 'lots-worker.ts' | 'gauntlet-worker.ts') {
+    constructor(worker?: WorkerName) {
         if (worker) this.worker = `${worker}`;
     }
 
@@ -15,6 +16,9 @@ export class UnifiedWorker {
             }
             else if (this.worker === 'lots-worker.ts') {
                 this.instance = new Worker(new URL('../workers/lots-worker.ts', import.meta.url), { type: 'module' });
+            }
+            else if (this.worker === 'equipment-worker.ts') {
+                this.instance = new Worker(new URL('../workers/equipment-worker.ts', import.meta.url), { type: 'module' });
             }
             else {
                 this.instance = new Worker(new URL('../workers/unified-worker.ts', import.meta.url), { type: 'module' });

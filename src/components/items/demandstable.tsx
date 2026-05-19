@@ -43,7 +43,8 @@ export const DemandsTable = (props: DemandsTableProps) => {
                     if (playerData) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setDisplayData(data.data.result.items);
                 },
-                true
+                true,
+                'equipment-worker.ts'
             )
         }, 500);
     }, [playerData, props.noRender]);

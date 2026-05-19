@@ -1,9 +1,9 @@
 import React from "react";
-import { UnifiedWorker } from "../typings/worker";
+import { UnifiedWorker, WorkerName } from "../typings/worker";
 
 export interface IWorkerContext {
     cancel: () => void;
-    runWorker: (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: 'gauntlet-worker.ts' | 'lots-worker.ts') => void,
+    runWorker: (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: WorkerName) => void,
     running: boolean;
     runningWorker: string | null
 }
@@ -88,14 +88,14 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
         this.cancel(true);
     }
 
-    private readonly createWorker = (file?: 'gauntlet-worker.ts' | 'lots-worker.ts') => {
+    private readonly createWorker = (file?: WorkerName) => {
         this.cancel();
         const worker = new UnifiedWorker(file);
         worker.addEventListener('message', this.workerMessage);
         return worker;
     }
 
-    private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: 'gauntlet-worker.ts' | 'lots-worker.ts'): void => {
+    private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: WorkerName): void => {
         console.log('Worker provider runWorker enter.');
         if (subscribeIfRunning && this.state.context.running) {
             console.log('Worker provider runWorker already running.');

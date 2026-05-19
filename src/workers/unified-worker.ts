@@ -6,12 +6,9 @@ import VoyagersWorker from './voyagers';
 import Optimizer from './optimizer';
 import BetaTachyon from './betatachyon';
 import CollectionOptimizer from './collectionworker';
-import ItemsWorker from './itemsworker';
 import QuestSolver from './questsolver2';
 import ShipFinder from './shipfinder';
-import { calcQLots } from '../utils/equipment';
 import ShipCrewWorker from './shipcrewworker';
-import { calculateGauntlet } from '../utils/gauntlet';
 import VoyPADD from './voypadd';
 
 // This worker can estimate a single lineup from input config
@@ -85,7 +82,6 @@ self.onmessage = (message: any) => {
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
-        'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
         'iampicard': () => voymod().then(mod => {
             let result = mod.calculate(JSON.stringify(message.data), res => {
                 postResult(res, true);
