@@ -65,28 +65,28 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 	const { crew_symbol } = props;
 	const { TRAIT_NAMES, CREW_ARCHETYPES } = context.localized;
 
-	const symbol = crew_symbol;
-	const crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
-
-	crew.immortal = CompletionState.DisplayAsImmortalStatic;
-
-	crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
-	crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;
-	crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
-
-	if (ownedCrew) {
-		let discovered = ownedCrew.filter(item => item.symbol === crew.symbol);
-		if (discovered?.length) {
-			let immortal = 0;
-			for (let c of discovered) {
-				if (c.immortal) {
-					immortal = c.immortal;
-					break;
+	const { crew } = React.useMemo(() => {
+		const symbol = crew_symbol;
+		const crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
+		crew.immortal = CompletionState.DisplayAsImmortalStatic;
+		crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
+		crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;
+		crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
+		if (ownedCrew) {
+			let discovered = ownedCrew.filter(item => item.symbol === crew.symbol);
+			if (discovered?.length) {
+				let immortal = 0;
+				for (let c of discovered) {
+					if (c.immortal) {
+						immortal = c.immortal;
+						break;
+					}
 				}
+				crew.immortal = immortal;
 			}
-			crew.immortal = immortal;
 		}
-	}
+		return { crew, symbol };
+	}, [crew_symbol]);
 
 	const imageDoubleClick = () => {
 		if (window.innerWidth < DEFAULT_MOBILE_WIDTH) return;
