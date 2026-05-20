@@ -67,7 +67,8 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 
 	const { crew } = React.useMemo(() => {
 		const symbol = crew_symbol;
-		const crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
+		let crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
+		if (crew) crew = structuredClone(crew);
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
 		crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
 		crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;

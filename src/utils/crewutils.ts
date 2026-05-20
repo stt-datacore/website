@@ -1314,9 +1314,9 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 }
 
 export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | CrewMember, preferEnglish = true) {
+	let daxname: string;
 	switch(trait) {
 		case "dax":
-			let daxname = '';
 			if (Array.isArray(crewGroup)) {
 				daxname = (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
 			}
@@ -1325,6 +1325,10 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			}
 			if (daxname === 'Ezri') return daxname;
 			return 'Dax';
+		case "una":
+			return "Una";
+		case "number_one":
+			return "Number One";
 		case "tpring":
 			return "T'Pring";
 		case "mbenga":
@@ -1335,7 +1339,6 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			return "M. Burnham";
 		case "mburnham_sr":
 			return "M. Burnham, Sr."
-
 		default:
 			if (Array.isArray(crewGroup)) {
 				return (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
@@ -1377,6 +1380,8 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 			}
 		});
 	}
+	if (variantTraits.includes("una")) variantTraits.push("number_one");
+	else if (variantTraits.includes("number_one")) variantTraits.push("una");
 
 	return variantTraits;
 }
@@ -1647,10 +1652,10 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 		ableSet = Object.keys(map).map(key => Number.parseInt(key));
 	}
 
-	for (var ability of ableSet) {
+	for (let ability of ableSet) {
 		let currmap = map[ability];
 		if (currmap) {
-			for (var stat in currmap) {
+			for (let stat in currmap) {
 				let value = Number.parseInt(stat);
 				let actions = currmap[stat];
 				if (actions) {

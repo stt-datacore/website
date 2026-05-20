@@ -99,7 +99,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			variants.push(addvar);
 		}
 		setVariants([...variants]);
-	}, [sortType]);
+	}, [sortType, traits_hidden, short_name]);
 
 	if (variants.length === 0) return (<></>);
 
