@@ -219,9 +219,29 @@ function listingsToCrew(listings: Listing[], crewList: CrewMember[], offerName?:
                 return split.includes(cname) || (cename && split.includes(cename))
             });
         }
+        let trait = undefined as string | undefined;
+        if (crew.length > 1 && !offer.symbol.includes("event")) {
+            function getTraitMap(traits: string[][]) {
+                let itrat = {} as any;
+                traits.forEach(t => t.forEach(tt => {
+                    itrat[tt] ??= 0;
+                    itrat[tt]++;
+                }));
+                return itrat;
+            }
+            let traits = crew.map(c => c.traits);
+            let traits_hidden = crew.map(c => c.traits_hidden);
+            let normtraits = getTraitMap(traits);
+            let hidetraits = getTraitMap(traits_hidden);
+            let candtraits = Object.entries(normtraits).filter(([key, value]) => value === traits.length).map(([key, value]) => key);
+            let candhidden = Object.entries(hidetraits).filter(([key, value]) => value === traits.length).map(([key, value]) => key);
+            if (candtraits.length === 1) trait = candtraits[0];
+            else if (candhidden.length === 1) trait = candhidden[0];
+        }
         result.push({
             name: offer.offer.titles[0],
             crew,
+            trait,
             description: offer.offer.descriptions.join(" "),
             drop_info: getDropInfo2(offer),
             seconds_remain: offer.secondsRemain || 0
