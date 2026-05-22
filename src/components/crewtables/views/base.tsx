@@ -343,7 +343,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 							crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 							}>
 							<div>
-								{!!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
+								{ !!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
 							</div>
 							{!!crew.immortal && crew.immortal >= -1 &&
 							<div style={{fontSize:"0.8em", minWidth: '4em'}}>
