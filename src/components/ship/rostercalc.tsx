@@ -18,6 +18,7 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import { BattleGraph } from "./battlegraph";
 import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
+import { useParams } from "react-router-dom";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -450,14 +451,16 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }, [currentEvent, ignoreSkills, ignoreTriggers]);
 
+    const { battle_mode: input_battle_mode, rarity: input_rarity } = useParams();
+
     React.useEffect(() => {
         if (typeof window !== 'undefined' && playerShips && !windowLoaded && ship) {
             setWindowLoaded(true);
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has("battle_mode") && urlParams.has('rarity')) {
+            if (input_battle_mode && input_rarity) {
                 try {
-                    let rarity = Number.parseInt(urlParams.get('rarity')!);
-                    let bmode = urlParams.get('battle_mode')! as BattleMode;
+                    let rarity = Number.parseInt(input_rarity);
+                    let bmode = input_battle_mode as BattleMode;
                     if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb_")) {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
@@ -481,8 +484,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                         }
                     }
                 }
-                catch {
-
+                catch (e) {
+                    console.log(e);
                 }
             }
             else {
