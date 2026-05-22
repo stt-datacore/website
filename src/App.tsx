@@ -104,6 +104,7 @@ function App() {
                       <Route path="/retrieval" element={<RetrievalPage />} />
                       <Route path="/seasonal" element={<SeasonalEvent />} />
                       <Route path="/ship/:ship_symbol" element={<ShipInfoPage />} />
+                      <Route path="/ship/:ship_symbol/:battle_mode/:rarity" element={<ShipInfoPage />} />
                       <Route path="/ships" element={<ShipsPage />} />
                       <Route path="/shuttlehelper" element={<ShuttleHelperPage />} />
                       <Route path="/stats" element={<StatsPage />} />

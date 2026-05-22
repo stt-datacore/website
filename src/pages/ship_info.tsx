@@ -137,12 +137,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				Navigate({ to: "/ships" });
 			}
 		}
-	}, [ships, shipKey]);
-
-	React.useEffect(() => {
-		let sk = shipKey;
-		setShipKey("_" + sk);
-	}, [asMaxed]);
+	}, [ships, shipKey, asMaxed]);
 
 	const division = React.useMemo(() => {
 		if (ship) {
@@ -150,6 +145,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 		}
 		return undefined;
 	}, [ship]);
+
 	return (<>
 		<div style={{
 			display: "flex",
