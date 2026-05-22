@@ -36,3 +36,11 @@ jobs:
                 type: now
                 target_branch: beta
                 github_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Merge into Dev
+
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: dev
+                github_token: ${{ secrets.GITHUB_TOKEN }}
