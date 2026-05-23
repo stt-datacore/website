@@ -87,27 +87,29 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	React.useEffect(() => {
 		if (crewStations?.length) {
 			let ch = false;
-			let c = crewStations.length;
+			let newStations = crewStations.slice();
+			let c = newStations.length;
 			for (let i = 0; i < c; i++) {
-				if (crewStations[i] && !crew?.some(c => c.id === crewStations[i]?.id)) {
-					crewStations[i] = undefined;
+				if (newStations[i] && !crew?.some(c => c.id === newStations[i]?.id)) {
+					newStations[i] = undefined;
 					ch = true;
 				}
 			}
 			if (ch) {
-				setCrewStations(crewStations.slice());
+				setCrewStations(newStations);
 			}
 		}
 	}, [crew]);
 
 	React.useEffect(() => {
 		if (ship?.battle_stations) {
-			crewStations.length = ship.battle_stations.length;
+			let newStations = crewStations.slice();
+			newStations.length = ship.battle_stations.length;
 			if (isOpponent && pvpData && ship.battle_stations.every(bs => !!bs.crew)) {
 				setCrewStations(ship.battle_stations.map(bs => bs.crew!));
 			}
 			else {
-				setCrewStations([...crewStations]);
+				setCrewStations(newStations);
 			}
 		}
 		else {
@@ -341,7 +343,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	function getCrew() {
 		if (!context) return [];
-		let results = [] as CrewMember[];
+		let results: CrewMember[];
 		if (isOpponent) {
 			results = context.core.crew.slice();
 		}

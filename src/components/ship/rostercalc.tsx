@@ -1,4 +1,5 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 import { Accordion, Button, Checkbox, Dropdown, DropdownItemProps, Grid, Icon, Input, Label, SemanticICONS } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { WorkerContext } from "../../context/workercontext";
@@ -18,7 +19,6 @@ import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import AdvancedCrewPowerPopup from "./advancedpower";
 import { BattleGraph } from "./battlegraph";
 import { ShipMultiWorkerContext, ShipMultiWorkerStatus } from "./shipmultiworker";
-import { useParams } from "react-router-dom";
 
 export interface RosterCalcProps {
     pageId: string;
@@ -57,7 +57,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const globalContext = React.useContext(GlobalContext);
     const { playerShips } = globalContext.player;
-    const workerContext = React.useContext(WorkerContext);
     const multiWorker = React.useContext(ShipMultiWorkerContext);
     const { running, runWorker, cancel } = multiWorker;
     //const { running, runWorker, cancel } = workerContext;
@@ -138,16 +137,17 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             setAdvancedPowerOpen(true);
         }
         else {
+            let aps = {...advancedPowerSettings };
             internalSetPowerDepth(value);
-            if (!advancedPowerSettings.ability_exclusions?.length) {
-                advancedPowerSettings.ability_exclusions = Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => false);
+            if (!aps.ability_exclusions?.length) {
+                aps.ability_exclusions = Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => false);
             }
             setAdvancedPowerSettings({
                 accuracy_depth: value,
                 evasion_depth: value,
                 attack_depth: value,
                 ability_depths: Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).map(m => m === '2' ? null : value),
-                ability_exclusions: [...advancedPowerSettings.ability_exclusions]
+                ability_exclusions: [...aps.ability_exclusions]
             });
         }
     }
@@ -225,8 +225,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const worker_sel = [] as DropdownItemProps[];
     let work_total = navigator?.hardwareConcurrency ?? 1;
     for (let i = 1; i <= work_total; i++) {
-        let bgcolor = '';
-        let fgcolor = '';
+        let bgcolor: string;
+        let fgcolor: string;
         if (i <= work_total / 2) {
             bgcolor = 'darkgreen';
             fgcolor = 'white';
@@ -454,9 +454,8 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const { battle_mode: input_battle_mode, rarity: input_rarity } = useParams();
 
     React.useEffect(() => {
-        if (typeof window !== 'undefined' && playerShips && !windowLoaded && ship) {
+        if (!windowLoaded && playerShips && ship) {
             setWindowLoaded(true);
-            const urlParams = new URLSearchParams(window.location.search);
             if (input_battle_mode && input_rarity) {
                 try {
                     let rarity = Number.parseInt(input_rarity);
@@ -477,9 +476,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             }
 
                             setTimeout(() => {
-                                //if (crewStations?.length == f.ship.battle_stations?.length && f.ship.battle_stations?.some((bs, idx) => f.ship.battle_stations![idx].crew?.symbol != crewStations[idx]?.symbol)) {
-                                    setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
-                                //}
+                                setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
                             });
                         }
                     }
@@ -492,7 +489,23 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 setTimeout(() => staffToCurrentBattleMode());
             }
         }
-    }, [ship]);
+    }, [ship, windowLoaded]);
+
+    React.useEffect(() => {
+        if (windowLoaded && input_battle_mode && input_rarity) {
+            let rarity = Number.parseInt(input_rarity);
+            let bmode = input_battle_mode as BattleMode;
+            if (bmode.startsWith('fbb')) {
+                let boss = AllBosses.find(f => f.rarity === rarity);
+                if (boss) {
+                    bmode = `fbb_${boss.id}`;
+                }
+            }
+            if (bmode !== battleMode) {
+                setWindowLoaded(false);
+            }
+        }
+    }, [input_battle_mode, input_rarity]);
 
     React.useEffect(() => {
         updateActiveCrew();
@@ -500,12 +513,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     React.useEffect(() => {
         if (crew?.length && ship.battle_stations?.length) {
-            let max_rarity = ship.rarity;
-            let boss = bossFromBattleMode(battleMode);
-            let mx = getBosses(ship)?.find(f => f.rarity === boss?.rarity && f.symbol === boss?.symbol)?.rarity;
-            if (mx) max_rarity = mx;
-            if (max_rarity > 5) max_rarity = 5;
-            let crewcount = prefilterCrew(max_rarity).length;
+            let crewcount = prefilterCrew().length;
             setCrewEstimate(crewcount);
         }
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
@@ -1081,7 +1089,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             if (battleMode.startsWith('fbb') && !battleConfig.opponent) return;
             results.length = 0;
             let ccrew = undefined as PlayerCrew | CrewMember | undefined;
-            const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew(max_rarity);
+            const pfcrew = current ? [] as PlayerCrew[] : prefilterCrew();
             if (!current && battleMode === 'skirmish' && chosenCrew?.length) {
                 ccrew = eventCrew?.find(f => f.id === chosenCrew[0]);
                 if (!pfcrew.some(c => c.id === chosenCrew[0])) {
@@ -1259,12 +1267,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         }
     }
 
-    function prefilterCrew(max_rarity?: number) {
+    function prefilterCrew() {
         const pref_order = fbb_mode ? [1, 2, 5, 0, 3, 4, 6, 7, 8, 9, 10] : [1, 5, 0, 2, 3, 4, 6, 7, 8, 9, 10];
         const bonus_pref = [0, 2, 1, 3];
 
-        max_rarity ??= ship.rarity ?? 5;
-        if (max_rarity > 5) max_rarity = 5;
         const min_rarity = minRarity ?? 1;
         const shipDiv = getShipDivision(ship.rarity);
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
@@ -1362,7 +1368,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         })
         .concat(appliedProspects)
         .sort((a, b) => {
-            let r = 0;
+            let r: number;
             // check durations
             if (fbb_mode) {
                 r = a.action.cycle_time - b.action.cycle_time;
