@@ -115,6 +115,11 @@ export interface CrewMember extends QuipmentScores {
     flavor: string;
 	flavor_english?: string;
     archetype_id: number;
+
+    // Occasionally, some crew silently release to the game without being in the portal.
+    // We can track those with this number.
+    silent_id?: number;
+
     max_rarity: number;
     equipment_slots: EquipmentSlot[];
     voice_over?: string;
