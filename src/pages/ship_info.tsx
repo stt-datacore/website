@@ -38,6 +38,7 @@ const ShipInfoPage = () => {
 	);
 
 	function navToShip(ship: string) {
+		if (ship === ship_symbol) return;
 		navigate(`/ship/${ship}`)
 	}
 }
