@@ -473,7 +473,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                             if (bmode !== battleMode) {
                                 setBattleMode(bmode);
                             }
+                            console.log("Set Crew Stations", f.ship.battle_stations);
                             setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
+                        }
+                        else {
+                            console.log("Ship not found");
                         }
                     }
                 }
@@ -482,6 +486,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
             else {
+                console.log("Staff current battle mode.");
                 staffToCurrentBattleMode();
             }
         }
