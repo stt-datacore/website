@@ -460,7 +460,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 try {
                     let rarity = Number.parseInt(input_rarity);
                     let bmode = input_battle_mode as BattleMode;
-                    if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb_")) {
+                    if (bmode === 'pvp' || bmode === 'skirmish' || bmode.startsWith("fbb")) {
                         let ships = getShipsInUse(globalContext.player);
                         const f = ships.find(f => f.ship.symbol === ship.symbol && f.battle_mode === bmode && f.rarity === rarity);
                         if (f) {
@@ -470,14 +470,10 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                                     bmode = `fbb_${boss.id}`;
                                 }
                             }
-
                             if (bmode !== battleMode) {
                                 setBattleMode(bmode);
                             }
-
-                            setTimeout(() => {
-                                setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
-                            });
+                            setCrewStations(f.ship.battle_stations!.map(bs => bs.crew as PlayerCrew));
                         }
                     }
                 }
@@ -486,7 +482,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
                 }
             }
             else {
-                setTimeout(() => staffToCurrentBattleMode());
+                staffToCurrentBattleMode();
             }
         }
     }, [ship, windowLoaded]);
