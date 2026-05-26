@@ -1,8 +1,8 @@
 name: sync-beta
 run-name: Sync Beta Full Merge
 on:
-  pull_request:
-    types: [opened, ready_for_review, reopened, synchronize, labeled]
+  # pull_request:
+  #   types: [opened, ready_for_review, reopened, synchronize, labeled]
 
   push:
     branches: [ 'master' ]
