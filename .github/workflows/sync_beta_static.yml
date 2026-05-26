@@ -1,8 +1,8 @@
 name: sync-beta-static
 run-name: Sync Beta Static Files
 on:
-  pull_request:
-    types: [opened, ready_for_review, reopened, synchronize, labeled]
+  # pull_request:
+  #   types: [opened, ready_for_review, reopened, synchronize, labeled]
 
   push:
     branches: [ 'master' ]
