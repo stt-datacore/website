@@ -45,7 +45,7 @@ export const VoyageHOF = (props: VoyageHOFProps) => {
 
     React.useEffect(() => {
         if (crew_symbols) {
-            var symbols = crew_symbols.split(',');
+            let symbols = crew_symbols.split(',');
             if (symbols.every(sym => allCrew.some(c => c.symbol === sym))) {
                 setCrewSymbol(symbols);
                 return;
@@ -379,7 +379,7 @@ export const VoyageHOF = (props: VoyageHOFProps) => {
                 let stats = [...NiceNamesForPeriod];
 
                 while (stats.length) {
-                    rows.push(stats.splice(0, isMobile ? 1 : 2).map(p => { return { stats: (voyageStats as Object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
+                    rows.push(stats.splice(0, isMobile ? 1 : 2).map(p => { return { stats: (voyageStats as object)[p] as VoyageStatEntry[], key: p as VoyageHOFPeriod } } ))
                 }
 
                 setVoyageStats(voyageStats);
