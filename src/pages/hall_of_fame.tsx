@@ -6,7 +6,9 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { Navigate, NavigateFunction, NavigateOptions, To, useNavigate, useParams } from 'react-router-dom';
 
-type HallOfFamePageProps = {};
+type HallOfFamePageProps = {
+	pageId?: string;
+};
 
 type HallOfFamePageState = {
 	navLink?: string,
