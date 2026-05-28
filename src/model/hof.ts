@@ -65,6 +65,7 @@ export interface VoyageStatEntry {
     seats: VoyageStatSeat[];
     quipmentCounts?: { [key: string]: number };
     quipStats?: CrewQuipStats[];
+    voyageTypes?: { [key: string]: number };
 }
 
 export type VoyageHOFPeriod = "allTime" | "lastSevenDays" | "lastThirtyDays" | "lastSixMonths" | "lastNinetyDays" | "oneYear";
