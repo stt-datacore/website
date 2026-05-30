@@ -318,7 +318,7 @@ export interface ConstituentWeights {
     velocity: number
     sko_absolute: number;
     sko_ambivalent: number;
-    donut?: number;
+    donut: number;
     gauntlet_plus_weights: GauntletPlusWeights;
     base_plus_weights: BasePlusWeights;
     voyage_plus_weights: VoyagePlusWeights;
@@ -408,6 +408,8 @@ export interface RankScoring {
     am_seating: number;
     collections: number;
     crit: number;
+    donut: number;
+    donut_rank: number;
     gauntlet_plus_rank: number;
     gauntlet_plus: number;
     gauntlet: number;
