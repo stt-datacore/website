@@ -422,6 +422,8 @@ export interface IterateBattleConfig {
 
 export type EffectMode = 'all' | 'actions' | 'non-actions';
 
+export type ResetQueue = { index: number, time: number };
+
 export interface EffectData {
     ship: Ship;
     boss: Ship;
@@ -529,6 +531,9 @@ export function iterateBattle(
         let oppo_origshield = oppo_shields;
         let oppo_shield_regen = (work_opponent?.shield_regen ?? ship.shield_regen) / rate;
 
+        let resets = [] as ResetQueue[];
+        let oppo_resets = [] as ResetQueue[];
+
         const attacks = [] as AttackInstant[];
         crew.forEach(c => c?.action && c.id ? c.action.crew = c.id! : null);
         if (work_opponent) oppo_crew?.forEach(c => c.action.crew = c.id!);
@@ -576,14 +581,16 @@ export function iterateBattle(
             }
             else {
                 if (oppo) {
-                    o_static_sim_hitter += ((o_now_speed * chance) / rate);
+                    // Add 2 seconds for attack effect to play first
+                    o_static_sim_hitter += ((o_now_speed * chance) / rate) - (2 / rate);
                     if (o_static_sim_hitter >= (1 / o_now_speed) - ((1 / o_now_speed) * (opponent_variance ?? 0))) {
                         o_static_sim_hitter = 0;
                         return true;
                     }
                 }
                 else {
-                    static_sim_hitter += ((now_speed * chance) / rate);
+                    // Add 2 seconds for attack effect to play first
+                    static_sim_hitter += ((now_speed * chance) / rate) - (2 / rate);
                     if (static_sim_hitter >= (1 / now_speed)) {
                         static_sim_hitter = 0;
                         return true;
@@ -879,7 +886,7 @@ export function iterateBattle(
                         }
                     }
                     else if (!oppo && !oppo_cloaked) {
-                        state_time = state_time.map((a, i) => active[i] ? a : 0);
+                        o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
                     }
                 }
                 else if (action.ability?.type === 10) {
