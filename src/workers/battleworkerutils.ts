@@ -882,11 +882,27 @@ export function iterateBattle(
                             }
                         }
                         else {
-                            state_time = state_time.map((a, i) => active[i] ? a : 0);
+                            state_time = state_time.map((a, i) => {
+                                if (!active[i]) {
+                                    if (allactions[i].charge_phases) {
+                                        resetAction(allactions[i]);
+                                    }
+                                    return 0;
+                                }
+                                return a;
+                            });
                         }
                     }
                     else if (!oppo && !oppo_cloaked) {
-                        o_state_time = o_state_time?.map((a, i) => o_active![i] ? a : 0);
+                        o_state_time = o_state_time?.map((a, i) => {
+                            if (!o_active![i]) {
+                                if (oppo_actions![i].charge_phases) {
+                                    resetAction(oppo_actions![i]);
+                                }
+                                return 0;
+                            }
+                            return a;
+                        });
                     }
                 }
                 else if (action.ability?.type === 10) {
