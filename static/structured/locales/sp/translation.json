@@ -1915,6 +1915,7 @@
             "average_difference": "Diferencia promedio",
             "difference": "Diferencia",
             "moving_average": "Media móvil",
+            "moving_average_difference": "Diferencia de medias móviles",
             "resource": "Recurso",
             "timestamp": "Marca de tiempo",
             "total_difference": "Diferencia total"
