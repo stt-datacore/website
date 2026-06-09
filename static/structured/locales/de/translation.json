@@ -1905,6 +1905,7 @@
             "average_difference": "Durchschnittlicher Unterschied",
             "difference": "Differenz",
             "moving_average": "Gleitender Durchschnitt",
+            "moving_average_difference": "Differenz der gleitenden Durchschnitte",
             "resource": "Ressource",
             "timestamp": "Zeitstempel",
             "total_difference": "Gesamtdifferenz"
