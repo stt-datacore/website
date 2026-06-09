@@ -7,6 +7,7 @@ export interface ResourceData {
     resource: string,
     amount: number,
     moving_average: number,
+    moving_average_difference: number,
     difference: number,
     timestamp: Date,
     average_difference: number,
