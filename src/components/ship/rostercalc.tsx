@@ -1272,7 +1272,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         const pref_order = fbb_mode ? [1, 2, 5, 0, 3, 4, 6, 7, 8, 9, 10] : [1, 5, 0, 2, 3, 4, 6, 7, 8, 9, 10];
         const bonus_pref = [0, 2, 1, 3];
 
-        const min_rarity = minRarity ?? 1;
         const shipDiv = getShipDivision(ship.rarity);
         const maxvalues = [0, 0, 0, 0, 0].map(o => [0, 0, 0, 0]);
         const maxabilityvalues = [0, 0, 0, 0, 0].map(o => Object.keys(CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE).slice(0, 9).map(m => 0));
@@ -1286,7 +1285,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
         });
 
         const results = crew.filter((crew) => {
-            if (min_rarity && crew.max_rarity < min_rarity) return false;
             if (onlyImmortal && ("immortal" in crew && !crew.immortal)) return false;
             if (!fbb_mode && maxInitTime !== undefined) {
                 if (crew.action.initial_cooldown > maxInitTime) return false;
@@ -1304,15 +1302,17 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
             //     if (!ability_types.some(at => crew.action.ability?.type === at)) return false;
             // }
 
+            let pass = true;
+            if (battleMode.startsWith("fbb_")) {
+                let n = Number(battleMode.slice(4));
+                if (!getBosses(ship, crew).some(boss => boss.id === n)) pass = false;
+            }
+            else if (battleMode === 'pvp') {
+                if (!getCrewDivisions(crew.max_rarity).includes(shipDiv)) pass = false;
+            }
+            if (!pass) return false;
+
             if (crew.action.ability) {
-                let pass = true;
-                if (battleMode.startsWith("fbb_")) {
-                    let n = Number(battleMode.slice(4));
-                    if (!getBosses(ship, crew).some(boss => boss.id === n)) pass = false;
-                }
-                else if (battleMode === 'pvp') {
-                    if (!getCrewDivisions(crew.max_rarity).includes(shipDiv)) pass = false;
-                }
                 if (pass) {
                     if (maxvalues[crew.max_rarity - 1][crew.action.bonus_type] < crew.action.bonus_amount) {
                         maxvalues[crew.max_rarity - 1][crew.action.bonus_type] = crew.action.bonus_amount;
