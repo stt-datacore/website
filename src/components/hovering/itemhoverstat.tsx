@@ -16,9 +16,11 @@ export interface ItemHoverStatProps extends HoverStatProps {
     navigate?: (link: string) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ItemHoverStatState extends HoverStatState<EquipmentItem> {
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ItemTargetProps extends HoverStatTargetProps<EquipmentItem | undefined> {
 }
 
@@ -87,7 +89,9 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
 
     componentDidUpdate(): void {
         if (this.props.inputItem) {
-            const url = `${process.env.VITE_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
+            let imgname = this.props.inputItem.icon?.file.slice(1).replace('/', '_');
+            if (imgname === undefined) return;
+            const url = `${process.env.VITE_ASSETS_URL}${imgname}.png`;
             if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();

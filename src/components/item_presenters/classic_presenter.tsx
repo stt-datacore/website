@@ -79,12 +79,12 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 	const fields = props.fields ?? defaultFields;
 	const elements = [] as React.ReactNode[];
-	if (!crew.cap_achiever && myCrew) {
-		let fc = myCrew.find(f => f.symbol === crew.symbol);
-		if (fc?.cap_achiever) {
-			crew.cap_achiever = fc.cap_achiever;
-		}
-	}
+	// if (!crew.cap_achiever && myCrew) {
+	// 	let fc = myCrew.find(f => f.symbol === crew.symbol);
+	// 	if (fc?.cap_achiever) {
+	// 		crew.cap_achiever = fc.cap_achiever;
+	// 	}
+	// }
 	fields.forEach(field => {
 		const fieldOverride = props.fieldOverrides?.find(fo => fo.field === field);
 		if (fieldOverride) {
@@ -92,7 +92,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 		}
 		else {
 			if (field === 'collections')
-				elements.push(<p><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></p>);
+				elements.push(<div key={`crewpage_col_wrap_${crew.symbol}`}><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></div>);
 
 			if (field === 'crew_demands')
 				elements.push(<CrewDemands key={field} crew={crew} />);

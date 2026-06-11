@@ -365,7 +365,7 @@ export function download(filename: string, text: any) {
 	if (isText) {
 		downloadData(`data:${mimeType},${encodeURIComponent(text)}`, filename);
 	} else {
-		var a = new FileReader();
+		let a = new FileReader();
 		a.onload = (e) => {
 			if (e.target && e.target.result) downloadData(e.target.result as string, filename);
 		};
@@ -1123,7 +1123,7 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 	action.charge_phases.forEach(cp => {
 		// After {{seconds}}s, {{action}}
 		charge_time += cp.charge_time;
-		let phaseDescription = '';
+		let phaseDescription: string;
 
 		if (t) {
 			phaseDescription = t(`ship.charge_phase.after_seconds${short ? '_short' : ''}`, { seconds: `${charge_time}` });
@@ -1325,10 +1325,10 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			}
 			if (daxname === 'Ezri') return daxname;
 			return 'Dax';
-		case "una":
-			return "Una";
-		case "number_one":
-			return "Number One";
+		// case "una":
+		// 	return "Una";
+		// case "number_one":
+		// 	return "Number One";
 		case "tpring":
 			return "T'Pring";
 		case "mbenga":
@@ -1380,8 +1380,8 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 			}
 		});
 	}
-	if (variantTraits.includes("una")) variantTraits.push("number_one");
-	else if (variantTraits.includes("number_one")) variantTraits.push("una");
+	// if (variantTraits.includes("una")) variantTraits.push("number_one");
+	// else if (variantTraits.includes("number_one")) variantTraits.push("una");
 
 	return variantTraits;
 }
