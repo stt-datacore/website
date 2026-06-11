@@ -1,16 +1,16 @@
 # STT DataCore Beta Website Build Pipeline
 
-name: Website CI Deploy Dev
+name: Website CI Update Static Files Dev
 
 # Controls when the action will run. Triggers the workflow on push
 # events but only for the master branch
 on:
   push:
     branches: [ dev ]
-#   paths-ignore: [ static/structured/** ]
+    paths: [ static/structured/** ]
 
   workflow_run:
-    workflows: ["sync-dev"]
+    workflows: ["sync-dev-static"]
     types:
       - completed
 
@@ -32,18 +32,6 @@ jobs:
         with:
           node-version: '22'
 
-      # Runs a single command using the runners shell
-      - name: Build project
-        env:
-          VITE_DATACORE_URL: https://dev.datacore.app/
-          VITE_ASSETS_URL: https://assets.datacore.app/
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-          CI: false
-        run: |
-          yarn
-          npm run build
-
       # Install our SSH Key into build server
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -54,7 +42,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Rsync over ssh
         run: |
-          rsync -avz --progress --delete ./build/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/
+          rsync -avz --progress ./static/structured/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/dev-site/structured
 
       # Clear the cloudflare cache
       - name: Cloudflare Cache Cleaner

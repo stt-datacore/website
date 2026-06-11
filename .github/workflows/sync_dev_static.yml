@@ -1,5 +1,5 @@
-name: sync-beta-static
-run-name: Sync Beta Static Files
+name: sync-dev-static
+run-name: Sync Dev Static Files
 on:
   # pull_request:
   #   types: [opened, ready_for_review, reopened, synchronize, labeled]
@@ -10,7 +10,7 @@ on:
 
 jobs:
     merge-master:
-        name: Merge master into beta on autosync or PR merge
+        name: Merge master into dev on autosync or PR merge
         runs-on: ubuntu-latest
         # if: |
         #   github.ref_name == 'master' ||
@@ -29,11 +29,10 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 path: website
 
-            - name: Merge into Beta
+            - name: Merge into Dev
 
               uses: devmasx/merge-branch@master
               with:
                 type: now
-                target_branch: beta
+                target_branch: dev
                 github_token: ${{ secrets.GITHUB_TOKEN }}
-
