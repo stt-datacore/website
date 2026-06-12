@@ -445,12 +445,6 @@ export function mergeListsOneToMany<T, U extends T>(onelist: T[], manylist: U[],
 		}
 		results.push(res);
 	}
-	// results.sort((a, b) => {
-	// 	let ax = orgList.findIndex(fi => fi === a.token);
-	// 	let bx = orgList.findIndex(fi => fi === b.token);
-	// 	return ax - bx;
-	// });
-
 	return results;
 }
 
@@ -537,7 +531,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	}
 	//let ccc = null as any;
 	if (!crew.preview) {
-		inroster = (knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal === undefined || c.immortal <= 0) && c.archetype_id === crew.archetype_id) ?? []));
+		inroster = (knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal === undefined || c.immortal <= 0) && c.archetype_id === crew.archetype_id && c.symbol === crew.symbol) ?? []));
 		//ccc = playerData?.player?.character?.crew?.filter(fc => fc.symbol === 'troi_lwaxana_fascination_crew');
 	}
 	else {
@@ -714,14 +708,11 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
 	let cidx = -1;
-	playerData.player.character.crew.sort((a, b) => a.archetype_id - b.archetype_id || a.id - b.id);
-	allcrew.sort((a, b) => a.archetype_id - b.archetype_id);
-	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.archetype_id - b.archetype_id);
+	playerData.player.character.crew.sort((a, b) => a.symbol.localeCompare(b.symbol) || a.archetype_id - b.archetype_id || a.id - b.id);
+	allcrew.sort((a, b) => a.symbol.localeCompare(b.symbol) || a.archetype_id - b.archetype_id);
+	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.symbol.localeCompare(b.symbol) || a.archetype_id - b.archetype_id);
 	for (let tl of twolists) {
 		let c = tl.token;
-		if (c.symbol === 'troi_lwaxana_fascination_crew') {
-			console.log('break');
-		}
 		for (let crew of prepareOne(c, playerData, buffConfig)) {
 			if (crew.have) {
 				if (!crew.id) {
