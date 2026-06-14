@@ -97,7 +97,18 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 	}
 
 	private readonly _eventListener = (message) => {
-		this.setState({ estimate: message.data.result });
+		let maxTime = (message.data.result.refills.reduce((p, n) => n.safeResult && n.safeResult > p ? n.safeResult : p, 0));
+		if (maxTime > (this.config.selectedTime ?? 20)) {
+			this.config.selectedTime = Math.floor(maxTime + 2);
+			this.worker?.terminate();
+			this.worker?.removeEventListener('message', this._eventListener);
+			this.worker = new Worker();
+			this.worker.addEventListener('message', this._eventListener);
+			this.beginCalc();
+		}
+		else {
+			this.setState({ estimate: message.data.result });
+		}
 	}
 
 	private beginCalc() {
@@ -106,7 +117,7 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 			if (nextHour % 2) nextHour++;
 
 			if (nextHour >= 16 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
-				this.config.selectedTime = nextHour + 6;
+				this.config.selectedTime = nextHour + 10;
 				if (this.config.selectedTime > 84) {
 					this.config.selectedTime = 84;
 				}
@@ -123,7 +134,7 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 			}
 		}
 
-		this.worker?.postMessage({ worker: 'voyageEstimate', config: this.config });
+		this.worker?.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
 	}
 
 	componentWillUnmount() {
