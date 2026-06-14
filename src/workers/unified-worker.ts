@@ -17,9 +17,9 @@ const voyageEstimate = (config, progress) => {
 };
 
 // This worker can estimate a single lineup from input config
-const voyageEstimateExtended = (config, progress) => {
+const sporeDrive = (config, progress) => {
     return new Promise((resolve, reject) => {
-        let estimate = sporedrive.getEstimate(config, progress);
+        let estimate = sporedrive(config, progress);
         resolve(estimate);
     });
 };
@@ -32,10 +32,10 @@ self.onmessage = (message: any) => {
     };
     console.log('Unified Worker has been started.');
     const messageHandlers = {
-        'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
+        'voyageEstimate': () => sporeDrive(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
-        'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
+        'sporeDrive': () => sporeDrive(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
