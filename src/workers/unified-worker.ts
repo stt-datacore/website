@@ -1,4 +1,3 @@
-//import transwarp from './transwarp.js';
 import voymod from './voymod.ts';
 import sporedrive from './sporedrive';
 import VoyagersWorker from './voyagers';
@@ -23,7 +22,6 @@ self.onmessage = (message: any) => {
         if (!inProgress) self.close();
         return !!inProgress;
     };
-    console.log('Unified Worker has been started.');
     const messageHandlers = {
         'voyageEstimate': () => sporeDrive(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
@@ -45,9 +43,5 @@ self.onmessage = (message: any) => {
         'ussjohnjay': () => VoyagersWorker(message.data, postResult, sporedrive),
         'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))
     };
-
-    //console.log(message.data.worker);
-
     messageHandlers[message.data.worker]();
-    // postMessage(result);
 };
