@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table, Icon, Form, Dropdown, Button, Message } from 'semantic-ui-react';
 
-import allFactions from '../../../static/structured/factions.json';
 import { ShuttleAdventure } from '../../model/shuttle';
 
 import { Shuttle, ShuttleSeat, ITableColumn, ITableData } from './model';
@@ -102,7 +101,7 @@ export const Missions = () => {
 		</React.Fragment>
 	);
 
-	function renderTableFooter(): JSX.Element {
+	function renderTableFooter(): React.ReactNode {
 		return (
 			<Table.Row>
 				<Table.HeaderCell colSpan={columnCount}>
@@ -113,7 +112,7 @@ export const Missions = () => {
 		);
 	}
 
-	function renderTableRow(datum: ITableData): JSX.Element {
+	function renderTableRow(datum: ITableData): React.ReactNode {
 		return (
 			<Table.Row key={datum.id} style={{ cursor: 'pointer' }}
 				onClick={() => toggleMission(datum.id)}
@@ -212,7 +211,9 @@ type GroupTogglesProps = {
 
 const GroupToggles = (props: GroupTogglesProps) => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
-	const { t } = React.useContext(GlobalContext).localized;
+	const globalContext = React.useContext(GlobalContext);
+	const { factions: allFactions } = globalContext.core;
+	const { t } = globalContext.localized;
 	const { groupId, activeShuttles, shuttlers } = shuttlersContext;
 
 	const [checkOptions, setCheckOptions] = React.useState<ICheckOption[]>([]);
@@ -263,8 +264,6 @@ const GroupToggles = (props: GroupTogglesProps) => {
 		shuttles.forEach(shuttle => {
 			if (shuttle.faction > 0 && !factions.includes(shuttle.faction)) factions.push(shuttle.faction);
 		});
-		{}
-		{}
 
 		if (threeSeaters.length > 0)
 			checkOptions.push({ key: 'three-seaters', text: t('shuttle_helper.missions.select.groups.only_three', { length: `${threeSeaters.length}` }), ids: threeSeaters });

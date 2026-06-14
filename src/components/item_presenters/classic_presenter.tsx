@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import { Segment, Accordion, Table, Rating, Icon, SemanticICONS, Modal, Label, Button } from 'semantic-ui-react';
 
 import { BaseSkills, CrewMember, SkillData } from '../../model/crew';
@@ -52,7 +52,7 @@ const defaultFields = [
 
 export interface IFieldOverride {
 	field: ValidField;
-	override: (crew: CrewMember, compact?: boolean) => JSX.Element;
+	override: (crew: CrewMember, compact?: boolean) => React.ReactNode;
 };
 
 export interface IFieldScale {
@@ -78,13 +78,13 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 	const myCrew = playerData ? playerData.player.character.crew : undefined;
 
 	const fields = props.fields ?? defaultFields;
-	const elements = [] as JSX.Element[];
-	if (!crew.cap_achiever && myCrew) {
-		let fc = myCrew.find(f => f.symbol === crew.symbol);
-		if (fc?.cap_achiever) {
-			crew.cap_achiever = fc.cap_achiever;
-		}
-	}
+	const elements = [] as React.ReactNode[];
+	// if (!crew.cap_achiever && myCrew) {
+	// 	let fc = myCrew.find(f => f.symbol === crew.symbol);
+	// 	if (fc?.cap_achiever) {
+	// 		crew.cap_achiever = fc.cap_achiever;
+	// 	}
+	// }
 	fields.forEach(field => {
 		const fieldOverride = props.fieldOverrides?.find(fo => fo.field === field);
 		if (fieldOverride) {
@@ -92,7 +92,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 		}
 		else {
 			if (field === 'collections')
-				elements.push(<p><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></p>);
+				elements.push(<div key={`crewpage_col_wrap_${crew.symbol}`}><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></div>);
 
 			if (field === 'crew_demands')
 				elements.push(<CrewDemands key={field} crew={crew} />);
@@ -185,12 +185,12 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 			</span>{' '}
 			<b>{crewDemands.totalChronCost}</b>
 			{', '}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
+				<img src={`${process.env.VITE_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 			</span>{' '}
 			<b>{crewDemands.craftCost}</b>
 		</div>
@@ -432,7 +432,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 		</Accordion>
 	);
 
-	function renderTableHeader(): JSX.Element {
+	function renderTableHeader(): React.ReactNode {
 		const baseSkills = Object.entries(crew.base_skills)
 			.filter(skill => !!skill[1])
 			.sort((a, b) => b[1].core - a[1].core);
@@ -442,7 +442,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 					<Table.HeaderCell />
 					{baseSkills.map(skill =>
 						<Table.HeaderCell key={skill[0]} textAlign='center'>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
+							<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
 						</Table.HeaderCell>
 					)}
 				</Table.Row>
@@ -450,11 +450,11 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 		)
 	}
 
-	function renderSkillData(sk: SkillData): JSX.Element {
+	function renderSkillData(sk: SkillData): React.ReactNode {
 		return renderTableRow(sk.rarity, sk.base_skills);
 	}
 
-	function renderTableRow(rarity: number, skills: BaseSkills): JSX.Element {
+	function renderTableRow(rarity: number, skills: BaseSkills): React.ReactNode {
 		debasedCrew.base_skills = skills;
 		Object.keys(debasedCrew.base_skills).map(skill => {
 			if (!debasedCrew.base_skills[skill])

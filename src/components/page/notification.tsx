@@ -3,7 +3,7 @@ import { Message, Icon, SemanticICONS, SemanticCOLORS } from 'semantic-ui-react'
 
 type NotificationProps = {
 	header: string;
-	content: JSX.Element;
+	content: React.ReactNode;
 	icon?: SemanticICONS;
 	color?: SemanticCOLORS;
 	warning?: boolean;

@@ -1,14 +1,13 @@
 import React from 'react';
-import { Link } from 'gatsby';
-import { Segment, Header, Grid, Dropdown, Form } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { Dropdown, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
+import { GlobalContext } from '../../context/globalcontext';
 import { CrewMember } from '../../model/crew';
 import { Variant } from '../../model/game-elements';
-import { GlobalContext } from '../../context/globalcontext';
-import ItemDisplay from '../../components/itemdisplay';
-import { CrewHoverStat, CrewTarget } from '../hovering/crewhoverstat';
 import { crewVariantIgnore, getShortNameFromTrait, getVariantTraits } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { AvatarView } from '../item_presenters/avatarview';
 
 type CrewVariantsProps = {
@@ -22,15 +21,18 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 	const { traits_hidden, short_name } = props;
 
 	const [variants, setVariants] = React.useState<Variant[]>([] as Variant[]);
-	const [byDate, setByDate] = useStateWithStorage('crewVariantSort', false, { rememberForever: true });
+	const [sortType, setSortType] = useStateWithStorage<string | boolean>('crewVariantSort', 'name', { rememberForever: true });
 
 	const sortTraitGroup = (crew: CrewMember[]) => {
 		crew.sort(((a, b) => {
 			if (a.max_rarity === b.max_rarity) {
-				if (byDate && a.date_added && b.date_added) {
+				if (sortType === 'date' && a.date_added && b.date_added) {
 					if (typeof a.date_added === 'string') a.date_added = new Date(a.date_added);
 					if (typeof b.date_added === 'string') b.date_added = new Date(b.date_added);
 					return a.date_added.getTime() - b.date_added.getTime();
+				}
+				else if (sortType === 'datascore') {
+					return a.ranks.scores.overall - b.ranks.scores.overall;
 				}
 				else {
 					return a.name.localeCompare(b.name);
@@ -39,6 +41,13 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			return a.max_rarity - b.max_rarity;
 		}))
 	}
+
+	React.useEffect(() => {
+		if (typeof sortType === 'boolean') {
+			if (sortType) setSortType('date');
+			else setSortType('name');
+		}
+	}, [sortType]);
 
 	React.useEffect(() => {
 		const variants = [] as Variant[];
@@ -90,19 +99,24 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 			variants.push(addvar);
 		}
 		setVariants([...variants]);
-	}, [byDate]);
+	}, [sortType, traits_hidden, short_name]);
 
 	if (variants.length === 0) return (<></>);
 
 	const sortOptions = [{
 		key: 'name',
-		value: false,
+		value: 'name',
 		text: t('global.name')
 	},
 	{
 		key: 'date',
-		value: true,
+		value: 'date',
 		text: t('base.release_date')
+	},
+	{
+		key: 'datascore',
+		value: 'datascore',
+		text: t('rank_names.datascore')
 	}];
 
 	return (
@@ -112,7 +126,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 		</React.Fragment>
 	);
 
-	function renderGroup(group: Variant, idx: number): JSX.Element {
+	function renderGroup(group: Variant, idx: number): React.ReactNode {
 		return (
 			<Segment key={`${group.name}_variant_${idx}`}>
 				<div style={{display:'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap'}}>
@@ -122,8 +136,8 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 							control={Dropdown}
 							label={`${t('global.sort_by')}${t('global.colon')}`}
 							options={sortOptions}
-							value={byDate}
-							onChange={(e, { value }) => setByDate(value as boolean)}
+							value={sortType}
+							onChange={(e, { value }) => setSortType(value as boolean)}
 							inline
 						/>
 					</Form>

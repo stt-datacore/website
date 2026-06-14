@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link } from "gatsby";
+import { Link } from "react-router-dom";
 import { Button, Checkbox, Dropdown, DropdownItemProps, Icon, Input, Label, Pagination, Popup, Rating, SemanticWIDTHS, Table } from "semantic-ui-react";
 
 import { GlobalContext } from "../../context/globalcontext";
@@ -41,7 +41,7 @@ export interface GauntletTableProps {
 export const GauntletCrewTable = (props: GauntletTableProps) => {
     const { filter, pageId, gauntlet, gauntlets, data, mode, textFilter, setTextFilter, rankByPair, setRankByPair } = props;
     const { t, TRAIT_NAMES } = React.useContext(GlobalContext).localized;
-    if (!data) return <></>;
+
 
     const targetGroup = `${pageId}_gauntletTable`;
 
@@ -189,6 +189,8 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
         setCrew(rosterizeCrew(data));
     }, [sortKey, sortDirection, elevated, data]);
 
+    if (!data) return <></>;
+
     const flexCol = OptionsPanelFlexColumn;
     const flexRow = OptionsPanelFlexRow;
 
@@ -300,7 +302,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 <img
                                     onClick={(e) => imageClick(e, crew)}
                                     width={48}
-                                    src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                    src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 />
                             </CrewTarget>
                             {crew.immortal > 0 &&

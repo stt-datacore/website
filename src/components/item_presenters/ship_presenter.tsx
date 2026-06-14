@@ -1,4 +1,3 @@
-import { navigate } from "gatsby";
 import React, { Component } from "react";
 import { Rating } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -8,10 +7,12 @@ import { printImmoText } from "../../utils/crewutils";
 import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ShipSkill } from "./shipskill";
+import { NavigateFunction } from "react-router-dom";
 
 export interface PresenterProps {
     hover: boolean;
     storeName: string;
+    navigate: NavigateFunction;
     disableBuffs?: boolean;
     mobileWidth?: number;
     forceVertical?: boolean;
@@ -42,7 +43,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
     constructor(props: ShipPresenterProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
@@ -73,8 +74,8 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         this.tiny.setValue<boolean>('ship', value, true);
     }
 
-    render(): JSX.Element {
-        const { ship: ship, touched, tabs, showIcon } = this.props;
+    render(): React.ReactNode {
+        const { ship: ship, touched, tabs, showIcon, navigate } = this.props;
         const { mobileWidth } = this.state;
         const { SHIP_TRAIT_NAMES } = this.context.localized;
 
@@ -155,13 +156,13 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                 <div style={{ display: "flex", flexDirection: "column"}}>
                     <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
                         <img
-                            src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
+                            src={`${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
                             style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
                         />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"16px"}}>
                         {!showIcon && <div
-                            onClick={() => navigate(`/ship_info/?ship=${ship.symbol}`)}
+                            onClick={() => navigate(`/ship/?ship=${ship.symbol}`)}
                             style={{
                                 cursor: 'pointer',
                                 display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: 'center' }}>
@@ -169,7 +170,7 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 return <img
                                     key={`${bs.skill}_key_${ship.symbol}_${idx}`}
                                     style={{height: '1em'}}
-                                    src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
+                                    src={`${process.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
                             })}
                             {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />

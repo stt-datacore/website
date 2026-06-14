@@ -88,7 +88,7 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                         <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                             <img
                                 style={{ height: '16px'}}
-                                src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+                                src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
                                 />
                             <span>
                             &nbsp;{skillToShort(skill)}
@@ -144,7 +144,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         if (!crew.best_quipment) return <></>;
 
         if (typeof skill === 'string') {
-            lot = { ... lot };
+            lot = { ...lot };
             lot.skill_quipment = {};
             lot.skill_quipment[skill] = crew.best_quipment.skill_quipment[skill];
         }

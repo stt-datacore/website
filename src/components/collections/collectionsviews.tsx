@@ -9,19 +9,19 @@ import { PlayerCollection, PlayerCrew } from '../../model/player';
 import { navToCrewPage } from '../../utils/nav';
 import { useStateWithStorage } from '../../utils/storage';
 
+import { WorkerContext } from '../../context/workercontext';
+import { Collection } from "../../model/collections";
 import CONFIG from '../CONFIG';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { CollectionPrefs } from './collectionprefs';
 import { CollectionModalContext, CollectionsContext } from './context';
-import { CollectionResearchView } from './views/researchview';
 import { CollectionCombosView } from './views/combosview';
 import CollectionsOverviewComponent from './views/overview';
 import { ProgressTable } from './views/progresstable';
-import { WorkerContext } from '../../context/workercontext';
-import { CollectionPrefs } from './collectionprefs';
+import { CollectionResearchView } from './views/researchview';
 import { CollectionTableView } from './views/tableview';
-import { TinyStore } from '../../utils/tiny';
-import { Collection } from "../../model/collections";
+import { useNavigate } from 'react-router-dom';
 
 export interface CollectionsViewsProps {
 	allCrew: (CrewMember | PlayerCrew)[];
@@ -38,6 +38,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const { topCrewScore, topStarScore } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
+	const navigate = useNavigate();
 
 	const { playerData } = globalContext.player;
 
@@ -85,7 +86,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				if (findcol) {
 					const msel = selnum = findcol.id;
 					if (!mapFilter?.collectionsFilter?.includes(msel)) {
-						setMapFilter({ ... (mapFilter ?? {}), collectionsFilter: [msel]});
+						setMapFilter({ ...(mapFilter ?? {}), collectionsFilter: [msel]});
 						window.setTimeout(() => {
 							window.history.replaceState({}, document.title, "/collections");
 							setTabIndex(3);
@@ -295,7 +296,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				{tabPanes[tabIndex].render(workerRunning)}
 			</>
 			}
-			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew)} targetGroup='collectionsTarget' />
+			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
 	);
@@ -312,7 +313,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			playerCollections,
 			playerData: globalContext.player.playerData,
 			filterProps: {
-				mapFilter: offPageSelect ? { ... mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
+				mapFilter: offPageSelect ? { ...mapFilter, collectionsFilter: [offPageSelect] } : mapFilter,
 				searchFilter,
 				rarityFilter,
 				fuseFilter,

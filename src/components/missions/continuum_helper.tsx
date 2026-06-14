@@ -44,7 +44,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
     /* Global Data Check & Initialization */
 
     const context = React.useContext(GlobalContext);
-    if (!context.player.playerData) return <></>
+
     const { t } = context.localized;
     const { continuum_missions } = context.core;
 
@@ -511,6 +511,8 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
         } as QuestFilterConfig);
     }, [missionConfig, quest, highlighted]);
 
+    if (!context.player.playerData) return <></>;
+
     return (
         <>
             <div>
@@ -608,7 +610,7 @@ export const ContinuumComponent = (props: ContinuumComponentProps) => {
                                 >
 
                                 <ItemDisplay
-                                        src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                        src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                         size={64}
                                         rarity={crew.rarity ?? crew.max_rarity}
                                         maxRarity={crew.max_rarity}

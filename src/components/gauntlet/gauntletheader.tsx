@@ -32,7 +32,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
     const [buckets, setBuckets] = React.useState<CrewMember[][]>([]);
     const [featuredOpen, setFeaturedOpen] = useStateWithStorage('gauntlet_featured_open', false, { rememberForever: true });
 
-    const [randCrew, setRandCrew] = React.useState<React.JSX.Element | undefined>();
+    const [randCrew, setRandCrew] = React.useState<React.ReactNode | undefined>();
 
     React.useEffect(() => {
         if (!randCrew) {
@@ -171,7 +171,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                         size={64}
                         maxRarity={featuredCrew.max_rarity}
                         rarity={featuredCrew.max_rarity}
-                        src={`${process.env.GATSBY_ASSETS_URL}${featuredCrew.imageUrlPortrait}`}
+                        src={`${process.env.VITE_ASSETS_URL}${featuredCrew.imageUrlPortrait}`}
                         allCrew={globalContext.core.crew}
                         playerData={globalContext.player.playerData}
                         targetGroup='gauntletsHover'
@@ -309,7 +309,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                     <Accordion.Content active={featuredOpen}>
                         <>
                         {buckets.map((bucket, idx) => {
-                            let title = undefined as JSX.Element | undefined;
+                            let title = undefined as React.ReactNode | undefined;
                             if (idx === 0) {
                                 title = <h2>{t('base.bigbook_tier')} {idx + 1}</h2>;
                             }
