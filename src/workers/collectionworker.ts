@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-assignment */
 import {
     ColComboMap,
     CollectionCombo,
