@@ -1,4 +1,5 @@
 //import transwarp from './transwarp.js';
+import voymod from './voymod.ts';
 import sporedrive from './sporedrive';
 import VoyagersWorker from './voyagers';
 import CollectionOptimizer from './collectionworker';
@@ -33,7 +34,6 @@ self.onmessage = (message: any) => {
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
         'iampicard': async () => {
-            const { default: voymod } = await import('./voymod.mjs');
             voymod().then(mod => {
                 let result = mod.calculate(JSON.stringify(message.data), res => {
                     postResult(res, true);
