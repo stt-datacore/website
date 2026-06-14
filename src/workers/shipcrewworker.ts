@@ -8,7 +8,7 @@ import { canSeatAll, iterateBattle } from "./battleworkerutils";
 
 const ShipCrewWorker = {
     calc: (options: ShipWorkerConfig, reportProgress: (data: { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: ShipWorkerTransportItem }) => boolean = () => true) => {
-        return new Promise<ShipWorkerResults>(async (resolve, reject) => {
+        return new Promise<ShipWorkerResults>((resolve, reject) => {
             const {
                 activation_offsets,
                 battle_mode,
@@ -77,7 +77,7 @@ const ShipCrewWorker = {
                 const min_attack = attacks.reduce((p, n) => p + n.min_attack, 0);
                 const max_attack = attacks.reduce((p, n) => p + n.max_attack, 0);
                 const battle_time = attacks.reduce((p, n) => p > n.second ? p : n.second, 0);
-                let weighted_attack = 0;
+                let weighted_attack: number;
                 if (battle_mode === 'skirmish') {
                     weighted_attack = attacks.reduce((p, n) => (p + (!n.second ? 0 : (n.attack / (n.second * 2)))), 0);
                 }
@@ -141,9 +141,9 @@ const ShipCrewWorker = {
 
             const time = options.max_duration || (battle_mode.startsWith('fbb') ? 180 : 30);
 
-            var last_high: ShipWorkerTransportItem | null = null;
+            let last_high: ShipWorkerTransportItem | null = null;
             let lqscore = 0;
-            var errors = false;
+            let errors = false;
 
             const fbb_mode = battle_mode.startsWith('fbb');
             let lmode: any = fbb_mode ? opponent?.symbol.includes('borg') ? 'evade' : 'heal' : 'arena';
@@ -167,7 +167,6 @@ const ShipCrewWorker = {
             });
 
             let resultcount = 0;
-            lqscore = 0;
             getPermutations(workCrew, seats, count, true, start_index, (set) => {
                 i++;
                 if (errors) return false;
@@ -248,19 +247,7 @@ const ShipCrewWorker = {
             });
 
         });
-    },
-    bestFinder: (options: MultiShipWorkerConfig) => {
-        return new Promise<ShipWorkerResults>((resolve, reject) => {
-
-            // resolve({
-            //     ships: [],
-            //     total_iterations: i,
-            //     run_time
-            // })
-
-        });
     }
-
 }
 
 export default ShipCrewWorker;

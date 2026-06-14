@@ -5,18 +5,9 @@ import VoyagersWorker from './voyagers';
 import CollectionOptimizer from './collectionworker';
 import QuestSolver from './questsolver2';
 import ShipFinder from './shipfinder';
-import ShipCrewWorker from './shipcrewworker';
 import VoyPADD from './voypadd';
-import { SporeDriveConfig, VoyageStatsConfig } from '../model/worker';
+import { SporeDriveConfig } from '../model/worker';
 import { Estimate } from '../model/voyage';
-
-// This worker can estimate a single lineup from input config
-const voyageEstimate = (config: VoyageStatsConfig, progress) => {
-    return new Promise((resolve, reject) => {
-        let estimate = transwarp.getEstimate(config, progress);
-        resolve(estimate);
-    });
-};
 
 // This worker can estimate a single lineup from input config
 const sporeDrive = (config: SporeDriveConfig, progress: (est: Estimate) => boolean) => {
@@ -50,8 +41,6 @@ self.onmessage = (message: any) => {
         }),
         'voypadd': () => VoyPADD.start(message.data, postResult),
         'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
-        'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true) || false).then(data => postResult(data, false)),
-        'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
         'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))
     };
 
