@@ -52,8 +52,6 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 			voyageBugDetected: Math.floor(voyageData.voyage_duration / 7200) > Math.floor(voyageData.log_index / 360),
 			currentAm: props.voyageData.hp ?? voyageData.max_hp
 		};
-
-		this.updateAndRun();
 	}
 
 	private updateAndRun(force?: boolean) {
@@ -96,9 +94,7 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 	}
 
 	private readonly _eventListener = (message: EstimateResponse) => {
-		let maxTime = Math.floor(message.data.result.refills.reduce((p, n) => n.safeResult && n.safeResult > p ? n.safeResult : p, 0));
-		if (maxTime % 2) maxTime--;
-		this.config.selectedTime = maxTime;
+		this.config.selectedTime = message.data.result.adjustedTime ?? 20;
 		this.setState({ estimate: message.data.result });
 	}
 
@@ -138,6 +134,10 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 		}
 
 		this.worker?.postMessage({ worker: 'sporeDrive', config: this.config });
+	}
+
+	componentDidMount(): void {
+		this.updateAndRun();
 	}
 
 	componentWillUnmount() {

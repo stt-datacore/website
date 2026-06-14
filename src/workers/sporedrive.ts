@@ -296,17 +296,19 @@ function getEstimate(config: SporeDriveConfig, reportProgress = (estimate: Estim
 
     for (let x = 0; x < retries; x++) {
         result = performEstimation(config, reportProgress);
-        if (result.refills.some((r) => r.safeResult === undefined)) {
-            let maxTime = result.refills.reduce(
-                (p, n) => (n.safeResult && n.safeResult > p ? n.safeResult : p),
-                0,
-            );
-            config.selectedTime = Math.floor(maxTime + 2);
+        let maxTime = result.refills.reduce(
+            (p, n) => (n.safeResult && n.safeResult > p ? n.safeResult : p),
+            0,
+        );
+        if (result.refills.some((r) => r.safeResult === undefined) || (config.selectedTime ?? 20) < maxTime) {
+            config.selectedTime = Math.floor(maxTime + 1);
+            if (config.selectedTime % 2) config.selectedTime++;
         }
         else {
             break;
         }
     }
+    result.adjustedTime = config.selectedTime ?? 20;
     result.refills = result.refills.filter((r) => r.safeResult);
     return result;
 }
