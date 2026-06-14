@@ -7,9 +7,11 @@ import QuestSolver from './questsolver2';
 import ShipFinder from './shipfinder';
 import ShipCrewWorker from './shipcrewworker';
 import VoyPADD from './voypadd';
+import { SporeDriveConfig, VoyageStatsConfig } from '../model/worker';
+import { Estimate } from '../model/voyage';
 
 // This worker can estimate a single lineup from input config
-const voyageEstimate = (config, progress) => {
+const voyageEstimate = (config: VoyageStatsConfig, progress) => {
     return new Promise((resolve, reject) => {
         let estimate = transwarp.getEstimate(config, progress);
         resolve(estimate);
@@ -17,7 +19,7 @@ const voyageEstimate = (config, progress) => {
 };
 
 // This worker can estimate a single lineup from input config
-const sporeDrive = (config, progress) => {
+const sporeDrive = (config: SporeDriveConfig, progress: (est: Estimate) => boolean) => {
     return new Promise((resolve, reject) => {
         let estimate = sporedrive(config, progress);
         resolve(estimate);
@@ -28,7 +30,7 @@ self.onmessage = (message: any) => {
     const postResult = (result: any, inProgress?: boolean) => {
         postMessage({ result, inProgress });
         if (!inProgress) self.close();
-        return inProgress;
+        return !!inProgress;
     };
     console.log('Unified Worker has been started.');
     const messageHandlers = {
