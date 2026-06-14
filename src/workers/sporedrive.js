@@ -276,7 +276,6 @@ function getEstimate(config, reportProgress = () => true) {
         refillCostTotal += refillCost;
         extend++;
       }
-
       if (iSim > 0 && iSim % 100 == 0)
         reportProgress(formatResults(false));
     } // foreach sim
