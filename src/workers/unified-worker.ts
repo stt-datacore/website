@@ -1,5 +1,4 @@
-import voymod from './voymod';
-import transwarp from './transwarp';
+//import transwarp from './transwarp.js';
 import sporedrive from './sporedrive';
 import VoyagersWorker from './voyagers';
 import CollectionOptimizer from './collectionworker';
@@ -33,14 +32,17 @@ self.onmessage = (message: any) => {
         ),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
-        'iampicard': () => voymod().then(mod => {
-            let result = mod.calculate(JSON.stringify(message.data), res => {
-                postResult(res, true);
-            });
-            postResult(result, false);
-        }),
+        'iampicard': async () => {
+            const { default: voymod } = await import('./voymod');
+            voymod().then(mod => {
+                let result = mod.calculate(JSON.stringify(message.data), res => {
+                    postResult(res, true);
+                });
+                postResult(result, false);
+            })
+        },
         'voypadd': () => VoyPADD.start(message.data, postResult),
-        'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
+        'ussjohnjay': () => VoyagersWorker(message.data, postResult, sporedrive),
         'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))
     };
 
