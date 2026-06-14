@@ -98,7 +98,7 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 
 	private readonly _eventListener = (message) => {
 		let maxTime = (message.data.result.refills.reduce((p, n) => n.safeResult && n.safeResult > p ? n.safeResult : p, 0));
-		if (maxTime > (this.config.selectedTime ?? 20)) {
+		if (message.data.result.refills.some(r => r.safeResult === undefined)) {
 			this.config.selectedTime = Math.floor(maxTime + 2);
 			this.worker?.terminate();
 			this.worker?.removeEventListener('message', this._eventListener);
