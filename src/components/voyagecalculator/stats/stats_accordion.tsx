@@ -96,8 +96,9 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 	}
 
 	private readonly _eventListener = (message: EstimateResponse) => {
-		let maxTime = (message.data.result.refills.reduce((p, n) => n.safeResult && n.safeResult > p ? n.safeResult : p, 0));
-		this.config.selectedTime = Math.floor(maxTime);
+		let maxTime = Math.floor(message.data.result.refills.reduce((p, n) => n.safeResult && n.safeResult > p ? n.safeResult : p, 0));
+		if (maxTime % 2) maxTime--;
+		this.config.selectedTime = maxTime;
 		this.setState({ estimate: message.data.result });
 	}
 
