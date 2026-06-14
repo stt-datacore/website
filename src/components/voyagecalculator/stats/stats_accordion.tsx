@@ -107,6 +107,7 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 			this.beginCalc();
 		}
 		else {
+			this.config.selectedTime = Math.floor(maxTime);
 			this.setState({ estimate: message.data.result });
 		}
 	}
