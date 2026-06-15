@@ -12,8 +12,8 @@ const blankSkill = {
     range_max: 0,
     skill: ""
 }
-function getEstimate(config: SporeDriveConfig, reportProgress = () => true) {
-    function performEstimation(config: SporeDriveConfig, reportProgress = () => true): Estimate {
+function getEstimate(config: SporeDriveConfig, reportProgress = (est: Estimate) => true) {
+    function performEstimation(config: SporeDriveConfig, reportProgress = (est: Estimate) => true): Estimate {
         let ps = skillSum(config.ps);
         let ss = skillSum(config.ss);
 
