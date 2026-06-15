@@ -6,7 +6,6 @@ import { Estimate, Refill } from "../model/voyage";
 import { SporeDriveConfig } from "../model/worker";
 import { skillSum } from "../utils/crewutils";
 
-/* eslint-disable */
 const blankSkill = {
     core: 0,
     range_min: 0,
@@ -14,7 +13,7 @@ const blankSkill = {
     skill: ""
 }
 function getEstimate(config: SporeDriveConfig, reportProgress = () => true) {
-    function performEstimation(config: SporeDriveConfig, reportProgress = () => true) {
+    function performEstimation(config: SporeDriveConfig, reportProgress = () => true): Estimate {
         let ps = skillSum(config.ps);
         let ss = skillSum(config.ss);
 
@@ -215,17 +214,11 @@ function getEstimate(config: SporeDriveConfig, reportProgress = () => true) {
         //console.log(allHazards.map(h => h()));
         if (deterministic) numSims = 1; // With no more skill checks there can only be one voyage length
 
-        /**
-         * @type {number[][]}
-         */
         let results = [] as number[][];
-        /**
-         * @type {number[]}
-         */
         let resultsRefillCostTotal = [] as number[];
+
         for (let iExtend = 0; iExtend <= numExtends; ++iExtend) {
             results.push([]);
-            //results[iExtend].length = numSims;
             resultsRefillCostTotal.push(0);
         }
 
