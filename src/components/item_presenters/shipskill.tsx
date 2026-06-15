@@ -453,7 +453,14 @@ export const TinyShipSkill = (props: TinyShipSkillProps) => {
                         {crew.ship_battle.evasion}
                         {` `}
                         </span>
-                    }
+                    }<br/>
+                    <span>
+                        <b>I:</b> {crew.action.initial_cooldown}s
+                        {`, `}
+                        <b>D:</b> {crew.action.duration}s
+                        {`, `}
+                        <b>C:</b> {crew.action.cooldown}s
+                    </span>
                 </p>}
             </div>
     )
