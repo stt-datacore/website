@@ -426,28 +426,28 @@ export const TinyShipSkill = (props: TinyShipSkillProps) => {
 
                 {!!action.charge_phases?.length && <i style={{fontSize:"0.8em"}}>(+{action.charge_phases.length} charge phases)</i>}
                 {!!crew && <p style={{fontSize:"0.75em"}}>
-                    {crew.ship_battle.crit_bonus && (
+                    {!!crew.ship_battle.crit_bonus && (
                         <span>
                             <b>CB:</b> +
                             {crew.ship_battle.crit_bonus}
                             {` `}
                         </span>
                     )}
-                    {crew.ship_battle.crit_chance && (
+                    {!!crew.ship_battle.crit_chance && (
                         <span>
                             <b>CR:</b> +
                             {crew.ship_battle.crit_chance}
                             {` `}
                         </span>
                     )}<br/>
-                    {crew.ship_battle.accuracy &&
+                    {!!crew.ship_battle.accuracy &&
                         <span>
                         <b>AC:</b> +
                         {crew.ship_battle.accuracy}
                         {` `}
                         </span>
                     }
-                    {crew.ship_battle.evasion &&
+                    {!!crew.ship_battle.evasion &&
                         <span>
                         <b>EV:</b> +
                         {crew.ship_battle.evasion}
