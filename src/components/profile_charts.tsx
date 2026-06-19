@@ -783,7 +783,7 @@ const FactionFormatDisplay = (props: FactionFormatProps) => {
 
 	const images = factions.map(faction => {
 		return (
-			<img key={`faction_image_${faction.name}_of_${item.name}`} style={{height:'20px', marginRight: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}${faction.icon}`} />
+			<img key={`faction_image_${faction.name}_of_${item.name}`} style={{height:'20px', marginRight: '0.25em'}} src={`${process.env.VITE_ASSETS_URL}${faction.icon}`} />
 		)
 	});
 
