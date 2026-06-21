@@ -517,7 +517,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			}
 		}
 
-		if (crew.immortal) {
+		if (crew.immortal && (crew.immortal === CompletionState.DisplayAsImmortalOwned || crew.immortal === CompletionState.Immortalized || crew.immortal > 0)) {
 			if (buffConfig) applyCrewBuffs(crew, buffConfig);
 			crew.have = true;
 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
