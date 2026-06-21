@@ -243,6 +243,10 @@ export const AvatarView = (props: AvatarViewProps) => {
                     gen_item = { ...gen_item };
                     gen_item.rarity = showMaxRarity ? gen_item.max_rarity : 0;
                 }
+                else if (props.item) {
+                    gen_item = { ...props.item};
+                    gen_item.rarity = showMaxRarity ? gen_item.max_rarity : 0;
+                }
             }
         }
         if (gen_item) {
