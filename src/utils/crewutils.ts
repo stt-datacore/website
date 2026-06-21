@@ -525,7 +525,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			crew.q_bits ??= 0;
 			crew.kwipment ??= [0, 0, 0, 0];
 			crew.kwipment_expiration ??= [0, 0, 0, 0];
-			inroster.push(crew);
+			if (crew.have) inroster.push(crew);
 			crew = templateCrew;
 		}
 	}
