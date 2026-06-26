@@ -14,6 +14,8 @@ on:
     types:
       - completed
 
+  workflow_dispatch:
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -54,3 +56,11 @@ jobs:
       - name: Rsync over ssh
         run: |
           rsync -avz --progress --delete ./public/ ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:~/data/beta-site/
+
+      # Clear the cloudflare cache
+      - name: Cloudflare Cache Cleaner
+        uses: Cyb3r-Jak3/action-cloudflare-cache@v3.0.0
+        with:
+            zone: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+            api_token: ${{ secrets.CLOUDFLARE_TOKEN }}
+
