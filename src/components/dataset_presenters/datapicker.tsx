@@ -18,6 +18,7 @@ import { DataGrid } from './datagrid';
 import { IDataGridSetup } from './model';
 import { DataTable } from './datatable';
 import { IDataTableSetup } from './model';
+import { OptionsPanelFlexRow } from '../stats/utils';
 
 type DataPickerProps = {
 	id: string;
@@ -47,6 +48,7 @@ export const DataPicker = (props: DataPickerProps) => {
 	// Reset search query and close options on each reload
 	const [searchQuery, setSearchQuery] = React.useState<string>('');
 	const [showOptions, setShowOptions] = React.useState<boolean>(false);
+	const [multiSearch, setMultiSearch] = useStateWithStorage<boolean>(`${props.id}/multiSearch`, false, { rememberForever: true });
 
 	// Persist layout preference
 	const [layout, setLayout] = useStateWithStorage<'grid' | 'table'>(`${props.id}/layout`, props.tableSetup ? 'table' : 'grid');
@@ -56,7 +58,7 @@ export const DataPicker = (props: DataPickerProps) => {
 			(!props.preFilteredIds || !props.preFilteredIds.has(datum.id))
 				&& (searchQuery === '' || textMatch(datum.name, searchQuery))
 		);
-	}, [props.data, props.preFilteredIds, searchQuery]);
+	}, [props.data, props.preFilteredIds, searchQuery, multiSearch]);
 
 	// Update selected ids on external changes
 	React.useEffect(() => {
@@ -99,16 +101,27 @@ export const DataPicker = (props: DataPickerProps) => {
 		</Modal>
 	);
 
-	function textMatch(fieldValue: string, userQuery: string): boolean {
+	function textMatch(fieldValue: string, userQuery: string, multiSearch?: boolean): boolean {
+		if (multiSearch) {
+			const uqparts = userQuery.split(",").map(p => p.trim());
+			if (uqparts.length > 1) {
+				return uqparts.some(part => fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '')
+					.indexOf(part.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0)
+			}
+		}
 		return fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '')
 			.indexOf(userQuery.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 	}
 
 	function renderModalHeader(): JSX.Element {
 		if (!props.search) return <>{props.title}</>;
-		return (
+		return (<div style={{display: 'flex', width: '100%'}}>
+			<Button active={multiSearch} icon onClick={() => setMultiSearch(!multiSearch)}>
+				<Icon name="list" />
+			</Button>
 			<Input	/* Search by name */
 				ref={inputRef}
+				style={{flexGrow:1}}
 				fluid size='mini'
 				iconPosition='left'
 				placeholder={props.searchPlaceholder ?? t('global.search_by_name')}
@@ -126,7 +139,7 @@ export const DataPicker = (props: DataPickerProps) => {
 					<Icon name='delete' />
 				</Button>
 			</Input>
-		);
+		</div>);
 	}
 
 	function renderModalContent(): JSX.Element {
