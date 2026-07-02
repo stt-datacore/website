@@ -25,16 +25,16 @@ type DataPickerProps = {
 	data: IEssentialData[];
 	closePicker: (selectedIds: Set<number>, affirmative: boolean) => void;
 	singleSelect?: boolean;
-	title?: string | JSX.Element;
+	title?: string | React.ReactNode;
 	preFilteredIds?: Set<number>;
 	preSelectedIds?: Set<number>;
 	selection?: boolean;
 	closeOnChange?: boolean;
 	search?: boolean;
 	searchPlaceholder?: string;
-	renderOptions?: (dataPickerState: IDataPickerState) => JSX.Element;
-	renderPreface?: (dataPickerState: IDataPickerState) => JSX.Element;
-	renderActions?: (dataPickerState: IDataPickerState) => JSX.Element;
+	renderOptions?: (dataPickerState: IDataPickerState) => React.ReactNode;
+	renderPreface?: (dataPickerState: IDataPickerState) => React.ReactNode;
+	renderActions?: (dataPickerState: IDataPickerState) => React.ReactNode;
 	gridSetup?: IDataGridSetup;
 	tableSetup?: IDataTableSetup;
 };
@@ -70,7 +70,7 @@ export const DataPicker = (props: DataPickerProps) => {
 		setShowOptions(false);
 	}, [searchQuery]);
 
-	const inputRef: React.RefObject<Input> = React.createRef<Input>();
+	const inputRef = React.createRef<HTMLInputElement>();
 	React.useEffect(() => {
 		inputRef.current?.focus();
 	}, []);
@@ -113,7 +113,7 @@ export const DataPicker = (props: DataPickerProps) => {
 			.indexOf(userQuery.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 	}
 
-	function renderModalHeader(): JSX.Element {
+	function renderModalHeader(): React.ReactNode {
 		if (!props.search) return <>{props.title}</>;
 		return (<div style={{display: 'flex', width: '100%'}}>
 			<Button active={multiSearch} icon onClick={() => setMultiSearch(!multiSearch)}>
@@ -142,7 +142,7 @@ export const DataPicker = (props: DataPickerProps) => {
 		</div>);
 	}
 
-	function renderModalContent(): JSX.Element {
+	function renderModalContent(): React.ReactNode {
 		return (
 			<React.Fragment>
 				{props.renderOptions && showOptions && (
@@ -194,7 +194,7 @@ export const DataPicker = (props: DataPickerProps) => {
 		);
 	}
 
-	function renderModalActions(): JSX.Element {
+	function renderModalActions(): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', columnGap: '1em' }}>

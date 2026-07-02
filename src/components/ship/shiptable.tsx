@@ -1,7 +1,6 @@
 import React from 'react';
 import { Checkbox, Dropdown, DropdownItemProps, Table } from 'semantic-ui-react';
 
-import { navigate } from 'gatsby';
 import { GlobalContext } from '../../context/globalcontext';
 import { PlayerBuffMode } from '../../model/player';
 import { Ship, ShipInUse } from '../../model/ship';
@@ -20,6 +19,7 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { gradeToColor } from '../../utils/crewutils';
+import { useNavigate } from 'react-router-dom';
 
 type ShipTableProps = {
 	pageId: string;
@@ -51,6 +51,8 @@ type Ownership = 'owned' | 'unowned';
 
 export const ShipTable = (props: ShipTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const { all_ships } = globalContext.core;
 	const { playerData, playerShips } = globalContext.player;
 	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
@@ -222,8 +224,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				title: t('ship.level'),
 				reverse: true,
 				customCompare: (a, b) => {
-					let r = 0;
-					r = (a.max_level ?? 0) - (b.max_level ?? 0);
+					let r = (a.max_level ?? 0) - (b.max_level ?? 0);
 					if (!r) r = (a.level ?? 0) - (b.level ?? 0);
 					return r;
 				}
@@ -313,14 +314,14 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	function printUsage(ship: Ship) {
 		let usages = shipsInUse?.filter(f => f.ship.id === ship.id);
-		let texts = [] as JSX.Element[];
+		let texts = [] as React.ReactNode[];
 		if (usages?.length) {
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}/${usage.battle_mode}/${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
 				}
 				else if (usage.battle_mode === 'pvp') {
-					texts.push(<a onClick={() => navigate(`/ship_info?ship=${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}/${usage.battle_mode}/${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
 				}
 			}
 		}
@@ -354,7 +355,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	function renderTableRow(ship: Ship, idx?: number) {
 		const navToShip = (ship: Ship) => {
-			navigate('/ship_info?ship=' + ship.symbol);
+			navigate('/ship/' + ship.symbol);
 		}
 
 		let pship = mode === 'all' ? playerShips?.find(f => f.symbol === ship.symbol) : undefined;
@@ -372,7 +373,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				>
 					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 						<ShipTarget inputItem={ship} targetGroup={`${pageId}/ship_hover`}>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+							<img width={48} src={`${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 						</ShipTarget>
 					</div>
 					<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>

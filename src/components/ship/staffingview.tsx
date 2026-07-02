@@ -1,26 +1,25 @@
 import React from "react"
-import { Accordion, Button, Checkbox, Grid, Icon, SemanticICONS } from "semantic-ui-react"
-import CrewPicker from "../crewpicker"
-import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat"
-import { ShipPresenter } from "../item_presenters/ship_presenter"
+import { Button, Checkbox } from "semantic-ui-react"
 import { GlobalContext } from "../../context/globalcontext"
 import { CrewMember } from "../../model/crew"
 import { PlayerCrew } from "../../model/player"
-import { BattleStation, Ship } from "../../model/ship"
-import { findPotentialCrew, getShipDivision, mergeRefShips, setupShip } from "../../utils/shiputils"
-import { useStateWithStorage } from "../../utils/storage"
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils"
-import { getShipBonus, getSkills } from "../../utils/crewutils"
-import CONFIG from "../CONFIG"
-import { getActionColor, getShipBonusIcon } from "../item_presenters/shipskill"
-import { ShipPicker } from "../crewtables/shipoptions"
-import { navigate } from "gatsby"
-import { DEFAULT_SHIP_OPTIONS, ShipCrewOptionsModal } from "./shipcrewmodal"
-import { CrewPreparer } from "../item_presenters/crew_preparer"
-import { OpponentImportComponent } from "./opponent_importer"
 import { PvpOpponent, PvpRoot } from "../../model/pvp"
+import { BattleStation, Ship } from "../../model/ship"
+import { getShipBonus, getSkills } from "../../utils/crewutils"
+import { findPotentialCrew, getShipDivision, mergeRefShips } from "../../utils/shiputils"
+import { useStateWithStorage } from "../../utils/storage"
+import CONFIG from "../CONFIG"
+import CrewPicker from "../crewpicker"
+import { ShipPicker } from "../crewtables/shipoptions"
+import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat"
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat"
+import { ShipPresenter } from "../item_presenters/ship_presenter"
+import { getActionColor, getShipBonusIcon } from "../item_presenters/shipskill"
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils"
+import { OpponentImportComponent } from "./opponent_importer"
+import { DEFAULT_SHIP_OPTIONS, ShipCrewOptionsModal } from "./shipcrewmodal"
 import { ShipStationProspects } from "./staffingprospects"
+import { useNavigate } from "react-router-dom"
 
 export interface ShipStaffingProps {
     ship?: Ship;
@@ -43,6 +42,7 @@ export interface ShipStaffingProps {
 
 export const ShipStaffingView = (props: ShipStaffingProps) => {
     const context = React.useContext(GlobalContext);
+	const navigate = useNavigate();
 	const { t } = context.localized;
 	const {
         pageId: targetGroup,
@@ -87,27 +87,29 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 	React.useEffect(() => {
 		if (crewStations?.length) {
 			let ch = false;
-			let c = crewStations.length;
+			let newStations = crewStations.slice();
+			let c = newStations.length;
 			for (let i = 0; i < c; i++) {
-				if (crewStations[i] && !crew?.some(c => c.id === crewStations[i]?.id)) {
-					crewStations[i] = undefined;
+				if (newStations[i] && !crew?.some(c => c.id === newStations[i]?.id)) {
+					newStations[i] = undefined;
 					ch = true;
 				}
 			}
 			if (ch) {
-				setCrewStations(crewStations.slice());
+				setCrewStations(newStations);
 			}
 		}
 	}, [crew]);
 
 	React.useEffect(() => {
 		if (ship?.battle_stations) {
-			crewStations.length = ship.battle_stations.length;
+			let newStations = crewStations.slice();
+			newStations.length = ship.battle_stations.length;
 			if (isOpponent && pvpData && ship.battle_stations.every(bs => !!bs.crew)) {
 				setCrewStations(ship.battle_stations.map(bs => bs.crew!));
 			}
 			else {
-				setCrewStations([...crewStations]);
+				setCrewStations(newStations);
 			}
 		}
 		else {
@@ -208,7 +210,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				<Button disabled={crewStations.every(cs => !cs) || !!pvpData} onClick={(e) => clearStation()}>{t('global.clear_all')}</Button>
 			</div>}
 
-			{!!ship && <ShipPresenter hover={false} ship={ship} showIcon={true} storeName='shipProfile' />}
+			{!!ship && <ShipPresenter navigate={navigate} hover={false} ship={ship} showIcon={true} storeName='shipProfile' />}
 		</div>
 
         </React.Fragment>
@@ -221,7 +223,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-			<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em' }} />
+			<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "32px", margin: '1em' }} />
 			<div
 				className="ui segment button"
 				style={{
@@ -236,10 +238,10 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				}}>
 				{!!crewStations[idx] && (
 					<CrewTarget inputItem={crewStations[idx]} targetGroup={`${targetGroup || 'ship_profile'}`}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
+						<img src={`${process.env.VITE_ASSETS_URL}${crewStations[idx]?.imageUrlPortrait}`} style={{ height: "128px" }} />
 					</CrewTarget>
 				) ||
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "64px" }} />
 				}
 			</div>
 
@@ -257,7 +259,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				alignItems: "center"
 			}}>
 				<div style={{...flexRow, alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
-					{dskill && <img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "16px" }} />}
+					{dskill && <img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`} style={{ height: "16px" }} />}
 					{crew.name}
 				</div>
 				<div style={{
@@ -341,7 +343,7 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 
 	function getCrew() {
 		if (!context) return [];
-		let results = [] as CrewMember[];
+		let results: CrewMember[];
 		if (isOpponent) {
 			results = context.core.crew.slice();
 		}

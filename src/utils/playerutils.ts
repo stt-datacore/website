@@ -87,7 +87,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     ) {
         if (p.player.character.crew_avatar.portrait.file.startsWith("/")) {
             p.player.character.crew_avatar = {
-                ... p.player.character.crew_avatar,
+                ...p.player.character.crew_avatar,
                 portrait: {
                     file: p.player.character.crew_avatar.portrait.file
                     .slice(1)

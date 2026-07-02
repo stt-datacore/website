@@ -22,7 +22,8 @@ import { printChrons, printCredits } from '../../retrieval/context';
 import { CollectionDisplay } from '../../item_presenters/presenter_utils';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../../stats/utils';
 import { AvatarView } from '../../item_presenters/avatarview';
-import { navigate } from 'gatsby';
+import { useNavigate } from 'react-router-dom';
+import { TraitNames } from '../../../model/traits';
 
 export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, alternativeLayout?: boolean, cheap?: boolean, ocols?: string[], discovery?: boolean) => {
 	const tableConfig = [] as ITableConfigRow[];
@@ -163,7 +164,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 			tableConfig.push({
 				width: 1,
 				column: `${skill.name}.core`,
-				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+				title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
 				reverse: true
 			});
 		});
@@ -257,7 +258,10 @@ type CrewCellProps = {
 
 export const CrewBaseCells = (props: CrewCellProps) => {
 	const { crew, tableType, absRank, alternativeLayout, cheap, discovery } = props;
-	const { t } = React.useContext(GlobalContext).localized;
+	const localized = React.useContext(GlobalContext).localized;
+	const { t, TRAIT_NAMES } = localized;
+	const navigate = useNavigate();
+
 	const tiny = TinyStore.getStore("index");
 
 	const navToSearch = (crew: IRosterCrew) => {
@@ -310,7 +314,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			</>}
 			{(tableType === 'offers') && <>
 			<Table.Cell textAlign='center' width={1}>
-				{renderOffers(crew)}
+				{renderOffers(crew, TRAIT_NAMES)}
 			</Table.Cell>
 			<Table.Cell>
 				<b title={printPortalStatus(crew, t, true, true, true)}>{printFancyPortal(crew, t, true)}</b>
@@ -339,7 +343,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 							crew.immortal !== -1 ? 'Frozen, unfinished or unowned crew do not have q-bits' : qbslots + " Slot(s) Open"
 							}>
 							<div>
-								{!!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
+								{ !!crew.immortal && crew.immortal >= -1 ? crew.q_bits : 'N/A' }
 							</div>
 							{!!crew.immortal && crew.immortal >= -1 &&
 							<div style={{fontSize:"0.8em", minWidth: '4em'}}>
@@ -396,7 +400,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		)
 	}
 
-	function renderOffers(crew: IRosterCrew) {
+	function renderOffers(crew: IRosterCrew, TRAIT_NAMES: TraitNames) {
 		const labelStyle: React.CSSProperties = {
 			display: 'flex',
 			flexDirection: 'row',
@@ -406,7 +410,7 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 		};
 		const divStyle: React.CSSProperties = {
 			display: 'grid',
-			gridTemplateAreas: `'a a' 'c b'`,
+			gridTemplateAreas: `'a a' 'c b' ${crew.offers?.some(o => o.trait) ? "'d d'" : ''}`,
 			//gridTemplateColumns: '7em 4em',
 			flexDirection: 'row',
 			alignItems: 'center',
@@ -446,10 +450,10 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 							style={{...labelStyle, gridArea: 'b', padding: '0.25em 1em'}}
 						>
 						{di.cost}
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`} style={{height: '16px', padding: '0.5em 0'}} />
 						</div>
 						<div style={{gridArea: 'c'}}><span>{t('base.expiration')}{t('global.colon')}{getExpiration(offer)}</span></div>
-
+						{!!offer.trait && <div style={{gridArea: 'd'}}><span>{t('hints.trait')}{t('global.colon')}{TRAIT_NAMES[offer.trait] || offer.trait}</span></div>}
 					</div>
 					)
 				}
