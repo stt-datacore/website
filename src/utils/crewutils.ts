@@ -31,7 +31,7 @@ export function exportCrewFields(t: TranslateMethod, force_english = true): Expo
 		},
 		{
 			label: 'Have',
-			value: (row: PlayerCrew) => row.have
+			value: (row: PlayerCrew) => row.have ? 'true' : 'false'
 		},
 		{
 			label: 'Short name',
@@ -63,7 +63,7 @@ export function exportCrewFields(t: TranslateMethod, force_english = true): Expo
 		},
 		{
 			label: 'In portal',
-			value: (row: PlayerCrew) => (row.in_portal === undefined ? 'N/A' : row.in_portal)
+			value: (row: PlayerCrew) => (row.in_portal === undefined ? 'N/A' : (row.in_portal ? 'true' : 'false'))
 		},
 		{
 			label: 'Collections',
