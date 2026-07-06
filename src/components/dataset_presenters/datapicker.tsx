@@ -54,7 +54,7 @@ export const DataPicker = (props: DataPickerProps) => {
 	const [layout, setLayout] = useStateWithStorage<'grid' | 'table'>(`${props.id}/layout`, props.tableSetup ? 'table' : 'grid');
 
 	const data = React.useMemo<IEssentialData[]>(() => {
-		return props.data.slice().filter(datum =>
+		return props.data.filter(datum =>
 			(!props.preFilteredIds || !props.preFilteredIds.has(datum.id))
 				&& (searchQuery === '' || textMatch(datum.name, searchQuery))
 		);
@@ -101,9 +101,9 @@ export const DataPicker = (props: DataPickerProps) => {
 		</Modal>
 	);
 
-	function textMatch(fieldValue: string, userQuery: string, multiSearch?: boolean): boolean {
+	function textMatch(fieldValue: string, userQuery: string): boolean {
 		if (multiSearch) {
-			const uqparts = userQuery.split(",").map(p => p.trim());
+			const uqparts = userQuery.split(",").map(p => p.trim()).filter(s => !!s);
 			if (uqparts.length > 1) {
 				return uqparts.some(part => fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '')
 					.indexOf(part.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0)
@@ -112,6 +112,7 @@ export const DataPicker = (props: DataPickerProps) => {
 		return fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '')
 			.indexOf(userQuery.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
 	}
+
 
 	function renderModalHeader(): JSX.Element {
 		if (!props.search) return <>{props.title}</>;
