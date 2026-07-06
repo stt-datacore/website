@@ -38,6 +38,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.archetype_cache;
     delete p.item_archetype_cache;
     delete p.seasonal_event_shop_root;
+    delete p.pinned_crew_root;
+    delete p.pinned_stasis_vault_root;
 
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
