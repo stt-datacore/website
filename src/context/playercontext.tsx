@@ -2,7 +2,7 @@ import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';
 import { EquipmentItem } from '../model/equipment';
-import { BorrowedCrew, CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { BorrowedCrew, CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PinnedCrewRoot, PinnedStatisVaultRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
 import { Ship } from '../model/ship';
 import { ShuttleAdventure } from '../model/shuttle';
 import { ShipTraitNames } from '../model/traits';
@@ -57,6 +57,8 @@ export interface IEphemeralData {
 	seasonalEventShop?: SeasonalShop;
 	stimpack?: Stimpack;
 	borrowedCrew: BorrowedCrew[];
+	pinnedCrew?: PinnedCrewRoot;
+	pinnedStasisVault?: PinnedStatisVaultRoot;
 };
 
 export interface ISessionStates {
@@ -178,7 +180,9 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
 				stimpack: input.player.character.stimpack,
 				seasonalEventShop: input.seasonal_event_shop_root,
-				borrowedCrew: [...input.player.character.crew_borrows ?? []]
+				borrowedCrew: [...input.player.character.crew_borrows ?? []],
+				pinnedCrew: input.pinned_crew_root,
+				pinnedStasisVault: input.pinned_stasis_vault_root
 			});
 		}
 
