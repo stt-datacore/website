@@ -36,8 +36,11 @@ type TypeTotals = {
 }
 
 const EventsPage = () => {
+	const { t } = React.useContext(GlobalContext).localized;
+
 	return (
 		<DataPageLayout
+			pageTitle={t("event_info.title")}
 			demands={[
 				"event_instances",
 				"event_stats",
@@ -50,6 +53,7 @@ const EventsPage = () => {
 	);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type EventsPageComponentProps = {
 }
 
@@ -97,7 +101,6 @@ const EventsPageComponent = (props: EventsPageComponentProps) => {
 
 	return (
 		<Container style={{ paddingTop: "4em", paddingBottom: "2em" }}>
-			<Header as="h2">{t("event_info.title")}</Header>
 
 			{loadingError && (
 				<Message negative>
