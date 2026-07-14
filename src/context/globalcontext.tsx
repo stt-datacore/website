@@ -9,7 +9,7 @@ import { MarketAggregation } from '../model/celestial';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { MarkdownEntry } from '../model/mdpages';
 
-export const CLIENT_API_VERSION = 32;
+export const CLIENT_API_VERSION = 33;
 
 const DEBUG_MODE = false;
 
