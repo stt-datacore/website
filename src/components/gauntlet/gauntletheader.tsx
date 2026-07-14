@@ -45,7 +45,8 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
         const seen = [] as string[];
 
         if (featuredGauntlet?.allCrew) {
-            for (let crew of featuredGauntlet.allCrew) {
+            const workCrew = featuredGauntlet.allCrew.filter(c => !c.preview);
+            for (let crew of workCrew) {
                 if (seen.includes(crew.symbol)) continue;
                 seen.push(crew.symbol);
                 //if (crew.ranks.gauntletRank <= 10) {
