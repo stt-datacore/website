@@ -9,8 +9,8 @@ import { EpochDiff, Highs } from "../model";
 import { CrewMember } from '../../../model/crew';
 import { StatsContext } from '../dataprovider';
 import { useStateWithStorage } from '../../../utils/storage';
-import SearchString from 'search-string/src/searchString';
 import { crewMatchesSearchFilter } from '../../../utils/crewsearch';
+import { Filter } from '../../../model/game-elements';
 
 export interface StatTrendsTableProps {
     prefilteredHighs?: Highs[];
@@ -129,7 +129,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
         return 0;
     }
 
-    function filterRow(row: EpochDiff, filters: SearchString[], filterType?: string) {
+    function filterRow(row: EpochDiff, filters: Filter[], filterType?: string) {
 
         if (exactOnly) {
             let pass = (row.crew.length < 2 || row.crew[0].skill_order.join("") === row.crew[1].skill_order.join("")) &&

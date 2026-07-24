@@ -9,6 +9,7 @@ export interface OfferCrew {
     crew: CrewMember[];
     seconds_remain?: number;
     description: string;
+    trait?: string;
 }
 
 export interface DropInfo {
@@ -34,6 +35,7 @@ export interface Offer {
     secondary_click_text?: string;
     secondary_click_action?: OfferClickAction;
     secondary_content?: OfferContent[];
+    trait?: string;
 }
 
 export interface OfferClickAction {

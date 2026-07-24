@@ -25,7 +25,7 @@ export function mergeItems(player_items: PlayerEquipmentItem[], items: Equipment
 		let itemEntry = items.find(i => i.symbol === item.symbol && !i.isReward);
 		if (itemEntry) {
 			data.push({
-				... itemEntry,
+				...itemEntry,
 				name: itemEntry.name,
 				type: itemEntry.type,
 				rarity: itemEntry.rarity,
@@ -342,7 +342,7 @@ export function checkReward(items: (EquipmentItem | EquipmentItem)[], reward: Re
 	if (!foundItem) {
 		let template_item = items.find(f => f.symbol === reward.symbol) ?? {} as EquipmentItem;
 		foundItem = {
-			... template_item,
+			...template_item,
 			...reward,
 			name: reward.name ?? "",
 			symbol: reward.symbol ?? "",

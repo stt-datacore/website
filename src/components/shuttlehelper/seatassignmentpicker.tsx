@@ -74,7 +74,7 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 		</Modal>
 	);
 
-	function renderTable(): JSX.Element {
+	function renderTable(): React.ReactNode {
 		let assignedCrew: IRosterCrew | undefined = undefined;
 		const seated: ISeatAssignment | undefined = assigned.find(seat =>
 			seat.shuttleId === shuttleId && seat.seatNum == seatNum
@@ -120,7 +120,7 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 		);
 	}
 
-	function renderRow(score: ICrewScore, idx: number, assignedCrew: IRosterCrew | undefined): JSX.Element {
+	function renderRow(score: ICrewScore, idx: number, assignedCrew: IRosterCrew | undefined): React.ReactNode {
 		const scoreCrew: IRosterCrew | undefined = rosterCrew.find(crew => crew.id === score.id);
 		if (!scoreCrew) return <></>;
 
@@ -166,7 +166,7 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 		);
 	}
 
-	function renderScoreChange(shuttleId: string, seatNum: number, replacementScore: number = 0): JSX.Element {
+	function renderScoreChange(shuttleId: string, seatNum: number, replacementScore: number = 0): React.ReactNode {
 		if (!shuttleScores[shuttleId]) return <></>;
 		const newScores = [...shuttleScores[shuttleId].scores];
 		newScores[seatNum] = replacementScore;

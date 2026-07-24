@@ -348,7 +348,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
             }
             dateSortCrew(crew);
             itemtraits[symbol].sort((a, b) => b.symbols.length - a.symbols.length);
-            let allcrew = [... new Set(itemtraits[symbol].map(m => m.symbols).flat()) ];
+            let allcrew = [...new Set(itemtraits[symbol].map(m => m.symbols).flat()) ];
             let common = traitsInCommon(allcrew);
             for (let traitset of itemtraits[symbol]) {
                 if (common.includes(traitset.trait)) {

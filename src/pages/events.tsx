@@ -36,8 +36,11 @@ type TypeTotals = {
 }
 
 const EventsPage = () => {
+	const { t } = React.useContext(GlobalContext).localized;
+
 	return (
 		<DataPageLayout
+			pageTitle={t("event_info.title")}
 			demands={[
 				"event_instances",
 				"event_stats",
@@ -50,6 +53,7 @@ const EventsPage = () => {
 	);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type EventsPageComponentProps = {
 }
 
@@ -97,7 +101,6 @@ const EventsPageComponent = (props: EventsPageComponentProps) => {
 
 	return (
 		<Container style={{ paddingTop: "4em", paddingBottom: "2em" }}>
-			<Header as="h2">{t("event_info.title")}</Header>
 
 			{loadingError && (
 				<Message negative>
@@ -177,7 +180,7 @@ const EventsPageComponent = (props: EventsPageComponentProps) => {
 										)}
 									</Label>
 									<LazyImage
-										src={`${process.env.GATSBY_ASSETS_URL}${eventInfo.image}`}
+										src={`${process.env.VITE_ASSETS_URL}${eventInfo.image}`}
 										size="large"
 										style={{maxHeight: '159px'}}
 										onError={(e) => (e.target.style.visibility = "hidden")}
@@ -612,7 +615,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 		let instance = event_instances.find(f => f.instance_id === stat.instance_id);
 		let url = '';
 		if (instance?.image) {
-			url = `${process.env.GATSBY_ASSETS_URL}${instance.image}`;
+			url = `${process.env.VITE_ASSETS_URL}${instance.image}`;
 		}
 		if (stat.event_name === 'The Darkest Timeline') {
 			console.log("here");

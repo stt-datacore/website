@@ -6,7 +6,8 @@ import {
 	Message,
 	Popup,
 	SemanticICONS,
-	Tab
+	Tab,
+	TabPane
 } from 'semantic-ui-react';
 
 import { Voyage } from '../../../model/player';
@@ -71,12 +72,12 @@ export const ResultPane = (props: ResultPaneProps) => {
 
 	if (!proposal) {
 		return (
-			<Tab.Pane>
+			<TabPane>
 				<div style={{ textAlign: 'center' }}>
 					<Image centered src='/media/voyage-wait-icon.gif' />
 					<Button onClick={() => abortCalculation(request.id)}>Abort</Button>
 				</div>
-			</Tab.Pane>
+			</TabPane>
 		);
 	}
 
@@ -147,7 +148,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 									{tfmt('voyage.estimate.projected_vp', {
 										n: <b>{proposal.estimate.vpDetails.total_vp.toLocaleString()}</b>
 									})}
-									{` `}<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
+									{` `}<img src={`${process.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />;
 									{` `}{tfmt('voyage.estimate.event_crew_bonus', {
 										n: <b>+{t('global.n_%', { n: Math.round((proposal.eventCrewBonus ?? 0) * 100) })}</b>
 									})}
@@ -196,7 +197,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 					</div>
 				</Message>
 			)}
-			<Tab.Pane>
+			<TabPane>
 				<div style={{...flexCol, alignItems: 'stretch', gap: '0.5em'}}>
 					<VoyageStatsAccordion
 						configSource={configSource}
@@ -240,7 +241,7 @@ export const ResultPane = (props: ResultPaneProps) => {
 				{calcState === CalculatorState.Done && (
 					<CIVASMessage voyageConfig={voyageConfig} estimate={proposal.estimate} />
 				)}
-			</Tab.Pane>
+			</TabPane>
 		</React.Fragment>
 	);
 

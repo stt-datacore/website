@@ -1,14 +1,14 @@
-import { Link } from 'gatsby';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Checkbox, Dropdown, Form, Header, Loader } from 'semantic-ui-react';
 
+import CONFIG from '../../components/CONFIG';
+import ProspectPicker from '../../components/prospectpicker';
+import { ITableConfigRow } from '../../components/searchabletable';
+import { GlobalContext } from '../../context/globalcontext';
 import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { CompletionState, PlayerBuffMode } from '../../model/player';
-import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../../components/CONFIG';
-import { ITableConfigRow } from '../../components/searchabletable';
-import ProspectPicker from '../../components/prospectpicker';
-import { oneCrewCopy, applyCrewBuffs, cheapestFFFE } from '../../utils/crewutils';
+import { applyCrewBuffs, cheapestFFFE, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { CrewConfigTable } from './crewconfigtable';
@@ -29,17 +29,17 @@ import { getQuipmentAsItemWithBonus } from '../../utils/itemutils';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { CrewBuffModes, SpecialViewMode, SpecialViews } from './commonoptions';
+import { CheapestFilters, DefaultCheapestOpts } from './filters/cheapestfffe';
 import { ObtainedFilter } from './filters/crewobtained';
+import { CrewOfferFilter } from './filters/crewofferfilter';
 import { ReleaseDateFilter } from './filters/crewreleasedate';
 import { CrewSkillOrder } from './filters/crewskillorder';
-import { CheapestFilters, DefaultCheapestOpts } from './filters/cheapestfffe';
 import { PowerMode, QuipmentToolsFilter } from './filters/quipmenttools';
 import RosterSummary from './rostersummary';
 import { CrewDataCoreRankCells, getDataCoreRanksTableConfig } from './views/datacoreranks';
 import { QuipmentScoreCells, getQuipmentTableConfig } from './views/quipmentscores';
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from './views/topquipment';
 import WeightingInfoPopup from './weightinginfo';
-import { CrewOfferFilter } from './filters/crewofferfilter';
 
 interface IRosterTableContext {
 	pageId: string;
@@ -102,7 +102,7 @@ export const RosterTable = (props: RosterTableProps) => {
 				const crew = globalContext.core.crew.find(crew => crew.symbol === prospect.symbol);
 				if (crew) {
 					const crewman = {
-						... oneCrewCopy(crew),
+						...oneCrewCopy(crew),
 						id: rosterPlusProspects.length,
 						prospect: true,
 						have: false,
@@ -195,19 +195,19 @@ type TableView =
 interface IToggleableFilter {
 	id: string;
 	available: boolean;
-	form: JSX.Element;
+	form: React.ReactNode;
 };
 
 interface ITableView {
 	id: TableView;
 	available: boolean;
 	optionText: string;
-	form?: JSX.Element;
+	form?: React.ReactNode;
 	tableConfig: ITableConfigRow[];
-	renderTableCells: (crew: IRosterCrew) => JSX.Element;
+	renderTableCells: (crew: IRosterCrew) => React.ReactNode;
 	spinText?: string;
 	worker?: (crew: IRosterCrew[]) => Promise<IRosterCrew[]>;
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.ReactNode;
 };
 
 interface ITableViewOption {
@@ -373,7 +373,7 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 						currentWorker.terminate();
 					}
 
-					let worker = new UnifiedWorker();
+					let worker = new UnifiedWorker('lots-worker.ts');
 					worker.addEventListener('message', (result) => {
 						resolve(result.data.result);
 					});
@@ -660,9 +660,9 @@ const CrewConfigTableMaker = (props: { tableType: RosterType }) => {
 
 	React.useEffect(() => {
 		if (preparedCrew) {
-			const maxedSkills = [... new Set(preparedCrew.filter(f => f.have && f.any_immortal).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			const maxedSkills = [...new Set(preparedCrew.filter(f => f.have && f.any_immortal).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
 			setMaxedSkills(maxedSkills);
-			const ownedSkills = [... new Set(preparedCrew.filter(f => f.have).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
+			const ownedSkills = [...new Set(preparedCrew.filter(f => f.have).map(pc => `${pc.skill_order.join()},${pc.max_rarity}`))];
 			setOwnedSkills(ownedSkills);
 		}
 	}, [preparedCrew]);

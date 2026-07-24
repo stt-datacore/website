@@ -1,4 +1,4 @@
-import { navigate } from "gatsby";
+import { NavigateFunction } from "react-router-dom";
 import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
 
@@ -10,6 +10,6 @@ import { PlayerCrew } from "../model/player";
  * @param buffs Your active buffs
  * @param allCrew All crew
  */
-export function navToCrewPage(crew: PlayerCrew | CrewMember) {
+export function navToCrewPage(crew: PlayerCrew | CrewMember, navigate: NavigateFunction) {
 	navigate('/crew/' + crew.symbol);
 }
