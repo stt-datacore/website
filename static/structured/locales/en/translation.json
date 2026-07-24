@@ -1906,6 +1906,7 @@
             "average_difference": "Average difference",
             "difference": "Difference",
             "moving_average": "Moving average",
+            "moving_average_difference": "Moving average difference",
             "resource": "Resource",
             "timestamp": "Timestamp",
             "total_difference": "Total difference"
