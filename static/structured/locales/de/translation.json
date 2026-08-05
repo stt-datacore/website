@@ -2366,7 +2366,9 @@
     },
     "ship_ownership": {
         "owned": "Nur Schiffe anzeigen, die im Besitz sind",
-        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind"
+        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind",
+        "maxed": "Nur eigene, voll ausgebaute Schiffe anzeigen",
+        "unmaxed": "Nur eigene Schiffe anzeigen, die noch nicht maximal ausgebaut sind"
     },
     "shuttle_helper": {
         "calculator": {
