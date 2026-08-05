@@ -2367,7 +2367,9 @@
     },
     "ship_ownership": {
         "owned": "Only show owned ships",
-        "unowned": "Only show unowned ships"
+        "unowned": "Only show unowned ships",
+        "maxed": "Only show owned, maxed ships",
+        "unmaxed": "Only show owned, unmaxed ships"
     },
     "shuttle_helper": {
         "calculator": {
