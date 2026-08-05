@@ -2378,7 +2378,9 @@
     },
     "ship_ownership": {
         "owned": "Afficher uniquement les vaisseaux possédés",
-        "unowned": "Afficher uniquement les vaisseaux sans propriétaire"
+        "unowned": "Afficher uniquement les vaisseaux sans propriétaire",
+        "maxed": "Afficher uniquement les vaisseaux possédés et au niveau maximum",
+        "unmaxed": "Afficher uniquement les vaisseaux possédés qui ne sont pas au niveau maximum"
     },
     "shuttle_helper": {
         "calculator": {
