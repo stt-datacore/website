@@ -2376,7 +2376,9 @@
     },
     "ship_ownership": {
         "owned": "Mostrar solo buques propios",
-        "unowned": "Mostrar solo buques sin propietario"
+        "unowned": "Mostrar solo buques sin propietario",
+        "maxed": "Mostrar solo buques en propiedad al máximo nivel",
+        "unmaxed": "Mostrar solo buques en propiedad que no hayan alcanzado el nivel máximo"
     },
     "shuttle_helper": {
         "calculator": {
