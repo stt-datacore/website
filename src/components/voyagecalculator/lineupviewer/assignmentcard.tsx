@@ -105,13 +105,13 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		</Card>
 	);
 
-	function renderCrewVP(): JSX.Element {
+	function renderCrewVP(): React.ReactNode {
 		const crewVP: number = getCrewEventBonus(voyageConfig, crew);
 		if (crewVP === 0) return <></>;
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '.3em', flexWrap: 'nowrap' }}>
 				<span>+{t('global.n_%', { n: crewVP * 100 })}</span>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1em' }} className='invertibleIcon' />
 			</div>
 		);
 	}
@@ -122,7 +122,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		else return (
 			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
-					<img src={`${process.env.GATSBY_ASSETS_URL}captains_bridge_antimatter.png`} style={{ height: '1em' }} />
+					<img src={`${process.env.VITE_ASSETS_URL}captains_bridge_antimatter.png`} style={{ height: '1em' }} />
 					<span>{t('global.exclusive')}</span>
 					<span>+{exclusiveBonus}</span>
 				</div>
@@ -130,7 +130,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 		);
 	}
 
-	function renderTraitBonus(): JSX.Element {
+	function renderTraitBonus(): React.ReactNode {
 		const traitBonus: number = getCrewTraitBonus(voyageConfig, crew, trait);
 		if (traitBonus === 0) return <></>;
 
@@ -138,7 +138,7 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 				{traitBonus === 25 && (
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.5em' }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 						<span>{TRAIT_NAMES[trait]}</span>
 						<span>+25</span>
 					</div>
@@ -146,20 +146,20 @@ export const AssignmentCard = (props: AssignmentCardProps) => {
 				{traitBonus > 0 && traitBonus !== 25 && (
 					<div style={{ display: 'flex', alignItems: 'center', gap: '.3em' }}>
 						<span>+{traitBonus}</span>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
 					</div>
 				)}
 			</div>
 		);
 	}
 
-	function renderCritTraitBonus(): JSX.Element {
+	function renderCritTraitBonus(): React.ReactNode {
 		if (voyageConfig.voyage_type === 'encounter' && 'event_content' in voyageConfig) {
 			let traits = crew.traits.filter(f => voyageConfig.event_content?.encounter_traits?.includes(f));
 			if (traits?.length) {
 				return (
 					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '.5em' }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em' }} className='invertibleIcon' />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_shipability_overcharge.png`} style={{ height: '1em' }} className='invertibleIcon' />
 						<span>{traits?.map(trait => TRAIT_NAMES[trait]).join(", ")}</span>
 					</div>
 				)

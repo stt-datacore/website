@@ -44,7 +44,7 @@ export const UnneededItems = () => {
 		</React.Fragment>
 	);
 
-	function renderWarning(): JSX.Element {
+	function renderWarning(): React.ReactNode {
 		return (
 			<Message warning>
 				<Message.Header>{t('items_unneeded.limit_warning.title')}</Message.Header>
@@ -415,7 +415,7 @@ const FuelGrid = (props: FuelGridProps) => {
 		</Segment>
 	);
 
-	function renderLink(itemName: string, itemEnglish?: string): JSX.Element {
+	function renderLink(itemName: string, itemEnglish?: string): React.ReactNode {
 		const itemUrl: string = 'https://sttwiki.org/wiki/'+(itemEnglish ?? itemName).replace(/\s/g,'_').replace(/’/g,'\'');
 		return <a href={itemUrl}>{itemName}</a>;
 	};

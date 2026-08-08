@@ -165,7 +165,7 @@ export const RetrievalCrew = () => {
 							/>
 							{ownedFilter === 'wishlist' && (
 								<Form.Field>
-									<Button	/* Manage Wishlist... */
+									<Button	/* Manage Wishlist...*/
 										onClick={() => setShowWishlistModal(true)}
 									>
 										{t('retrieval.wishlist.manage_ellipses')}

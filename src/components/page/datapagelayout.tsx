@@ -1,21 +1,21 @@
 import React from 'react';
-import { withPrefix, graphql, useStaticQuery } from 'gatsby';
+
 import { Helmet as HelmetDep } from 'react-helmet';
 
-import { GlobalContext } from '../../context/globalcontext';
 import { ValidDemands } from '../../context/datacontext';
+import { GlobalContext } from '../../context/globalcontext';
 
 import { Container, Header } from 'semantic-ui-react';
-import { Navigation } from './navigation';
-import Dashboard from './dashboard';
 import PlayerHeader from '../../components/playerdata/playerheader';
-import { AlertContext, AlertProvider } from '../alerts/alertprovider';
 import { EnergyLogContextProvider } from '../../context/energylogcontext';
+import { AlertProvider } from '../alerts/alertprovider';
+import Dashboard from './dashboard';
+import { Navigation } from './navigation';
 
 const DEBUG_MODE = false;
 
 export interface DataPageLayoutProps {
-	children: JSX.Element;
+	children: React.ReactNode;
 
 	pageId?: string;
 
@@ -23,13 +23,13 @@ export interface DataPageLayoutProps {
 	 * Title of the page, for use in both datapage header, title, and meta tags
 	 */
 	pageTitle?: string;
-	pageTitleJSX?: JSX.Element;
+	pageTitleJSX?: React.ReactNode;
 
 	/**
 	 * One or two-sentence description of the page, for use in both datapage header and meta tags
 	 */
 	pageDescription?: string;
-	pageDescriptionJSX?: JSX.Element;
+	pageDescriptionJSX?: React.ReactNode;
 
 	/**
 	 * Default demands are crew, items, all_ships, all_buffs, and cadet
@@ -72,10 +72,9 @@ const MainContent = ({ children, narrowLayout }) => {
 
 const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
-	const alertContext = React.useContext(AlertContext);
-	const { drawAlertModal } = alertContext;
+	const { t } = globalContext.localized;
 
-	const { children, pageId, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
+	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -110,15 +109,15 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 					description={pageDescription}
 				/>
 				<Navigation
-					sidebarTarget={topAnchor}
+					sidebarTarget={topAnchor as any}
 					requestPanel={(target: string, panel: string | undefined) => {
 						if (target === 'player') {
 							setPlayerPanel(panel);
-							if (panel) scrollTo(contentAnchor);
+							if (panel) scrollTo(contentAnchor as any);
 						}
 						else if (target === 'dashboard') {
 							setDashboardPanel(panel);
-							if (panel) scrollTo(topAnchor);
+							if (panel) scrollTo(topAnchor as any);
 						}
 					}}
 				>
@@ -127,7 +126,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 							<Dashboard
 								openInputPanel={() => {
 									setPlayerPanel('input');
-									scrollTo(contentAnchor);
+									scrollTo(contentAnchor as any);
 								}}
 								narrow={narrowLayout ?? false}
 								activePanel={dashboardPanel}
@@ -154,12 +153,12 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		</AlertProvider>
 	);
 
-	function renderContents(): JSX.Element {
+	function renderContents(): React.ReactNode {
 		if (DEBUG_MODE) console.log("renderContents()");
 		return (
 			<React.Fragment>
 				{!isReady &&
-					<div className='ui medium centered text active inline loader'>{notReadyMessage ?? 'Loading data...'}</div>
+					<div className='ui medium centered text active inline loader'>{notReadyMessage ?? t('spinners.default')}</div>
 				}
 				{isReady &&
 					<React.Fragment>
@@ -186,33 +185,34 @@ type DataPageHelmetProps = {
 
 const DataPageHelmet = (props: DataPageHelmetProps) => {
 	const { title, description } = props;
-	const data = useStaticQuery(graphql`
-		query {
-			site {
-				siteMetadata {
-					defaultTitle: title
-					titleTemplate
-					defaultDescription: description
-					baseUrl
-				}
+	const baseUrl = `${document.location.origin}`;
+	const data = {
+		site: {
+			siteMetadata: {
+				defaultTitle: title,
+				titleTemplate: '',
+				defaultDescription: description,
+				baseUrl
 			}
 		}
-	`);
+	}
 
 	if (DEBUG_MODE) console.log("Helmet component render");
 	const Helmet = HelmetDep as any;
+	function withPrefix(arg0: string): string | undefined {
+		return "/" + arg0;
+	}
+	const pageTitle = `STT DataCore - ${title}`;
 	return (
-		<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
+		<Helmet titleTemplate={pageTitle} defaultTitle={pageTitle}>
 			{title && <title>{title}</title>}
 			<meta property='og:type' content='website' />
-			<meta property='og:title' content={`${title ? `${title} - ` : ''}${data.site.siteMetadata.defaultTitle}`} />
-			<meta property='og:site_name' content='DataCore' />
+			<meta property='og:title' content={pageTitle} />
+			<meta property='og:site_name' content='`Star Trek Timelines DataCore' />
 			<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
 			<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
 			<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
 			<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
-			<script src={withPrefix('styles/theming.js')} type='text/javascript' />
-			<script src={withPrefix('polyfills.js')} type='text/javascript' />
 		</Helmet>
 	);
 };

@@ -37,7 +37,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 		return true;
 	}
 
-	function renderCopyPaste(): JSX.Element {
+	function renderCopyPaste(): React.ReactNode {
 		if (!quest) return <></>
 		return (
 			<React.Fragment>

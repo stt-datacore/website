@@ -1,5 +1,4 @@
 import React from 'react';
-import { navigate } from "gatsby";
 import { Menu, Dropdown, Icon, Sidebar, Grid, Container } from "semantic-ui-react";
 import { v4 } from "uuid";
 import { GlobalContext } from "../../context/globalcontext";
@@ -10,12 +9,13 @@ import { useStateWithStorage } from '../../utils/storage';
 import { PlayerMenu } from "./playermenu";
 import { SupportedLanguage, getBrowserLanguage } from '../../context/localizedcontext';
 import { AlertContext } from '../alerts/alertprovider';
+import { useNavigate } from 'react-router-dom';
 
 
 type NavigationProps = {
 	requestPanel: (target: string, panel: string | undefined) => void;
     sidebarTarget?: React.RefObject<HTMLElement>;
-    children: JSX.Element;
+    children: React.ReactNode;
 };
 
 function printLang(lang?: SupportedLanguage) {
@@ -26,15 +26,15 @@ function printLang(lang?: SupportedLanguage) {
 function getLanguageIcon(lang?: SupportedLanguage) {
 	switch (lang) {
 		case 'en':
-			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_english_icon.png`;
+			return `${process.env.VITE_ASSETS_URL}atlas/flag_english_icon.png`;
 		case 'de':
-			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_german_icon.png`;
+			return `${process.env.VITE_ASSETS_URL}atlas/flag_german_icon.png`;
 		case 'fr':
-			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_french_icon.png`;
+			return `${process.env.VITE_ASSETS_URL}atlas/flag_french_icon.png`;
 		case 'sp':
-			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_spanish_icon.png`;
+			return `${process.env.VITE_ASSETS_URL}atlas/flag_spanish_icon.png`;
 		default:
-			return `${process.env.GATSBY_ASSETS_URL}atlas/flag_english_icon.png`;
+			return `${process.env.VITE_ASSETS_URL}atlas/flag_english_icon.png`;
 
 	}
 }
@@ -57,7 +57,8 @@ function getLanguageFullName(lang?: SupportedLanguage) {
 export const Navigation = (props: NavigationProps) => {
 	const windowGlobal = typeof globalThis.window !== 'undefined' ? globalThis.window : undefined;
 	const globalContext = React.useContext(GlobalContext);
-
+	const navigate = useNavigate();
+	const { extraPages } = globalContext;
 	const { t, language, setPreferredLanguage } = globalContext.localized;
 
     const [isMobile, setIsMobile] = React.useState(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
@@ -85,7 +86,7 @@ export const Navigation = (props: NavigationProps) => {
 	// 	props.requestPanel(target, panel);
 	// 	setOpenBar(false);
 	// }
-	let portrait = `${process.env.GATSBY_ASSETS_URL}${globalContext.player.playerData?.player?.character?.crew_avatar
+	let portrait = `${process.env.VITE_ASSETS_URL}${globalContext.player.playerData?.player?.character?.crew_avatar
 		? (globalContext.player.playerData?.player?.character?.crew_avatar?.portrait?.file ?? globalContext.player.playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
 		: 'crew_portraits_cm_empty_sm.png'}`;
 
@@ -102,7 +103,7 @@ export const Navigation = (props: NavigationProps) => {
 		// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
 		{ optionKey: 'event', src: '/media/event.png', title: t('menu.tools.event_planner'), link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
 		{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: t('menu.tools.gauntlet'), link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-		{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.tools.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		{ optionKey: 'cite', src: `${process.env.VITE_ASSETS_URL}/atlas/star_reward.png`, title: t('menu.tools.citation_optimizer'), link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 		{ optionKey: 'voyage', src: "/media/voyage.png", title: t('menu.tools.voyage_calculator'), link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 		{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: t('menu.tools.voyage_history'), link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 		{ optionKey: 'collection', src: '/media/vault.png', title: t('menu.tools.collection_planner'), link: "/collections", sidebarRole: 'item' },	// Collections added v4
@@ -137,7 +138,7 @@ export const Navigation = (props: NavigationProps) => {
 			}
 		},
 		{
-			src: `${process.env.GATSBY_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
+			src: `${process.env.VITE_ASSETS_URL}${'crew_portraits_cm_empty_sm.png'}`,
 			title: isMobile ? undefined : t('menu.player.import_player_data_ellipses'),
 			customAction: () => props.requestPanel('player', 'input'),
 			checkVisible: (data) => {
@@ -267,7 +268,7 @@ export const Navigation = (props: NavigationProps) => {
 			sidebarRole: 'heading',
 			subMenu: toolsSubMenu,
 			checkVisible: () => !isMobile,
-			customRender: (data) => renderColumnsMenu(data, 2)
+			customRender: (data) => renderColumnsMenu(data, navigate, 2)
 		},
 		{
 			title: t('menu.tools_title'),
@@ -286,7 +287,7 @@ export const Navigation = (props: NavigationProps) => {
 		// 			src: '/media/crew_icon.png',
 		// 			subMenu: [
 		// 				{ optionKey: 'behold', src: '/media/portal.png',title: "Behold Helper", link: "/behold", sidebarRole: 'item' },	// Behold available at launch
-		// 				{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+		// 				{ optionKey: 'cite', src: `${process.env.VITE_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 		// 				{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
 		// 				{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
 		// 			]
@@ -384,7 +385,7 @@ export const Navigation = (props: NavigationProps) => {
 				let fopt = popts.find(o => o.optionKey === actmnu[xkey]);
 				if (fopt) {
 					pages[p] = {
-						... fopt,
+						...fopt,
 						title: undefined,
 						optionKey: undefined,
 						tooltip: fopt.textTitle ?? (typeof fopt.title === 'string' ? fopt.title : ''),
@@ -395,7 +396,7 @@ export const Navigation = (props: NavigationProps) => {
 		}
 	}
 
-	const otherPages = useOtherPages();
+	const otherPages = (extraPages ?? []).filter(page => page.slug !== 'about' && !page.bigbook_section);
 	const about = [
 		{ title: 'About DataCore', link: '/about', sidebarRole: 'item' },
 		{ title: 'Announcements', link: '/announcements', sidebarRole: 'item' }
@@ -424,13 +425,13 @@ export const Navigation = (props: NavigationProps) => {
 
 	otherPages.map((page) => {
 		about.push(
-			{ title: page.title, link: page.slug, sidebarRole: 'item' }
+			{ title: page.title, link: '/' + page.slug, sidebarRole: 'item' }
 		);
 	});
 
-	const sidebarItems = [] as JSX.Element[];
-	const menuItems = [] as JSX.Element[];
-	const rightItems = [] as JSX.Element[];
+	const sidebarItems = [] as React.ReactNode[];
+	const menuItems = [] as React.ReactNode[];
+	const rightItems = [] as React.ReactNode[];
 
 	for (let page of pages) {
 		if (page.right) continue;
@@ -447,10 +448,10 @@ export const Navigation = (props: NavigationProps) => {
 					menuItems.push(page.customRender(page));
 				}
 				else if (page.subMenu) {
-					menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
+					menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate));
 				}
 				else {
-					menuItems.push(drawMenuItem(page));
+					menuItems.push(drawMenuItem(page, navigate));
 				}
 			}
 			else {
@@ -458,10 +459,10 @@ export const Navigation = (props: NavigationProps) => {
 					sidebarItems.push(page.customRender(page));
 				}
 				else if (page.subMenu) {
-					sidebarItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, true));
+					sidebarItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate, true));
 				}
 				else {
-					sidebarItems.push(drawMenuItem(page));
+					sidebarItems.push(drawMenuItem(page, navigate));
 				}
 			}
 		}
@@ -470,10 +471,10 @@ export const Navigation = (props: NavigationProps) => {
 				menuItems.push(page.customRender(page));
 			}
 			else if (page.subMenu) {
-				menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
+				menuItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate));
 			}
 			else {
-				menuItems.push(drawMenuItem(page));
+				menuItems.push(drawMenuItem(page, navigate));
 			}
 		}
 	}
@@ -491,19 +492,19 @@ export const Navigation = (props: NavigationProps) => {
 			rightItems.push(page.customRender(page));
 		}
 		else if (page.subMenu) {
-			rightItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu));
+			rightItems.push(createSubMenu(page.textTitle ?? (typeof page.title === 'string' ? page.title : ''), page.subMenu, navigate));
 		}
 		else {
-			rightItems.push(drawMenuItem(page));
+			rightItems.push(drawMenuItem(page, navigate));
 		}
 	}
 
 	if (!isMobile) {
-		rightItems.unshift(createSubMenu(t('menu.about_title'), about));
+		rightItems.unshift(createSubMenu(t('menu.about_title'), about, navigate));
 
 	}
 	else {
-		sidebarItems.push(createSubMenu(t('menu.about_title'), about, true));
+		sidebarItems.push(createSubMenu(t('menu.about_title'), about, navigate, true));
 	}
 
 	if (typeof windowGlobal !== 'undefined') {

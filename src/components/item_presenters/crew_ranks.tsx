@@ -1,4 +1,4 @@
-import { Link, navigate } from 'gatsby';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { Accordion, Divider, Header, Icon, Segment, SemanticICONS, SemanticWIDTHS, Statistic } from 'semantic-ui-react';
 
@@ -22,6 +22,8 @@ type CrewRankHighlightsProps = {
 export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 	const { crew, compact } = props;
 	const { t } = React.useContext(GlobalContext).localized;
+	const navigate = useNavigate();
+
 	if (compact) {
 		return (
 			<div style={{ textAlign: 'center' }}>
@@ -79,9 +81,9 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				/>
 
 				<StatLabel title={t('rank_names.voyage_rank')}
-					value={rankLinker(false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')} />
+					value={rankLinker(navigate, false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')} />
 				<StatLabel title={t('rank_names.gauntlet_rank')}
-					value={rankLinker(false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')} />
+					value={rankLinker(navigate, false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')} />
 			</div>
 
 			<div style={{
@@ -98,12 +100,12 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 
 				<StatLabel
 					title={t('rank_names.scores.overall_rank')}
-					value={crew.ranks.scores.overall_rank ? rankLinker(false, crew.ranks.scores.overall_rank, crew.symbol, 'ranks.scores.overall', 'descending', 'rarity:' + crew.max_rarity) : '?'}
+					value={crew.ranks.scores.overall_rank ? rankLinker(navigate, false, crew.ranks.scores.overall_rank, crew.symbol, 'ranks.scores.overall', 'descending', 'rarity:' + crew.max_rarity) : '?'}
 				/>
 
 				<StatLabel
 					title={t('rank_names.cab_rank')}
-					value={crew.cab_ov_rank ? rankLinker(false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:' + crew.max_rarity) : '?'}
+					value={crew.cab_ov_rank ? rankLinker(navigate, false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:' + crew.max_rarity) : '?'}
 				/>
 
 				{!isNever && <>
@@ -155,6 +157,7 @@ type CrewRanksProps = {
 
 export const CrewRanks = (props: CrewRanksProps) => {
 	const { crew, myCrew } = props;
+	const navigate = useNavigate();
 	const { t } = React.useContext(GlobalContext).localized;
 	const [showPane, setShowPane] = React.useState(false);
 	const title = !!myCrew ? getMyCrewTitle(crew, myCrew) : getCoolStats(t, crew, false);
@@ -182,11 +185,11 @@ export const CrewRanks = (props: CrewRanksProps) => {
 		</Accordion>
 	);
 
-	function renderOtherRanks(): JSX.Element {
-		let v = [] as JSX.Element[];
-		let g = [] as JSX.Element[];
-		let b = [] as JSX.Element[];
-		let o = [] as JSX.Element[];
+	function renderOtherRanks(): React.ReactNode {
+		let v = [] as React.ReactNode[];
+		let g = [] as React.ReactNode[];
+		let b = [] as React.ReactNode[];
+		let o = [] as React.ReactNode[];
 
 		const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
 		const widths: SemanticWIDTHS = isMobile ? 'two' : 'three';
@@ -207,7 +210,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 			: crew.ranks[rank].rank;
 
 		const formatLabel = (label: string) => {
-			let output: string | JSX.Element = '';
+			let output: string | React.ReactNode = '';
 			if (label.length > 15) {
 				output = label.split(' ').reduce((p, n) => p ? <>{p} {n}</> : <>{n}</>, <></>)
 			}
@@ -233,21 +236,21 @@ export const CrewRanks = (props: CrewRanksProps) => {
 				v.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{translateSkills(rank.slice(2).replace('_', ' / '), ' / ')}</Statistic.Label>
-						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, 'ranks.' + rank)}</Statistic.Value>
+						<Statistic.Value>{crew.ranks[rank] && rankLinker(navigate, !!myCrew, rankHandler(rank), crew.symbol, 'ranks.' + rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('G_')) {
 				g.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{translateSkills(rank.slice(2).replace('_', ' / '), ' / ')}</Statistic.Label>
-						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, 'ranks.' + rank)}</Statistic.Value>
+						<Statistic.Value>{crew.ranks[rank] && rankLinker(navigate, !!myCrew, rankHandler(rank), crew.symbol, 'ranks.' + rank)}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.startsWith('B_') && crew.ranks[rank]) {
 				b.push(
 					<Statistic key={rank}>
 						<Statistic.Label>{skillName(rank.slice(2))}</Statistic.Label>
-						<Statistic.Value>{crew.ranks[rank] && rankLinker(!!myCrew, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.slice(2))?.name ?? "", 'descending')}</Statistic.Value>
+						<Statistic.Value>{crew.ranks[rank] && rankLinker(navigate, !!myCrew, rankHandler(rank), crew.symbol, CONFIG.SKILLS_SHORT.find(c => c.short === rank.slice(2))?.name ?? "", 'descending')}</Statistic.Value>
 					</Statistic>
 				);
 			} else if (rank.endsWith("_rank")) {
@@ -306,7 +309,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 							<Statistic.Group widths="one" size={'mini'}>
 								<Statistic>
 									<Statistic.Label>{translateSkills(crew.ranks.voyTriplet.name, ' / ')}</Statistic.Label>
-									<Statistic.Value>{rankLinker(!!myCrew, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
+									<Statistic.Value>{rankLinker(navigate, !!myCrew, tripletHandler('voyTriplet'), crew.symbol, 'ranks.voyRank', 'ascending', tripletFilter)}</Statistic.Value>
 								</Statistic>
 							</Statistic.Group>
 							<Divider />
@@ -370,7 +373,7 @@ export const CrewRanks = (props: CrewRanksProps) => {
 	}
 };
 
-const rankLinker = (roster: boolean, rank: number, symbol: string, column: string, direction: string = 'ascending', search: string | undefined = undefined) => {
+const rankLinker = (navigate: NavigateFunction, roster: boolean, rank: number, symbol: string, column: string, direction: string = 'ascending', search: string | undefined = undefined) => {
 	if (roster) return (<>{rank}</>);
 	const linkState = {
 		search: search ?? '',

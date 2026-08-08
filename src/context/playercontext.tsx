@@ -194,7 +194,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
 
 		if (input.stripped !== true) {
-			setStripped({ ... structuredClone(strippedData), stripped: true });
+			setStripped({ ...structuredClone(strippedData), stripped: true });
 		}
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools

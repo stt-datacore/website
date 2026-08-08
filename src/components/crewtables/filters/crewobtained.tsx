@@ -1,8 +1,7 @@
 import React from 'react';
-import { Form, Dropdown, DropdownItemProps } from 'semantic-ui-react';
+import { Dropdown, DropdownItemProps, Form } from 'semantic-ui-react';
 
-import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
-import { printPortalStatus } from '../../../utils/crewutils';
+import { ICrewFilter, IRosterCrew } from '../../../components/crewtables/model';
 import { GlobalContext } from '../../../context/globalcontext';
 
 type ObtainedFilterProps = {
@@ -20,7 +19,7 @@ export const ObtainedFilter = (props: ObtainedFilterProps) => {
 
 	const [obtainedFilter, setObtainedFilter] = React.useState<string[] | undefined>(undefined as string[] | undefined);
 
-    const availObtained = [... new Set(crew.map(m => m.obtained)) ].sort();
+    const availObtained = [...new Set(crew.map(m => m.obtained)) ].sort();
 
 	const portalFilterOptions = [] as DropdownItemProps[];
 
@@ -58,7 +57,7 @@ export const ObtainedFilter = (props: ObtainedFilterProps) => {
 				selection
 				multiple={true}
 				options={portalFilterOptions}
-				value={obtainedFilter}
+				value={obtainedFilter || [].slice()}
 				onChange={(e, { value }) => setObtainedFilter(value as string[] | undefined)}
 				closeOnChange
 			/>

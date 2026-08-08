@@ -1,4 +1,4 @@
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import React from 'react';
 import { EquipmentItem } from '../../model/equipment';
 import { PlayerEquipmentItem, TranslateMethod } from '../../model/player';
@@ -11,7 +11,7 @@ import { SemanticWIDTHS } from 'semantic-ui-react';
 export interface CustomFieldDef {
 	field: string;
 	text: string;
-	format?: (value: any, context: any) => string | React.JSX.Element;
+	format?: (value: any, context: any) => string | React.ReactNode;
 	width?: SemanticWIDTHS;
 	reverse?: boolean,
     customCompare?: (a: any, b: any) => number;
@@ -89,7 +89,7 @@ export function printRequiredTraits(
     item: EquipmentItem,
     trait_names: { [key: string]: string },
     t?: TranslateMethod
-): JSX.Element {
+): React.ReactNode {
     if (item.kwipment) {
         if (item.traits_requirement?.length) {
             let req = item.traits_requirement!;
@@ -150,8 +150,8 @@ export interface FlavorConfig {
 export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipmentItem, config: FlavorConfig) {
     const { localized, crew: inputCrew } = config;
     const { t, tfmt } = localized;
-    let output = [] as JSX.Element[];
-
+    let output = [] as React.ReactNode[];
+    let xidx = 0;
     let flavor = item.flavor ?? "";
     if (flavor.startsWith("Equippable by:")) {
         let crew = flavor
@@ -163,7 +163,7 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
         if (crew?.length) {
             if (crew.length <= 5) {
                 output.push(
-                    <div>
+                    <div key={`item_flavor_${item.symbol}_${xidx++}`}>
                         {tfmt("items.equippable_by", {
                             crew: crew
                                 .map((crew) => (
@@ -180,7 +180,7 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
             }
             else {
                 output.push(
-                    <div>
+                    <div key={`item_flavor_${item.symbol}_${xidx++}`}>
                         {tfmt("items.equippable_by_n_crew", {
                             n: crew.length.toString()
                         })}
@@ -199,7 +199,7 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
         item.kwipment &&
         (item.traits_requirement?.length || item.max_rarity_requirement)
     ) {
-        let found: CrewMember[] | null = null;
+        let found: CrewMember[] | null;
 
         const bonus = getItemBonuses(item as EquipmentItem);
         const traits = localized.TRAIT_NAMES;
@@ -227,16 +227,11 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
         });
 
         if (found?.length) {
-            flavor ??= "";
-
-            if (flavor?.length) {
-                flavor += "\n";
-            }
             if (found.length > 5) {
                 if (item.traits_requirement?.length) {
                     if (item.max_rarity_requirement) {
                         output.push(
-                            <div>
+                            <div key={`item_flavor_${item.symbol}_${xidx}`}>
                                 {tfmt("items.equippable_by_rarity_traits", {
                                     rarity: (
                                         <span
@@ -253,25 +248,18 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
                                 })}
                             </div>
                         );
-                        flavor += t("items.equippable_by_rarity_traits", {
-                            rarity: CONFIG.RARITIES[item.max_rarity_requirement].name,
-                            traits: `${printRequiredTraits(item, traits, t)}`,
-                        });
                     } else {
                         output.push(
-                            <>
+                            <React.Fragment key={`item_flavor_${item.symbol}_${xidx}`}>
                                 {tfmt("items.equippable_by_traits", {
                                     traits: printRequiredTraits(item, traits, t),
                                 })}
-                            </>
+                            </React.Fragment>
                         );
-                        flavor += t("items.equippable_by_traits", {
-                            traits: `${printRequiredTraits(item, traits)}`,
-                        });
                     }
                 } else if (item.max_rarity_requirement) {
                     output.push(
-                        <div>
+                        <div key={`item_flavor_${item.symbol}_${xidx}`}>
                             {tfmt("items.equippable_by_rarity", {
                                 rarity: (
                                     <span
@@ -287,18 +275,14 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
                             })}
                         </div>
                     );
-                    flavor += t("items.equippable_by_rarity", {
-                        rarity: CONFIG.RARITIES[item.max_rarity_requirement].name,
-                    });
                 } else {
                     output.push(
-                        <div>{t("items.equippable_by", { crew: found.length.toString() })}</div>
+                        <div key={`item_flavor_${item.symbol}_${xidx}`}>{t("items.equippable_by", { crew: found.length.toString() })}</div>
                     );
-                    flavor += t("items.equippable_by", { crew: found.length.toString() });
                 }
             } else {
                 output.push(
-                    <div>
+                    <div key={`item_flavor_${item.symbol}_${xidx}`}>
                         {tfmt("items.equippable_by", {
                             crew: found
                                 .map((crew) => (
@@ -312,15 +296,11 @@ export function createFlavor(item: EquipmentItem | EquipmentItem | PlayerEquipme
                         })}
                     </div>
                 );
-
-                flavor += t("items.equippable_by", {
-                    crew: [...found.map((f) => f.symbol)].join(", "),
-                });
             }
         }
     }
     else if (flavor) {
-        output.push(<>{flavor}</>)
+        output.push(<React.Fragment key={`item_flavor_${item.symbol}_${xidx}`}>{flavor}</React.Fragment>)
     }
     return output;
 }

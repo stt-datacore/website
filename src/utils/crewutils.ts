@@ -12,7 +12,7 @@ import { TinyStore } from './tiny';
 import { demandsPerSlot } from './equipment';
 
 const tiny = TinyStore.getStore(`global_playerSettings`);
-export var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+export let gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
 tiny.subscribe((key) => {
 	if (key === 'noGradeColors') {
 		gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
@@ -365,7 +365,7 @@ export function download(filename: string, text: any) {
 	if (isText) {
 		downloadData(`data:${mimeType},${encodeURIComponent(text)}`, filename);
 	} else {
-		var a = new FileReader();
+		let a = new FileReader();
 		a.onload = (e) => {
 			if (e.target && e.target.result) downloadData(e.target.result as string, filename);
 		};
@@ -1114,7 +1114,7 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 	action.charge_phases.forEach(cp => {
 		// After {{seconds}}s, {{action}}
 		charge_time += cp.charge_time;
-		let phaseDescription = '';
+		let phaseDescription: string;
 
 		if (t) {
 			phaseDescription = t(`ship.charge_phase.after_seconds${short ? '_short' : ''}`, { seconds: `${charge_time}` });
@@ -1305,9 +1305,9 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 }
 
 export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | CrewMember, preferEnglish = true) {
+	let daxname: string;
 	switch(trait) {
 		case "dax":
-			let daxname = '';
 			if (Array.isArray(crewGroup)) {
 				daxname = (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
 			}
@@ -1316,6 +1316,10 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			}
 			if (daxname === 'Ezri') return daxname;
 			return 'Dax';
+		// case "una":
+		// 	return "Una";
+		// case "number_one":
+		// 	return "Number One";
 		case "tpring":
 			return "T'Pring";
 		case "mbenga":
@@ -1326,7 +1330,6 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			return "M. Burnham";
 		case "mburnham_sr":
 			return "M. Burnham, Sr."
-
 		default:
 			if (Array.isArray(crewGroup)) {
 				return (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
@@ -1368,6 +1371,8 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 			}
 		});
 	}
+	// if (variantTraits.includes("una")) variantTraits.push("number_one");
+	// else if (variantTraits.includes("number_one")) variantTraits.push("una");
 
 	return variantTraits;
 }
@@ -1638,10 +1643,10 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 		ableSet = Object.keys(map).map(key => Number.parseInt(key));
 	}
 
-	for (var ability of ableSet) {
+	for (let ability of ableSet) {
 		let currmap = map[ability];
 		if (currmap) {
-			for (var stat in currmap) {
+			for (let stat in currmap) {
 				let value = Number.parseInt(stat);
 				let actions = currmap[stat];
 				if (actions) {
@@ -1827,7 +1832,7 @@ export function powerSum(skills: Skill[]): { [key: string]: Skill } {
 	skills.forEach((skill) => {
 		if (!skill.skill) return;
 		if (!output[skill.skill]) {
-			output[skill.skill] = { ... skill };
+			output[skill.skill] = { ...skill };
 		}
 		else {
 			output[skill.skill] = skillAdd(output[skill.skill], skill) as Skill;

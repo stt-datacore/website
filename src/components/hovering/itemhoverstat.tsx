@@ -1,4 +1,3 @@
-import { navigate } from "gatsby";
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { EquipmentItem } from "../../model/equipment";
@@ -6,19 +5,22 @@ import { mergeItems } from "../../utils/itemutils";
 import CONFIG from "../CONFIG";
 import { ItemPresenter } from "../item_presenters/item_presenter";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { NavigateFunction } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
 export interface ItemHoverStatProps extends HoverStatProps {
     disableBuffs?: boolean;
-    navigate?: (symbol: string) => void;
     crewTargetGroup?: string;
     compact?: boolean;
+    navigate?: (link: string) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ItemHoverStatState extends HoverStatState<EquipmentItem> {
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ItemTargetProps extends HoverStatTargetProps<EquipmentItem | undefined> {
 }
 
@@ -59,11 +61,11 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
             const fi = playerData?.player?.character?.items?.find(f => f.symbol === dataIn?.symbol);
             const ci = items?.find(f => f.symbol === dataIn.symbol);
             if (fi && ci) {
-                dataOut = { ... ci, ... mergeItems([fi],[ci])[0] as EquipmentItem };
+                dataOut = { ...ci, ...mergeItems([fi],[ci])[0] as EquipmentItem };
             }
             else if (ci) {
                 if (dataOut) {
-                    dataOut = { ...dataOut, ... mergeItems([dataOut], [ci])[0] as EquipmentItem };
+                    dataOut = { ...dataOut, ...mergeItems([dataOut], [ci])[0] as EquipmentItem };
                 }
                 else {
                     dataOut = ci;
@@ -71,7 +73,7 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
             }
 
             if (dataIn && dataOut && !dataOut?.demandCrew?.length && !!dataIn?.demandCrew?.length) {
-                dataOut.demandCrew = [ ... dataIn.demandCrew ];
+                dataOut.demandCrew = [ ...dataIn.demandCrew ];
             }
         }
         if (dataIn?.needed && dataOut){
@@ -87,7 +89,9 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
 
     componentDidUpdate(): void {
         if (this.props.inputItem) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
+            let imgname = this.props.inputItem.icon?.file.slice(1).replace('/', '_');
+            if (imgname === undefined) return;
+            const url = `${process.env.VITE_ASSETS_URL}${imgname}.png`;
             if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();
@@ -109,7 +113,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
     constructor(props: ItemHoverStatProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
     }
@@ -122,7 +126,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
             let mr = item.rarity ?? 0;
             let clr = CONFIG.RARITIES[mr].color ?? 'gray';
             if (boxStyle.borderColor !== clr) {
-                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ...this.state, boxStyle: { ...boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }
@@ -130,12 +134,12 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         return false;
     }
 
-    protected renderContent = (): JSX.Element =>  {
+    protected renderContent = (): React.ReactNode =>  {
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
 
-        const { crewTargetGroup, targetGroup } = this.props;
+        const { crewTargetGroup, targetGroup, navigate } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
 
         const compact = this.props.compact ?? true;
@@ -153,7 +157,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
                 this.props.navigate(altItem.symbol);
             }
             else {
-                navigate('/item_info?symbol=' + altItem.symbol, { replace: false });
+                this.navigate('/item_info?symbol=' + altItem.symbol, { replace: false });
             }
             this.deactivate();
 
@@ -165,6 +169,7 @@ export class ItemHoverStat extends HoverStat<EquipmentItem, ItemHoverStatProps, 
         }
 
         return displayItem ? (<ItemPresenter
+            navigate={this.navigate as NavigateFunction}
             compact={compact}
             crewTargetGroup={crewTargetGroup}
             mobileWidth={mobileWidth}

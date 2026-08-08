@@ -1,4 +1,4 @@
-import { navigate } from 'gatsby';
+import { Navigate } from 'react-router-dom';
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { v4 } from 'uuid';
@@ -21,6 +21,7 @@ import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
 import { ICoreData } from './coremodel';
 import { SeasonalShop } from '../model/offers';
+import { RootSpin } from '../components/rootspin';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -58,13 +59,13 @@ export type ValidDemands =
 	'skill_bufs';
 
 export interface DataProviderProperties {
-	children: JSX.Element;
+	children: React.ReactNode;
 };
 
 export interface ICoreContext extends ICoreData {
 	ready: (demands: ValidDemands[], onReady: () => void) => void;
 	reset: () => boolean;
-	spin: (message?: string) => JSX.Element;
+	spin: (message?: string) => React.ReactNode;
 };
 
 interface IDemandResult {
@@ -143,12 +144,10 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	const spin = (message?: string) => {
 		message ??= "Loading..."
-		return (<span><Icon loading name='spinner' /> {message}</span>);
+		return <RootSpin message={message} />
 	};
 
 	if (!tsAck || !syncConfig) return spin();
-
-	const { token: syncToken } = syncConfig;
 
 	const providerValue = {
 		...data,
@@ -165,7 +164,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 	);
 
 	function ready(demands: ValidDemands[] = [], onReady: () => void): void {
-		demands = [ ... demands ];
+		demands = [ ...demands ];
 		// Not ready if any valid demands are being processed
 		if (isReadying) return;
 		// Fetch only if valid demand is not already satisfied
@@ -481,7 +480,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	if (!allCrew?.length) {
-		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${process.env.GATSBY_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
+		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${process.env.VITE_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
 	}
 
 	const rndcrew_pass1 = (allCrew.filter((a: CrewMember) => a.traits_hidden.includes(symbol) && a.max_rarity >= 4) ?? []) as CrewMember[];
@@ -500,7 +499,7 @@ export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	const idx = Math.floor(Math.random() * (rndcrew.length - 1));
 	const q = rndcrew[idx];
 	const img = q.imageUrlFullBody;
-	const fullurl = `${process.env.GATSBY_ASSETS_URL}${img}`;
+	const fullurl = `${process.env.VITE_ASSETS_URL}${img}`;
 
-	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => navigate("/crew/" + q.symbol)} />
+	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => Navigate({ to: "/crew/" + q.symbol })} />
 }
