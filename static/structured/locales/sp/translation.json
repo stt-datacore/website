@@ -1915,6 +1915,7 @@
             "average_difference": "Diferencia promedio",
             "difference": "Diferencia",
             "moving_average": "Media móvil",
+            "moving_average_difference": "Diferencia de medias móviles",
             "resource": "Recurso",
             "timestamp": "Marca de tiempo",
             "total_difference": "Diferencia total"
@@ -2375,7 +2376,9 @@
     },
     "ship_ownership": {
         "owned": "Mostrar solo buques propios",
-        "unowned": "Mostrar solo buques sin propietario"
+        "unowned": "Mostrar solo buques sin propietario",
+        "maxed": "Mostrar solo buques en propiedad al máximo nivel",
+        "unmaxed": "Mostrar solo buques en propiedad que no hayan alcanzado el nivel máximo"
     },
     "shuttle_helper": {
         "calculator": {
