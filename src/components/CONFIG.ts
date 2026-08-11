@@ -265,6 +265,7 @@ export default class CONFIG {
 		'tos', 'tas',
 		'tng', 'ds9', 'voy', 'ent',
 		'dsc', 'pic', 'low', 'snw', 'vst', 'sfa',
+		's31',
 		'original'
 	];
 
