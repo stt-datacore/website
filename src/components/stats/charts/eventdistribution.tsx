@@ -66,6 +66,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'snw', value: 'snw', text: t('series.snw') },
         { key: 'vst', value: 'vst', text: t('series.vst') },
         { key: 'sfa', value: 'sfa', text: t('series.sfa') },
+        { key: 's31', value: 's31', text: t('series.s31') },
         { key: 'original', value: 'original', text: t('series.original') },
     ];
 

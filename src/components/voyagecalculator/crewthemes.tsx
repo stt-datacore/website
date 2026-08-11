@@ -156,6 +156,7 @@ export const CrewThemes = (props: CrewThemesProps) => {
 			{ key: 'low', name: t('series.low') },
 			{ key: 'snw', name: t('series.snw') },
 			{ key: 'vst', name: t('series.vst') },
+			{ key: 's31', name: t('series.s31') },
 			{ key: 'sfa', name: t('series.sfa') },
 		] as ISeriesOption[]).forEach(series => {
 			const crewIds = props.rosterCrew.filter(crew => crew.traits_hidden.includes(series.key)).map(crew => crew.id);
