@@ -1533,6 +1533,7 @@
         },
         "game_info": {
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
+            "crew_releases": "Premières des équipages",
             "episodes": "Épisodes",
             "events": "Événements",
             "ftm_hof": "Temple de la renommée des FAMs",
