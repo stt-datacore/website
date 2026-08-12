@@ -97,6 +97,7 @@ export interface ObtainedMetadata {
     event_instance_id?: number;
     where?: EventWhere;
     additional_events?: AdditionalEvent[];
+    continuum_id?: number;
 }
 
 /**
