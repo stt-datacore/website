@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './styles/semantic.slate.css';
+import './styles/custom.css';
 import './styles/theming.js';
 
 const root = ReactDOM.createRoot(
