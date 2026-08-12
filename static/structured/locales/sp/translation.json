@@ -1531,6 +1531,7 @@
         },
         "game_info": {
             "bridge_crew_tool": "Herramienta de tripulación de puente",
+            "crew_releases": "Lanzamientos de tripulación",
             "episodes": "Episodios",
             "events": "Eventos",
             "ftm_hof": "Salón de la fama del PLM",

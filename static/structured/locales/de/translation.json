@@ -1521,6 +1521,7 @@
         },
         "game_info": {
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
+            "crew_releases": "Veröffentlichungen von Crew",
             "episodes": "Folgen",
             "events": "Ereignisen",
             "ftm_hof": "ZZM Ruhmeshalle",
