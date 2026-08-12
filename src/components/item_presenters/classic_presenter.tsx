@@ -241,7 +241,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	}, [crew]);
 
 	return (
-		<p>
+		<div style={{display: 'inline'}}>
 			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : (new Date(crew.date_added))?.toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 			{!!crewEvent?.event_date && !disable_event_modal && (
 				<div>
@@ -340,7 +340,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 					</Accordion.Content>
 				</Accordion>
 			)}
-		</p>
+		</div>
 	);
 
 	function printWhere(crew: CrewMember) {

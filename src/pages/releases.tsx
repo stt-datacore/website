@@ -26,7 +26,7 @@ const ReleasesPage = () => {
 }
 
 const Releases = (props: ReleasesProps) => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
     const { series, event_instances, all_buffs } = globalContext.core;
@@ -34,7 +34,14 @@ const Releases = (props: ReleasesProps) => {
     const itemsPerPage = props.itemsPerPage || 10;
     const [currentPage, setCurrentPage] = React.useState(1);
     const navigate = useNavigate();
-    crew.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
+    const [bigShow, setBigShow] = React.useState(undefined as CrewMember | undefined);
+
+    crew.sort((a, b) => {
+        if (a.preview && b.preview) {
+            return b.archetype_id - a.archetype_id;
+        }
+        return b.date_added.getTime() - a.date_added.getTime()
+    });
     const numPages = React.useMemo(() => {
         let np = Math.ceil(crew.length / itemsPerPage);
         if (currentPage > np) {
@@ -51,7 +58,7 @@ const Releases = (props: ReleasesProps) => {
     }, [currentPage]);
 
     return (<div>
-        <div className="tall-feathered-border" style={{
+        {!bigShow && <div className="tall-feathered-border" style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'stretch',
@@ -89,8 +96,38 @@ const Releases = (props: ReleasesProps) => {
                     <Icon name='forward' size='large' />
                 </Button>
             </div>
-        </div>
+        </div>}
+        {!!bigShow && drawBigShow(bigShow)}
     </div>)
+
+    function drawBigShow(crew: CrewMember) {
+
+        return (
+            <div
+                onClick={() => setBigShow(undefined)}
+                className="tall-feathered-border" style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'fixed',
+                left: '1em',
+                top: '1em',
+                width: 'calc(100vw - 2em)',
+                height: 'calc(100vh - 2em)',
+                cursor: 'zoom-out'
+            }}>
+                <img style={{ height: !isMobile ? 'calc(100vh - 14em)' : undefined}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
+                <div>
+                    <Rating maxRating={crew.max_rarity} rating={crew.max_rarity} icon='star' size='huge' />
+                </div>
+                <div style={{fontFamily: 'Star Cine', marginTop: '0.5em', fontSize: '2em', color: CONFIG.RARITIES[crew.max_rarity].color}}>
+                    {crew.name}
+                </div>
+
+            </div>
+        );
+    }
 
     function drawCrew(crew: CrewMember, reverse?: boolean) {
 
@@ -141,7 +178,10 @@ const Releases = (props: ReleasesProps) => {
                 <div style={{
                     display: 'grid',
                     gridTemplateAreas: `'z' 'w'`,
-                    }}>
+                    cursor: 'zoom-in'
+                    }}
+                    onClick={() => setBigShow(crew)}
+                    >
                     <div style={{
                         gridArea: 'w',
                         display: 'flex',
@@ -230,16 +270,32 @@ const Releases = (props: ReleasesProps) => {
                             </div>
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
-                        {!!reverse && (<>
-                            {col_img}
-                            {col_present}
-                        </>)}
-                        {!reverse && (<>
-                            {col_present}
-                            {col_img}
-                        </>)}
-                    </Grid.Row>
+                    {!isMobile && (<>
+                        <Grid.Row>
+                            {!!reverse && (<>
+                                {col_img}
+                                {col_present}
+                            </>)}
+                            {!reverse && (<>
+                                {col_present}
+                                {col_img}
+                            </>)}
+                        </Grid.Row>
+                    </>)}
+                    {!!isMobile && (<>
+                        <Grid.Row>
+                            {!!reverse && (<>
+                                {col_img}
+                                {col_present}
+                            </>)}
+                        </Grid.Row>
+                        <Grid.Row>
+                            {!reverse && (<>
+                                {col_present}
+                                {col_img}
+                            </>)}
+                        </Grid.Row>
+                    </>)}
                 </Grid>
             </div>
         )
