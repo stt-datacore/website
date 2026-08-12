@@ -2,11 +2,14 @@ import React from "react"
 import { GlobalContext } from "../context/globalcontext";
 import { CrewMember } from "../model/crew";
 import { CrewPresenter } from "../components/item_presenters/crew_presenter";
-import { Button, Grid, Icon } from "semantic-ui-react";
+import { Button, Grid, Icon, Rating } from "semantic-ui-react";
 import DataPageLayout from "../components/page/datapagelayout";
-import { ClassicPresenter } from "../components/item_presenters/classic_presenter";
+import { ClassicPresenter, Skills } from "../components/item_presenters/classic_presenter";
 import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
 import CONFIG from "../components/CONFIG";
+import { useNavigate } from "react-router-dom";
+import { applyCrewBuffs } from "../utils/crewutils";
+import CrewStat from "../components/item_presenters/crewstat";
 
 export interface ReleasesProps {
     itemsPerPage?: number;
@@ -16,7 +19,7 @@ export interface ReleasesProps {
 const ReleasesPage = () => {
 
 
-    return (<DataPageLayout pageTitle="Releases">
+    return (<DataPageLayout demands={['event_instances', 'collections']}>
         <Releases />
     </DataPageLayout>)
 
@@ -26,10 +29,11 @@ const Releases = (props: ReleasesProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { series } = globalContext.core;
+    const { series, event_instances, all_buffs } = globalContext.core;
     const crew = props.crew || globalContext.core.crew;
     const itemsPerPage = props.itemsPerPage || 10;
     const [currentPage, setCurrentPage] = React.useState(1);
+    const navigate = useNavigate();
     crew.sort((a, b) => b.date_added.getTime() - a.date_added.getTime())
     const numPages = React.useMemo(() => {
         let np = Math.ceil(crew.length / itemsPerPage);
@@ -55,7 +59,6 @@ const Releases = (props: ReleasesProps) => {
             width: '100%'
         }}>
             {pageData.map((crew, idx) => {
-
                 return (
                     <div key={`${crew.symbol}_${idx}_release`}>
                         {drawCrew(crew, idx % 2 != 0)}
@@ -91,16 +94,24 @@ const Releases = (props: ReleasesProps) => {
 
     function drawCrew(crew: CrewMember, reverse?: boolean) {
 
-        let s = '';
+        let img = '';
+
+        applyCrewBuffs(crew, all_buffs);
+
         for(let t of crew.traits_hidden) {
             if (t in series) {
-                s = t;
+                img = `${process.env.VITE_DATACORE_URL}media/series/${t}.png`;
                 break;
             }
         }
-
+        // if (crew.obtained_metadata?.event_instance_id) {
+        //     let evt = event_instances.find(f => f.instance_id === crew.obtained_metadata.event_instance_id);
+        //     if (evt) {
+        //         img = `${process.env.VITE_ASSETS_URL}${evt.image}`;
+        //     }
+        // }
         const mainContainerStyle = {
-                border: '2px solid ' + CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[crew.action.bonus_type],
+                //border: '2px solid ' + CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[crew.action.bonus_type],
                 borderRadius: '4em',
                 margin: '1em 0',
                 fontSize:
@@ -109,68 +120,130 @@ const Releases = (props: ReleasesProps) => {
                 gridTemplateAreas: `'x`,
                 textAlign: 'left'
             } as React.CSSProperties;
-                const bgImageStyle = {
-                    opacity: 0.1,
-                    gridArea: 'x',
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    padding: "2.5em",
-                    width: '100%',
-                    height: '100%',
-                    alignItems: "center",
-                } as React.CSSProperties;
+
+        const bgImageStyle = {
+            opacity: 0.1,
+            gridArea: 'x',
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "2.5em",
+            width: '100%',
+            height: '100%',
+            alignItems: "center",
+        } as React.CSSProperties;
+
+        const col_img = (
+            <Grid.Column style={{
+                marginLeft: reverse ? '0' : '-4em',
+                marginRight: !reverse ? '0' : '-4em',
+                }}>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateAreas: `'z' 'w'`,
+                    }}>
+                    <div style={{
+                        gridArea: 'w',
+                        display: 'flex',
+                        justifyContent: 'center' // reverse ? 'flex-end' : 'flex-start'
+                        //padding: reverse ? '0 0 0 5em' : '0 0 0 5em',
+                    }}>
+                        <img style={{height: '48em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
+                    </div>
+                </div>
+            </Grid.Column>
+        );
+
+        const col_present = (
+            <Grid.Column>
+                <div style={{
+                    padding: '0 4em',
+                    margin: '2em 0'
+                }}>
+                    <ClassicPresenter
+                        coolMode={true}
+                        fields={[
+                            'flavor',
+                            'ship_ability',
+                            'rank_highlights',
+                            'ranks',
+                            'short_name',
+                            'traits',
+                            'collections',
+                            'nicknames',
+                            'cross_fuses',
+                            'date_added',
+                            'cap_achiever'
+                        ]}
+                        crew={crew}
+                        />
+                </div>
+            </Grid.Column>
+        );
+
         return (
             <div style={mainContainerStyle}>
                 <div style={bgImageStyle}>
-                    <img  style={{width:'90%'}} src={`${process.env.VITE_DATACORE_URL}media/series/${s}.png`}
+                    <img  style={{width:'90%'}} src={img}
                         />
                 </div>
                 <Grid columns={2} style={{gridArea: 'x'}}>
-                    {!!reverse && (<>
+                    <Grid.Row columns={1}>
                         <Grid.Column>
-                            <div style={{
-                                padding: '5em'
-                            }}>
-                                <img style={{height: '48em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
+                            <div
+                                onClick={() => navigate(`/crew/${crew.symbol}`)}
+                                style={{
+                                fontSize: '1em',
+                                display: 'flex',
+                                flexDirection:'column',
+                                justifyContent:'center',
+                                alignItems:'center',
+                                fontFamily: 'Star Cine',
+                                textAlign: 'center',
+                                padding: '2em 0 2em 0',
+                                cursor: 'pointer',
+                                color: CONFIG.RARITIES[crew.max_rarity].color,
+                                gap:'1em'
+                                }}>
+                                <div style={{fontSize: '2em'}}>
+                                    {crew.name}
+                                </div>
+                                <Rating size="huge" maxRating={crew.max_rarity} rating={crew.max_rarity} icon="star" />
+                                <div style={{
+                                    border: '1px solid ' + CONFIG.RARITIES[crew.max_rarity].color,
+                                    borderRadius: '4em',
+                                    padding: '1em',
+                                    gap: '1em',
+                                    display: 'inline-flex',
+                                    justifySelf: 'center',
+                                    justifyContent: 'center',
+                                    flexDirection:'row',
+                                    background: CONFIG.RARITIES[crew.max_rarity].rgb.replace("1)", "0.25)")
+                                    }}>
+                                    {crew.skill_order.map((sko) => {
+                                        return (<div key={`${crew.symbol}_sko_${sko}`} style={{padding:'1em 0'}}>
+                                            <CrewStat skill_name={sko} data={crew[sko]} scale={1} />
+                                        </div>)
+                                    })}
+                                </div>
+                                {crew.preview ? t('global.pending_release') : crew.date_added?.toLocaleDateString()}
                             </div>
                         </Grid.Column>
-                        <Grid.Column>
-                            <div style={{
-                                padding: '5em'
-                            }}>
-                                <ClassicPresenter
-                                    crew={crew}
-                                    />
-                            </div>
-                        </Grid.Column>
-                    </>)}
-                    {!reverse && (<>
-                        <Grid.Column>
-                            <div style={{
-                                padding: '5em'
-                            }}>
-                                <ClassicPresenter
-                                    crew={crew}
-                                    />
-                            </div>
-                        </Grid.Column>
-                        <Grid.Column>
-                            <div style={{
-                                padding: '5em'
-                            }}>
-                                <img style={{height: '48em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
-                            </div>
-                        </Grid.Column>
-                    </>)}
+                    </Grid.Row>
+                    <Grid.Row>
+                        {!!reverse && (<>
+                            {col_img}
+                            {col_present}
+                        </>)}
+                        {!reverse && (<>
+                            {col_present}
+                            {col_img}
+                        </>)}
+                    </Grid.Row>
                 </Grid>
             </div>
         )
     }
-
-
-
-
 }
 
 

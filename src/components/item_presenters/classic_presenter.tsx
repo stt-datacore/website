@@ -68,6 +68,7 @@ type ClassicPresenterProps = {
 	fieldOverrides?: IFieldOverride[];
 	compact?: boolean;
 	fieldScale?: IFieldScale[]
+	coolMode?: boolean;
 };
 
 export const ClassicPresenter = (props: ClassicPresenterProps) => {
@@ -117,7 +118,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 				elements.push(<Nicknames key={field} crew={crew} />);
 
 			if (field === 'rank_highlights')
-				elements.push(<CrewRankHighlights key={field} crew={crew} markdownRemark={markdownRemark} compact={compact} />);
+				elements.push(<CrewRankHighlights cool={props.coolMode} key={field} crew={crew} markdownRemark={markdownRemark} compact={compact} />);
 
 			if (field === 'ranks') {
 				elements.push(<CrewRanks key='ranks' crew={crew} />);
@@ -350,13 +351,15 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 
 	function resetCrewEvent() {
 		let event: EventInstance | undefined = undefined;
+		if (crew.name === 'Sakkath') {
+			let p = 1;
+		}
 		if (['Event', 'Mega'].includes(crew.obtained) && crew.obtained_metadata?.event_instance_id) {
 			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
 		}
 		setCrewEvent(event);
 		setModalEvent(event);
 	}
-
 };
 
 

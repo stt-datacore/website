@@ -5,3 +5,8 @@
   /* Creates a soft, feathered black border extending outward */
   box-shadow: 0 0 20px 10px rgba(0, 0, 0, 1);
 }
+
+@font-face {
+  font-family: Star Cine;
+  src: url('./starcine.ttf');
+}
