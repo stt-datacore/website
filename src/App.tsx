@@ -32,7 +32,10 @@ const FleetPage = lazy(() => import("./pages/fleet"));
 const FTMHofPage = lazy(() => import("./pages/ftmhof"));
 const GauntletsPage = lazy(() => import("./pages/gauntlets"));
 const HallOfFamePage = lazy(() => import("./pages/hall_of_fame"));
+
+// Main Page
 const IndexPage = lazy(() => import("./pages"));
+
 const ItemInfoPage = lazy(() => import("./pages/item_info"));
 const ItemsPage = lazy(() => import("./pages/items"));
 const MarkdownPage = lazy(() => import("./components/mdpage"));
@@ -40,6 +43,7 @@ const ObjectiveEventHelperPage = lazy(() => import("./pages/objective_events"));
 const OtherPage = lazy(() => import("./pages/achievements"));
 const PlayerToolsPage = lazy(() => import("./pages/playertools"));
 const ProfilePage = lazy(() => import("./pages/profile"));
+const ReleasesPage = lazy(() => import("./pages/releases"));
 const ResourceTrackerPage = lazy(() => import("./pages/resourcetracker"));
 const RetrievalPage = lazy(() => import("./pages/retrieval"));
 const SeasonalEvent = lazy(() => import("./pages/seasonal"));
@@ -100,6 +104,7 @@ function App() {
                       <Route path="/objective_events" element={<ObjectiveEventHelperPage />} />
                       <Route path="/playertools" element={<PlayerToolsPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/releases" element={<ReleasesPage />} />
                       <Route path="/resourcetracker" element={<ResourceTrackerPage />} />
                       <Route path="/retrieval" element={<RetrievalPage />} />
                       <Route path="/seasonal" element={<SeasonalEvent />} />
