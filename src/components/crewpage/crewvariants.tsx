@@ -29,7 +29,7 @@ export const CrewVariants = (props: CrewVariantsProps) => {
 				if (sortType === 'date' && a.date_added && b.date_added) {
 					if (typeof a.date_added === 'string') a.date_added = new Date(a.date_added);
 					if (typeof b.date_added === 'string') b.date_added = new Date(b.date_added);
-					return a.date_added.getTime() - b.date_added.getTime();
+					return a.date_added.getTime() - b.date_added.getTime() || a.archetype_id - b.archetype_id;
 				}
 				else if (sortType === 'datascore') {
 					return a.ranks.scores.overall - b.ranks.scores.overall;
