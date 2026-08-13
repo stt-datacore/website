@@ -18,8 +18,9 @@ export interface ReleasesProps {
 
 const ReleasesPage = () => {
 
+    const { t } = React.useContext(GlobalContext).localized;
 
-    return (<DataPageLayout demands={['event_instances', 'collections']}>
+    return (<DataPageLayout pageTitle={t('menu.game_info.crew_releases')} suppressTitleDisplay={true} demands={['event_instances', 'collections']}>
         <Releases />
     </DataPageLayout>)
 

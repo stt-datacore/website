@@ -43,6 +43,8 @@ export interface DataPageLayoutProps {
 	/** default is true */
 	initPlayerData?: boolean;
 
+	suppressTitleDisplay?: boolean;
+
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
 
@@ -74,7 +76,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 
-	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
+	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType, suppressTitleDisplay } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -133,7 +135,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 								setActivePanel={setDashboardPanel}
 							/>
 							<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
-								{(!!pageTitleJSX || !!pageTitle) && (
+								{(!!pageTitleJSX || !!pageTitle) && !suppressTitleDisplay && (
 									<React.Fragment>
 										<Header as='h2'>{pageTitleJSX || pageTitle}</Header>
 										{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
