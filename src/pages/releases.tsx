@@ -59,7 +59,7 @@ const Releases = (props: ReleasesProps) => {
     }, [currentPage]);
 
     return (<div>
-        {!bigShow && <div className="tall-feathered-border" style={{
+        {true && <div className="tall-feathered-border" style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'stretch',
