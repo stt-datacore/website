@@ -36,6 +36,7 @@ const Releases = (props: ReleasesProps) => {
     const [currentPage, setCurrentPage] = React.useState(1);
     const navigate = useNavigate();
     const [bigShow, setBigShow] = React.useState(undefined as CrewMember | undefined);
+    const [lastScroll, setLastScroll] = React.useState(0);
 
     crew.sort((a, b) => {
         if (a.preview && b.preview) {
@@ -43,6 +44,7 @@ const Releases = (props: ReleasesProps) => {
         }
         return b.date_added.getTime() - a.date_added.getTime()
     });
+
     const numPages = React.useMemo(() => {
         let np = Math.ceil(crew.length / itemsPerPage);
         if (currentPage > np) {
@@ -59,7 +61,7 @@ const Releases = (props: ReleasesProps) => {
     }, [currentPage]);
 
     return (<div>
-        {true && <div className="tall-feathered-border" style={{
+        {!bigShow && <div className="tall-feathered-border" style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'stretch',
@@ -99,21 +101,21 @@ const Releases = (props: ReleasesProps) => {
             </div>
         </div>}
         {!!bigShow && drawBigShow(bigShow)}
-    </div>)
+    </div>);
 
     function drawBigShow(crew: CrewMember) {
 
         return (
             <div
-                onClick={() => setBigShow(undefined)}
+                onClick={() => enableBigShow(undefined)}
                 className="tall-feathered-border" style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
                 position: 'fixed',
-                left: '1em',
-                top: '1em',
+                left: `1em`,
+                top: `1em`,
                 width: 'calc(100vw - 2em)',
                 height: 'calc(100vh - 2em)',
                 cursor: 'zoom-out'
@@ -181,7 +183,7 @@ const Releases = (props: ReleasesProps) => {
                     gridTemplateAreas: `'z' 'w'`,
                     cursor: 'zoom-in'
                     }}
-                    onClick={() => setBigShow(crew)}
+                    onClick={() => enableBigShow(crew)}
                     >
                     <div style={{
                         gridArea: 'w',
@@ -300,6 +302,19 @@ const Releases = (props: ReleasesProps) => {
                 </Grid>
             </div>
         )
+    }
+
+    function enableBigShow(value?: CrewMember) {
+        if (typeof window === 'undefined') return;
+        if (value) {
+            setLastScroll(window.scrollY);
+        }
+        else {
+            setTimeout(() => {
+                window.scrollY = lastScroll;
+            });
+        }
+        setBigShow(value);
     }
 }
 
