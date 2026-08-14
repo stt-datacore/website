@@ -107,7 +107,7 @@ const Releases = (props: ReleasesProps) => {
 
         return (
             <div
-                onClick={() => enableBigShow(undefined)}
+                onClick={() => toggleBigShow(undefined)}
                 className="tall-feathered-border" style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -183,7 +183,7 @@ const Releases = (props: ReleasesProps) => {
                     gridTemplateAreas: `'z' 'w'`,
                     cursor: 'zoom-in'
                     }}
-                    onClick={() => enableBigShow(crew)}
+                    onClick={() => toggleBigShow(crew)}
                     >
                     <div style={{
                         gridArea: 'w',
@@ -304,14 +304,14 @@ const Releases = (props: ReleasesProps) => {
         )
     }
 
-    function enableBigShow(value?: CrewMember) {
+    function toggleBigShow(value?: CrewMember) {
         if (typeof window === 'undefined') return;
         if (value) {
             setLastScroll(window.scrollY);
         }
         else {
             setTimeout(() => {
-                window.scrollY = lastScroll;
+                window.scrollTo(0, lastScroll);
             });
         }
         setBigShow(value);
