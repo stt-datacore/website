@@ -105,7 +105,13 @@ export interface ReferenceShip extends ShipBonus {
   obtained_metadata?: {
     instance_id?: number,
     event?: string,
-    event_type?: string
+    event_type?: string,
+    mission?: string,
+    mission_id?: number,
+    quest?: string,
+    quest_id?: number,
+    challenge?: string
+    challenge_id?: number
   }
 }
 /**
@@ -149,6 +155,19 @@ export interface Ship extends ShipBonus {
   ranks?: ShipScores;
   predefined?: boolean;
   dps?: number;
+  obtained?: string;
+  date_added?: Date;
+  obtained_metadata?: {
+    instance_id?: number,
+    event?: string,
+    event_type?: string,
+    mission?: string,
+    mission_id?: number,
+    quest?: string,
+    quest_id?: number,
+    challenge?: string
+    challenge_id?: number
+  }
 
   /** Internal use only, not part of game data */
   buffed?: boolean;
