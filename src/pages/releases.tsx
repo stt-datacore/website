@@ -17,13 +17,11 @@ export interface ReleasesProps {
 }
 
 const ReleasesPage = () => {
-
     const { t } = React.useContext(GlobalContext).localized;
 
     return (<DataPageLayout pageTitle={t('menu.game_info.crew_releases')} suppressTitleDisplay={true} demands={['event_instances', 'collections']}>
         <Releases />
     </DataPageLayout>)
-
 }
 
 const Releases = (props: ReleasesProps) => {
@@ -32,7 +30,8 @@ const Releases = (props: ReleasesProps) => {
     const { t } = globalContext.localized;
     const { series, event_instances, all_buffs } = globalContext.core;
     const crew = props.crew || globalContext.core.crew;
-    const itemsPerPage = props.itemsPerPage || 10;
+
+    const [itemsPerPage, setItemsPerPage] = React.useState(props.itemsPerPage || 10);
     const [currentPage, setCurrentPage] = React.useState(1);
     const navigate = useNavigate();
     const [bigShow, setBigShow] = React.useState(undefined as CrewMember | undefined);
@@ -58,7 +57,7 @@ const Releases = (props: ReleasesProps) => {
     const pageData = React.useMemo(() => {
         let cp = currentPage - 1;
         return crew.slice(cp * itemsPerPage, (cp * itemsPerPage) + itemsPerPage);
-    }, [currentPage]);
+    }, [currentPage, itemsPerPage]);
 
     return (<div>
         {!bigShow && <div className="tall-feathered-border" style={{
@@ -91,6 +90,15 @@ const Releases = (props: ReleasesProps) => {
                     style={{background: 'transparent'}}>
                     <Icon name='backward' size='large' />
                 </Button>
+                <a onClick={() => setItemsPerPage(itemsPerPage + 10)}
+                    style={{
+                        background: 'transparent',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '12pt'
+                    }}>
+                    {t('global.show_more_ellipses')}
+                </a>
                 <Button
                     icon
                     onClick={() => setCurrentPage(currentPage + 1)}
