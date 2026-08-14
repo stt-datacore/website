@@ -18,7 +18,7 @@ import { BossShip } from '../../model/boss';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { gradeToColor } from '../../utils/crewutils';
+import { gradeToColor, prettyObtained } from '../../utils/crewutils';
 import { useNavigate } from 'react-router-dom';
 
 type ShipTableProps = {
@@ -232,7 +232,22 @@ export const ShipTable = (props: ShipTableProps) => {
 					return r;
 				}
 			},
-		 );
+			{
+				width: 1, column: 'date_added', title: t('base.release_date'), reverse: true,
+				customCompare: (a: Ship, b: Ship) => {
+					if (!a.date_added && !b.date_added) return 0;
+					if (!a.date_added) return -1;
+					if (!b.date_added) return 1;
+					if (typeof a.date_added === 'string') {
+						a.date_added = new Date(a.date_added);
+					}
+					if (typeof b.date_added === 'string') {
+						b.date_added = new Date(b.date_added);
+					}
+					return a.date_added.getTime() - b.date_added.getTime();
+				}
+			},
+		);
 		if (!showRanks) {
 			if (!!tierLabel) conf.splice(2, 3);
 			else conf.splice(1, 3);
@@ -482,6 +497,10 @@ export const ShipTable = (props: ShipTableProps) => {
 				{ship.level && <> {ship.level} / {ship.max_level} </>
 					|| <>{ship.max_level}</>}
 			</Table.Cell>}
+			<Table.Cell>
+				{ship.date_added?.toLocaleDateString() || ''}<br />
+				{prettyObtained(ship, t, true)}
+			</Table.Cell>
 		</Table.Row>)
 	}
 

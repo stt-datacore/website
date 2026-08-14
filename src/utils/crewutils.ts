@@ -1724,9 +1724,9 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 }
 
 
-export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod, long?: boolean) {
+export function prettyObtained(item: { obtained: string } | { obtained?: string }, t: TranslateMethod, long?: boolean) {
 	long ??= false;
-	let obstr = `${crew.obtained}`;
+	let obstr = `${item.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 	else if (obstr === 'FactionStore') obstr = 'Faction';
 	if (long) {

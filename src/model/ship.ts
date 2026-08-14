@@ -150,6 +150,14 @@ export interface Ship extends ShipBonus {
   predefined?: boolean;
   dps?: number;
 
+  date_added?: Date;
+  obtained?: string;
+  obtained_metadata?: {
+    event?: string;
+    instance_id?: number;
+    event_type?: string;
+  }
+
   /** Internal use only, not part of game data */
   buffed?: boolean;
 }
