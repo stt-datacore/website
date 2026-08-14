@@ -10,3 +10,13 @@
   font-family: Star Cine;
   src: url('./starcine.ttf');
 }
+
+@font-face {
+  font-family: Eurostile;
+  src: url('./eurostile-webfont.ttf');
+}
+
+body {
+  font-family: Eurostile, sans-serif;
+  font-size: 10pt;
+}
