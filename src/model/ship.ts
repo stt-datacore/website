@@ -100,6 +100,13 @@ export interface ReferenceShip extends ShipBonus {
   passive_status: number
   levels: ShipLevel[];
   ranks: ShipScores;
+  obtained?: string;
+  date_added?: Date;
+  obtained_metadata?: {
+    instance_id?: number,
+    event?: string,
+    event_type?: string
+  }
 }
 /**
  * Ship
