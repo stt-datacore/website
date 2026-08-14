@@ -299,6 +299,9 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 						{crew.obtained_metadata.additional_events.map(add => {
 							let evtData = instances.find(f => f.instance_id === add.instance_id);
 							if (!evtData) return <></>;
+							if (typeof evtData.event_date === 'string') {
+								evtData.event_date = new Date(evtData.event_date);
+							}
 							return (
 								<React.Fragment key={`crew_additional_${add.instance_id}`}>
 									<div style={{
