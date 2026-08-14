@@ -262,7 +262,7 @@ export const ShipTable = (props: ShipTableProps) => {
 					/>
 					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => setGrantFilter(value as string[])} />
 					<ShipAbilityPicker ship={true} selectedAbilities={abilityFilter} setSelectedAbilities={(value) => setAbilityFilter(value as string[])} />
-					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter((value as string[]).filter(v => !!v?.trim()))} />
+					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter((value as string[] ?? []).filter(v => !!v?.trim()))} />
 					{mode === 'all' && <CrewBuffModes buffMode={buffMode} setBuffMode={(e) => setBuffMode(e || 'none')} playerAvailable={!!playerShips} />}
 					{!!playerShips && mode === 'all' && <ShipOwnership selectedValue={ownership} setSelectedValue={setOwnership} />}
 					{!!minOpts && (
