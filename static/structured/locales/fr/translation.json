@@ -1906,6 +1906,7 @@
             "voyage_plus": {
                 "am_seating": "{{rank_names.scores.am_seating}}",
                 "quipment": "{{rank_names.scores.quipment}}",
+                "tertiary_rarity": "{{rank_names.scores.tertiary_rarity}}",
                 "title": "Pondération du Voyage+",
                 "voyage": "{{rank_names.scores.voyage}}"
             }
