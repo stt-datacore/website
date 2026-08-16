@@ -1,15 +1,14 @@
-import React from "react"
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Grid, Icon, Rating } from "semantic-ui-react";
+import CONFIG from "../components/CONFIG";
+import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
+import { ClassicPresenter } from "../components/item_presenters/classic_presenter";
+import CrewStat from "../components/item_presenters/crewstat";
+import DataPageLayout from "../components/page/datapagelayout";
 import { GlobalContext } from "../context/globalcontext";
 import { CrewMember } from "../model/crew";
-import { CrewPresenter } from "../components/item_presenters/crew_presenter";
-import { Button, Grid, Icon, Rating } from "semantic-ui-react";
-import DataPageLayout from "../components/page/datapagelayout";
-import { ClassicPresenter, Skills } from "../components/item_presenters/classic_presenter";
-import { DEFAULT_MOBILE_WIDTH } from "../components/hovering/hoverstat";
-import CONFIG from "../components/CONFIG";
-import { useNavigate } from "react-router-dom";
 import { applyCrewBuffs } from "../utils/crewutils";
-import CrewStat from "../components/item_presenters/crewstat";
 
 export interface ReleasesProps {
     itemsPerPage?: number;
@@ -28,7 +27,7 @@ const Releases = (props: ReleasesProps) => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= DEFAULT_MOBILE_WIDTH;
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { series, event_instances, all_buffs } = globalContext.core;
+    const { series, all_buffs } = globalContext.core;
     const crew = props.crew || globalContext.core.crew;
 
     const [itemsPerPage, setItemsPerPage] = React.useState(props.itemsPerPage || 10);

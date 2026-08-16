@@ -100,6 +100,8 @@ export interface ReferenceShip extends ShipBonus {
   passive_status: number
   levels: ShipLevel[];
   ranks: ShipScores;
+
+  series?: string;
   obtained?: string;
   date_added?: Date;
   obtained_metadata?: {
@@ -155,6 +157,8 @@ export interface Ship extends ShipBonus {
   ranks?: ShipScores;
   predefined?: boolean;
   dps?: number;
+
+  series?: string;
   obtained?: string;
   date_added?: Date;
   obtained_metadata?: {
@@ -167,14 +171,6 @@ export interface Ship extends ShipBonus {
     quest_id?: number,
     challenge?: string
     challenge_id?: number
-  }
-
-  date_added?: Date;
-  obtained?: string;
-  obtained_metadata?: {
-    event?: string;
-    instance_id?: number;
-    event_type?: string;
   }
 
   /** Internal use only, not part of game data */

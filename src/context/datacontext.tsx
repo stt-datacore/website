@@ -389,6 +389,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function processAllShips(all_ships: ReferenceShip[]) {
 		for (let ship of all_ships) {
+			if (ship.date_added) {
+				ship.date_added = new Date(ship.date_added);
+			}
 			ship.id = ship.archetype_id;
 		}
 		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels), id: ship.id || ship.archetype_id }));
