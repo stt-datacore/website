@@ -120,6 +120,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	const filteredShips = React.useMemo(() => {
 		const result = ships.filter((ship) => {
+			if (!ship) return false;
 			ship.ranks ??= {} as any;
 			ship.ranks!.overall ??= 0;
 			ship.ranks!.arena ??= 0;
@@ -248,20 +249,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				}
 			},
 			{
-				width: 1, column: 'mo', title: 'mo', reverse: true,
-				customCompare: (a: Ship, b: Ship) => {
-					try {
-						let an = a?.ranks?.extra?.mo ? Number(a.ranks.extra.mo) : 0;
-						let bn = b?.ranks?.extra?.mo ? Number(b.ranks.extra.mo) : 0;
-						if (Number.isNaN(an)) an = 0;
-						if (Number.isNaN(bn)) bn = 0;
-						return an - bn;
-					}
-					catch (e: any) {
-						console.log(e);
-						return 0;
-					}
-				}
+				width: 1, column: 'ranks.extra.compat_score', title: 'compat_score', reverse: true,
 			},
 		);
 		if (!showRanks) {
@@ -518,7 +506,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				{prettyObtained(ship, t, true)}
 			</Table.Cell>
 			<Table.Cell>
-				{ship.ranks?.extra?.mo ?? 0}
+				{ship.ranks?.extra?.compat_score ?? 0}
 			</Table.Cell>
 		</Table.Row>)
 	}
