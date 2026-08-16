@@ -287,6 +287,7 @@ export interface VoyagePlusWeights {
     voyage: number;
     am_seating: number;
     quipment: number;
+    tertiary_rarity: number;
 }
 
 export interface BasePlusWeights {
