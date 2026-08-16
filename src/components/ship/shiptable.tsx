@@ -247,6 +247,9 @@ export const ShipTable = (props: ShipTableProps) => {
 					return a.date_added.getTime() - b.date_added.getTime();
 				}
 			},
+			{
+				width: 1, column: 'avg_compat', title: t('ship.avg_compat'), reverse: true,
+			},
 		);
 		if (!showRanks) {
 			if (!!tierLabel) conf.splice(2, 3);
@@ -500,6 +503,9 @@ export const ShipTable = (props: ShipTableProps) => {
 			<Table.Cell>
 				{ship.date_added?.toLocaleDateString() || ''}<br />
 				{prettyObtained(ship, t, true)}
+			</Table.Cell>
+			<Table.Cell>
+				{ship.ranks!.avg_compat}
 			</Table.Cell>
 		</Table.Row>)
 	}
