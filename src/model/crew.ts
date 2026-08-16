@@ -349,8 +349,11 @@ export interface ShipScores {
     fbb_rank: number,
     boss_details: BossDetails[],
     bosses: BossScore[];
-    avg_compat?: number;
-    extra?: any;
+    avg_compat: number;
+    extra: {
+        mo: number;
+        compat_score: number;
+    };
     divisions: {
         fbb: {
             1?: number,
