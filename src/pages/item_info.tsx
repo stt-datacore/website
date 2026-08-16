@@ -401,6 +401,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 					</ShipTarget> */}
 
 					<ShipPresenter
+						dateAdded
 						navigate={navigate}
 						openShip={() => navigate('/ship/'+ship.symbol)}
 						storeName='item_info'

@@ -8,11 +8,15 @@ import { TinyStore } from "../../utils/tiny";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ShipSkill } from "./shipskill";
 import { NavigateFunction } from "react-router-dom";
+import { DateAdded } from "./classic_presenter";
 
 export interface PresenterProps {
     hover: boolean;
     storeName: string;
     navigate: NavigateFunction;
+    dateAdded?: boolean;
+    statsOnly?: boolean;
+    noRarity?: boolean;
     disableBuffs?: boolean;
     mobileWidth?: number;
     forceVertical?: boolean;
@@ -34,7 +38,10 @@ export interface ShipPresenterState {
     mobileWidth: number;
 }
 
-export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterState> {
+export class ShipPresenter extends Component<
+    ShipPresenterProps,
+    ShipPresenterState
+> {
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
 
@@ -44,97 +51,122 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         super(props);
         this.state = {
             ...this.state,
-            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
-        }
+            mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
+        };
 
-        this.tiny = TinyStore.getStore(props.storeName)
+        this.tiny = TinyStore.getStore(props.storeName);
     }
 
     protected get showPlayerBuffs(): boolean {
-        return this.tiny.getValue<boolean>('buff', true) ?? false;
+        return this.tiny.getValue<boolean>("buff", true) ?? false;
     }
 
     protected set showPlayerBuffs(value: boolean) {
-        this.tiny.setValue<boolean>('buff', value, true);
+        this.tiny.setValue<boolean>("buff", value, true);
     }
 
     protected get showImmortalized(): boolean {
-        return this.tiny.getValue<boolean>('immo', true) ?? false;
+        return this.tiny.getValue<boolean>("immo", true) ?? false;
     }
 
     protected set showImmortalized(value: boolean) {
-        this.tiny.setValue<boolean>('immo', value, true);
+        this.tiny.setValue<boolean>("immo", value, true);
     }
 
     protected get showShipAbility(): boolean {
-        return this.tiny.getValue<boolean>('ship', true) ?? false;
+        return this.tiny.getValue<boolean>("ship", true) ?? false;
     }
 
     protected set showShipAbility(value: boolean) {
-        this.tiny.setValue<boolean>('ship', value, true);
+        this.tiny.setValue<boolean>("ship", value, true);
     }
 
     render(): React.ReactNode {
-        const { ship: ship, touched, tabs, showIcon, navigate } = this.props;
+        const { ship: ship, touched, tabs, showIcon, navigate, statsOnly, noRarity, dateAdded } = this.props;
         const { mobileWidth } = this.state;
         const { SHIP_TRAIT_NAMES } = this.context.localized;
 
         const compact = this.props.hover;
 
         if (!ship) {
-            return <></>
+            return <></>;
         }
 
         const { t } = this.context.localized;
 
         const frozenStyle: React.CSSProperties = {
-            background: 'transparent',
-            color: 'white',
+            background: "transparent",
+            color: "white",
             cursor: "default",
-            marginRight: "0px"
-        }
+            marginRight: "0px",
+        };
 
         const checkedStyle: React.CSSProperties = {
             color: "lightgreen",
-            marginRight: "0px"
-        }
+            marginRight: "0px",
+        };
 
         var me = this;
         const immoToggle = (e) => {
-            if (ship && "immortal" in ship && ship.immortal !== undefined && ship.immortal != 0 && ship.immortal > -2) {
+            if (
+                ship &&
+                "immortal" in ship &&
+                ship.immortal !== undefined &&
+                ship.immortal != 0 &&
+                ship.immortal > -2
+            ) {
                 return;
             }
             me.showImmortalized = !me.showImmortalized;
-        }
+        };
 
         const navClick = (e) => {
             if (!ship) return;
             if (this.props.openShip) {
                 this.props.openShip(ship);
             }
-        }
+        };
 
-        let keys = [ "attack", "accuracy", "evasion", "shields", "hull", "antimatter"]
-        let icons = [ "attack-color.png", "accuracy-color.png", "evasion-color.png", "shield-color.png", "hull-color.png", "antimatter-icon.png"]
-        let names = [ t('ship.attack'), t('ship.accuracy'), t('ship.evasion'), t('ship.shields'), t('ship.hull'), t('ship.antimatter')]
+        let keys = [
+            "attack",
+            "accuracy",
+            "evasion",
+            "shields",
+            "hull",
+            "antimatter",
+        ];
+        let icons = [
+            "attack-color.png",
+            "accuracy-color.png",
+            "evasion-color.png",
+            "shield-color.png",
+            "hull-color.png",
+            "antimatter-icon.png",
+        ];
+        let names = [
+            t("ship.attack"),
+            t("ship.accuracy"),
+            t("ship.evasion"),
+            t("ship.shields"),
+            t("ship.hull"),
+            t("ship.antimatter"),
+        ];
 
-        let stats1: { name: string, value: number, icon: string }[]=[];
-        let stats2: { name: string, value: number, icon: string }[]=[];
+        let stats1: { name: string; value: number; icon: string }[] = [];
+        let stats2: { name: string; value: number; icon: string }[] = [];
 
         if (ship) {
             for (let i = 0; i < 6; i++) {
                 let stat = {
                     name: names[i],
                     value: ship[keys[i]] as number,
-                    icon: icons[i]
-                }
+                    icon: icons[i],
+                };
                 if (i <= 2) {
                     stats1.push(stat);
-                }
-                else {
+                } else {
                     stats2.push(stat);
                 }
-
             }
         }
 
@@ -154,44 +186,97 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
             alignItems: "center",
         } as React.CSSProperties;
 
-        return ship ? (<div style={{
-                        fontSize: "12pt",
+        return ship ? (
+            <div
+                style={{
+                    fontSize: "12pt",
+                    display: "flex",
+                    textAlign: "left",
+                    flexDirection:
+                        window.innerWidth < mobileWidth ? "column" : "row",
+                    //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
+                }}
+            >
+                {!!this.props.hover &&
+                <div style={bgImageStyle}>
+                    {!!ship.series && (
+                        <Image
+                            src={`/media/series/${ship.series}.png`}
+                            style={{ maxHeight: "26em" }}
+                        />
+                    )}
+                </div>}
+                <div
+                    style={{
                         display: "flex",
-                        textAlign: 'left',
-                        flexDirection: window.innerWidth < mobileWidth ? "column" : "row",
-                        //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
-
-                        }}>
-                            <div style={bgImageStyle}>
-                                {!!ship.series && (
-                                    <Image src={`/media/series/${ship.series}.png`} style={{ maxHeight: "26em" }} />
-                                )}
-                            </div>
-                            <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
-                        {touched && <>
-                            <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
-                        </>}
-                    </div>
-                <div style={{ display: "flex", flexDirection: "column"}}>
-                    <div style={{flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"row"}}>
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                    }}
+                >
+                    {touched && (
+                        <>
+                            <i
+                                className="close icon"
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) =>
+                                    this.props.close
+                                        ? this.props.close()
+                                        : undefined
+                                }
+                            />
+                        </>
+                    )}
+                </div>
+                {!statsOnly && <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div
+                        style={{
+                            flexGrow: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexDirection: "row",
+                        }}
+                    >
                         <img
-                            src={`${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`}
-                            style={{ height: compact ? "15em" : "25em", maxWidth: "calc(100vw - 32px)", marginRight: "8px"}}
+                            src={`${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace("/", "_")}.png`}
+                            style={{
+                                height: compact ? "15em" : "25em",
+                                maxWidth: "calc(100vw - 32px)",
+                                marginRight: "8px",
+                            }}
                         />
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom:"16px"}}>
-                        {!showIcon && <div
-                            onClick={() => navigate(`/ship/?ship=${ship.symbol}`)}
-                            style={{
-                                cursor: 'pointer',
-                                display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: 'center' }}>
-                            {ship.battle_stations?.map((bs, idx) => {
-                                return <img
-                                    key={`${bs.skill}_key_${ship.symbol}_${idx}`}
-                                    style={{height: '1em'}}
-                                    src={`${process.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`} />
-                            })}
-                            {/* {(!this.props.disableBuffs) &&
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "flex-end",
+                            marginBottom: "16px",
+                        }}
+                    >
+                        {!showIcon && (
+                            <div
+                                onClick={() =>
+                                    navigate(`/ship/?ship=${ship.symbol}`)
+                                }
+                                style={{
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-evenly",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {ship.battle_stations?.map((bs, idx) => {
+                                    return (
+                                        <img
+                                            key={`${bs.skill}_key_${ship.symbol}_${idx}`}
+                                            style={{ height: "1em" }}
+                                            src={`${process.env.VITE_ASSETS_URL}atlas/icon_${bs.skill}.png`}
+                                        />
+                                    );
+                                })}
+                                {/* {(!this.props.disableBuffs) &&
                             <i className="arrow alternate circle up icon" title="Toggle Personal Buffs" style={this.showPlayerBuffs ? activeStyle : dormantStyle} onClick={(e) => buffToggle(e)} />
                             ||
                             <i className="arrow alternate circle up icon" title="Buffs not Available" style={disableStyle} />
@@ -208,9 +293,10 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 style={("immortal" in ship && ship.immortal != 0 && (ship.immortal ?? 0) > -2) ? completeStyle : this.showImmortalized ? activeStyle : dormantStyle}
                                 onClick={(e) => immoToggle(e)} />
                             } */}
-                        </div>}
+                            </div>
+                        )}
                     </div>
-                </div>
+                </div>}
                 <div
                     style={{
                         display: "flex",
@@ -220,37 +306,104 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         width: window.innerWidth < mobileWidth ? "15m" : "32em",
                     }}
                 >
-                    <div style={{display: "flex", flexDirection: window.innerWidth < mobileWidth ? "column" : "row", justifyContent: "space-between"}}>
-                        <h3 style={{margin:"2px 8px", padding: "8px", marginLeft: "0px", paddingLeft: "0px"}}>
-                            <a onClick={(e) => navClick(e)} style={{cursor: "default"}} title={ship.name}>
+                    {!noRarity && <div
+                        style={{
+                            display: "flex",
+                            flexDirection:
+                                window.innerWidth < mobileWidth
+                                    ? "column"
+                                    : "row",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <h3
+                            style={{
+                                margin: "2px 8px",
+                                padding: "8px",
+                                marginLeft: "0px",
+                                paddingLeft: "0px",
+                            }}
+                        >
+                            <a
+                                onClick={(e) => navClick(e)}
+                                style={{ cursor: "default" }}
+                                title={ship.name}
+                            >
                                 {ship.name}
                             </a>
-                            <p style={{fontSize: '0.8em', fontStyle: 'italic'}}>
+                            <p
+                                style={{
+                                    fontSize: "0.8em",
+                                    fontStyle: "italic",
+                                }}
+                            >
                                 {ship.flavor}
                             </p>
                         </h3>
-                        <div style={{margin: "4px", marginLeft: 0, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                            <h4 style={{margin:"2px 8px", marginLeft: 0, padding: "8px"}} className="ui segment" title={"immortal" in ship ? printImmoText(ship.immortal ?? CompletionState.DisplayAsImmortalStatic, t('ship.ship'), t('ship.max_level'), t) : t('item_state.item_is_shown', { item: 'base.ship', level: 'ship.max_level'})}>
-                                {
-                                    "immortal" in ship && (
-                                        ((ship.immortal === 0)) ?
-                                        (<b>{ship.level}/{ship.max_level}</b>) :
-                                        (((ship.immortal ?? 0) > 0)) ?
-                                        (<i className="snowflake icon" style={frozenStyle} />) :
-                                        (<i className="check icon" style={checkedStyle} />)
-                                    ) || (<i className="check icon" style={checkedStyle} />)
+                        <div
+                            style={{
+                                margin: "4px",
+                                marginLeft: 0,
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                            }}
+                        >
+                            <h4
+                                style={{
+                                    margin: "2px 8px",
+                                    marginLeft: 0,
+                                    padding: "8px",
+                                }}
+                                className="ui segment"
+                                title={
+                                    "immortal" in ship
+                                        ? printImmoText(
+                                              ship.immortal ??
+                                                  CompletionState.DisplayAsImmortalStatic,
+                                              t("ship.ship"),
+                                              t("ship.max_level"),
+                                              t,
+                                          )
+                                        : t("item_state.item_is_shown", {
+                                              item: "base.ship",
+                                              level: "ship.max_level",
+                                          })
                                 }
+                            >
+                                {("immortal" in ship &&
+                                    (ship.immortal === 0 ? (
+                                        <b>
+                                            {ship.level}/{ship.max_level}
+                                        </b>
+                                    ) : (ship.immortal ?? 0) > 0 ? (
+                                        <i
+                                            className="snowflake icon"
+                                            style={frozenStyle}
+                                        />
+                                    ) : (
+                                        <i
+                                            className="check icon"
+                                            style={checkedStyle}
+                                        />
+                                    ))) || (
+                                    <i
+                                        className="check icon"
+                                        style={checkedStyle}
+                                    />
+                                )}
                             </h4>
                             <Rating
                                 onClick={(e) => immoToggle(e)}
-                                icon='star'
+                                icon="star"
                                 rating={ship.rarity}
                                 maxRating={ship.rarity}
-                                size='large'
-                                disabled />
+                                size="large"
+                                disabled
+                            />
                         </div>
-                    </div>
-                    {stats?.map((statline, index) =>
+                    </div>}
+                    {stats?.map((statline, index) => (
                         <div
                             key={index}
                             style={{
@@ -263,18 +416,41 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                                 marginBottom: "2px",
                             }}
                         >
-                            {statline?.map((stat, index) =>
-                                <div key={index} style={{
-                                        width: window.innerWidth < mobileWidth ? "30vw" : "9em", display: "flex", flexDirection: "row", alignItems: "center" }}>
-                                    <img src={"/media/ship/" + stat.icon} style={{height: "1.5em", marginRight: "6px"}} />
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
+                            {statline?.map((stat, index) => (
+                                <div
+                                    key={index}
+                                    style={{
+                                        width:
+                                            window.innerWidth < mobileWidth
+                                                ? "30vw"
+                                                : "9em",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <img
+                                        src={"/media/ship/" + stat.icon}
+                                        style={{
+                                            height: "1.5em",
+                                            marginRight: "6px",
+                                        }}
+                                    />
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                        }}
+                                    >
                                         <div>{stat?.name}</div>
-                                        <div>{stat?.value?.toLocaleString()}</div>
+                                        <div>
+                                            {stat?.value?.toLocaleString()}
+                                        </div>
                                     </div>
                                 </div>
-                            )}
+                            ))}
                         </div>
-                        )}
+                    ))}
                     <div
                         style={{
                             textAlign: "left",
@@ -284,30 +460,45 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                             marginBottom: "4px",
                         }}
                     >
-                        {ship.traits?.map(t => SHIP_TRAIT_NAMES[t]).join(", ")}
+                        {ship.traits
+                            ?.map((t) => SHIP_TRAIT_NAMES[t])
+                            .join(", ")}
                     </div>
-                    {!!ship.traits_hidden?.length && <div
-                        style={{
-                            textAlign: "left",
-                            fontStyle: "italic",
-                            fontSize: "0.85em",
-                            marginTop: "2px",
-                            opacity: 0.50,
-                            marginBottom: "4px",
-                        }}
-                    >
-                        {ship.traits_hidden?.join(", ")}
-                    </div>}
+                    {!!ship.traits_hidden?.length && (
+                        <div
+                            style={{
+                                textAlign: "left",
+                                fontStyle: "italic",
+                                fontSize: "0.85em",
+                                marginTop: "2px",
+                                opacity: 0.5,
+                                marginBottom: "4px",
+                            }}
+                        >
+                            {ship.traits_hidden?.join(", ")}
+                        </div>
+                    )}
                     <div>
-                        {!!ship.actions?.length && <ShipSkill
+                        {!!ship.actions?.length && (
+                            <ShipSkill
                                 withActionIcons={showIcon}
                                 grouped={tabs}
                                 context={ship}
-                                fontSize="0.8em" />}
+                                fontSize="0.8em"
+                            />
+                        )}
                     </div>
+                    {!!dateAdded && (
+                        <div>
+                        {!!ship && <div style={{textAlign:'left', width: '100%'}}>
+                            <DateAdded crew={ship as any} />
+                        </div>}
+                        </div>
+                    )}
                 </div>
-            </div>) : <></>
-
+            </div>
+        ) : (
+            <></>
+        );
     }
-
 }

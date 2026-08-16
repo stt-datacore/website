@@ -48,6 +48,7 @@ const ResourceTrackerPage = lazy(() => import("./pages/resourcetracker"));
 const RetrievalPage = lazy(() => import("./pages/retrieval"));
 const SeasonalEvent = lazy(() => import("./pages/seasonal"));
 const ShipInfoPage = lazy(() => import("./pages/ship_info"));
+const ShipReleases = lazy(() => import("./pages/shipreleases"));
 const ShipsPage = lazy(() => import("./pages/ships"));
 const ShuttleHelperPage = lazy(() => import("./pages/shuttlehelper"));
 const StatsPage = lazy(() => import("./pages/stats"));
@@ -110,6 +111,7 @@ function App() {
                       <Route path="/seasonal" element={<SeasonalEvent />} />
                       <Route path="/ship/:ship_symbol" element={<ShipInfoPage />} />
                       <Route path="/ship/:ship_symbol/:battle_mode/:rarity" element={<ShipInfoPage />} />
+                      <Route path="/shipreleases" element={<ShipReleases />} />
                       <Route path="/ships" element={<ShipsPage />} />
                       <Route path="/shuttlehelper" element={<ShuttleHelperPage />} />
                       <Route path="/stats" element={<StatsPage />} />

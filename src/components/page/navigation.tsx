@@ -325,6 +325,7 @@ export const Navigation = (props: NavigationProps) => {
             sidebarRole: 'heading',
             subMenu: [
 				{ title: t('menu.game_info.crew_releases'), link: '/releases', sidebarRole: 'item' },
+				{ title: t('menu.game_info.ship_releases'), link: '/shipreleases', sidebarRole: 'item' },
 				{ title: t('menu.game_info.episodes'), link: '/episodes', sidebarRole: 'item' },
 				{ title: t('menu.game_info.events'), link: '/events', sidebarRole: 'item' },
 				{ title: t('menu.game_info.objective_events'), link: '/objective_events', sidebarRole: 'item' },

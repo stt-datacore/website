@@ -20,6 +20,7 @@ import { OpponentImportComponent } from "./opponent_importer"
 import { DEFAULT_SHIP_OPTIONS, ShipCrewOptionsModal } from "./shipcrewmodal"
 import { ShipStationProspects } from "./staffingprospects"
 import { useNavigate } from "react-router-dom"
+import { DateAdded } from "../item_presenters/classic_presenter"
 
 export interface ShipStaffingProps {
     ship?: Ship;
@@ -211,7 +212,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				<Button disabled={crewStations.every(cs => !cs) || !!pvpData} onClick={(e) => clearStation()}>{t('global.clear_all')}</Button>
 			</div>}
 
-			{!!ship && <ShipPresenter navigate={navigate} hover={false} ship={ship} showIcon={true} storeName='shipProfile' />}
+			{!!ship && <ShipPresenter navigate={navigate} hover={false} dateAdded ship={ship} showIcon={true} storeName='shipProfile' />}
+
 		</div>
 
         </React.Fragment>
