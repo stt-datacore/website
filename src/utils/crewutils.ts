@@ -1735,7 +1735,7 @@ export function prettyObtained(item: { obtained: string } | { obtained?: string 
 	else {
 		obstr = t(`obtained.short.${obstr}`);
 	}
-	return obstr;
+	return obstr || item.obtained || '';
 }
 
 /**

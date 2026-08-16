@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Rating } from "semantic-ui-react";
+import { Image, Rating } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CompletionState } from "../../model/player";
 import { Ship } from "../../model/ship";
@@ -139,6 +139,20 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
         }
 
         const stats = [stats1, stats2];
+        const bgImageStyle = {
+            zIndex: -1,
+            position: "absolute",
+            left: "0",
+            top: "0",
+            width: "100%",
+            height: "100%",
+            opacity: 0.025,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "2.5em",
+            alignItems: "center",
+        } as React.CSSProperties;
 
         return ship ? (<div style={{
                         fontSize: "12pt",
@@ -148,6 +162,11 @@ export class ShipPresenter extends Component<ShipPresenterProps, ShipPresenterSt
                         //width: window.innerWidth < mobileWidth ? "calc(100vw - 16px)" : undefined
 
                         }}>
+                            <div style={bgImageStyle}>
+                                {!!ship.series && (
+                                    <Image src={`/media/series/${ship.series}.png`} style={{ maxHeight: "26em" }} />
+                                )}
+                            </div>
                             <div style={{display: "flex", flexDirection:"row", justifyContent:"flex-start"}}>
                         {touched && <>
                             <i className='close icon' style={{cursor: "pointer"}} onClick={(e) => this.props.close ? this.props.close() : undefined} />
