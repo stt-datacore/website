@@ -192,6 +192,9 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 					a.date_added ??= new Date();
 					b.date_added ??= new Date();
 					if (!!a.preview != !!b.preview) return a.preview ? 1 : -1;
+					if (!!a.preview && !!b.preview) {
+						return a.archetype_id - b.archetype_id;
+					}
 					if (typeof a.date_added === 'string') a.date_added = new Date(a.date_added);
 					if (typeof b.date_added === 'string') b.date_added = new Date(b.date_added);
 					let m = a.date_added.getTime() - b.date_added.getTime() || a.archetype_id - b.archetype_id;
