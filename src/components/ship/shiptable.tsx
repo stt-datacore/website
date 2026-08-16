@@ -248,7 +248,20 @@ export const ShipTable = (props: ShipTableProps) => {
 				}
 			},
 			{
-				width: 1, column: 'avg_compat', title: t('ship.avg_compat'), reverse: true,
+				width: 1, column: 'mo', title: 'mo', reverse: true,
+				customCompare: (a: Ship, b: Ship) => {
+					try {
+						let an = a?.ranks?.extra?.mo ? Number(a.ranks.extra.mo) : 0;
+						let bn = b?.ranks?.extra?.mo ? Number(b.ranks.extra.mo) : 0;
+						if (Number.isNaN(an)) an = 0;
+						if (Number.isNaN(bn)) bn = 0;
+						return an - bn;
+					}
+					catch (e: any) {
+						console.log(e);
+						return 0;
+					}
+				}
 			},
 		);
 		if (!showRanks) {
@@ -505,7 +518,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				{prettyObtained(ship, t, true)}
 			</Table.Cell>
 			<Table.Cell>
-				{ship.ranks!.avg_compat}
+				{ship.ranks?.extra?.mo ?? 0}
 			</Table.Cell>
 		</Table.Row>)
 	}
