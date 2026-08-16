@@ -225,7 +225,7 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 	return <></>;
 };
 
-const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) => {
+export const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) => {
 	const { crew, disable_event_modal } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const instances = globalContext.core.event_instances;
@@ -347,18 +347,18 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	);
 
 	function printWhere(crew: CrewMember) {
-		let txt = t(`event_info.${crew.obtained_metadata.where}_rewards`)
+		let txt = t(`event_info.${crew.obtained_metadata.where || 'threshold'}_rewards`)
 		if (!txt && crew.obtained === 'Mega') txt = t(`event_info.threshold_rewards`);
 		return txt;
 	}
 
 	function resetCrewEvent() {
 		let event: EventInstance | undefined = undefined;
-		if (crew.name === 'Sakkath') {
-			let p = 1;
-		}
 		if (['Event', 'Mega'].includes(crew.obtained) && crew.obtained_metadata?.event_instance_id) {
 			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
+		}
+		else if (['Event', 'Mega'].includes(crew.obtained) && (crew.obtained_metadata as any)?.instance_id) {
+			event = instances.find(f => f.instance_id === (crew.obtained_metadata as any)?.instance_id);
 		}
 		setCrewEvent(event);
 		setModalEvent(event);

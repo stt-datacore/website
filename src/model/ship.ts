@@ -158,6 +158,7 @@ export interface Ship extends ShipBonus {
   predefined?: boolean;
   dps?: number;
 
+  preview?: boolean;
   series?: string;
   obtained?: string;
   date_added?: Date;
