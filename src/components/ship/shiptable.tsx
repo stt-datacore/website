@@ -18,7 +18,7 @@ import { BossShip } from '../../model/boss';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { gradeToColor, prettyObtained } from '../../utils/crewutils';
+import { gradeToColor, numberToGrade, prettyObtained } from '../../utils/crewutils';
 import { useNavigate } from 'react-router-dom';
 
 type ShipTableProps = {
@@ -166,6 +166,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	const tableConfig = React.useMemo(() => {
 		let bb = [] as ITableConfigRow[];
+
 		if (breakoutBosses) {
 			let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
 			distinct.sort();
@@ -206,6 +207,10 @@ export const ShipTable = (props: ShipTableProps) => {
 			{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
 			{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
 			...bb,
+			{
+				width: 1, column: 'compat_score', title: t('ship.compat_score'), reverse: true,
+				customCompare: (a, b) => a.ranks.extra.compat_score - b.ranks.extra.compat_score
+			},
 			{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
 			{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
 			{ width: 1, column: 'attack', title: t('ship.attack'), reverse: true },
@@ -249,8 +254,8 @@ export const ShipTable = (props: ShipTableProps) => {
 			},
 		);
 		if (!showRanks) {
-			if (!!tierLabel) conf.splice(2, 3);
-			else conf.splice(1, 3);
+			if (!!tierLabel) conf.splice(2, 4);
+			else conf.splice(1, 4);
 		}
 		return conf;
 	}, [showRanks, t, breakoutBosses]);
@@ -480,6 +485,16 @@ export const ShipTable = (props: ShipTableProps) => {
 					}
 				})}
 			</>)}
+			{showRanks && <>
+				<Table.Cell>
+					<div style={{
+						color: gradeToColor(ship.ranks?.extra.compat_score ?? 0)
+					}}>
+						{numberToGrade(ship.ranks?.extra.compat_score ?? 0)}<br />
+						{formatcompat(ship.ranks?.extra.compat_score ?? 0)}
+					</div>
+				</Table.Cell>
+			</>}
 			<Table.Cell>{printShipValue(ship, "antimatter", pship)}</Table.Cell>
 			<Table.Cell>{printShipValue(ship, "accuracy", pship)}</Table.Cell>
 			<Table.Cell>{printShipValue(ship, "attack", pship)} ({printShipValue(ship, "attacks_per_second", pship)}/s)</Table.Cell>
@@ -595,5 +610,9 @@ export const ShipTable = (props: ShipTableProps) => {
 			});
 		}
 		return [];
+	}
+
+	function formatcompat(n: number) {
+		return Number((n * 100).toFixed(2))
 	}
 }
