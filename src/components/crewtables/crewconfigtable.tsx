@@ -115,7 +115,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 			positive: highlighted
 		};
 
-		setCrew ??= (e) => { return; };
+		//setCrew ??= (e) => { return; };
 
 		return (
 			<Table.Row key={`roster_${crew.symbol}+${crew.id}+${!!crew.have}_${rosterType}`} {...attributes}

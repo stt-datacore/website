@@ -246,11 +246,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 	// If no direction set, determine direction from tableConfig when possible
 	if (!sortDirection) {
-		const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
+		const columnConfig = props.config.find(col => col.column === sortColumn) || props.config.find(col => col.pseudocolumns?.includes(sortColumn));
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
 
-	const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
+	const columnConfig = props.config.find(col => col.column === sortColumn) || props.config.find(col => col.pseudocolumns?.includes(sortColumn));
 
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
