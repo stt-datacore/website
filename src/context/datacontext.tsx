@@ -270,6 +270,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'portal_log':
 						newData.portal_log = result.json;
 						newData.portal_log?.forEach(log => log.date = new Date(log.date));
+						newData.portal_log?.sort((a, b) => a.date.getTime() - b.date.getTime());
 						break;
 					default:
 						newData[result.demand] = result.json;
