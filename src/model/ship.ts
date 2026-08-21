@@ -113,6 +113,7 @@ export interface ReferenceShip extends ShipBonus {
     challenge?: string
     challenge_id?: number
   }
+  in_portal?: boolean;
 }
 /**
  * Ship
@@ -168,7 +169,7 @@ export interface Ship extends ShipBonus {
     challenge?: string
     challenge_id?: number
   }
-
+  in_portal?: boolean;
   /** Internal use only, not part of game data */
   buffed?: boolean;
 }
