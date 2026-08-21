@@ -53,7 +53,7 @@ export const ShipTable = (props: ShipTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const navigate = useNavigate();
 
-	const { all_ships } = globalContext.core;
+	const { all_ships, portal_log } = globalContext.core;
 	const { playerData, playerShips } = globalContext.player;
 	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { mode, pageId, event_ships, high_bonus, event_ship_traits, customList, hideTools, tierLabel, tierDescending, tierColor } = props;
@@ -119,11 +119,17 @@ export const ShipTable = (props: ShipTableProps) => {
 	}, [ships]);
 
 	const filteredShips = React.useMemo(() => {
+		let last_portal = portal_log.length ? new Date(portal_log[portal_log.length - 1].date) : undefined;
+
 		const result = ships.filter((ship) => {
 			ship.ranks ??= {} as any;
 			ship.ranks!.overall ??= 0;
 			ship.ranks!.arena ??= 0;
 			ship.ranks!.fbb ??= 0;
+			if (last_portal && ship.date_added) {
+				ship.date_added = new Date(ship.date_added);
+				ship.in_portal = ship.date_added.getTime() <= last_portal.getTime();
+			}
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
@@ -252,6 +258,9 @@ export const ShipTable = (props: ShipTableProps) => {
 					return a.date_added.getTime() - b.date_added.getTime();
 				}
 			},
+			{
+				width: 1, column: 'in_portal', title: t('base.in_portal')
+			}
 		);
 		if (!showRanks) {
 			if (!!tierLabel) conf.splice(2, 4);
@@ -515,6 +524,9 @@ export const ShipTable = (props: ShipTableProps) => {
 			<Table.Cell>
 				{ship.date_added?.toLocaleDateString() || ''}<br />
 				{prettyObtained(ship, t, true)}
+			</Table.Cell>
+			<Table.Cell>
+				{ship.in_portal ? t('global.yes') : t('global.no')}
 			</Table.Cell>
 		</Table.Row>)
 	}
