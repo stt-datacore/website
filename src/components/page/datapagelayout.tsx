@@ -44,7 +44,7 @@ export interface DataPageLayoutProps {
 	initPlayerData?: boolean;
 
 	suppressTitleDisplay?: boolean;
-
+	suppressPlayerHeader?: boolean;
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
 
@@ -76,7 +76,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 
-	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType, suppressTitleDisplay } = props;
+	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType, suppressTitleDisplay, suppressPlayerHeader } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -125,7 +125,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				>
 					<EnergyLogContextProvider>
 						<MainContent narrowLayout={narrowLayout}>
-							<Dashboard
+							{!suppressPlayerHeader && <Dashboard
 								openInputPanel={() => {
 									setPlayerPanel('input');
 									scrollTo(contentAnchor as any);
@@ -133,7 +133,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 								narrow={narrowLayout ?? false}
 								activePanel={dashboardPanel}
 								setActivePanel={setDashboardPanel}
-							/>
+							/>}
 							<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
 								{(!!pageTitleJSX || !!pageTitle) && !suppressTitleDisplay && (
 									<React.Fragment>
@@ -141,7 +141,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 										{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
 									</React.Fragment>
 								)}
-								{!!isReady && <PlayerHeader
+								{!!isReady && !suppressPlayerHeader && <PlayerHeader
 									promptType={playerPromptType ?? 'none'}
 									activePanel={playerPanel}
 									setActivePanel={setPlayerPanel}

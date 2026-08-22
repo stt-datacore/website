@@ -154,7 +154,7 @@ export class ShipPresenter extends Component<
 
         let stats1: { name: string; value: number; icon: string }[] = [];
         let stats2: { name: string; value: number; icon: string }[] = [];
-
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < this.state.mobileWidth;
         if (ship) {
             for (let i = 0; i < 6; i++) {
                 let stat = {
@@ -410,6 +410,7 @@ export class ShipPresenter extends Component<
                                 display: "flex",
                                 flexWrap: "wrap",
                                 flexDirection: "row",
+                                gap: isMobile ? '0.5em' : undefined,
                                 //window.innerWidth < mobileWidth ? "column" : "row",
                                 justifyContent: "space-between",
                                 marginTop: "4px",
@@ -422,7 +423,7 @@ export class ShipPresenter extends Component<
                                     style={{
                                         width:
                                             window.innerWidth < mobileWidth
-                                                ? "30vw"
+                                                ? "25vw"
                                                 : "9em",
                                         display: "flex",
                                         flexDirection: "row",

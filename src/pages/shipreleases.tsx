@@ -23,9 +23,15 @@ export interface ReleasesProps {
 const ShipReleasesPage = () => {
     const { t } = React.useContext(GlobalContext).localized;
 
-    return (<DataPageLayout pageTitle={t('menu.game_info.ship_releases')} suppressTitleDisplay={true} demands={['event_instances', 'collections']}>
-        <ShipReleases />
-    </DataPageLayout>)
+    return (
+        <DataPageLayout
+            pageTitle={t('menu.game_info.ship_releases')}
+            suppressTitleDisplay={true}
+            suppressPlayerHeader={true}
+            demands={['event_instances', 'collections']}>
+            <ShipReleases />
+        </DataPageLayout>
+    );
 }
 
 const ShipReleases = (props: ReleasesProps) => {
@@ -197,8 +203,8 @@ const ShipReleases = (props: ReleasesProps) => {
 
         const col_img = (
             <Grid.Column style={{
-                marginLeft: reverse ? '0' : '-4em',
-                marginRight: !reverse ? '0' : '-4em',
+                marginLeft: isMobile ? undefined : reverse ? '0' : '-4em',
+                marginRight: isMobile ? undefined : !reverse ? '0' : '-4em',
                 }}>
                 <div style={{
                     display: 'grid',
@@ -213,7 +219,10 @@ const ShipReleases = (props: ReleasesProps) => {
                         justifyContent: 'center' // reverse ? 'flex-end' : 'flex-start'
                         //padding: reverse ? '0 0 0 5em' : '0 0 0 5em',
                     }}>
-                        <img style={{height: '36em'}} src={`${process.env.VITE_ASSETS_URL}${getIconPath(ship.icon!, true)}`} />
+                        <img style={{
+                            height: isMobile ? undefined : '36em',
+                            width: isMobile ? 'calc(100%)' : undefined,
+                        }} src={`${process.env.VITE_ASSETS_URL}${getIconPath(ship.icon!, true)}`} />
                     </div>
                 </div>
             </Grid.Column>
@@ -224,7 +233,7 @@ const ShipReleases = (props: ReleasesProps) => {
         const col_present = (
             <Grid.Column>
                 <div style={{
-                    padding: '0 4em',
+                    padding: isMobile ? '0 0.5em' : '0 4em',
                     margin: '2em 0'
                 }}>
                     <p>{ship.flavor}</p>
@@ -300,7 +309,7 @@ const ShipReleases = (props: ReleasesProps) => {
                     <img  style={{width:'90%'}} src={img}
                         />
                 </div>
-                <Grid columns={2} style={{gridArea: 'x'}}>
+                <Grid columns={isMobile ? 1 : 2} style={{gridArea: 'x'}}>
                     <Grid.Row columns={1}>
                         <Grid.Column>
                             <div
@@ -318,7 +327,7 @@ const ShipReleases = (props: ReleasesProps) => {
                                 color: CONFIG.RARITIES[ship.rarity].color,
                                 gap:'1em'
                                 }}>
-                                <div style={{fontSize: '2em'}}>
+                                <div style={{fontSize: '2em', lineHeight: '2em'}}>
                                     {ship.name}
                                 </div>
                                 <Rating size="huge" maxRating={ship.rarity} rating={ship.rarity} icon="star" />
@@ -331,6 +340,7 @@ const ShipReleases = (props: ReleasesProps) => {
                                     justifySelf: 'center',
                                     justifyContent: 'center',
                                     flexDirection:'row',
+                                    flexWrap: isMobile ? 'wrap' : undefined,
                                     background: CONFIG.RARITIES[ship.rarity].rgb.replace("1)", "0.25)")
                                     }}>
                                     {ship.battle_stations?.map((bs, idx) => {
@@ -343,7 +353,9 @@ const ShipReleases = (props: ReleasesProps) => {
                                         );
                                     })}
                                 </div>
-                                {ship.preview ? t('global.pending_release') : ship.date_added?.toLocaleDateString()}
+                                <div style={{fontSize: '1.5em'}}>
+                                    {ship.preview ? t('global.pending_release') : ship.date_added?.toLocaleDateString()}
+                                </div>
                             </div>
                         </Grid.Column>
                     </Grid.Row>
@@ -361,15 +373,9 @@ const ShipReleases = (props: ReleasesProps) => {
                     </>)}
                     {!!isMobile && (<>
                         <Grid.Row>
-                            {!!reverse && (<>
+                            {true && (<>
                                 {col_img}
                                 {col_present}
-                            </>)}
-                        </Grid.Row>
-                        <Grid.Row>
-                            {!reverse && (<>
-                                {col_present}
-                                {col_img}
                             </>)}
                         </Grid.Row>
                     </>)}
@@ -379,6 +385,7 @@ const ShipReleases = (props: ReleasesProps) => {
     }
 
     function toggleBigShow(value?: Ship) {
+        if (isMobile && value) return;
         if (typeof window === 'undefined') return;
         if (value) {
             setLastScroll(window.scrollY);

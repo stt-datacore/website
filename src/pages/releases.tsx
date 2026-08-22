@@ -18,9 +18,15 @@ export interface ReleasesProps {
 const ReleasesPage = () => {
     const { t } = React.useContext(GlobalContext).localized;
 
-    return (<DataPageLayout pageTitle={t('menu.game_info.crew_releases')} suppressTitleDisplay={true} demands={['event_instances', 'collections']}>
-        <Releases />
-    </DataPageLayout>)
+    return (
+        <DataPageLayout
+            pageTitle={t('menu.game_info.crew_releases')}
+            suppressTitleDisplay={true}
+            suppressPlayerHeader={true}
+            demands={['event_instances', 'collections']}>
+            <Releases />
+        </DataPageLayout>
+    )
 }
 
 const Releases = (props: ReleasesProps) => {
@@ -151,14 +157,7 @@ const Releases = (props: ReleasesProps) => {
                 break;
             }
         }
-        // if (crew.obtained_metadata?.event_instance_id) {
-        //     let evt = event_instances.find(f => f.instance_id === crew.obtained_metadata.event_instance_id);
-        //     if (evt) {
-        //         img = `${process.env.VITE_ASSETS_URL}${evt.image}`;
-        //     }
-        // }
         const mainContainerStyle = {
-                //border: '2px solid ' + CONFIG.CREW_SHIP_BATTLE_BONUS_COLORS[crew.action.bonus_type],
                 borderRadius: '4em',
                 margin: '1em 0',
                 fontSize:
@@ -182,8 +181,8 @@ const Releases = (props: ReleasesProps) => {
 
         const col_img = (
             <Grid.Column style={{
-                marginLeft: reverse ? '0' : '-4em',
-                marginRight: !reverse ? '0' : '-4em',
+                    marginLeft: isMobile ? undefined : reverse ? '0' : '-4em',
+                    marginRight: isMobile ? undefined : !reverse ? '0' : '-4em',
                 }}>
                 <div style={{
                     display: 'grid',
@@ -198,7 +197,7 @@ const Releases = (props: ReleasesProps) => {
                         justifyContent: 'center' // reverse ? 'flex-end' : 'flex-start'
                         //padding: reverse ? '0 0 0 5em' : '0 0 0 5em',
                     }}>
-                        <img style={{height: '48em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
+                        <img style={{height: '60em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
                     </div>
                 </div>
             </Grid.Column>
@@ -207,11 +206,12 @@ const Releases = (props: ReleasesProps) => {
         const col_present = (
             <Grid.Column>
                 <div style={{
-                    padding: '0 4em',
+                    padding: isMobile ? '0 2em' : '0 4em',
                     margin: '2em 0'
                 }}>
                     <ClassicPresenter
                         coolMode={true}
+                        //compact={isMobile}
                         fields={[
                             'flavor',
                             'ship_ability',
@@ -237,7 +237,7 @@ const Releases = (props: ReleasesProps) => {
                     <img  style={{width:'90%'}} src={img}
                         />
                 </div>
-                <Grid columns={2} style={{gridArea: 'x'}}>
+                <Grid columns={isMobile ? 1 : 2} style={{gridArea: 'x'}}>
                     <Grid.Row columns={1}>
                         <Grid.Column>
                             <div
@@ -250,12 +250,12 @@ const Releases = (props: ReleasesProps) => {
                                 alignItems:'center',
                                 fontFamily: 'Star Cine',
                                 textAlign: 'center',
-                                padding: '2em 0 2em 0',
+                                padding: '2em 0',
                                 cursor: 'pointer',
                                 color: CONFIG.RARITIES[crew.max_rarity].color,
                                 gap:'1em'
                                 }}>
-                                <div style={{fontSize: '2em'}}>
+                                <div style={{fontSize: '2em', lineHeight: '2em'}}>
                                     {crew.name}
                                 </div>
                                 <Rating size="huge" maxRating={crew.max_rarity} rating={crew.max_rarity} icon="star" />
@@ -263,11 +263,13 @@ const Releases = (props: ReleasesProps) => {
                                     border: '1px solid ' + CONFIG.RARITIES[crew.max_rarity].color,
                                     borderRadius: '4em',
                                     padding: '1em',
-                                    gap: '1em',
+                                    gap: isMobile ? '0.5em' : '1em',
+                                    margin: isMobile ? '1em' : undefined,
                                     display: 'inline-flex',
                                     justifySelf: 'center',
                                     justifyContent: 'center',
                                     flexDirection:'row',
+                                    flexWrap: isMobile ? 'wrap' : undefined,
                                     background: CONFIG.RARITIES[crew.max_rarity].rgb.replace("1)", "0.25)")
                                     }}>
                                     {crew.skill_order.map((sko) => {
@@ -276,7 +278,9 @@ const Releases = (props: ReleasesProps) => {
                                         </div>)
                                     })}
                                 </div>
-                                {crew.preview ? t('global.pending_release') : crew.date_added?.toLocaleDateString()}
+                                <div style={{fontSize: '1.5em'}}>
+                                    {crew.preview ? t('global.pending_release') : crew.date_added?.toLocaleDateString()}
+                                </div>
                             </div>
                         </Grid.Column>
                     </Grid.Row>
@@ -294,15 +298,9 @@ const Releases = (props: ReleasesProps) => {
                     </>)}
                     {!!isMobile && (<>
                         <Grid.Row>
-                            {!!reverse && (<>
+                            {true && (<>
                                 {col_img}
                                 {col_present}
-                            </>)}
-                        </Grid.Row>
-                        <Grid.Row>
-                            {!reverse && (<>
-                                {col_present}
-                                {col_img}
                             </>)}
                         </Grid.Row>
                     </>)}
@@ -312,6 +310,7 @@ const Releases = (props: ReleasesProps) => {
     }
 
     function toggleBigShow(value?: CrewMember) {
+        if (isMobile && value) return;
         if (typeof window === 'undefined') return;
         if (value) {
             setLastScroll(window.scrollY);
