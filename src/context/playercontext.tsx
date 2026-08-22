@@ -106,7 +106,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
-	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentItem)[] | undefined>('calculatedDemands', undefined, { compress: true });
+	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentItem)[] | undefined>('calculatedDemands', undefined, { compress: true, avoidSessionStorage: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 
@@ -156,8 +156,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		});
 
 		if (input.stripped !== true) {
-			setCalculatedDemands(undefined);
-
 			if (!!input.archetype_cache?.archetypes?.length) {
 				setItemArchetypeCache(input.archetype_cache);
 			}
@@ -195,6 +193,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 		if (input.stripped !== true) {
 			setStripped({ ... structuredClone(strippedData), stripped: true });
+			setCalculatedDemands(undefined);
 		}
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools
