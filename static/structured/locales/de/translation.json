@@ -1906,6 +1906,7 @@
             "average_difference": "Durchschnittlicher Unterschied",
             "difference": "Differenz",
             "moving_average": "Gleitender Durchschnitt",
+            "moving_average_difference": "Differenz der gleitenden Durchschnitte",
             "resource": "Ressource",
             "timestamp": "Zeitstempel",
             "total_difference": "Gesamtdifferenz"
@@ -2367,7 +2368,9 @@
     },
     "ship_ownership": {
         "owned": "Nur Schiffe anzeigen, die im Besitz sind",
-        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind"
+        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind",
+        "maxed": "Nur eigene, voll ausgebaute Schiffe anzeigen",
+        "unmaxed": "Nur eigene Schiffe anzeigen, die noch nicht maximal ausgebaut sind"
     },
     "shuttle_helper": {
         "calculator": {

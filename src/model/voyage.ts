@@ -87,6 +87,7 @@ export interface Estimate {
 	deterministic?: boolean;
 	antimatter?: number;
 	vpDetails?: VPDetails;
+    adjustedTime?: number;
 };
 
 export interface Refill {
