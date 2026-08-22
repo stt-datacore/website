@@ -1,5 +1,4 @@
 import { DropdownItemProps } from 'semantic-ui-react';
-import boss_data from '../../static/structured/boss_data.json';
 import CONFIG from "../components/CONFIG";
 import { PlayerContextData } from "../context/playercontext";
 import { BossShip } from '../model/boss';
@@ -13,7 +12,9 @@ import { decamelify, ExportField, simplejson2csv } from './misc';
 import { StatsSorter } from "./statssorter";
 import { BuffStatTable } from "./voyageutils";
 
-const BossData = (() => {
+import boss_data from '../static/structured/boss_data.json';
+
+const BossData = ( () => {
 	let res = [] as BossShip[];
 	let bd = boss_data as any as BossShip[];
 	let groups = {} as {[key:string]: BossShip[]};
@@ -285,7 +286,7 @@ export function mergeRefShips(ref_ships: ReferenceShip[], ships: Ship[], SHIP_TR
 		if (!traits_named?.length) traits_named = undefined;
 
 		if (owned) {
-			ship = { ...ship, ... owned, level: player_direct ? owned.level : owned.level + 1 };
+			ship = { ...ship, ...owned, level: player_direct ? owned.level : owned.level + 1 };
 
 			if (owned.actions) {
 				ship.actions = structuredClone(owned.actions) as ShipAction[];
@@ -351,9 +352,9 @@ export function buffShip(ship: Ship, buffs: BuffStatTable) {
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buffs = false): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
+	let unowned_id = -1;
 	ship_schematics = structuredClone(ship_schematics);
 	ship_schematics.forEach((schematic) => {
-		let unowned_id = -1;
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
 		let traits_named = schematic.ship.traits_named;
@@ -375,7 +376,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
 			schematic.ship.shield_regen = owned.shield_regen;
 			schematic.ship.shields = owned.shields;
 			if (owned.battle_stations?.length) {
-				schematic.ship.battle_stations = [ ... owned.battle_stations ?? []];
+				schematic.ship.battle_stations = [ ...owned.battle_stations ?? []];
 			}
 
 			if (owned.actions) {
@@ -388,7 +389,7 @@ export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buf
 			if (schematic.ship.levels) {
 				let h = highestLevel(schematic.ship);
 				if (schematic.ship.max_level && h === schematic.ship.max_level + 1 && schematic.ship.levels[`${h}`].hull) {
-					schematic.ship = { ... schematic.ship, ...schematic.ship.levels[`${h}`] };
+					schematic.ship = { ...schematic.ship, ...schematic.ship.levels[`${h}`] };
 					schematic.ship.attack = schematic.ship.levels![`${h}`].attack_power * power;
 					schematic.ship.accuracy = schematic.ship.levels![`${h}`].accuracy_power * power;
 					schematic.ship.evasion = schematic.ship.levels![`${h}`].evasion_power * power;
@@ -482,7 +483,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 		//if (bscrew.length === 0) bscrew = bsave;
 	}
 
-	var sorter = new StatsSorter({ objectConfig: shipStatSortConfig });
+	let sorter = new StatsSorter({ objectConfig: shipStatSortConfig });
 	sorter.sortStats(bscrew, true);
 	return bscrew;
 }
@@ -644,7 +645,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 
 export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, b: ShipWorkerTransportItem | ShipWorkerItem, fbb_mode: boolean) {
 	if (fbb_mode) {
-		let r = 0;
+		let r: number;
 		let aa: number;
 		let ba: number;
 		aa = a.fbb_metric;
@@ -669,7 +670,7 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 		return r;
 	}
 	else {
-		let r = 0;
+		let r: number;
 		if (a.win !== b.win) {
 			if (a.win) return -1;
 			else if (b.win) return 1;

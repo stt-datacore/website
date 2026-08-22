@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Header, Icon, Label, Menu, Modal, Popup, Segment, Tab } from "semantic-ui-react";
+import { Container, Header, Icon, Label, Menu, Modal, Popup, Segment, Tab, TabPane } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { ObjectiveEvent, OERefType } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
@@ -45,9 +45,9 @@ export const OEModal = (props: OEModalProps) => {
     const panes = activeEventInfo?.objective_archetypes.map(oearch => ({
         menuTitle: getArchetypeTitle(oearch),
         data: oearch,
-        render: () => <Tab.Pane attached={false}>
+        render: () => <TabPane attached={false}>
             <OEInfo data={activeEventInfo} objective_archetype={oearch} />
-        </Tab.Pane>
+        </TabPane>
     })) ?? [];
 
     const Tool = React.useMemo(() => {
@@ -114,7 +114,7 @@ export const OEModal = (props: OEModalProps) => {
                     <div className="ui segment" style={{ margin: 'auto', padding: (toolActive && Tool) ? '0.5em 1em 1em 1em' : undefined }}>
                         {(!toolActive || !Tool) && <img
                             style={{ height: '300px', width: '500px', margin: 'auto' }}
-                            src={`${process.env.GATSBY_ASSETS_URL}${getIconPath(activeEventInfo.image, true)}`}
+                            src={`${process.env.VITE_ASSETS_URL}${getIconPath(activeEventInfo.image, true)}`}
                         />}
                         {!!toolActive && !!Tool && !!activeArchetype &&
                             <div style={{ width: '500px', height: '300px' }}>

@@ -388,7 +388,7 @@ const ExportOptions = (props: ExportOptionsProps) => {
 		</div>
 	);
 
-	function renderPrefsForm(): JSX.Element {
+	function renderPrefsForm(): React.ReactNode {
 		if (!isActive) return (<></>);
 		return (
 			<div style={{ marginBottom: '2em', padding: '0 1.5em' }}>

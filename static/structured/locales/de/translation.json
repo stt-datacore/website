@@ -1521,11 +1521,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
+            "crew_releases": "Veröffentlichungen von Crew",
             "episodes": "Folgen",
             "events": "Ereignisen",
             "ftm_hof": "ZZM Ruhmeshalle",
             "misc_game_stats": "Verschiedene Spielstatistiken",
             "objective_events": "Objektive-Ereignisse",
+            "ship_releases": "Veröffentlichungen von Schiffe",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Ruhmeshalle der Reise"
         },
@@ -1830,8 +1832,8 @@
             "am_seating": "Antimaterie",
             "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
-            "event": "{{obtained.short.Event}}",
             "donut_rank": "Reisemetrik",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
             "gauntlet_plus": "Herausforderung+",
             "greatness": "Vielseitigkeit",
@@ -2280,6 +2282,7 @@
         },
         "charge_phases": "Ladephasen",
         "clear_station": "Station löschen",
+        "compat_score": "Kaderstärke",
         "cooldown": "Abklingzeit",
         "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "crit_bonus": "Krit Bonus",
@@ -2367,10 +2370,10 @@
         "handicap": "Verringern Sie {{type}} um {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Nur Schiffe anzeigen, die im Besitz sind",
-        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind",
         "maxed": "Nur eigene, voll ausgebaute Schiffe anzeigen",
-        "unmaxed": "Nur eigene Schiffe anzeigen, die noch nicht maximal ausgebaut sind"
+        "owned": "Nur Schiffe anzeigen, die im Besitz sind",
+        "unmaxed": "Nur eigene Schiffe anzeigen, die noch nicht maximal ausgebaut sind",
+        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind"
     },
     "shuttle_helper": {
         "calculator": {

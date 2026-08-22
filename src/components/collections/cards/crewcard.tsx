@@ -1,12 +1,11 @@
 import React from 'react';
-import { PlayerCollection, PlayerCrew } from '../../../model/player';
 import { Icon } from 'semantic-ui-react';
-import { RewardsGrid } from '../../crewtables/rewards';
-import { CrewItemsView } from '../../item_presenters/crew_items';
-import ItemDisplay from '../../itemdisplay';
 import { GlobalContext } from '../../../context/globalcontext';
+import { PlayerCollection, PlayerCrew } from '../../../model/player';
 import { makeCiteNeeds } from '../../../utils/collectionutils';
+import { RewardsGrid } from '../../crewtables/rewards';
 import { AvatarView } from '../../item_presenters/avatarview';
+import { CrewItemsView } from '../../item_presenters/crew_items';
 import { OptionsPanelFlexColumn } from '../../stats/utils';
 
 
@@ -23,7 +22,7 @@ export interface CollectionsCrewCardProps {
     highlightClassName?: string;
 }
 
-const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
+const CollectionsCrewCard = (props: CollectionsCrewCardProps): React.ReactNode => {
     const context = React.useContext(GlobalContext);
     const { t } = context.localized;
     const { highlightStyle, highlightIfNeeded, collection, crew, index, onClick } = props;
@@ -42,7 +41,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
         padding: "0.25em 1em",
         paddingTop: index < (collection?.needed ?? 0) ? '0.75em' : undefined,
         borderRadius: "5px",
-        ... ((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
+        ...((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
     };
 
     const compactStyle: React.CSSProperties = {
@@ -56,7 +55,7 @@ const CollectionsCrewCard = (props: CollectionsCrewCardProps): JSX.Element => {
         padding: "0.25em 1em",
         paddingTop: index < (collection?.needed ?? 0) ? '0.75em' : undefined,
         borderRadius: "5px",
-        ... ((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
+        ...((highlightIfNeeded && needed) ? highlightStyle : style) ?? {}
     };
 
     return (<div

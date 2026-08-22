@@ -1531,11 +1531,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Herramienta de tripulación de puente",
+            "crew_releases": "Lanzamientos de tripulación",
             "episodes": "Episodios",
             "events": "Eventos",
             "ftm_hof": "Salón de la fama del PLM",
             "misc_game_stats": "Estadísticas varias del juego",
             "objective_events": "Eventos objetivos",
+            "ship_releases": "Lanzamientos de buques",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Salón de la fama del viaje"
         },
@@ -1840,8 +1842,8 @@
             "am_seating": "Antimateria",
             "collections": "Colecciones",
             "crit": "Crítico elevado",
-            "event": "{{obtained.short.Event}}",
             "donut_rank": "Medida del viaje",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Reto",
             "gauntlet_plus": "Reto+",
             "greatness": "Versatilidad",
@@ -2290,6 +2292,7 @@
         },
         "charge_phases": "Fases de Carga",
         "clear_station": "Borrar estación",
+        "compat_score": "Fortaleza de la plantilla",
         "cooldown": "Recargar",
         "crew_with_trigger_check": "Mostrar solo los tripulantes con el activador coincidente",
         "crit_bonus": "Bonificación de Crít",
@@ -2377,10 +2380,10 @@
         "handicap": "Disminuir {{type}} en {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Mostrar solo buques propios",
-        "unowned": "Mostrar solo buques sin propietario",
         "maxed": "Mostrar solo buques en propiedad al máximo nivel",
-        "unmaxed": "Mostrar solo buques en propiedad que no hayan alcanzado el nivel máximo"
+        "owned": "Mostrar solo buques propios",
+        "unmaxed": "Mostrar solo buques en propiedad que no hayan alcanzado el nivel máximo",
+        "unowned": "Mostrar solo buques sin propietario"
     },
     "shuttle_helper": {
         "calculator": {

@@ -2,8 +2,6 @@ import React, { PureComponent } from 'react';
 
 import MissionCost from './missioncost';
 import { EquipmentItemSource } from '../model/equipment';
-import { Link } from 'gatsby';
-import CONFIG from './CONFIG';
 import { TinyStore } from '../utils/tiny';
 import { GlobalContext } from '../context/globalcontext';
 import { Quest } from '../model/missions';
@@ -56,7 +54,7 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		newstate.briefs[name] = value;
 		this.tiny.setValue('whole_state', newstate);
 		window.setTimeout(() => {
-			this.setState({ ... newstate });
+			this.setState({ ...newstate });
 		})
 
 	}
@@ -80,8 +78,8 @@ class ItemSources extends PureComponent<ItemSourcesProps, ItemSourcesState> {
 		const briefSepInit = <>&nbsp;</>;
 		const briefSepFinal = <><br /></>;
 		const textDec = "";
-		let res = [] as JSX.Element[];
-		let eps = {} as {[key:string]: JSX.Element};
+		let res = [] as React.ReactNode[];
+		let eps = {} as {[key:string]: React.ReactNode};
 
 		if (this.context.core.episodes) {
 			this.context.core.episodes.forEach(e => {

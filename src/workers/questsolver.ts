@@ -1,5 +1,4 @@
-import CONFIG from "../components/CONFIG";
-import { BaseSkills, ComputedSkill, CrewMember, Skill } from "../model/crew";
+import { BaseSkills, CrewMember } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";
 import { Jackpot, MissionChallenge, MissionTraitBonus } from "../model/missions";
 import { PlayerCrew, PlayerEquipmentItem } from "../model/player";
@@ -7,7 +6,7 @@ import { IQuestCrew, PathGroup, QuestSolverConfig, QuestSolverResult, ThreeSolve
 import { getNodePaths, makeNavMap } from "../utils/episodes";
 import { calcItemDemands, canBuildItem, deductDemands, reverseDeduction } from "../utils/equipment";
 
-import { getPossibleQuipment, getItemBonuses, ItemBonusInfo, addItemBonus, checkReward, ItemWithBonus, sortItemsWithBonus, getItemWithBonus } from "../utils/itemutils";
+import { addItemBonus, getItemBonuses, getItemWithBonus, getPossibleQuipment, ItemBonusInfo, sortItemsWithBonus } from "../utils/itemutils";
 import { applyCrewBuffs } from "./betatachyon";
 
 function newQuip(crew: IQuestCrew) {
@@ -37,7 +36,7 @@ function makeSmartCombos(source: IQuestCrew[], path: MissionChallenge[], maxSolv
                 if (required?.length && !required.every(r => newcombo.some(c => c.id === r))) continue;
 
                 if (newcombo.some(n => n.challenges?.some(c => c.challenge.id === last.id))) {
-                    let cbs = [... new Set(newcombo.map(n => n.challenges?.map(c => c.challenge?.id ?? -1) ?? []).flat()) ].sort();
+                    let cbs = [...new Set(newcombo.map(n => n.challenges?.map(c => c.challenge?.id ?? -1) ?? []).flat()) ].sort();
                     let key = cbs.join("_");
                     counts[key] ??= 0;
                     if (counts[key] < maxSolves || newcombo.every(nc => nc.challenges?.some(ncc => cbs.includes(ncc.challenge.id) && !ncc.max_solve))) {
@@ -749,7 +748,7 @@ const QuestSolver = {
                                         return tg.some(c => c.associated_paths?.some(pt => pt.path === path_key && quip.kwipment_id && pt.needed_kwipment?.includes(Number.parseInt(quip.kwipment_id as string))))
                                     })
                                     .map((quip) => {
-                                        return { ... quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
+                                        return { ...quip, demands: calcItemDemands(quip, config.context.core.items, playerItems) }
                                     });
 
                                 let tc = tg.filter((c) => buildQuipment(c, pretendItems, tghist, c.associated_paths?.find(fp => fp.path === path_key)?.needed_kwipment));
@@ -838,7 +837,7 @@ const QuestSolver = {
                 });
             });
 
-            let finalpss = [ ... pathSolutions ];
+            let finalpss = [ ...pathSolutions ];
 
             if (!config.includePartials) {
                 for (let p of paths) {

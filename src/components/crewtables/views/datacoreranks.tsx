@@ -92,7 +92,7 @@ export const getDataCoreRanksTableConfig = (weights: CurrentWeighting, t: Transl
         }
         return 0;
     });
-    sorter = [ ...ScoreFields.slice(0, 3), ... sorter];
+    sorter = [ ...ScoreFields.slice(0, 3), ...sorter];
     sorter.forEach(field => {
         if (field === 'cab') {
             tableConfig.push(
@@ -161,7 +161,7 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
         return 0;
     });
 
-    sortedFields = [ ...ScoreFields.slice(0, 3), ... sortedFields];
+    sortedFields = [ ...ScoreFields.slice(0, 3), ...sortedFields];
     const sortedRanks = [] as string[];
 
     for (let key of sortedFields) {

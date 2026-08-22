@@ -38,12 +38,12 @@ export interface NumberSortConfigItem {
      * to the next available position.
      */
     precedence?: number;
-    
+
     /**
      * Optional custom comparison method
-     * @param a 
-     * @param b 
-     * @returns 
+     * @param a
+     * @param b
+     * @returns
      */
     customComp?: (a: any, b: any) => number;
 }
@@ -68,7 +68,7 @@ export class StatsSorter {
         let seeprec = [] as number[];
 
         for (let conf of this.objectConfig.props){
-            if (conf.precedence) {    
+            if (conf.precedence) {
                 let sp = conf.precedence;
                 while (seeprec.includes(sp)) {
                     sp++;
@@ -79,10 +79,10 @@ export class StatsSorter {
         }
 
         for (let conf of this.objectConfig.props){
-            if (!conf.precedence) {    
+            if (!conf.precedence) {
                 while (seeprec.includes(prec)) {
                     prec++;
-                }                            
+                }
                 conf.precedence = prec;
                 seeprec.push(prec);
                 prec++;
@@ -106,7 +106,7 @@ export class StatsSorter {
 
         for (let stat of newstats) {
             let val = this.getValue(stat, prop);
-            if (val !== undefined) {      
+            if (val !== undefined) {
                 result[val] ??= [];
                 result[val].push(stat);
             }
@@ -121,7 +121,7 @@ export class StatsSorter {
                 this.sortStats(result[stat], true);
             }
         }
-        
+
         return result;
 
     }
@@ -138,7 +138,7 @@ export class StatsSorter {
             tstats = stats ?? [];
         }
         else {
-            tstats = [ ... stats ?? [] ];
+            tstats = [ ...stats ?? [] ];
         }
 
         tstats.sort((a,b) => this.compareObjects(a, b));
@@ -147,8 +147,8 @@ export class StatsSorter {
 
     /**
      * Compare two objects based on the current configuration.
-     * @param a 
-     * @param b 
+     * @param a
+     * @param b
      * @returns -1 if a comes first, 1 if b comes first, and 0 if equal.
      */
     public compareObjects<T extends Object>(a: T, b: T) {
@@ -166,12 +166,12 @@ export class StatsSorter {
 
         return r;
     }
-    
+
     /**
      * Get the value at the specified (non-compound) property path on the specified object
-     * @param target 
-     * @param prop 
-     * @returns 
+     * @param target
+     * @param prop
+     * @returns
      */
     public getValue<T extends Object>(target: T, prop: string | number): number | undefined {
         if (typeof prop === 'string') {
@@ -179,7 +179,7 @@ export class StatsSorter {
             if (x !== -1) {
                 let path = prop.slice(x + 1);
                 prop = prop.slice(0, x);
-                
+
                 let idx = Number.parseInt(prop);
 
                 if (!Number.isNaN(idx)) {
@@ -247,17 +247,17 @@ export class StatsSorter {
 
     /**
      * The inner logic engine for the sorter
-     * @param a 
-     * @param b 
-     * @param props 
-     * @param direction 
-     * @param null_direction 
-     * @returns 
+     * @param a
+     * @param b
+     * @param props
+     * @param direction
+     * @param null_direction
+     * @returns
      */
     private numbersComp<T extends Object | Object[]>(a: T, b: T, props: string | number, direction?: 'ascending' | 'descending' | undefined, null_direction?: 'ascending' | 'descending' | undefined, operation?: string) {
         let val1 = this.getCompoundValue(a, props, operation);
         let val2 = this.getCompoundValue(b, props, operation);
-        
+
         if (val1 !== undefined && val2 !== undefined) {
             if (direction === 'descending') {
                 return val2 - val1;

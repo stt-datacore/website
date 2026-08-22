@@ -1533,11 +1533,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
+            "crew_releases": "Premières des équipages",
             "episodes": "Épisodes",
             "events": "Événements",
             "ftm_hof": "Temple de la renommée des FAMs",
             "misc_game_stats": "Statistiques diverses du jeu",
             "objective_events": "Événements objectifs",
+            "ship_releases": "Premières des vaisseaux",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Temple de la renommée des voyages"
         },
@@ -1842,8 +1844,8 @@
             "am_seating": "Antimatière",
             "collections": "Collections",
             "crit": "Critique élevée",
-            "event": "{{obtained.short.Event}}",
             "donut_rank": "Mesure du voyage",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
             "gauntlet_plus": "Gantelet+",
             "greatness": "Polyvalence",
@@ -2292,6 +2294,7 @@
         },
         "charge_phases": "Phases de Chargement",
         "clear_station": "Effacer la station",
+        "compat_score": "Force de l'effectif",
         "cooldown": "Recharge",
         "crew_with_trigger_check": "Afficher uniquement les équipiers avec le déclencheur correspondant",
         "crit_bonus": "Bonus Crit",
@@ -2379,10 +2382,10 @@
         "handicap": "Diminuer {{type}} de {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Afficher uniquement les vaisseaux possédés",
-        "unowned": "Afficher uniquement les vaisseaux sans propriétaire",
         "maxed": "Afficher uniquement les vaisseaux possédés et au niveau maximum",
-        "unmaxed": "Afficher uniquement les vaisseaux possédés qui ne sont pas au niveau maximum"
+        "owned": "Afficher uniquement les vaisseaux possédés",
+        "unmaxed": "Afficher uniquement les vaisseaux possédés qui ne sont pas au niveau maximum",
+        "unowned": "Afficher uniquement les vaisseaux sans propriétaire"
     },
     "shuttle_helper": {
         "calculator": {

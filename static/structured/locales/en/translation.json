@@ -1522,11 +1522,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Bridge Crew Tool",
+            "crew_releases": "Crew Releases",
             "episodes": "Episodes",
             "events": "Events",
             "ftm_hof": "FTM Hall of Fame",
             "misc_game_stats": "Misc Game Stats",
             "objective_events": "Objective Events",
+            "ship_releases": "Ship Releases",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Voyage Hall of Fame"
         },
@@ -1831,8 +1833,8 @@
             "am_seating": "Antimatter",
             "collections": "Collections",
             "crit": "Elevated Crit",
-            "event": "{{obtained.short.Event}}",
             "donut": "Voyage Measure",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
             "greatness": "Versatility",
@@ -2281,6 +2283,7 @@
         },
         "charge_phases": "Charge Phases",
         "clear_station": "Clear Station",
+        "compat_score": "Roster Strength",
         "cooldown": "Cooldown",
         "crew_with_trigger_check": "Only show crew with matching trigger",
         "crit_bonus": "Crit Bonus",
@@ -2368,10 +2371,10 @@
         "handicap": "Decrease {{type}} by {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Only show owned ships",
-        "unowned": "Only show unowned ships",
         "maxed": "Only show owned, maxed ships",
-        "unmaxed": "Only show owned, unmaxed ships"
+        "owned": "Only show owned ships",
+        "unmaxed": "Only show owned, unmaxed ships",
+        "unowned": "Only show unowned ships"
     },
     "shuttle_helper": {
         "calculator": {

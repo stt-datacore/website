@@ -164,16 +164,16 @@ export class IAmPicardHelper extends Helper {
 			// This won't be necessary once we switch away from Json to pure binary for native invocation
 			let newCrew = {
 				id: crew.crew_id ? crew.crew_id : crew.id,
-				name: crew.name.replace(/[^\x00-\x7F]/g, ''),
+				name: crew.name.replace(/[^\x20-\x7F]/g, ''),
 				traitBitMask: traitBitMask,
 				max_rarity: crew.max_rarity,
-				skillData: Array.from(skillData)
+				skillData: Array.from(skillData),
+				antimatter_bonus: crew.antimatter_bonus || 0
 			};
 			dataToExport.crew.push(newCrew);
 		});
 
 		binaryConfig.setUint16(32, dataToExport.crew.length, true);
-
 		dataToExport.binaryConfig = Array.from(new Uint8Array(binaryConfigBuffer));
 
 		return dataToExport;
