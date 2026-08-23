@@ -19,13 +19,13 @@ export const UnneededItems = () => {
 	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 
-	const [playerItems, setPlayeritem] = React.useState<EquipmentItem[]>([]);
+	const [playerItems, setPlayerItems] = React.useState<EquipmentItem[]>([]);
 
 	React.useEffect(() => {
 		const playerItems: EquipmentItem[] = mergeItems(playerData?.player.character.items ?? [], globalContext.core.items)
 			.filter(item => item.type !== 14 && item.type !== 15);
 		console.log(playerItems.filter(item => (item.quantity ?? 0)  > 32000));
-		setPlayeritem([...playerItems]);
+		setPlayerItems([...playerItems]);
 	}, [playerData]);
 
 	if (!playerData) return <></>;
@@ -63,6 +63,7 @@ type SchematicFuelProps = {
 const SchematicFuel = (props: SchematicFuelProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
+	const { playerSchematics } = props;
 	const { playerData, playerShips } = globalContext.player;
 
 	const dbid = playerData?.dbid;
@@ -71,35 +72,38 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 
 	if (!playerData || !playerShips) return <></>;
 
-	const allPlayerShips: Ship[] = playerShips.slice();
-	// Core ships is missing the default ship (1* Constellation Class), so manually account for it here
-	const defaultShip: Ship | undefined = playerData.player.character.ships.find(ship => ship.symbol === 'constellation_ship');
-	if (defaultShip) allPlayerShips.push(defaultShip);
+	// const allPlayerShips: Ship[] = playerShips.slice();
+	// // Core ships is missing the default ship (1* Constellation Class), so manually account for it here
+	// const defaultShip: Ship | undefined = playerData.player.character.ships.find(ship => ship.symbol === 'constellation_ship');
+	// if (defaultShip) allPlayerShips.push(defaultShip);
 
 	// Calculate unneeded schematics
-	const maxedShips: Ship[] = allPlayerShips.filter(
+	const maxedShips: Ship[] = React.useMemo(() => playerShips.filter(
 		ship => ship.level === ship.max_level
-	);
-	const fuelList: EquipmentItem[] = props.playerSchematics.filter(item =>
-		maxedShips.some(ship => {
-			if (item.symbol === `${ship.symbol}_schematic`) {
-				item.rarity = ship.rarity;	// Use ship rarity instead of schematic item rarity
-				return true;
+	), [playerShips]);
+
+	const fuelList: EquipmentItem[] = React.useMemo(() => {
+		return playerSchematics.filter(item =>
+			maxedShips.some(ship => {
+				if (item.symbol === `${ship.symbol}_schematic`) {
+					item.rarity = ship.rarity;	// Use ship rarity instead of schematic item rarity
+					return true;
+				}
+			})
+		).sort((a, b) => {
+			let r = 0;
+			if (sort === 'name') {
+				r = a.name.localeCompare(b.name) || (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity;
 			}
-		})
-	).sort((a, b) => {
-		let r = 0;
-		if (sort === 'name') {
-			r = a.name.localeCompare(b.name) || (b.quantity ?? 0) - (a.quantity ?? 0) || b.rarity - a.rarity;
-		}
-		else if (sort === 'quantity') {
-			r = b.rarity - a.rarity || (b.quantity ?? 0) - (a.quantity ?? 0) || a.name.localeCompare(b.name);
-		}
-		else {
-			r = b.rarity - a.rarity || a.name.localeCompare(b.name) || (a.quantity ?? 0) - (b.quantity ?? 0);
-		}
-		return r;
-	});
+			else if (sort === 'quantity') {
+				r = b.rarity - a.rarity || (b.quantity ?? 0) - (a.quantity ?? 0) || a.name.localeCompare(b.name);
+			}
+			else {
+				r = b.rarity - a.rarity || a.name.localeCompare(b.name) || (a.quantity ?? 0) - (b.quantity ?? 0);
+			}
+			return r;
+		});
+	}, [playerSchematics]);
 
 	if (fuelList.length === 0) return <></>;
 
