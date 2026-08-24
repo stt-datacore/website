@@ -13,6 +13,7 @@ import { printAM } from '../retrieval/context';
 import { descriptionLabel, SpecialViews } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
 import { ICrewFilter, IRosterCrew, RosterType } from './model';
+import CONFIG from '../CONFIG';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -53,6 +54,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{
 			width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos,
+			sticky: true,
 			translatePseudocolumn: (field) => {
 				return t(`base.${field}`) || t(`base.pseudocolumns.${field}`);
 			}
@@ -123,7 +125,15 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 				// 	backgroundColor: specialView === 'as_immortalized' && crew.immortal === CompletionState.DisplayAsImmortalOwned ? 'darkgreen' : undefined
 				// }}
 				>
-				<Table.Cell className='sticky'>
+				<Table.Cell
+					className='ui segment'
+					style={{
+						borderLeft: '2px solid ' + CONFIG.RARITIES[crew.max_rarity].color,
+						minWidth: '18em',
+						position: 'sticky', left: 0,
+						//background: idx % 2 ? '#353a41' : '#2e3338'
+						backgroundImage: `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))`
+					}}>
 					<div
 						style={{
 							display: 'grid',
