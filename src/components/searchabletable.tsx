@@ -173,9 +173,10 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				{props.config.map((cell, idx) => (
 					<Table.HeaderCell
 						key={idx}
+						className={cell.sticky ? 'ui segment' : undefined}
 						style={{
 							position: cell.sticky ? 'sticky' : undefined,
-							left: cell.sticky ? 0 : undefined
+							left: cell.sticky ? 0 : undefined,
 						}}
 						width={cell.width as any}
 						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : undefined) ?? undefined}
@@ -434,13 +435,17 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
-				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
-					<Table sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table' style={props.tableStyle}>
+				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto', gap: 0 }}>
+					<Table
+						sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table'
+						style={props.tableStyle}>
 						<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 						<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+					</Table>
+					<Table style={{position: 'sticky', left: 0, width: '100%', marginTop: 0, paddingTop: 0}}>
 						<Table.Footer>
 							<Table.Row>
-								<Table.HeaderCell colSpan={props.config.length}>
+								<Table.HeaderCell>
 									<div style={{ zIndex: "1000", width: "100%" }}>
 										<Pagination
 											totalPages={totalPages}
