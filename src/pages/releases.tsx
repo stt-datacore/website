@@ -197,7 +197,7 @@ const Releases = (props: ReleasesProps) => {
                         justifyContent: 'center' // reverse ? 'flex-end' : 'flex-start'
                         //padding: reverse ? '0 0 0 5em' : '0 0 0 5em',
                     }}>
-                        <img style={{height: '60em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
+                        <img style={{height: isMobile ? '48em' : '60em'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} />
                     </div>
                 </div>
             </Grid.Column>
@@ -248,7 +248,7 @@ const Releases = (props: ReleasesProps) => {
                                 flexDirection:'column',
                                 justifyContent:'center',
                                 alignItems:'center',
-                                fontFamily: 'Star Cine',
+                                fontFamily: 'Star Cine, sans-serif',
                                 textAlign: 'center',
                                 padding: '2em 0',
                                 cursor: 'pointer',
@@ -266,8 +266,10 @@ const Releases = (props: ReleasesProps) => {
                                     gap: isMobile ? '0.5em' : '1em',
                                     margin: isMobile ? '1em' : undefined,
                                     display: 'inline-flex',
+                                    fontFamily:"Star Cine, sans-serif",
                                     justifySelf: 'center',
                                     justifyContent: 'center',
+                                    alignItems: 'center',
                                     flexDirection:'row',
                                     flexWrap: isMobile ? 'wrap' : undefined,
                                     background: CONFIG.RARITIES[crew.max_rarity].rgb.replace("1)", "0.25)")
