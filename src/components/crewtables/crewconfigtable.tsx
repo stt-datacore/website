@@ -118,7 +118,16 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 		};
 
 		//setCrew ??= (e) => { return; };
-
+		let ownedbg = '';
+		if (crew.have) {
+			let kwip = crew.kwipment;
+			if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+			}
+			else if (crew.immortal && (crew.immortal === -1 || crew.immortal > 0)) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+			}
+		}
 		return (
 			<Table.Row key={`roster_${crew.symbol}+${crew.id}+${!!crew.have}_${rosterType}`} {...attributes}
 				// style={{
@@ -132,27 +141,40 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 						minWidth: '18em',
 						position: 'sticky', left: 0,
 						//background: idx % 2 ? '#353a41' : '#2e3338'
-						backgroundImage: `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))`
+						backgroundImage:
+							`linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
+							(ownedbg ? ", " + ownedbg : '') ,
 					}}>
-					<div
-						style={{
-							display: 'grid',
-							gridTemplateColumns: '60px auto',
-							gridTemplateAreas: `'icon stats' 'icon description'`,
-							gridGap: '1px'
-						}}
-					>
-						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
-								<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
-							</CrewTarget>
+					<div style={{display: 'grid', gridTemplateAreas: `'a'`}}>
+						<div style={{
+						//backgroundImage: `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))`,
+							gridArea: 'a',
+							height: '100%',
+							width: '100%'
+							}}>
+								&nbsp;
 						</div>
-						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
-						</div>
-						<div style={{ gridArea: 'description' }}>
-							{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
-							{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+						<div
+							style={{
+								gridArea: 'a',
+								display: 'grid',
+								gridTemplateColumns: '60px auto',
+								gridTemplateAreas: `'icon stats' 'icon description'`,
+								gridGap: '1px',
+							}}
+						>
+							<div style={{ gridArea: 'icon' }}>
+								<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
+									<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								</CrewTarget>
+							</div>
+							<div style={{ gridArea: 'stats' }}>
+								<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
+							</div>
+							<div style={{ gridArea: 'description' }}>
+								{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
+								{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+							</div>
 						</div>
 					</div>
 				</Table.Cell>
