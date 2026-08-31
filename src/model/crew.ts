@@ -15,7 +15,11 @@ export interface CrossFuseInfo {
 export interface MarkdownInfo {
     author: string;
     modified: Date;
+    author_key?: string;
+    extra?: string;
+    changeLog?: MarkdownInfo[];
 }
+
 export interface SkillQuipmentScores {
     command_skill: number;
     security_skill: number;
@@ -98,6 +102,12 @@ export interface ObtainedMetadata {
     where?: EventWhere;
     additional_events?: AdditionalEvent[];
     continuum_id?: number;
+}
+
+export interface CrewReview {
+    symbol: string;
+    markdownContent: string;
+    markdownInfo: MarkdownInfo;
 }
 
 /**
