@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Icon, Rating, Table } from "semantic-ui-react";
+import { Checkbox, Icon, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { CrewMember, QuippedPower } from "../../model/crew";
@@ -249,7 +249,6 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
             }
 
             crew = crew.filter((c, i) => crew?.findIndex(c2 => c2.id === c.id) === i);
-
             crew.sort((a, b) => {
                 let an = a.q_bits ?? 0;
                 let bn = b.q_bits ?? 0;
@@ -260,11 +259,6 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
             setMissionPool(crew);
             setSelCrew(selCrew?.filter(f => crew?.some(c => c.id === f)));
-            setTimeout(() => {
-                if (mission?.quests?.length && (!questId || !mission.quest_ids.includes(questId))) {
-                    setQuestId(mission.quests[0].id);
-                }
-            });
         }
     }, [playerData]);
 
@@ -291,8 +285,11 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
     React.useEffect(() => {
         if (!!mission?.quests?.length) {
-            setQuestId(undefined);
-            setTimeout(() => setQuestId(questId ?? 0));
+            setTimeout(() => {
+                if (mission?.quests?.length && (!questId || !mission.quest_ids.includes(questId))) {
+                    setQuestId(mission.quests[0].id);
+                }
+            });
         }
     }, [mission]);
 
@@ -500,6 +497,7 @@ const QpCrew = (props: QpCrewProps) => {
     const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
     const [displayCrew, setDisplayCrew] = React.useState<IRosterCrew[]>([]);
     const [running, setRunning] = React.useState(false);
+    const [showIdle, setShowIdle] = useStateWithStorage('/quipmentTools/idleCrew', false, { rememberForever: true });
     const [prospects, setProspects] = useStateWithStorage('/quipmentTools/quipProspects', {} as {[key:string]: number[]})
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
@@ -535,6 +533,10 @@ const QpCrew = (props: QpCrewProps) => {
             return;
         }
         const newcrew = crew.filter(qc => {
+            if (showIdle) {
+                let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
+                if (isActive) return false;
+            }
             if (!qc.skills || qc.immortal > 0) {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
             }
@@ -563,8 +565,14 @@ const QpCrew = (props: QpCrewProps) => {
             return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
         })
         .map(qc => {
-            if (prospects[qc.symbol]) {
+            let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
+            if (prospects[qc.symbol] || isActive) {
                 qc = oneCrewCopy(qc);
+            }
+            if (isActive) {
+                qc.active_status = isActive;
+            }
+            if (prospects[qc.symbol]) {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
                 qc.kwipment_prospects = false;
                 qc.kwipment_expiration = [0, 0, 0, 0];
@@ -579,7 +587,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects]);
+    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle]);
 
     return (
         <div style={{
@@ -608,6 +616,7 @@ const QpCrew = (props: QpCrewProps) => {
                 crewFilters={crewFilters}
                 setCrewFilters={setCrewFilters}
                 />
+            <Checkbox label={t('options.crew_status.idle')} checked={showIdle} onChange={(e, { checked }) => setShowIdle(!!checked)} />
                 {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
                 {!running && <SearchableTable
                     showSortDropdown
@@ -674,11 +683,12 @@ const QpCrew = (props: QpCrewProps) => {
                                 <div style={{gridArea: 'check'}}>
                                     {!!crew.isSelected && <Icon size='large' name= 'check' color='green' />}
                                 </div>
-                                <div style={{gridArea: 'name'}}>
+                                <div style={{gridArea: 'name', display: 'flex', alignItems: 'center'}}>
                                     <Link to={`/crew/${crew.symbol}`} style={{fontWeight: 'bold', fontSize: '1.2em'}}>
                                         {crew.name}
                                     </Link>
                                     {!!crew.immortal && crew.immortal > 0 && <Icon name='snowflake' style={{margin:'0.5em'}} />}
+                                    {!!crew.active_status && <Icon name='space shuttle' style={{margin:'0.5em'}}  />}
                                 </div>
                                 <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
                                 <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
