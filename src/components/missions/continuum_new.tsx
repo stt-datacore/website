@@ -11,7 +11,7 @@ import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestSolverComponent } from "./solver_component";
 import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
-import { Checkbox, Dropdown, Message, Step, Table } from "semantic-ui-react";
+import { Checkbox, Dropdown, Message, Rating, Step, Table } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { QuestCrewTable } from "./quest_crew_table";
@@ -21,7 +21,7 @@ import { TraitSelection } from "./trait_selector";
 import { PathTable } from "./path_table";
 import { CrewDropDown } from "../base/crewdropdown";
 import ItemDisplay from "../itemdisplay";
-import { CrewHoverStat } from "../hovering/crewhoverstat";
+import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
 import { CrewBaseCells, getBaseTableConfig } from "../crewtables/views/base";
 import { getTopQuipmentTableConfig, TopQuipmentScoreCells } from "../crewtables/views/topquipment";
@@ -30,8 +30,12 @@ import { ICrewFilter, IRosterCrew } from "../crewtables/model";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { PowerMode, QuipmentToolsFilter } from "../crewtables/filters/quipmenttools";
 import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { oneCrewCopy } from "../../utils/crewutils";
+import { oneCrewCopy, skillSum } from "../../utils/crewutils";
 import { UnifiedWorker } from "../../typings/worker";
+import { crewMatchesSearchFilter } from "../../utils/crewsearch";
+import CONFIG from "../CONFIG";
+import { Link } from "react-router-dom";
+import { CrewItemsView } from "../item_presenters/crew_items";
 
 export interface RemoteQuestStore {
     id: number,
@@ -54,7 +58,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     /* Global Data Check & Initialization */
 
     const context = React.useContext(GlobalContext);
-
+    const { playerData } = context.player;
     const { t } = context.localized;
     const { continuum_missions } = context.core;
 
@@ -260,8 +264,13 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
             setMissionPool(crew);
             setSelCrew(selCrew?.filter(f => crew?.some(c => c.id === f)));
+            setTimeout(() => {
+                if (!questId && mission?.quests) {
+                    setQuestId(mission.quests[0].id);
+                }
+            });
         }
-    }, [missionConfig, context]);
+    }, [playerData]);
 
     React.useEffect(() => {
         if (!!mission?.quests?.length && questId !== undefined && questId >= 0 && questId < (mission?.quests?.length ?? 0)) {
@@ -447,26 +456,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                     setMastery={setMastery}
                     highlighted={getRemoteQuestFlags()}
                 />
-                <Step.Group fluid>
-                    <Step
-                        onClick={(e) => setShowPane(0)}
-                        active={showPane === 0}
-                    >
-                        <Step.Content>
-                            <Step.Title>Mission Board</Step.Title>
-                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show the mission map and select which challenges to solve.</Step.Description>
-                        </Step.Content>
-                    </Step>
-                    <Step
-                        onClick={(e) => setShowPane(1)}
-                        active={showPane === 1}
-                    >
-                        <Step.Content>
-                            <Step.Title>Quest Solver Results</Step.Title>
-                            <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >Show the crew and quipment calculated by the quest solver.</Step.Description>
-                        </Step.Content>
-                    </Step>
-                </Step.Group>
+
                 {!!mission &&
                     <div style={{ display: showPane !== 0 ? 'none' : undefined }}>
                         <MissionMapComponent
@@ -486,9 +476,8 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                         />
 
                     </div>}
-                <CrewHoverStat targetGroup="quipment_hover" />
 
-                <QpCrew crew={missionPool} />
+                {!!quest && <QpCrew crew={missionPool} quest={quest} highlighted={highlighted} mastery={mastery} />}
             </div>
         </>
     );
@@ -496,12 +485,15 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
 type QpCrewProps = {
     crew: PlayerCrew[];
+    quest: Quest
+    mastery: number,
+    highlighted: HighlightItem[]
 }
 const QpCrew = (props: QpCrewProps) => {
 
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { crew } = props;
+    const { crew, quest, highlighted, mastery } = props;
     const quipment = globalContext.core.items.filter(i => i.type === 14).map(q => getItemWithBonus(q));
     const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
     const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
@@ -513,12 +505,37 @@ const QpCrew = (props: QpCrewProps) => {
     const [displayCrew, setDisplayCrew] = React.useState<IRosterCrew[]>([]);
     const [running, setRunning] = React.useState(false);
     const tableConfig = [
+        { width: 3, column: 'name', title: t('base.crew'), sticky: true,
+            pseudocolumns: ['name', 'kwipment', 'power'], translatePseudocolumn: (c) => {
+                if (c === 'kwipment') c = 'quipment';
+                return t(`base.${c}`) || t(`global.${c}`);
+            },
+            customCompare: (a: PlayerCrew, b: PlayerCrew, config) => {
+                if (config.field === 'kwipment')
+                    return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length;
+                if (config.field === 'power')
+                    return skillSum(Object.values(a.skills)) - skillSum(Object.values(b.skills));
+                return a.name.localeCompare(b.name);
+            }
+        },
         ... getTopQuipmentTableConfig(t, pstMode, false)
     ] as ITableConfigRow[];
 
     React.useEffect(() => {
-        const newcrew = crew.filter(c => {
-            return !crewFilters.length || crewFilters.every(cf => cf.filterTest(c as IRosterCrew))
+        const newcrew = crew.filter(qc => {
+            if (quest?.challenges?.length) {
+                let challenges = highlighted.filter(h => h.quest === quest.id && !h.excluded).map(h => h.challenge);
+                if (challenges?.length) {
+                    let chmatch = quest.challenges.filter(ch => challenges.includes(ch.id));
+                    if (chmatch?.length) {
+                        return chmatch.some(ch => {
+
+                            return qc.skill_order[0] === ch.skill && skillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery];
+                        });
+                    }
+                }
+            }
+            return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
         });
         calculate(newcrew).then((results) => {
             setRunning(false);
@@ -527,7 +544,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode]);
+    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery]);
 
     return (
         <div style={{
@@ -536,6 +553,7 @@ const QpCrew = (props: QpCrewProps) => {
             flexDirection: 'column',
             gap: '1em'
         }}>
+            <CrewHoverStat targetGroup="quipment_hover" />
             <QuipmentToolsFilter
                 traitsOnly={traitsOnly}
                 setTraitsOnly={setTraitsOnly}
@@ -556,26 +574,67 @@ const QpCrew = (props: QpCrewProps) => {
                 setCrewFilters={setCrewFilters}
                 />
                 {!!running && globalContext.core.spin()}
-                {!running && <CrewConfigTable
-                    tableConfig={tableConfig}
-                    renderTableCells={renderTableRow}
-                    crewFilters={crewFilters}
-                    pageId='item_info'
-                    rosterCrew={displayCrew as IRosterCrew[]}
-                    rosterType={'myCrew'}
+                {!running && <SearchableTable
+                    showSortDropdown
+                    config={tableConfig}
+                    renderTableRow={renderTableRow}
+                    filterRow={filterTableRows}
+                    data={displayCrew as IRosterCrew[]}
                 />}
         </div>
     );
 
 
     function filterTableRows(crew: CrewMember, filter: Filter[], searchParams?: string) {
-        return true;
+        return crewMatchesSearchFilter(crew, filter, searchParams);
     }
 
-    function renderTableRow(crew: CrewMember, idx?: number) {
-        return (<>
-            <TopQuipmentScoreCells pstMode={pstMode} crew={crew as IRosterCrew} top={crew} targetGroup='quipment_hover' quipment={quipment} />
-        </>)
+    function renderTableRow(crew: PlayerCrew, idx?: number) {
+        let ownedbg = '';
+		if (crew.have) {
+			let kwip = crew.kwipment;
+			if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+			}
+			else if (crew.immortal && (crew.immortal === -1 || crew.immortal > 0)) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+			}
+		}
+        return (
+            <Table.Row>
+                <Table.Cell className='ui segment'
+                    style={{
+                        position: 'sticky', left: 0,
+                        backgroundImage:
+                            `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
+                            (ownedbg ? ", " + ownedbg : '') ,
+                        }}>
+                    <CrewTarget inputItem={crew} targetGroup="quipment_hover">
+                        <div style={{
+                            width: '18em',
+                            display: 'grid',
+                            gridTemplateAreas: `'img name' 'img rating' 'quipment quipment'`,
+                            gridTemplateColumns: '64px auto',
+                            alignItems: 'center',
+                            gap: '1em',
+                            justifyContent: 'stretch'
+                            }}>
+                            <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                style={{height:'64px', gridArea: 'img'}} />
+                            <Link to={`/crew/${crew.symbol}`} style={{gridArea: 'name', fontWeight: 'bold', fontSize: '1.2em'}}>
+                                {crew.name}
+                            </Link>
+                            <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
+                            <div className='ui segment' style={{gridArea: 'quipment'}}>
+
+                                <CrewItemsView crew={crew} quipment={true} />
+                            </div>
+                        </div>
+                    </CrewTarget>
+                </Table.Cell>
+                <TopQuipmentScoreCells pstMode={pstMode} crew={crew as IRosterCrew} top={crew} targetGroup='quipment_hover' quipment={quipment} />
+            </Table.Row>
+        )
     }
 
     function calculate(crew: PlayerCrew[]): Promise<IRosterCrew[]> {
