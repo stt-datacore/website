@@ -557,7 +557,11 @@ const QpCrew = (props: QpCrewProps) => {
             });
             return;
         }
-        const newcrew = crew.map(qc => {
+        const newcrew = crew.filter(c =>
+            (!rarities?.length || rarities.includes(c.max_rarity)) &&
+            (!unclaimed || c.q_bits < 1300) &&
+            (!showIdle || !c.active_status)
+        ).map(qc => {
             let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
             qc = oneCrewCopy(qc);
             if (isActive) {
@@ -574,10 +578,6 @@ const QpCrew = (props: QpCrewProps) => {
             }
             return qc;
         }).filter(qc => {
-            if (unclaimed && qc.q_bits >= 1300) return false;
-            if (showIdle && qc.active_status) {
-                return false;
-            }
             if (challenges?.length) {
                 let chmatch = quest.challenges!.filter(ch => challenges.includes(ch.id));
                 if (chmatch?.length) {
@@ -596,7 +596,9 @@ const QpCrew = (props: QpCrewProps) => {
             delete qc.isSelected;
             return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
         });
+
         const errors = {} as {[key:string]: ChallengeError};
+
         if (challenges?.length && highlighted.length) {
             for (let ch of quest.challenges!.filter(f => highlighted.some(h => h.challenge === f.id))) {
                 if (!newcrew.some(qc => qc.isSelected && qc.skill_order.includes(ch.skill) && (minSkillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]))) {
