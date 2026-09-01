@@ -1389,6 +1389,7 @@
         },
         "craft_for_chrons": "Craft it for {{cost}} using this recipe",
         "current_demands": "Current demands",
+        "daily_replication_allowance": "Daily replication allowance",
         "equippable_by": "Equippable by: {{crew}}",
         "equippable_by_n_crew": "Equippable by {{n}} crew.",
         "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
@@ -1415,6 +1416,7 @@
             "favorites": "Select all favorited crew"
         },
         "recipe": "Recipe",
+        "replications_remaining": "Replications remaining",
         "required_traits": "Required Traits: {{traits}}",
         "show_unowned_needed": "Show unowned needed items",
         "this_will_require_items": "This will require {{items}}"

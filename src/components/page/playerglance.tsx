@@ -10,7 +10,7 @@ import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
 import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
-import { CONQUEST_CURRENCY_ICON } from "../../pages/seasonal";
+import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from "../../pages/seasonal";
 import { useNavigate } from "react-router-dom";
 
 export interface SaleData {
@@ -244,7 +244,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
             pvp,
             conquest_tokens
         } = energy;
-
+        let reps = playerData.player.replicator_limit - playerData.player.replicator_uses_today;
         if (revival && coreRevival) {
             revival = mergeItems([revival], [coreRevival])[0];
         }
@@ -326,6 +326,12 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 quantity: conquest_tokens ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
                 click: (e) => navigate('/seasonal')
+            },
+            {
+                name: t('items.replications_remaining'),
+                quantity: reps ?? 0,
+                imageUrl: `${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`,
+                click: (e) => navigate('/items')
             }
 
         ] as PlayerResource[];

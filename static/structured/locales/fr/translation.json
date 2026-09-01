@@ -1400,6 +1400,7 @@
         },
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
+        "daily_replication_allowance": "Quota quotidien de réplication",
         "equippable_by": "Équipable par : {{crew}}",
         "equippable_by_n_crew": "Équipable par {{n}} équipiers.",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipier {{rarity}}.",
@@ -1426,6 +1427,7 @@
             "favorites": "Sélectionnez tous les équipiers favoris"
         },
         "recipe": "Recette",
+        "replications_remaining": "Réplications restantes",
         "required_traits": "Traits Requises: {{traits}}",
         "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
         "this_will_require_items": "Cela nécessitera {{items}}"

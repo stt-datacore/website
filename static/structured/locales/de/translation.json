@@ -1388,6 +1388,7 @@
         },
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
         "current_demands": "Aktuelle Anforderungen",
+        "daily_replication_allowance": "Tägliches Replikationskontingent",
         "equippable_by": "Ausrüstbar durch: {{crew}}",
         "equippable_by_n_crew": "Ausrüstbar durch {{n}} Crew.",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
@@ -1414,6 +1415,7 @@
             "favorites": "Wähle alle favorisierten Crewmitglieder aus"
         },
         "recipe": "Rezept",
+        "replications_remaining": "Verbleibende Replikationen",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
         "this_will_require_items": "Hierzu sind {{items}} erforderlich."
