@@ -28,6 +28,7 @@ export interface CrewItemsViewProps {
     alwaysHideProgress?: boolean;
     alwaysShowProgress?: boolean;
     gap?: string;
+    prospectsClicked?: (data?: PlayerCrew) => void;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -198,7 +199,10 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>
         ||context.core.items?.length &&
             <div style={{...flexCol, gap: 0}}>
-            {!!crew.kwipment_prospects && quip && <Label color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
+            {!!crew.kwipment_prospects && quip && <Label
+            style={{cursor: props.prospectsClicked ? 'pointer' : undefined}}
+            onClick={() => props.prospectsClicked ? props.prospectsClicked(crew) : false}
+            color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
             <div style={{
                 display: "flex",
                 flexDirection: vertical ? 'column' : 'row',
@@ -219,6 +223,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         locked={getLocked(idx)}
                         itemSize={props.itemSize}
                         mobileSize={props.mobileSize}
+                        prospectsClicked={props.prospectsClicked}
                         mobileWidth={mobileWidth}
                         crew={crew}
                         expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>{props.printNA && item.symbol ? props.printNA : <br/>}</>) : undefined}
@@ -263,7 +268,7 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
     const globalContext = props.context;
     const navigate = useNavigate();
 
-    const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration } = props;
+    const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration, prospectsClicked } = props;
 
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 

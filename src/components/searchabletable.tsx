@@ -177,6 +177,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 						style={{
 							position: cell.sticky ? 'sticky' : undefined,
 							left: cell.sticky ? 0 : undefined,
+							background: 'rgb(28, 30, 34)'
 						}}
 						width={cell.width as any}
 						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : undefined) ?? undefined}

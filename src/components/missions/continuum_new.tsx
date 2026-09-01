@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PlayerCrew } from "../../model/player";
-import { CrewMember } from "../../model/crew";
+import { CrewMember, QuippedPower } from "../../model/crew";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
@@ -11,7 +11,7 @@ import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestSolverComponent } from "./solver_component";
 import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
-import { Checkbox, Dropdown, Message, Rating, Step, Table } from "semantic-ui-react";
+import { Checkbox, Dropdown, Icon, Message, Rating, Step, Table } from "semantic-ui-react";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { QuestCrewTable } from "./quest_crew_table";
@@ -36,6 +36,7 @@ import { crewMatchesSearchFilter } from "../../utils/crewsearch";
 import CONFIG from "../CONFIG";
 import { Link } from "react-router-dom";
 import { CrewItemsView } from "../item_presenters/crew_items";
+import CrewStat from "../item_presenters/crewstat";
 
 export interface RemoteQuestStore {
     id: number,
@@ -504,6 +505,7 @@ const QpCrew = (props: QpCrewProps) => {
     const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
     const [displayCrew, setDisplayCrew] = React.useState<IRosterCrew[]>([]);
     const [running, setRunning] = React.useState(false);
+    const [prospects, setProspects] = useStateWithStorage('/quipmentTools/quipProspects', {} as {[key:string]: number[]})
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
             pseudocolumns: ['name', 'kwipment', 'power'], translatePseudocolumn: (c) => {
@@ -511,6 +513,14 @@ const QpCrew = (props: QpCrewProps) => {
                 return t(`base.${c}`) || t(`global.${c}`);
             },
             customCompare: (a: PlayerCrew, b: PlayerCrew, config) => {
+                if (config.direction === 'descending') {
+                    if (a.isSelected && !b.isSelected) return 1;
+                    if (b.isSelected && !a.isSelected) return -1;
+                }
+                else {
+                    if (a.isSelected && !b.isSelected) return -1;
+                    if (b.isSelected && !a.isSelected) return 1;
+                }
                 if (config.field === 'kwipment')
                     return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length;
                 if (config.field === 'power')
@@ -522,20 +532,46 @@ const QpCrew = (props: QpCrewProps) => {
     ] as ITableConfigRow[];
 
     React.useEffect(() => {
+        let mpro = {...prospects};
+        if (Object.values(mpro).some(p => !p?.length || p.some(pe => !pe))) {
+            setTimeout(() => {
+                setProspects({});
+            });
+            return;
+        }
         const newcrew = crew.filter(qc => {
             if (quest?.challenges?.length) {
                 let challenges = highlighted.filter(h => h.quest === quest.id && !h.excluded).map(h => h.challenge);
+                if (!challenges?.length) {
+                    challenges = quest.challenges.map(ch => ch.id);
+                }
                 if (challenges?.length) {
                     let chmatch = quest.challenges.filter(ch => challenges.includes(ch.id));
                     if (chmatch?.length) {
-                        return chmatch.some(ch => {
-
-                            return qc.skill_order[0] === ch.skill && skillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery];
+                        let nimba = false;
+                        let sharma = chmatch.some(ch => {
+                            if (qc.skill_order.includes(ch.skill)) {
+                                if (skillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]) nimba = true;
+                                return true;
+                            }
+                            return false;
                         });
+                        qc.isSelected = nimba;
+                        return sharma;
                     }
                 }
             }
+            delete qc.isSelected;
             return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
+        })
+        .map(qc => {
+            if (prospects[qc.symbol]) {
+                qc = oneCrewCopy(qc);
+                qc.kwipment_prospects = false;
+                qc.kwipment_expiration = [0, 0, 0, 0];
+                qc.kwipment = prospects[qc.symbol];
+            }
+            return qc;
         });
         calculate(newcrew).then((results) => {
             setRunning(false);
@@ -544,7 +580,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery]);
+    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects]);
 
     return (
         <div style={{
@@ -573,7 +609,7 @@ const QpCrew = (props: QpCrewProps) => {
                 crewFilters={crewFilters}
                 setCrewFilters={setCrewFilters}
                 />
-                {!!running && globalContext.core.spin()}
+                {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
                 {!running && <SearchableTable
                     showSortDropdown
                     config={tableConfig}
@@ -591,6 +627,7 @@ const QpCrew = (props: QpCrewProps) => {
 
     function renderTableRow(crew: PlayerCrew, idx?: number) {
         let ownedbg = '';
+        let cellcrew = crew;
 		if (crew.have) {
 			let kwip = crew.kwipment;
 			if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
@@ -600,11 +637,17 @@ const QpCrew = (props: QpCrewProps) => {
 				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
 			}
 		}
+        if (prospects[crew.symbol]) {
+            cellcrew = {...crew, kwipment_prospects: true };
+        }
         return (
             <Table.Row>
                 <Table.Cell className='ui segment'
                     style={{
                         position: 'sticky', left: 0,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
                         backgroundImage:
                             `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
                             (ownedbg ? ", " + ownedbg : '') ,
@@ -613,28 +656,62 @@ const QpCrew = (props: QpCrewProps) => {
                         <div style={{
                             width: '18em',
                             display: 'grid',
-                            gridTemplateAreas: `'img name' 'img rating' 'quipment quipment'`,
-                            gridTemplateColumns: '64px auto',
+                            gridTemplateAreas: `'img name check' 'img rating rating' 'quipment quipment quipment'`,
+                            gridTemplateColumns: '64px auto auto',
                             alignItems: 'center',
                             gap: '1em',
                             justifyContent: 'stretch'
                             }}>
                             <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 style={{height:'64px', gridArea: 'img'}} />
+                            <div style={{gridArea: 'check'}}>
+                                {!!crew.isSelected && <Icon size='large' name= 'check' color='green' />}
+                            </div>
                             <Link to={`/crew/${crew.symbol}`} style={{gridArea: 'name', fontWeight: 'bold', fontSize: '1.2em'}}>
                                 {crew.name}
                             </Link>
                             <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
-                            <div className='ui segment' style={{gridArea: 'quipment'}}>
-
-                                <CrewItemsView crew={crew} quipment={true} />
+                            <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
+                                <CrewItemsView crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
+                                <div style={{marginLeft:'2em', marginTop: '0.5em'}}>
+                                    {crew.skill_order.map(skill => {
+                                        return (<CrewStat scale={0.8} key={`${crew.symbol}_${skill}_qmpv`} skill_name={skill} data={crew.skills[skill]} />)
+                                    })}
+                                </div>
                             </div>
                         </div>
                     </CrewTarget>
                 </Table.Cell>
-                <TopQuipmentScoreCells pstMode={pstMode} crew={crew as IRosterCrew} top={crew} targetGroup='quipment_hover' quipment={quipment} />
+                <TopQuipmentScoreCells
+                    showButtonClick={(lot) => {
+                        addLot(crew, lot);
+                    }}
+                    showButtonText={t('global.apply')}
+                    showButtonColor="green"
+                    pstMode={pstMode}
+                    crew={crew as IRosterCrew}
+                    top={crew}
+                    targetGroup='quipment_hover'
+                    quipment={quipment}
+                />
             </Table.Row>
         )
+    }
+
+    function clearIt(c?: PlayerCrew) {
+        if (c) {
+            let mpro = {...prospects};
+            delete mpro[c.symbol];
+            setRunning(true);
+            setProspects(mpro);
+        }
+    }
+
+    function addLot(crew: PlayerCrew, lot: QuippedPower) {
+        let mpro = {...prospects};
+        mpro[crew.symbol] = Object.values(lot.skill_quipment).flat().map(e => Number(e.id));
+        setRunning(true);
+        setProspects(mpro);
     }
 
     function calculate(crew: PlayerCrew[]): Promise<IRosterCrew[]> {
