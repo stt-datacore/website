@@ -616,7 +616,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, unclaimed]);
+    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed]);
 
     return (
         <div style={{
@@ -668,8 +668,12 @@ const QpCrew = (props: QpCrewProps) => {
                     />
                 </div>
             </div>
-                {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
-                {!running && <SearchableTable
+            {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
+            <div style={{
+                display: running ? 'none' : undefined
+            }}>
+                <SearchableTable
+                    id="continuum_helper_crew"
                     showSortDropdown
                     initOptions={{
                         column: 'power',
@@ -679,7 +683,8 @@ const QpCrew = (props: QpCrewProps) => {
                     renderTableRow={renderTableRow}
                     filterRow={filterTableRows}
                     data={displayCrew as IRosterCrew[]}
-                />}
+                />
+            </div>
         </div>
     );
 
