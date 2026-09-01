@@ -30,7 +30,7 @@ import { ICrewFilter, IRosterCrew } from "../crewtables/model";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { PowerMode, QuipmentToolsFilter } from "../crewtables/filters/quipmenttools";
 import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { oneCrewCopy, skillSum } from "../../utils/crewutils";
+import { applyCrewBuffs, oneCrewCopy, skillSum } from "../../utils/crewutils";
 import { UnifiedWorker } from "../../typings/worker";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
 import CONFIG from "../CONFIG";
@@ -567,6 +567,7 @@ const QpCrew = (props: QpCrewProps) => {
         .map(qc => {
             if (prospects[qc.symbol]) {
                 qc = oneCrewCopy(qc);
+                applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))
                 qc.kwipment_prospects = false;
                 qc.kwipment_expiration = [0, 0, 0, 0];
                 qc.kwipment = prospects[qc.symbol];
