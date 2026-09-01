@@ -534,7 +534,7 @@ const QpCrew = (props: QpCrewProps) => {
         }
         const newcrew = crew.map(qc => {
             let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
-            if (prospects[qc.symbol] || isActive) {
+            if (prospects[qc.symbol] || isActive || !qc.skills || qc.immortal > 0) {
                 qc = oneCrewCopy(qc);
             }
             if (isActive) {
@@ -546,13 +546,13 @@ const QpCrew = (props: QpCrewProps) => {
                 qc.kwipment_expiration = [0, 0, 0, 0];
                 qc.kwipment = prospects[qc.symbol];
             }
+            else if (!qc.skills || qc.immortal > 0) {
+                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
+            }
             return qc;
         }).filter(qc => {
             if (showIdle && qc.active_status) {
                 return false;
-            }
-            if (!qc.skills || qc.immortal > 0) {
-                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
             }
             if (quest?.challenges?.length) {
                 let challenges = highlighted.filter(h => h.quest === quest.id && !h.excluded).map(h => h.challenge);
