@@ -532,10 +532,24 @@ const QpCrew = (props: QpCrewProps) => {
             });
             return;
         }
-        const newcrew = crew.filter(qc => {
-            if (showIdle) {
-                let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
-                if (isActive) return false;
+        const newcrew = crew.map(qc => {
+            let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
+            if (prospects[qc.symbol] || isActive) {
+                qc = oneCrewCopy(qc);
+            }
+            if (isActive) {
+                qc.active_status = isActive;
+            }
+            if (prospects[qc.symbol]) {
+                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
+                qc.kwipment_prospects = false;
+                qc.kwipment_expiration = [0, 0, 0, 0];
+                qc.kwipment = prospects[qc.symbol];
+            }
+            return qc;
+        }).filter(qc => {
+            if (showIdle && qc.active_status) {
+                return false;
             }
             if (!qc.skills || qc.immortal > 0) {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
@@ -563,22 +577,6 @@ const QpCrew = (props: QpCrewProps) => {
             }
             delete qc.isSelected;
             return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
-        })
-        .map(qc => {
-            let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
-            if (prospects[qc.symbol] || isActive) {
-                qc = oneCrewCopy(qc);
-            }
-            if (isActive) {
-                qc.active_status = isActive;
-            }
-            if (prospects[qc.symbol]) {
-                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
-                qc.kwipment_prospects = false;
-                qc.kwipment_expiration = [0, 0, 0, 0];
-                qc.kwipment = prospects[qc.symbol];
-            }
-            return qc;
         });
         calculate(newcrew).then((results) => {
             setRunning(false);
