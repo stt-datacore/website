@@ -1398,6 +1398,7 @@
         },
         "craft_for_chrons": "Hazlo por {{cost}} usando esta receta",
         "current_demands": "Demandas actuales",
+        "daily_replication_allowance": "Cupo diario de replicación",
         "equippable_by": "Equipable por: {{crew}}",
         "equippable_by_n_crew": "Equipable por {{n}} tripulantes.",
         "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
@@ -1424,6 +1425,7 @@
             "favorites": "Seleccionar toda los tripulantes favoritos"
         },
         "recipe": "Receta",
+        "replications_remaining": "Réplicas restantes",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
         "this_will_require_items": "Cela nécessitera {{items}}"
