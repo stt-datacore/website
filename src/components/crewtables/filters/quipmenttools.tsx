@@ -53,6 +53,14 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 
 	const quipmentcache = {} as {[key:string]: EquipmentItem[]};
 
+	const slotFilterOptions = [
+		{ key: 'slot0', value: 'slot0', text: t('quipment_dropdowns.slots.natural') },
+		{ key: 'slot1', value: 'slot1', text: t('quipment_dropdowns.slots.one_slot') },
+		{ key: 'slot2', value: 'slot2', text: t('quipment_dropdowns.slots.n_slots', { slots: "2" }) },
+		{ key: 'slot3', value: 'slot3', text: t('quipment_dropdowns.slots.n_slots', { slots: "3" }) },
+		{ key: 'slot4', value: 'slot4', text: t('quipment_dropdowns.slots.n_slots', { slots: "4" }) },
+	];
+
 	React.useEffect(() => {
 		const index = crewFilters.findIndex(crewFilter => crewFilter.id === 'qp_best');
 		if (index >= 0) crewFilters.splice(index, 1);
@@ -67,17 +75,9 @@ export const QuipmentToolsFilter = (props: QuipmentToolsFilterProps) => {
 		setCrewFilters([...crewFilters]);
 	}, [slotFilter, questFilter, traitsOnly]);
 
-    if (hideForm) {
+	if (hideForm) {
         return <></>;
     }
-
-	const slotFilterOptions = [
-		{ key: 'slot0', value: 'slot0', text: t('quipment_dropdowns.slots.natural') },
-		{ key: 'slot1', value: 'slot1', text: t('quipment_dropdowns.slots.one_slot') },
-		{ key: 'slot2', value: 'slot2', text: t('quipment_dropdowns.slots.n_slots', { slots: "2" }) },
-		{ key: 'slot3', value: 'slot3', text: t('quipment_dropdowns.slots.n_slots', { slots: "3" }) },
-		{ key: 'slot4', value: 'slot4', text: t('quipment_dropdowns.slots.n_slots', { slots: "4" }) },
-	];
 
 	const contentOptions = [
 		{
