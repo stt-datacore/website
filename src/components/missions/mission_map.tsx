@@ -3,7 +3,7 @@ import { Reward } from "../../model/player";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { Mission, Quest } from "../../model/missions";
-import { ChallengeNode, ChallengeNodeInfo } from "./challenge_node";
+import { ChallengeError, ChallengeNode, ChallengeNodeInfo } from "./challenge_node";
 import { Step, Table } from "semantic-ui-react";
 import { useStateWithStorage } from "../../utils/storage";
 import { RewardsGrid } from "../crewtables/rewards";
@@ -43,6 +43,8 @@ export interface MissionComponentProps {
     showChainRewards?: boolean;
     pageId: string;
     autoTraits?: boolean;
+
+    challengeErrors?: {[key:string]: ChallengeError }
 }
 
 export function cleanTraitSelection(quests: Quest[], traits: TraitSelection[]) {
@@ -69,7 +71,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         setSelectedTraits: internalSetSelectedTraits,
         highlighted,
         setHighlighted,
-        showSelector
+        showSelector,
+        challengeErrors,
     } = props;
 
     const [quest, setQuest] = React.useState<Quest | undefined>(undefined);
@@ -312,6 +315,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
+                                                                                error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
                                                                                 highlight={isHighlighted(item)}
                                                                                 excluded={isExcluded(item)}
@@ -337,6 +341,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
+                                                                                error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
                                                                                 highlight={isHighlighted(item)}
                                                                                 excluded={isExcluded(item)}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Checkbox, Icon, Rating, Table } from "semantic-ui-react";
+import { Checkbox, DropdownItemProps, Icon, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { CrewMember, QuippedPower } from "../../model/crew";
@@ -10,7 +10,7 @@ import { PlayerCrew } from "../../model/player";
 import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
 import { UnifiedWorker } from "../../typings/worker";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
-import { applyCrewBuffs, oneCrewCopy, skillSum } from "../../utils/crewutils";
+import { applyCrewBuffs, oneCrewCopy, minSkillSum } from "../../utils/crewutils";
 import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
@@ -28,6 +28,8 @@ import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./missi
 import { QuestImportComponent } from "./quest_importer";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
+import { RarityFilter } from "../crewtables/commonoptions";
+import { ChallengeError } from "./challenge_node";
 
 export interface RemoteQuestStore {
     id: number,
@@ -128,6 +130,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [activeConfig, setActiveConfig] = React.useState<QuestFilterConfig>(missionConfig);
 
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
+    const [challengeErrors, setChallengeErrors] = React.useState<{[key:string]: ChallengeError}>({});
 
     const getCurrentKey = () => {
         return `${mission?.id}/${quest?.id}/${mastery}`;
@@ -466,11 +469,21 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                             setSelectedTraits={setSelectedTraits}
                             highlighted={highlighted}
                             setHighlighted={setHighlighted}
+                            challengeErrors={challengeErrors}
                         />
 
                     </div>}
 
-                {!!quest && <QpCrew crew={missionPool} quest={quest} highlighted={highlighted} mastery={mastery} />}
+                {!!quest && (
+                    <QpCrew
+                        crew={missionPool}
+                        quest={quest}
+                        highlighted={highlighted}
+                        mastery={mastery}
+                        challengeErrors={challengeErrors}
+                        setChallengeErrors={setChallengeErrors}
+                    />
+                )}
             </div>
         </>
     );
@@ -481,12 +494,14 @@ type QpCrewProps = {
     quest: Quest
     mastery: number,
     highlighted: HighlightItem[]
+    challengeErrors: {[key:string]: ChallengeError}
+    setChallengeErrors: (value: {[key:string]: ChallengeError}) => void;
 }
-const QpCrew = (props: QpCrewProps) => {
 
+const QpCrew = (props: QpCrewProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { crew, quest, highlighted, mastery } = props;
+    const { crew, quest, highlighted, mastery, challengeErrors, setChallengeErrors } = props;
     const quipment = globalContext.core.items.filter(i => i.type === 14).map(q => getItemWithBonus(q));
     const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
     const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
@@ -499,6 +514,9 @@ const QpCrew = (props: QpCrewProps) => {
     const [running, setRunning] = React.useState(false);
     const [showIdle, setShowIdle] = useStateWithStorage('/quipmentTools/idleCrew', false, { rememberForever: true });
     const [prospects, setProspects] = useStateWithStorage('/quipmentTools/quipProspects', {} as {[key:string]: number[]})
+    const [rarities, setRarities] = useStateWithStorage('/quipmentTools/rarities', [] as number[], { rememberForever: true });
+    const [unclaimed, setUnclaimed] = useStateWithStorage('/quipment/onlyUnclaimedQuippers', false, { rememberForever: true });
+
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
             pseudocolumns: ['name', 'kwipment', 'power'], translatePseudocolumn: (c) => {
@@ -517,7 +535,7 @@ const QpCrew = (props: QpCrewProps) => {
                 if (config.field === 'kwipment')
                     return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length;
                 if (config.field === 'power')
-                    return skillSum(Object.values(a.skills)) - skillSum(Object.values(b.skills));
+                    return minSkillSum(Object.values(a.skills)) - minSkillSum(Object.values(b.skills));
                 return a.name.localeCompare(b.name);
             }
         },
@@ -526,6 +544,13 @@ const QpCrew = (props: QpCrewProps) => {
 
     React.useEffect(() => {
         let mpro = {...prospects};
+        let challenges: number[] = [];
+        if (quest?.challenges?.length) {
+            challenges = highlighted.filter(h => h.quest === quest.id && !h.excluded).map(h => h.challenge);
+            if (!challenges?.length) {
+                challenges = quest.challenges.map(ch => ch.id);
+            }
+        }
         if (Object.values(mpro).some(p => !p?.length || p.some(pe => !pe))) {
             setTimeout(() => {
                 setProspects({});
@@ -534,9 +559,7 @@ const QpCrew = (props: QpCrewProps) => {
         }
         const newcrew = crew.map(qc => {
             let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
-            if (prospects[qc.symbol] || isActive || !qc.skills || qc.immortal > 0) {
-                qc = oneCrewCopy(qc);
-            }
+            qc = oneCrewCopy(qc);
             if (isActive) {
                 qc.active_status = isActive;
             }
@@ -546,46 +569,52 @@ const QpCrew = (props: QpCrewProps) => {
                 qc.kwipment_expiration = [0, 0, 0, 0];
                 qc.kwipment = prospects[qc.symbol];
             }
-            else if (!qc.skills || qc.immortal > 0) {
+            else {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
             }
             return qc;
         }).filter(qc => {
+            if (unclaimed && qc.q_bits >= 1300) return false;
             if (showIdle && qc.active_status) {
                 return false;
             }
-            if (quest?.challenges?.length) {
-                let challenges = highlighted.filter(h => h.quest === quest.id && !h.excluded).map(h => h.challenge);
-                if (!challenges?.length) {
-                    challenges = quest.challenges.map(ch => ch.id);
-                }
-                if (challenges?.length) {
-                    let chmatch = quest.challenges.filter(ch => challenges.includes(ch.id));
-                    if (chmatch?.length) {
-                        let nimba = false;
-                        let sharma = chmatch.some(ch => {
-                            if (qc.skill_order.includes(ch.skill)) {
-                                if (skillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]) nimba = true;
-                                return true;
-                            }
-                            return false;
-                        });
-                        qc.isSelected = nimba;
-                        return sharma;
-                    }
+            if (challenges?.length) {
+                let chmatch = quest.challenges!.filter(ch => challenges.includes(ch.id));
+                if (chmatch?.length) {
+                    let power_matched = false;
+                    let skill_matched = chmatch.some(ch => {
+                        if (qc.skill_order.includes(ch.skill)) {
+                            if (minSkillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]) power_matched = true;
+                            return true;
+                        }
+                        return false;
+                    });
+                    qc.isSelected = power_matched;
+                    return skill_matched;
                 }
             }
             delete qc.isSelected;
             return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
         });
+        const errors = {} as {[key:string]: ChallengeError};
+        if (challenges?.length && highlighted.length) {
+            for (let ch of quest.challenges!.filter(f => highlighted.some(h => h.challenge === f.id))) {
+                if (!newcrew.some(qc => qc.isSelected && qc.skill_order.includes(ch.skill) && (minSkillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]))) {
+                    errors[ch.id] = {
+                        message: t('crew_picker.no_results')
+                    }
+                }
+            }
+        }
         calculate(newcrew).then((results) => {
             setRunning(false);
             setDisplayCrew(results);
+            setChallengeErrors(errors);
         });
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle]);
+    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, unclaimed]);
 
     return (
         <div style={{
@@ -614,7 +643,29 @@ const QpCrew = (props: QpCrewProps) => {
                 crewFilters={crewFilters}
                 setCrewFilters={setCrewFilters}
                 />
-            <Checkbox label={t('options.crew_status.idle')} checked={showIdle} onChange={(e, { checked }) => setShowIdle(!!checked)} />
+            <div style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                gap: '1em',
+                flexWrap: 'wrap'
+            }}>
+                <RarityFilter rarityFilter={rarities} setRarityFilter={setRarities} />
+                <div style={{display: 'grid', gridTemplateAreas: `'thing1' 'thing2'`, gap: '0.5em'}}>
+                    <Checkbox
+                        style={{ gridArea: 'thing1' }}
+                        label={t('options.crew_status.idle')}
+                        checked={showIdle}
+                        onChange={(e, { checked }) => setShowIdle(!!checked)}
+                    />
+                    <Checkbox
+                        style={{ gridArea: 'thing2' }}
+                        label={t('options.roster_maintenance.advanceable')}
+                        checked={unclaimed}
+                        onChange={(e, { checked }) => setUnclaimed(!!checked)}
+                    />
+                </div>
+            </div>
                 {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
                 {!running && <SearchableTable
                     showSortDropdown
@@ -776,6 +827,4 @@ const QpCrew = (props: QpCrewProps) => {
         return globalContext.player.buffConfig ?? globalContext.core.all_buffs;
     }
 }
-
-
 

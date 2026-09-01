@@ -4,8 +4,13 @@ import { RewardsGrid } from "../crewtables/rewards";
 import { Reward } from "../../model/player";
 import { appelate } from "../../utils/misc";
 import CONFIG from "../CONFIG";
-import { Icon } from "semantic-ui-react";
+import { Icon, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
+
+export type ChallengeError = {
+    message: string;
+    context?: any;
+}
 
 export interface ChallengeNodeInfo {
     quest: Quest;
@@ -20,13 +25,14 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
     style?: React.CSSProperties;
     targetGroup?: string;
     crewTargetGroup?: string;
+    error?: ChallengeError;
     onClick?: (e: Event, data: ChallengeNodeInfo) => void;
 }
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
     const { localized } = React.useContext(GlobalContext);
 
-    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup } = props;
+    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup, error } = props;
 
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
@@ -102,6 +108,8 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                             crewTargetGroup={crewTargetGroup}
                             rewards={rewards ? [rewards as Reward] : []} />
                     </div>}
+                 {!!error && <Label color='red'>{error.message}</Label>}
+
             </div>
         </div>
     </div>)
