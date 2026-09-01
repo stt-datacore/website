@@ -117,7 +117,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
 		if (props.initOptions) {
-			setSearchFilter(props.initOptions.search ?? '');
+			setSearchFilter(props.initOptions.search ?? searchFilter);
 			setFilterType(props.initOptions.filter ?? 'Any match');
 			setColumn(props.initOptions.column ?? undefined);
 			setDirection(props.initOptions.direction ?? undefined);
