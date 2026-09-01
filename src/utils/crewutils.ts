@@ -1827,6 +1827,24 @@ export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)
 	}
 }
 
+/**
+ * Adds one or more skill-type objects together by minimum power
+ * @param skills The skill or skills to add
+ * @param mode Specify what to add (optional)
+ * @returns The sum of core + ((max+min) * 0.5) (depending on mode) from every element.
+ */
+export function minSkillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[]): number {
+	if (Array.isArray(skills)) {
+		return skills.reduce((p, n) => p + minSkillSum(n), 0);
+	}
+	else if ("range_max" in skills) {
+		return skills.core + skills.range_min;
+	}
+	else {
+		return skills.core + skills.min;
+	}
+}
+
 export function powerSum(skills: Skill[]): { [key: string]: Skill } {
 	const output = {} as { [key: string]: Skill };
 	skills.forEach((skill) => {
