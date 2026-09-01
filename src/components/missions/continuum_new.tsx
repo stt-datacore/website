@@ -1,42 +1,33 @@
-import React, { useState } from "react";
-import { PlayerCrew } from "../../model/player";
-import { CrewMember, QuippedPower } from "../../model/crew";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Icon, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
-import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
-import { Notification } from "../page/notification";
-import { useStateWithStorage } from "../../utils/storage";
-import { QuestImportComponent } from "./quest_importer";
-import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
-import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
-import { QuestSolverComponent } from "./solver_component";
-import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
-import { Checkbox, Dropdown, Icon, Message, Rating, Step, Table } from "semantic-ui-react";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { ItemHoverStat } from "../hovering/itemhoverstat";
-import { QuestCrewTable } from "./quest_crew_table";
-import { v4 } from "uuid";
-import { QuestSelector } from "./quest_selector";
-import { TraitSelection } from "./trait_selector";
-import { PathTable } from "./path_table";
-import { CrewDropDown } from "../base/crewdropdown";
-import ItemDisplay from "../itemdisplay";
-import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
-import { ITableConfigRow, SearchableTable } from "../searchabletable";
-import { CrewBaseCells, getBaseTableConfig } from "../crewtables/views/base";
-import { getTopQuipmentTableConfig, TopQuipmentScoreCells } from "../crewtables/views/topquipment";
+import { CrewMember, QuippedPower } from "../../model/crew";
 import { Filter } from "../../model/game-elements";
-import { ICrewFilter, IRosterCrew } from "../crewtables/model";
-import { getItemWithBonus } from "../../utils/itemutils";
-import { PowerMode, QuipmentToolsFilter } from "../crewtables/filters/quipmenttools";
-import { CrewConfigTable } from "../crewtables/crewconfigtable";
-import { applyCrewBuffs, oneCrewCopy, skillSum } from "../../utils/crewutils";
+import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
+import { PlayerCrew } from "../../model/player";
+import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
 import { UnifiedWorker } from "../../typings/worker";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
+import { applyCrewBuffs, oneCrewCopy, skillSum } from "../../utils/crewutils";
+import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
+import { getItemWithBonus } from "../../utils/itemutils";
+import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
-import { Link } from "react-router-dom";
+import { PowerMode, QuipmentToolsFilter } from "../crewtables/filters/quipmenttools";
+import { ICrewFilter, IRosterCrew } from "../crewtables/model";
+import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from "../crewtables/views/topquipment";
+import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import CrewStat from "../item_presenters/crewstat";
+import { Notification } from "../page/notification";
+import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
+import { QuestImportComponent } from "./quest_importer";
+import { QuestSelector } from "./quest_selector";
+import { TraitSelection } from "./trait_selector";
 
 export interface RemoteQuestStore {
     id: number,
@@ -244,7 +235,11 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
             crew = crew.filter(f => {
                 f.q_bits ??= 0;
                 if (!f.immortal) return false;
-                if (!considerFrozen && f.immortal > 0) return false;
+                //if (!considerFrozen && f.immortal > 0) return false;
+                else if (f.immortal > 0) {
+                    f.kwipment = [0, 0, 0, 0];
+                    f.kwipment_expiration = [0, 0, 0, 0];
+                }
                 if (qpOnly && f.q_bits < 100) return false;
                 return true;
             }).sort((a, b) => a.immortal - b.immortal);
@@ -266,7 +261,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
             setMissionPool(crew);
             setSelCrew(selCrew?.filter(f => crew?.some(c => c.id === f)));
             setTimeout(() => {
-                if (!questId && mission?.quests) {
+                if (mission?.quests?.length && (!questId || !mission.quest_ids.includes(questId))) {
                     setQuestId(mission.quests[0].id);
                 }
             });
@@ -540,6 +535,9 @@ const QpCrew = (props: QpCrewProps) => {
             return;
         }
         const newcrew = crew.filter(qc => {
+            if (!qc.skills || qc.immortal > 0) {
+                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
+            }
             if (quest?.challenges?.length) {
                 let challenges = highlighted.filter(h => h.quest === quest.id && !h.excluded).map(h => h.challenge);
                 if (!challenges?.length) {
@@ -567,7 +565,7 @@ const QpCrew = (props: QpCrewProps) => {
         .map(qc => {
             if (prospects[qc.symbol]) {
                 qc = oneCrewCopy(qc);
-                applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))
+                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
                 qc.kwipment_prospects = false;
                 qc.kwipment_expiration = [0, 0, 0, 0];
                 qc.kwipment = prospects[qc.symbol];
@@ -613,6 +611,10 @@ const QpCrew = (props: QpCrewProps) => {
                 {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
                 {!running && <SearchableTable
                     showSortDropdown
+                    initOptions={{
+                        column: 'power',
+                        direction: 'descending'
+                    }}
                     config={tableConfig}
                     renderTableRow={renderTableRow}
                     filterRow={filterTableRows}
@@ -653,35 +655,42 @@ const QpCrew = (props: QpCrewProps) => {
                             `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
                             (ownedbg ? ", " + ownedbg : '') ,
                         }}>
-                    <CrewTarget inputItem={crew} targetGroup="quipment_hover">
-                        <div style={{
-                            width: '18em',
-                            display: 'grid',
-                            gridTemplateAreas: `'img name check' 'img rating rating' 'quipment quipment quipment'`,
-                            gridTemplateColumns: '64px auto auto',
-                            alignItems: 'center',
-                            gap: '1em',
-                            justifyContent: 'stretch'
-                            }}>
-                            <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
-                                style={{height:'64px', gridArea: 'img'}} />
-                            <div style={{gridArea: 'check'}}>
-                                {!!crew.isSelected && <Icon size='large' name= 'check' color='green' />}
-                            </div>
-                            <Link to={`/crew/${crew.symbol}`} style={{gridArea: 'name', fontWeight: 'bold', fontSize: '1.2em'}}>
-                                {crew.name}
-                            </Link>
-                            <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
-                            <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
-                                <CrewItemsView crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
-                                <div style={{marginLeft:'2em', marginTop: '0.5em'}}>
-                                    {crew.skill_order.map(skill => {
-                                        return (<CrewStat scale={0.8} key={`${crew.symbol}_${skill}_qmpv`} skill_name={skill} data={crew.skills[skill]} />)
-                                    })}
+                    <div style={{ display: 'flex', justifyContent: 'center'}}>
+                            <div style={{
+                                width: '18em',
+                                display: 'grid',
+                                gridTemplateAreas: `'img name check' 'img rating rating' 'quipment quipment quipment'`,
+                                gridTemplateColumns: '64px auto auto',
+                                alignItems: 'center',
+                                justifyContent: 'stretch',
+                                gap: '1em',
+                                }}>
+                                <div style={{gridArea: 'img'}}>
+                                    <CrewTarget inputItem={crew} targetGroup="quipment_hover">
+                                        <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                            style={{height:'64px'}} />
+                                    </CrewTarget>
+                                </div>
+                                <div style={{gridArea: 'check'}}>
+                                    {!!crew.isSelected && <Icon size='large' name= 'check' color='green' />}
+                                </div>
+                                <div style={{gridArea: 'name'}}>
+                                    <Link to={`/crew/${crew.symbol}`} style={{fontWeight: 'bold', fontSize: '1.2em'}}>
+                                        {crew.name}
+                                    </Link>
+                                    {!!crew.immortal && crew.immortal > 0 && <Icon name='snowflake' style={{margin:'0.5em'}} />}
+                                </div>
+                                <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
+                                <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
+                                    <CrewItemsView crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
+                                    <div style={{marginLeft:'2em', marginTop: '0.5em'}}>
+                                        {crew.skill_order.map(skill => {
+                                            return (<CrewStat scale={0.8} key={`${crew.symbol}_${skill}_qmpv`} skill_name={skill} data={crew.skills[skill]} />)
+                                        })}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </CrewTarget>
+                    </div>
                 </Table.Cell>
                 <TopQuipmentScoreCells
                     showButtonClick={(lot) => {
