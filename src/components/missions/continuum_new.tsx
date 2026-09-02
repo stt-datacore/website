@@ -516,6 +516,7 @@ const QpCrew = (props: QpCrewProps) => {
     const [prospects, setProspects] = useStateWithStorage('/quipmentTools/quipProspects', {} as {[key:string]: number[]})
     const [rarities, setRarities] = useStateWithStorage('/quipmentTools/rarities', [] as number[], { rememberForever: true });
     const [unclaimed, setUnclaimed] = useStateWithStorage('/quipment/onlyUnclaimedQuippers', false, { rememberForever: true });
+    const [frozens, setFrozens] = useStateWithStorage('/quipment/frozens', false, { rememberForever: true });
 
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
@@ -560,7 +561,7 @@ const QpCrew = (props: QpCrewProps) => {
         const newcrew = crew.filter(c =>
             (!rarities?.length || rarities.includes(c.max_rarity)) &&
             (!unclaimed || c.q_bits < 1300) &&
-            (!showIdle || !c.active_status)
+            (frozens || c.immortal <= 0)
         ).map(qc => {
             let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
             qc = oneCrewCopy(qc);
@@ -578,6 +579,8 @@ const QpCrew = (props: QpCrewProps) => {
             }
             return qc;
         }).filter(qc => {
+            if (showIdle && (qc.active_status || qc.immortal > 0)) return false;
+
             if (challenges?.length) {
                 let chmatch = quest.challenges!.filter(ch => challenges.includes(ch.id));
                 if (chmatch?.length) {
@@ -616,7 +619,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed]);
+    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens]);
 
     return (
         <div style={{
@@ -653,7 +656,7 @@ const QpCrew = (props: QpCrewProps) => {
                 flexWrap: 'wrap'
             }}>
                 <RarityFilter rarityFilter={rarities} setRarityFilter={setRarities} />
-                <div style={{display: 'grid', gridTemplateAreas: `'thing1' 'thing2'`, gap: '0.5em'}}>
+                <div style={{display: 'grid', gridTemplateAreas: `'thing1' 'thing2'`, gap: '0.5em', marginRight: '0.5em'}}>
                     <Checkbox
                         style={{ gridArea: 'thing1' }}
                         label={t('options.crew_status.idle')}
@@ -666,6 +669,18 @@ const QpCrew = (props: QpCrewProps) => {
                         checked={unclaimed}
                         onChange={(e, { checked }) => setUnclaimed(!!checked)}
                     />
+                </div>
+                <div style={{display: 'grid', gridTemplateAreas: `'thing1' 'thing2'`, gap: '0.5em', margin: '0.5em'}}>
+                    <Checkbox
+                        style={{ gridArea: 'thing1' }}
+                        disabled={showIdle}
+                        label={t('voyage.picker_options.frozen')}
+                        checked={frozens}
+                        onChange={(e, { checked }) => setFrozens(!!checked)}
+                    />
+                    <div style={{ gridArea: 'thing2'}}>
+                        &nbsp;
+                    </div>
                 </div>
             </div>
             {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
