@@ -30,6 +30,7 @@ import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
 import { RarityFilter } from "../crewtables/commonoptions";
 import { ChallengeError } from "./challenge_node";
+import { QuipmentProspectList } from "../voyagecalculator/quipment/quipmentprospects";
 
 export interface RemoteQuestStore {
     id: number,
@@ -568,11 +569,13 @@ const QpCrew = (props: QpCrewProps) => {
             if (isActive) {
                 qc.active_status = isActive;
             }
-            if (prospects[qc.symbol]) {
+
+            qc.kwipment_prospects = false;
+
+            if (prospects[qc.id]) {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
-                qc.kwipment_prospects = false;
                 qc.kwipment_expiration = [0, 0, 0, 0];
-                qc.kwipment = prospects[qc.symbol];
+                qc.kwipment = prospects[qc.id];
             }
             else {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
@@ -585,13 +588,16 @@ const QpCrew = (props: QpCrewProps) => {
                 let chmatch = quest.challenges!.filter(ch => challenges.includes(ch.id));
                 if (chmatch?.length) {
                     let power_matched = false;
-                    let skill_matched = chmatch.some(ch => {
-                        if (qc.skill_order.includes(ch.skill)) {
+                    let skill_matched = chmatch.reduce((prev, ch) => {
+                        if (qc.skill_order.includes(ch.skill) && qc.skills[ch.skill]) {
+                            if (qc.symbol === 'mbenga_king_ridley_crew') {
+                                console.log('here');
+                            }
                             if (minSkillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]) power_matched = true;
                             return true;
                         }
-                        return false;
-                    });
+                        return prev;
+                    }, false);
                     qc.isSelected = power_matched;
                     return skill_matched;
                 }
@@ -620,6 +626,18 @@ const QpCrew = (props: QpCrewProps) => {
             setRunning(true);
         });
     }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens]);
+
+    const prospectList = React.useMemo(() => {
+        const newProspects = [] as PlayerCrew[];
+        for(let [id, items] of Object.entries(prospects)) {
+            let c = displayCrew.find(f => f.id === Number(id)) as PlayerCrew;
+            if (!c) continue;
+            c = oneCrewCopy(c);
+            c.kwipment_prospects = true;
+            newProspects.push(c);
+        }
+        return newProspects;
+    }, [displayCrew]);
 
     return (
         <div style={{
@@ -700,9 +718,14 @@ const QpCrew = (props: QpCrewProps) => {
                     data={displayCrew as IRosterCrew[]}
                 />
             </div>
+            <div>
+                <QuipmentProspectList
+                    crew={prospectList}
+                    no_voyage={true}
+                />
+            </div>
         </div>
     );
-
 
     function filterTableRows(crew: CrewMember, filter: Filter[], searchParams?: string) {
         return crewMatchesSearchFilter(crew, filter, searchParams);
@@ -792,7 +815,7 @@ const QpCrew = (props: QpCrewProps) => {
     function clearIt(c?: PlayerCrew) {
         if (c) {
             let mpro = {...prospects};
-            delete mpro[c.symbol];
+            delete mpro[c.id];
             setRunning(true);
             setProspects(mpro);
         }
@@ -800,7 +823,7 @@ const QpCrew = (props: QpCrewProps) => {
 
     function addLot(crew: PlayerCrew, lot: QuippedPower) {
         let mpro = {...prospects};
-        mpro[crew.symbol] = Object.values(lot.skill_quipment).flat().map(e => Number(e.id));
+        mpro[crew.id] = Object.values(lot.skill_quipment).flat().map(e => Number(e.id));
         setRunning(true);
         setProspects(mpro);
     }
