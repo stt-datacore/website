@@ -141,6 +141,9 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 						minWidth: '18em',
 						position: 'sticky', left: 0,
 						//background: idx % 2 ? '#353a41' : '#2e3338'
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
 						backgroundImage:
 							`linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
 							(ownedbg ? ", " + ownedbg : '') ,
