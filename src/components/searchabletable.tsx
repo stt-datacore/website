@@ -118,11 +118,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	React.useEffect(() => {
 		if (props.initOptions) {
 			setSearchFilter(props.initOptions.search ?? searchFilter);
-			setFilterType(props.initOptions.filter ?? 'Any match');
-			setColumn(props.initOptions.column ?? undefined);
-			setDirection(props.initOptions.direction ?? undefined);
-			setPaginationRows(props.initOptions.rows ?? 10);
-			setPaginationPage(props.initOptions.page ?? 1);
+			setFilterType(props.initOptions.filter ?? filterType);
+			setColumn(props.initOptions.column ?? column);
+			setDirection(props.initOptions.direction ?? direction);
+			setPaginationRows(props.initOptions.rows ?? pagination_rows);
+			setPaginationPage(props.initOptions.page ?? pagination_page);
 		}
 	}, [props.initOptions]);
 
