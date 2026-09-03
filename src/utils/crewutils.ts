@@ -1837,7 +1837,7 @@ export function minSkillSum(skills: Skill | ComputedSkill | (Skill | ComputedSki
 	if (Array.isArray(skills)) {
 		return skills.reduce((p, n) => p + minSkillSum(n), 0);
 	}
-	else if ("range_max" in skills) {
+	else if ("range_min" in skills) {
 		return skills.core + skills.range_min;
 	}
 	else {
