@@ -31,6 +31,7 @@ import { TraitSelection } from "./trait_selector";
 import { RarityFilter } from "../crewtables/commonoptions";
 import { ChallengeError } from "./challenge_node";
 import { QuipmentProspectList } from "../voyagecalculator/quipment/quipmentprospects";
+import { ShipSeatPicker } from "../crewtables/shipoptions";
 
 export interface RemoteQuestStore {
     id: number,
@@ -509,6 +510,7 @@ const QpCrew = (props: QpCrewProps) => {
     const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
     const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
     const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
+    const [primaryOnly, setPrimaryOnly] = useStateWithStorage<boolean>('/quipmentTools/primaryOnly', false, { rememberForever: true });
     const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([]);
     const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
     const [displayCrew, setDisplayCrew] = React.useState<IRosterCrew[]>([]);
@@ -519,6 +521,8 @@ const QpCrew = (props: QpCrewProps) => {
     const [unclaimed, setUnclaimed] = useStateWithStorage('/quipment/onlyUnclaimedQuippers', false, { rememberForever: true });
     const [frozens, setFrozens] = useStateWithStorage('/quipment/frozens', false, { rememberForever: true });
     const [activePlace, setActivePlace] = React.useState("crew");
+    const [selSkills, setSelSkills] = useStateWithStorage('/quipmentTools/selSkills', [] as string[]);
+
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
             pseudocolumns: ['name', 'kwipment', 'power'], translatePseudocolumn: (c) => {
@@ -535,7 +539,7 @@ const QpCrew = (props: QpCrewProps) => {
                     if (b.isSelected && !a.isSelected) return 1;
                 }
                 if (config.field === 'kwipment')
-                    return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length;
+                    return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length || minSkillSum(Object.values(a.skills)) - minSkillSum(Object.values(b.skills));
                 if (config.field === 'power')
                     return minSkillSum(Object.values(a.skills)) - minSkillSum(Object.values(b.skills));
                 return a.name.localeCompare(b.name);
@@ -543,6 +547,22 @@ const QpCrew = (props: QpCrewProps) => {
         },
         ... getTopQuipmentTableConfig(t, pstMode, false)
     ] as ITableConfigRow[];
+
+    const availSkills = React.useMemo(() => {
+        if (!quest?.challenges?.length) return Object.keys(CONFIG.SKILLS);
+        const skills = [] as string[];
+        for (let ch of quest.challenges) {
+            if (highlighted.length && !highlighted.some(ch2 => ch2.challenge === ch.id && !ch2.excluded)) continue;
+            if (!skills.includes(ch.skill))
+                skills.push(ch.skill);
+        }
+        if (selSkills.length) {
+            setTimeout(() => {
+                setSelSkills(selSkills.filter(f => skills.includes(f)));
+            });
+        }
+        return skills;
+    }, [quest, highlighted]);
 
     React.useEffect(() => {
         let mpro = {...prospects};
@@ -559,19 +579,24 @@ const QpCrew = (props: QpCrewProps) => {
             });
             return;
         }
+
+        const allowedSkills = !selSkills.length ? Object.keys(CONFIG.SKILLS) : availSkills.filter(f => selSkills.includes(f));
+
         const newcrew = crew.filter(c =>
             (!rarities?.length || rarities.includes(c.max_rarity)) &&
             (!unclaimed || c.q_bits < 1300) &&
-            (frozens || c.immortal <= 0)
+            (frozens || c.immortal <= 0) &&
+            (
+                (!primaryOnly && c.skill_order.some(sko => allowedSkills.includes(sko))) ||
+                (primaryOnly && allowedSkills.includes(c.skill_order[0]))
+            )
         ).map(qc => {
             let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
             qc = oneCrewCopy(qc);
             if (isActive) {
                 qc.active_status = isActive;
             }
-
             qc.kwipment_prospects = false;
-
             if (prospects[qc.id]) {
                 qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.id].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
                 qc.kwipment_expiration = [0, 0, 0, 0];
@@ -625,7 +650,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens]);
+    }, [crewFilters, slots, crew, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens, selSkills, primaryOnly]);
 
     const prospectList = React.useMemo(() => {
         const newProspects = [] as PlayerCrew[];
@@ -699,6 +724,22 @@ const QpCrew = (props: QpCrewProps) => {
                     <div style={{ gridArea: 'thing2'}}>
                         &nbsp;
                     </div>
+                </div>
+            </div>
+            <div style={{display: 'inline-flex', alignItems: 'center', gap: '1em'}}>
+                <div style={{ gridArea: 'thing1'}}>
+                    <ShipSeatPicker
+                        availableSeats={availSkills}
+                        setSelectedSeats={setSelSkills}
+                        selectedSeats={selSkills}
+                        />
+                </div>
+                <div style={{ gridArea: 'thing2'}}>
+                    <Checkbox
+                        checked={primaryOnly}
+                        onChange={(e, { checked }) => setPrimaryOnly(!!checked)}
+                        label={t('base.primary')}
+                        />
                 </div>
             </div>
             {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
