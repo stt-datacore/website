@@ -24,6 +24,7 @@ export interface CrewItemsViewProps {
     printNA?: string | React.ReactNode;
     targetGroup?: string;
     locked?: boolean;
+    altProspectText?: string;
     vertical?: boolean;
     alwaysHideProgress?: boolean;
     alwaysShowProgress?: boolean;
@@ -202,7 +203,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             {!!crew.kwipment_prospects && quip && <Label
             style={{cursor: props.prospectsClicked ? 'pointer' : undefined}}
             onClick={() => props.prospectsClicked ? props.prospectsClicked(crew) : false}
-            color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
+            color='blue'><i>{props.altProspectText || t('voyage.quipment.title')}</i></Label> }
             <div style={{
                 display: "flex",
                 flexDirection: vertical ? 'column' : 'row',
@@ -218,6 +219,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         key={`${crew.id}_${crew.symbol}_${idx}_${item.symbol}__crewEquipBox`}
                         context={context}
                         vertical={!!vertical}
+                        altProspectText={props.altProspectText}
                         targetGroup={targetGroup}
                         style={(quip && maxqIdx < idx) || disabled[idx] ? { opacity: locked ? "0.50" : "0.25" } : undefined}
                         locked={getLocked(idx)}

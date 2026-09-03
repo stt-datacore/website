@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Checkbox, DropdownItemProps, Icon, Rating, Table } from "semantic-ui-react";
+import { Checkbox, DropdownItemProps, Icon, Rating, Step, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { CrewMember, QuippedPower } from "../../model/crew";
@@ -518,7 +518,7 @@ const QpCrew = (props: QpCrewProps) => {
     const [rarities, setRarities] = useStateWithStorage('/quipmentTools/rarities', [] as number[], { rememberForever: true });
     const [unclaimed, setUnclaimed] = useStateWithStorage('/quipment/onlyUnclaimedQuippers', false, { rememberForever: true });
     const [frozens, setFrozens] = useStateWithStorage('/quipment/frozens', false, { rememberForever: true });
-
+    const [activePlace, setActivePlace] = React.useState("crew");
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
             pseudocolumns: ['name', 'kwipment', 'power'], translatePseudocolumn: (c) => {
@@ -573,7 +573,7 @@ const QpCrew = (props: QpCrewProps) => {
             qc.kwipment_prospects = false;
 
             if (prospects[qc.id]) {
-                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.symbol].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
+                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => prospects[qc.id].includes(Number(f.item.id))).map(be => be.bonusInfo))!;
                 qc.kwipment_expiration = [0, 0, 0, 0];
                 qc.kwipment = prospects[qc.id];
             }
@@ -625,7 +625,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, pstMode, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens]);
+    }, [crewFilters, slots, crew, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens]);
 
     const prospectList = React.useMemo(() => {
         const newProspects = [] as PlayerCrew[];
@@ -702,8 +702,24 @@ const QpCrew = (props: QpCrewProps) => {
                 </div>
             </div>
             {!!running && <div style={{height: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}> {globalContext.core.spin()}</div>}
+            {!running && !!prospectList.length && (<>
+            <Step.Group fluid>
+				<Step active={activePlace === 'crew'} onClick={() => setActivePlace('crew')}>
+					<Icon name='users' />
+					<Step.Content>
+						<Step.Title>{t('base.crew')}</Step.Title>
+					</Step.Content>
+				</Step>
+				<Step active={activePlace === 'prospectDetail'} onClick={() => setActivePlace('prospectDetail')}>
+					<Icon name='shopping bag' />
+					<Step.Content>
+						<Step.Title>{t('voyage.quipment.title')}</Step.Title>
+					</Step.Content>
+				</Step>
+			</Step.Group>
+            </>)}
             <div style={{
-                display: running ? 'none' : undefined
+                display: running || (!!prospectList.length && activePlace === 'prospectDetail') ? 'none' : undefined
             }}>
                 <SearchableTable
                     id="continuum_helper_crew"
@@ -718,12 +734,14 @@ const QpCrew = (props: QpCrewProps) => {
                     data={displayCrew as IRosterCrew[]}
                 />
             </div>
-            <div>
+            {!!prospectList.length && <div style={{
+                display: activePlace !== 'prospectDetail' ? 'none' : undefined
+            }}>
                 <QuipmentProspectList
                     crew={prospectList}
                     no_voyage={true}
                 />
-            </div>
+            </div>}
         </div>
     );
 
@@ -743,7 +761,7 @@ const QpCrew = (props: QpCrewProps) => {
 				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
 			}
 		}
-        if (prospects[crew.symbol]) {
+        if (prospects[crew.id]) {
             cellcrew = {...crew, kwipment_prospects: true };
         }
         return (
@@ -760,7 +778,7 @@ const QpCrew = (props: QpCrewProps) => {
                         }}>
                     <div style={{ display: 'flex', justifyContent: 'center'}}>
                             <div style={{
-                                width: '18em',
+                                width: '20em',
                                 display: 'grid',
                                 gridTemplateAreas: `'img name check' 'img rating rating' 'quipment quipment quipment'`,
                                 gridTemplateColumns: '64px auto auto',
@@ -786,7 +804,7 @@ const QpCrew = (props: QpCrewProps) => {
                                 </div>
                                 <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
                                 <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
-                                    <CrewItemsView crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
+                                    <CrewItemsView altProspectText={t('global.clear')} crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
                                     <div style={{marginLeft:'2em', marginTop: '0.5em'}}>
                                         {crew.skill_order.map(skill => {
                                             return (<CrewStat scale={0.8} key={`${crew.symbol}_${skill}_qmpv`} skill_name={skill} data={crew.skills[skill]} />)
