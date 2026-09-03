@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Dropdown, Rating, Menu, MenuItemProps, DropdownItemProps } from "semantic-ui-react";
+import { Form, Dropdown, Rating, Menu, MenuItemProps, DropdownItemProps, Icon } from "semantic-ui-react";
 import { PlayerData } from "../../model/player";
 import { Ship } from "../../model/ship";
 import { DropDownItem } from "../../utils/misc";
@@ -279,6 +279,8 @@ export type ShipSeatPickerProps = {
 export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 	const { selectedSeats, setSelectedSeats, fluid, formatTitle } = props;
     const availableSeats = props.availableSeats && props.availableSeats.length ? props.availableSeats : Object.keys(CONFIG.SKILLS);
+	const globalContext = React.useContext(GlobalContext);
+	const { t } = globalContext.localized;
 
 	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
 		if (!data.name) return;
@@ -323,6 +325,16 @@ export const ShipSeatPicker = (props: ShipSeatPickerProps) => {
 						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${c}.png`} style={{width: "1em"}} />
 					</Menu.Item>)
 				)}
+				<Menu.Item
+					as="a"
+					name={'_skill'}
+					key={'clearseats_skill_key'}
+					onClick={() => setSelectedSeats([].slice())}
+					disabled={!selectedSeats?.length}
+					title={t('global.clear')}
+					>
+					<Icon name='x' style={{padding:0,margin:0}} />
+				</Menu.Item>
 			</Menu>
 		</React.Fragment>
 	);
