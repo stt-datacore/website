@@ -28,10 +28,11 @@ import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./missi
 import { QuestImportComponent } from "./quest_importer";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
-import { RarityFilter } from "../crewtables/commonoptions";
+import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
 import { ChallengeError } from "./challenge_node";
 import { QuipmentProspectList } from "../voyagecalculator/quipment/quipmentprospects";
 import { ShipSeatPicker } from "../crewtables/shipoptions";
+import { CrewTraitsFilter } from "../crewtables/filters/crewtraits";
 
 export interface RemoteQuestStore {
     id: number,
@@ -502,7 +503,7 @@ type QpCrewProps = {
 
 const QpCrew = (props: QpCrewProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t } = globalContext.localized;
+    const { t, TRAIT_NAMES } = globalContext.localized;
     const { crew, quest, highlighted, mastery, challengeErrors, setChallengeErrors } = props;
     const quipment = globalContext.core.items.filter(i => i.type === 14).map(q => getItemWithBonus(q));
     const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
@@ -518,6 +519,8 @@ const QpCrew = (props: QpCrewProps) => {
     const [showIdle, setShowIdle] = useStateWithStorage('/quipmentTools/idleCrew', false, { rememberForever: true });
     const [prospects, setProspects] = useStateWithStorage('/quipmentTools/quipProspects', {} as {[key:string]: number[]})
     const [rarities, setRarities] = useStateWithStorage('/quipmentTools/rarities', [] as number[], { rememberForever: true });
+    const [traits, setTraits] = useStateWithStorage('/quipmentTools/selTraits', [] as string[], { rememberForever: true });
+    const [minTraits, setMinTraits] = useStateWithStorage('/quipmentTools/minTraits', 1, { rememberForever: true });
     const [unclaimed, setUnclaimed] = useStateWithStorage('/quipment/onlyUnclaimedQuippers', false, { rememberForever: true });
     const [frozens, setFrozens] = useStateWithStorage('/quipment/frozens', false, { rememberForever: true });
     const [activePlace, setActivePlace] = React.useState("crew");
@@ -539,9 +542,9 @@ const QpCrew = (props: QpCrewProps) => {
                     if (b.isSelected && !a.isSelected) return 1;
                 }
                 if (config.field === 'kwipment')
-                    return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length || minSkillSum(Object.values(a.skills)) - minSkillSum(Object.values(b.skills));
+                    return a.kwipment.filter(f => !!f).length - b.kwipment.filter(f => !!f).length || powerOf(a) - powerOf(b);
                 if (config.field === 'power')
-                    return minSkillSum(Object.values(a.skills)) - minSkillSum(Object.values(b.skills));
+                    return powerOf(a) - powerOf(b);
                 return a.name.localeCompare(b.name);
             }
         },
@@ -581,14 +584,21 @@ const QpCrew = (props: QpCrewProps) => {
         }
 
         const allowedSkills = !selSkills.length ? Object.keys(CONFIG.SKILLS) : availSkills.filter(f => selSkills.includes(f));
-
+        const cast = Object.values(globalContext.core.maincast).flat();
+        const ttraits = traits?.filter(t => !['maincast', 'notmaincast'].includes(t));
         const newcrew = crew.filter(c =>
             (!rarities?.length || rarities.includes(c.max_rarity)) &&
             (!unclaimed || c.q_bits < 1300) &&
             (frozens || c.immortal <= 0) &&
+            (!crewFilters.length || crewFilters.every(cf => cf.filterTest(c as IRosterCrew))) &&
             (
                 (!primaryOnly && c.skill_order.some(sko => allowedSkills.includes(sko))) ||
                 (primaryOnly && allowedSkills.includes(c.skill_order[0]))
+            ) &&
+            (
+                (!traits.includes('maincast') || cast.some(trait => c.traits_hidden.includes(trait))) &&
+                (!traits.includes('notmaincast') || cast.every(trait => !c.traits_hidden.includes(trait))) &&
+                (!ttraits.length || (c.traits.filter(t => ttraits.includes(t)).length + c.traits_hidden.filter(t => ttraits.includes(t)).length) >= minTraits)
             )
         ).map(qc => {
             let isActive = globalContext.player.ephemeral?.activeCrew?.find(f => f.id === qc.id)?.active_status;
@@ -628,7 +638,7 @@ const QpCrew = (props: QpCrewProps) => {
                 }
             }
             delete qc.isSelected;
-            return !crewFilters.length || crewFilters.every(cf => cf.filterTest(qc as IRosterCrew))
+            return true;
         });
 
         const errors = {} as {[key:string]: ChallengeError};
@@ -650,7 +660,7 @@ const QpCrew = (props: QpCrewProps) => {
         setTimeout(() => {
             setRunning(true);
         });
-    }, [crewFilters, slots, crew, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens, selSkills, primaryOnly]);
+    }, [crewFilters, slots, crew, powerMode, quest, highlighted, mastery, prospects, showIdle, rarities, unclaimed, frozens, selSkills, primaryOnly, traits, minTraits]);
 
     const prospectList = React.useMemo(() => {
         const newProspects = [] as PlayerCrew[];
@@ -699,6 +709,11 @@ const QpCrew = (props: QpCrewProps) => {
                 flexWrap: 'wrap'
             }}>
                 <RarityFilter rarityFilter={rarities} setRarityFilter={setRarities} />
+                <CrewTraitFilter
+                    minTraitMatches={minTraits}
+                    setMinTraitMatches={setMinTraits}
+                    traitFilter={traits}
+                    setTraitFilter={setTraits} />
                 <div style={{display: 'grid', gridTemplateAreas: `'thing1' 'thing2'`, gap: '0.5em', marginRight: '0.5em'}}>
                     <Checkbox
                         style={{ gridArea: 'thing1' }}
@@ -821,7 +836,7 @@ const QpCrew = (props: QpCrewProps) => {
                             <div style={{
                                 width: '20em',
                                 display: 'grid',
-                                gridTemplateAreas: `'img name check' 'img rating rating' 'quipment quipment quipment'`,
+                                gridTemplateAreas: `'img name check' 'img rating rating' 'traits traits traits' 'quipment quipment quipment'`,
                                 gridTemplateColumns: '64px auto auto',
                                 alignItems: 'center',
                                 justifyContent: 'stretch',
@@ -844,6 +859,13 @@ const QpCrew = (props: QpCrewProps) => {
                                     {!!crew.active_status && <Icon name='space shuttle' style={{margin:'0.5em'}}  />}
                                 </div>
                                 <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
+                                <div style={{gridArea: 'traits', fontStyle: 'italic', margin: '0 0.5em'}}>
+                                    {Object.entries(getTraitBoosts(crew)).map(([trait, score]) => {
+                                        return (<span key={`${crew.symbol}_trait_${trait}_power`}>
+                                            {TRAIT_NAMES[trait]} +{score}
+                                        </span>)
+                                    }).reduce((p, n) => p !== undefined ? <>{p}, {n}</> : <>{n}</>, undefined as React.ReactNode | undefined)}
+                                </div>
                                 <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
                                     <CrewItemsView altProspectText={t('global.clear')} crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
                                     <div style={{marginLeft:'2em', marginTop: '0.5em'}}>
@@ -929,6 +951,31 @@ const QpCrew = (props: QpCrewProps) => {
 
     function getActiveBuffs() {
         return globalContext.player.buffConfig ?? globalContext.core.all_buffs;
+    }
+
+    function getTraitBoosts(crew: PlayerCrew) {
+        const boosts = {} as {[key:string]: number};
+        if (!quest?.challenges?.length || !quest.challenges.every(ch => ch.trait_bonuses?.length)) return {};
+        let elig = quest.challenges.filter(ch => crew.traits.some(tr => ch.trait_bonuses.some(bs => bs.trait === tr)));
+        for (let ch of elig) {
+            for (let bonus of ch.trait_bonuses) {
+                if (crew.traits.includes(bonus.trait)) {
+                    boosts[bonus.trait] ??= 0;
+                    if (boosts[bonus.trait] < bonus.bonuses[mastery]) {
+                        boosts[bonus.trait] = bonus.bonuses[mastery];
+                    }
+                }
+            }
+        }
+        return boosts;
+    }
+
+    function boostSum(boost: {[key:string]:number}) {
+        return Object.values(boost).reduce((p, n) => p + n, 0);
+    }
+
+    function powerOf(crew: PlayerCrew) {
+        return minSkillSum(Object.values(crew.skills)) + boostSum(getTraitBoosts(crew));
     }
 }
 
