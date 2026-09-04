@@ -27,6 +27,10 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const hasPlayer = !!playerData;
 
     React.useEffect(() => {
+        autoCall();
+    }, [setQuest]);
+
+    React.useEffect(() => {
         if (collapsed === undefined) setCollapsed(true);
     }, [currentHasRemote]);
 
@@ -116,5 +120,18 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
         if (typeof window !== 'undefined' && (window as any)['rqfeed'] && typeof (window as any)['rqfeed'] === 'function') return (window as any)['rqfeed'](questId);
         let url = `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=${CLIENT_API_VERSION}&continuum=true`;
         return url;
+    }
+    async function autoCall() {
+        try {
+            if (typeof window !== 'undefined' && (window as any)['rqfeed'] && typeof (window as any)['rqfeed'] === 'function') {
+                let result = await fetch((window as any)['rqfeed'](questId));
+                if (result?.ok) {
+                    setQuest(await result.json());
+                }
+            }
+        }
+        catch (e: any) {
+            console.log(`Autocall failed: ${e}`);
+        }
     }
 }

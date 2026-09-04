@@ -21,7 +21,7 @@ export interface JsonInputFormProps<T> {
     config: JsonImportConfig;
 };
 
-export const JsonInputForm = <T extends Object>(props: JsonInputFormProps<T>) => {
+export const JsonInputForm = <T extends object>(props: JsonInputFormProps<T>) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t, tfmt } = globalContext.localized;
 
