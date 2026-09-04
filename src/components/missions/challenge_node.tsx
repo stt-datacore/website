@@ -37,40 +37,49 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
     const { playerData } = globalContext.player;
     const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup, error, showOwnedQuantity } = props;
 
-    const challenges = quest.challenges ?? [];
-    let reward = undefined as MissionReward | undefined;
-    let rc = false;
-    let mrc = false;
-    let negative = false;
-    const idx = quest.challenges?.findIndex(f => f.id === challengeId) ?? 0;
+    const challenges = React.useMemo(() => {
+        return quest.challenges ?? [];
+    }, [quest]);
 
-    if (quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
-        rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].claimed;
-        mrc = !!(quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].can_reclaim;
-        reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === challengeId)?.reward[0];
-        if (showOwnedQuantity && playerData && reward?.symbol) {
-            let item = playerData.player.character.items.find(f => f.symbol === reward!.symbol);
-            if (item?.quantity) {
-                (reward as any).owned = item.quantity;
-                //if (item.quantity < 8) negative = true;
+    const challenge = React.useMemo(() => {
+        return challenges.find(f => f.id === challengeId) as MissionChallenge;
+    }, [challenges, challengeId]);
+
+    const { claimed, reclaimable, rewards, negative } = React.useMemo(() => {
+        let reward = undefined as MissionReward | undefined;
+        let rc = false;
+        let mrc = false;
+        let negative = false;
+        const idx = quest.challenges?.findIndex(f => f.id === challengeId) ?? 0;
+        if (quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
+            rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].claimed;
+            mrc = !!(quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].can_reclaim;
+            reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === challengeId)?.reward[0];
+            if (showOwnedQuantity && playerData && reward?.symbol) {
+                let item = playerData.player.character.items.find(f => f.symbol === reward!.symbol);
+                if (item?.quantity) {
+                    (reward as any).owned = item.quantity;
+                    //if (item.quantity < 8) negative = true;
+                }
             }
         }
-    }
+        const claimed = rc;
+        const reclaimable = mrc;
+        const rewards = reward;
+        return { claimed, reclaimable, rewards, negative };
+    }, [showOwnedQuantity, playerData, mastery, quest, challengeId]);
 
-    const challenge = challenges.find(f => f.id === challengeId) as MissionChallenge;
-    const children = challenges.filter((c) => challenge.children.includes(c.id));
-    const claimed = rc;
-    const reclaimable = mrc;
-    const rewards = reward;
-
-    const difficulty = challenge.difficulty_by_mastery[mastery];
-    const crit = difficulty + ([150, 275, 300][mastery]);
+    const { difficulty, crit } = React.useMemo(() => {
+        const difficulty = challenge?.difficulty_by_mastery[mastery] ?? 0;
+        const crit = difficulty + ([150, 275, 300][mastery]);
+        return { difficulty, crit };
+    }, [challenge, mastery]);
 
     const handleClick = (e: React.MouseEvent) => {
         if (props.onClick) {
             props.onClick(e.nativeEvent, {
                 quest,
-                challengeId: challengeId,
+                challengeId,
                 mastery
             });
         }
