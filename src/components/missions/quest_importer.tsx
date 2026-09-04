@@ -88,7 +88,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 				<JsonInputForm
 					requestDismiss={() => setCollapsed(!collapsed && !!currentHasRemote)}
 					config={{
-						dataUrl: `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=${CLIENT_API_VERSION}&continuum=true`,
+						dataUrl: getReqUrl(),
                         dataName: t('json_types.quest_data'),
 					    jsonHint: '{"id":',
 						androidFileHint: 'conflict_info.json',
@@ -106,11 +106,15 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 		);
 	}
 
-    return <>
+    return (<>
+        <div className='ui segment'>
+            {renderCopyPaste()}
+        </div>
+    </>);
 
-    <div className='ui segment'>
-        {renderCopyPaste()}
-    </div>
-
-    </>
+    function getReqUrl() {
+        if (typeof window !== 'undefined' && (window as any)['rqfeed'] && typeof (window as any)['rqfeed'] === 'function') return (window as any)['rqfeed'](questId);
+        let url = `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=${CLIENT_API_VERSION}&continuum=true`;
+        return url;
+    }
 }
