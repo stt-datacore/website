@@ -127,7 +127,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [challengeErrors, setChallengeErrors] = React.useState<{[key:string]: ChallengeError}>({});
 
     const setQuestId = (callerDebug: string, value?: number) => {
-        if (value !== undefined && !!mission?.quests?.length && value > mission?.quests.length) {
+        if (value !== undefined && !!mission?.quests?.length && value >= mission.quests.length) {
             value = mission.quests.findIndex(q => q.id === value);
         }
         //console.log(`setQuestId called from ${callerDebug} with value of ${value}`);
