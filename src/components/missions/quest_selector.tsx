@@ -11,7 +11,7 @@ export interface QuestSelectorProps {
     mastery: number;
     setMastery: (value: number) => void;
     questId?: number;
-    setQuestId: (value?: number) => void;
+    setQuestId: (callerDebug: string, value?: number) => void;
     mission?: Mission | ContinuumMission;
     highlighted?: boolean[];
     masteryPlacement?: 'top' | 'bottom';
@@ -66,7 +66,7 @@ export const QuestSelector = (props: QuestSelectorProps) => {
             {mission?.quests?.map((quest, idx) => (
                 <Step
                     key={pageId + "quest_" + idx + "_" + quest.id} active={questId === idx}
-                    onClick={() => setQuestId(idx)}>
+                    onClick={() => setQuestId("selectorClick", idx)}>
                     <Step.Content>
                         <Step.Title>{(highlighted && highlighted[idx] === true) ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</Step.Title>
                         <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >{quest.description}</Step.Description>
