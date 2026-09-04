@@ -71,8 +71,8 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
     }, [showOwnedQuantity, playerData, mastery, quest, challengeId]);
 
     const { difficulty, crit } = React.useMemo(() => {
-        const difficulty = challenge?.difficulty_by_mastery[mastery] ?? 0;
-        const crit = difficulty + ([150, 275, 300][mastery]);
+        const difficulty = challenge?.difficulty_by_mastery[mastery];
+        const crit = (difficulty ?? 0) + ([150, 275, 300][mastery]);
         return { difficulty, crit };
     }, [hasRemoteData, challenge, mastery]);
 
