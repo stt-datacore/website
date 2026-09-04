@@ -28,7 +28,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 
     React.useEffect(() => {
         autoCall();
-    }, [setQuest]);
+    }, [setQuest, questId]);
 
     React.useEffect(() => {
         if (collapsed === undefined) setCollapsed(true);
@@ -100,10 +100,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 					}}
 					title={`Quest Input Form: ${quest?.name}`}
 					validateInput={validateMission}
-					setValidInput={(quest) => {
-						if (quest) setCollapsed(true);
-						setQuest(quest);
-					}}
+					setValidInput={populateInput}
 
 				/>}
 			</React.Fragment>
@@ -116,6 +113,11 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
         </div>
     </>);
 
+    function populateInput(quest: Quest | undefined) {
+        if (quest) setCollapsed(true);
+        setQuest(quest);
+    }
+
     function getReqUrl() {
         if (typeof window !== 'undefined' && (window as any)['rqfeed'] && typeof (window as any)['rqfeed'] === 'function') return (window as any)['rqfeed'](questId);
         let url = `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=${CLIENT_API_VERSION}&continuum=true`;
@@ -124,9 +126,13 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     async function autoCall() {
         try {
             if (typeof window !== 'undefined') {
-                (window as any)['questSetter'] = setQuest;
+                (window as any)['questSetter'] = function(quest: Quest | undefined) {
+                    setTimeout(() => {
+                        populateInput(quest);
+                    });
+                };
             }
-            if (typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
+            if (!!questId && typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
                 (window as any)['rqload'](questId);
             }
         }
