@@ -72,7 +72,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
             let b = [] as boolean[];
             for (let i = 0; i < mission.quests.length; i++) {
                 if (mission.quests[i]) {
-                    b[i] = remoteQuests.some(rq => rq.id === (mission.quests as Quest[])[i].id);
+                    b[i] = remoteQuests.some(rq => rq.id === mission.quests![i].id);
                 }
             }
             return b;
@@ -85,23 +85,11 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
             internalSetMission(undefined);
             return;
         }
-        value = structuredClone(value);
         if (!value.discover_date) {
             value.discover_date = mostRecentDate;
         }
         else if (typeof value.discover_date === 'string') {
             value.discover_date = new Date(value.discover_date);
-        }
-
-        if (remoteQuests.length) {
-            if (value.quests) {
-                for (let rem of remoteQuests) {
-                    let f = value.quests?.findIndex(q => q.id === rem.id);
-                    if (f !== -1) {
-                        value.quests[f] = rem.quest;
-                    }
-                }
-            }
         }
         internalSetMission(value);
    }
@@ -124,6 +112,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
     const [challengeErrors, setChallengeErrors] = React.useState<{[key:string]: ChallengeError}>({});
+    const [loading, setLoading] = React.useState(false);
 
     const setQuestIdx = (callerDebug: string, value?: number) => {
         if (value !== undefined && !!mission?.quests?.length && value >= mission.quests.length) {
@@ -243,6 +232,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                 }
             });
         }
+        if (loading) setLoading(false);
     }, [mission]);
 
     React.useEffect(() => {
@@ -317,37 +307,37 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
     const setRemoteQuest = (quest?: Quest) => {
         if (!quest) {
-            // if (mission) {
-            //     setMission({ ...mission })
-            // };
             return;
         }
+        setLoading(true);
+            setTimeout(() => {
+            let rq = [ ...remoteQuests ];
+            let fi = rq.findIndex(f => f.id === quest.id);
 
-        let rq = [ ...remoteQuests ];
-        let fi = rq.findIndex(f => f.id === quest.id);
-
-        if (fi !== -1) {
-            rq[fi].quest.challenges = quest.challenges;
-            rq[fi].quest = quest;
-            rq[fi].id = quest.id;
-        }
-        else {
-            rq.push({
-                id: quest.id,
-                quest
-            });
-        }
-        if (mission?.quests) {
-            let newMission: ContinuumMission = {...mission };
-            for (let nrq of rq) {
-                let fi = newMission.quests!.findIndex(q => q.id === nrq.id);
-                if (fi > -1) {
-                    newMission.quests![fi] = nrq.quest;
-                }
+            if (fi !== -1) {
+                rq[fi].quest.challenges = quest.challenges;
+                rq[fi].quest = quest;
+                rq[fi].id = quest.id;
             }
-            setMission(newMission);
-        }
-        setRemoteQuests([ ...rq ]);
+            else {
+                rq.push({
+                    id: quest.id,
+                    quest
+                });
+            }
+            setRemoteQuests([ ...rq ]);
+            const rquest = quest;
+            setTimeout(() => {
+                if (mission?.quests) {
+                    let newMission: ContinuumMission = {...mission };
+                    let fi = newMission.quests!.findIndex(q => q.id === rquest.id);
+                    if (fi > -1) {
+                        newMission.quests![fi] = rquest;
+                    }
+                    setMission(newMission);
+                }
+            });
+        });
     }
 
     React.useEffect(() => {
@@ -399,7 +389,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                     highlighted={getRemoteQuestFlags()}
                 />
 
-                {!!mission &&
+                {!!mission && !loading &&
                     <div style={{ display: showPane !== 0 ? 'none' : undefined }}>
                         <MissionMapComponent
                             showOwnedQuantities={true}
@@ -421,7 +411,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
                     </div>}
 
-                {!!quest && (
+                {!!quest && !loading && (
                     <QpCrew
                         crew={missionPool}
                         quest={quest}
@@ -431,6 +421,12 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                         setChallengeErrors={setChallengeErrors}
                     />
                 )}
+
+                {!!loading && (<>
+                    <div style={{height: '50vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                        {context.core.spin()}
+                    </div>
+                </>)}
             </div>
         </>
     );
@@ -765,7 +761,7 @@ const QpCrew = (props: QpCrewProps) => {
             cellcrew = {...crew, kwipment_prospects: true };
         }
         return (
-            <Table.Row>
+            <Table.Row key={`continuum_crew_${crew.symbol}_${idx}`}>
                 <Table.Cell className='ui segment'
                     style={{
                         position: 'sticky', left: 0,
