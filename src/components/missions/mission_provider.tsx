@@ -1,6 +1,6 @@
 import React from "react";
 import { ContinuumMission } from "../../model/continuum";
-import { RemoteQuestStore } from "./continuum_helper";
+import { RemoteQuestStore } from "./continuum_new";
 import { GlobalContext } from "../../context/globalcontext";
 import { Mission, Quest } from "../../model/missions";
 import { Notification } from "../page/notification";
