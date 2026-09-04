@@ -260,7 +260,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                         pageId={pageId}
                         mission={mission}
                         questId={questId}
-                        setQuestId={setQuestId}
+                        setQuestId={(quest) => setQuestId(Number(quest))}
                         mastery={mastery}
                         setMastery={setMastery}
                         highlighted={isRemote}
