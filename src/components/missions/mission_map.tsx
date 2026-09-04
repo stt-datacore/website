@@ -317,6 +317,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
+                                                                                hasRemoteData={!!isRemote && !!isRemote[questId]}
                                                                                 showOwnedQuantity={showOwnedQuantities}
                                                                                 error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
@@ -344,6 +345,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
+                                                                                hasRemoteData={!!isRemote && !!isRemote[questId]}
                                                                                 showOwnedQuantity={showOwnedQuantities}
                                                                                 error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
