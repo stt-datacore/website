@@ -53,7 +53,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                             You can paste your data using the box, below.
                         </p>
                         <p>
-                            Current Quest Data: <b><a target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=${CLIENT_API_VERSION}&continuum=true`}>{quest?.name}</a></b>
+                            Current Quest Data: <b><a target='_blank' href={getReqUrl()}>{quest?.name}</a></b>
                         </p>
                         </>
                     }
@@ -72,7 +72,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 							Click here to update your data if you wish to refresh your claimed rewards, or use data from another account.
 						</p>
                         <p>
-                            Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=${CLIENT_API_VERSION}&continuum=true`}>{quest?.name}</a></b>
+                            Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={getReqUrl()}>{quest?.name}</a></b>
                         </p>
                         <p style={{textAlign: "right"}}>
 							<b style={{fontSize:"0.8em"}}>(To clear all quest data, <a title={'Clear All Quest Data'} onClick={() => clearQuest()}>Click Here</a>)</b>
