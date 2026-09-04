@@ -127,10 +127,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                 (window as any)['questSetter'] = setQuest;
             }
             if (typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
-                let result = await (window as any)['rqload'](questId);
-                if (result) {
-                    setQuest(result);
-                }
+                (window as any)['rqload'](questId);
             }
         }
         catch (e: any) {
