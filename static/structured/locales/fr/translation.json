@@ -1526,8 +1526,11 @@
     },
     "mastery": {
         "elite": "Élite",
+        "elite_difficulty": "Difficulté Élite",
         "epic": "Épique",
-        "normal": "Normale"
+        "epic_difficulty": "Difficulté Épique",
+        "normal": "Normale",
+        "normal_difficulty": "Difficulté normale"
     },
     "menu": {
         "about_title": "À propos",
@@ -1592,9 +1595,12 @@
         "type_5": "Mission du continuum"
     },
     "missions": {
+        "chain_reward": "Récompense de chaîne",
+        "claimed": "Réclamé",
         "continuum_mission_map": "Carte de mission du continuum",
         "current_continuum_mission_date": "Mission actuelle du continuum: {{date}}",
-        "mission_map": "Carte de mission"
+        "mission_map": "Carte de mission",
+        "reclaimable": "Réclamable"
     },
     "objective_events": {
         "mini_helper_available": "Mini-assistant disponible !",

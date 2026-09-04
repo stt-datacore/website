@@ -39,7 +39,9 @@ export interface RewardsGridProps {
 	crewTargetGroup?: string;
 	size?: number;
 	style?: React.CSSProperties;
+	altQuantity?: (quantity?: number, neg?: boolean, owned?: number, silentZero?: boolean) => React.ReactNode;
 	forceCols?: number;
+	alwaysShowQuantity?: boolean;
 }
 
 export const RewardsGrid = (props: RewardsGridProps) => {
@@ -50,7 +52,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	// props.maxCols ??= 4;
 	// props.wrap ??= false;
 
-	const { kind, needs, wrap, maxCols, targetGroup, crewTargetGroup } = props;
+	const { kind, needs, wrap, maxCols, targetGroup, crewTargetGroup, alwaysShowQuantity, altQuantity } = props;
 	const rewards = props.rewards ?? [];
 	const context = React.useContext(GlobalContext);
 	const { ITEM_ARCHETYPES } = context.localized;
@@ -96,6 +98,8 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	let cols = !wrap ? rewards.length : ((maxCols && maxCols >= 4) ? maxCols : 4);
 	if (rewards.length < cols) cols = rewards.length;
 	if (props.forceCols) cols = props.forceCols;
+
+	const q = altQuantity || quantityLabel;
 
 	if (wrap) {
 
@@ -145,7 +149,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 												src={`${process.env.VITE_ASSETS_URL}${img}`}
 												quantity={reward.quantity}
 											/>
-											<div style={{textAlign: 'center'}}>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</div>
+											<div style={{textAlign: 'center'}}>{(reward.quantity > 1 || !!alwaysShowQuantity ||  !!needs?.length) && (<div><small>{q(reward.quantity, negative, reward.owned)}</small></div>)}</div>
 										</div>
 									</div>
 								</Grid.Column>
@@ -241,7 +245,7 @@ export function quantityLabel(quantity?: number, neg?: boolean, owned?: number, 
 		}
 	}
 
-	let qstr = "";
+	let qstr: string;
 
 	if (quantity >= 10000) {
 		qstr = Math.round(quantity / 1000).toLocaleString() + 'K';

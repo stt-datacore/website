@@ -382,6 +382,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                 {!!mission &&
                     <div style={{ display: showPane !== 0 ? 'none' : undefined }}>
                         <MissionMapComponent
+                            showOwnedQuantities={true}
                             autoTraits={true}
                             pageId={'continuum'}
                             mission={mission}
@@ -548,9 +549,9 @@ const QpCrew = (props: QpCrewProps) => {
                     let power_matched = false;
                     let skill_matched = chmatch.reduce((prev, ch) => {
                         if (qc.skill_order.includes(ch.skill) && qc.skills[ch.skill]) {
-                            if (qc.symbol === 'mbenga_king_ridley_crew') {
-                                console.log('here');
-                            }
+                            // if (qc.symbol === 'mbenga_king_ridley_crew') {
+                            //     console.log('here');
+                            // }
                             if (minSkillSum(qc.skills[ch.skill]) >= ch.difficulty_by_mastery[mastery]) power_matched = true;
                             return true;
                         }
@@ -757,21 +758,21 @@ const QpCrew = (props: QpCrewProps) => {
                         }}>
                     <div style={{ display: 'flex', justifyContent: 'center'}}>
                             <div style={{
-                                width: '20em',
+                                width: '22em',
                                 display: 'grid',
                                 gridTemplateAreas: `'img name check' 'img rating rating' 'traits traits traits' 'quipment quipment quipment'`,
-                                gridTemplateColumns: '64px auto auto',
+                                gridTemplateColumns: '84px auto auto',
                                 alignItems: 'center',
                                 justifyContent: 'stretch',
                                 gap: '1em',
                                 }}>
-                                <div style={{gridArea: 'img'}}>
+                                <div style={{gridArea: 'img', margin: '1em'}}>
                                     <CrewTarget inputItem={crew} targetGroup="quipment_hover">
                                         <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                             style={{height:'64px'}} />
                                     </CrewTarget>
                                 </div>
-                                <div style={{gridArea: 'check'}}>
+                                <div style={{gridArea: 'check', display: 'inline-flex', justifyContent:'flex-end'}}>
                                     {!!crew.isSelected && <Icon size='large' name= 'check' color='green' />}
                                 </div>
                                 <div style={{gridArea: 'name', display: 'flex', alignItems: 'center'}}>
@@ -781,7 +782,9 @@ const QpCrew = (props: QpCrewProps) => {
                                     {!!crew.immortal && crew.immortal > 0 && <Icon name='snowflake' style={{margin:'0.5em'}} />}
                                     {!!crew.active_status && <Icon name='space shuttle' style={{margin:'0.5em'}}  />}
                                 </div>
-                                <Rating style={{gridArea: 'rating', width: '5em'}} size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
+                                <div style={{gridArea: 'rating', width: '5em', margin: 0, padding: 0}}>
+                                    <Rating size={'tiny'} icon="star" rating={crew.max_rarity} maxRating={crew.max_rarity} />
+                                </div>
                                 <div style={{gridArea: 'traits', fontStyle: 'italic', margin: '0 0.5em'}}>
                                     {Object.entries(getTraitBoosts(crew)).map(([trait, score]) => {
                                         return (<span key={`${crew.symbol}_trait_${trait}_power`}>

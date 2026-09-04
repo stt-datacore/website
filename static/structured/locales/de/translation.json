@@ -1514,8 +1514,11 @@
     },
     "mastery": {
         "elite": "Elite",
+        "elite_difficulty": "Elite-Schwierigkeitsgrad",
         "epic": "Episch",
-        "normal": "Normal"
+        "epic_difficulty": "Epischer Schwierigkeitsgrad",
+        "normal": "Normal",
+        "normal_difficulty": "Normaler Schwierigkeitsgrad"
     },
     "menu": {
         "about_title": "Über uns",
@@ -1580,9 +1583,12 @@
         "type_5": "Kontinuumsmission"
     },
     "missions": {
+        "chain_reward": "Kettenbelohnung",
+        "claimed": "Beansprucht",
         "continuum_mission_map": "Kontinuumsmissionskarte",
         "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}",
-        "mission_map": "Missionskarte"
+        "mission_map": "Missionskarte",
+        "reclaimable": "Rückforderbar"
     },
     "objective_events": {
         "mini_helper_available": "Mini-Helfer vorhanden!",

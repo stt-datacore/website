@@ -1515,8 +1515,11 @@
     },
     "mastery": {
         "elite": "Elite",
+        "elite_difficulty": "Elite difficulty",
         "epic": "Epic",
-        "normal": "Normal"
+        "epic_difficulty": "Epic difficulty",
+        "normal": "Normal",
+        "normal_difficulty": "Normal difficulty"
     },
     "menu": {
         "about_title": "About",
@@ -1581,9 +1584,12 @@
         "type_5": "Continuum Mission"
     },
     "missions": {
+        "chain_reward": "Chain Reward",
+        "claimed": "Claimed",
         "continuum_mission_map": "Continuum Mission Map",
         "current_continuum_mission_date": "Current continuum mission: {{date}}",
-        "mission_map": "Mission Map"
+        "mission_map": "Mission Map",
+        "reclaimable": "Reclaimable"
     },
     "objective_events": {
         "mini_helper_available": "Mini-helper available!",

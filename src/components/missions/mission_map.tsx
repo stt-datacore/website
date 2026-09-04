@@ -41,6 +41,7 @@ export interface MissionComponentProps {
 
     isRemote?: boolean[];
     showChainRewards?: boolean;
+    showOwnedQuantities?: boolean;
     pageId: string;
     autoTraits?: boolean;
 
@@ -66,6 +67,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         pageId,
         mission,
         showChainRewards,
+        showOwnedQuantities,
         autoTraits,
         selectedTraits,
         setSelectedTraits: internalSetSelectedTraits,
@@ -315,6 +317,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
+                                                                                showOwnedQuantity={showOwnedQuantities}
                                                                                 error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
                                                                                 highlight={isHighlighted(item)}
@@ -341,6 +344,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
+                                                                                showOwnedQuantity={showOwnedQuantities}
                                                                                 error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
                                                                                 highlight={isHighlighted(item)}
@@ -378,7 +382,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                 }}
                                             >
                                                 <hr style={{ width: "calc(100% - 10em)" }} />
-                                                <h3>Chain Rewards</h3>
+                                                <h3>{t('missions.chain_reward')}</h3>
                                                 <RewardsGrid
                                                     targetGroup="continuum_items"
                                                     crewTargetGroup="continuum_helper"
@@ -390,9 +394,9 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                             </Table.Body>
                         </Table>
                     </div>}
-
-
             </div>
         </>
     );
+
+
 };

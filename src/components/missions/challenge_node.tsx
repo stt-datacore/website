@@ -26,27 +26,41 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
     targetGroup?: string;
     crewTargetGroup?: string;
     error?: ChallengeError;
+    showOwnedQuantity?: boolean;
     onClick?: (e: Event, data: ChallengeNodeInfo) => void;
 }
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
-    const { localized } = React.useContext(GlobalContext);
-
-    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup, error } = props;
+    const globalContext = React.useContext(GlobalContext);
+    const { localized } = globalContext;
+    const { t } = localized;
+    const { playerData } = globalContext.player;
+    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup, error, showOwnedQuantity } = props;
 
     const challenges = quest.challenges ?? [];
     let reward = undefined as MissionReward | undefined;
     let rc = false;
+    let mrc = false;
+    let negative = false;
     const idx = quest.challenges?.findIndex(f => f.id === challengeId) ?? 0;
 
     if (quest.mastery_levels && quest.mastery_levels[mastery] && quest.mastery_levels[mastery].jackpots && quest.mastery_levels[mastery].jackpots?.length) {
         rc = (quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].claimed;
+        mrc = !!(quest.mastery_levels[mastery].jackpots as Jackpot[])[idx].can_reclaim;
         reward = (quest.mastery_levels[mastery].jackpots as Jackpot[]).find(j => j.id === challengeId)?.reward[0];
+        if (showOwnedQuantity && playerData && reward?.symbol) {
+            let item = playerData.player.character.items.find(f => f.symbol === reward!.symbol);
+            if (item?.quantity) {
+                (reward as any).owned = item.quantity;
+                //if (item.quantity < 8) negative = true;
+            }
+        }
     }
 
     const challenge = challenges.find(f => f.id === challengeId) as MissionChallenge;
     const children = challenges.filter((c) => challenge.children.includes(c.id));
     const claimed = rc;
+    const reclaimable = mrc;
     const rewards = reward;
 
     const difficulty = challenge.difficulty_by_mastery[mastery];
@@ -102,8 +116,12 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
                 <img style={{ height: "2em", margin: "0.5em" }} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${challenge.skill}.png`} />
                 {!!rewards &&
                     <div>
-                        {claimed && <div style={{ marginBottom: '0.5em', fontStyle: 'italic', color: 'lightgreen' }}>(Claimed)</div>}
+                        {claimed && <div style={{ marginBottom: '0.5em', fontStyle: 'italic', color: 'lightgreen' }}>({t('missions.claimed')})</div>}
+                        {reclaimable && <div style={{ marginBottom: '0.5em', fontStyle: 'italic', color: 'lightgreen' }}>({t('missions.reclaimable')})</div>}
                         <RewardsGrid
+                            alwaysShowQuantity={true}
+                            negative={negative}
+                            altQuantity={renderQuantity}
                             targetGroup={targetGroup}
                             crewTargetGroup={crewTargetGroup}
                             rewards={rewards ? [rewards as Reward] : []} />
@@ -113,4 +131,18 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
             </div>
         </div>
     </div>)
+
+    function renderQuantity(quantity?: number, neg?: boolean, owned?: number, silentZero?: boolean) {
+        if (quantity === undefined) return <></>;
+
+        if (owned !== undefined) {
+            return (<h4 style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.5em'}}>
+                <span>{t('items.n_rewarded', { n: quantity })}</span>
+                <span style={{color: neg ? 'tomato' : undefined}}>({t('items.n_owned', { n: owned })})</span>
+            </h4>)
+        }
+        return (<h4 style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.5em'}}>
+            <span>{t('items.n_rewarded', { n: quantity })}</span>
+        </h4>)
+    }
 }

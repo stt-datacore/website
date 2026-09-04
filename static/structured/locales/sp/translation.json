@@ -1524,8 +1524,11 @@
     },
     "mastery": {
         "elite": "Élite",
+        "elite_difficulty": "Dificultad de élite",
         "epic": "Épico",
-        "normal": "Normal"
+        "epic_difficulty": "Dificultad épica",
+        "normal": "Normal",
+        "normal_difficulty": "Dificultad normal"
     },
     "menu": {
         "about_title": "Sobre",
@@ -1590,9 +1593,12 @@
         "type_5": "Misión continuo"
     },
     "missions": {
+        "chain_reward": "Recompensa de cadena",
+        "claimed": "Reclamado",
         "continuum_mission_map": "Mapa de misión continuo",
         "current_continuum_mission_date": "Misión continuo actual: {{date}}",
-        "mission_map": "Mapa de la misión"
+        "mission_map": "Mapa de la misión",
+        "reclaimable": "Reclamable"
     },
     "objective_events": {
         "mini_helper_available": "¡Mini-ayudante disponible!",
