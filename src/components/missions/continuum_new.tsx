@@ -10,7 +10,7 @@ import { PlayerCrew } from "../../model/player";
 import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
 import { UnifiedWorker } from "../../typings/worker";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
-import { applyCrewBuffs, minSkillSum, oneCrewCopy } from "../../utils/crewutils";
+import { applyCrewBuffs, minSkillSum, missionsToNext, oneCrewCopy } from "../../utils/crewutils";
 import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
@@ -115,7 +115,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [missionPool, setMissionPool] = React.useState([] as IQuestCrew[]);
     const [selCrew, setSelCrew] = useStateWithStorage('continuum/selCrew', [] as number[] | undefined);
 
-    const [questId, setQuestId] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
+    const [questId, internalSetQuestId] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
     const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
 
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
@@ -126,6 +126,13 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
     const [challengeErrors, setChallengeErrors] = React.useState<{[key:string]: ChallengeError}>({});
 
+    const setQuestId = (callerDebug: string, value?: number) => {
+        if (value !== undefined && !!mission?.quests?.length && value >= mission.quests.length) {
+            value = mission.quests.findIndex(q => q.id === value);
+        }
+        //console.log(`setQuestId called from ${callerDebug} with value of ${value}`);
+        internalSetQuestId(value);
+    }
     const getCurrentKey = () => {
         return `${mission?.id}/${quest?.id}/${mastery}`;
     }
@@ -225,8 +232,8 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     React.useEffect(() => {
         if (!!mission?.quests?.length) {
             setTimeout(() => {
-                if (mission?.quests?.length && (!questId || !mission.quest_ids.includes(questId))) {
-                    setQuestId(mission.quests[0].id);
+                if (mission?.quests?.length && (questId === undefined)) {
+                    setQuestId("mission changed", mission.quests[0].id);
                 }
             });
         }
@@ -325,9 +332,9 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
         }
 
         setRemoteQuests([ ...rq ]);
-        if (questId && !rq.some(r => r.id === questId)) {
-            setQuestId(quest?.id);
-        }
+        setTimeout(() => {
+            setQuestId("set remote quest", quest?.id);
+        });
     }
 
     React.useEffect(() => {
@@ -389,7 +396,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                             showChainRewards={true}
                             isRemote={getRemoteQuestFlags()}
                             questId={questId}
-                            setQuestId={setQuestId}
+                            setQuestId={(questId) => setQuestId('mission map', questId)}
                             mastery={mastery}
                             setMastery={setMastery}
                             selectedTraits={selectedTraits}

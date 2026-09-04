@@ -21,6 +21,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const context = React.useContext(GlobalContext);
     const { playerData} = context.player;
 	const { t } = context.localized;
+    const [autoRan, setAutoRan] = React.useState(0);
 
 	const [collapsed, setCollapsed] = React.useState<boolean | undefined>(undefined);
 
@@ -132,8 +133,9 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                     });
                 };
             }
-            if (!!questId && typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
+            if (!!questId && (!currentHasRemote) && typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
                 (window as any)['rqload'](questId);
+                setAutoRan(questId);
             }
         }
         catch (e: any) {
