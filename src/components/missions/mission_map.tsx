@@ -27,8 +27,8 @@ export interface MissionComponentProps {
 
     showSelector?: boolean;
 
-    questId?: number;
-    setQuestId?: (value?: number) => void;
+    questIdx?: number;
+    setQuestIdx?: (value?: number) => void;
 
     mastery: number;
     setMastery?: (value: number) => void;
@@ -62,8 +62,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
         isRemote,
         mastery,
         setMastery,
-        questId,
-        setQuestId,
+        questIdx,
+        setQuestIdx,
         pageId,
         mission,
         showChainRewards,
@@ -221,8 +221,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
     }
 
     React.useEffect(() => {
-        if (!!mission?.quests?.length && questId !== undefined && questId >= 0 && questId < (mission?.quests?.length ?? 0)) {
-            const mquest = mission.quests[questId];
+        if (!!mission?.quests?.length && questIdx !== undefined && questIdx >= 0 && questIdx < (mission?.quests?.length ?? 0)) {
+            const mquest = mission.quests[questIdx];
             const navmap = makeNavMap(mquest);
             const pathInfo = getNodePaths(navmap[0], navmap);
 
@@ -248,24 +248,24 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
             setQuest(undefined);
             setStages(undefined);
         }
-    }, [questId]);
+    }, [questIdx]);
 
     return (
         <>
             <div>
                 <ItemHoverStat targetGroup={pageId + "_items"} />
                 <CrewHoverStat targetGroup={pageId + "_helper"} />
-                {!!showSelector && !!setQuestId && !!setMastery &&
+                {!!showSelector && !!setQuestIdx && !!setMastery &&
                     <QuestSelector
                         pageId={pageId}
                         mission={mission}
-                        questId={questId}
-                        setQuestId={(quest) => setQuestId(Number(quest))}
+                        questIdx={questIdx}
+                        setQuestIdx={(caller, quest) => setQuestIdx(quest)}
                         mastery={mastery}
                         setMastery={setMastery}
                         highlighted={isRemote}
                     />}
-                {!!quest && typeof questId !== 'undefined' &&
+                {!!quest && typeof questIdx !== 'undefined' &&
                     <div className={"ui segment"}>
                         <Table style={{ margin: 0, padding: 0 }} striped>
                             <Table.Body>
@@ -282,7 +282,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                             <div style={{ display: 'flex', width: "100%", flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                 <div style={{ width: "32px" }}></div>
                                                 <div>
-                                                    <h3>{isRemote && isRemote[questId] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
+                                                    <h3>{isRemote && isRemote[questIdx] ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</h3>
                                                 </div>
                                                 <div>
                                                     <MapExplanation header={t('missons.continuum_mission_map')} />
@@ -317,7 +317,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
-                                                                                hasRemoteData={!!isRemote && !!isRemote[questId]}
+                                                                                hasRemoteData={!!isRemote && !!isRemote[questIdx]}
                                                                                 showOwnedQuantity={showOwnedQuantities}
                                                                                 error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}
@@ -345,7 +345,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
                                                                             <ChallengeNode
-                                                                                hasRemoteData={!!isRemote && !!isRemote[questId]}
+                                                                                hasRemoteData={!!isRemote && !!isRemote[questIdx]}
                                                                                 showOwnedQuantity={showOwnedQuantities}
                                                                                 error={challengeErrors ? challengeErrors[item.id] : undefined}
                                                                                 tapped={isTapped(item)}

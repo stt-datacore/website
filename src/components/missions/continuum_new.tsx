@@ -5,7 +5,7 @@ import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { CrewMember, QuippedPower } from "../../model/crew";
 import { Filter } from "../../model/game-elements";
-import { Quest, QuestFilterConfig } from "../../model/missions";
+import { Mission, Quest, QuestFilterConfig } from "../../model/missions";
 import { PlayerCrew } from "../../model/player";
 import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
 import { UnifiedWorker } from "../../typings/worker";
@@ -85,7 +85,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
             internalSetMission(undefined);
             return;
         }
-
+        value = structuredClone(value);
         if (!value.discover_date) {
             value.discover_date = mostRecentDate;
         }
@@ -103,7 +103,6 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                 }
             }
         }
-
         internalSetMission(value);
    }
 
@@ -115,7 +114,7 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [missionPool, setMissionPool] = React.useState([] as IQuestCrew[]);
     const [selCrew, setSelCrew] = useStateWithStorage('continuum/selCrew', [] as number[] | undefined);
 
-    const [questId, internalSetQuestId] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
+    const [questIdx, internalSetQuestIdx] = useStateWithStorage('continuum/questIndex', undefined as number | undefined);
     const [quest, setQuest] = useStateWithStorage<Quest | undefined>('continuum/currentQuest', undefined);
 
     const [selectedTraits, setSelectedTraits] = useStateWithStorage('continuum/selectedTraits', [] as TraitSelection[]);
@@ -126,12 +125,12 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
     const [challengeErrors, setChallengeErrors] = React.useState<{[key:string]: ChallengeError}>({});
 
-    const setQuestId = (callerDebug: string, value?: number) => {
+    const setQuestIdx = (callerDebug: string, value?: number) => {
         if (value !== undefined && !!mission?.quests?.length && value >= mission.quests.length) {
             value = mission.quests.findIndex(q => q.id === value);
         }
         //console.log(`setQuestId called from ${callerDebug} with value of ${value}`);
-        internalSetQuestId(value);
+        internalSetQuestIdx(value);
     }
     const getCurrentKey = () => {
         return `${mission?.id}/${quest?.id}/${mastery}`;
@@ -209,41 +208,42 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     }, [playerData]);
 
     React.useEffect(() => {
-        if (!!mission?.quests?.length && questId !== undefined && questId >= 0 && questId < (mission?.quests?.length ?? 0)) {
-            const mquest = remoteQuests?.find(f => f.id === questId)?.quest ?? mission.quests[questId];
+        if (!!mission?.quests?.length && questIdx !== undefined && questIdx >= 0 && questIdx < (mission?.quests?.length ?? 0)) {
+            const mquest = mission.quests[questIdx];
+            //const navmap = makeNavMap(mquest);
+            // const pathInfo = getNodePaths(navmap[0], navmap);
 
-            const navmap = makeNavMap(mquest);
-            const pathInfo = getNodePaths(navmap[0], navmap);
+            // let stages = {} as { [key: number]: NavMapItem[] };
 
-            let stages = {} as { [key: number]: NavMapItem[] };
-
-            for (let item of navmap) {
-                stages[item.stage] ??= [];
-                stages[item.stage].push(item);
-            }
-
+            // for (let item of navmap) {
+            //     stages[item.stage] ??= [];
+            //     stages[item.stage].push(item);
+            // }
             setQuest(mquest);
         }
         else if (quest !== undefined) {
             setQuest(undefined);
         }
-    }, [questId]);
+    }, [questIdx]);
 
     React.useEffect(() => {
         if (!!mission?.quests?.length) {
             setTimeout(() => {
-                if (mission?.quests?.length && (questId === undefined)) {
-                    setQuestId("mission changed", mission.quests[0].id);
+                if (mission?.quests?.length && (questIdx === undefined)) {
+                    setQuestIdx("mission changed", 0);
+                }
+                else if (questIdx !== undefined && mission?.quests?.length) {
+                    if (questIdx >= mission.quests.length) {
+                        setQuestIdx('mission changed reset', 0);
+                        return;
+                    }
+                    if (mission.quests[questIdx] !== quest) {
+                        setQuest(mission.quests[questIdx]);
+                    }
                 }
             });
         }
     }, [mission]);
-
-    React.useEffect(() => {
-        if (mission) {
-            setMission({ ...mission });
-        }
-    }, [remoteQuests]);
 
     React.useEffect(() => {
         fetch(missionUrl)
@@ -288,7 +288,14 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                 if (typeof result.discover_date === 'string') {
                     result.discover_date = new Date(result.discover_date);
                 }
-
+                if (result?.quests) {
+                    for (let nrq of remoteQuests) {
+                        let fi = result.quests!.findIndex(q => q.id === nrq.id);
+                        if (fi > -1) {
+                            result.quests![fi] = nrq.quest;
+                        }
+                    }
+                }
                 setMission(result);
                 setSelectedTraits(selTraits ?? []);
                 setErrorMsg("");
@@ -310,9 +317,9 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
 
     const setRemoteQuest = (quest?: Quest) => {
         if (!quest) {
-            if (mission) {
-                setMission({ ...mission })
-            };
+            // if (mission) {
+            //     setMission({ ...mission })
+            // };
             return;
         }
 
@@ -330,13 +337,17 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                 quest
             });
         }
-
+        if (mission?.quests) {
+            let newMission: ContinuumMission = {...mission };
+            for (let nrq of rq) {
+                let fi = newMission.quests!.findIndex(q => q.id === nrq.id);
+                if (fi > -1) {
+                    newMission.quests![fi] = nrq.quest;
+                }
+            }
+            setMission(newMission);
+        }
         setRemoteQuests([ ...rq ]);
-
-        if (mission) setMission({...mission});
-        setTimeout(() => {
-            setQuestId("set remote quest", quest?.id);
-        });
     }
 
     React.useEffect(() => {
@@ -381,8 +392,8 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                     masteryPlacement="bottom"
                     pageId={'continuum'}
                     mission={mission}
-                    questId={questId}
-                    setQuestId={setQuestId}
+                    questIdx={questIdx}
+                    setQuestIdx={setQuestIdx}
                     mastery={mastery}
                     setMastery={setMastery}
                     highlighted={getRemoteQuestFlags()}
@@ -397,8 +408,8 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
                             mission={mission}
                             showChainRewards={true}
                             isRemote={getRemoteQuestFlags()}
-                            questId={questId}
-                            setQuestId={(questId) => setQuestId('mission map', questId)}
+                            questIdx={questIdx}
+                            setQuestIdx={(questId) => setQuestIdx('mission map', questId)}
                             mastery={mastery}
                             setMastery={setMastery}
                             selectedTraits={selectedTraits}

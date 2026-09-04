@@ -10,8 +10,8 @@ export interface QuestSelectorProps {
     pageId: string;
     mastery: number;
     setMastery: (value: number) => void;
-    questId?: number;
-    setQuestId: (callerDebug: string, value?: number) => void;
+    questIdx?: number;
+    setQuestIdx: (callerDebug: string, value?: number) => void;
     mission?: Mission | ContinuumMission;
     highlighted?: boolean[];
     masteryPlacement?: 'top' | 'bottom';
@@ -20,7 +20,7 @@ export interface QuestSelectorProps {
 export const QuestSelector = (props: QuestSelectorProps) => {
     const globalContext = React.useContext(GlobalContext);
     const { t } = globalContext.localized;
-    const { highlighted, pageId, mastery, setMastery, questId, setQuestId, mission } = props;
+    const { highlighted, pageId, mastery, setMastery, questIdx, setQuestIdx, mission } = props;
     const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
     const renderMastery = () => {
@@ -54,30 +54,24 @@ export const QuestSelector = (props: QuestSelectorProps) => {
             </Step.Content>
         </Step>
     </Step.Group>)
-
     }
 
     return (<React.Fragment>
-
         {props.masteryPlacement !== 'bottom' && renderMastery()}
-
         <Step.Group fluid style={{display: 'flex', flexWrap: 'wrap'}}>
 
             {mission?.quests?.map((quest, idx) => (
                 <Step
-                    key={pageId + "quest_" + idx + "_" + quest.id} active={questId === idx}
-                    onClick={() => setQuestId("selectorClick", idx)}>
+                    key={pageId + "quest_" + idx + "_" + quest.id} active={questIdx === idx}
+                    onClick={() => setQuestIdx("selectorClick", idx)}>
                     <Step.Content>
                         <Step.Title>{(highlighted && highlighted[idx] === true) ? <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>{quest.name}</span> : quest.name}</Step.Title>
                         <Step.Description style={{ maxWidth: isMobile ? '100%' : "10vw" }} >{quest.description}</Step.Description>
                     </Step.Content>
                 </Step>
             ))}
-
         </Step.Group>
-
         {props.masteryPlacement === 'bottom' && renderMastery()}
-
     </React.Fragment>)
 
 }
