@@ -123,10 +123,13 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     }
     async function autoCall() {
         try {
-            if (typeof window !== 'undefined' && (window as any)['rqfeed'] && typeof (window as any)['rqfeed'] === 'function') {
-                let result = await fetch((window as any)['rqfeed'](questId));
-                if (result?.ok) {
-                    setQuest(await result.json());
+            if (typeof window !== 'undefined') {
+                (window as any)['questSetter'] = setQuest;
+            }
+            if (typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
+                let result = await (window as any)['rqload'](questId);
+                if (result) {
+                    setQuest(result);
                 }
             }
         }
