@@ -1,38 +1,36 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Checkbox, DropdownItemProps, Icon, Rating, Step, Table } from "semantic-ui-react";
+import { Checkbox, Icon, Rating, Step, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { ContinuumMission } from "../../model/continuum";
 import { CrewMember, QuippedPower } from "../../model/crew";
 import { Filter } from "../../model/game-elements";
-import { MissionChallenge, Quest, QuestFilterConfig } from "../../model/missions";
+import { Quest, QuestFilterConfig } from "../../model/missions";
 import { PlayerCrew } from "../../model/player";
 import { IQuestCrew, QuestSolverCacheItem, QuestSolverResult } from "../../model/worker";
 import { UnifiedWorker } from "../../typings/worker";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
-import { applyCrewBuffs, oneCrewCopy, minSkillSum } from "../../utils/crewutils";
+import { applyCrewBuffs, minSkillSum, oneCrewCopy } from "../../utils/crewutils";
 import { NavMapItem, getNodePaths, makeNavMap } from "../../utils/episodes";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
+import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
 import { PowerMode, QuipmentToolsFilter } from "../crewtables/filters/quipmenttools";
 import { ICrewFilter, IRosterCrew } from "../crewtables/model";
+import { ShipSeatPicker } from "../crewtables/shipoptions";
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from "../crewtables/views/topquipment";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { CrewItemsView } from "../item_presenters/crew_items";
 import CrewStat from "../item_presenters/crewstat";
 import { Notification } from "../page/notification";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
+import { QuipmentProspectList } from "../voyagecalculator/quipment/quipmentprospects";
+import { ChallengeError } from "./challenge_node";
 import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./mission_map";
 import { QuestImportComponent } from "./quest_importer";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
-import { CrewTraitFilter, RarityFilter } from "../crewtables/commonoptions";
-import { ChallengeError } from "./challenge_node";
-import { QuipmentProspectList } from "../voyagecalculator/quipment/quipmentprospects";
-import { ShipSeatPicker } from "../crewtables/shipoptions";
-import { CrewTraitsFilter } from "../crewtables/filters/crewtraits";
 
 export interface RemoteQuestStore {
     id: number,
@@ -49,16 +47,13 @@ export interface DiscoveredMissionInfo {
 }
 
 export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
-
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-
     /* Global Data Check & Initialization */
 
     const context = React.useContext(GlobalContext);
     const { playerData } = context.player;
     const { t } = context.localized;
     const { continuum_missions } = context.core;
-
+    const dbid = playerData?.player.dbid ?? 0;
     const mostRecentDate = new Date(
         continuum_missions[continuum_missions.length - 1].discover_date
     );
@@ -66,11 +61,9 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const missionId = continuum_missions[continuum_missions.length - 1].id;
     const missionUrl = `/structured/continuum/${missionId}.json`;
 
-    const [running, setRunning] = React.useState(false);
-
     /* Missions Data Initialization & Persistence */
 
-    const [remoteQuests, setRemoteQuests] = useStateWithStorage<RemoteQuestStore[]>('continuum/remoteQuests', [], { rememberForever: true, compress: true });
+    const [remoteQuests, setRemoteQuests] = useStateWithStorage<RemoteQuestStore[]>(`${dbid}/continuum/remoteQuests`, [], { rememberForever: true, compress: true, avoidSessionStorage: true });
     const [mission, internalSetMission] = React.useState<ContinuumMission | undefined>();
     const [currentHasRemote, setCurrentHasRemote] = React.useState(false);
 
@@ -117,7 +110,6 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     /* Component State */
 
     const [showPane, setShowPane] = useStateWithStorage('continuum/showPane', 0);
-    const [showResults, setShowResults] = useStateWithStorage('continuum/showResults', 0);
     const [errorMsg, setErrorMsg] = React.useState<string | undefined>(undefined);
     const [clearInc, setClearInc] = React.useState(0);
     const [missionPool, setMissionPool] = React.useState([] as IQuestCrew[]);
@@ -130,22 +122,12 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     const [highlighted, setHighlighted] = useStateWithStorage<HighlightItem[]>('continuum/selected', []);
 
     const [missionConfig, setMissionConfig] = useStateWithStorage<QuestFilterConfig>('continuum/missionConfig', { mastery: 0, idleOnly: true, showAllSkills: false, includeCurrentQp: true }, { rememberForever: true });
-    const [activeConfig, setActiveConfig] = React.useState<QuestFilterConfig>(missionConfig);
 
     const [internalSolverResults, internalSetSolverResults] = React.useState<QuestSolverCacheItem[]>([]);
     const [challengeErrors, setChallengeErrors] = React.useState<{[key:string]: ChallengeError}>({});
 
     const getCurrentKey = () => {
         return `${mission?.id}/${quest?.id}/${mastery}`;
-    }
-
-    const getSolverResults = () => {
-        let key = getCurrentKey();
-        if (Array.isArray(internalSolverResults) === false) {
-            internalSetSolverResults([]);
-            return undefined;
-        }
-        return internalSolverResults?.find(r => r.key === key);
     }
 
     const setSolverResults = (value?: QuestSolverResult) => {
@@ -179,58 +161,9 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
         internalSetSolverResults(sr);
     }
 
-    const { includePartials, noTraitBonus, alwaysCrit, buildableOnly, cheapestFirst, showAllSkills, mastery, idleOnly, considerUnowned, considerFrozen, qpOnly, ignoreQpConstraint, includeCurrentQp } = missionConfig;
-
-    const setIncludePartials = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, includePartials: value });
-    }
-
-    const setIdleOnly = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, idleOnly: value });
-    }
-
-    const setConsiderFrozen = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, considerFrozen: value });
-    }
-
-    const setConsiderUnowned = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, considerUnowned: value });
-    }
-
-    const setQpOnly = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, qpOnly: value });
-    }
-
-    const setIncludeCurrentQp = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, includeCurrentQp: value });
-    }
-
-    const setIgnoreQpConstraint = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, ignoreQpConstraint: value });
-    }
-
+    const { mastery, considerUnowned, qpOnly } = missionConfig;
     const setMastery = (value: number) => {
         setMissionConfig({ ...missionConfig, mastery: value });
-    }
-
-    const setShowAllSkills = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, showAllSkills: value });
-    }
-
-    const setCheapestFirst = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, cheapestFirst: value });
-    }
-
-    const setBuildableOnly = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, buildableOnly: value });
-    }
-
-    const setAlwaysCrit = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, alwaysCrit: value });
-    }
-
-    const setNoTraitBonus = (value: boolean) => {
-        setMissionConfig({ ...missionConfig, noTraitBonus: value });
     }
 
     /* Component Initialization & State Management */
@@ -404,16 +337,6 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     }, [mission, quest, remoteQuests]);
 
     /* Render */
-
-    React.useEffect(() => {
-        setActiveConfig({
-            ...missionConfig,
-            challenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge))?.flat() ?? []) as MissionChallenge[],
-            ignoreChallenges: (highlighted.map(h => quest?.challenges?.filter(ch => h.quest === quest?.id && ch.id === h.challenge && h.excluded)?.map(q2 => q2.id ?? 0) ?? [])?.flat() ?? []) as number[],
-            quest,
-            mastery,
-        } as QuestFilterConfig);
-    }, [missionConfig, quest, highlighted]);
 
     if (!context.player.playerData) return <></>;
 
