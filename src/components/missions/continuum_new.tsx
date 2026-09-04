@@ -332,6 +332,8 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
         }
 
         setRemoteQuests([ ...rq ]);
+
+        if (mission) setMission({...mission});
         setTimeout(() => {
             setQuestId("set remote quest", quest?.id);
         });

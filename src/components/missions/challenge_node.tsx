@@ -28,6 +28,7 @@ export interface ChallengeNodeProps extends ChallengeNodeInfo {
     error?: ChallengeError;
     showOwnedQuantity?: boolean;
     onClick?: (e: Event, data: ChallengeNodeInfo) => void;
+    hasRemoteData: boolean;
 }
 
 export const ChallengeNode = (props: ChallengeNodeProps) => {
@@ -35,7 +36,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
     const { localized } = globalContext;
     const { t } = localized;
     const { playerData } = globalContext.player;
-    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup, error, showOwnedQuantity } = props;
+    const { excluded, tapped, mastery, style, quest, challengeId, targetGroup, crewTargetGroup, error, showOwnedQuantity, hasRemoteData } = props;
 
     const challenges = React.useMemo(() => {
         return quest.challenges ?? [];
@@ -73,7 +74,7 @@ export const ChallengeNode = (props: ChallengeNodeProps) => {
         const difficulty = challenge?.difficulty_by_mastery[mastery] ?? 0;
         const crit = difficulty + ([150, 275, 300][mastery]);
         return { difficulty, crit };
-    }, [challenge, mastery]);
+    }, [hasRemoteData, challenge, mastery]);
 
     const handleClick = (e: React.MouseEvent) => {
         if (props.onClick) {
