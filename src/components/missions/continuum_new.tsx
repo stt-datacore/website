@@ -199,15 +199,6 @@ export const ContinuumComponentNew = (props: ContinuumComponentProps) => {
     React.useEffect(() => {
         if (!!mission?.quests?.length && questIdx !== undefined && questIdx >= 0 && questIdx < (mission?.quests?.length ?? 0)) {
             const mquest = mission.quests[questIdx];
-            //const navmap = makeNavMap(mquest);
-            // const pathInfo = getNodePaths(navmap[0], navmap);
-
-            // let stages = {} as { [key: number]: NavMapItem[] };
-
-            // for (let item of navmap) {
-            //     stages[item.stage] ??= [];
-            //     stages[item.stage].push(item);
-            // }
             setQuest(mquest);
         }
         else if (quest !== undefined) {
@@ -553,7 +544,7 @@ const QpCrew = (props: QpCrewProps) => {
                 qc.kwipment = prospects[qc.id];
             }
             else {
-                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false)!;
+                qc.skills = applyCrewBuffs(qc, globalContext.player.buffConfig ?? globalContext.core.all_buffs, false, quipment.filter(f => (qc.kwipment as number[]).includes(Number(f.item.id))).map(be => be.bonusInfo))!;
             }
             return qc;
         }).filter(qc => {
