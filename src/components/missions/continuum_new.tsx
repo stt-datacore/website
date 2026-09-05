@@ -434,28 +434,44 @@ type QpCrewProps = {
 
 const QpCrew = (props: QpCrewProps) => {
     const globalContext = React.useContext(GlobalContext);
-    const { t, TRAIT_NAMES } = globalContext.localized;
-    const { crew, quest, highlighted, mastery, challengeErrors, setChallengeErrors } = props;
     const quipment = globalContext.core.items.filter(i => i.type === 14).map(q => getItemWithBonus(q));
-    const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>('/quipmentTools/questFilter', undefined);
-    const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>('/quipmentTools/pstMode', false, { rememberForever: true });
-    const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>('/quipmentTools/powerMode', 'all', { rememberForever: true });
-    const [slots, setSlots] = useStateWithStorage<number | undefined>('/quipmentTools/slots', undefined, { rememberForever: true });
-    const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>('/quipmentTools/traitsOnly', false, { rememberForever: true });
-    const [primaryOnly, setPrimaryOnly] = useStateWithStorage<boolean>('/quipmentTools/primaryOnly', false, { rememberForever: true });
+    const { t, TRAIT_NAMES } = globalContext.localized;
+    const { playerData } = globalContext.player;
+    const dbid = playerData?.player.dbid ?? 0;
+    const { crew, quest, highlighted, mastery, setChallengeErrors } = props;
+
+    const [questFilter, setQuestFilter] = useStateWithStorage<string[] | undefined>(`${dbid}/quipmentTools/questFilter`, undefined);
+    const [pstMode, setPstMode] = useStateWithStorage<boolean | 2 | 3>(`${dbid}/quipmentTools/pstMode`, false, { rememberForever: true });
+    const [powerMode, setPowerMode] = useStateWithStorage<PowerMode>(`${dbid}/quipmentTools/powerMode`, 'all', { rememberForever: true });
+    const [slots, setSlots] = useStateWithStorage<number | undefined>(`${dbid}/quipmentTools/slots`, undefined, { rememberForever: true });
+    const [traitsOnly, setTraitsOnly] = useStateWithStorage<boolean>(`${dbid}/quipmentTools/traitsOnly`, false, { rememberForever: true });
+    const [primaryOnly, setPrimaryOnly] = useStateWithStorage<boolean>(`${dbid}/quipmentTools/primaryOnly`, false, { rememberForever: true });
+    const [showIdle, setShowIdle] = useStateWithStorage(`${dbid}/quipmentTools/idleCrew`, false, { rememberForever: true });
+    const [prospects, setProspects] = useStateWithStorage(`${dbid}/quipmentTools/quipProspects`, {} as {[key:string]: number[]})
+    const [rarities, setRarities] = useStateWithStorage(`${dbid}/quipmentTools/rarities`, [] as number[], { rememberForever: true });
+    const [traits, setTraits] = useStateWithStorage(`${dbid}/quipmentTools/selTraits`, [] as string[], { rememberForever: true });
+    const [minTraits, setMinTraits] = useStateWithStorage(`${dbid}/quipmentTools/minTraits`, 1, { rememberForever: true });
+    const [unclaimed, setUnclaimed] = useStateWithStorage(`${dbid}/quipmentTools/onlyUnclaimedQuippers`, false, { rememberForever: true });
+    const [frozens, setFrozens] = useStateWithStorage(`${dbid}/quipmentTools/frozens`, false, { rememberForever: true });
+    const [selSkills, setSelSkills] = useStateWithStorage(`${dbid}/quipmentTools/selSkills`, [] as string[]);
+
     const [crewFilters, setCrewFilters] = React.useState<ICrewFilter[]>([]);
     const [currentWorker, setCurrentWorker] = React.useState<UnifiedWorker | undefined>();
     const [displayCrew, setDisplayCrew] = React.useState<IRosterCrew[]>([]);
     const [running, setRunning] = React.useState(false);
-    const [showIdle, setShowIdle] = useStateWithStorage('/quipmentTools/idleCrew', false, { rememberForever: true });
-    const [prospects, setProspects] = useStateWithStorage('/quipmentTools/quipProspects', {} as {[key:string]: number[]})
-    const [rarities, setRarities] = useStateWithStorage('/quipmentTools/rarities', [] as number[], { rememberForever: true });
-    const [traits, setTraits] = useStateWithStorage('/quipmentTools/selTraits', [] as string[], { rememberForever: true });
-    const [minTraits, setMinTraits] = useStateWithStorage('/quipmentTools/minTraits', 1, { rememberForever: true });
-    const [unclaimed, setUnclaimed] = useStateWithStorage('/quipment/onlyUnclaimedQuippers', false, { rememberForever: true });
-    const [frozens, setFrozens] = useStateWithStorage('/quipment/frozens', false, { rememberForever: true });
     const [activePlace, setActivePlace] = React.useState("crew");
-    const [selSkills, setSelSkills] = useStateWithStorage('/quipmentTools/selSkills', [] as string[]);
+
+    React.useEffect(() => {
+        if (
+            traits === undefined ||
+            traits === null ||
+            !Array.isArray(traits) ||
+            (traits.length > 0 && traits.some(t => typeof t !== 'string')) ||
+            (traits.length > 0 && traits.some(t => !TRAIT_NAMES[t] && t !== 'maincast' && t !== 'notmaincast'))
+        ) {
+            setTraits([].slice());
+        }
+    }, [traits]);
 
     const tableConfig = [
         { width: 3, column: 'name', title: t('base.crew'), sticky: true,
