@@ -11,7 +11,7 @@ export interface DropDownItem {
 	image: AvatarIcon;
 	text: string;
 	title?: string;
-	content?: JSX.Element;
+	content?: React.ReactNode;
 }
 
 export function translateSkills(string: string, separator: string = '/'): string {
@@ -56,7 +56,7 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 		}
 	}
 	let minglescore = {
-		... crew.ranks.scores,
+		...crew.ranks.scores,
 		arena: crew.ranks.scores.ship.arena_rank,
 		fbb: crew.ranks.scores.ship.fbb_rank
 	};

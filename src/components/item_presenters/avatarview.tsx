@@ -8,9 +8,9 @@ import { ItemTarget } from "../hovering/itemhoverstat";
 import { CrewTarget } from "../hovering/crewhoverstat";
 import { Ship } from "../../model/ship";
 import { ShipTarget } from "../hovering/shiphoverstat";
-import { navigate } from "gatsby";
 import { CrewMember } from "../../model/crew";
 import { getIconPath } from "../../utils/assets";
+import { useNavigate } from "react-router-dom";
 
 export type AvatarViewMode = 'crew' | 'item' | 'ship';
 export type AvatarCrewBackground = 'normal' | 'rich';
@@ -93,6 +93,8 @@ export interface BasicItem {
 export const AvatarView = (props: AvatarViewProps) => {
     const shipRichClr = '#091220';
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
+
     const { playerData } = globalContext.player;
     const items = props.altItems ?? globalContext.core.items;
     const crew = props.altCrew ?? globalContext.core.crew;
@@ -116,8 +118,8 @@ export const AvatarView = (props: AvatarViewProps) => {
     let starSize = Math.floor(size / 6);
     let bottomStar = Math.floor(size / 23);
     let borderRadius = props.round ? Math.floor(size / 2) : Math.floor(size / 7);
-    let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
-    let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;
+    let star_reward = `${process.env.VITE_ASSETS_URL}atlas/star_reward.png`;
+    let star_reward_inactive = `${process.env.VITE_ASSETS_URL}atlas/star_reward_inactive.png`;
     let item = undefined as EquipmentItem | undefined;
     let ship = undefined as Ship | undefined;
     let HoverTarget = undefined as any | undefined;
@@ -134,7 +136,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     } as React.CSSProperties;
 
     let src = props.src;
-    let rarity = [] as JSX.Element[];
+    let rarity = [] as React.ReactNode[];
 
     if (mode === 'crew') {
         gen_item = prepareCrew(gen_item);
@@ -147,7 +149,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
 
     if (partialItem && props.item) {
-        gen_item = { ... gen_item ?? {}, ... props.item };
+        gen_item = { ...gen_item ?? {}, ...props.item };
     }
 
     if (!gen_item) return <></>
@@ -157,7 +159,7 @@ export const AvatarView = (props: AvatarViewProps) => {
 
     const divStyle = {
         cursor: props.link || props.onClick ? 'pointer' : undefined,
-        ... (style ?? {}),
+        ...(style ?? {}),
         position: 'relative',
         display: 'flex',
         flexDirection: "column",
@@ -253,7 +255,7 @@ export const AvatarView = (props: AvatarViewProps) => {
             HoverTarget = CrewTarget;
             const crew = gen_item as PlayerCrew;
             if (!crew.rarity && !!crew.highest_owned_rarity) crew.rarity = crew.highest_owned_rarity!;
-            if (!src) src= `${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`;
+            if (!src) src= `${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`;
             if (!playerData) {
                 crew.immortal = CompletionState.DisplayAsImmortalUnowned;
                 crew.rarity = crew.max_rarity;
@@ -261,10 +263,10 @@ export const AvatarView = (props: AvatarViewProps) => {
             if ((showMaxRarity || crew.immortal) && crewBackground === 'rich') {
                 let kwip = substitute_kwipment ?? crew.kwipment;
                 if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
-                    imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+                    imgStyle.backgroundImage = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
                 }
                 else {
-                    imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+                    imgStyle.backgroundImage = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
                 }
                 imgStyle.backgroundSize = (size) + "px";
                 imgStyle.backgroundRepeat = "no-repeat";
@@ -312,25 +314,25 @@ export const AvatarView = (props: AvatarViewProps) => {
                 item = { ...citem } as EquipmentItem;
             }
             else if (pitem) {
-                item = { ... pitem } as EquipmentItem;
+                item = { ...pitem } as EquipmentItem;
             }
             if (item && citem) {
                 item.demandCrew = citem.demandCrew;
                 if (!src) {
                     if (item.imageUrl) {
-                        src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
+                        src = `${process.env.VITE_ASSETS_URL}${item.imageUrl}`;
                     }
                     else if (item.icon) {
-                        src = `${process.env.GATSBY_ASSETS_URL}${getIconPath(item.icon, true)}`;
+                        src = `${process.env.VITE_ASSETS_URL}${getIconPath(item.icon, true)}`;
                     }
 
                 }
             }
             if (item?.symbol && globalContext.localized.ITEM_ARCHETYPES[item.symbol]) {
-                item = { ...item, ... globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
+                item = { ...item, ...globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
             if (item && gen_item.rarity) item.rarity = gen_item.rarity;
-            if (item && !src) src = `${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`;
+            if (item && !src) src = `${process.env.VITE_ASSETS_URL}${item.imageUrl}`;
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;
@@ -378,10 +380,10 @@ export const AvatarView = (props: AvatarViewProps) => {
             }
 
             if (props.useSchematicsIcon && cship) {
-                if (!src) src = `${process.env.GATSBY_ASSETS_URL}${cship.icon?.file.slice(1).replace('/', '_')}.png`;
+                if (!src) src = `${process.env.VITE_ASSETS_URL}${cship.icon?.file.slice(1).replace('/', '_')}.png`;
             }
             else if (ship) {
-                if (!src) src = `${process.env.GATSBY_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`;
+                if (!src) src = `${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`;
             }
             gen_item = ship;
             if (gen_item && !gen_item.max_rarity) {

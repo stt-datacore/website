@@ -100,6 +100,8 @@ export interface ReferenceShip extends ShipBonus {
   passive_status: number
   levels: ShipLevel[];
   ranks: ShipScores;
+
+  series?: string;
   obtained?: string;
   date_added?: Date;
   obtained_metadata?: {
@@ -156,6 +158,9 @@ export interface Ship extends ShipBonus {
   ranks?: ShipScores;
   predefined?: boolean;
   dps?: number;
+
+  preview?: boolean;
+  series?: string;
   obtained?: string;
   date_added?: Date;
   obtained_metadata?: {

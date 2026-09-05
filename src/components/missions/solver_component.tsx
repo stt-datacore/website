@@ -69,7 +69,7 @@ export class QuestSolverComponent extends React.Component<QuestSolverProps, Ques
                         ephemeral: this.context.player.ephemeral
                     }
                 },
-				... this.props.config
+				...this.props.config
             } as QuestSolverConfig
 		});
 	}

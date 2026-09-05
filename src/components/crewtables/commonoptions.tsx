@@ -77,7 +77,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				key: trait,
 				value: trait,
 				text: TRAIT_NAMES[trait],
-				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
+				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		// [ ...CONFIG.SERIES].reverse().forEach(series => {
@@ -152,7 +152,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 };
 
 
-export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwned?: boolean, special?: boolean): JSX.Element {
+export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwned?: boolean, special?: boolean): React.ReactNode {
 
 	const counts = [
 		{ name: crew.collections.length !== 1 ? t('base.collections_fmt', { count: crew.collections.length.toString() }) : t('base.collection_fmt'), count: crew.collections.length }

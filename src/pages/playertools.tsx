@@ -1,8 +1,9 @@
 import React from 'react';
-import { navigate } from 'gatsby';
+
 import { Card, Image } from 'semantic-ui-react';
 
 import DataPageLayout from '../components/page/datapagelayout';
+import { Navigate } from 'react-router-dom';
 
 interface IToolPage {
 	optionKey: string;
@@ -19,7 +20,7 @@ const toolPages: IToolPage[] = [
 	// { optionKey: 'fleet', title: "Fleet", src: '/media/fleet_icon.png', link: "/fleet", sidebarRole: 'item' },	// Factions available at launch
 	{ optionKey: 'event', src: '/media/event.png', title: "Event Planner", link: "/eventplanner", sidebarRole: 'item' },	// Events added post-launch
 	{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
-	{ optionKey: 'cite', src: `${process.env.GATSBY_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
+	{ optionKey: 'cite', src: `${process.env.VITE_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 	{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
 	{ optionKey: 'voyhist', src: "/media/voyagehist.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 	{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
@@ -39,7 +40,7 @@ const PlayerToolsPage = () => {
 				<Card.Group>
 					{toolPages.sort((a, b) => a.title.localeCompare(b.title)).map(page => (
 						<Card key={page.optionKey}>
-							<Card.Content onClick={() => navigate(page.link)} style={{ cursor: 'pointer' }}>
+							<Card.Content onClick={() => Navigate({ to: page.link })} style={{ cursor: 'pointer' }}>
 								<Image floated='right' size='mini' src={page.src} />
 								<Card.Header>
 									{page.title}

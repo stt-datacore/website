@@ -37,7 +37,7 @@ export const VPGraphAccordion = (props: VPGraphProps) => {
 		</Accordion>
 	);
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.ReactNode {
 		return (
 			<Segment>
 				<VPGraph voyageConfig={voyageConfig} estimate={estimate} />

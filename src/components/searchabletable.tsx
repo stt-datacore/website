@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import { IConfigSortData, IResultSortDataBy, sortDataBy } from '../utils/datasort';
 import { useStateWithStorage } from '../utils/storage';
 
-import SearchString from 'search-string/src/searchString';
+import SearchString from 'search-string';
 import { InitialOptions } from '../model/game-elements';
 import { CrewMember } from '../model/crew';
 import { PlayerCrew } from '../model/player';
@@ -44,13 +44,14 @@ export interface SortConfig {
 export interface ITableConfigRow {
 	width: number;
 	column?: string;
-	title: string | JSX.Element;
+	sticky?: boolean;
+	title: string | React.ReactNode;
 	pseudocolumns?: string[];
 	reverse?: boolean;
 	tiebreakers?: string[];
 	tiebreakers_reverse?: boolean[];
 	customCompare?: (a: any, b: any, config: IConfigSortData) => number;
-	translatePseudocolumn?: (field: string) => string | JSX.Element;
+	translatePseudocolumn?: (field: string) => string | React.ReactNode;
 }
 
 export interface SearchableTableInitOptions {
@@ -69,7 +70,7 @@ export interface SearchableTableProps {
 	config: ITableConfigRow[];
 	overflowX?: 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto';
 
-	renderTableRow: (row: any, idx?: number, isActive?: boolean) => JSX.Element;
+	renderTableRow: (row: any, idx?: number, isActive?: boolean) => React.ReactNode;
 
 	noSearch?: boolean;
 	initOptions?: SearchableTableInitOptions;
@@ -79,7 +80,7 @@ export interface SearchableTableProps {
 	showFilterOptions?: boolean;
 	showPermalink?: boolean;
 	lockable?: any[];
-	zeroMessage?: (searchFilter: string) => JSX.Element;
+	zeroMessage?: (searchFilter: string) => React.ReactNode;
 
 	toolCaption?: string;
 	dropDownChoices?: string[];
@@ -116,12 +117,12 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
 		if (props.initOptions) {
-			setSearchFilter(props.initOptions.search ?? '');
-			setFilterType(props.initOptions.filter ?? 'Any match');
-			setColumn(props.initOptions.column ?? undefined);
-			setDirection(props.initOptions.direction ?? undefined);
-			setPaginationRows(props.initOptions.rows ?? 10);
-			setPaginationPage(props.initOptions.page ?? 1);
+			setSearchFilter(props.initOptions.search ?? searchFilter);
+			setFilterType(props.initOptions.filter ?? filterType);
+			setColumn(props.initOptions.column ?? column);
+			setDirection(props.initOptions.direction ?? direction);
+			setPaginationRows(props.initOptions.rows ?? pagination_rows);
+			setPaginationPage(props.initOptions.page ?? pagination_page);
 		}
 	}, [props.initOptions]);
 
@@ -166,12 +167,18 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		setPaginationPage(1);
 	}
 
-	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | undefined): JSX.Element {
+	function renderTableHeader(column: any, direction: 'descending' | 'ascending' | undefined): React.ReactNode {
 		return (
 			<Table.Row>
 				{props.config.map((cell, idx) => (
 					<Table.HeaderCell
 						key={idx}
+						className={cell.sticky ? 'ui segment' : undefined}
+						style={{
+							position: cell.sticky ? 'sticky' : undefined,
+							left: cell.sticky ? 0 : undefined,
+							background: 'rgb(28, 30, 34)'
+						}}
 						width={cell.width as any}
 						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : undefined) ?? undefined}
 						onClick={() => onHeaderClick(cell)}
@@ -190,7 +197,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 		);
 	}
 
-	function renderPermalink(): JSX.Element {
+	function renderPermalink(): React.ReactNode {
 		// Will not catch custom options (e.g. highlight)
 		const params = new URLSearchParams();
 		if (searchFilter != '') params.append('search', searchFilter);
@@ -246,11 +253,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 	// If no direction set, determine direction from tableConfig when possible
 	if (!sortDirection) {
-		const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
+		const columnConfig = props.config.find(col => col.column === sortColumn) || props.config.find(col => col.pseudocolumns?.includes(sortColumn));
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
 
-	const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
+	const columnConfig = props.config.find(col => col.column === sortColumn) || props.config.find(col => col.pseudocolumns?.includes(sortColumn));
 
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
@@ -429,13 +436,17 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
-				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
-					<Table sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table' style={props.tableStyle}>
+				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto', gap: 0 }}>
+					<Table
+						sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table'
+						style={props.tableStyle}>
 						<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 						<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+					</Table>
+					<Table style={{position: 'sticky', left: 0, width: '100%', marginTop: 0, paddingTop: 0}}>
 						<Table.Footer>
 							<Table.Row>
-								<Table.HeaderCell colSpan={props.config.length}>
+								<Table.HeaderCell>
 									<div style={{ zIndex: "1000", width: "100%" }}>
 										<Pagination
 											totalPages={totalPages}
@@ -662,7 +673,8 @@ export const prettyCrewColumnTitle = (column: string) => {
 	return column;
 };
 
-function renderDefaultZeroMessage(): JSX.Element {
+function renderDefaultZeroMessage(): React.ReactNode {
+	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const { t } = React.useContext(GlobalContext).localized;
 	return (
 		<Message icon>
@@ -675,7 +687,7 @@ function renderDefaultZeroMessage(): JSX.Element {
 	);
 }
 
-function renderDefaultExplanation(): JSX.Element {
+function renderDefaultExplanation(): React.ReactNode {
 	return (
 		<div>
 			<p>

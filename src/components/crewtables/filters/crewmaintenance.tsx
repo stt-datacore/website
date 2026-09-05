@@ -1,12 +1,10 @@
 import React from 'react';
-import { Form, Dropdown } from 'semantic-ui-react';
+import { Dropdown, Form } from 'semantic-ui-react';
 
-import { IRosterCrew, ICrewFilter } from '../../../components/crewtables/model';
-import { CompletionState } from '../../../model/player';
+import { ICrewFilter, IRosterCrew } from '../../../components/crewtables/model';
 import { GlobalContext } from '../../../context/globalcontext';
-import { getCrewQuipment, isQuipped } from '../../../utils/crewutils';
-import { EquipmentItem } from '../../../model/equipment';
-import { getPossibleQuipment } from '../../../utils/itemutils';
+import { CompletionState } from '../../../model/player';
+import { isQuipped } from '../../../utils/crewutils';
 
 type CrewMaintenanceFilterProps = {
 	pageId: string;

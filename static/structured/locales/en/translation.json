@@ -75,6 +75,7 @@
         "on_shuttle": "On shuttle",
         "on_voyage": "On voyage",
         "one_slot": "1 slot",
+        "power": "Skill Power",
         "primary": "Primary",
         "proficiency": "Proficiency",
         "pseudocolumns": {
@@ -1388,6 +1389,7 @@
         },
         "craft_for_chrons": "Craft it for {{cost}} using this recipe",
         "current_demands": "Current demands",
+        "daily_replication_allowance": "Daily replication allowance",
         "equippable_by": "Equippable by: {{crew}}",
         "equippable_by_n_crew": "Equippable by {{n}} crew.",
         "equippable_by_rarity": "Equippable by up to {{rarity}} crew.",
@@ -1414,6 +1416,7 @@
             "favorites": "Select all favorited crew"
         },
         "recipe": "Recipe",
+        "replications_remaining": "Replications remaining",
         "required_traits": "Required Traits: {{traits}}",
         "show_unowned_needed": "Show unowned needed items",
         "this_will_require_items": "This will require {{items}}"
@@ -1512,8 +1515,11 @@
     },
     "mastery": {
         "elite": "Elite",
+        "elite_difficulty": "Elite difficulty",
         "epic": "Epic",
-        "normal": "Normal"
+        "epic_difficulty": "Epic difficulty",
+        "normal": "Normal",
+        "normal_difficulty": "Normal difficulty"
     },
     "menu": {
         "about_title": "About",
@@ -1522,11 +1528,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Bridge Crew Tool",
+            "crew_releases": "Crew Releases",
             "episodes": "Episodes",
             "events": "Events",
             "ftm_hof": "FTM Hall of Fame",
             "misc_game_stats": "Misc Game Stats",
             "objective_events": "Objective Events",
+            "ship_releases": "Ship Releases",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Voyage Hall of Fame"
         },
@@ -1576,9 +1584,12 @@
         "type_5": "Continuum Mission"
     },
     "missions": {
+        "chain_reward": "Chain Reward",
+        "claimed": "Claimed",
         "continuum_mission_map": "Continuum Mission Map",
         "current_continuum_mission_date": "Current continuum mission: {{date}}",
-        "mission_map": "Mission Map"
+        "mission_map": "Mission Map",
+        "reclaimable": "Reclaimable"
     },
     "objective_events": {
         "mini_helper_available": "Mini-helper available!",
@@ -1831,8 +1842,8 @@
             "am_seating": "Antimatter",
             "collections": "Collections",
             "crit": "Elevated Crit",
-            "event": "{{obtained.short.Event}}",
             "donut": "Voyage Measure",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gauntlet",
             "gauntlet_plus": "Gauntlet+",
             "greatness": "Versatility",
@@ -2281,6 +2292,7 @@
         },
         "charge_phases": "Charge Phases",
         "clear_station": "Clear Station",
+        "compat_score": "Roster Strength",
         "cooldown": "Cooldown",
         "crew_with_trigger_check": "Only show crew with matching trigger",
         "crit_bonus": "Crit Bonus",
@@ -2368,10 +2380,10 @@
         "handicap": "Decrease {{type}} by {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Only show owned ships",
-        "unowned": "Only show unowned ships",
         "maxed": "Only show owned, maxed ships",
-        "unmaxed": "Only show owned, unmaxed ships"
+        "owned": "Only show owned ships",
+        "unmaxed": "Only show owned, unmaxed ships",
+        "unowned": "Only show unowned ships"
     },
     "shuttle_helper": {
         "calculator": {

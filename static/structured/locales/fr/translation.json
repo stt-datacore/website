@@ -75,6 +75,7 @@
         "on_shuttle": "En navette",
         "on_voyage": "En voyage",
         "one_slot": "1 emplacement",
+        "power": "Puissance des compétences",
         "primary": "Primaire",
         "proficiency": "Compétence",
         "pseudocolumns": {
@@ -1399,6 +1400,7 @@
         },
         "craft_for_chrons": "Fabriquez-le pour {{cost}} en utilisant cette recette",
         "current_demands": "Demandes actuelles",
+        "daily_replication_allowance": "Quota quotidien de réplication",
         "equippable_by": "Équipable par : {{crew}}",
         "equippable_by_n_crew": "Équipable par {{n}} équipiers.",
         "equippable_by_rarity": "Peut être équipé jusqu'à un équipier {{rarity}}.",
@@ -1425,6 +1427,7 @@
             "favorites": "Sélectionnez tous les équipiers favoris"
         },
         "recipe": "Recette",
+        "replications_remaining": "Réplications restantes",
         "required_traits": "Traits Requises: {{traits}}",
         "show_unowned_needed": "Afficher les éléments nécessaires sans propriétaire",
         "this_will_require_items": "Cela nécessitera {{items}}"
@@ -1523,8 +1526,11 @@
     },
     "mastery": {
         "elite": "Élite",
+        "elite_difficulty": "Difficulté Élite",
         "epic": "Épique",
-        "normal": "Normale"
+        "epic_difficulty": "Difficulté Épique",
+        "normal": "Normale",
+        "normal_difficulty": "Difficulté normale"
     },
     "menu": {
         "about_title": "À propos",
@@ -1533,11 +1539,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Outil pour l'équipage de la passerelle",
+            "crew_releases": "Premières des équipages",
             "episodes": "Épisodes",
             "events": "Événements",
             "ftm_hof": "Temple de la renommée des FAMs",
             "misc_game_stats": "Statistiques diverses du jeu",
             "objective_events": "Événements objectifs",
+            "ship_releases": "Premières des vaisseaux",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Temple de la renommée des voyages"
         },
@@ -1587,9 +1595,12 @@
         "type_5": "Mission du continuum"
     },
     "missions": {
+        "chain_reward": "Récompense de chaîne",
+        "claimed": "Réclamé",
         "continuum_mission_map": "Carte de mission du continuum",
         "current_continuum_mission_date": "Mission actuelle du continuum: {{date}}",
-        "mission_map": "Carte de mission"
+        "mission_map": "Carte de mission",
+        "reclaimable": "Réclamable"
     },
     "objective_events": {
         "mini_helper_available": "Mini-assistant disponible !",
@@ -1842,8 +1853,8 @@
             "am_seating": "Antimatière",
             "collections": "Collections",
             "crit": "Critique élevée",
-            "event": "{{obtained.short.Event}}",
             "donut_rank": "Mesure du voyage",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Gantelet",
             "gauntlet_plus": "Gantelet+",
             "greatness": "Polyvalence",
@@ -2292,6 +2303,7 @@
         },
         "charge_phases": "Phases de Chargement",
         "clear_station": "Effacer la station",
+        "compat_score": "Force de l'effectif",
         "cooldown": "Recharge",
         "crew_with_trigger_check": "Afficher uniquement les équipiers avec le déclencheur correspondant",
         "crit_bonus": "Bonus Crit",
@@ -2379,10 +2391,10 @@
         "handicap": "Diminuer {{type}} de {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Afficher uniquement les vaisseaux possédés",
-        "unowned": "Afficher uniquement les vaisseaux sans propriétaire",
         "maxed": "Afficher uniquement les vaisseaux possédés et au niveau maximum",
-        "unmaxed": "Afficher uniquement les vaisseaux possédés qui ne sont pas au niveau maximum"
+        "owned": "Afficher uniquement les vaisseaux possédés",
+        "unmaxed": "Afficher uniquement les vaisseaux possédés qui ne sont pas au niveau maximum",
+        "unowned": "Afficher uniquement les vaisseaux sans propriétaire"
     },
     "shuttle_helper": {
         "calculator": {

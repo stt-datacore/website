@@ -1,7 +1,6 @@
 import { PolestarWorkerResults } from "../components/retrieval/polestarmultiworker";
-import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerConfig, IMutualPolestarWorkerItem, IPolestarCrew, PolestarComboSize } from "../model/worker";
+import { IMutualPolestarInternalWorkerConfig, IMutualPolestarWorkerItem } from "../model/worker";
 import { getComboCountBig, getPermutations } from "../utils/misc";
-import { calculateRetrievalCost } from "../utils/retrieval";
 
 type ProgressType = { percent?: number, progress?: bigint, count?: bigint, accepted?: bigint, format?: string, options?: any, result?: IMutualPolestarWorkerItem };
 

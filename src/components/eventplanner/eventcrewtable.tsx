@@ -1,28 +1,27 @@
 import React from 'react';
-import { Header, Table, Icon, Rating, Form, Checkbox, Message, Popup } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Checkbox, Form, Header, Icon, Message, Popup, Rating, Table } from 'semantic-ui-react';
 
-import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { GlobalContext } from '../../context/globalcontext';
+import { InitialOptions, LockedProspect } from '../../model/game-elements';
 
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
 
 import CONFIG from '../../components/CONFIG';
-import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
+import { ITableConfigRow, SearchableTable } from '../../components/searchabletable';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
-import { useStateWithStorage } from '../../utils/storage';
 import { crewGender, isQuipped, qbitsToSlots } from '../../utils/crewutils';
+import { useStateWithStorage } from '../../utils/storage';
 
-import { IEventData, IRosterCrew, IEventScoredCrew, IEventCombos, IBestCombos, IBestCombo } from './model';
+import { Link, useNavigate } from 'react-router-dom';
 import { calculateGalaxyChance, computeEventBest } from '../../utils/events';
 import { navToCrewPage } from '../../utils/nav';
-import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import { SkillPicker } from '../base/skillpicker';
-import { QPContext } from '../qpconfig/provider';
-import { QuipmentProspectsOptions } from '../qpconfig/options';
-import { OptionsPanelFlexRow } from '../stats/utils';
 import { CrewShipCells, getShipTableConfig } from '../crewtables/views/shipabilities';
-import { QuipmentProspectAccordion, QuipmentProspectList } from '../voyagecalculator/quipment/quipmentprospects';
+import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
+import { QuipmentProspectsOptions } from '../qpconfig/options';
+import { QPContext } from '../qpconfig/provider';
+import { OptionsPanelFlexRow } from '../stats/utils';
+import { IBestCombo, IBestCombos, IEventCombos, IEventData, IEventScoredCrew, IRosterCrew } from './model';
 
 type EventCrewTableProps = {
 	rosterType: string;
@@ -34,6 +33,8 @@ type EventCrewTableProps = {
 
 export const EventCrewTable = (props: EventCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const qpContext = React.useContext(QPContext);
 	const { t } = globalContext.localized;
 	const [qpConfig, setQpConfig] = qpContext.useQPConfig();
@@ -59,13 +60,6 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 	React.useEffect(() => {
 		setInitOptions({});
 	}, [eventData, phaseIndex]);
-
-	if (eventData.bonus.length === 0)
-		return (
-			<div style={{ marginTop: '1em' }}>
-				{t('event_planner.table.featured_crew_not_identified')}
-			</div>
-		);
 
 	const tableConfig: ITableConfigRow[] = React.useMemo(() => {
 		const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
@@ -161,7 +155,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 						>
 							{eventData.activeContent?.primary_skill === skill.name && <Icon color='yellow' name= 'star'/>}
 							{eventData.activeContent?.secondary_skill === skill.name && <Icon color='grey' name= 'star'/>}
-							<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+							<img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 						</span>,
 					reverse: true,
 					customCompare:
@@ -179,6 +173,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		}
 	}, [eventData, phaseIndex]);
 
+	if (eventData.bonus.length === 0)
+		return (
+			<div style={{ marginTop: '1em' }}>
+				{t('event_planner.table.featured_crew_not_identified')}
+			</div>
+		);
+
 	const phaseType = phaseIndex < eventData.content_types.length ? eventData.content_types[phaseIndex] : eventData.content_types[0];
 
 	// Check for custom column (i.e. combo from crew matrix click)
@@ -191,8 +192,8 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			column: customColumn,
 			title:
 				<span>
-					<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${customSkills[0]}.png`} style={{ height: '1.1em' }} />
-					+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${customSkills[1]}.png`} style={{ height: '1.1em' }} />
+					<img alt='Skill' src={`${process.env.VITE_ASSETS_URL}atlas/icon_${customSkills[0]}.png`} style={{ height: '1.1em' }} />
+					+<img alt='Skill' src={`${process.env.VITE_ASSETS_URL}atlas/icon_${customSkills[1]}.png`} style={{ height: '1.1em' }} />
 				</span>,
 			reverse: true
 		});
@@ -315,13 +316,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 				showFilterOptions={true}
 				lockable={props.lockable}
 			/>
-			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='eventTarget' />
+			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='eventTarget' />
 			{phaseType !== 'skirmish' && (<EventCrewMatrix skillFilter={skillFilter} crew={rosterCrew} bestCombos={bestCombos} phaseType={phaseType} handleClick={sortByCombo} />)}
-			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[... new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
+			{/* phaseType !== 'skirmish' && qpConfig.enabled && <QuipmentProspectList no_voyage={true} crew={[...new Set(Object.values(bestCombos).map(bc => rosterCrew.find(rc => rc.id === bc.id)!))]} /> */}
 		</React.Fragment>
 	);
 
-	function renderTableRow(crew: IEventScoredCrew, idx: number, highlighted: boolean): JSX.Element {
+	function renderTableRow(crew: IEventScoredCrew, idx: number, highlighted: boolean): React.ReactNode {
 		const attributes = {
 			positive: highlighted
 		};
@@ -339,7 +340,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					>
 						<div style={{ gridArea: 'icon', display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
 							<CrewTarget targetGroup='eventTarget' inputItem={crew} >
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 							{crew.statusIcon && <Icon style={{ margin: '0 0 0.5em -0.5em' }} name={crew.statusIcon} />}
 						</div>
@@ -360,13 +361,13 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 					<React.Fragment>
 						<Table.Cell textAlign='center'>
 							<b>{scoreLabel(crew.bestSkill.score)}</b>
-							<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
+							<br /><img alt='Skill' src={`${process.env.VITE_ASSETS_URL}atlas/icon_${crew.bestSkill.skill}.png`} style={{ height: '1em' }} />
 						</Table.Cell>
 						{eventData.activeContent?.content_type !== 'voyage' && <Table.Cell textAlign='center'>
 							{!!crew.bestPair.score && <>
 							<b>{scoreLabel(crew.bestPair.score)}</b>
-							<br /><img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
-							{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
+							<br /><img alt='Skill' src={`${process.env.VITE_ASSETS_URL}atlas/icon_${crew.bestPair.skillA}.png`} style={{ height: '1em' }} />
+							{crew.bestPair.skillB !== '' && (<span>+<img alt='Skill' src={`${process.env.VITE_ASSETS_URL}atlas/icon_${crew.bestPair.skillB}.png`} style={{ height: '1em' }} /></span>)}
 							</>}
 						</Table.Cell>}
 						{eventData.activeContent?.content_type === 'voyage' && (<>
@@ -423,7 +424,7 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 
 	function printExtraGauntlet(crew: IEventScoredCrew) {
 		let granks = Object.entries(crew.ranks).filter(([key, value]) => key.slice(0, 2) === 'G_');
-		let strs = [] as React.JSX.Element[];
+		let strs = [] as React.ReactNode[];
 		granks.sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]));
 		for (let rank of granks) {
 			if (rank[1] <= 25) {
@@ -432,10 +433,10 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 			}
 		}
 		if (!strs.length) return <></>;
-		else return strs.reduce((p, n) => (p !== undefined ? <>{p}<br/>{n}</> : n) as React.JSX.Element, undefined as React.JSX.Element | undefined) || <></>;
+		else return strs.reduce((p, n) => (p !== undefined ? <>{p}<br/>{n}</> : n) as React.ReactNode, undefined as React.ReactNode | undefined) || <></>;
 	}
 
-	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): JSX.Element {
+	function descriptionLabel(crew: IEventScoredCrew, withActiveStatus = false): React.ReactNode {
 		return (
 			<div>
 				<div><Rating icon='star' rating={rosterType === 'myCrew' ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} size='large' disabled /></div>
@@ -454,18 +455,18 @@ export const EventCrewTable = (props: EventCrewTableProps) => {
 		);
 	}
 
-	function renderCustomLabel(crew: IEventScoredCrew, customColumn: string): JSX.Element {
+	function renderCustomLabel(crew: IEventScoredCrew, customColumn: string): React.ReactNode {
 		const combo = customColumn.split('.')[1];
 		return <>{scoreLabel(crew.combos[combo])}</>;
 	}
 
-	function scoreLabel(score: number): JSX.Element {
+	function scoreLabel(score: number): React.ReactNode {
 		if (!score || score === 0) return (<></>);
 		if (phaseType === 'gather') return (<>{`${calculateGalaxyChance(score)}%`}</>);
 		return (<>{Math.floor(score)}</>);
 	}
 
-	function renderSkillScore(crew: IEventScoredCrew, skill: string): JSX.Element {
+	function renderSkillScore(crew: IEventScoredCrew, skill: string): React.ReactNode {
 		if (phaseType === 'voyage') {
 			return (
 				<React.Fragment>
@@ -525,7 +526,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 
 	const [halfMatrix, setHalfMatrix] = useStateWithStorage<boolean>('eventHalfMatrix', false, { rememberForever: true });
 
-	const matrixSkills = halfMatrix ? [ ... CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
+	const matrixSkills = halfMatrix ? [ ...CONFIG.SKILLS_SHORT ].reverse() : CONFIG.SKILLS_SHORT;
 	const comboSeen = {} as { [key: string]: boolean };
 	const isMobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
 
@@ -540,7 +541,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 							<Table.HeaderCell />
 							{matrixSkills.map((skill, cellId) => (
 								<Table.HeaderCell key={cellId} width={2} textAlign='center'>
-									<img alt={`${skill.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
+									<img alt={`${skill.name}`} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />
 								</Table.HeaderCell>
 							))}
 						</Table.Row>
@@ -548,7 +549,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 					<Table.Body>
 						{CONFIG.SKILLS_SHORT.map((skillA, rowId) => (
 							<Table.Row key={rowId}>
-								<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
+								<Table.Cell width={1} textAlign='center'><img alt={`${skillA.name}`} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} /></Table.Cell>
 								{matrixSkills.map((skillB, cellId) => {
 									let cbkey = [skillA.name, skillB.name].sort().join("");
 									let cbs = comboSeen[cbkey];
@@ -595,9 +596,9 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 									justifyContent: 'center',
 									gap: '0.5em'
 								}}>
-									<img alt={`${skillA.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} />
+									<img alt={`${skillA.name}`} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skillA.name}.png`} style={{ height: '1.1em' }} />
 									<span>&nbsp;/&nbsp;</span>
-									<img alt={`${skillB.name}`} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skillB.name}.png`} style={{ height: '1.1em' }} />
+									<img alt={`${skillB.name}`} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skillB.name}.png`} style={{ height: '1.1em' }} />
 								</div>
 								{renderCell(skillA.name, skillB.name, cbs || !vis, isMobile)}
 							</div>;
@@ -611,7 +612,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 	}
 
 
-	function renderCell(skillA: string, skillB: string, invisible: boolean, mobile: boolean) : JSX.Element {
+	function renderCell(skillA: string, skillB: string, invisible: boolean, mobile: boolean) : React.ReactNode {
 		let key: string, best: IBestCombo;
 		if (skillA === skillB) {
 			key = skillA;
@@ -633,14 +634,14 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			if (!isMobile)
 				return (
 					<Table.Cell key={key} textAlign='center' style={{ cursor: 'pointer', opacity: invisible ? "0" : undefined }} onClick={() => handleClick(skillA, skillB)}>
-						<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
+						<img width={48} src={`${process.env.VITE_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
 						<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
 					</Table.Cell>
 				);
 			else
 			return (
 				<div key={key} style={{ display: 'inline', cursor: 'pointer', opacity: invisible ? "0" : undefined, textAlign: 'center' }} onClick={() => handleClick(skillA, skillB)}>
-					<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
+					<img width={48} src={`${process.env.VITE_ASSETS_URL}${bestCrew?.imageUrlPortrait}`} />
 					<br/>{icon} {bestCrew?.name} <small>({phaseType === 'gather' ? `${calculateGalaxyChance(best.score)}%` : Math.floor(best.score)})</small>
 				</div>
 			);

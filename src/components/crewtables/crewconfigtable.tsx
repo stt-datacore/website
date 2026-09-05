@@ -1,20 +1,19 @@
 import React from 'react';
-import { Link } from 'gatsby';
-import { Table, Rating, Checkbox, Button } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { Rating, Table } from 'semantic-ui-react';
 
-import { InitialOptions, LockedProspect } from '../../model/game-elements';
-import { GlobalContext } from '../../context/globalcontext';
-import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
 import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverstat';
+import { ITableConfigRow, SearchableTable } from '../../components/searchabletable';
+import { GlobalContext } from '../../context/globalcontext';
+import { InitialOptions, LockedProspect } from '../../model/game-elements';
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 
-import { IRosterCrew, RosterType, ICrewFilter } from './model';
+import { ItemHoverStat } from '../hovering/itemhoverstat';
+import { printAM } from '../retrieval/context';
 import { descriptionLabel, SpecialViews } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
-import { ItemHoverStat } from '../hovering/itemhoverstat';
-import { OptionsPanelFlexRow } from '../stats/utils';
-import { CompletionState } from '../../model/player';
-import { printAM, printChrons } from '../retrieval/context';
+import { ICrewFilter, IRosterCrew, RosterType } from './model';
+import CONFIG from '../CONFIG';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -23,10 +22,10 @@ type CrewConfigTableProps = {
 	rosterCrew: IRosterCrew[];
 	crewFilters: ICrewFilter[];
 	tableConfig?: ITableConfigRow[];
-	renderTableCells?: (crew: IRosterCrew) => JSX.Element;
+	renderTableCells?: (crew: IRosterCrew) => React.ReactNode;
 	lockableCrew?: LockedProspect[];
 	loading?: boolean;
-	extraSearchContent?: JSX.Element;
+	extraSearchContent?: React.ReactNode;
 	specialView?: SpecialViews;
 };
 
@@ -55,6 +54,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{
 			width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos,
+			sticky: true,
 			translatePseudocolumn: (field) => {
 				return t(`base.${field}`) || t(`base.pseudocolumns.${field}`);
 			}
@@ -112,39 +112,72 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 		return crewMatchesSearchFilter(crew, filters, filterType);
 	}
 
-	function renderTableRow(crew: IRosterCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<IRosterCrew | null | undefined>> | undefined = undefined): JSX.Element {
+	function renderTableRow(crew: IRosterCrew, idx: number, highlighted: boolean, setCrew: React.Dispatch<React.SetStateAction<IRosterCrew | null | undefined>> | undefined = undefined): React.ReactNode {
 		const attributes = {
 			positive: highlighted
 		};
 
-		setCrew ??= (e) => { return; };
-
+		//setCrew ??= (e) => { return; };
+		let ownedbg = '';
+		if (crew.have) {
+			let kwip = crew.kwipment;
+			if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+			}
+			else if (crew.immortal && (crew.immortal === -1 || crew.immortal > 0)) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+			}
+		}
 		return (
 			<Table.Row key={`roster_${crew.symbol}+${crew.id}+${!!crew.have}_${rosterType}`} {...attributes}
 				// style={{
 				// 	backgroundColor: specialView === 'as_immortalized' && crew.immortal === CompletionState.DisplayAsImmortalOwned ? 'darkgreen' : undefined
 				// }}
 				>
-				<Table.Cell className='sticky'>
-					<div
-						style={{
-							display: 'grid',
-							gridTemplateColumns: '60px auto',
-							gridTemplateAreas: `'icon stats' 'icon description'`,
-							gridGap: '1px'
-						}}
-					>
-						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
-							</CrewTarget>
+				<Table.Cell
+					className='ui segment'
+					style={{
+						borderLeft: '2px solid ' + CONFIG.RARITIES[crew.max_rarity].color,
+						minWidth: '18em',
+						position: 'sticky', left: 0,
+						//background: idx % 2 ? '#353a41' : '#2e3338'
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+						backgroundImage:
+							`linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
+							(ownedbg ? ", " + ownedbg : '') ,
+					}}>
+					<div style={{display: 'grid', gridTemplateAreas: `'a'`}}>
+						<div style={{
+						//backgroundImage: `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))`,
+							gridArea: 'a',
+							height: '100%',
+							width: '100%'
+							}}>
+								&nbsp;
 						</div>
-						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
-						</div>
-						<div style={{ gridArea: 'description' }}>
-							{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
-							{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+						<div
+							style={{
+								gridArea: 'a',
+								display: 'grid',
+								gridTemplateColumns: '60px auto',
+								gridTemplateAreas: `'icon stats' 'icon description'`,
+								gridGap: '1px',
+							}}
+						>
+							<div style={{ gridArea: 'icon' }}>
+								<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
+									<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								</CrewTarget>
+							</div>
+							<div style={{ gridArea: 'stats' }}>
+								<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
+							</div>
+							<div style={{ gridArea: 'description' }}>
+								{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
+								{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+							</div>
 						</div>
 					</div>
 				</Table.Cell>
