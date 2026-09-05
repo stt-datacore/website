@@ -27,8 +27,10 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const hasPlayer = !!playerData;
 
     React.useEffect(() => {
-        autoCall();
-    }, [setQuest, questId, currentHasRemote]);
+        if (questId !== undefined && !currentHasRemote) {
+            autoCall();
+        }
+    }, [questId, currentHasRemote]);
 
     React.useEffect(() => {
         if (collapsed === undefined) setCollapsed(true);
@@ -132,7 +134,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                     });
                 };
             }
-            if (questId !== undefined || !currentHasRemote && typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
+            if (questId !== undefined && !currentHasRemote && typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
                 (window as any)['rqload'](questId);
             }
         }
