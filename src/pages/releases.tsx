@@ -44,6 +44,13 @@ const Releases = (props: ReleasesProps) => {
 
     crew.sort((a, b) => {
         if (a.preview && b.preview) {
+            if (a.published_date && b.published_date) {
+                if (typeof a.published_date === 'string')
+                    a.published_date = new Date(a.published_date);
+                if (typeof b.published_date === 'string')
+                    b.published_date = new Date(b.published_date);
+                return b.published_date.getTime() - a.published_date.getTime()
+            }
             return b.archetype_id - a.archetype_id;
         }
         return b.date_added.getTime() - a.date_added.getTime()
