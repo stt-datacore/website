@@ -91,7 +91,7 @@ export const StandardTreeComponent = (props: TreeComponentProps) => {
                     continue;
                 }
             }
-            let dtest = typeof value === 'string' ? new Date(value) : 'invalid date';
+            let dtest = typeof value === 'string' && Number.isNaN(Number(value))  ? new Date(value) : 'invalid date';
 
             if (dtest.toString().toLowerCase() !== 'invalid date') value = dtest;
             if (typeof value === 'boolean') {

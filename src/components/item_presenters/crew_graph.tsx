@@ -10,6 +10,7 @@ import { printFancyPortal } from "../base/utils";
 import { IRosterCrew } from "../crewtables/model";
 import { decamelify } from "../../utils/misc";
 import { AvatarView } from "./avatarview";
+import { getIconPath } from "../../utils/assets";
 
 export interface CrewGraphAccordionProps {
     crew: CrewMember;
@@ -183,6 +184,18 @@ export const CrewGraph = (props: CrewGraphProps) => {
                             renderContent: (value) => {
                                 return CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[value]
                             }
+                        },
+                        condition: {
+                            renderContent: (value) => {
+                                return CONFIG.CREW_SHIP_BATTLE_TRIGGER[value];
+                            }
+                        }
+                    },
+                    icon: {
+                        file: {
+                            renderContent: (data: any, key) => {
+                                return <><img style={{width: '48px'}} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} /></>
+                            }
                         }
                     }
                 },
@@ -206,6 +219,13 @@ export const CrewGraph = (props: CrewGraphProps) => {
                         }
                         else {
                             return <>{data}</>
+                        }
+                    }
+                },
+                cap_achiever: {
+                    date: {
+                        renderContent: (value) => {
+                            return `${new Date(value * 1000)}`;
                         }
                     }
                 },
