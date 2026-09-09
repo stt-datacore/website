@@ -184,6 +184,7 @@ export interface CrewMember extends QuipmentScores {
     cap_achiever?: CapAchiever;
     preview?: boolean;
     published?: boolean;
+    published_date?: Date;
     requiredChronCost?: number;
     requiredFactionItems?: number;
     npe?: boolean;
