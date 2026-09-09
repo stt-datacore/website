@@ -17,6 +17,7 @@ import { Polestars } from '../components/crewpage/polestars';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { useStateWithStorage } from '../utils/storage';
 import { StandardTreeComponent } from '../components/base/tree';
+import { CrewGraphAccordion } from '../components/item_presenters/crew_graph';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 
@@ -115,7 +116,6 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 						<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
 					</div>
 				</h2>
-				{/* <StandardTreeComponent data={[crew]} /> */}
 				<div
 					id='static_avatar'
 					style={{
@@ -177,6 +177,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 			<Polestars crew={crew} />
 			<CrewQuipment crew={crew} />
 			<CrewVariants traits_hidden={crew.traits_hidden} short_name={crew.short_name} />
+			<CrewGraphAccordion crew={crew} />
 		</>
 	);
 }
