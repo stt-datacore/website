@@ -16,6 +16,7 @@ import { EquipmentBuilds } from '../components/crewpage/equipmentbuilds';
 import { Polestars } from '../components/crewpage/polestars';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { useStateWithStorage } from '../utils/storage';
+import { StandardTreeComponent } from '../components/base/tree';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 
@@ -114,7 +115,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 						<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
 					</div>
 				</h2>
-
+				{/* <StandardTreeComponent data={[crew]} /> */}
 				<div
 					id='static_avatar'
 					style={{
