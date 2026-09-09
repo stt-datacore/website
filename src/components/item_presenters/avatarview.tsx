@@ -154,8 +154,8 @@ export const AvatarView = (props: AvatarViewProps) => {
 
     if (!gen_item) return <></>
 
-    maxRarity = gen_item?.max_rarity ?? gen_item?.rarity ?? 0;
-    borderColor = CONFIG.RARITIES[maxRarity].color;
+    // maxRarity = gen_item?.max_rarity ?? gen_item?.rarity ?? 0;
+    // borderColor = CONFIG.RARITIES[maxRarity].color;
 
     const divStyle = {
         cursor: props.link || props.onClick ? 'pointer' : undefined,
