@@ -2590,6 +2590,7 @@
             "highest_datascore": "DataScore más alta",
             "inaugural_crew": "Tripulante inaugural",
             "latest_crew": "Última tripulante",
+            "quipment": "{{base.quipment}}",
             "total_crew": "Tripulantes totales",
             "trait": "{{hints.trait}}"
         },
@@ -2610,6 +2611,7 @@
             "exclude_launch": "Exclude launch crew",
             "exclude_x": "Excluir {{x}}",
             "hide_only_one": "Ocultar rasgos con uno solo tripulante",
+            "n_alone": "{{n}} solo",
             "only_show_potential_collections": "Mostrar solo colecciones potenciales",
             "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",
