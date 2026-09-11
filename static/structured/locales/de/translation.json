@@ -2580,6 +2580,7 @@
             "highest_datascore": "Höchster DataScore",
             "inaugural_crew": "Eröffnungsmannschaft",
             "latest_crew": "Neueste Crew",
+            "quipment": "{{base.quipment}}",
             "total_crew": "Gesamtcrew",
             "trait": "{{hints.trait}}"
         },
@@ -2600,6 +2601,7 @@
             "exclude_launch": "Exclude launch crew",
             "exclude_x": "{{x}} ausschließen",
             "hide_only_one": "Merkmale mit nur einer Crew verbergen",
+            "n_alone": "{{n}} allein",
             "only_show_potential_collections": "Nur potentielle Sammlungen anzeigen",
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",

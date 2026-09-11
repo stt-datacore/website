@@ -2592,6 +2592,7 @@
             "highest_datascore": "Le plus haut DataScore",
             "inaugural_crew": "Equipier inaugural",
             "latest_crew": "Dernier équipier",
+            "quipment": "{{base.quipment}}",
             "total_crew": "Équipiers totals",
             "trait": "{{hints.trait}}"
         },
@@ -2612,6 +2613,7 @@
             "exclude_launch": "Exclude launch crew",
             "exclude_x": "Exclure {{x}}",
             "hide_only_one": "Masquer les traits avec un seul équipier",
+            "n_alone": "{{n}} seul",
             "only_show_potential_collections": "Afficher uniquement les collections potentielles",
             "potential_collection_score_n": "Score de collecte potentiel : {{n}}",
             "retroactively_added_to_n_crew": "Ajouté rétroactivement à 5 équipiers",

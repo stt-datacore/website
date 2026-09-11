@@ -2581,6 +2581,7 @@
             "highest_datascore": "Highest DataScore",
             "inaugural_crew": "Inaugural crew",
             "latest_crew": "Latest crew",
+            "quipment": "{{base.quipment}}",
             "total_crew": "Total crew",
             "trait": "{{hints.trait}}"
         },
@@ -2601,6 +2602,7 @@
             "exclude_launch": "Exclude launch crew",
             "exclude_x": "Exclude {{x}}",
             "hide_only_one": "Hide traits with only one crew",
+            "n_alone": "{{n}} alone",
             "only_show_potential_collections": "Only show potential collections",
             "potential_collection_score_n": "Potential Collection Score: {{n}}",
             "retroactively_added_to_n_crew": "Retroactively added to {{n}} crew",
