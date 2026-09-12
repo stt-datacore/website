@@ -13,7 +13,7 @@ export interface TraitSelectorProps {
     traits: string[];
     questId: number;
     preformatted?: boolean;
-    joinString?: string | JSX.Element;
+    joinString?: string | React.ReactNode;
     selectedTraits: TraitSelection[];
     setSelectedTraits: (value: TraitSelection[]) => void;
     style?: React.CSSProperties;
@@ -51,7 +51,7 @@ export const TraitSelectorComponent = (props: TraitSelectorProps) => {
         textAlign: 'center',
         flexWrap: 'wrap',
         gap: "0.25em",
-        ... style ?? {},
+        ...style ?? {},
     }}>
         {traits.map((trait) => {
             let tf = preformatted ? trait : localized.TRAIT_NAMES[trait];

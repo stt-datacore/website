@@ -27,7 +27,7 @@ export interface OptionGroup {
     options?: ModalOption[];
     placeholder?: string;
     multi?: boolean;
-    renderContent?: () => JSX.Element;
+    renderContent?: () => React.ReactNode;
     initialValue: OptionValueType;
     containerStyle?: React.CSSProperties;
 }
@@ -66,7 +66,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		const isDirty = j1 !== j3;
 
 		if (this.state.isDirty !== isDirty || this.state.isDefault !== isDefault) {
-			this.setState({ ... this.state, isDefault, isDirty });
+			this.setState({ ...this.state, isDefault, isDirty });
 			return true;
 		}
 		return false;
@@ -132,7 +132,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 		);
 	}
 
-	renderTrigger(): JSX.Element {
+	renderTrigger(): React.ReactNode {
 		const { isDefault } = this.state;
 		const { t } = this.context.localized;
 		return (
@@ -148,7 +148,7 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 	}
 
 	resetOptions(): void {
-        let newstate = { ... this.state };
+        let newstate = { ...this.state };
 
         for(let group of this.optionGroups){
 			if (group.initialValue === undefined) {
@@ -168,16 +168,16 @@ export abstract class OptionsModal<TOptions extends OptionsBase> extends React.C
 	}
 
 	setOptions(value: TOptions) {
-		this.setState({ ... this.state, options: value });
+		this.setState({ ...this.state, options: value });
 	}
 
     setGroupValue(group: OptionGroup, value: any) {
-        let newopts = { ... this.state.options } as TOptions;
+        let newopts = { ...this.state.options } as TOptions;
         (newopts as OptionsBase)[group.key] = value;
-        this.setState({ ... this.state, options: newopts });
+        this.setState({ ...this.state, options: newopts });
     }
 
 	setModalIsOpen(value: boolean) {
-		this.setState({ ... this.state, modalIsOpen: value });
+		this.setState({ ...this.state, modalIsOpen: value });
 	}
 };

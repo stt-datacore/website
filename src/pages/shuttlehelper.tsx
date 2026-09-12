@@ -22,7 +22,7 @@ const ShuttleHelperPage = () => {
 
 	return (
 		<DataPageLayout
-			demands={['event_instances']}
+			demands={['event_instances', 'factions']}
 			pageTitle={t('menu.tools.shuttle_helper')}
 			pageDescription={t('shuttle_helper.heading')}
 			playerPromptType='recommend'

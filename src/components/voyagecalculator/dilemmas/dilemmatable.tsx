@@ -13,9 +13,9 @@ import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../../stats/utils";
 import { ReferenceShip, Ship } from "../../../model/ship";
 import { formatTime } from "../../../utils/voyageutils";
-import { navigate } from "gatsby";
 import { gradeColorsDisabled, gradeToColor } from "../../../utils/crewutils";
 import { Reward } from "../../../model/player";
+import { useNavigate } from "react-router-dom";
 
 export interface DilemmaTableProps {
     voyageLog?: NarrativeData;
@@ -60,6 +60,8 @@ export const DilemmaReferenceAccordion = (props: DilemmaTableProps) => {
 
 export const DilemmaTable = (props: DilemmaTableProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
+
     const { playerShips } = globalContext.player;
     const { playerData } = globalContext.player
     const playerCrew = playerData?.player.character.crew;
@@ -330,7 +332,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                 }
                 else if ("attack" in selObj) {
                     let s = selObj as ReferenceShip;
-                    navigate(`http://localhost:81/ship_info/?ship=${s.symbol}`);
+                    navigate(`http://localhost:81/ship/?ship=${s.symbol}`);
                 }
             }
         }

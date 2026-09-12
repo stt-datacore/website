@@ -115,7 +115,7 @@ const NonPlayerHome = () => {
 		});
 	}
 
-	function renderCancelButton(): JSX.Element {
+	function renderCancelButton(): React.ReactNode {
 		return (
 			<Button	/* All Voyages */
 				size='large'
@@ -460,7 +460,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 	}
 
-	function renderVoyagePicker(): JSX.Element {
+	function renderVoyagePicker(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Header	/* Current Voyages */
@@ -532,7 +532,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		}
 	}
 
-	function renderRecreateButton(voyageConfig: IVoyageInputConfig): JSX.Element {
+	function renderRecreateButton(voyageConfig: IVoyageInputConfig): React.ReactNode {
 		const runningVoyage: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
 		if (!runningVoyage) return <span key={voyageConfig.voyage_type}></span>;
 
@@ -554,7 +554,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		);
 	}
 
-	function renderViewButton(voyageConfig: IVoyageInputConfig, configSource: 'player' | 'custom' = 'player'): JSX.Element {
+	function renderViewButton(voyageConfig: IVoyageInputConfig, configSource: 'player' | 'custom' = 'player'): React.ReactNode {
 		const runningVoyage: Voyage | undefined = ephemeral?.voyage?.find(voyage => voyage.voyage_type === voyageConfig.voyage_type);
 		return (
 			<Button	/* View running voyage OR View crew calculator */
@@ -567,7 +567,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		);
 	}
 
-	function renderActiveView(): JSX.Element {
+	function renderActiveView(): React.ReactNode {
 		if (!activeView) return <></>;
 
 		const runningVoyage: Voyage | undefined = ephemeral?.voyage.find(voyage =>
@@ -606,7 +606,7 @@ const PlayerHome = (props: PlayerHomeProps) => {
 		);
 	}
 
-	function renderCancelButton(): JSX.Element {
+	function renderCancelButton(): React.ReactNode {
 		return (
 			<Button	/* All Voyages */
 				size='large'

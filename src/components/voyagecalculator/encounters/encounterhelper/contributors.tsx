@@ -95,7 +95,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 								textAlign='center'
 							>
 								<img
-									src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${contestSkill.skill}.png`}
+									src={`${process.env.VITE_ASSETS_URL}atlas/icon_${contestSkill.skill}.png`}
 									style={{ height: '1.1em', verticalAlign: 'middle' }}
 									className='invertibleIcon'
 								/>
@@ -300,10 +300,10 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		return Math.floor((totalMin + totalMax) / 2) * 3;
 	}
 
-	function renderBoostPicker(contributor: IContributor): JSX.Element {
+	function renderBoostPicker(contributor: IContributor): React.ReactNode {
 		if (!contributor.crew) return <></>;
 
-		const notes: JSX.Element[] = [];
+		const notes: React.ReactNode[] = [];
 		if (contributor.crew) {
 			let message: string = '';
 			let icon: SemanticICONS | undefined;
@@ -373,7 +373,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderContribution(contributor: IContributor, skill: string): JSX.Element {
+	function renderContribution(contributor: IContributor, skill: string): React.ReactNode {
 		const contributorSkill: IContributorSkill | undefined = contributor.skills[skill];
 		if (!contributorSkill) return <></>;
 
@@ -397,7 +397,7 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		}
 		if (message !== '') return makeIconNote(message, 'minus circle', undefined, true);
 
-		let impact: JSX.Element | undefined;
+		let impact: React.ReactNode | undefined;
 		/* CREW is boosting their contribution to this contest skill */
 		if (contributor.impact === BoostImpact.Skill && contributor.boost?.type === skill) {
 			impact = makeIconNote(
@@ -428,12 +428,12 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderCritChance(): JSX.Element {
+	function renderCritChance(): React.ReactNode {
 		const isBoosted: boolean = assignments[activeContest.id].boost?.type === 'voyage_crit_boost';
 		return (
 			<div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', columnGap: '.3em' }}>
 				<img
-					src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+					src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
 					style={{ height: '1.1em' }}
 					className='invertibleIcon'
 				/>
@@ -452,13 +452,13 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		);
 	}
 
-	function renderTotalValue(skill: string): JSX.Element {
+	function renderTotalValue(skill: string): React.ReactNode {
 		const total: number = contributors.reduce((prev, curr) => prev + (curr.skills[skill] ? curr.skills[skill].value : 0), 0);
 		if (total === 0) return <></>;
 		return <b>{total}</b>;
 	}
 
-	function makeIconNote(message: string, icon?: SemanticICONS, color?: SemanticCOLORS, fitted?: boolean): JSX.Element {
+	function makeIconNote(message: string, icon?: SemanticICONS, color?: SemanticCOLORS, fitted?: boolean): React.ReactNode {
 		return (
 			<Icon
 				title={message}

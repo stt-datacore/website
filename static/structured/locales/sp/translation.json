@@ -75,6 +75,7 @@
         "on_shuttle": "En lanzadera",
         "on_voyage": "En viaje",
         "one_slot": "1 espacio",
+        "power": "Poder de habilidad",
         "primary": "Primario",
         "proficiency": "Competencia",
         "pseudocolumns": {
@@ -112,6 +113,7 @@
         "shuttles": "Lanzaderas",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
         "status": "Estado",
+        "symbol": "Symbolo",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Únicamente recuperable",
         "variant": "Variante",
@@ -1156,6 +1158,7 @@
         "no_search_results_found": "No se han encontrado resultados. Pruebe con diferentes opciones de búsqueda.",
         "none": "Ninguna",
         "notes": "Notas",
+        "object_graph": "Grafo de objetos",
         "obtained": "Obtenido por",
         "officer": "Oficial",
         "opponent": "{{gauntlet.opponent_table.opponent}}",
@@ -1179,6 +1182,7 @@
         "rerun": "Repetición",
         "reserved": "Reservado",
         "reset": "Restablecer",
+        "root": "Raíz",
         "rows_per_page": "Filas por página",
         "running": "Ejecutando",
         "save": "Guardar",
@@ -1212,6 +1216,7 @@
         "type": "Tipo",
         "uncheck_all": "Desmarcar todo",
         "unselect_all": "Deseleccionar todo",
+        "view_object_graph": "Ver grafo de objetos",
         "view_options": "Ver las opciones",
         "viewing_stats_for_x": "Visualización de estadísticas para {{x}}",
         "win": "Ganar",
@@ -1397,6 +1402,7 @@
         },
         "craft_for_chrons": "Hazlo por {{cost}} usando esta receta",
         "current_demands": "Demandas actuales",
+        "daily_replication_allowance": "Cupo diario de replicación",
         "equippable_by": "Equipable por: {{crew}}",
         "equippable_by_n_crew": "Equipable por {{n}} tripulantes.",
         "equippable_by_rarity": "Equipable hasta por tripulación {{rarity}}.",
@@ -1423,6 +1429,7 @@
             "favorites": "Seleccionar toda los tripulantes favoritos"
         },
         "recipe": "Receta",
+        "replications_remaining": "Réplicas restantes",
         "required_traits": "Rasgos requeridas: {{traits}}",
         "show_unowned_needed": "Mostrar artículos necesarios sin propietario",
         "this_will_require_items": "Cela nécessitera {{items}}"
@@ -1521,8 +1528,11 @@
     },
     "mastery": {
         "elite": "Élite",
+        "elite_difficulty": "Dificultad de élite",
         "epic": "Épico",
-        "normal": "Normal"
+        "epic_difficulty": "Dificultad épica",
+        "normal": "Normal",
+        "normal_difficulty": "Dificultad normal"
     },
     "menu": {
         "about_title": "Sobre",
@@ -1531,11 +1541,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Herramienta de tripulación de puente",
+            "crew_releases": "Lanzamientos de tripulación",
             "episodes": "Episodios",
             "events": "Eventos",
             "ftm_hof": "Salón de la fama del PLM",
             "misc_game_stats": "Estadísticas varias del juego",
             "objective_events": "Eventos objetivos",
+            "ship_releases": "Lanzamientos de buques",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Salón de la fama del viaje"
         },
@@ -1585,9 +1597,12 @@
         "type_5": "Misión continuo"
     },
     "missions": {
+        "chain_reward": "Recompensa de cadena",
+        "claimed": "Reclamado",
         "continuum_mission_map": "Mapa de misión continuo",
         "current_continuum_mission_date": "Misión continuo actual: {{date}}",
-        "mission_map": "Mapa de la misión"
+        "mission_map": "Mapa de la misión",
+        "reclaimable": "Reclamable"
     },
     "objective_events": {
         "mini_helper_available": "¡Mini-ayudante disponible!",
@@ -1840,8 +1855,8 @@
             "am_seating": "Antimateria",
             "collections": "Colecciones",
             "crit": "Crítico elevado",
-            "event": "{{obtained.short.Event}}",
             "donut_rank": "Medida del viaje",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Reto",
             "gauntlet_plus": "Reto+",
             "greatness": "Versatilidad",
@@ -2290,6 +2305,7 @@
         },
         "charge_phases": "Fases de Carga",
         "clear_station": "Borrar estación",
+        "compat_score": "Fortaleza de la plantilla",
         "cooldown": "Recargar",
         "crew_with_trigger_check": "Mostrar solo los tripulantes con el activador coincidente",
         "crit_bonus": "Bonificación de Crít",
@@ -2377,10 +2393,10 @@
         "handicap": "Disminuir {{type}} en {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Mostrar solo buques propios",
-        "unowned": "Mostrar solo buques sin propietario",
         "maxed": "Mostrar solo buques en propiedad al máximo nivel",
-        "unmaxed": "Mostrar solo buques en propiedad que no hayan alcanzado el nivel máximo"
+        "owned": "Mostrar solo buques propios",
+        "unmaxed": "Mostrar solo buques en propiedad que no hayan alcanzado el nivel máximo",
+        "unowned": "Mostrar solo buques sin propietario"
     },
     "shuttle_helper": {
         "calculator": {
@@ -2574,6 +2590,7 @@
             "highest_datascore": "DataScore más alta",
             "inaugural_crew": "Tripulante inaugural",
             "latest_crew": "Última tripulante",
+            "quipment": "{{base.quipment}}",
             "total_crew": "Tripulantes totales",
             "trait": "{{hints.trait}}"
         },
@@ -2594,6 +2611,7 @@
             "exclude_launch": "Exclude launch crew",
             "exclude_x": "Excluir {{x}}",
             "hide_only_one": "Ocultar rasgos con uno solo tripulante",
+            "n_alone": "{{n}} solo",
             "only_show_potential_collections": "Mostrar solo colecciones potenciales",
             "potential_collection_score_n": "Puntuación de colección potencial: {{n}}",
             "retroactively_added_to_n_crew": "Agregado retroactivamente a {{n}} tripulantes",

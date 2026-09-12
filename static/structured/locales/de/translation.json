@@ -75,6 +75,7 @@
         "on_shuttle": "Im Shuttle",
         "on_voyage": "Auf Reise",
         "one_slot": "1 Ablagefach",
+        "power": "Fertigkeitsstärke",
         "primary": "Primär",
         "proficiency": "Kompetenz",
         "pseudocolumns": {
@@ -112,6 +113,7 @@
         "shuttles": "Shuttles",
         "skills": "{{shuttle_helper.missions.columns.skills}}",
         "status": "Status",
+        "symbol": "Symbol",
         "traits": "{{hints.traits}}",
         "uniquely_retrievable": "Eindeutig abrufbar",
         "variant": "Variante",
@@ -1148,6 +1150,7 @@
         "no_search_results_found": "Es wurden keine Ergebnisse gefunden. Versuchen Sie es mit anderen Suchoptionen.",
         "none": "Keine",
         "notes": "Anmerkungen",
+        "object_graph": "Objektgraph",
         "obtained": "Erhalten von",
         "officer": "Offizier",
         "opponent": "{{gauntlet.opponent_table.opponent}}",
@@ -1171,6 +1174,7 @@
         "rerun": "Wiederholung",
         "reserved": "Reserviert",
         "reset": "Zurücksetzen",
+        "root": "Wurzel",
         "rows_per_page": "Zeilen pro Seite",
         "running": "Läuft",
         "save": "Speichern",
@@ -1204,6 +1208,7 @@
         "type": "Typ",
         "uncheck_all": "Deaktivieren Sie alle",
         "unselect_all": "Auswahl aufheben",
+        "view_object_graph": "Objektgraph anzeigen",
         "view_options": "Optionen anzeigen",
         "viewing_stats_for_x": "Statistiken für {{x}} anzeigen",
         "win": "Gewinnen",
@@ -1387,6 +1392,7 @@
         },
         "craft_for_chrons": "Stellen Sie es mit diesem Rezept für {{cost}} her",
         "current_demands": "Aktuelle Anforderungen",
+        "daily_replication_allowance": "Tägliches Replikationskontingent",
         "equippable_by": "Ausrüstbar durch: {{crew}}",
         "equippable_by_n_crew": "Ausrüstbar durch {{n}} Crew.",
         "equippable_by_rarity": "Ausrüstbar für bis zu {{rarity}} Crew.",
@@ -1413,6 +1419,7 @@
             "favorites": "Wähle alle favorisierten Crewmitglieder aus"
         },
         "recipe": "Rezept",
+        "replications_remaining": "Verbleibende Replikationen",
         "required_traits": "Erforderliche Merkmalen: {{traits}}",
         "show_unowned_needed": "Nicht im Besitz befindliche benötigte Artikel anzeigen",
         "this_will_require_items": "Hierzu sind {{items}} erforderlich."
@@ -1511,8 +1518,11 @@
     },
     "mastery": {
         "elite": "Elite",
+        "elite_difficulty": "Elite-Schwierigkeitsgrad",
         "epic": "Episch",
-        "normal": "Normal"
+        "epic_difficulty": "Epischer Schwierigkeitsgrad",
+        "normal": "Normal",
+        "normal_difficulty": "Normaler Schwierigkeitsgrad"
     },
     "menu": {
         "about_title": "Über uns",
@@ -1521,11 +1531,13 @@
         },
         "game_info": {
             "bridge_crew_tool": "Brückenbesatzungswerkzeug",
+            "crew_releases": "Veröffentlichungen von Crew",
             "episodes": "Folgen",
             "events": "Ereignisen",
             "ftm_hof": "ZZM Ruhmeshalle",
             "misc_game_stats": "Verschiedene Spielstatistiken",
             "objective_events": "Objektive-Ereignisse",
+            "ship_releases": "Veröffentlichungen von Schiffe",
             "stat_trends": "{{stat_trends.title}}",
             "voyage_hof": "Ruhmeshalle der Reise"
         },
@@ -1575,9 +1587,12 @@
         "type_5": "Kontinuumsmission"
     },
     "missions": {
+        "chain_reward": "Kettenbelohnung",
+        "claimed": "Beansprucht",
         "continuum_mission_map": "Kontinuumsmissionskarte",
         "current_continuum_mission_date": "Aktuelle Kontinuumsmission: {{date}}",
-        "mission_map": "Missionskarte"
+        "mission_map": "Missionskarte",
+        "reclaimable": "Rückforderbar"
     },
     "objective_events": {
         "mini_helper_available": "Mini-Helfer vorhanden!",
@@ -1830,8 +1845,8 @@
             "am_seating": "Antimaterie",
             "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
-            "event": "{{obtained.short.Event}}",
             "donut_rank": "Reisemetrik",
+            "event": "{{obtained.short.Event}}",
             "gauntlet": "Herausforderung",
             "gauntlet_plus": "Herausforderung+",
             "greatness": "Vielseitigkeit",
@@ -2280,6 +2295,7 @@
         },
         "charge_phases": "Ladephasen",
         "clear_station": "Station löschen",
+        "compat_score": "Kaderstärke",
         "cooldown": "Abklingzeit",
         "crew_with_trigger_check": "Nur Crew mit passendem Auslöser anzeigen",
         "crit_bonus": "Krit Bonus",
@@ -2367,10 +2383,10 @@
         "handicap": "Verringern Sie {{type}} um {{amount}}"
     },
     "ship_ownership": {
-        "owned": "Nur Schiffe anzeigen, die im Besitz sind",
-        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind",
         "maxed": "Nur eigene, voll ausgebaute Schiffe anzeigen",
-        "unmaxed": "Nur eigene Schiffe anzeigen, die noch nicht maximal ausgebaut sind"
+        "owned": "Nur Schiffe anzeigen, die im Besitz sind",
+        "unmaxed": "Nur eigene Schiffe anzeigen, die noch nicht maximal ausgebaut sind",
+        "unowned": "Nur Schiffe anzeigen, die nicht im Besitz sind"
     },
     "shuttle_helper": {
         "calculator": {
@@ -2564,6 +2580,7 @@
             "highest_datascore": "Höchster DataScore",
             "inaugural_crew": "Eröffnungsmannschaft",
             "latest_crew": "Neueste Crew",
+            "quipment": "{{base.quipment}}",
             "total_crew": "Gesamtcrew",
             "trait": "{{hints.trait}}"
         },
@@ -2584,6 +2601,7 @@
             "exclude_launch": "Exclude launch crew",
             "exclude_x": "{{x}} ausschließen",
             "hide_only_one": "Merkmale mit nur einer Crew verbergen",
+            "n_alone": "{{n}} allein",
             "only_show_potential_collections": "Nur potentielle Sammlungen anzeigen",
             "potential_collection_score_n": "Möglicher Sammlungswert: {{n}}",
             "retroactively_added_to_n_crew": "Nachträglich zu {{n}} Crewmitgliedern hinzugefügt",

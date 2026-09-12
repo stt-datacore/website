@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Header, Label, Message, Icon, Table, Image } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import { ResponsiveLine } from '@nivo/line'
 import themes from '../components/nivo_themes';
 import ErrorBoundary from '../components/errorboundary';
@@ -31,7 +31,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 	componentDidMount() {
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('instance_id')) {
-			let event_instance = urlParams.get('instance_id');			
+			let event_instance = urlParams.get('instance_id');
 			this.setState({ event_instance: event_instance ?? undefined });
 
 			fetch('/structured/event_instances.json')
@@ -322,7 +322,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 		return (
 			<DataPageLayout pageTitle={event_data.ev_inst.event_name}>
 				<React.Fragment>
-				<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${event_data.ev_inst.image}`} />
+				<Image size='large' src={`${process.env.VITE_ASSETS_URL}${event_data.ev_inst.image}`} />
 
 				{this.renderEventDetails()}
 
@@ -352,7 +352,7 @@ class EventInfoPage extends Component<EventInfoPageProps, EventInfoPageState> {
 										<div style={{ gridArea: 'icon' }}>
 											<img
 												width={48}
-												src={`${process.env.GATSBY_ASSETS_URL}${member.avatar ? member.avatar.file.slice(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
+												src={`${process.env.VITE_ASSETS_URL}${member.avatar ? member.avatar.file.slice(1).replace(/\//g, '_') + '.png' : 'crew_portraits_cm_empty_sm.png'
 													}`}
 											/>
 										</div>

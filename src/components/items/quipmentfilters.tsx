@@ -15,6 +15,7 @@ import { CrewPresenter } from "../item_presenters/crew_presenter";
 import { applyCrewBuffs, oneCrewCopy, qbitsToSlots } from "../../utils/crewutils";
 import { getItemWithBonus } from "../../utils/itemutils";
 import { calcItemDemands, canBuildItem } from "../../utils/equipment";
+import { useNavigate } from "react-router-dom";
 
 
 type CrewType = 'all' | 'quippable' | 'owned' | 'frozen' | 'quipped';
@@ -69,12 +70,13 @@ export interface QuipmentFilterProps {
     mode: QuipmentMode;
     setMode: (value: QuipmentMode) => void;
     initCrew?: CrewMember;
-    children: JSX.Element;
+    children: React.ReactNode;
     noRender?: boolean;
 }
 
 export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
     const globalContext = React.useContext(GlobalContext);
+    const navigate = useNavigate();
     const { t } = globalContext.localized;
     const { children, pageId, ownedItems, noRender, initCrew } = props;
     const { mode, setMode } = props;
@@ -420,6 +422,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                 }}
             >
                 <CrewPresenter
+                    navigate={navigate}
                     selfRender
                     quipmentMode
                     hideStats
@@ -476,7 +479,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
     function renderItem(item: IEssentialData, isSelected: boolean) {
         let crew = item as CrewMember | PlayerCrew;
         return <div className={'ui segment'} style={{ ...flexCol, height: '100%', gap: '0.5em', backgroundColor: isSelected ? 'royalblue' : undefined }}>
-            <img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+            <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                 style={{ height: '64px' }}
             />
             <span>{crew.name}</span>

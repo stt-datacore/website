@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, navigate } from 'gatsby';
+import { Link, useNavigate} from 'react-router-dom';
 import { Card, Label, Icon, Button, Form, Checkbox, Popup } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
@@ -44,6 +44,7 @@ type PlayerShareNotificationsProps = {
 
 export const PlayerShareNotifications = (props: PlayerShareNotificationsProps) => {
 	const globalContext = React.useContext(GlobalContext);
+
 	const { t, tfmt } = globalContext.localized;
 	const { playerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
@@ -112,7 +113,7 @@ export const PlayerSharePanel = (props: PlayerSharePanelProps) => {
 	const [dbidCopied, setDBIDCopied] = React.useState(false);
     if (!playerData) return (<></>);
 
-	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`) : (!!dbidHash ? `${process.env.GATSBY_DATACORE_URL}profile/?hash=${dbidHash}` : `${process.env.GATSBY_DATACORE_URL}profile/?dbid=${dbid}`);
+	const PROFILE_LINK = typeof window !== 'undefined' ? window.location.origin + (!!dbidHash ? `/profile?hash=${dbidHash}` : `/profile?dbid=${dbid}`) : (!!dbidHash ? `${process.env.VITE_DATACORE_URL}profile/?hash=${dbidHash}` : `${process.env.VITE_DATACORE_URL}profile/?dbid=${dbid}`);
 	const isUploading = uploadState === ProfileUploadState.AutoUpdate || uploadState === ProfileUploadState.ManualUpdate;
 
 	return (
@@ -253,6 +254,8 @@ type PlayerProfileUploaderProps = {
 
 const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
+
 	const { t, tfmt } = globalContext.localized;
 	const { strippedPlayerData, sessionStates, updateSessionState } = globalContext.player;
 	const uploadState = sessionStates?.profileUpload ?? ProfileUploadState.Idle;
@@ -322,7 +325,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	function uploadProfile(): void {
 		let dbid = strippedPlayerData?.player.dbid;
 		if (dbid) {
-			fetch(`${process.env.GATSBY_DATACORE_URL}api/profile?dbid=${dbid}&short_crew=1`)
+			fetch(`${process.env.VITE_DATACORE_URL}api/profile?dbid=${dbid}&short_crew=1`)
 				.then((result) => result.json())
 				.then((short_crew: ShortCrew) => {
 					if (setNewCrew) {
@@ -343,7 +346,7 @@ const PlayerProfileUploader = (props: PlayerProfileUploaderProps) => {
 	function continueUpload(): void {
 		let jsonBody = JSON.stringify(strippedPlayerData);
 
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/postProfile`, {
+		fetch(`${process.env.VITE_DATACORE_URL}api/postProfile`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

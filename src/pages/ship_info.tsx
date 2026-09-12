@@ -5,7 +5,7 @@ import { BattleMode, Ship } from '../model/ship';
 import { PlayerCrew } from '../model/player';
 import { CrewMember } from '../model/crew';
 import { GlobalContext } from '../context/globalcontext';
-import { navigate } from 'gatsby';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import DataPageLayout from '../components/page/datapagelayout';
 import { WorkerProvider } from '../context/workercontext';
 import { ShipRosterCalc } from '../components/ship/rostercalc';
@@ -17,34 +17,30 @@ import { Step } from 'semantic-ui-react';
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized
-
 	const [shipKey, setShipKey] = React.useState<string | undefined>();
+	const { ship_symbol } = useParams();
+	const navigate = useNavigate();
 
 	React.useEffect(() => {
-		let ship_key: string | undefined = undefined;
-		const urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.has('ship')) {
-			ship_key = urlParams.get('ship') ?? undefined;
-		}
-		if (!ship_key && urlParams.has('symbol')) {
-			ship_key = urlParams.get('symbol') ?? undefined;
-		}
-		if (!ship_key) {
-			navigate('/ships');
-			return;
-		}
-		setShipKey(ship_key);
-	}, []);
+		setShipKey(ship_symbol);
+		if (typeof window !== 'undefined') {
+			window.scrollTo(0, 0);
+;		}
+	}, [ship_symbol]);
 
-	return <DataPageLayout pageTitle={t('pages.ship_info')}>
-		<div>
-			{!!shipKey && <ShipViewer ship={shipKey} setShip={setShipKey} />}
-			{!shipKey && globalContext.core.spin(t('spinners.default'))}
+	return (
+		<DataPageLayout pageTitle={t('pages.ship_info')}>
+			<div>
+				{!!shipKey && <ShipViewer ship={shipKey} setShip={navToShip} />}
+				{!shipKey && globalContext.core.spin(t('spinners.default'))}
+			</div>
+		</DataPageLayout>
+	);
 
-			{/* <ShipProfile /> */}
-		</div>
-	</DataPageLayout>
-
+	function navToShip(ship: string) {
+		if (ship === ship_symbol) return;
+		navigate(`/ship/${ship}`)
+	}
 }
 
 interface ShipViewerProps {
@@ -80,11 +76,12 @@ const ShipViewer = (props: ShipViewerProps) => {
 
 	const [activeTabIndex, setActiveTabIndex] = React.useState<number>(0);
 	const [oldMaxed, setOldMaxed] = React.useState(false);
+	const [oldShip, setOldShip] = React.useState('');
 
 	React.useEffect(() => {
 		if (inputShip) {
 			if ((inputShip.battle_stations?.length !== crewStations?.length)) {
-				setCrewStations(inputShip?.battle_stations?.map(b => undefined) ?? [])
+				setCrewStations(inputShip?.battle_stations?.map(b => b.crew) ?? [])
 			}
 			else {
 				setCrewStations([...crewStations]);
@@ -93,10 +90,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 	}, [inputShip]);
 
 	React.useEffect(() => {
-		const c = inputShip?.battle_stations?.length ?? 0;
 		if (inputShip && crewStations) {
-			if (asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs?.id == ship.battle_stations![i]?.crew?.id)) return;
+			if (oldShip === inputShip?.symbol && asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs?.id == ship.battle_stations![i]?.crew?.id)) return;
 			setShip(setupShip(inputShip, crewStations));
+			setOldShip(inputShip.symbol);
 			setOldMaxed(asMaxed);
 		}
 	}, [crewStations]);
@@ -137,15 +134,10 @@ const ShipViewer = (props: ShipViewerProps) => {
 				}
 			}
 			else {
-				navigate("/ships");
+				Navigate({ to: "/ships" });
 			}
 		}
-	}, [ships, shipKey]);
-
-	React.useEffect(() => {
-		let sk = shipKey;
-		setShipKey("_" + sk);
-	}, [asMaxed]);
+	}, [ships, shipKey, asMaxed]);
 
 	const division = React.useMemo(() => {
 		if (ship) {

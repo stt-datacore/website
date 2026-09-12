@@ -1,4 +1,3 @@
-import { navigate } from "gatsby";
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CompletionState } from "../../model/player";
@@ -6,6 +5,7 @@ import { Ship } from "../../model/ship";
 import CONFIG from "../CONFIG";
 import { ShipPresenter } from "../item_presenters/ship_presenter";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { NavigateFunction } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -100,7 +100,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
 
     componentDidUpdate(): void {
         if (this.props.inputItem) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
+            const url = `${process.env.VITE_ASSETS_URL}${this.props.inputItem.icon?.file.slice(1).replace('/', '_')}.png`;
             if (isWindow) window.setTimeout(() => {
                 for (let i = 0; i < 1; i++) {
                     let img = new Image();
@@ -122,7 +122,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
     constructor(props: ShipHoverStatProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
     }
@@ -135,7 +135,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
             let mr = ship.rarity;
             let clr = CONFIG.RARITIES[mr].color;
             if (boxStyle.borderColor !== clr) {
-                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ...this.state, boxStyle: { ...boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }
@@ -167,7 +167,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
         this.tiny.setValue<boolean>('ship', value, true);
     }
 
-    protected renderContent = (): JSX.Element =>  {
+    protected renderContent = (): React.ReactNode =>  {
         if (this.checkBorder()) {
             window.setTimeout(() => this.checkBorder(undefined, true));
         }
@@ -185,7 +185,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
 
         const navClick = () => {
             if (!displayItem) return;
-            navigate('/ship_info?ship=' + displayItem.symbol);
+            this.navigate('/ship/' + displayItem.symbol);
         }
 
         const onClose = () => {
@@ -193,6 +193,7 @@ export class ShipHoverStat extends HoverStat<Ship, ShipHoverStatProps, ShipHover
         }
 
         return displayItem ? (<ShipPresenter
+                        navigate={this.navigate as NavigateFunction}
                         mobileWidth={mobileWidth}
                         close={() => onClose()}
                         openShip={(ship) => navClick()}

@@ -1,25 +1,23 @@
-import React from "react"
-import { GlobalContext } from "../../../context/globalcontext"
-import { ITableConfigRow, SearchableTable } from "../../searchabletable";
-import { Checkbox, Table } from "semantic-ui-react";
-import { computePotentialColScores, GameEpoch, OptionsPanelFlexColumn, OptionsPanelFlexRow, potentialCols, HiddenTraitCols } from "../utils";
-import { approxDate } from "../itemdateutils";
-import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/es';
-import { AvatarView } from "../../item_presenters/avatarview";
+import 'moment/locale/fr';
+import React from "react";
+import { Checkbox, Grid, Table } from "semantic-ui-react";
+import { GlobalContext } from "../../../context/globalcontext";
 import { CrewMember } from "../../../model/crew";
+import { getVariantTraits, gradeToColor } from "../../../utils/crewutils";
 import { omniSearchFilter } from "../../../utils/omnisearch";
 import { useStateWithStorage } from "../../../utils/storage";
-import { getVariantTraits, gradeToColor, oneCrewCopy } from "../../../utils/crewutils";
-import { getIconPath } from "../../../utils/assets";
-import { TraitStats } from "../model";
-import { TraitDive } from "./traitdive";
-import { renderMainDataScore } from "../../crewtables/views/base";
 import CONFIG from "../../CONFIG";
-import { EquipmentItem } from "../../../model/equipment";
-import { ICoreData } from "../../../context/coremodel";
-import { colSpecialDate, getItemDateEstimates } from "../itemdateutils";
+import { renderMainDataScore } from "../../crewtables/views/base";
+import { AvatarView } from "../../item_presenters/avatarview";
+import { ITableConfigRow, SearchableTable } from "../../searchabletable";
+import { approxDate, colSpecialDate, getItemDateEstimates } from "../itemdateutils";
+import { TraitStats } from "../model";
+import { computePotentialColScores, GameEpoch, HiddenTraitCols, OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
+import { TraitDive } from "./traitdive";
+import { getItemWithBonus } from '../../../utils/itemutils';
+import { ItemHoverStat } from '../../hovering/itemhoverstat';
 
 export const TraitStatsTable = () => {
 
@@ -36,6 +34,7 @@ export const TraitStatsTable = () => {
     const [onlyPotential, setOnlyPotential] = useStateWithStorage<boolean>('stat_trends/traits/only_potential', false, { rememberForever: true });
     const [hideOne, setHideOne] = useStateWithStorage<boolean>('stat_trends/traits/hide_one', false, { rememberForever: true });
     const [showVariantTraits, setShowVariantTraits] = useStateWithStorage<boolean>('stat_trends/traits/show_variant_traits', true, { rememberForever: true });
+    const [openQuipment, setOpenQuipment] = useStateWithStorage<{[key:string]:boolean}>('/stat_trends/traits/open_quipment', {});
 
     const [showDive, setShowDive] = React.useState<TraitStats | undefined>(undefined);
 
@@ -50,7 +49,7 @@ export const TraitStatsTable = () => {
         if (!crew?.length) return;
 
         const { work, stoneicons, stones } = getItemDateEstimates(globalContext.core, t);
-
+        const quipment = globalContext.core.items.filter(f => f.type === 14).map(e => getItemWithBonus(e));
         const ntraits = [] as string[];
         const htraits = [] as string[];
 
@@ -115,8 +114,11 @@ export const TraitStatsTable = () => {
                     owned_crew = playerData.player.character.crew.filter(f => f.traits.includes(trait) || f.traits_hidden.includes(trait)).length;
                     unowned_crew = tcrew.length - owned_crew;
                 }
+                const trait_quipment = quipment.filter(q => q.item.traits_requirement?.includes(trait)).sort((a, b) => a.item.traits_requirement!.length - b.item.traits_requirement!.length || a.item.name.localeCompare(b.item.name));
+
                 const newtrait: TraitStats = {
                     trait: !hidden && TRAIT_NAMES[trait] || trait,
+                    quipment: trait_quipment,
                     trait_raw: trait,
                     collection: '',
                     first_appearance: d,
@@ -214,6 +216,14 @@ export const TraitStatsTable = () => {
                     else if (f2 && !a.collection) return -1;
                     else if (f2 && a.collection) return 1;
                     return a.collection.localeCompare(b.collection);
+                }
+            },
+            {
+                width: 2,
+                column: 'quipment',
+                title: t('stat_trends.trait_columns.quipment'),
+                customCompare: (a: TraitStats, b: TraitStats) => {
+                    return a.quipment.filter(q => q.item.traits_requirement?.length === 1).length - b.quipment.filter(q => q.item.traits_requirement?.length === 1).length || a.quipment.length - b.quipment.length || a.trait.localeCompare(b.trait);
                 }
             },
             {
@@ -329,6 +339,7 @@ export const TraitStatsTable = () => {
                     )}
                 </div>
             </div>
+            <ItemHoverStat targetGroup='trait_dive_items' />
             <SearchableTable
                 data={stats}
                 renderTableRow={(item, idx) => renderTableRow(item, idx)}
@@ -352,10 +363,13 @@ export const TraitStatsTable = () => {
     function renderTableRow(item: TraitStats, idx: any) {
         const fcrew = item.first_crew;
         const lcrew = item.latest_crew;
+        const alone = item.quipment.filter(f => f.item.traits_requirement?.length === 1).length;
+        const total = item.quipment.length;
+        const diff = alone != total;
 
         return <Table.Row key={`traitSetIdx_${idx}`}>
                 <Table.Cell>
-                    <div style={{... flexCol, gap: '0.5em', cursor: 'zoom-in', alignItems: 'flex-start'}} onClick={() => setShowDive(item)}>
+                    <div style={{...flexCol, gap: '0.5em', cursor: 'zoom-in', alignItems: 'flex-start'}} onClick={() => setShowDive(item)}>
                         <div style={{...flexRow, justifyContent: 'flex-start', gap: '1em'}}>
                             {!!item.icon && <img src={item.icon} style={{height: '32px'}} />}
                             <span>{item.trait}</span>
@@ -373,7 +387,7 @@ export const TraitStatsTable = () => {
                         {CONFIG.SERIES.includes(item.trait_raw) &&
                             <img
                                 style={{ height: '2em'}}
-                                src={`${process.env.GATSBY_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
+                                src={`${process.env.VITE_DATACORE_URL}/media/series/${item.trait_raw}.png`} />
                         }
                     </div>
                 </Table.Cell>
@@ -390,6 +404,77 @@ export const TraitStatsTable = () => {
                         })}
                         {!item.grade && <span>{item.collection}</span>}
                     </div>
+                </Table.Cell>
+                <Table.Cell>
+                    {!item.quipment?.length && t('global.none')}
+                    {!!item.quipment?.length && (<>
+                        {!openQuipment[item.trait] && (
+                            <div style={{
+                                cursor: 'zoom-in'
+                            }}
+                                onClick={() => setOpenQuipment({...openQuipment, [item.trait]: true})}
+                            >
+                                {diff && <>{item.quipment.length} ({t('stat_trends.traits.n_alone', { n: alone })})</>}
+                                {!diff && <>{item.quipment.length}</>}
+                            </div>
+                        )}
+                        {!!openQuipment[item.trait] && (
+                            <div
+                                className='ui segment'
+                                style={{
+                                cursor: 'zoom-out',
+                                overflowY: 'auto',
+                                maxHeight: '30em'
+                            }}
+                                onClick={() => setOpenQuipment({...openQuipment, [item.trait]: false})}
+                            >
+                                <Grid>
+                                {item.quipment.map(qb => {
+                                    let others = qb.item.traits_requirement!.filter(f => f !== item.trait).map(t => TRAIT_NAMES[t]);
+                                    let type = qb.item.traits_requirement_operator?.toLowerCase() ?? 'and';
+                                    type = t(`global.${type}`);
+                                    return (
+                                        <Grid.Row key={`_dive_item_qp_${qb.item.symbol}_${item.trait}`}>
+                                            <Grid.Column>
+                                                <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: '0.5em'}}>
+                                                    <AvatarView
+                                                        mode='item'
+                                                        targetGroup='trait_dive_items'
+                                                        item={qb.item}
+                                                        size={32}
+                                                        />
+                                                    <div>
+                                                        {qb.item.name}
+                                                        {!!others?.length && (
+                                                            <div>
+                                                                {others.map((other, idx) => {
+                                                                    if (idx) {
+                                                                        return (
+                                                                            <span key={`_trait_dive_item_other_${idx}_${other}_${item.trait}_${qb.item.symbol}`}>
+                                                                                &nbsp;<b>{type}</b>&nbsp;<span style={{color: 'goldenrod', fontStyle: 'italic'}}>{other}</span>
+                                                                            </span>
+                                                                        );
+                                                                    }
+                                                                    else {
+                                                                        return (
+                                                                            <span key={`_trait_dive_item_other_${idx}_${other}_${item.trait}_${qb.item.symbol}`}>
+                                                                                <span style={{color: 'goldenrod', fontStyle: 'italic'}}>{other}</span>
+                                                                            </span>
+                                                                        );
+                                                                    }
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                    )
+                                })}
+                                </Grid>
+                            </div>
+                        )}
+                    </>)}
                 </Table.Cell>
                 <Table.Cell>
                     {/* {moment(item.first_appearance).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")} */}

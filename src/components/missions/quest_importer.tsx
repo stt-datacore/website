@@ -27,6 +27,12 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
     const hasPlayer = !!playerData;
 
     React.useEffect(() => {
+        if (questId !== undefined && !currentHasRemote) {
+            autoCall();
+        }
+    }, [questId, currentHasRemote]);
+
+    React.useEffect(() => {
         if (collapsed === undefined) setCollapsed(true);
     }, [currentHasRemote]);
 
@@ -37,7 +43,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 		return true;
 	}
 
-	function renderCopyPaste(): JSX.Element {
+	function renderCopyPaste(): React.ReactNode {
 		if (!quest) return <></>
 		return (
 			<React.Fragment>
@@ -53,7 +59,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
                             You can paste your data using the box, below.
                         </p>
                         <p>
-                            Current Quest Data: <b><a target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=${CLIENT_API_VERSION}&continuum=true`}>{quest?.name}</a></b>
+                            Current Quest Data: <b><a target='_blank' href={getReqUrl()}>{quest?.name}</a></b>
                         </p>
                         </>
                     }
@@ -72,7 +78,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 							Click here to update your data if you wish to refresh your claimed rewards, or use data from another account.
 						</p>
                         <p>
-                            Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={`https://app.startrektimelines.com/quest/conflict_info?id=${quest?.id}&client_api=${CLIENT_API_VERSION}&continuum=true`}>{quest?.name}</a></b>
+                            Current Quest Data: <b><a onClick={() => setCollapsed(false)} target='_blank' href={getReqUrl()}>{quest?.name}</a></b>
                         </p>
                         <p style={{textAlign: "right"}}>
 							<b style={{fontSize:"0.8em"}}>(To clear all quest data, <a title={'Clear All Quest Data'} onClick={() => clearQuest()}>Click Here</a>)</b>
@@ -88,7 +94,7 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 				<JsonInputForm
 					requestDismiss={() => setCollapsed(!collapsed && !!currentHasRemote)}
 					config={{
-						dataUrl: `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=${CLIENT_API_VERSION}&continuum=true`,
+						dataUrl: getReqUrl(),
                         dataName: t('json_types.quest_data'),
 					    jsonHint: '{"id":',
 						androidFileHint: 'conflict_info.json',
@@ -96,21 +102,44 @@ export const QuestImportComponent = (props: QuestImporterProps) => {
 					}}
 					title={`Quest Input Form: ${quest?.name}`}
 					validateInput={validateMission}
-					setValidInput={(quest) => {
-						if (quest) setCollapsed(true);
-						setQuest(quest);
-					}}
+					setValidInput={populateInput}
 
 				/>}
 			</React.Fragment>
 		);
 	}
 
-    return <>
+    return (<>
+        <div className='ui segment'>
+            {renderCopyPaste()}
+        </div>
+    </>);
 
-    <div className='ui segment'>
-        {renderCopyPaste()}
-    </div>
+    function populateInput(quest: Quest | undefined) {
+        if (quest) setCollapsed(true);
+        setQuest(quest);
+    }
 
-    </>
+    function getReqUrl() {
+        if (typeof window !== 'undefined' && (window as any)['rqfeed'] && typeof (window as any)['rqfeed'] === 'function') return (window as any)['rqfeed'](questId);
+        let url = `https://app.startrektimelines.com/quest/conflict_info?id=${questId}&client_api=${CLIENT_API_VERSION}&continuum=true`;
+        return url;
+    }
+    async function autoCall() {
+        try {
+            if (typeof window !== 'undefined') {
+                (window as any)['questSetter'] = function(quest: Quest | undefined) {
+                    setTimeout(() => {
+                        populateInput(quest);
+                    });
+                };
+            }
+            if (questId !== undefined && !currentHasRemote && typeof window !== 'undefined' && (window as any)['rqload'] && typeof (window as any)['rqload'] === 'function') {
+                (window as any)['rqload'](questId);
+            }
+        }
+        catch (e: any) {
+            console.log(`Autocall failed: ${e}`);
+        }
+    }
 }

@@ -490,7 +490,7 @@ export function calcQLots<T extends CrewMember>(
 		}
 		else {
 			newSkill = {
-				... crew.base_skills[skill],
+				...crew.base_skills[skill],
 				skill
 			};
 		}
@@ -557,7 +557,7 @@ export function calcQLots<T extends CrewMember>(
 			if (skills.length) {
 				for (let skill of skills) {
 					if (!final_best.skills_hash[skill.skill!]) {
-						final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
+						final_best.skills_hash[skill.skill!] = { ...crewSkills[skill.skill!] };
 					}
 
 					final_best.skills_hash[skill.skill!].core += skill.core;
@@ -566,7 +566,7 @@ export function calcQLots<T extends CrewMember>(
 				}
 			}
 			else if (!final_best.skills_hash[sk]) {
-				final_best.skills_hash[sk] = { ... crewSkills[sk] };
+				final_best.skills_hash[sk] = { ...crewSkills[sk] };
 				final_best.skills_hash[sk].reference = true;
 			}
 		}
@@ -653,10 +653,10 @@ export function calcQLots<T extends CrewMember>(
 			});
 		});
 
-		const item_ids = [ ... new Set(qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id!))) ];
+		const item_ids = [ ...new Set(qpcounts.map(qp => qp.item).flat().map(m => Number(m.kwipment_id!))) ];
 		const combos = makeAllCombos(item_ids, undefined, undefined, undefined, slots).filter(c => c.length === slots);
 
-		const combo_map = combos.map(cb => cb.map(co => ({ ... qpcounts.find(f => f.item.kwipment_id === co.toString())! } as QpCount)));
+		const combo_map = combos.map(cb => cb.map(co => ({ ...qpcounts.find(f => f.item.kwipment_id === co.toString())! } as QpCount)));
 
 		const balance_diff = [] as {
 			value: number,
@@ -723,7 +723,7 @@ export function calcQLots<T extends CrewMember>(
 
 		for (let skill of item_buffs) {
 			if (!final_best.skills_hash[skill.skill!]) {
-				final_best.skills_hash[skill.skill!] = { ... crewSkills[skill.skill!] };
+				final_best.skills_hash[skill.skill!] = { ...crewSkills[skill.skill!] };
 			}
 
 			final_best.skills_hash[skill.skill!].core += skill.core;
@@ -751,7 +751,7 @@ export function calcQLots<T extends CrewMember>(
 		}
 		else {
 			q_power[skill] = {
-				... crew.base_skills[skill],
+				...crew.base_skills[skill],
 				skill
 			}
 		}
@@ -775,7 +775,7 @@ export function calcQLots<T extends CrewMember>(
 
 					q_lots[skill].push(skill_quipment[i].item);
 
-					// ... but we still need the total skill values for both core and proficiencies,
+					// ...but we still need the total skill values for both core and proficiencies,
 					// no matter what mode.
 					q_power[skill].core += skill_quipment[i].skill.core;
 					q_power[skill].range_max += skill_quipment[i].skill.range_max;

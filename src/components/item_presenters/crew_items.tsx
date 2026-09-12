@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { navigate } from 'gatsby';
 import { Label, Progress } from 'semantic-ui-react';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
@@ -12,6 +11,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { getRealCrewLevel } from '../../utils/equipment';
+import { useNavigate } from 'react-router-dom';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -21,13 +21,15 @@ export interface CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     quipment?: boolean;
-    printNA?: string | JSX.Element;
+    printNA?: string | React.ReactNode;
     targetGroup?: string;
     locked?: boolean;
+    altProspectText?: string;
     vertical?: boolean;
     alwaysHideProgress?: boolean;
     alwaysShowProgress?: boolean;
     gap?: string;
+    prospectsClicked?: (data?: PlayerCrew) => void;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -198,7 +200,10 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>
         ||context.core.items?.length &&
             <div style={{...flexCol, gap: 0}}>
-            {!!crew.kwipment_prospects && quip && <Label color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
+            {!!crew.kwipment_prospects && quip && <Label
+            style={{cursor: props.prospectsClicked ? 'pointer' : undefined}}
+            onClick={() => props.prospectsClicked ? props.prospectsClicked(crew) : false}
+            color='blue'><i>{props.altProspectText || t('voyage.quipment.title')}</i></Label> }
             <div style={{
                 display: "flex",
                 flexDirection: vertical ? 'column' : 'row',
@@ -214,11 +219,13 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
                         key={`${crew.id}_${crew.symbol}_${idx}_${item.symbol}__crewEquipBox`}
                         context={context}
                         vertical={!!vertical}
+                        altProspectText={props.altProspectText}
                         targetGroup={targetGroup}
                         style={(quip && maxqIdx < idx) || disabled[idx] ? { opacity: locked ? "0.50" : "0.25" } : undefined}
                         locked={getLocked(idx)}
                         itemSize={props.itemSize}
                         mobileSize={props.mobileSize}
+                        prospectsClicked={props.prospectsClicked}
                         mobileWidth={mobileWidth}
                         crew={crew}
                         expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>{props.printNA && item.symbol ? props.printNA : <br/>}</>) : undefined}
@@ -249,7 +256,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
-    expiration?: string | JSX.Element;
+    expiration?: string | React.ReactNode;
     vertical: boolean;
     itemSize?: number;
     mobileSize?: number;
@@ -261,8 +268,9 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
 export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
 
     const globalContext = props.context;
+    const navigate = useNavigate();
 
-    const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration } = props;
+    const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration, prospectsClicked } = props;
 
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
@@ -287,12 +295,12 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
             itemSymbol={equipment?.symbol}
             allItems={globalContext.core.items}
             playerData={globalContext.player.playerData}
-            src={`${process.env.GATSBY_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            src={`${process.env.VITE_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
             size={itemSize}
             maxRarity={equipment?.rarity ?? 0}
             rarity={equipment?.rarity ?? 0}
         />
-        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
+        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.VITE_ASSETS_URL}atlas/lock_icon.png`}/>}
         </div>
     </div>)
 

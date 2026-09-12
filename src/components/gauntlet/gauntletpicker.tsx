@@ -1,21 +1,22 @@
+import moment from "moment";
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { DefaultAdvancedGauntletSettings, GauntletPane } from "../../utils/gauntlet";
 import { GauntletContext } from "./dataprovider";
-import moment from "moment";
-import 'moment/locale/fr';
-import 'moment/locale/de';
-import 'moment/locale/es';
 
-import { Step, Label, Icon, SemanticWIDTHS } from "semantic-ui-react";
+import { Icon, Label, Step } from "semantic-ui-react";
+import { Gauntlet, GauntletRoot, Opponent } from "../../model/gauntlets";
+import { TinyStore } from "../../utils/tiny";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { GauntletImportComponent } from "./gauntletimporter";
-import GauntletSettingsPopup from "./settings";
-import { Gauntlet, GauntletRoot, Opponent } from "../../model/gauntlets";
-import { GauntletView } from "./gauntletview";
 import { BrowsableGauntletView } from "./browseableview";
-import { TinyStore } from "../../utils/tiny";
+import { GauntletImportComponent } from "./gauntletimporter";
+import { GauntletView } from "./gauntletview";
+import GauntletSettingsPopup from "./settings";
 
 export const GauntletPicker = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -184,14 +185,14 @@ export const GauntletPicker = () => {
                 gauntlet.date = d.toISOString();
             }
 
-            const newoppos = [ ... gauntlet.opponents ?? [] ];
+            const newoppos = [ ...gauntlet.opponents ?? [] ];
             const prevoppos = getCleanOpponents(gauntlet.bracket_id);
 
             for (let oppo of newoppos) {
                 oppo.bracket_id = gauntlet.bracket_id;
             	let prevoppo = prevoppos.find(fo => fo.player_id === oppo.player_id);
             	if (prevoppo) {
-            		const newdata = [ ... oppo.crew_contest_data.crew ];
+            		const newdata = [ ...oppo.crew_contest_data.crew ];
             		for (let newcrew of newdata) {
             			let fcrew = prevoppo.crew_contest_data.crew.find(c => c.archetype_symbol === newcrew.archetype_symbol);
             			if (fcrew) {

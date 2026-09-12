@@ -42,7 +42,7 @@ export const HelperMode = (props: HelperModeProps) => {
 
 	return (
 		<Message icon>
-			<img src={`${process.env.GATSBY_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
+			<img src={`${process.env.VITE_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
 			<Message.Content>
 				<p>{t('shuttle_helper.mode.heading')}:</p>
 				<Form style={{ marginTop: '1em' }}>
@@ -76,7 +76,7 @@ export const HelperMode = (props: HelperModeProps) => {
 		}
 	}
 
-	function renderStandardOnly(): JSX.Element {
+	function renderStandardOnly(): React.ReactNode {
 		let label: string = '';
 		if (activeShuttles.length > 0)
 			label = 'All shuttle missions that are open in-game have been imported, but missions and recommendations will NOT be saved by the shuttle helper.';
@@ -84,7 +84,7 @@ export const HelperMode = (props: HelperModeProps) => {
 			label = 'Shuttle missions and recommendations will NOT be saved by the shuttle helper.';
 		return (
 			<Message icon>
-				<img src={`${process.env.GATSBY_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
+				<img src={`${process.env.VITE_ASSETS_URL}/atlas/shuttle_icon.png`} style={{ width: '3em', marginRight: '1em' }} />
 				<Message.Content>
 					{label}
 				</Message.Content>
@@ -92,7 +92,7 @@ export const HelperMode = (props: HelperModeProps) => {
 		);
 	}
 
-	function renderStandardOption(): JSX.Element {
+	function renderStandardOption(): React.ReactNode {
 		let label: string = '';
 		if (activeShuttles.length > 0)
 			label = t('shuttle_helper.mode.standard.active');
@@ -111,21 +111,21 @@ export const HelperMode = (props: HelperModeProps) => {
 		);
 	}
 
-	function renderEventOption(eventData: IEventData): JSX.Element {
+	function renderEventOption(eventData: IEventData): React.ReactNode {
 		let label: string = '';
 		if (eventData.seconds_to_start === 0) {
 			if (props.rosterType === 'allCrew')
-				label = t('shuttle_helper.mode.active_event.all', { name: eventData.name }); 
+				label = t('shuttle_helper.mode.active_event.all', { name: eventData.name });
 			else if (activeShuttles.length > 0)
-				label = t('shuttle_helper.mode.active_event.active', { name: eventData.name }); 
+				label = t('shuttle_helper.mode.active_event.active', { name: eventData.name });
 			else
-				label = t('shuttle_helper.mode.active_event.inactive', { name: eventData.name }); 
+				label = t('shuttle_helper.mode.active_event.inactive', { name: eventData.name });
 		}
 		else {
 			if (activeShuttles.length > 0)
-				label = t('shuttle_helper.mode.inactive_event.active', { name: eventData.name }); 
+				label = t('shuttle_helper.mode.inactive_event.active', { name: eventData.name });
 			else
-				label = t('shuttle_helper.mode.inactive_event.inactive', { name: eventData.name }); 
+				label = t('shuttle_helper.mode.inactive_event.inactive', { name: eventData.name });
 		}
 		return (
 			<Form.Field key={eventData.symbol}>

@@ -1,14 +1,14 @@
 import React from 'react';
-import { CollectionsContext } from '../context';
-import { Pagination, Table, Grid, Dropdown, Checkbox } from 'semantic-ui-react';
-import { PlayerCrew, PlayerCollection } from '../../../model/player';
+import { Dropdown, Grid, Pagination, Table } from 'semantic-ui-react';
 import { GlobalContext } from '../../../context/globalcontext';
-import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
-import { useStateWithStorage } from '../../../utils/storage';
-import CollectionsCrewCard from '../cards/crewcard';
-import { CollectionCombo, ComboCostMap, CollectionMatchMode } from '../../../model/collections';
+import { CollectionCombo, CollectionMatchMode, ComboCostMap } from '../../../model/collections';
+import { PlayerCollection } from '../../../model/player';
 import { findColGroupsCrew, getOptCols, getOwnedCites, neededStars, starCost } from '../../../utils/collectionutils';
+import { useStateWithStorage } from '../../../utils/storage';
+import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
 import { CollectionCard } from '../cards/collectioncard';
+import CollectionsCrewCard from '../cards/crewcard';
+import { CollectionsContext } from '../context';
 
 export interface CollectionOptimizerProps {
 	colCombos: CollectionCombo[];
