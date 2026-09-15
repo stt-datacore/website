@@ -1,4 +1,3 @@
-import moment from "moment";
 import React from "react";
 import { Accordion, Button, Dropdown, Icon, Label, Message } from "semantic-ui-react";
 import { randomCrew } from "../../context/datacontext";
@@ -14,6 +13,7 @@ import { AvatarView } from "../item_presenters/avatarview";
 import ItemDisplay from "../itemdisplay";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../stats/utils";
 import { GauntletContext } from "./dataprovider";
+import { useLocaleDate } from "../base/localedate";
 
 export interface GauntletHeaderProps {
     gauntlet: Gauntlet;
@@ -24,7 +24,10 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
     const { viewMode, setViewMode, pane, setConfig, config, featuredGauntlet, pairGroups } = gauntletContext;
     const { gauntlet } = props;
     const globalContext = React.useContext(GlobalContext);
-
+    const localeDate = useLocaleDate(globalContext.localized);
+    const longDate = (date?: string | Date) => {
+         return localeDate(new Date(date || ''));
+    }
     const { t, TRAIT_NAMES } = globalContext.localized;
 
     const featuredCrew = globalContext.core.crew.find((crew) => crew.symbol === gauntlet.jackpot_crew);
@@ -101,7 +104,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
 
     const jackpots = jp;
     const prettyTraits = gauntlet.state === "POWER" ? [t('gauntlet.base_power')] : gauntlet.contest_data?.traits?.map(t => TRAIT_NAMES[t]);
-    const prettyDate = gauntlet.state === "POWER" ? "" : (!gauntlet.template ? moment(gauntlet.date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format('dddd, D MMMM YYYY') : "");
+    const prettyDate = gauntlet.state === "POWER" ? "" : (!gauntlet.template ? longDate(gauntlet.date) : "");
     const displayOptions = [{
         key: "pair_cards",
         value: "pair_cards",
@@ -460,7 +463,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                                 showMaxRarity={true}
                                             />
                                             <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.5em 0 0 0" }}>{jcrew.name}</i>
-                                            <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({moment(jcrew.date_added).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("D MMM YYYY")})</i>
+                                            <i style={{ color: crit < 25 ? undefined : gradeToColor(crit) ?? undefined, margin: "0.25em 0 0 0" }}>({longDate(jcrew.date_added)})</i>
                                         </div>
                                     )
                                 })}

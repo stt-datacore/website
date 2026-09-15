@@ -24,7 +24,6 @@
     "localforage": "^1.10.0",
     "lz-string": "^1.5.0",
     "marked": "^12.0.1",
-    "moment": "^2.30.1",
     "react": "^19.2.6",
     "react-device-detect": "^2.2.3",
     "react-dom": "^19.2.6",

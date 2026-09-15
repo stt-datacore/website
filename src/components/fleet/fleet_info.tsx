@@ -10,14 +10,12 @@ import { printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
 import { downloadData } from '../../utils/crewutils';
 import { getIconPath } from '../../utils/assets';
-import moment from "moment";
-import 'moment/locale/fr';
-import 'moment/locale/de';
-import 'moment/locale/es';
+
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { omniSearchFilter } from '../../utils/omnisearch';
 import { useStateWithStorage } from '../../utils/storage';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { useLocaleDate } from '../base/localedate';
 
 type FleetInfoPageProps = {
 	fleet_id: number;
@@ -54,6 +52,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 
 	const [onlyOfficers, setOnlyOfficers] = useStateWithStorage<boolean>('fleet/only_officers', false, { rememberForever: true });
 	const [onlyEvent, setOnlyEvent] = useStateWithStorage<boolean>('fleet/only_event', false, { rememberForever: true });
+	const localeDate = useLocaleDate(globalContext.localized);
 
 	React.useEffect(() => {
 		if (inputFleetData) {
@@ -407,7 +406,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 	}
 
 	function _momentDate(date: Date) {
-		return moment(date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")
+		return localeDate(date);
 	}
 
 	function _exportItems(data: Member[], clipboard?: boolean) {
