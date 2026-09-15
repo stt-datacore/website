@@ -11,7 +11,7 @@ const ContinuumPage = () => {
     const { crew } = context.core;
 
     return <DataPageLayout playerPromptType='require' pageTitle={t('menu.tools.continuum_helper')} demands={['items', 'missionsfull', 'continuum_missions', 'maincast']}>
-        {!playerData?.player?.dbid && context.core.spin()}
+        {/* {!playerData?.player?.dbid && context.core.spin()} */}
         {!!playerData?.player?.dbid && <ContinuumComponentNew roster={playerData?.player.character.crew ?? crew} />}
     </DataPageLayout>
 }

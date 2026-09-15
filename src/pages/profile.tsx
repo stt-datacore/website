@@ -1,7 +1,4 @@
 import { Workbook } from 'exceljs';
-import 'moment/locale/de';
-import 'moment/locale/es';
-import 'moment/locale/fr';
 import React from 'react';
 import { Dropdown, Icon, Menu, Message, Tab } from 'semantic-ui-react';
 
@@ -16,7 +13,6 @@ import { demandsPerSlot } from '../utils/equipment';
 import { exportItemFields, exportItems, mergeItems } from '../utils/itemutils';
 import { exportShipFields, exportShips, mergeRefShips } from '../utils/shiputils';
 
-import moment from 'moment';
 import { v4 } from 'uuid';
 import CONFIG from '../components/CONFIG';
 import RosterSummary from '../components/crewtables/rostersummary';
@@ -279,7 +275,7 @@ const ProfilePageComponent = (props: { refresh?: () => void }) => {
 			<PlayerBadge t={t} playerData={playerData} />
 			<Menu compact>
 				<Menu.Item>
-					{playerData.calc?.lastModified ? <span>{t('global.last_updated_colon')}&nbsp;{moment(playerData.calc.lastModified).locale(globalContext.localized.language).format("llll")}</span> : <span />}
+					{playerData.calc?.lastModified ? <span>{t('global.last_updated_colon')}&nbsp;{new Date(playerData.calc.lastModified).toLocaleString()}</span> : <span />}
 				</Menu.Item>
 				<Dropdown item text={t('global.download')}>
 					<Dropdown.Menu>

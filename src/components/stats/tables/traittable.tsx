@@ -1,6 +1,3 @@
-import 'moment/locale/de';
-import 'moment/locale/es';
-import 'moment/locale/fr';
 import React from "react";
 import { Checkbox, Grid, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
@@ -477,7 +474,6 @@ export const TraitStatsTable = () => {
                     </>)}
                 </Table.Cell>
                 <Table.Cell>
-                    {/* {moment(item.first_appearance).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")} */}
                     {approxDate(item.first_appearance, t)}
                 </Table.Cell>
                 <Table.Cell>

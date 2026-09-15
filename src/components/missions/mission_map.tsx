@@ -248,7 +248,7 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
             setQuest(undefined);
             setStages(undefined);
         }
-    }, [questIdx]);
+    }, [questIdx, mission]);
 
     return (
         <>

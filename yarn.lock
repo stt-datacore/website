@@ -6007,7 +6007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:*, moment@npm:^2.30.1":
+"moment@npm:*":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 859236bab1e88c3e5802afcf797fc801acdbd0ee509d34ea3df6eea21eb6bcc2abd4ae4e4e64aa7c986aa6cba563c6e62806218e6412a765010712e5fa121ba6
@@ -7194,9 +7194,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stt-datacore@workspace:.":
+"stt-data-core@workspace:.":
   version: 0.0.0-use.local
-  resolution: "stt-datacore@workspace:."
+  resolution: "stt-data-core@workspace:."
   dependencies:
     "@eslint/js": ^10.0.1
     "@nivo/bar": ^0.99.0
@@ -7237,7 +7237,6 @@ __metadata:
     localforage: ^1.10.0
     lz-string: ^1.5.0
     marked: ^12.0.1
-    moment: ^2.30.1
     react: ^19.2.6
     react-device-detect: ^2.2.3
     react-dom: ^19.2.6
