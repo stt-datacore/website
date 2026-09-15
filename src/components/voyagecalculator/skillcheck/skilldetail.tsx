@@ -37,7 +37,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		field: string;
 		title: string;
 		adjustValue?: (value: number) => number;
-		renderValue?: (value: number) => JSX.Element;
+		renderValue?: (value: number) => React.ReactNode;
 	};
 
 	const rows: ISkillDetailRow[] = [
@@ -74,7 +74,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 					{voyageConfig.skills.primary_skill === currentData.skill && <Icon name='star' color='yellow' style={{ marginLeft: '.5em' }} />}
 					{voyageConfig.skills.secondary_skill === currentData.skill && <Icon name='star' color='grey' style={{ marginLeft: '.5em' }} />}
 					{highlighted && <Icon name='check' style={{marginLeft: '0.2em'}} />}
-					<Image floated='right' src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${currentData.skill}.png`} style={{ height: '1.5em' }} />
+					<Image floated='right' src={`${process.env.VITE_ASSETS_URL}atlas/icon_${currentData.skill}.png`} style={{ height: '1.5em' }} />
 				</Message.Header>
 			</Message>
 			<Segment attached>
@@ -127,14 +127,14 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		</React.Fragment>
 	);
 
-	function renderRowValue(row: ISkillDetailRow): JSX.Element {
+	function renderRowValue(row: ISkillDetailRow): React.ReactNode {
 		let currentValue: number = currentData[row.field];
 		if (row.adjustValue) currentValue = row.adjustValue(currentValue);
 		if (row.renderValue) return <b>{row.renderValue(currentValue)}</b>;
 		return <b>{currentValue}</b>;
 	}
 
-	function renderProficiency(proficiencyMode: boolean): JSX.Element {
+	function renderProficiency(proficiencyMode: boolean): React.ReactNode {
 		const currentValue: number = proficiencyMode ? currentData.best_minimum : currentData.best_proficiency;
 
 		// Voyage history does not have reliable proficiency values for individual crew, so return N/A
@@ -155,7 +155,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 		);
 	}
 
-	function renderPairedSkills(): JSX.Element {
+	function renderPairedSkills(): React.ReactNode {
 		interface IPairedSkill {
 			skill: string;
 			change?: 'gained' | 'lost';
@@ -182,7 +182,7 @@ export const SkillDetail = (props: SkillDetailProps) => {
 					<span key={pairedSkill.skill}>
 						{pairedSkill.change === 'gained' && <Icon name='plus' color='green' />}
 						{pairedSkill.change === 'lost' && <Icon name='minus' color='red' />}
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairedSkill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${pairedSkill.skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 					</span>
 				))}
 			</div>

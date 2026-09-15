@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';

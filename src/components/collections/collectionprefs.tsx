@@ -1,14 +1,12 @@
-import React from "react"
-import { GlobalContext } from "../../context/globalcontext"
-import { CollectionsContext } from "./context";
-import { Checkbox, Pagination, Dropdown, Form, DropdownItemProps } from "semantic-ui-react";
-import { CollectionCombo, CollectionMatchMode, ComboCostMap } from "../../model/collections";
-import { appelate } from "../../utils/misc";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { RewardFilter } from "./rewardfilter";
+import React from "react";
+import { Checkbox, Dropdown, DropdownItemProps, Form } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
+import { CollectionCombo } from "../../model/collections";
 import { PlayerCollection, PlayerCrew } from "../../model/player";
 import CONFIG from "../CONFIG";
-import { useStateWithStorage } from "../../utils/storage";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { CollectionsContext } from "./context";
+import { RewardFilter } from "./rewardfilter";
 
 
 export interface CollectionPrefsProps {

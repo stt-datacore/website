@@ -30,8 +30,8 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
 
         if (Array.isArray(node)) {
 
-            let highGaunt = [ ... new Set(node.filter(f => f.contest_data?.traits.some(t => crew.traits.includes(t))).map(t => t.contest_data?.traits ?? [])) ];
-            highGaunt = [ ... new Set(highGaunt.map(m => m.join("_"))) ].map(m => m.split("_"));
+            let highGaunt = [ ...new Set(node.filter(f => f.contest_data?.traits.some(t => crew.traits.includes(t))).map(t => t.contest_data?.traits ?? [])) ];
+            highGaunt = [ ...new Set(highGaunt.map(m => m.join("_"))) ].map(m => m.split("_"));
             let critters = {} as { [key: string]: number };
 
             for (let gaunt of highGaunt) {
@@ -77,7 +77,7 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
                 </div>
                 <div style={{margin: "0.5em"}}>
                     {crew.base_skills[node.contest_data?.featured_skill ?? "_invalid"] ?
-                    <img style={{width: '1em'}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} />
+                    <img style={{width: '1em'}} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${node.contest_data?.featured_skill}.png`} />
                     : ''}
                 </div>
             </div>)
@@ -133,8 +133,8 @@ export class GauntletSkill extends PresenterPlugin<PlayerCrew | CrewMember, Gaun
             }}>
                 {this.drawLeftArea()}
                 <div style={{gridArea: 'right', fontSize: "12pt", marginTop: "1em", marginBottom: "1em"}} title={t('base.best_pair')}>
-                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} />
-                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} />
+                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${pairs[0][0].skill}.png`} />
+                    <img style={{height: '2em', margin: "0.25em"}} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${pairs[0][1].skill}.png`} />
                     <div style={{margin: "0.25em"}}>{t('base.best_pair')}</div>
                 </div>
             </div>

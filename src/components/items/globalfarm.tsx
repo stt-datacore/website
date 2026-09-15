@@ -99,7 +99,8 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                     if (playerData && !crewFilter?.length) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setPrefilteredData(filterDemands(data.data.result.items as EquipmentItem[]));
                 },
-                true
+                true,
+                'equipment-worker.ts'
             )
         }, 500);
     }, [playerData, coreItems, crewFilter, props.noRender]);
@@ -208,7 +209,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     function drawExtraContent() {
         const selFav = () => {
             let favs = rosterCrew.filter(f => f.favorite && !f.immortal).map(m => m.id) ?? [];
-            let cf = [... new Set(crewFilter.concat(favs))];
+            let cf = [...new Set(crewFilter.concat(favs))];
             setCrewFilter(cf);
         }
         return (
@@ -219,7 +220,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
     }
 
     function renderExpanded(item: FarmSources) {
-        const crewSymbols = [... new Set(item.items.map(i => i.demandCrew ?? []).flat())]
+        const crewSymbols = [...new Set(item.items.map(i => i.demandCrew ?? []).flat())]
         const workCrew = rosterCrew
             .filter(rc => crewSymbols.includes(rc.symbol))
             .sort((a, b) => b.max_rarity - a.max_rarity || b.rarity - a.rarity || b.level - a.level || b.equipment.length - a.equipment.length || a.name.localeCompare(b.name));
