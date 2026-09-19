@@ -21,7 +21,7 @@ import { ICrewFilter, IRosterCrew } from "../crewtables/model";
 import { ShipSeatPicker } from "../crewtables/shipoptions";
 import { TopQuipmentScoreCells, getTopQuipmentTableConfig } from "../crewtables/views/topquipment";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
-import { CrewItemsView } from "../item_presenters/crew_items";
+import { CrewItemsView, QuipmentPickerModal } from "../item_presenters/crew_items";
 import CrewStat from "../item_presenters/crewstat";
 import { Notification } from "../page/notification";
 import { ITableConfigRow, SearchableTable } from "../searchabletable";
@@ -31,6 +31,7 @@ import { HighlightItem, MissionMapComponent, cleanTraitSelection } from "./missi
 import { QuestImportComponent } from "./quest_importer";
 import { QuestSelector } from "./quest_selector";
 import { TraitSelection } from "./trait_selector";
+import { EquipmentItem } from "../../model/equipment";
 
 export interface RemoteQuestStore {
     id: number,
@@ -360,6 +361,11 @@ type QpCrewProps = {
     challengeErrors: {[key:string]: ChallengeError}
     setChallengeErrors: (value: {[key:string]: ChallengeError}) => void;
 }
+type ModalOpenConfig = {
+    crew: IRosterCrew,
+    index: number;
+    current?: EquipmentItem;
+}
 
 const QpCrew = (props: QpCrewProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -389,6 +395,7 @@ const QpCrew = (props: QpCrewProps) => {
     const [displayCrew, setDisplayCrew] = React.useState<IRosterCrew[]>([]);
     const [running, setRunning] = React.useState(false);
     const [activePlace, setActivePlace] = React.useState("crew");
+    const [modalOpenConfig, setModalOpenConfig] = React.useState(undefined as ModalOpenConfig | undefined);
 
     React.useEffect(() => {
         if (
@@ -674,6 +681,16 @@ const QpCrew = (props: QpCrewProps) => {
                     no_voyage={true}
                 />
             </div>}
+            {!!modalOpenConfig && <QuipmentPickerModal
+                show={!!modalOpenConfig}
+                setShow={(value) => {
+                    if (!value) setModalOpenConfig(undefined);
+                }}
+                current={modalOpenConfig?.current}
+                crew={modalOpenConfig.crew}
+                setCurrent={(item, old_item, idx) => configProspect(modalOpenConfig.crew, old_item, item, idx)}
+                idx={modalOpenConfig?.index}
+                />}
         </div>
     );
 
@@ -745,7 +762,15 @@ const QpCrew = (props: QpCrewProps) => {
                                     }).reduce((p, n) => p !== undefined ? <>{p}, {n}</> : <>{n}</>, undefined as React.ReactNode | undefined)}
                                 </div>
                                 <div className='ui segment' style={{gridArea: 'quipment', marginBottom: '0.5em'}}>
-                                    <CrewItemsView altProspectText={t('global.clear')} crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
+                                    <CrewItemsView
+                                        altItemClick={(current, index) => {
+                                            setModalOpenConfig({
+                                                crew,
+                                                current,
+                                                index
+                                            })
+                                        }}
+                                        altProspectText={t('global.clear')} crew={cellcrew} quipment={true} prospectsClicked={(c) => clearIt(c)} />
                                     <div style={{marginLeft:'2em', marginTop: '0.5em'}}>
                                         {crew.skill_order.map(skill => {
                                             return (<CrewStat scale={0.8} key={`${crew.symbol}_${skill}_qmpv`} skill_name={skill} data={crew.skills[skill]} />)
@@ -785,6 +810,26 @@ const QpCrew = (props: QpCrewProps) => {
         mpro[crew.id] = Object.values(lot.skill_quipment).flat().map(e => Number(e.id));
         setRunning(true);
         setProspects(mpro);
+    }
+
+    function configProspect(crew: IRosterCrew, old_item: EquipmentItem | undefined, new_item: EquipmentItem | undefined, index: number) {
+        let pronew = {...prospects};
+        if (!pronew[crew.id]) {
+            pronew[crew.id] = [...crew.kwipment].filter(f => !!f) as number[];
+        }
+        let pros = pronew[crew.id];
+        if (pros?.length && old_item) {
+            pros = pros.filter(f => f !== Number(old_item?.id));
+        }
+        if (new_item) pros.push(Number(new_item.id));
+        if (!pros?.length) {
+            delete pronew[crew.id];
+        }
+        else {
+            pronew[crew.id] = pros;
+        }
+        setProspects(pronew);
+        //setModalOpenConfig(undefined);
     }
 
     function calculate(crew: PlayerCrew[]): Promise<IRosterCrew[]> {
