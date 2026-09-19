@@ -107,7 +107,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     const useDirect = props.useDirect || false //?? !!props.item;
     const mode = props.mode === 1 ? 'crew' : props.mode === 8 ? 'ship' : typeof props.mode === 'string' ? props.mode : 'item';
 
-    if (id === undefined && !symbol) {
+    if (id === undefined && !symbol && !props.src) {
         throw new Error("Avatar View requires either id or symbol");
     }
 
@@ -152,7 +152,7 @@ export const AvatarView = (props: AvatarViewProps) => {
         gen_item = { ...gen_item ?? {}, ...props.item };
     }
 
-    if (!gen_item) return <></>
+    if (!gen_item && !props.src) return <></>
 
     // maxRarity = gen_item?.max_rarity ?? gen_item?.rarity ?? 0;
     // borderColor = CONFIG.RARITIES[maxRarity].color;
@@ -178,7 +178,7 @@ export const AvatarView = (props: AvatarViewProps) => {
         textAlign: 'center'
     } as React.CSSProperties;
 
-    if (!hideRarity) {
+    if (!hideRarity && gen_item) {
         if (showMaxRarity || mode !== 'crew') {
             for (let i = 0; i < gen_item.max_rarity!; i++) {
                 rarity.push(<img key={i} src={star_reward} style={{ width: starSize + 'px' }} />);
@@ -196,7 +196,7 @@ export const AvatarView = (props: AvatarViewProps) => {
 
     if (targetGroup && HoverTarget) {
         return (
-            <div style={divStyle} onClick={() => props.onClick ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
+            <div style={divStyle} onClick={() => props.onClick && gen_item ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
                 <HoverTarget
                     passDirect={passDirect}
                     inputItem={gen_item as PlayerCrew}
@@ -218,7 +218,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
     else {
         return (
-            <div style={divStyle} onClick={() => props.onClick ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
+            <div style={divStyle} onClick={() => props.onClick && gen_item ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
                 <img
                     src={src}
                     style={imgStyle}
