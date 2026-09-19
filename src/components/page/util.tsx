@@ -1,5 +1,3 @@
-
-import { navigate } from 'gatsby';
 import * as lz from 'lz-string';
 import React from 'react';
 import { Container, Dropdown, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
@@ -8,6 +6,7 @@ import { IEphemeralData } from '../../context/playercontext';
 import { ISM_ID, PlayerData } from '../../model/player';
 import { CiteInventory, getOwnedCites } from '../../utils/collectionutils';
 import { getChrons } from '../../utils/playerutils';
+import { NavigateFunction } from 'react-router-dom';
 
 export const MaxMenuItems = 5;
 export const MaxMobileItems = 4;
@@ -79,7 +78,7 @@ const energyLogDefaults = {
 export const EnergyLogContext = React.createContext(energyLogDefaults);
 
 export interface NavItem {
-	title?: string | JSX.Element,
+	title?: string | React.ReactNode,
     textTitle?: string,
 	link?: string,
 	tooltip?: string,
@@ -89,19 +88,19 @@ export interface NavItem {
 	subMenu?: NavItem[];
 	checkVisible?: (data: NavItem) => boolean;
 	customAction?: (e: Event, data: NavItem) => void;
-	customRender?: (data: NavItem) => JSX.Element;
+	customRender?: (data: NavItem) => React.ReactNode;
     sidebarRole?: 'item' | 'heading' | 'separator';
     optionKey?: string;
 }
 
-export const renderColumnsMenu = (menu: NavItem, columns: number = 2) => {
+export const renderColumnsMenu = (menu: NavItem, navigate: NavigateFunction, columns: number = 2) => {
     return (
         <Dropdown key={v4()} text={menu.title as string} item simple direction='left'>
             {menu.subMenu && (
                 <Menu>
                     <Container fluid>
                         <div style={{ columns, columnGap: '1px' }}>
-                            {menu.subMenu.map(item => renderColumnsSubmenuItem(item))}
+                            {menu.subMenu.map(item => renderColumnsSubmenuItem(item, navigate))}
                         </div>
                     </Container>
                 </Menu>
@@ -112,7 +111,7 @@ export const renderColumnsMenu = (menu: NavItem, columns: number = 2) => {
 
 // Similar to renderSubmenuItem, with tweaks to look better in columns
 //	Only used by renderColumnsMenu
-const renderColumnsSubmenuItem = ((item: NavItem) => {
+const renderColumnsSubmenuItem = ((item: NavItem, navigate: NavigateFunction) => {
     // Set border to 0 to avoid weird shifting when hovering over some items
     return (
         <Menu.Item key={v4()} onClick={(e) => item.link && navigate(item.link)}
@@ -134,7 +133,7 @@ const renderColumnsSubmenuItem = ((item: NavItem) => {
     );
 });
 
-export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: boolean) => {
+export const renderSubmenuItem = (item: NavItem, navigate: NavigateFunction, title?: string, asDropdown?: boolean) => {
     //const menuKey = title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     if (asDropdown) {
         return (
@@ -146,7 +145,7 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
                     {!!item.subMenu?.length && <>
                         <div style={{marginLeft: '1em'}}>
                             {item.subMenu?.map((sub) => {
-                                return renderSubmenuItem(sub);
+                                return renderSubmenuItem(sub, navigate);
                             })}
                        </div>
                     </>}
@@ -175,7 +174,7 @@ export const renderSubmenuItem = (item: NavItem, title?: string, asDropdown?: bo
             {!!item.subMenu?.length && <>
                     <div style={{marginLeft: '1em'}}>
                         {item.subMenu?.map((sub) => {
-                            return renderSubmenuItem(sub);
+                            return renderSubmenuItem(sub, navigate);
                         })}
                     </div>
                 </>}
@@ -210,7 +209,7 @@ function formatItem(page: NavItem, style?: React.CSSProperties) {
     )
 }
 
-export const createSubMenu = (title: string | JSX.Element | undefined, children: NavItem[], verticalLayout: boolean = false, page?: NavItem, recursed?: boolean) => {
+export const createSubMenu = (title: string | React.ReactNode | undefined, children: NavItem[], navigate: NavigateFunction, verticalLayout: boolean = false, page?: NavItem, recursed?: boolean) => {
     //const menuKey = title.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
     const header = typeof title === 'string' ? undefined : title;
     const text = typeof title === 'string' ? title : undefined;
@@ -219,7 +218,7 @@ export const createSubMenu = (title: string | JSX.Element | undefined, children:
         return (
             <React.Fragment key={v4()}>
             {<h3 style={{marginTop:"0.75em"}}>{header ?? text}<hr/></h3>}
-            {children.map(item => item.customRender ? item.customRender(item) : (renderSubmenuItem(item)))}
+            {children.map(item => item.customRender ? item.customRender(item) : (renderSubmenuItem(item, navigate)))}
             </React.Fragment>
         );
     } else {
@@ -235,7 +234,7 @@ export const createSubMenu = (title: string | JSX.Element | undefined, children:
                 <Dropdown.Menu style={{left: recursed ? "6em" : undefined}}>
                     {children.map(item => {
                         if (item.customRender) return item.customRender(item);
-                        return (!!item.subMenu?.length && createSubMenu(item.title, item.subMenu, verticalLayout, item, true) ||
+                        return (!!item.subMenu?.length && createSubMenu(item.title, item.subMenu, navigate, verticalLayout, item, true) ||
                             <Dropdown.Item disabled={item.sidebarRole === 'separator'} icon={item.icon} key={v4()} onClick={(e) => item?.customAction ? item.customAction(e.nativeEvent, item) : navigate(item.link ?? '')}>
                                 {formatItem(item)}
                             </Dropdown.Item>
@@ -249,9 +248,9 @@ export const createSubMenu = (title: string | JSX.Element | undefined, children:
     }
 };
 
-export function drawMenuItem(page: NavItem, idx?: number, dropdown?: boolean) {
+export function drawMenuItem(page: NavItem, navigate: NavigateFunction, idx?: number, dropdown?: boolean) {
     //const menuKey = page.title?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? page.tooltip?.toLowerCase().replace(/[^a-z0-9_]/g, '') ?? v4();
-    return (!!page.subMenu?.length && createSubMenu(page.title ?? '', page.subMenu, dropdown, page) ||
+    return (!!page.subMenu?.length && createSubMenu(page.title ?? '', page.subMenu, navigate, dropdown, page) ||
         <Menu.Item disabled={page.sidebarRole === 'separator'} key={v4()} style={{ padding: (!!page.src && !page.title) ? "0 0.5em" : "0 1.25em", height: "48px" }} className='link item'  onClick={(e) => page.customAction ? page.customAction(e.nativeEvent, page) : navigate(page.link ?? '')}>
             {formatItem(page)}
         </Menu.Item>)

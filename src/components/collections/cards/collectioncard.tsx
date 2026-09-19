@@ -1,12 +1,12 @@
 import React from "react";
-import { CollectionCombo, CollectionInfo, CollectionFilterOptions } from "../../../model/collections";
+import { Icon, Image, Progress } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
-import { Progress, Icon, Image } from "semantic-ui-react";
+import { CollectionCombo, CollectionFilterOptions, CollectionInfo } from "../../../model/collections";
 
-import { ItemArchetypeBase, PlayerCollection, Reward } from "../../../model/player";
+import { ItemArchetypeBase, Reward } from "../../../model/player";
 import { CiteInventory, makeCiteNeeds } from "../../../utils/collectionutils";
-import { CollectionModalContext, CollectionsContext, formatColString } from "../context";
 import { RewardsGrid } from "../../crewtables/rewards";
+import { CollectionModalContext, formatColString } from "../context";
 
 export interface CollectionCardProps {
     style?: React.CSSProperties;
@@ -76,7 +76,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
             >
                 <Image
                     size="medium"
-                    src={`${process.env.GATSBY_ASSETS_URL}${playerCol.image?.replace(
+                    src={`${process.env.VITE_ASSETS_URL}${playerCol.image?.replace(
                         "/collection_vault/",
                         "collection_vault_"
                     )}.png`}
@@ -135,7 +135,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                             <i style={{ fontSize: "0.9em" }}>
                                 {t('collections.citation_cost_to_next')}:
                                 <img
-                                    src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+                                    src={`${process.env.VITE_ASSETS_URL}currency_honor_currency_0.png`}
                                     style={{ width: "16px", verticalAlign: "text-bottom" }}
                                 />
                                 {neededCost.toLocaleString()}
@@ -155,7 +155,7 @@ export const CollectionCard = (props: CollectionCardProps) => {
                                             }}
                                         >
                                             <img
-                                                src={`${process.env.GATSBY_ASSETS_URL}currency_honor_currency_0.png`}
+                                                src={`${process.env.VITE_ASSETS_URL}currency_honor_currency_0.png`}
                                                 style={{
                                                     width: "16px",
                                                     verticalAlign: "text-bottom",

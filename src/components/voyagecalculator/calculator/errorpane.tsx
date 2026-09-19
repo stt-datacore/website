@@ -3,7 +3,8 @@ import {
 	Button,
 	Message,
 	Popup,
-	Tab
+	Tab,
+	TabPane
 } from 'semantic-ui-react';
 
 import { IVoyageRequest } from '../../../model/voyage';
@@ -50,9 +51,9 @@ export const ErrorPane = (props: ErrorPaneProps) => {
 					</div>
 				</div>
 			</Message>
-			<Tab.Pane>
+			<TabPane>
 				<p>{tfmt('voyage.results.messages.failed_with_inputs', { inputs: renderInputOptions() })}</p>
-			</Tab.Pane>
+			</TabPane>
 		</React.Fragment>
 	);
 }

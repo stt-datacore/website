@@ -4,7 +4,7 @@ import {
 	Form,
 	Message
 } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 
 import { CrewMember } from '../../../model/crew';
 import { PlayerData } from '../../../model/player';
@@ -53,8 +53,8 @@ export function sendCalcResultTelemetry(
 	const estimatedDuration = calcResult.estimate.refills[0].result*60*60;
 
 	let allGolds = allCrew.filter(f => f.max_rarity === 5).map(c => c.symbol);
-	let maxxedGolds = [ ... new Set(playerData.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal < 0).map(c => c.symbol)) ];
-	let frozenGolds = [ ... new Set(playerData.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal > 0).map(c => c.symbol)) ];
+	let maxxedGolds = [ ...new Set(playerData.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal < 0).map(c => c.symbol)) ];
+	let frozenGolds = [ ...new Set(playerData.player.character.crew.filter(f => f.max_rarity === 5 && f.immortal && f.immortal > 0).map(c => c.symbol)) ];
 
 	let goldCount = allGolds.length;
 	let frozenCount = frozenGolds.filter(c => !maxxedGolds.includes(c)).length;
@@ -83,7 +83,7 @@ export function sendCalcResultTelemetry(
 		calculator,
 		am_traits: voyageConfig.crew_slots.map(cs => cs.trait),
 		ship_trait: voyageConfig.ship_trait,
-		... voyageConfig.skills,
+		...voyageConfig.skills,
 		extra_stats: {
 			immortalRatio,
 			frozenRatio,
@@ -93,7 +93,7 @@ export function sendCalcResultTelemetry(
 	};
 
 	try {
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/telemetry`, {
+		fetch(`${process.env.VITE_DATACORE_URL}api/telemetry`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

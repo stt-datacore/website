@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, navigate } from 'gatsby';
+import { Link, useNavigate } from 'react-router-dom';
 import { Grid, Card, Label, Image, Button, Icon, Rating, SemanticWIDTHS } from 'semantic-ui-react';
 
 import { CrewMember } from '../../model/crew';
@@ -43,6 +43,7 @@ type CardCrewProps = {
 
 const CardCrew = (props: CardCrewProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
 	const { t, tfmt } = globalContext.localized;
 	const { playerData } = globalContext.player;
 	const { crew, index } = props;
@@ -82,7 +83,7 @@ const CardCrew = (props: CardCrewProps) => {
 					<Icon name='x' color='red' style={{ cursor: 'pointer' }} />
 				</Label>
 				<Card.Content>
-					<Image src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`} floated='right' size='small' />
+					<Image src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} floated='right' size='small' />
 					<Card.Header>
 						<Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
 					</Card.Header>
