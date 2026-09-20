@@ -32,7 +32,7 @@ export interface CrewItemsViewProps {
     alwaysShowProgress?: boolean;
     gap?: string;
     prospectsClicked?: (data?: PlayerCrew) => void;
-    altItemClick?: (data: EquipmentItem, idx: number) => void;
+    altItemClick?: (data: EquipmentItem | undefined, idx: number) => void;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -40,7 +40,7 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
         let dnum = Math.floor(playerData.calc.lastModified.getTime() / 1000);
         let result = (crew.kwipment_expiration?.map((kw: number | number[]) => {
             if (kw === 0) return undefined;
-            let n = 0;
+            let n: number;
             if (typeof kw === 'number') {
                 n = (dnum+kw);
             }
@@ -72,7 +72,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const [toNext, next] = alwaysShowProgress && crew.q_bits >= 1300 ? [0, 1300] : (!!alwaysHideProgress || !quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
 
     crew.equipment ??= [];
-    let startlevel = 0;
+    let startlevel: number;
     let { level: lvl } = getRealCrewLevel(crew);
     startlevel = Math.floor(lvl / 10) * 4;
     // if (crew.local_slots?.length && crew.local_slots[0]?.level === crew.level) {
@@ -141,6 +141,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         if (crew.kwipment?.length && !crew.kwipment_slots) {
             if ((crew.kwipment as number[])?.some((q: number) => !!q)) {
                 let quips = (crew.kwipment as number[]).map(q => context.core.items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
+                // eslint-disable-next-line react-hooks/immutability
                 crew.kwipment_slots = quips.map(q => {
                     return {
                         level: 100,
@@ -273,18 +274,26 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
 
 export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
 
-    const globalContext = props.context;
     const navigate = useNavigate();
 
-    const { altItemClick, locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration, prospectsClicked } = props;
+    const { altItemClick, locked, nonInteractive, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration, prospectsClicked, idx } = props;
 
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
+    const itemClick = (() => {
+        if (altItemClick) {
+            altItemClick(equipment, idx || 0);
+        }
+        else if (!nonInteractive && !targetGroup && !!equipment?.symbol) {
+            navigate("/item_info?symbol=" + equipment.symbol)
+        }
+    });
+
     return (<div
-        onClick={(e) => (!props.nonInteractive && !targetGroup && (props.equipment?.symbol || altItemClick)) ? (altItemClick ? altItemClick(props.equipment, props.idx || 0) : navigate("/item_info?symbol=" + props.equipment?.symbol)) : false}
+        onClick={(e) => itemClick()}
         title={equipment?.name}
         style={{
-        cursor: props.equipment?.symbol || altItemClick ? "pointer" : 'no-drop',
+        cursor: (equipment?.symbol || altItemClick) ? "pointer" : 'no-drop',
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
