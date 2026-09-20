@@ -13,7 +13,8 @@ import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { getRealCrewLevel } from '../../utils/equipment';
 import { useNavigate } from 'react-router-dom';
 import { AvatarView } from './avatarview';
-import { isQuipmentMatch } from '../../utils/itemutils';
+import { getItemBonuses, getItemWithBonus, isQuipmentMatch } from '../../utils/itemutils';
+import CrewStat from './crewstat';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -335,13 +336,15 @@ export const QuipmentPickerModal = (props: QuipmentPickerModalProps) => {
 
     const [proposed, setProposed] = React.useState(current);
 
-    const items = React.useMemo(() => {
+    const { items, itemsWithBonus } = React.useMemo(() => {
         const quips = (equipment || globalContext.core.items.filter(i => i.type === 14));
-        return quips.filter(quip => isQuipmentMatch(crew as PlayerCrew, quip) && (proposed?.symbol === quip.symbol || current?.symbol === quip.symbol || !crew.kwipment?.some(k => Number(quip.id) == k)));
+        const items = quips.filter(quip => isQuipmentMatch(crew as PlayerCrew, quip) && (proposed?.symbol === quip.symbol || current?.symbol === quip.symbol || !crew.kwipment?.some(k => Number(quip.id) == k)));
+        const itemsWithBonus = items.map(item => getItemWithBonus(item));
+        return { items, itemsWithBonus };
     }, [equipment, globalContext.core.items, proposed]);
 
     return (<>
-        <Modal size={'mini'} open={show}>
+        <Modal size={'small'} open={show}>
             <Modal.Header>
                 { (
                     <div style={{
@@ -371,7 +374,9 @@ export const QuipmentPickerModal = (props: QuipmentPickerModalProps) => {
             <Modal.Content style={{maxHeight: '25em', overflowY: 'auto'}}>
                 <Table striped selectable>
                     <Table.Body>
-                        {items.map(available => {
+                        {items.map((available, idx) => {
+                            const bonuses = Object.values(itemsWithBonus[idx].bonusInfo.bonuses);
+
                             return (
                                 <Table.Row key={`quipment_pickeR_modal_${available.symbol}`}
                                     onClick={() => setProposed(available)}
@@ -392,6 +397,15 @@ export const QuipmentPickerModal = (props: QuipmentPickerModalProps) => {
                                     </Table.Cell>
                                     <Table.Cell>
                                         {available.name}
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <div style={{...OptionsPanelFlexColumn, alignItems: 'flex-start', justifyContent: 'center'}}>
+                                        {bonuses?.map((skill, idx) => {
+                                            return (
+                                                <CrewStat style={{fontSize: '1rem'}} key={`stat_${idx}_${skill.skill}_${available.symbol}`} skill_name={skill.skill} data={skill} />
+                                            )
+                                        })}
+                                        </div>
                                     </Table.Cell>
                                 </Table.Row>
                             )
