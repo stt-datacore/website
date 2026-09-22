@@ -41,7 +41,8 @@ const ScoreFields = [
     "tertiary_rarity",
     "velocity",
     "sko_absolute",
-    "sko_ambivalent"
+    "sko_ambivalent",
+    "adv_crit"
 ]
 
 const RankFields = [
@@ -71,7 +72,8 @@ const RankFields = [
     "tertiary_rarity_rank",
     "velocity_rank",
     "sko_absolute_rank",
-    "sko_ambivalent_rank"
+    "sko_ambivalent_rank",
+    "adv_crit_rank"
 ]
 
 export const getDataCoreRanksTableConfig = (weights: CurrentWeighting, t: TranslateMethod, rarityFilter?: number[]) => {
