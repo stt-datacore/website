@@ -1827,6 +1827,7 @@
         "quipment_score": "Rüstzeug Werte",
         "rank": "Rang",
         "scores": {
+            "adv_crit": "Gewichtetes Kriterium",
             "am_seating": "Antimaterie",
             "collections": "Sammlungen",
             "crit": "Erhöhte Krit",
