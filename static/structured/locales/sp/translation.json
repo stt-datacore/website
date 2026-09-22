@@ -1852,6 +1852,7 @@
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
         "scores": {
+            "adv_crit": "Crítico ponderado",
             "am_seating": "Antimateria",
             "collections": "Colecciones",
             "crit": "Crítico elevado",

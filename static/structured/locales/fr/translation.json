@@ -1854,6 +1854,7 @@
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
         "scores": {
+            "adv_crit": "Critique pondéré",
             "am_seating": "Antimatière",
             "collections": "Collections",
             "crit": "Critique élevée",

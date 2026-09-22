@@ -292,6 +292,7 @@ export interface Nickname {
 export interface GauntletPlusWeights {
     gauntlet: number,
     crit: number,
+    adv_crit: number,
     quipment: number
 }
 
@@ -316,6 +317,7 @@ export interface ConstituentWeights {
     gauntlet: number
     gauntlet_plus: number
     crit: number
+    adv_crit: number
     ship: number
     quipment: number
     collections: number
@@ -430,6 +432,8 @@ export interface RankScoring {
     donut_rank: number;
     gauntlet_plus_rank: number;
     gauntlet_plus: number;
+    adv_crit: number;
+    adv_crit_rank: number;
     gauntlet: number;
     greatness_rank: number;
     greatness: number;
