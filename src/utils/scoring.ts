@@ -68,8 +68,14 @@ export function applyDynamicWeights(roster: CrewMember[], weighting: CurrentWeig
         let n_voyage_plus = c.ranks.scores.voyage_plus * weights.voyage_plus;
         let n_shuttle_plus = c.ranks.scores.shuttle_plus * weights.shuttle_plus;
         let n_ship_rank = c.ranks.ship_rank * weights.ship;
+        let n_donut_rank = c.ranks.scores.donut_rank * weights.donut;
+        let n_ac_rank = c.ranks.scores.adv_crit_rank * weights.adv_crit;
+        let n_great_rank = c.ranks.scores.greatness_rank * weights.greatness;
 
         const scores = [
+            n_great_rank,
+            n_ac_rank,
+            n_donut_rank,
             n_main_cast,
             n_variant,
             n_skill_positions,
