@@ -1828,6 +1828,7 @@
         "quipment_score": "Quipment Score",
         "rank": "Rank",
         "scores": {
+            "adv_crit": "Weighted Crit",
             "am_seating": "Antimatter",
             "collections": "Collections",
             "crit": "Elevated Crit",
@@ -1890,7 +1891,8 @@
                 "crit": "{{rank_names.scores.crit}}",
                 "gauntlet": "{{rank_names.scores.gauntlet}}",
                 "quipment": "{{rank_names.scores.quipment}}",
-                "title": "Gauntlet+ Weighting"
+                "title": "Gauntlet+ Weighting",
+                "adv_crit": "{{rank_names.scores.adv_crit}}"
             },
             "voyage_plus": {
                 "am_seating": "{{rank_names.scores.am_seating}}",
