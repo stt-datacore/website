@@ -1811,6 +1811,7 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "adv_crit_rank": "Weighted Crit Rank",
         "always_show_datascore": "Always show DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
