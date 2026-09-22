@@ -1837,6 +1837,7 @@
             "offense": "Attaque (Précision/Dégâts)",
             "select": "Sélectionnez un avantage"
         },
+        "adv_crit": "Rang de critique pondéré",
         "always_show_datascore": "Toujours afficher le DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Étage Big Book",
@@ -1854,6 +1855,7 @@
         "quipment_score": "Rang de Quipement",
         "rank": "Rang",
         "scores": {
+            "adv_crit": "Critique pondéré",
             "am_seating": "Antimatière",
             "collections": "Collections",
             "crit": "Critique élevée",

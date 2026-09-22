@@ -1825,6 +1825,7 @@
             "offense": "Angriff (Genauigkeit/Schaden)",
             "select": "Wählen Sie einen Vorteil"
         },
+        "adv_crit": "Gewichtetes Kriteriumrang",
         "always_show_datascore": "DataScore immer anzeigen",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Stufe",
@@ -1842,6 +1843,7 @@
         "quipment_score": "Rüstzeug Werte",
         "rank": "Rang",
         "scores": {
+            "adv_crit": "Gewichtetes Kriterium",
             "am_seating": "Antimaterie",
             "collections": "Sammlungen",
             "crit": "Erhöhte Krit",

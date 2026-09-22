@@ -1826,6 +1826,7 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
+        "adv_crit_rank": "Weighted Crit Rank",
         "always_show_datascore": "Always show DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
@@ -1843,6 +1844,7 @@
         "quipment_score": "Quipment Score",
         "rank": "Rank",
         "scores": {
+            "adv_crit": "Weighted Crit",
             "am_seating": "Antimatter",
             "collections": "Collections",
             "crit": "Elevated Crit",
@@ -1905,7 +1907,8 @@
                 "crit": "{{rank_names.scores.crit}}",
                 "gauntlet": "{{rank_names.scores.gauntlet}}",
                 "quipment": "{{rank_names.scores.quipment}}",
-                "title": "Gauntlet+ Weighting"
+                "title": "Gauntlet+ Weighting",
+                "adv_crit": "{{rank_names.scores.adv_crit}}"
             },
             "voyage_plus": {
                 "am_seating": "{{rank_names.scores.am_seating}}",

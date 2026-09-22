@@ -1835,6 +1835,7 @@
             "offense": "Ofensa (Precisión/Daño)",
             "select": "Seleccione una ventaja"
         },
+        "adv_crit": "Rango de crítico ponderado",
         "always_show_datascore": "Mostrar siempre DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",
@@ -1852,6 +1853,7 @@
         "quipment_score": "Puntuación del Quipo",
         "rank": "Rango",
         "scores": {
+            "adv_crit": "Crítico ponderado",
             "am_seating": "Antimateria",
             "collections": "Colecciones",
             "crit": "Crítico elevado",
