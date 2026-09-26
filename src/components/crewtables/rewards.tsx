@@ -39,7 +39,9 @@ export interface RewardsGridProps {
 	crewTargetGroup?: string;
 	size?: number;
 	style?: React.CSSProperties;
+	altQuantity?: (quantity?: number, neg?: boolean, owned?: number, silentZero?: boolean) => React.ReactNode;
 	forceCols?: number;
+	alwaysShowQuantity?: boolean;
 }
 
 export const RewardsGrid = (props: RewardsGridProps) => {
@@ -50,7 +52,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	// props.maxCols ??= 4;
 	// props.wrap ??= false;
 
-	const { kind, needs, wrap, maxCols, targetGroup, crewTargetGroup } = props;
+	const { kind, needs, wrap, maxCols, targetGroup, crewTargetGroup, alwaysShowQuantity, altQuantity } = props;
 	const rewards = props.rewards ?? [];
 	const context = React.useContext(GlobalContext);
 	const { ITEM_ARCHETYPES } = context.localized;
@@ -97,6 +99,8 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 	if (rewards.length < cols) cols = rewards.length;
 	if (props.forceCols) cols = props.forceCols;
 
+	const q = altQuantity || quantityLabel;
+
 	if (wrap) {
 
 		let idx = 0;
@@ -124,7 +128,7 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 							const img = needs?.length ? reward.icon?.file : getImageName(reward);
 							checkReward(items, reward, !!needs?.length);
 							if (reward.symbol && ITEM_ARCHETYPES[reward.symbol]) {
-								reward = { ... reward, ... ITEM_ARCHETYPES[reward.symbol]};
+								reward = { ...reward, ...ITEM_ARCHETYPES[reward.symbol]};
 							}
 							return (
 								<Grid.Column key={idx + "_rowcolreward"}>
@@ -142,10 +146,10 @@ export const RewardsGrid = (props: RewardsGridProps) => {
 												altItems={items}
 												targetGroup={(reward.type === 1 ? (crewTargetGroup ?? 'collectionsTarget') : (targetGroup ?? 'collectionsTarget_item'))}
 												symbol={reward.symbol}
-												src={`${process.env.GATSBY_ASSETS_URL}${img}`}
+												src={`${process.env.VITE_ASSETS_URL}${img}`}
 												quantity={reward.quantity}
 											/>
-											<div style={{textAlign: 'center'}}>{(reward.quantity > 1 || !!needs?.length) && (<div><small>{quantityLabel(reward.quantity, negative, reward.owned)}</small></div>)}</div>
+											<div style={{textAlign: 'center'}}>{(reward.quantity > 1 || !!alwaysShowQuantity ||  !!needs?.length) && (<div><small>{q(reward.quantity, negative, reward.owned)}</small></div>)}</div>
 										</div>
 									</div>
 								</Grid.Column>
@@ -183,7 +187,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 			value: reward.symbol,
 			text: arch?.name ?? reward.name,
 			content: !icons ? undefined : (<div title={arch?.name ?? reward.full_name ?? reward.name} style={{ display: "flex", flexDirection: "row", width: "24px", alignItems: "center" }}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}${getImageName(reward)}`} style={{ height: "24px", marginRight: "0.25em" }} />
+				<img src={`${process.env.VITE_ASSETS_URL}${getImageName(reward)}`} style={{ height: "24px", marginRight: "0.25em" }} />
 				{arch?.name ?? reward.full_name ?? reward.name}
 			</div>)
 		}
@@ -241,7 +245,7 @@ export function quantityLabel(quantity?: number, neg?: boolean, owned?: number, 
 		}
 	}
 
-	let qstr = "";
+	let qstr: string;
 
 	if (quantity >= 10000) {
 		qstr = Math.round(quantity / 1000).toLocaleString() + 'K';

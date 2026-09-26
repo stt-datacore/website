@@ -1,9 +1,7 @@
 import React from 'react';
-import { DropdownItemProps } from 'semantic-ui-react';
-import { OptionsBase, OptionsModal, OptionGroup, OptionsModalProps, ModalOption } from '../../components/base/optionsmodal_base';
-import CONFIG from '../CONFIG';
+import { ModalOption, OptionGroup, OptionsBase, OptionsModal, OptionsModalProps } from '../../components/base/optionsmodal_base';
 import { GlobalContext } from '../../context/globalcontext';
-import { TranslateMethod } from '../../model/player';
+import CONFIG from '../CONFIG';
 
 export interface BeholdModalOptions extends OptionsBase {
 	portal: string;

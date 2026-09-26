@@ -77,7 +77,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                         <PortalFilter
                             portalFilter={citeConfig?.portal}
                             setPortalFilter={(data) => {
-                                setCiteConfig({ ... citeConfig ?? {}, portal: data });
+                                setCiteConfig({ ...citeConfig ?? {}, portal: data });
                             }}
                             />
                     </div>
@@ -85,7 +85,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                         <Input
                             label={t('global.search')}
                             value={citeConfig.nameFilter}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, nameFilter: value })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, nameFilter: value })}
                             />
                         <i className='delete icon'
                             title={t('cite_opt.config.clear')}
@@ -94,7 +94,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                                 marginLeft: "0.75em"
                             }}
                             onClick={(e) => {
-                                    setCiteConfig({ ... citeConfig ?? {}, nameFilter: '' });
+                                    setCiteConfig({ ...citeConfig ?? {}, nameFilter: '' });
                                     setTimeout(() => {
                                         setCiteConfig({ ...citeConfig ?? {}, nameFilter: '' , checks: [] });
                                     });
@@ -110,7 +110,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_primary_skill')}
                             value={citeConfig.priSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, priSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, priSkills: value as string[] })}
                             />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -120,7 +120,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_secondary_skill')}
                             value={citeConfig.secSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, secSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, secSkills: value as string[] })}
                             />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -130,7 +130,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_voyage_seating')}
                             value={citeConfig.seatSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, seatSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, seatSkills: value as string[] })}
                             />
                     </div>
                 </div>
@@ -148,7 +148,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             multiple={true}
                             selection={citeConfig.collections}
                             setSelection={(data) => {
-                                setCiteConfig({ ... citeConfig ?? {}, collections: typeof data === 'number' ? [data] : (!data ? [] : data) });
+                                setCiteConfig({ ...citeConfig ?? {}, collections: typeof data === 'number' ? [data] : (!data ? [] : data) });
                             }}
                             customRender={(col) => {
 

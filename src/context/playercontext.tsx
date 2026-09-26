@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';
@@ -184,7 +185,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 			});
 		}
 
-		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
+		const dtImported = (input.calc?.lastImported) ? new Date(input.calc?.lastImported) : new Date();
 
 		// stripped is used for any storage purpose, i.e. sharing profile
 		//	Ephmeral data is stripped from playerData here

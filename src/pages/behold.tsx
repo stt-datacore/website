@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, navigate } from 'gatsby';
+import { Link, Navigate } from 'react-router-dom';
 import { Step, Icon, Button, Message, Popup } from 'semantic-ui-react';
 
 import { CrewMember } from '../model/crew';
@@ -160,7 +160,7 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 							size='tiny'
 							trigger={
 								<Button icon='clipboard' content={t('global.copy_permalink_clipboard')}
-									onClick={() => navigator.clipboard.writeText(`${process.env.GATSBY_DATACORE_URL}/behold?${permalink}`)}
+									onClick={() => navigator.clipboard.writeText(`${process.env.VITE_DATACORE_URL}/behold?${permalink}`)}
 								/>
 							}
 						/>
@@ -187,7 +187,7 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 		const linkState = {
 			prospect: crewSymbols
 		};
-		navigate(linkUrl, { state: linkState });
+		Navigate({ to: linkUrl, state: linkState });
 	}
 };
 
