@@ -1765,6 +1765,7 @@
             "item_table": "Artikeltabelle",
             "ship_table": "Schiffstabelle"
         },
+        "first_entitlement": "Erster Anspruch",
         "items": "{{menu.roster.items}}",
         "other": "Andere",
         "ships": "{{menu.roster.ships}}",
@@ -1818,6 +1819,7 @@
         "break_out": "Schlüsseln Sie die einzelnen Boss-Ergebnisse auf."
     },
     "rank_names": {
+        "adv_crit": "Gewichtetes Kriteriumrang",
         "advantage": {
             "d": "V",
             "defense": "Verteidigung (Reparatur/Ausweichen)",
@@ -1825,7 +1827,6 @@
             "offense": "Angriff (Genauigkeit/Schaden)",
             "select": "Wählen Sie einen Vorteil"
         },
-        "adv_crit": "Gewichtetes Kriteriumrang",
         "always_show_datascore": "DataScore immer anzeigen",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Stufe",
