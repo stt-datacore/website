@@ -29,7 +29,6 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
             }
         }
     }
-
     delete p.player.entitlements;
     delete p.player.mailbox;
     delete p.player.motd;
