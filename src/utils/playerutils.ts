@@ -13,22 +13,18 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     // Find grant/claim for guild_create
     // This is a good proxy for account creation
     p.calc ??= {};
-    let gc = p.player.entitlements?.granted.find(e => e.symbol === 'guild_create');
-    if (gc) {
-        let h = gc.history.find(h => h.what === 'granted');
-        if (h) {
-            p.calc.guild_create = new Date(h.when);
-        }
+
+    let gc = p.player.entitlements?.granted.map(m => m.history).filter(h => h.filter(h2 => h2.what === 'granted')).flat().map(d => new Date(d.when)).sort((a, b) => a.getTime() - b.getTime());
+    let cc = p.player.entitlements?.claimed.map(m => m.history).filter(h => h.filter(h2 => h2.what === 'granted')).flat().map(d => new Date(d.when)).sort((a, b) => a.getTime() - b.getTime());
+    let gctime = undefined as Date | undefined;
+    if (gc?.length) {
+        gctime = gc[0];
     }
-    else {
-        let cc = p.player.entitlements?.claimed.find(e => e.symbol === 'guild_create');
-        if (cc) {
-            let h = cc.history.find(h => h.what === 'granted');
-            if (h) {
-                p.calc.guild_create = new Date(h.when);
-            }
-        }
+    if (cc?.length && (!gctime || gctime.getTime() > cc[0].getTime())) {
+        gctime = cc[0];
     }
+    if (gctime) p.calc.guild_create = gctime;
+
     delete p.player.entitlements;
     delete p.player.mailbox;
     delete p.player.motd;
