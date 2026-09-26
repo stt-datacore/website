@@ -698,6 +698,7 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	});
 
 	playerData.calc = {
+		guild_create: playerData?.calc?.guild_create ? new Date(playerData.calc.guild_create) : undefined,
 		numImmortals: numImmortals?.size ?? 0,
 		lastModified
 	};

@@ -189,7 +189,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		// stripped is used for any storage purpose, i.e. sharing profile
 		//	Ephmeral data is stripped from playerData here
 		const strippedData = input.stripped ? input : stripPlayerData(coreData.items, {...input}) as PlayerData;
-		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
+		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString(), 'guild_create': strippedData.calc?.guild_create ? new Date(strippedData.calc.guild_create) : undefined };
 
 		if (input.stripped !== true) {
 			setStripped({ ... structuredClone(strippedData), stripped: true });

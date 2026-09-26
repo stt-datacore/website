@@ -50,7 +50,7 @@ export interface PlayerData {
   fleet_boss_battles_root?: BossBattlesRoot;
   captains_bridge_root?: CaptainsBridgeRoot;
   seasonal_event_shop_root?: SeasonalShop;
-  calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
+  calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; guild_create?: Date };
   archetype_cache?: ArchetypeRoot20;
   [key: string]: any;
   forte_root: ForteRoot;
