@@ -149,6 +149,11 @@ export const ResourceTracker = () => {
             title: t('resource_tracker.columns.average_difference')
         },
         {
+            column: 'moving_average_difference',
+            width: 1,
+            title: t('resource_tracker.columns.moving_average_difference')
+        },
+        {
             column: 'total_difference',
             width: 1,
             title: t('resource_tracker.columns.total_difference')
@@ -173,7 +178,7 @@ export const ResourceTracker = () => {
         if (!!saleData?.honor_sale || !enabled || (!finalDaily && !finalWeekly) || (!resourceFilter.includes('honor') && resourceFilter.length) || !stats?.length) return <></>;
         let i = stats.findLastIndex(f => f.resource === 'honor');
         if (i === -1) return <></>;
-        let h = Math.round(stats[i].average_difference);
+        let h = Math.round(stats[i].moving_average_difference);
 
         if (h <= 0) {
             return (
@@ -391,6 +396,9 @@ export const ResourceTracker = () => {
                     {Math.round(row.average_difference).toLocaleString()}
                 </Table.Cell>
                 <Table.Cell>
+                    {Math.round(row.moving_average_difference).toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
                     {Math.round(row.total_difference).toLocaleString()}<br /><span style={pctstyle}>{(100 * row.total_change_pct).toFixed(1)}%</span>
                 </Table.Cell>
             </Table.Row>
@@ -468,6 +476,7 @@ export const ResourceTracker = () => {
                         average_difference: 0,
                         total_difference: 0,
                         moving_average: 0,
+                        moving_average_difference: 0,
                         amount_pct: 0,
                         change_pct: 0,
                         total_change_pct: 0
@@ -539,6 +548,12 @@ export const ResourceTracker = () => {
                     const stat = rstats[i];
                     let diffs = rstats.map(stat => stat.difference);
                     stat.average_difference = diffs.slice(0, i + 1).reduce((p, n) => p + n, 0) / (i + 1);
+                    if (i === 0) {
+                        stat.moving_average_difference = stat.average_difference;
+                    }
+                    else {
+                        stat.moving_average_difference = (rstats[i].difference + rstats[i - 1].difference) / 2;
+                    }
                     if (!high[stat.resource]) continue;
                     stat.amount_pct = stat.amount / (low[stat.resource] || 1);
                     if (!stat.amount || stat.amount === low[stat.resource] || i == 0) continue;
