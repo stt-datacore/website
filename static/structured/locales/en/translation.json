@@ -1766,6 +1766,7 @@
             "item_table": "Item Table",
             "ship_table": "Ship Table"
         },
+        "first_entitlement": "First Entitlement",
         "items": "{{menu.roster.items}}",
         "other": "Other",
         "ships": "{{menu.roster.ships}}",
@@ -1819,6 +1820,7 @@
         "break_out": "Break out individual boss scores."
     },
     "rank_names": {
+        "adv_crit_rank": "Weighted Crit Rank",
         "advantage": {
             "d": "D",
             "defense": "Defense (Repair/Evasion)",
@@ -1826,7 +1828,6 @@
             "offense": "Offense (Accuracy/Damage)",
             "select": "Select an advantage"
         },
-        "adv_crit_rank": "Weighted Crit Rank",
         "always_show_datascore": "Always show DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Big Book Tier",
@@ -1904,11 +1905,11 @@
                 "title": "Base+ Weighting"
             },
             "gauntlet_plus": {
+                "adv_crit": "{{rank_names.scores.adv_crit}}",
                 "crit": "{{rank_names.scores.crit}}",
                 "gauntlet": "{{rank_names.scores.gauntlet}}",
                 "quipment": "{{rank_names.scores.quipment}}",
-                "title": "Gauntlet+ Weighting",
-                "adv_crit": "{{rank_names.scores.adv_crit}}"
+                "title": "Gauntlet+ Weighting"
             },
             "voyage_plus": {
                 "am_seating": "{{rank_names.scores.am_seating}}",

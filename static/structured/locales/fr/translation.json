@@ -1777,6 +1777,7 @@
             "item_table": "Tableau des éléments",
             "ship_table": "Tableau des vaisseaux"
         },
+        "first_entitlement": "Premier droit",
         "items": "{{menu.roster.items}}",
         "other": "Autre",
         "ships": "{{menu.roster.ships}}",
@@ -1830,6 +1831,7 @@
         "break_out": "Affichez les scores individuels des boss."
     },
     "rank_names": {
+        "adv_crit": "Rang de critique pondéré",
         "advantage": {
             "d": "D",
             "defense": "Défense (Réparation/Évasion)",
@@ -1837,7 +1839,6 @@
             "offense": "Attaque (Précision/Dégâts)",
             "select": "Sélectionnez un avantage"
         },
-        "adv_crit": "Rang de critique pondéré",
         "always_show_datascore": "Toujours afficher le DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Étage Big Book",

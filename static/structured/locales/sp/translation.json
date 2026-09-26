@@ -1775,6 +1775,7 @@
             "item_table": "Tabla de elementos",
             "ship_table": "Tabla de buques"
         },
+        "first_entitlement": "Primer derecho",
         "items": "{{menu.roster.items}}",
         "other": "Otra",
         "ships": "{{menu.roster.ships}}",
@@ -1828,6 +1829,7 @@
         "break_out": "Muestra las puntuaciones individuales de cada jefe."
     },
     "rank_names": {
+        "adv_crit": "Rango de crítico ponderado",
         "advantage": {
             "d": "D",
             "defense": "Defensa (Reparación/Evasión)",
@@ -1835,7 +1837,6 @@
             "offense": "Ofensa (Precisión/Daño)",
             "select": "Seleccione una ventaja"
         },
-        "adv_crit": "Rango de crítico ponderado",
         "always_show_datascore": "Mostrar siempre DataScore",
         "arena_rank": "Arena",
         "bigbook_tier": "Piso de Big Book",

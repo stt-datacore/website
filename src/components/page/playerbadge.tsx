@@ -42,6 +42,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
             <Item.Content>
                 <Item.Header>{playerData.player.character.display_name}</Item.Header>
                 <Item.Meta style={{marginLeft: 0, marginTop: "0.25em"}}>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t('profile.first_entitlement')} {playerData.calc?.guild_create && new Date(playerData.calc.guild_create).toLocaleDateString() || '?'}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>VIP {playerData.player.vip_level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t('base.level')} {playerData.player.character.level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t("player_badge.n_immortals", { n: `${immortal}`})}</Label>
