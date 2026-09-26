@@ -10,6 +10,26 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.archetype_cache;
     delete p.version;
 
+
+    // Find grant/claim for guild_create
+    // This is a good proxy for account creation
+    p.calc ??= {};
+    let gc = p.player.entitlements?.granted.find(e => e.symbol === 'guild_create');
+    if (gc) {
+        let h = gc.history.find(h => h.what === 'granted');
+        if (h) {
+            p.calc.guild_create = new Date(h.when);
+        }
+    }
+    else {
+        let cc = p.player.entitlements?.claimed.find(e => e.symbol === 'guild_create');
+        if (cc) {
+            let h = cc.history.find(h => h.what === 'granted');
+            if (h) {
+                p.calc.guild_create = new Date(h.when);
+            }
+        }
+    }
     delete p.player.entitlements;
     delete p.player.mailbox;
     delete p.player.motd;
