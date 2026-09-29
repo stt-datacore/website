@@ -40,6 +40,10 @@ export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | Cu
     if (!ignore_cloak && meta.startsWith('arena')) {
         if (!cloakcheck()) return false;
     }
+    if (meta.endsWith("_each")) {
+        if (![0,1,2].every(type => crew.some(c => c.action.bonus_type === type))) return false;
+        meta = meta.replace("_each", "") as LineUpMeta;
+    }
     let ables = crew.map(m => m.action.ability?.type ?? -1);
     let types = crew.map(m => m.action.bonus_type);
     let grants = ship.actions!.map(a => a.status).filter(f => f !== undefined);
