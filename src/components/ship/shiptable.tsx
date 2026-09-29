@@ -174,8 +174,8 @@ export const ShipTable = (props: ShipTableProps) => {
 							title: boss.name,
 							reverse: true,
 							customCompare: (a: Ship, b: Ship) => {
-								let aboss = a.ranks?.bosses.find(f => f.boss === boss.symbol);
-								let bboss = b.ranks?.bosses.find(f => f.boss === boss.symbol);
+								let aboss = a.ranks?.bosses?.find(f => f.boss === boss.symbol);
+								let bboss = b.ranks?.bosses?.find(f => f.boss === boss.symbol);
 								if (!aboss && !bboss) return 0;
 								else if (!aboss) return -1;
 								else if (!bboss) return 1;
@@ -424,7 +424,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			</>}
 			{breakoutBosses && (<>
 				{bosses.map((boss, idx) => {
-					let rank = ship.ranks?.bosses.find(f => f.boss === boss.symbol);
+					let rank = ship.ranks?.bosses?.find(f => f.boss === boss.symbol);
 					let isActive = activeMode && activeMode.ship === ship && activeMode.mode === 'fbb' && activeMode.boss === boss.symbol;
 
 					const toggle = () => {
@@ -548,6 +548,9 @@ export const ShipTable = (props: ShipTableProps) => {
 		}
 		else {
 			ecrew = globalContext.core.crew;
+		}
+		if (!ship.ranks?.bosses?.length) {
+			console.warn(`${ship.symbol} has no bosses!`);
 		}
 		if (fbb && ship.ranks?.divisions.fbb_crew) {
 			let bosses = getBosses(ship).filter(f => fbb === 'all' || f.symbol === fbb);
