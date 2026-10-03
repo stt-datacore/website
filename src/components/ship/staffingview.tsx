@@ -173,7 +173,8 @@ export const ShipStaffingView = (props: ShipStaffingProps) => {
 				justifyContent: "center",
 				alignItems: "center",
 				padding: 0,
-				marginBottom: '2em'
+				marginBottom: '2em',
+				flexWrap: 'wrap'
 			}}>
 				{!!ship && ship.battle_stations?.map((bs, idx) => (
 					<div key={`${isOpponent ? 'opponent_' : ''}ship_battle_station_${idx}_${bs.skill}`} style={flexCol}>
