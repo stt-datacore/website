@@ -21,7 +21,7 @@ const ShipsPage = () => {
         }
     }, [playerData]);
 
-    return <DataPageLayout demands={['all_ships', 'battle_metas']} playerPromptType='recommend' pageTitle={t('pages.ships')}>
+    return <DataPageLayout demands={['all_ships', 'battle_metas', 'portal_log']} playerPromptType='recommend' pageTitle={t('pages.ships')}>
         <React.Fragment>
             {!!playerData && <Step.Group fluid style={{marginBottom: '1em'}} widths={3}>
 				<Step active={mode === 'owned'} onClick={() => setMode('owned')}>

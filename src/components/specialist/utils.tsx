@@ -12,14 +12,14 @@ export function drawTraits(traits: string[], TRAIT_NAMES: TraitNames, style?: Re
     const flexRow = OptionsPanelFlexRow;
 
     const traitimg = traits.map((trait) => {
-        let trait_icon = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+        let trait_icon = `${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`;
         return <div style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
             <img src={trait_icon} style={{height: `${iconSize}px`}} />
             {TRAIT_NAMES[trait]}
         </div>
     });
 
-    const traitcontent = [] as JSX.Element[];
+    const traitcontent = [] as React.ReactNode[];
 
     for (let img of traitimg) {
         traitcontent.push(img);
@@ -48,14 +48,14 @@ export function drawSkills(skills: string[], t: TranslateMethod, combo?: 'and' |
     })();
 
     const skillimg = skills.map((skill) => {
-        let skill_icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`;
+        let skill_icon = `${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
         return <div title={CONFIG.SKILLS[skill]} style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
             <img src={skill_icon} style={{width: `${iconSize}px`}} />
             {!!names && <span>{CONFIG.SKILLS[skill]}</span>}
         </div>
     });
 
-    const skillcontent = [] as JSX.Element[];
+    const skillcontent = [] as React.ReactNode[];
 
     for (let img of skillimg) {
         if (skillcontent.length) skillcontent.push(<div style={{width: `${iconSize}px`}}>{combo_txt}</div>);

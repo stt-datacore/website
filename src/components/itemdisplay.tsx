@@ -36,10 +36,10 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		let borderRadius = Math.floor(this.props.size / 7);
 		let borderColor = CONFIG.RARITIES[this.props.maxRarity ?? 0].color;
 
-		let star_reward = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward.png`;
-		let star_reward_inactive = `${process.env.GATSBY_ASSETS_URL}atlas/star_reward_inactive.png`;
+		let star_reward = `${process.env.VITE_ASSETS_URL}atlas/star_reward.png`;
+		let star_reward_inactive = `${process.env.VITE_ASSETS_URL}atlas/star_reward_inactive.png`;
 
-		let rarity = [] as JSX.Element[];
+		let rarity = [] as React.ReactNode[];
 		if (!this.props.hideRarity) {
 			for (let i = 0; i < this.props.rarity; i++) {
 				rarity.push(<img key={i} src={star_reward} style={{ width: starSize + 'px' }} />);
@@ -50,7 +50,7 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 		}
 
 		const divStyle = {
-			... (this.props.style ?? {}),
+			...(this.props.style ?? {}),
 			position: 'relative',
 			display: 'flex',
 			flexDirection: "column",
@@ -90,10 +90,10 @@ class ItemDisplay extends PureComponent<ItemDisplayProps> {
 			else if (crew.immortal && crewBackground === 'rich') {
 				let kwip = this.props.substitute_kwipment ?? crew.kwipment;
 				if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
-					imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+					imgStyle.backgroundImage = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
 				}
 				else {
-					imgStyle.backgroundImage = `url(${process.env.GATSBY_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+					imgStyle.backgroundImage = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
 				}
 				imgStyle.backgroundSize = (this.props.size) + "px";
 				imgStyle.backgroundRepeat = "no-repeat";

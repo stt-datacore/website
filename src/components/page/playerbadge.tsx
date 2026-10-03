@@ -15,7 +15,7 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
 
     const { crewLimit, unfrozen, immortal, avatar } = React.useMemo(() => {
 
-        let portrait = `${process.env.GATSBY_ASSETS_URL}${playerData?.player?.character?.crew_avatar
+        let portrait = `${process.env.VITE_ASSETS_URL}${playerData?.player?.character?.crew_avatar
             ? (playerData?.player?.character?.crew_avatar?.portrait?.file ?? playerData?.player?.character?.crew_avatar?.portrait ?? 'crew_portraits_cm_empty_sm.png')
             : 'crew_portraits_cm_empty_sm.png'}`;
 
@@ -33,15 +33,35 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
     if (!playerData) return <></>;
 
     return <Item.Group style={{...style, cursor: openPlayerPanel ? 'pointer' : undefined }} onClick={() => openPlayerPanel ? openPlayerPanel() : null}>
-        <Item>
-
-            <div style={{display: 'inline', textAlign: 'center'}}>
-                <img src={avatar} style={{height: '84px', width: 'auto !important', margin: '0.5em', marginTop: 0}} />
-            </div>
-
+        <Item style={{width: '16rem'}}>
             <Item.Content>
-                <Item.Header>{playerData.player.character.display_name}</Item.Header>
+                <Item.Header>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateAreas: `'avatar name' 'avatar badge' 'avatar space' 'starbase starbase'`,
+                        alignItems: 'center',
+                        gridTemplateColumns: 'auto auto',
+                        gridTemplateRows: 'auto auto auto'
+                    }}>
+                        <img src={avatar} style={{ gridArea: 'avatar', height: '84px', width: 'auto !important', margin: '0 0.5em 0.5em 0', marginTop: 0}} />
+                        <div style={{gridArea: 'name'}}>
+                            {playerData.player.character.display_name}
+                        </div>
+                        <div style={{gridArea: 'badge', fontSize: '0.8em' }}>
+                            ({t(`global.${playerData.player.fleet.rank.toLowerCase().replace('leader', 'admiral')}`)?.toUpperCase()})
+                        </div>
+                        <div style={{gridArea: 'starbase', textAlign: 'left', fontSize: '0.75em'}}>
+                            {!!playerData.player.fleet?.id && (
+                                <p>
+                                    <b><ColorName text={playerData.player.fleet.slabel} /></b><br />
+                                    {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </Item.Header>
                 <Item.Meta style={{marginLeft: 0, marginTop: "0.25em"}}>
+                    <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t('profile.first_entitlement')} {playerData.calc?.guild_create && new Date(playerData.calc.guild_create).toLocaleDateString() || '?'}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>VIP {playerData.player.vip_level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t('base.level')} {playerData.player.character.level}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{t("player_badge.n_immortals", { n: `${immortal}`})}</Label>
@@ -49,17 +69,6 @@ export const PlayerBadge = (props: PlayerBadgeProps) => {
                         {crewLimit < unfrozen && <span style={{color: 'tomato'}}>!!</span>} {t('player_badge.x_y_crew', { x: `${unfrozen}`, y: `${crewLimit}`})}</Label>
                     <Label style={{marginLeft: 0, marginTop: "0.25em"}}>{ t('player_badge.n_shuttles', { n: `${playerData.player.character.shuttle_bays}` })}</Label>
                 </Item.Meta>
-                <Item.Description>
-                    {!!playerData.player.fleet?.id && (
-                        <p>
-                            {/* <Link to={`/fleet_info?fleetid=${playerData.player.fleet.id}`}> */}
-                                <b><ColorName text={playerData.player.fleet.slabel} /></b>
-                            {/* </Link>{' '} */}
-                            <br/>
-                            ({t(`global.${playerData.player.fleet.rank.toLowerCase().replace('leader', 'admiral')}`)?.toUpperCase()})<br/> {t('player_badge.starbase_level')} {playerData.player.fleet.nstarbase_level}{' '}
-                        </p>
-                    )}
-                </Item.Description>
             </Item.Content>
         </Item>
     </Item.Group>

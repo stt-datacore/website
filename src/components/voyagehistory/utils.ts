@@ -238,7 +238,7 @@ export function getRuntime(voyageConfig: Voyage): number {
 }
 
 export async function getTrackedData(dbid: string, trackerId?: string): Promise<IVoyageHistory | undefined> {
-	let url = `${process.env.GATSBY_DATACORE_URL}api/getTrackedData?`;
+	let url = `${process.env.VITE_DATACORE_URL}api/getTrackedData?`;
 	if (trackerId) {
 		url += `dbid=${dbid}&trackerId=${trackerId}`;
 	}
@@ -278,7 +278,7 @@ export async function getTrackedData(dbid: string, trackerId?: string): Promise<
 }
 
 export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assignments: IFullPayloadAssignment[]): Promise<TrackerPostResult> {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
+	let route = `${process.env.VITE_DATACORE_URL}api/postTrackedData`
 	return await fetch(route, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -293,7 +293,7 @@ export async function postTrackedData(dbid: string, voyage: ITrackedVoyage, assi
 }
 
 export async function postTrackedDataBatch(dbid: string, voyages: ITrackedVoyage[], assignments: IFullPayloadAssignment[][]): Promise<TrackerPostResultBatch> {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedDataBatch`
+	let route = `${process.env.VITE_DATACORE_URL}api/postTrackedDataBatch`
 	return await fetch(route, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -308,7 +308,7 @@ export async function postTrackedDataBatch(dbid: string, voyages: ITrackedVoyage
 }
 
 export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHistory, tracker_id?: number) {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postTrackedData`
+	let route = `${process.env.VITE_DATACORE_URL}api/postTrackedData`
 	let unsynced = history.voyages.filter(v => !v.remote);
 	let crewkeys = Object.keys(history.crew);
 
@@ -347,12 +347,12 @@ export async function postUnsynchronizedVoyages(dbid: string, history: IVoyageHi
 }
 
 export function repairRemoteHistory(dbid: string): Promise<any> {
-	return fetch(`${process.env.GATSBY_DATACORE_URL}api/repairVoyages?dbid=${dbid}`)
+	return fetch(`${process.env.VITE_DATACORE_URL}api/repairVoyages?dbid=${dbid}`)
 	.catch((error) => { throw(error); });
 }
 
 export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<TrackerPostResult> {
-	let route = `${process.env.GATSBY_DATACORE_URL}api/postVoyage`
+	let route = `${process.env.VITE_DATACORE_URL}api/postVoyage`
 	return await fetch(route, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -366,7 +366,7 @@ export async function postVoyage(dbid: string, voyage: ITrackedVoyage): Promise<
 }
 
 export async function deleteTrackedData(dbid: string, trackerId?: number): Promise<boolean> {
-	let url = `${process.env.GATSBY_DATACORE_URL}api/deleteTrackedData?`;
+	let url = `${process.env.VITE_DATACORE_URL}api/deleteTrackedData?`;
 	if (trackerId) {
 		url += `dbid=${dbid}&trackerId=${trackerId}`;
 	}

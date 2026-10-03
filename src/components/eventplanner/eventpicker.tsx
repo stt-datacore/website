@@ -12,20 +12,19 @@ import ProspectPicker from '../../components/prospectpicker';
 import { EventShuttleHelper, ShuttleHelper } from '../../components/shuttlehelper/shuttlehelper';
 
 import CONFIG from '../../components/CONFIG';
-import { applyCrewBuffs, applySkillBuff, crewCopy, oneCrewCopy } from '../../utils/crewutils';
+import { applyCrewBuffs, applySkillBuff, oneCrewCopy } from '../../utils/crewutils';
 import { useStateWithStorage } from '../../utils/storage';
 
+import { factionImageLocations } from '../factions';
 import { GatherPlanner } from '../gather/gather_planner';
+import { CrewHoverStat } from '../hovering/crewhoverstat';
 import { ShipHoverStat } from '../hovering/shiphoverstat';
 import { AvatarView } from '../item_presenters/avatarview';
 import { QPContext } from '../qpconfig/provider';
 import { ShipTable } from '../ship/shiptable';
 import { SpecialistMissionTable } from '../specialist/specialistmissions';
+import { OptionsPanelFlexRow } from '../stats/utils';
 import { IEventData, IRosterCrew } from './model';
-import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { CrewPresenter } from '../item_presenters/crew_presenter';
-import { factionImageLocations } from '../factions';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 
 interface ISelectOptions {
 	key: string;
@@ -41,7 +40,7 @@ type EventPickerProps = {
 
 export const EventPicker = (props: EventPickerProps) => {
 	const globalContext = React.useContext(GlobalContext);
-	const qpContext = React.useContext(QPContext);
+
 	const { t } = globalContext.localized;
 	const { playerData, buffConfig, ephemeral } = globalContext.player;
 	const { events, rosterType } = props;
@@ -171,7 +170,7 @@ export const EventPicker = (props: EventPickerProps) => {
 					onChange={(e, { value }) => setEventIndex(value as number)}
 				/>
 			</Form>
-			<Image size='large' src={`${process.env.GATSBY_ASSETS_URL}${eventData.image}`} />
+			<Image size='large' src={`${process.env.VITE_ASSETS_URL}${eventData.image}`} />
 			<div>{eventData.description}</div>
 			{phaseList.length > 1 && (
 				<div style={{ margin: '1em 0' }}>
@@ -321,7 +320,7 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 const EventMega = (props: FeatureToolProps & { mega: CrewMember }) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { event, mega } = props;
+	const { mega } = props;
 
 	return (<>
 		<h4>{t('obtained.long.Mega')}</h4>
@@ -375,7 +374,7 @@ export const EventFactions = (props: FeatureToolProps & { vertical?: boolean, im
 			{facts.map(faction => {
 				if (!faction) return <></>;
 				return (<div key={`${faction.id}_${faction.home_system}_eventpicker`} style={{...OptionsPanelFlexRow, alignItems: 'center', gap: '0.5em'}}>
-					<img style={{margin: 0, height: props.imgSize ?? '48px'}} src={`${process.env.GATSBY_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
+					<img alt={`${faction.name}`} style={{margin: 0, height: props.imgSize ?? '48px'}} src={`${process.env.VITE_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
 					<div>{faction.name}</div>
 				</div>)
 			})}

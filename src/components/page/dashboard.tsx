@@ -22,7 +22,7 @@ const Dashboard = (props: DashboardProps) => {
 	const { setEnergyUpdated, energyUpdated } = energyLogContext;
 	const [dbidHash, setDbidHash] = React.useState<string | undefined>(undefined);
 	const isMobile = globalContext.isMobile;
-	const { player } = globalContext;
+	const { player, announcement } = globalContext;
 	const { playerData, ephemeral, showPlayerGlance, setShowPlayerGlance } = player;
 	const { t } = globalContext.localized;
 	const { activePanel, setActivePanel, narrow, openInputPanel } = props;
@@ -38,7 +38,7 @@ const Dashboard = (props: DashboardProps) => {
 
 	return (
 		<React.Fragment>
-			<Announcement />
+			{!!announcement && <Announcement announcement={announcement} />}
 
 			{!!playerData && showPlayerGlance && (!isMobile || mobileHideOverride) &&
 				<PlayerGlance

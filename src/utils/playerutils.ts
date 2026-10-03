@@ -10,7 +10,6 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.archetype_cache;
     delete p.version;
 
-
     // Find grant/claim for guild_create
     // This is a good proxy for account creation
     p.calc ??= {};
@@ -105,7 +104,7 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     ) {
         if (p.player.character.crew_avatar.portrait.file.startsWith("/")) {
             p.player.character.crew_avatar = {
-                ... p.player.character.crew_avatar,
+                ...p.player.character.crew_avatar,
                 portrait: {
                     file: p.player.character.crew_avatar.portrait.file
                     .slice(1)
@@ -317,7 +316,7 @@ export function bonusCrewForCurrentEvent(
 }
 
 export function getChrons(playerData: PlayerData) {
-    let ch = 0;
+    let ch: number;
     ch = Math.floor(playerData.player.character.seconds_from_replay_energy_basis / playerData.player.character.replay_energy_rate);
     if (ch <= 0) {
         ch = playerData.player.character.replay_energy_max + playerData.player.character.replay_energy_overflow;

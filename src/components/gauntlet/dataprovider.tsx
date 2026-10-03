@@ -1,4 +1,3 @@
-import moment from "moment";
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { Gauntlet, GauntletViewMode, PairGroup } from "../../model/gauntlets";
@@ -174,9 +173,9 @@ export const GauntletDataProvider = (props: GauntletContextProviderProps) => {
     }
 
     async function loadFromApi(): Promise<Gauntlet | undefined> {
-        return fetch("https://datacore.app/api/gauntlet_info")
+        return fetch(`${process.env.VITE_DATACORE_URL}api/gauntlet_info`)
             .then((result) => result.json())
-            .then((json) => ({ ...json, fromApi: true, date: moment(new Date()).utc(false).toISOString() } as Gauntlet))
+            .then((json) => ({ ...json, fromApi: true, date: (new Date()).toISOString() } as Gauntlet))
             .catch((e) =>
                 undefined
         );

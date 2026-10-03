@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Popup } from "semantic-ui-react";
-import { CrewChallengeInfo, IQuestCrew } from '../../model/worker';
+import { CrewChallengeInfo } from '../../model/worker';
 
 export const PowerColors = {
     MinRoll: 'lightgreen',
@@ -10,17 +10,17 @@ export const PowerColors = {
 }
 
 const paraStyle = {
-    display: 'flex', 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'left', 
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'left',
     marginTop: "0.25em"
 } as React.CSSProperties;
 
 const swatchStyle = {
-    width: "24px", 
-    height: "24px", 
-    border: "1px solid black", 
+    width: "24px",
+    height: "24px",
+    border: "1px solid black",
     color: 'black',
     display: 'flex',
     flexDirection: 'column',
@@ -39,7 +39,7 @@ export const gradeCrew = (info: CrewChallengeInfo) => {
         return "C";
     }
     else if (info.max_solve) {
-        return "B";    
+        return "B";
     }
     return "A";
 }

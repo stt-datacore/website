@@ -14,7 +14,7 @@ import { printNCrew } from "../../../utils/misc";
 import { SwarmPlot } from "@nivo/swarmplot";
 import { CrewMember } from "../../../model/crew";
 import { AvatarView } from "../../item_presenters/avatarview";
-import { PointProps } from "@nivo/bump/dist/types/bump/Point";
+
 import CONFIG from "../../CONFIG";
 
 interface MapConfig {
@@ -517,24 +517,24 @@ export const StatsCreepGraphs = (props: GraphPropsCommon) => {
     }
 }
 
-const PointComponent = (props: PointProps<DefaultBumpDatum, any>): JSX.Element => {
-    const crew = React.useContext(GlobalContext).core.crew;
-    let cmarr = props.point.serie.data.data as GraphSeries[];
-    let x = Number(props.point.id.split(".")[1]);
-    let cm = cmarr[x].data![0];
-    if (cm?.symbol) {
-        let f = crew.find(fe => fe.symbol === cm.symbol);
-        if (!f) {
-            return <></>
-        }
-        else {
-            return <div style={{zIndex: 100}}><img src={`${process.env.GATSBY_ASSETS_URL}${f.imageUrlPortrait}`}
-                    style={{height: '20px', borderRadius: '10px'}} />
-                    </div>
-        }
-    }
-    else {
-        return <></>
-    }
-}
+// const PointComponent = (props: PointProps<DefaultBumpDatum, any>): React.ReactNode => {
+//     const crew = React.useContext(GlobalContext).core.crew;
+//     let cmarr = props.point.serie.data.data as GraphSeries[];
+//     let x = Number(props.point.id.split(".")[1]);
+//     let cm = cmarr[x].data![0];
+//     if (cm?.symbol) {
+//         let f = crew.find(fe => fe.symbol === cm.symbol);
+//         if (!f) {
+//             return <></>
+//         }
+//         else {
+//             return <div style={{zIndex: 100}}><img src={`${process.env.VITE_ASSETS_URL}${f.imageUrlPortrait}`}
+//                     style={{height: '20px', borderRadius: '10px'}} />
+//                     </div>
+//         }
+//     }
+//     else {
+//         return <></>
+//     }
+// }
 

@@ -1,4 +1,5 @@
 import { CrewMember } from "../../model/crew";
+import { ItemWithBonus } from "../../utils/itemutils";
 
 export type StatsDisplayMode = 'crew' | 'graphs' | 'traits' | 'items' | 'portal_update';
 
@@ -10,6 +11,7 @@ export interface TraitStats {
     collection: string,
     first_appearance: Date
     crew: CrewMember[],
+    quipment: ItemWithBonus[],
     first_crew: CrewMember,
     latest_crew: CrewMember,
     launch_crew?: CrewMember,

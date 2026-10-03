@@ -52,7 +52,7 @@ export interface BetaTachyonSettingsProps {
     presets: BetaTachyonSettings[];
     updatePresets: (value: BetaTachyonSettings[]) => void;
     config: BetaTachyonSettingsConfig;
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.ReactNode;
 	setIsOpen: (value: boolean) => void;
 	isOpen: boolean;
 };
@@ -81,7 +81,7 @@ export function settingsToPermalink(settings: BetaTachyonSettings) {
 
     let host = "";
 
-    if (!globalThis.window) host = (process.env.GATSBY_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (process.env.VITE_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
 
     return `${host}cite-opt?${params.toString()}`;
@@ -93,7 +93,7 @@ export function permalinkToSettings(t: TranslateMethod) {
     if (!params.size) return undefined;
 
     let newConfig = {
-        ... DefaultBetaTachyonSettings,
+        ...DefaultBetaTachyonSettings,
         improved: Number.parseFloat(params.get("imp") ?? DefaultBetaTachyonSettings.improved.toString()),
         power: Number.parseFloat(params.get("pow") ?? DefaultBetaTachyonSettings.power.toString()),
         citeEffort: Number.parseFloat(params.get("cite") ?? DefaultBetaTachyonSettings.citeEffort.toString()),
@@ -225,8 +225,8 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
     const { confirm } = promptContext;
 	const { config, presets, updatePresets } = props;
 	const [modalIsOpen, setModalIsOpen] = React.useState(false);
-	const inputRef = React.createRef<Input>();
-    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ... DefaultBetaTachyonSettings, ... config.current });
+	const inputRef = React.createRef<HTMLInputElement>();
+    const [innerSettings, setInnerSettings] = React.useState<InternalSettings>({ ...DefaultBetaTachyonSettings, ...config.current });
 
     const [showCopied, setShowCopied] = React.useState(false);
 
@@ -320,7 +320,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		</Modal>
 	);
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.ReactNode {
 
         const rowStyle = {
             display: "flex",
@@ -367,7 +367,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
                             style={key === 'name' ? nameStyle : inputStyle}
                             placeholder="Value"
                             value={innerSettings[key]}
-                            onChange={(e, { value }) => setCurrent({ ... innerSettings, [key]: value })}>
+                            onChange={(e, { value }) => setCurrent({ ...innerSettings, [key]: value })}>
                         </Input>
                     </div>)
                 })}
@@ -391,7 +391,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.ReactNode {
 		return (
         <Button>
             {t('global.advanced_settings')}

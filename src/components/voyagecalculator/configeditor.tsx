@@ -128,11 +128,11 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 		updateConfig(voyageConfig);
 	}
 
-	function renderTrigger(): JSX.Element {
+	function renderTrigger(): React.ReactNode {
 		return <Button color='blue' size='large' icon='pencil' content={t('voyage.custom_voyage_create')} />;
 	}
 
-	function renderEditor(): JSX.Element {
+	function renderEditor(): React.ReactNode {
 		if (!options) {
 			const skillsList: DropdownItemProps[] = [];
 			for (let skill in CONFIG.SKILLS) {
@@ -244,7 +244,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 								{ idx % 2 === 0 ?
 									(
 										<Table.Cell rowSpan='2' textAlign='center'>
-											<img alt={seat.skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${seat.skill}.png`} style={{ height: '3em' }} />
+											<img alt={seat.skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${seat.skill}.png`} style={{ height: '3em' }} />
 										</Table.Cell>
 									)
 									: (<></>)

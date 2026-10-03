@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 
 import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';

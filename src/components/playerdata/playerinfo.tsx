@@ -36,7 +36,7 @@ export const PlayerInfo = (props: PlayerInfoProps) => {
 					<Item>
 						<Item.Image
 							size='tiny'
-							src={`${process.env.GATSBY_ASSETS_URL}${playerData.player.character.crew_avatar?.icon
+							src={`${process.env.VITE_ASSETS_URL}${playerData.player.character.crew_avatar?.icon
 									? playerData.player.character.crew_avatar.portrait.file
 									: 'crew_portraits_cm_empty_sm.png'
 								}`}

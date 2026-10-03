@@ -1,4 +1,11 @@
+
 import React from 'react';
+
+import { crewIsShortSkilled, getCrewSkillsScore } from '../utils';
+
+import { ProficiencyContext } from './context';
+import { ISkillPairData } from './data';
+
 import {
 	Icon,
 	Image,
@@ -10,11 +17,6 @@ import { GlobalContext } from '../../../../context/globalcontext';
 
 import { IDataMatrixField, IDataMatrixSetup, IEssentialMatrixData } from '../../../dataset_presenters/model';
 import { DataMatrix } from '../../../dataset_presenters/datamatrix';;
-
-import { crewIsShortSkilled, getCrewSkillsScore } from '../utils';
-
-import { ProficiencyContext } from './context';
-import { ISkillPairData } from './data';
 
 type ProficiencyMatrixProps = {
 	id: string;
@@ -50,24 +52,24 @@ export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 		</React.Fragment>
 	);
 
-	function renderSkillHeader(skill: string): JSX.Element {
+	function renderSkillHeader(skill: string): React.ReactNode {
 		return (
 			<React.Fragment>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 			</React.Fragment>
 		);
 	}
 
-	function renderMatrixCell(datum: ISkillPairData): JSX.Element {
+	function renderMatrixCell(datum: ISkillPairData): React.ReactNode {
 		if (datum.coverage.length === 0) return <></>;
 		const bestCrew: PlayerCrew = datum.coverage[0];
 		const imageUrlPortrait: string = bestCrew.imageUrlPortrait ?? `${bestCrew.portrait.file.substring(1).replace(/\//g, '_')}.png`;
 		return (
 			<React.Fragment>
 				<div style={{ display: 'flex', justifyContent: 'center' }}>
-					<Image src={`${process.env.GATSBY_ASSETS_URL}${imageUrlPortrait}`} style={{ height: '36px' }} />
+					<Image src={`${process.env.VITE_ASSETS_URL}${imageUrlPortrait}`} style={{ height: '36px' }} />
 				</div>
 				<div>{bestCrew.name}</div>
 				<Label.Group>
@@ -106,7 +108,7 @@ const CrewCritTraits = (props: CrewCritTraitsProps) => {
 	return (
 		<Label>
 			<div style={{ display: 'flex', alignItems: 'center' }} title={title}>
-				<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '.9em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '.9em', verticalAlign: 'middle' }} className='invertibleIcon' />
 				{crewCritTraits.length}
 			</div>
 		</Label>

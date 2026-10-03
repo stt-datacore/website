@@ -16,7 +16,6 @@ import CrewStat from "./crewstat";
 import { PresenterProps } from "./ship_presenter";
 import { ShipSkill } from "./shipskill";
 
-import { navigate } from "gatsby";
 import { Image } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { getCoolStats } from "../../utils/misc";
@@ -303,7 +302,7 @@ export class CrewPresenter extends React.Component<
         if (this.props.openCrew) {
             this.props.openCrew(crew);
         } else {
-            navigate("/crew/" + crew.symbol);
+            this.props.navigate("/crew/" + crew.symbol);
         }
     };
 
@@ -324,7 +323,7 @@ export class CrewPresenter extends React.Component<
         return newcrew ?? (inputCrew as PlayerCrew);
     }
 
-    render(): JSX.Element {
+    render(): React.ReactNode {
         const {
             crew: inputCrew,
             touched,
@@ -436,7 +435,7 @@ export class CrewPresenter extends React.Component<
                     >
                         {!showPortrait && (
                             <img
-                                src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlFullBody}`}
+                                src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`}
                                 style={{
                                     height: hover ? (isMobile ? "15em" : "19em") : (compact ? "14em" : "25em"),
                                     marginRight: "8px",
@@ -445,7 +444,7 @@ export class CrewPresenter extends React.Component<
                         )}
                         {showPortrait && (
                             <img
-                                src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 style={{
                                     width: compact ? "5em" : "10em",
                                     marginRight: "8px",

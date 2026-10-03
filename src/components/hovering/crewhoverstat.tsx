@@ -1,4 +1,3 @@
-import { navigate } from "gatsby";
 import * as React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { CrewMember } from "../../model/crew";
@@ -9,6 +8,7 @@ import { CrewPreparer } from "../item_presenters/crew_preparer";
 import { CrewPlugins, CrewPresenter } from "../item_presenters/crew_presenter";
 import { toDataURL } from "../item_presenters/shipskill";
 import { DEFAULT_MOBILE_WIDTH, HoverStat, HoverStatProps, HoverStatState, HoverStatTarget, HoverStatTargetProps, HoverStatTargetState } from "./hoverstat";
+import { NavigateFunction } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -160,7 +160,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidUpdate(): void {
         const di = this.tiny.getRapid<PlayerCrew | undefined>('displayItem', undefined);
         if (di) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${di.imageUrlFullBody}`;
+            const url = `${process.env.VITE_ASSETS_URL}${di.imageUrlFullBody}`;
             toDataURL(url, () => {});
         }
     }
@@ -168,7 +168,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     componentDidMount(): void {
         const di = this.props.inputItem;
         if (di) {
-            const url = `${process.env.GATSBY_ASSETS_URL}${di.imageUrlFullBody}`;
+            const url = `${process.env.VITE_ASSETS_URL}${di.imageUrlFullBody}`;
             window.setTimeout(() => {
                 const img = new Image()
                 img.src = url;
@@ -188,7 +188,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
     constructor(props: CrewHoverStatProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         };
     }
@@ -201,7 +201,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
             let mr = crew.max_rarity;
             let clr = CONFIG.RARITIES[mr].color;
             if (boxStyle.borderColor !== clr) {
-                if (setState) this.setState({ ... this.state, boxStyle: { ... boxStyle, borderWidth: "2px", borderColor: clr }});
+                if (setState) this.setState({ ...this.state, boxStyle: { ...boxStyle, borderWidth: "2px", borderColor: clr }});
                 return true;
             }
         }
@@ -290,10 +290,11 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
         }
     }
 
-    protected renderContent = (): JSX.Element => {
+    protected renderContent = (): React.ReactNode => {
         if (this.checkBorder()) {
             if (isWindow) window.setTimeout(() => this.checkBorder(undefined, true));
         }
+
         const { targetGroup, openCrew, plugins, pluginData } = this.props;
         const { mobileWidth, displayItem, touchToggled } = this.state;
         const compact = true;
@@ -303,7 +304,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
             this.cancelled = false;
             if (isWindow) window.setTimeout(() => this.deactivate());
         }
-
+        const navigate = this.navigate;
         const navClick = () => {
             if (!displayItem) return;
 
@@ -314,7 +315,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
                 const { buffConfig, playerData } = this.context.player;
                 const { crew: allCrew } = this.context.core;
                 if (playerData && "player" in playerData) {
-                    navToCrewPage(displayItem);
+                    navToCrewPage(displayItem, navigate as NavigateFunction);
                 }
                 else {
                     navigate("/crew/" + displayItem.symbol);
@@ -328,6 +329,7 @@ export class CrewHoverStat extends HoverStat<PlayerCrew | CrewMember, CrewHoverS
         }
 
         return displayItem ? (<CrewPresenter
+                        navigate={navigate as NavigateFunction}
                         plugins={plugins}
                         pluginData={pluginData}
                         close={() => closeClick()}

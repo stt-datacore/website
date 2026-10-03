@@ -9,7 +9,7 @@ import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 export interface AdvancedCrewPowerProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    renderTrigger?: (disabled?: boolean) => JSX.Element;
+    renderTrigger?: (disabled?: boolean) => React.ReactNode;
     config: AdvancedCrewPowerConfig;
     disabled?: boolean;
 }
@@ -19,7 +19,7 @@ const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerP
     const { t, tfmt } = globalContext.localized;
     const { disabled, config } = props;
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const inputRef = React.createRef<Input>();
+    const inputRef = React.createRef<HTMLInputElement>();
 
     // const [workConf, setWorkConf] = React.useState(config);
     const [innerSettings, setInnerSettings] = React.useState<AdvancedCrewPower>(config.current);
@@ -121,7 +121,7 @@ const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerP
         </Modal>
     );
 
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.ReactNode {
 
         const rowStyle = {
             display: "flex",
@@ -257,7 +257,7 @@ const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerP
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.ReactNode {
         return (
             <Button disabled={disabled}>
                 {t('ship.calc.advanced.power_depth')}

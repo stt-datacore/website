@@ -1,4 +1,4 @@
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import React from 'react';
 import { Popup, Icon, Form, Dropdown, Checkbox, Table } from 'semantic-ui-react';
 import { GlobalContext } from '../../../context/globalcontext';
@@ -131,7 +131,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 		return meetsAnyCondition;
 	}
 
-	function renderCollectionRow(collection: any, idx: number): JSX.Element {
+	function renderCollectionRow(collection: any, idx: number): React.ReactNode {
 		const rewards = collection.totalRewards > 0 ? collection.milestone.buffs.concat(collection.milestone.rewards) : [];
 
 		return (
