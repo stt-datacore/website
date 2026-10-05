@@ -215,7 +215,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			...bb,
 			{
 				width: 1, column: 'compat_score', title: t('ship.compat_score'), reverse: true,
-				customCompare: (a, b) => a.ranks.extra.compat_score - b.ranks.extra.compat_score
+				customCompare: (a, b) => (a.ranks.extra?.compat_score ?? 0) - (b.ranks.extra?.compat_score ?? 0)
 			},
 			{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
 			{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
@@ -497,10 +497,10 @@ export const ShipTable = (props: ShipTableProps) => {
 			{showRanks && <>
 				<Table.Cell>
 					<div style={{
-						color: gradeToColor(ship.ranks?.extra.compat_score ?? 0)
+						color: gradeToColor(ship.ranks?.extra?.compat_score ?? 0)
 					}}>
-						{numberToGrade(ship.ranks?.extra.compat_score ?? 0)}<br />
-						{formatcompat(ship.ranks?.extra.compat_score ?? 0)}
+						{numberToGrade(ship.ranks?.extra?.compat_score ?? 0)}<br />
+						{formatcompat(ship.ranks?.extra?.compat_score ?? 0)}
 					</div>
 				</Table.Cell>
 			</>}

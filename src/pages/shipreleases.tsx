@@ -54,7 +54,7 @@ const ShipReleases = (props: ReleasesProps) => {
         topRare[ship.rarity] ??= [];
         topRare[ship.rarity].push({
             symbol: ship.symbol,
-            score: ship.ranks!.overall
+            score: ship?.ranks?.overall ?? 0
         });
     }
     Object.values(topRare).forEach((list) => {
