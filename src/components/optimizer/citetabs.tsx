@@ -7,6 +7,8 @@ import { CiteOptTable } from "./citetable"
 import { GlobalContext } from "../../context/globalcontext"
 import { CiteData } from "../../model/worker"
 import { VoyageGroupsComponent } from "./voyagegroups"
+import CONFIG from "../CONFIG"
+import { shortToSkill, skillToShort } from "../../utils/crewutils"
 
 
 
@@ -32,8 +34,28 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
     React.useEffect(() => {
         const workset = !preFilterData ? undefined : { ...preFilterData, crewToCite: [...preFilterData?.crewToCite ?? []], crewToTrain: [...preFilterData?.crewToTrain ?? []] } as CiteData;
 
-        workset?.crewToCite?.forEach((crew, idex) => crew.pickerId = idex + 1);
-        workset?.crewToTrain?.forEach((crew, idex) => crew.pickerId = idex + 1);
+        workset?.crewToCite?.forEach((crew, idex) => {
+            crew.pickerId = idex + 1
+            crew.voyagesImproved = crew.voyagesImproved?.map(vi => {
+                let sp = vi.split("/").map(s => s.trim());
+                let skills = [] as string[];
+                for (let skill of sp) {
+                    if (skill.length === 3) {
+                        skills.push(shortToSkill(skill, true) as string);
+                    }
+                    else if (!skill.endsWith("_skill")) {
+                        skills.push((skill+"_skill").toLowerCase());
+                    }
+                    else {
+                        skills.push(skill);
+                    }
+                }
+                return skills.join("/");
+            });
+        });
+        workset?.crewToTrain?.forEach((crew, idex) => {
+            crew.pickerId = idex + 1
+        });
 
         if (workset && priSkills?.length) {
             workset.crewToCite = workset.crewToCite.filter((crew) => crew.voyagesImproved?.some(vi => priSkills?.some(ci => vi.startsWith(ci.toLowerCase()))));
@@ -54,7 +76,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     }
                     return crew;
                 })
-                .filter((crew) => seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
+                .filter((crew) => seatSkills?.some(sk => crew.skill_order.includes(sk)));
 
             workset.crewToTrain = workset.crewToTrain
                 .map(crew => {
@@ -64,7 +86,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     }
                     return crew;
                 })
-                .filter((crew) => seatSkills?.some(sk => (sk.toLowerCase() + "_skill") in crew?.base_skills));
+                .filter((crew) => seatSkills?.some(sk => crew.skill_order.includes(sk)));
         }
 
         if (workset && portal !== undefined && globalContext?.player?.playerData?.player?.character?.crew?.length) {

@@ -27,31 +27,31 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
         proccrew = undefined;
     }
     else {
-        proccrew = proccrew.map(mc => globalContext.player.playerData?.player.character.crew.find(f => f.name === mc.name)!)!
+        proccrew = proccrew.map(mc => globalContext.player.playerData?.player.character.crew.find(f => f.name === mc.name)).filter(f => !!f);
     }
 
     const resultCrew = proccrew?.filter((f, idx) => f && proccrew.findIndex(f2 => f2 && ((f.symbol && f2.symbol === f.symbol) || (f.name && f.name === f2.name))) === idx);
 
     const priSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
-            key: skill.replace('_skill', ''),
-            value: skill.replace('_skill', ''),
+            key: skill,
+            value: skill,
             text: name
         }
     });
 
     const secSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
-            key: skill.replace('_skill', ''),
-            value: skill.replace('_skill', ''),
+            key: skill,
+            value: skill,
             text: name
         }
     });
 
     const seatSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
-            key: skill.replace('_skill', ''),
-            value: skill.replace('_skill', ''),
+            key: skill,
+            value: skill,
             text: name
         }
     });
