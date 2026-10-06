@@ -25,6 +25,7 @@ export interface CiteConfig {
     checks: SymCheck[];
     showEV: boolean;
     collections?: number[];
+    skillPositions?: number[];
 }
 
 export interface CiteEngineResults {

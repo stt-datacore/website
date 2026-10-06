@@ -19,7 +19,7 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
     const { playerData } = globalContext.player;
 
     const { results, citeConfig } = citeContext;
-    const { seatSkills, priSkills, secSkills, collections } = citeConfig;
+    const { seatSkills, priSkills, secSkills, collections, skillPositions } = citeConfig;
     const { portal, nameFilter } = citeConfig;
 
     const compareCount = citeConfig.checks?.filter(z => z.checked)?.length;
@@ -76,7 +76,19 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     }
                     return crew;
                 })
-                .filter((crew) => seatSkills?.some(sk => crew.skill_order.includes(sk)));
+                .filter((crew) => {
+                    if (!seatSkills?.length) return true;
+                    if (!skillPositions?.length) {
+                        return seatSkills?.some(sk => crew.skill_order.includes(sk))
+                    }
+                    else {
+                        for (let i of skillPositions) {
+                            if (crew.skill_order.length < i) break;
+                            if (seatSkills?.some(skill => crew.skill_order[i-1] === skill)) return true;
+                        }
+                    }
+                    return false;
+                });
 
             workset.crewToTrain = workset.crewToTrain
                 .map(crew => {
@@ -86,7 +98,19 @@ export const CitationOptimizerTabs = (props: { pageId: string }) => {
                     }
                     return crew;
                 })
-                .filter((crew) => seatSkills?.some(sk => crew.skill_order.includes(sk)));
+                .filter((crew) => {
+                    if (!seatSkills?.length) return true;
+                    if (!skillPositions?.length) {
+                        return seatSkills?.some(sk => crew.skill_order.includes(sk))
+                    }
+                    else {
+                        for (let i of skillPositions) {
+                            if (crew.skill_order.length < i) break;
+                            if (seatSkills?.some(skill => crew.skill_order[i-1] === skill)) return true;
+                        }
+                    }
+                    return false;
+                });
         }
 
         if (workset && portal !== undefined && globalContext?.player?.playerData?.player?.character?.crew?.length) {
