@@ -870,8 +870,8 @@ export function getPairScore(scores: GauntletPairScore[], pair: string) {
 }
 
 
-export function shortToSkill(rank: string, english?: boolean): PlayerSkill | undefined {
-	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === rank) : CONFIG.SKILLS_SHORT.find(f => f.short === rank);
+export function shortToSkill(skill: string, english?: boolean): PlayerSkill | undefined {
+	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === skill) : CONFIG.SKILLS_SHORT.find(f => f.short === skill);
 	if (f) return f.name as PlayerSkill;
 	return undefined;
 }
