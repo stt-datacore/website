@@ -77,7 +77,7 @@ export const CiteOptTable = (props: CiteOptTableProps) => {
     const maxQuip = data.map(d => d.quipment_score ?? 0).reduce((p, n) => p > n ? p : n, 0);
 
     const formatVoyImp = (value: string) => {
-        return value.split("/").map(m => m + "_skill").map(skill => CONFIG.SKILLS[skill]).join("/");
+        return value.split("/").map(m => m).map(skill => CONFIG.SKILLS[skill]).join("/");
     }
 
     return (<div style={{ overflowX: "auto" }}>
