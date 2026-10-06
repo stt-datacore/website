@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Input, Dropdown, Button, Icon } from "semantic-ui-react";
+import { Segment, Input, Dropdown, Button, Icon, ButtonGroup } from "semantic-ui-react";
 import { PortalFilter } from "../crewtables/commonoptions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
@@ -53,6 +53,15 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
             key: skill,
             value: skill,
             text: name
+        }
+    });
+
+    const seatPositions = [1,2,3].map(pos => {
+        let key = "".padEnd(pos, "I");
+        return {
+            key,
+            value: pos,
+            text: key
         }
     });
 
@@ -130,8 +139,30 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_voyage_seating')}
                             value={citeConfig.seatSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, seatSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, seatSkills: value as string[], skillPositions: (value as string[])?.length ? citeConfig.skillPositions : [] })}
                             />
+
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "left", marginLeft: "1em", gap: 0}}>
+                            <ButtonGroup>
+                            {seatPositions.map(pos => {
+                                let skillPos = [... citeConfig.skillPositions ?? []];
+                                const active = skillPos.includes(pos.value);
+                                const click = (val: number) => {
+                                    if (skillPos.includes(val)) {
+                                        skillPos = skillPos.filter(f => f !== val);
+                                    }
+                                    else {
+                                        skillPos.push(val);
+                                    }
+                                    setCiteConfig({...citeConfig, skillPositions: skillPos });
+                                }
+                                return (
+                                    <Button disabled={!citeConfig?.seatSkills?.length} style={{height: '2.3em', margin:0}} active={active} onClick={() => click(pos.value)} >{pos.text}</Button>
+                                )
+                            })}
+                            </ButtonGroup>
+                        </div>
+
                     </div>
                 </div>
                 <div style={{
