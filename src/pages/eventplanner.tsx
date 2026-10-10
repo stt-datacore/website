@@ -3,15 +3,15 @@ import { Message } from 'semantic-ui-react';
 
 import { PlayerCrew } from '../model/player';
 
-import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
+import { GlobalContext } from '../context/globalcontext';
 
-import { RosterPicker } from '../components/eventplanner/rosterpicker';
 import { EventPicker } from '../components/eventplanner/eventpicker';
+import { RosterPicker } from '../components/eventplanner/rosterpicker';
 import { getEvents } from '../utils/events';
 
 import { IEventData } from '../components/eventplanner/model';
-import { DefaultQuipmentConfig, QPConfigProvider, QuipmentProspectConfig } from '../components/qpconfig/provider';
+import { QPConfigProvider } from '../components/qpconfig/provider';
 
 const EventPlannerPage = () => {
 	const { t } = React.useContext(GlobalContext).localized;
@@ -34,7 +34,7 @@ const EventPlannerPage = () => {
 const EventPlannerSetup = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
-	const { playerData, ephemeral } = globalContext.player;
+	const { playerData } = globalContext.player;
 	const [activeEvents, setActiveEvents] = React.useState<IEventData[] | undefined>(undefined);
 	const [rosterType, setRosterType] = React.useState(playerData ? 'myCrew' : 'allCrew');
 	const [rosterCrew, setRosterCrew] = React.useState<PlayerCrew[] | undefined>(undefined);

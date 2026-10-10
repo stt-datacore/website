@@ -13,7 +13,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	setOptions: (value: T) => void;
 	defaultOptions: T;
 
-	renderTrigger?: () => JSX.Element;
+	renderTrigger?: () => React.ReactNode;
 	beforeOpen?: (data: any, options: T) => void;
 	pickerModal: typeof OptionsModal<T>;
 	filterCrew: (crew: (PlayerCrew | CrewMember)[], searchFilter?: string) => (PlayerCrew | CrewMember)[];
@@ -22,7 +22,7 @@ export interface CrewPickerProps<T extends OptionsBase> {
 	isOpen?: boolean;
 
 	hoverBoundingClient?: boolean;
-	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => JSX.Element | string;
+	renderCrewCaption?: (crew: PlayerCrew | CrewMember) => React.ReactNode | string;
 	contextData?: any;
 
 	locked?: boolean;
@@ -41,7 +41,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 	const [paginationPage, setPaginationPage] = React.useState(1);
 	const [selectedCrew, setSelectedCrew] = React.useState<PlayerCrew | CrewMember | undefined>(undefined);
 
-	const inputRef = React.createRef<Input>();
+	const inputRef = React.createRef<HTMLInputElement>();
 	const { pickerModal } = props;
 	const PickerModal = pickerModal as unknown as (typeof React.Component<OptionsModalProps<T>, any, any>);
 
@@ -127,7 +127,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		setModalIsOpen(false);
 	}
 
-	function renderDefaultTrigger(): JSX.Element {
+	function renderDefaultTrigger(): React.ReactNode {
 		return (
 			<Button fluid size='big' color='blue'>
 				<Icon name='zoom-in' />
@@ -136,7 +136,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 		);
 	}
 
-	function renderGrid(): JSX.Element {
+	function renderGrid(): React.ReactNode {
 		const { filterCrew, renderCrewCaption } = props;
 		if (!modalIsOpen) return (<></>);
 
@@ -163,7 +163,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 							color={(selectedCrew?.pickerId === crew.pickerId ? 'blue' : null) as SemanticCOLORS}
 						>
 
-								<img width={60} height={60} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={60} height={60} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 
 							<div>{renderCrewCaption ? renderCrewCaption(crew) : crew.name}</div>
 							<div><Rating defaultRating={"rarity"in crew ? crew.rarity : crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='small' disabled /></div>
@@ -257,7 +257,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 			|| options.rarities.length !== this.props.options.rarities.length || !this.props.options.rarities.every(r => options.rarities.includes(r));
 
 // 		if (this.state.isDefault != isDefault || this.state.isDirty != isDirty) {
-// 			this.setState({ ... this.state, isDefault, isDirty });
+// 			this.setState({ ...this.state, isDefault, isDirty });
 // 		}
 // 	}
 
@@ -320,7 +320,7 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 		);
 // 	}
 
-// 	protected renderTrigger(): JSX.Element {
+// 	protected renderTrigger(): React.ReactNode {
 // 		const { isDefault } = this.state;
 
 // 		return (
@@ -345,11 +345,11 @@ const CrewPicker = <T extends OptionsBase>(props: CrewPickerProps<T>) => {
 // 	}
 
 // 	protected setOptions(value: any) {
-// 		this.setState({ ... this.state, options: value });
+// 		this.setState({ ...this.state, options: value });
 // 	}
 
 // 	protected setModalIsOpen(value: boolean) {
-// 		this.setState({ ... this.state, modalIsOpen: value });
+// 		this.setState({ ...this.state, modalIsOpen: value });
 // 	}
 // };
 

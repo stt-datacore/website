@@ -24,16 +24,16 @@ function setThemeCss(dark) {
 	}
 }
 
-function getPreferredColorScheme() {
-	if (window && window.matchMedia) {
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			return 'dark';
-		} else {
-			return 'lite';
-		}
-	}
-	return 'dark';
-}
+// function getPreferredColorScheme() {
+// 	if (window && window.matchMedia) {
+// 		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+// 			return 'dark';
+// 		} else {
+// 			return 'lite';
+// 		}
+// 	}
+// 	return 'dark';
+// }
 
 function swapThemeCss(reverse) {
 	let theme = window && window.localStorage ? window.localStorage.getItem('theme') : 'dark';
@@ -60,7 +60,7 @@ function aprilFools() {
 	else {
 		if (typeof localStorage !== undefined) {
 			localStorage.removeItem("hahaDone");
-		}	
+		}
 	}
 }
 

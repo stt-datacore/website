@@ -6,12 +6,12 @@ import CONFIG from "../CONFIG";
 import { GlobalContext } from "../../context/globalcontext";
 import ItemDisplay from "../itemdisplay";
 import { VoyageHOFState } from "../../model/hof";
-import { navigate } from "gatsby";
 import themes from "../nivo_themes";
 
 import { ResponsiveSunburst } from "@nivo/sunburst";
 import { StatTreeNode } from "../../utils/statutils";
 import { ResponsivePie } from "@nivo/pie";
+import { useNavigate } from "react-router-dom";
 
 export const formatNumber = (
     value: number,
@@ -44,10 +44,11 @@ interface Seats {
 
 export const HofDetails = (props: HofDetailsProps) => {
     const context = React.useContext(GlobalContext);
-    const { t, tfmt, useT } = context.localized;
+    const { t, useT } = context.localized;
     const { t: details } = useT('hof.details');
+    const navigate = useNavigate();
 
-    const { voyageStats, glanceDays, rawVoyages } = props.hofState;
+    const { glanceDays, rawVoyages } = props.hofState;
     const crewSymbol = props.hofState.crewSymbol?.filter(
         (f) => !!f?.length && f !== "undefined"
     );
@@ -268,7 +269,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                                             <img
                                                 style={{ height: "10em", cursor: "pointer" }}
                                                 onClick={(e) => navigate(`/crew/${featured.symbol}`)}
-                                                src={`${process.env.GATSBY_ASSETS_URL}${featured.imageUrlPortrait}`}
+                                                src={`${process.env.VITE_ASSETS_URL}${featured.imageUrlPortrait}`}
                                             />
                                         </div>
                                         <div style={{ display: "flex", flexDirection: "column" }}>
@@ -353,7 +354,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                                                 alignItems: "center"
                                             }}
                                             key={`voycountseat_${seat}_${featured.symbol}`}>
-                                            <img style={{ gridArea: 'skill', height: "18px", margin: "0.5em 1em" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} />
+                                            <img style={{ gridArea: 'skill', height: "18px", margin: "0.5em 1em" }} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} />
                                             <div style={{ gridArea: 'seat' }}>{appelate(seat)}</div>
                                             <div style={{ gridArea: 'value', textAlign: 'right', margin: "0.5em 1em" }}>{Math.round(100 * (count / rawVoyages.length))}%</div>
                                         </div></div>
@@ -537,7 +538,7 @@ export const HofDetails = (props: HofDetailsProps) => {
                                             size={64}
                                             rarity={crew.max_rarity}
                                             maxRarity={crew.max_rarity}
-                                            src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                            src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                             targetGroup={"voyagehof"}
                                         />
                                         <div style={{ margin: "0.5em", textAlign: "center" }}>

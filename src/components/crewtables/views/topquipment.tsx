@@ -2,7 +2,7 @@ import React from "react";
 import { IRosterCrew } from "../model";
 import { ITableConfigRow } from "../../searchabletable";
 import CONFIG from "../../CONFIG";
-import { Table } from "semantic-ui-react";
+import { Button, SemanticCOLORS, Table } from "semantic-ui-react";
 import { QuippedPower, QuipmentScores, QuipSkill } from "../../../model/crew";
 import { qbProgressToNext, skillToShort } from "../../../utils/crewutils";
 import { CrewItemsView } from "../../item_presenters/crew_items";
@@ -23,6 +23,9 @@ export interface TopQuipmentScoreProps {
     excludeQBits?: boolean;
     pstMode: boolean | 2 | 3;
     buffConfig?: BuffStatTable;
+    showButtonText?: string;
+    showButtonColor?: SemanticCOLORS;
+    showButtonClick?: (data: QuippedPower) => void;
 }
 
 export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean | 2 | 3, excludeQBits: boolean) => {
@@ -88,7 +91,7 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
                         <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                             <img
                                 style={{ height: '16px'}}
-                                src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+                                src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
                                 />
                             <span>
                             &nbsp;{skillToShort(skill)}
@@ -106,7 +109,7 @@ export const getTopQuipmentTableConfig = (t: TranslateMethod, pstMode: boolean |
 }
 
 export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
-    const { pstMode, excludeQBits, targetGroup, top, allslots, crew } = props;
+    const { pstMode, excludeQBits, targetGroup, top, allslots, crew, showButtonClick, showButtonText, showButtonColor } = props;
     const q_bits = allslots ? 1300 : crew.q_bits;
     const skills = Object.keys(CONFIG.SKILLS);
 
@@ -144,7 +147,7 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         if (!crew.best_quipment) return <></>;
 
         if (typeof skill === 'string') {
-            lot = { ... lot };
+            lot = { ...lot };
             lot.skill_quipment = {};
             lot.skill_quipment[skill] = crew.best_quipment.skill_quipment[skill];
         }
@@ -156,6 +159,11 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
             gap:"0.5em",
             justifyContent: 'normal'
         }}>
+            {!!showButtonText && !!showButtonClick && (<>
+                <Button size='small' color={showButtonColor} onClick={() => showButtonClick(lot)}>
+                    {showButtonText}
+                </Button>
+            </>)}
             <CrewItemsView
                 vertical={!pstMode}
                 crew={{ ...crew, q_bits, kwipment_expiration: [], kwipment: Object.values(lot.skill_quipment).flat().map(q => Number(q.kwipment_id) as number) }}
@@ -186,23 +194,23 @@ export const TopQuipmentScoreCells = (props: TopQuipmentScoreProps) => {
         <QuipmentScoreCells excludeGrade={true} excludeSpecialty={!pstMode} top={top} crew={crew} excludeSkills={true} excludeQBits={excludeQBits} />
         {!pstMode && skills.map((skill, idx) => {
             if (!(skill in crew.base_skills)) {
-                return <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}></Table.Cell>
+                return <Table.Cell className='top aligned' key={`qpbest_${idx}_${skill}_${crew.id}`}></Table.Cell>
             }
             return (
-                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
+                <Table.Cell className='top aligned' key={`qpbest_${idx}_${skill}_${crew.id}`}>
                     {printCell(skill)}
                 </Table.Cell>)
         })}
         {pstMode === true && ['primary', 'secondary', 'tertiary'].map((skill, idx) => {
 
             return (
-                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
+                <Table.Cell className='top aligned' key={`qpbest_${idx}_${skill}_${crew.id}`}>
                     {printCell(idx)}
                 </Table.Cell>)
         })}
         {pstMode === 2 && ['first_pair', 'second_pair', 'third_pair', 'three_skills', 'top_quipment'].map((skill, idx) => {
             return (
-                <Table.Cell key={`qpbest_${idx}_${skill}_${crew.id}`}>
+                <Table.Cell className='top aligned' key={`qpbest_${idx}_${skill}_${crew.id}`}>
                     {printCell(idx)}
                 </Table.Cell>)
         })}

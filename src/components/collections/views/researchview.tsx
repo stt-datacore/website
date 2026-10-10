@@ -1,15 +1,14 @@
 import React from 'react';
+import { Dropdown, Grid, Pagination, Table } from 'semantic-ui-react';
 import { GlobalContext } from '../../../context/globalcontext';
-import { PlayerCollection } from '../../../model/player';
-import { CollectionsContext } from '../context';
-import { Checkbox, Pagination, Table, Grid, Dropdown } from 'semantic-ui-react';
-import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
-import { useStateWithStorage } from '../../../utils/storage';
-import CollectionsCrewCard from '../cards/crewcard';
 import { CollectionInfo } from '../../../model/collections';
+import { PlayerCollection } from '../../../model/player';
 import { getOwnedCites } from '../../../utils/collectionutils';
+import { useStateWithStorage } from '../../../utils/storage';
+import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
 import { CollectionCard } from '../cards/collectioncard';
-import { RewardFilter } from '../rewardfilter';
+import CollectionsCrewCard from '../cards/crewcard';
+import { CollectionsContext } from '../context';
 
 export interface GroupTableProps {
 	playerCollections: PlayerCollection[];

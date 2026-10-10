@@ -1,6 +1,6 @@
 import React from 'react';
 import { Label, Message, Rating, Table } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { SearchableTable, ITableConfigRow } from '../../components/searchabletable';
@@ -9,7 +9,6 @@ import { CrewHoverStat, CrewTarget } from '../../components/hovering/crewhoverst
 import { crewMatchesSearchFilter } from '../../utils/crewsearch';
 import { formatTierLabel } from '../../utils/crewutils';
 import { getCoolStats } from '../../utils/misc';
-import { navToCrewPage } from '../../utils/nav';
 import { gradeToColor, numberToGrade } from "../../utils/crewutils";
 
 import { IRosterCrew, RetrievableState } from './model';
@@ -18,6 +17,7 @@ import CONFIG from '../CONFIG';
 import { PlayerCrew } from '../../model/player';
 import { RetrievalContext } from './context';
 import { renderAnyDataScore, renderCabColumn, renderMainDataScore } from '../crewtables/views/base';
+import { navToCrewPage } from '../../utils/nav';
 
 type RetrievalCrewTableProps = {
  	filteredCrew: IRosterCrew[];
@@ -25,6 +25,7 @@ type RetrievalCrewTableProps = {
 
 export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
+	const navigate = useNavigate();
 	const retrievalContext = React.useContext(RetrievalContext);
 	const { market } = retrievalContext;
 	const { t, tfmt } = globalContext.localized;
@@ -79,7 +80,7 @@ export const RetrievalCrewTable = (props: RetrievalCrewTableProps) => {
 				filterRow={(crew, filters, filterType) => crewMatchesSearchFilter(crew, filters, filterType ?? null)}
 				showFilterOptions={true}
 			/>
-			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew)} targetGroup='retrievalGroup' />
+			<CrewHoverStat openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='retrievalGroup' />
 		</React.Fragment>
 	);
 };
@@ -112,7 +113,7 @@ const CrewRow = (props: CrewRowProps) => {
 				>
 					<div style={{ gridArea: 'icon' }}>
 						<CrewTarget inputItem={crew}  targetGroup='retrievalGroup'>
-							<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 						</CrewTarget>
 					</div>
 					<div style={{ gridArea: 'stats' }}>
@@ -132,7 +133,7 @@ const CrewRow = (props: CrewRowProps) => {
 		</Table.Row>
 	);
 
-	function renderDefaultCells(): JSX.Element {
+	function renderDefaultCells(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Table.Cell textAlign='center'>
@@ -162,11 +163,11 @@ const CrewRow = (props: CrewRowProps) => {
 		);
 	}
 
-	function renderQuipment(crew: IRosterCrew): JSX.Element {
+	function renderQuipment(crew: IRosterCrew): React.ReactNode {
 		return renderAnyDataScore(crew, 'quipment', t);
 	}
 
-	function renderRetrieval(crew: IRosterCrew): JSX.Element {
+	function renderRetrieval(crew: IRosterCrew): React.ReactNode {
 		if (crew.retrievable === RetrievableState.Never)
 			return <Label color='red'>{crew.alt_source}</Label>;
 		else if (crew.retrievable === RetrievableState.InFuture)

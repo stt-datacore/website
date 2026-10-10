@@ -56,7 +56,7 @@ const NamedTrait = (props: NamedTraitProps) => {
 		</div>
 	);
 
-	function renderNeeded(): JSX.Element {
+	function renderNeeded(): React.ReactNode {
 		let needed: string = t('global.x_or_y', { x: 0, y: instances.length });
 		const consumed: number = instances.filter(t => t.consumed).length;
 		if (consumed > 0) needed = `${instances.length - consumed}`;

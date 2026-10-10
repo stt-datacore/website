@@ -1,15 +1,15 @@
 import React from "react";
-import { UnifiedWorker } from "../typings/worker";
+import { UnifiedWorker, WorkerName } from "../typings/worker";
 
 export interface IWorkerContext {
     cancel: () => void;
-    runWorker: (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean) => void,
+    runWorker: (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: WorkerName) => void,
     running: boolean;
     runningWorker: string | null
 }
 
 export interface WorkerProviderProps {
-    children: JSX.Element;
+    children: React.ReactNode;
 }
 
 export interface WorkerProviderState {
@@ -39,7 +39,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
             callback: null,
             worker: null,
             context: {
-                ... DefaultContextData,
+                ...DefaultContextData,
                 cancel: () => this.cancel(true),
                 runWorker: this.runWorker
             },
@@ -51,14 +51,14 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
 
     private readonly clearState = () => {
         this.setState({
-            ... this.state,
+            ...this.state,
             extraCallbacks: [].slice(),
             workerName: null,
             config: null,
             callback: null,
             worker: null,
             context: {
-                ... this.state.context,
+                ...this.state.context,
                 running: false,
                 runningWorker: null
             }});
@@ -88,15 +88,17 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
         this.cancel(true);
     }
 
-    private readonly createWorker = () => {
+    private readonly createWorker = (file?: WorkerName) => {
         this.cancel();
-        const worker = new UnifiedWorker();
+        const worker = new UnifiedWorker(file);
         worker.addEventListener('message', this.workerMessage);
         return worker;
     }
 
-    private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean): void => {
+    private readonly runWorker = (workerName: string, config: any, callback: (data: any) => void, subscribeIfRunning?: boolean, file?: WorkerName): void => {
+        console.log('Worker provider runWorker enter.');
         if (subscribeIfRunning && this.state.context.running) {
+            console.log('Worker provider runWorker already running.');
             let ecb = [...this.state.extraCallbacks];
             if (!ecb.includes(callback)) {
                 ecb.push(callback);
@@ -105,15 +107,15 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
             return;
         }
 
-        const worker = this.createWorker();
+        const worker = this.createWorker(file);
         this.setState({
-            ... this.state,
+            ...this.state,
             worker,
             workerName,
             config,
             callback,
             context: {
-                ... this.state.context,
+                ...this.state.context,
                 running: true,
                 runningWorker: workerName
             }});
@@ -122,6 +124,7 @@ export class WorkerProvider extends React.Component<WorkerProviderProps, WorkerP
     componentDidUpdate(prevProps: Readonly<WorkerProviderProps>, prevState: Readonly<WorkerProviderState>, snapshot?: any): void {
         const { workerName: name, config, worker } = this.state;
         if (worker && config) {
+            console.log('Worker post message START.');
             worker.postMessage({
                 worker: name,
                 config

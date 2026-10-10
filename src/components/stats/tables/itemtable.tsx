@@ -4,9 +4,6 @@ import { ITableConfigRow, SearchableTable } from "../../searchabletable";
 import { Table } from "semantic-ui-react";
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from "../utils";
 import { approxDate } from "../itemdateutils";
-import 'moment/locale/fr';
-import 'moment/locale/de';
-import 'moment/locale/es';
 import { AvatarView } from "../../item_presenters/avatarview";
 import { CrewMember } from "../../../model/crew";
 import { omniSearchFilter } from "../../../utils/omnisearch";
@@ -205,7 +202,6 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
                     {drawTrait(item)}
                 </Table.Cell>
                 <Table.Cell>
-                    {/* {moment(item.first_appearance).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")} */}
                     {!!item.latest_usage && <>{approxDate(item.latest_usage, t)}</> || 'N/A'}
                 </Table.Cell>
                 <Table.Cell>
@@ -348,7 +344,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
             }
             dateSortCrew(crew);
             itemtraits[symbol].sort((a, b) => b.symbols.length - a.symbols.length);
-            let allcrew = [... new Set(itemtraits[symbol].map(m => m.symbols).flat()) ];
+            let allcrew = [...new Set(itemtraits[symbol].map(m => m.symbols).flat()) ];
             let common = traitsInCommon(allcrew);
             for (let traitset of itemtraits[symbol]) {
                 if (common.includes(traitset.trait)) {

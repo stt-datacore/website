@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header, Message, Icon, Table, Checkbox } from 'semantic-ui-react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import { GlobalContext } from '../../context/globalcontext';
 import { FleetDetails, Member, ProfileData } from '../../model/fleet';
 import { EventInstance } from '../../model/events';
@@ -10,14 +10,12 @@ import { printShortDistance } from '../../utils/misc';
 import { exportMembers } from '../../utils/fleet';
 import { downloadData } from '../../utils/crewutils';
 import { getIconPath } from '../../utils/assets';
-import moment from "moment";
-import 'moment/locale/fr';
-import 'moment/locale/de';
-import 'moment/locale/es';
+
 import { ITableConfigRow, SearchableTable } from '../searchabletable';
 import { omniSearchFilter } from '../../utils/omnisearch';
 import { useStateWithStorage } from '../../utils/storage';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
+import { useLocaleDate } from '../base/localedate';
 
 type FleetInfoPageProps = {
 	fleet_id: number;
@@ -54,6 +52,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 
 	const [onlyOfficers, setOnlyOfficers] = useStateWithStorage<boolean>('fleet/only_officers', false, { rememberForever: true });
 	const [onlyEvent, setOnlyEvent] = useStateWithStorage<boolean>('fleet/only_event', false, { rememberForever: true });
+	const localeDate = useLocaleDate(globalContext.localized);
 
 	React.useEffect(() => {
 		if (inputFleetData) {
@@ -272,7 +271,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 					<div style={{ gridArea: 'icon' }}>
 						<img
 							width={48}
-							src={`${process.env.GATSBY_ASSETS_URL}${memberIcons[member.dbid] || 'crew_portraits_cm_empty_sm.png'}`}
+							src={`${process.env.VITE_ASSETS_URL}${memberIcons[member.dbid] || 'crew_portraits_cm_empty_sm.png'}`}
 						/>
 					</div>
 					<div style={{ gridArea: 'stats' }}>
@@ -357,7 +356,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 		if (!inputFleet || !playerData || !dbids?.length) {
 			return;
 		}
-		fetch(`${process.env.GATSBY_DATACORE_URL}api/fleet_info`, {
+		fetch(`${process.env.VITE_DATACORE_URL}api/fleet_info`, {
 				method: 'POST',
 				body: JSON.stringify({ dbids: dbids }),
 				headers: {
@@ -407,7 +406,7 @@ export const FleetInfoPage = (props: FleetInfoPageProps) => {
 	}
 
 	function _momentDate(date: Date) {
-		return moment(date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y")
+		return localeDate(date);
 	}
 
 	function _exportItems(data: Member[], clipboard?: boolean) {

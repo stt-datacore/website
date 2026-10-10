@@ -1,21 +1,19 @@
+
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 import { DefaultAdvancedGauntletSettings, GauntletPane } from "../../utils/gauntlet";
 import { GauntletContext } from "./dataprovider";
-import moment from "moment";
-import 'moment/locale/fr';
-import 'moment/locale/de';
-import 'moment/locale/es';
 
-import { Step, Label, Icon, SemanticWIDTHS } from "semantic-ui-react";
+import { Icon, Label, Step } from "semantic-ui-react";
+import { Gauntlet, GauntletRoot, Opponent } from "../../model/gauntlets";
+import { TinyStore } from "../../utils/tiny";
 import { CrewHoverStat } from "../hovering/crewhoverstat";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { GauntletImportComponent } from "./gauntletimporter";
-import GauntletSettingsPopup from "./settings";
-import { Gauntlet, GauntletRoot, Opponent } from "../../model/gauntlets";
-import { GauntletView } from "./gauntletview";
 import { BrowsableGauntletView } from "./browseableview";
-import { TinyStore } from "../../utils/tiny";
+import { GauntletImportComponent } from "./gauntletimporter";
+import { GauntletView } from "./gauntletview";
+import GauntletSettingsPopup from "./settings";
+import { useLocaleDate } from "../base/localedate";
 
 export const GauntletPicker = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -25,6 +23,7 @@ export const GauntletPicker = () => {
     const { playerData } = globalContext.player;
     const hasPlayer = !!playerData;
     const [dbid, setDbid] = React.useState("");
+    const localeDate = useLocaleDate(globalContext.localized);
 
     const tiny = TinyStore.getStore('gauntlets');
 
@@ -68,11 +67,10 @@ export const GauntletPicker = () => {
     if (!gauntlets?.length) return <></>
 
     const today = gauntlets[0];
-    const yesterday = gauntlets[1];
 
     const fs = isMobile ? "0.75em" : "1em";
-    const tDateStr = moment(today?.date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y");
-    const yDateStr = moment(yesterday?.date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y");
+    const tDateStr = localeDate(new Date(today.date));
+
     const tabPanes = [
         {
             pane: 'today',
@@ -172,11 +170,11 @@ export const GauntletPicker = () => {
                 return;
             }
 
-            const dts = gauntlet.bracket_id?.split("_");
+            // const dts = gauntlet.bracket_id?.split("_");
 
-            if (dts !== undefined) {
-                gauntlet.date = dts[0];
-            }
+            // if (dts !== undefined) {
+            //     gauntlet.date = dts[0];
+            // }
 
             if (!gauntlet.date && gauntlet.seconds_to_join) {
                 let d = new Date((Date.now() + (1000 * gauntlet.seconds_to_join)));
@@ -184,14 +182,14 @@ export const GauntletPicker = () => {
                 gauntlet.date = d.toISOString();
             }
 
-            const newoppos = [ ... gauntlet.opponents ?? [] ];
+            const newoppos = [ ...gauntlet.opponents ?? [] ];
             const prevoppos = getCleanOpponents(gauntlet.bracket_id);
 
             for (let oppo of newoppos) {
                 oppo.bracket_id = gauntlet.bracket_id;
             	let prevoppo = prevoppos.find(fo => fo.player_id === oppo.player_id);
             	if (prevoppo) {
-            		const newdata = [ ... oppo.crew_contest_data.crew ];
+            		const newdata = [ ...oppo.crew_contest_data.crew ];
             		for (let newcrew of newdata) {
             			let fcrew = prevoppo.crew_contest_data.crew.find(c => c.archetype_symbol === newcrew.archetype_symbol);
             			if (fcrew) {
