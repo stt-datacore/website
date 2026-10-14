@@ -408,6 +408,7 @@
         "mortal": "Only show owned non-immortals",
         "none": "Show all crew",
         "owned": "Only show owned crew",
+        "unfinished": "Show all unfinished crew",
         "unowned": "Only show unowned crew",
         "wishlist": "Only show crew on my wishlist"
     },

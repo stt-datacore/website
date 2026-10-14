@@ -408,6 +408,7 @@
         "mortal": "Nur nicht unsterbliche Crew anzeigen, die im Besitz ist",
         "none": "Gesamte Crew anzeigen",
         "owned": "Nur Crew anzeigen, die im Besitz ist",
+        "unfinished": "Alle unfertigen Crew anzeigen",
         "unowned": "Nur Crew anzeigen, die nicht im Besitz ist",
         "wishlist": "Nur Crew auf meiner Wunschliste anzeigen"
     },

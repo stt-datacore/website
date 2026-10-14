@@ -21,9 +21,11 @@ export const CrewOwnershipFilter = (props: CrewOwnershipFilterProps) => {
 		{ key: 'immortal', value: 'immortal', text: t('crew_ownership.immortal') },
 		{ key: 'mortal', value: 'mortal', text: t('crew_ownership.mortal') },
 		{ key: 'unowned', value: 'unowned', text: t('crew_ownership.unowned') },
+		{ key: 'unfinished', value: 'unfinished', text: t('crew_ownership.unfinished') },
 	];
 
 	const filterByOwnership = (crew: IRosterCrew) => {
+		if (ownershipFilter === 'unfinished' && crew.any_immortal) return false;
 		if (ownershipFilter === 'owned' && !crew.have) return false;
 		if (ownershipFilter === 'unowned' && crew.have) return false;
 		if (ownershipFilter === 'immortal' && !crew.any_immortal) return false;

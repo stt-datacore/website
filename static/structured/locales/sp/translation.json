@@ -408,6 +408,7 @@
         "mortal": "Solo mostrar propiedad de no inmortales",
         "none": "Mostrar todas tripulantes",
         "owned": "Mostrar solo equipo propiedad",
+        "unfinished": "Mostrar toda la tripulación pendiente",
         "unowned": "Mostrar solo equipo sin propietario",
         "wishlist": "Solo el equipo del programa en mi lista de deseos"
     },
