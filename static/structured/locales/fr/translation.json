@@ -408,6 +408,7 @@
         "mortal": "Afficher uniquement les non-immortels appartenant",
         "none": "Afficher tous les équipiers",
         "owned": "Afficher uniquement les équipiers possédée",
+        "unfinished": "Afficher tout l'équipage en attente",
         "unowned": "Afficher uniquement les équipiers sans propriétaire",
         "wishlist": "Afficher uniquement l'équipage sur ma liste de souhaits"
     },
