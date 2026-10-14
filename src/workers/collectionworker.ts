@@ -188,7 +188,7 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const eligCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && mapFilter.collectionsFilter?.length));
+            const eligCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && (mapFilter.collectionsFilter?.length || mapFilter.rewardFilter?.length)));
             eligCrew.forEach((f) => {
                 if (f.have === undefined) f.have = !(f.immortal && f.immortal < -1);
                 if (!f.have) {
