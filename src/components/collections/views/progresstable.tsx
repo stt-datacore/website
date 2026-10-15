@@ -105,7 +105,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 	);
 
 	function showCollectionRow(collection: PlayerCollection, filters: Filter[]): boolean {
-		if (!rewardsFilterPassFail(mapFilter, [collection], short)) return false;
+		if (!rewardsFilterPassFail(mapFilter, [collection], short, true)) return false;
 		if (!showMaxed && collection.milestone.goal == 0) return false;
 		if (filters.length == 0) return true;
 
