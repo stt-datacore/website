@@ -170,10 +170,11 @@ export const Calculator = () => {
 	function recommendShuttlers(): void {
 		if (calcState > 0) return;
 
-		// Clear previously picked boosts; shuttlers are saved by updateAssignments
+		// Clear previously picked boosts
 		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).forEach(shuttle => {
 			delete shuttle.boost;
 		});
+		setShuttlers({...shuttlers});
 
 		const todo: ShuttleSeat[] = [], todoIds: string[] = [];
 		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).forEach(shuttle => {
