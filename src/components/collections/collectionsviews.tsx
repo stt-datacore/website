@@ -80,7 +80,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					sel = decodeURIComponent(window.location.hash.slice(1));
 				}
 
-				let findcol: Collection | PlayerCollection | undefined = undefined;
+				let findcol: Collection | PlayerCollection | undefined;
 				findcol = playerCollections?.find(f => f.name === sel && f.milestone.goal !== 0);
 
 				if (findcol) {
@@ -140,7 +140,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 			if (m_idx !== -1 && m_idx != ((playerCollections[idx].milestones?.length ?? 0) - 1)) {
 				let len = (!!playerCollections[idx].milestones ? playerCollections[idx].milestones?.length ?? 0 : 0);
 				let milestones = playerCollections[idx].milestones ?? [];
-				let crew = 0;
+				let crew: number;
 				for (let i = m_idx; i < len; i++) {
 					crew = milestones[i].goal;
 					milestoneOpts.push({
