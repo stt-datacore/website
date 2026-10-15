@@ -4,14 +4,13 @@ import { Button, Checkbox, Form, Icon, Popup, Message } from 'semantic-ui-react'
 import { ShuttleAdventure } from '../../model/shuttle';
 import { IRosterCrew } from '../../components/eventplanner/model';
 import { GlobalContext } from '../../context/globalcontext';
-import CONFIG from '../CONFIG';
 import { useStateWithStorage } from '../../utils/storage';
 
 import { Shuttle, ShuttleSeat, CrewScores, ISeatAssignment, ICrewSkillSets, ICrewScore } from './model';
 import { ShuttlersContext } from './context';
 import { Missions } from './missions';
 import { Assignments } from './assignments';
-import { getSkillSetId } from './utils';
+import { getCrewSeatScore, getSkillSetId } from './utils';
 import { isQuipped } from '../../utils/crewutils';
 import { CrewExcluder } from '../excluder/crewexcluder';
 import { PlayerCrew } from '../../model/player';
@@ -171,6 +170,11 @@ export const Calculator = () => {
 	function recommendShuttlers(): void {
 		if (calcState > 0) return;
 
+		// Clear previously picked boosts; shuttlers are saved by updateAssignments
+		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).forEach(shuttle => {
+			delete shuttle.boost;
+		});
+
 		const todo: ShuttleSeat[] = [], todoIds: string[] = [];
 		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId && shuttle.priority > 0).forEach(shuttle => {
 			for (let seatNum = 0; seatNum < shuttle.seats.length; seatNum++) {
@@ -228,7 +232,7 @@ export const Calculator = () => {
 				const currentIndex: number = crewScores.ranked.findIndex(score => score.id === rosterCrew[i].id && score.ssId === ssId);
 				if (currentIndex >= 0) crewScores.ranked.splice(currentIndex, 1);
 
-				const seatScore: number = getCrewSeatScore(rosterCrew[i], seat);
+				const seatScore: number = getCrewSeatScore(rosterCrew[i], seat, eventData);
 				if (seatScore > 0) {
 					const crewScore: ICrewScore = {
 						id: rosterCrew[i].id,
@@ -251,43 +255,6 @@ export const Calculator = () => {
 		crewScores.ranked = crewScores.ranked.concat(newScores);
 		crewScores.ranked.sort((a, b) => b.score - a.score);
 		setCrewScores({...crewScores});
-	}
-
-	function getCrewSeatScore(crew: IRosterCrew, seat: ShuttleSeat): number {
-		const skillOperand: string = seat.operand;
-		const primarySkill: string = seat.skillA;
-		const secondarySkill: string = seat.skillB;
-
-		let iHigherSkill = 0, iLowerSkill = 0;
-		for (let skill in CONFIG.SKILLS) {
-			if (skill !== primarySkill && skill !== secondarySkill) continue;
-			if (crew[skill].core === 0) continue;
-
-			let iMultiplier = 1;
-			if (eventData) {
-				if (eventData.featured.indexOf(crew.symbol) >= 0)
-					iMultiplier = 3;
-				else if (eventData.bonus.indexOf(crew.symbol) >= 0)
-					iMultiplier = 2;
-			}
-			const iSkillScore = crew[skill].core*iMultiplier;
-
-			if (iSkillScore > iHigherSkill) {
-				iLowerSkill = iHigherSkill;
-				iHigherSkill = iSkillScore;
-			}
-			else if (iSkillScore > iLowerSkill) {
-				iLowerSkill = iSkillScore;
-			}
-		}
-
-		let iSeatScore = 0;
-		if (skillOperand === 'OR')
-			iSeatScore = iHigherSkill;
-		else
-			iSeatScore = iHigherSkill+(iLowerSkill/4);
-
-		return iSeatScore;
 	}
 
 	function updateAssignments(): void {
@@ -370,7 +337,7 @@ export const Calculator = () => {
 							ssId,
 							assignedId: assignedCrew.id,
 							assignedSymbol: assignedCrew.symbol,
-							seatScore: getCrewSeatScore(assignedCrew, seat),
+							seatScore: getCrewSeatScore(assignedCrew, seat, eventData),
 							locked: false
 						});
 					}
