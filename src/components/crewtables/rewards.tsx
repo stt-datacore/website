@@ -224,6 +224,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 			disabled={disabled}
 			style={{ width: "22em" }}
 			scrolling
+			selection
 			placeholder={placeholder ?? 'Prioritize rewards'}
 			options={rrOpts}
 			value={value}

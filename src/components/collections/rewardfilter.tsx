@@ -17,12 +17,13 @@ export interface RewardFilterProps {
     setSelection: (value?: string[]) => void;
     hardFilter: boolean;
     setHardFilter: (value: boolean) => void;
+    hideCrew?: boolean;
 }
 
 export const RewardFilter = (props: RewardFilterProps) => {
 
     const { t }= React.useContext(GlobalContext).localized;
-    const { hardFilter, setHardFilter, searchFilter, setSearchFilter, crewSource, collectionSource, narrow, grouped, setGrouped, selection, setSelection } = props;
+    const { hideCrew, hardFilter, setHardFilter, searchFilter, setSearchFilter, crewSource, collectionSource, narrow, grouped, setGrouped, selection, setSelection } = props;
 
     return <React.Fragment>
                 <div style={{
@@ -35,7 +36,8 @@ export const RewardFilter = (props: RewardFilterProps) => {
                     width:
                         window.innerWidth < DEFAULT_MOBILE_WIDTH ? '100%' : '60%'
                 }}>
-                    <Dropdown
+                    {!hideCrew && <Dropdown
+                        style={{marginRight: '0.5em'}}
                         multiple
                         placeholder={t('hints.select_crew')}
                         clearable
@@ -57,8 +59,8 @@ export const RewardFilter = (props: RewardFilterProps) => {
                         }) ?? []}
                         //placeholder="Click crew name to filter..."
                         value={searchFilter.split(";").map(s => s.trim())}
-                        onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))} />
-
+                        onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))}
+                    />}
 
                     <RewardPicker
                         placeholder={t('hints.prioritize_rewards')}

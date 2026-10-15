@@ -3,10 +3,14 @@ import React from 'react';
 import { Popup, Icon, Form, Dropdown, Checkbox, Table } from 'semantic-ui-react';
 import { GlobalContext } from '../../../context/globalcontext';
 import { Filter } from '../../../model/game-elements';
-import { PlayerCollection } from '../../../model/player';
+import { PlayerCollection, PlayerCrew } from '../../../model/player';
 import { useStateWithStorage } from '../../../utils/storage';
 import { makeRewards, RewardsGrid } from '../../crewtables/rewards';
 import { ITableConfigRow, SearchableTable } from '../../searchabletable';
+import { CollectionsContext } from '../context';
+import { RewardFilter } from '../rewardfilter';
+import { DEFAULT_MOBILE_WIDTH } from '../../hovering/hoverstat';
+import { compareRewards, rewardsFilterPassFail } from '../../../utils/collectionutils';
 
 export interface ProgressTableProps {
 	playerCollections: PlayerCollection[];
@@ -18,9 +22,13 @@ export const ProgressTable = (props: ProgressTableProps) => {
 	const { workerRunning, playerCollections, filterCrewByCollection } = props;
 	const context = React.useContext(GlobalContext);
 	const { t } = context.localized;
-	const [rewardFilter, setRewardFilter] = useStateWithStorage<string | undefined>('collectionstool/rewardFilter', undefined);
+	const { playerData } = context.player;
+	const { crew: allCrew } = context.core;
+	//const [rewardFilter, setRewardFilter] = useStateWithStorage<string | undefined>('collectionstool/rewardFilter', undefined);
 	const [showMaxed, setShowMaxed] = useStateWithStorage('collectionstool/showMaxed', false);
 	const [showScores, setShowScores] = useStateWithStorage('collectionstool/showScores', true, { rememberForever: true });
+	const colContext = React.useContext(CollectionsContext);
+	const { hardFilter, setHardFilter, setShort, short, searchFilter, setSearchFilter, mapFilter, setMapFilter } = colContext;
 
 	const tableConfig: ITableConfigRow[] = [
 		{ width: 2, column: 'name', title: t('base.collection') },
@@ -35,27 +43,37 @@ export const ProgressTable = (props: ProgressTableProps) => {
 	if (!showScores) {
 		tableConfig.splice(1, 3);
 	}
-	// Rewards will test value against literal symbol string, except when prefixed by:
-	//	= Regular expression against symbol, * Special test case
-	const rewardOptions = makeRewards(t);
 
-	// if (workerRunning) {
-	// 	return context.core.spin(t('spinners.default'));
-	// }
+	const narrow = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
+
+	const crewSource = React.useMemo(() => {
+		if (playerData) {
+			return playerData.player.character.crew;
+		}
+		else {
+			return allCrew as PlayerCrew[];
+		}
+	}, [playerData, allCrew]);
+
 	return (
 		<React.Fragment>
 			<div style={{ margin: '.5em 0' }}>
+				<RewardFilter
+					hideCrew={true}
+					hardFilter={hardFilter}
+					setHardFilter={setHardFilter}
+					narrow={narrow}
+					grouped={short}
+					setGrouped={setShort}
+					searchFilter={searchFilter}
+					setSearchFilter={setSearchFilter}
+					collectionSource={playerCollections}
+					crewSource={crewSource}
+					selection={mapFilter?.rewardFilter}
+					setSelection={(value) => setMapFilter({ ...mapFilter ?? {}, rewardFilter: value as string[] | undefined })}
+				/>
 				<Form>
 					<Form.Group inline>
-						<Form.Field
-							control={Dropdown}
-							placeholder={t('hints.filter_by_reward')}
-							selection
-							clearable
-							options={rewardOptions}
-							value={rewardFilter}
-							onChange={(e, { value }) => setRewardFilter(value)}
-						/>
 						<Form.Field
 							control={Checkbox}
 							label={t('collections.options.show_maxed_collections')}
@@ -71,7 +89,7 @@ export const ProgressTable = (props: ProgressTableProps) => {
 					</Form.Group>
 				</Form>
 			</div>
-			<SearchableTable
+			{!!mapFilter && <SearchableTable
 				id='collections/progress'
 				data={playerCollections}
 				config={tableConfig}
@@ -82,27 +100,13 @@ export const ProgressTable = (props: ProgressTableProps) => {
 						<p>{t('collections.options.search_by_name_or_trait')}</p>
 					</div>
 				}
-			/>
+			/>}
 		</React.Fragment>
 	);
 
 	function showCollectionRow(collection: PlayerCollection, filters: Filter[]): boolean {
+		if (!rewardsFilterPassFail(mapFilter, [collection], short)) return false;
 		if (!showMaxed && collection.milestone.goal == 0) return false;
-
-		if (rewardFilter && rewardFilter != '*any') {
-			let re: RegExp;
-			if (rewardFilter == '*buffs') {
-				if (collection.milestone?.buffs?.length == 0) return false;
-			}
-			else if (rewardFilter.slice(0, 1) == '=') {
-				re = new RegExp(rewardFilter.slice(1));
-				if (!collection.milestone.rewards?.find(reward => reward.symbol && re.test(reward.symbol))) return false;
-			}
-			else if (!collection.milestone.rewards?.find(reward => reward.symbol == rewardFilter)) {
-				return false;
-			}
-		}
-
 		if (filters.length == 0) return true;
 
 		const matchesFilter = (input: string, searchString: string) =>
