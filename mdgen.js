@@ -51,4 +51,5 @@ function scanForMarkdown(dir) {
     }
     delete org.crew;
     fs.writeFileSync('./static/structured/markdown_pages.json', JSON.stringify(org, null, 4));
+    fs.writeFileSync('./src/static/structured/markdown_pages.json', JSON.stringify(org, null, 4));
 })();
