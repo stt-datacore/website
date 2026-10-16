@@ -39,9 +39,9 @@ export function getCrewSeatScore(crew: IRosterCrew, seat: ShuttleSeat, eventData
 				iMultiplier = 2;
 		}
 
-		// Shuttle boost adds to seated crew's skill (only if crew has that skill), after event bonuses
+		// Shuttle boost adds to seated crew's skill (only if crew has that skill), before event bonuses
 		const iBoost = boost?.skill === skill ? SHUTTLE_BOOST_BONUSES[boost.rarity] : 0;
-		const iSkillScore = crew[skill].core * iMultiplier + iBoost;
+		const iSkillScore = (crew[skill].core + iBoost) * iMultiplier;
 
 		if (iSkillScore > iHigherSkill) {
 			iLowerSkill = iHigherSkill;
