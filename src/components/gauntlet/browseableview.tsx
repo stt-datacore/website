@@ -1,4 +1,3 @@
-import moment from "moment";
 import React from "react";
 import { Dropdown } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -68,7 +67,7 @@ export const BrowsableGauntletView = (props: BrowseableGauntletProps) => {
             text = `${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")}`;
         }
         else {
-            text = moment(g.date).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).utc(false).format('dddd, D MMMM YYYY') + ` (${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
+            text = new Intl.DateTimeFormat(globalContext.localized.language.replace('sp', 'es'), { dateStyle: 'long' }).format(new Date(g.date)) + ` (${g.contest_data?.traits.map(t => TRAIT_NAMES[t]).join("/")}/${skillToShort(g.contest_data?.featured_skill ?? "")})`;
         }
 
         return {

@@ -17,12 +17,13 @@ export interface RewardFilterProps {
     setSelection: (value?: string[]) => void;
     hardFilter: boolean;
     setHardFilter: (value: boolean) => void;
+    hideCrew?: boolean;
 }
 
 export const RewardFilter = (props: RewardFilterProps) => {
 
     const { t }= React.useContext(GlobalContext).localized;
-    const { hardFilter, setHardFilter, searchFilter, setSearchFilter, crewSource, collectionSource, narrow, grouped, setGrouped, selection, setSelection } = props;
+    const { hideCrew, hardFilter, setHardFilter, searchFilter, setSearchFilter, crewSource, collectionSource, narrow, grouped, setGrouped, selection, setSelection } = props;
 
     return <React.Fragment>
                 <div style={{
@@ -35,7 +36,8 @@ export const RewardFilter = (props: RewardFilterProps) => {
                     width:
                         window.innerWidth < DEFAULT_MOBILE_WIDTH ? '100%' : '60%'
                 }}>
-                    <Dropdown
+                    {!hideCrew && <Dropdown
+                        style={{marginRight: '0.5em'}}
                         multiple
                         placeholder={t('hints.select_crew')}
                         clearable
@@ -49,7 +51,7 @@ export const RewardFilter = (props: RewardFilterProps) => {
                                 content:
                                     <div key={"dropdown_opt_"+ca.symbol} style={{display:"inline-flex", alignItems:"center", flexDirection:"row"}}>
                                         <img
-                                            src={`${process.env.GATSBY_ASSETS_URL}${ca.imageUrlPortrait}`}
+                                            src={`${process.env.VITE_ASSETS_URL}${ca.imageUrlPortrait}`}
                                             style={{height:'2em', marginRight:"0.5em"}} />
                                         {ca.name}
                                     </div>
@@ -57,8 +59,8 @@ export const RewardFilter = (props: RewardFilterProps) => {
                         }) ?? []}
                         //placeholder="Click crew name to filter..."
                         value={searchFilter.split(";").map(s => s.trim())}
-                        onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))} />
-
+                        onChange={(e, { value }) => setSearchFilter((value as string[])?.join("; "))}
+                    />}
 
                     <RewardPicker
                         placeholder={t('hints.prioritize_rewards')}

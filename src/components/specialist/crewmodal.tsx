@@ -41,7 +41,7 @@ type SpecialistPickerProps = {
     cooldowns?: GalaxyCrewCooldown[];
     selection?: IRosterCrew;
     onClose: (selection: IRosterCrew | undefined, affirmative: boolean, position?: number) => void;
-    //renderTrigger?: (mission: SpecialistMission, crew: IRosterCrew) => JSX.Element;
+    //renderTrigger?: (mission: SpecialistMission, crew: IRosterCrew) => React.ReactNode;
 }
 
 function SpecialistPickerModal(props: SpecialistPickerProps) {
@@ -317,7 +317,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             cooldown.is_disabled = cooldown.disabled_until.getTime() > Date.now();
         }
         const skillimg = row.matched_skills.map((skill) => {
-            let skill_icon = `${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`;
+            let skill_icon = `${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
             return (
                 <div title={CONFIG.SKILLS[skill]} style={{
                     ...flexRow,
@@ -340,21 +340,21 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             )
         });
 
-        const skillcontent = [] as JSX.Element[];
+        const skillcontent = [] as React.ReactNode[];
 
         for (let img of skillimg) {
             skillcontent.push(img);
         }
 
         const traitimg = row.matched_traits.map((trait) => {
-            let trait_icon = `${process.env.GATSBY_ASSETS_URL}items_keystones_${trait}.png`;
+            let trait_icon = `${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`;
             return <div title={TRAIT_NAMES[trait]} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
                 <img src={trait_icon} style={{height: '24px'}} />
                 {TRAIT_NAMES[trait]}
             </div>
         });
 
-        const traitcontent = [] as JSX.Element[];
+        const traitcontent = [] as React.ReactNode[];
 
         for (let img of traitimg) {
             traitcontent.push(img);

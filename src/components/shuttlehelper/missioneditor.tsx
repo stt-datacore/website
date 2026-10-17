@@ -1,11 +1,10 @@
 import React from 'react';
 import { Header, Table, Icon, Dropdown, Input, Button, Grid, Modal, Divider } from 'semantic-ui-react';
 
-import allFactions from '../../../static/structured/factions.json';
-
 import { Shuttle, ShuttleSeat, IDropdownOption } from './model';
 import CONFIG from '../CONFIG';
 import { ShuttlersContext } from './context';
+import { GlobalContext } from '../../context/globalcontext';
 
 type MissionEditorProps = {
 	shuttle: Shuttle;
@@ -15,6 +14,8 @@ type MissionEditorProps = {
 
 export const MissionEditor = (props: MissionEditorProps) => {
 	const shuttlersContext = React.useContext(ShuttlersContext);
+	const globalContext = React.useContext(GlobalContext);
+	const { factions: allFactions } = globalContext.core;
 	const { eventFactions } = shuttlersContext;
 	const [shuttle, setShuttle] = React.useState<Shuttle>(structuredClone(props.shuttle));
 
@@ -45,7 +46,7 @@ export const MissionEditor = (props: MissionEditorProps) => {
 		</Modal>
 	);
 
-	function renderContent(): JSX.Element {
+	function renderContent(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Grid columns={2} divided stackable>
@@ -161,9 +162,9 @@ const EditorSeat = (props: EditorSeatProps) => {
 			<Grid.Column>
 				<Button circular
 					disabled={seat.skillB === '' ? true : false}
-					onClick={() => updateMissionSeat(seatNum, 'operand', seat.operand == 'AND' ? 'OR' : 'AND')}
+					onClick={() => updateMissionSeat(seatNum, 'operand', seat.operand === 'AND' ? 'OR' : 'AND')}
 				>
-					{seat.skillB == '' ? '' : seat.operand}
+					{seat.skillB === '' ? '' : seat.operand}
 				</Button>
 			</Grid.Column>
 			<Grid.Column>

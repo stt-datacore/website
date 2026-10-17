@@ -142,11 +142,11 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		</React.Fragment>
 	);
 
-	function renderSkills(skills: IContestSkill[]): JSX.Element {
+	function renderSkills(skills: IContestSkill[]): React.ReactNode {
 		return <ProficiencyRanges skills={skills} />;
 	}
 
-	function renderBoost(assignment: IContestAssignment): JSX.Element {
+	function renderBoost(assignment: IContestAssignment): React.ReactNode {
 		if (!assignment.crew) return <></>;
 		return (
 			<BoostPicker
@@ -157,7 +157,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		);
 	}
 
-	function renderChampionSkills(assignedContest: IChampionContest): JSX.Element {
+	function renderChampionSkills(assignedContest: IChampionContest): React.ReactNode {
 		const champion: IChampion = assignedContest.champion;
 		const contestSkills: IContestSkill[] = assignedContest.skills.map(contestSkill => {
 			const championSkill: IContestSkill | undefined = champion.skills.find(championSkill =>
@@ -173,7 +173,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		return renderSkills(contestSkills);
 	}
 
-	function renderContest(contestIndex: number, assignedContest: IChampionContest | undefined): JSX.Element {
+	function renderContest(contestIndex: number, assignedContest: IChampionContest | undefined): React.ReactNode {
 		if (assignedContest) {
 			return (
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
@@ -200,7 +200,7 @@ export const ContestsTable = (props: ContestsTableProps) => {
 		);
 	}
 
-	function renderOdds(assignedContest: IChampionContest | undefined): JSX.Element {
+	function renderOdds(assignedContest: IChampionContest | undefined): React.ReactNode {
 		if (!assignedContest) return <>{t('global.n_%', { n: 0 })}</>;
 		if (!assignedContest.result) return <></>;
 		return (

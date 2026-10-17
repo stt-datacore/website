@@ -92,7 +92,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
                 chrons,
                 ism,
                 quantum,
-            } as TrackedEnergy;
+            } as any as TrackedEnergy;
 
             const elognew = energyLog ? { ...energyLog } : {};
             elognew[dbid] ??= [];
@@ -172,7 +172,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     async function searchRemote(startDate?: Date, endDate?: Date) {
         if (!playerData) return undefined;
         const dbid = playerData.player.dbid;
-        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources?dbid=${dbid}`;
+        let url = `${process.env.VITE_DATACORE_URL}api/playerResources?dbid=${dbid}`;
         if (startDate) {
             url += `&startDate=${startDate.toLocaleDateString()}`;
         }
@@ -216,7 +216,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     async function logToRemote(entry: EnergyLogEntry) {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
-        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResources`;
+        let url = `${process.env.VITE_DATACORE_URL}api/playerResources`;
         let postBody = {
             resources: entry.energy,
             timestamp: entry.timestamp,
@@ -239,7 +239,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     async function updateRemote(entries: EnergyLogEntry[]) {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
-        let url = `${process.env.GATSBY_DATACORE_URL}api/playerResourcesBatch`;
+        let url = `${process.env.VITE_DATACORE_URL}api/playerResourcesBatch`;
         let resources = entries.filter(e => !e.remote && !!e.energy).map((e) => ({ ...e, dbid })) as RemoteEnergyLogEntry[];
         if (!resources?.length) return { "result": "ok" };
         let postBody = {
@@ -263,7 +263,7 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     async function clearRemote() {
         if (!playerData) return false;
         let dbid = playerData.player.dbid;
-        let url = `${process.env.GATSBY_DATACORE_URL}api/clearPlayerResources`;
+        let url = `${process.env.VITE_DATACORE_URL}api/clearPlayerResources`;
         let postBody = { dbid };
          return fetch(url, {
             method: "POST",

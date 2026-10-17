@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Header } from 'semantic-ui-react';
-import { graphql } from 'gatsby';
 
 import DataPageLayout from '../components/page/datapagelayout';
 
@@ -30,14 +29,3 @@ class StaticPage extends PureComponent<StaticPageProps> {
 }
 
 export default StaticPage;
-
-export const query = graphql`
-	query($slug: String!) {
-		markdownRemark(fields: { slug: { eq: $slug } }) {
-			html
-			frontmatter {
-				title
-			}
-		}
-	}
-`;

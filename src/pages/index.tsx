@@ -9,7 +9,6 @@ import { IRosterCrew, RosterType } from '../components/crewtables/model';
 import { RosterPicker } from '../components/crewtables/rosterpicker';
 import { RosterTable } from '../components/crewtables/rostertable';
 import { TinyStore } from '../utils/tiny';
-import { navigate } from 'gatsby';
 import { useStateWithStorage } from '../utils/storage';
 import { PlayerBuffMode } from '../model/player';
 
@@ -38,7 +37,7 @@ const IndexPage = (props: IndexPageProps) => {
 	tiny.subscribe((name) => {
 		if (name === "search") {
 			let search = tiny.getRapid<string>('search') ?? '';
-			history.pushState({}, "", "/?search=" + search);
+			window.history.pushState({}, "", "/?search=" + search);
 			window.setTimeout(() => {
 				setSearchExtra(search);
 			});

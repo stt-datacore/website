@@ -1,14 +1,15 @@
-import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
+/* eslint-disable no-useless-assignment */
 import {
-    CollectionInfo,
+    ColComboMap,
     CollectionCombo,
+    CollectionInfo,
     CollectionWorkerConfig,
     CollectionWorkerResult,
-    ColComboMap,
     ComboCostMap,
 } from "../model/collections";
 import { PlayerCollection, PlayerCrew } from "../model/player";
-import { getPermutations, makeAllCombos } from "../utils/misc";
+import { compareRewards, findColGroupsCrew, getOptCrew, neededStars, starCost } from "../utils/collectionutils";
+import { makeAllCombos } from "../utils/misc";
 
 function makeOptimizedCombos(colCombos: CollectionCombo, playerCollections: PlayerCollection[]) {
     let cname = colCombos.collection.name;
@@ -187,7 +188,7 @@ const CollectionOptimizer = {
                     ?.filter((f) => f?.length) ?? []
                 : [];
 
-            const eligCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && mapFilter.collectionsFilter?.length));
+            const eligCrew = collectionCrew.filter(f => !f.immortal || ((f.immortal && f.immortal < -1) && (mapFilter.collectionsFilter?.length || mapFilter.rewardFilter?.length)));
             eligCrew.forEach((f) => {
                 if (f.have === undefined) f.have = !(f.immortal && f.immortal < -1);
                 if (!f.have) {
@@ -210,7 +211,7 @@ const CollectionOptimizer = {
                 col.crew = eligCrew.filter(f => f.collections.some(col2 => col2 === col.name)).map(c => c.symbol);
             });
 
-            const workingCrew = [... new Set(colInfo.map((col: LocalCollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
+            const workingCrew = [...new Set(colInfo.map((col: LocalCollectionInfo) => col.crew).flat())].map(symbol => eligCrew.find(sym => sym.symbol === symbol) as PlayerCrew) as PlayerCrew[];
             normalCollectionSort(workingCrew);
 
             workingCrew.forEach((crew) => {
@@ -334,7 +335,7 @@ const CollectionOptimizer = {
                 let bcol = b.collection;
                 let r = 0;
 
-                if (mapFilter?.rewardFilter) {
+                if (mapFilter?.rewardFilter?.length) {
                     r = compareRewards(mapFilter, [acol], [bcol], short);
                     if (r) return r;
                 }
@@ -362,9 +363,9 @@ const CollectionOptimizer = {
                     x.collection !== undefined &&
                     x.crew?.length &&
                     x.collection?.totalRewards &&
-                    x.collection.milestone &&
+                    x.collection?.milestone &&
                     (!mapFilter?.collectionsFilter?.length ||
-                        mapFilter.collectionsFilter.some((cf) => x.collection?.id === cf));
+                        mapFilter.collectionsFilter.some((cf) => Number(x.collection?.id) === Number(cf)));
 
                 if (searchFilter?.length && bPass) {
                     bPass &&= x.crew?.some((csf) =>
