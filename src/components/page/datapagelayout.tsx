@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { Helmet as HelmetDep } from 'react-helmet';
-
 import { ValidDemands } from '../../context/datacontext';
 import { GlobalContext } from '../../context/globalcontext';
 
@@ -45,6 +43,7 @@ export interface DataPageLayoutProps {
 
 	suppressTitleDisplay?: boolean;
 	suppressPlayerHeader?: boolean;
+	suppressMetaTags?: boolean;
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
 
@@ -76,7 +75,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 
-	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType, suppressTitleDisplay, suppressPlayerHeader } = props;
+	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType, suppressTitleDisplay, suppressPlayerHeader, suppressMetaTags } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -106,10 +105,12 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 		<AlertProvider>
 			<div ref={topAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
 
-				<DataPageHelmet
-					title={pageTitle}
-					description={pageDescription}
-				/>
+				{!suppressMetaTags && (
+					<DataPageMeta
+						title={pageTitle}
+						description={pageDescription}
+					/>
+				)}
 				<Navigation
 					sidebarTarget={topAnchor as any}
 					requestPanel={(target: string, panel: string | undefined) => {
@@ -179,43 +180,25 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	}
 };
 
-// Use Gatsby Head on each page instead of ReactHelmet in layout with Gatsby 4?
-type DataPageHelmetProps = {
+type DataPageMetaProps = {
 	title: string | undefined;
 	description: string | undefined;
 };
 
-const DataPageHelmet = (props: DataPageHelmetProps) => {
+const DataPageMeta = (props: DataPageMetaProps) => {
 	const { title, description } = props;
 	const baseUrl = `${document.location.origin}`;
-	const data = {
-		site: {
-			siteMetadata: {
-				defaultTitle: title,
-				titleTemplate: '',
-				defaultDescription: description,
-				baseUrl
-			}
-		}
-	}
 
-	if (DEBUG_MODE) console.log("Helmet component render");
-	const Helmet = HelmetDep as any;
-	function withPrefix(arg0: string): string | undefined {
-		return "/" + arg0;
-	}
-	const pageTitle = `STT DataCore - ${title}`;
+	const pageTitle = title ? `STT DataCore - ${title}` : 'STT DataCore';
 	return (
-		<Helmet titleTemplate={pageTitle} defaultTitle={pageTitle}>
-			{title && <title>{title}</title>}
+		<>
+			{title && <title>{pageTitle}</title>}
 			<meta property='og:type' content='website' />
 			<meta property='og:title' content={pageTitle} />
-			<meta property='og:site_name' content='`Star Trek Timelines DataCore' />
-			<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
-			<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
-			<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
-			<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
-		</Helmet>
+			<meta property='og:site_name' content='Star Trek Timelines DataCore' />
+			<meta property='og:image' content={`${baseUrl}/media/logo.png`} />
+			{description && <meta property='og:description' content={description} />}
+		</>
 	);
 };
 
