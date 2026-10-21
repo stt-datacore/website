@@ -75,7 +75,8 @@ export const Calculator = () => {
 								</p>
 								<p>
 									{tfmt('shuttle_helper.calculator.you_can_view_running', { link: <Button compact content={t('shuttle_helper.calculator.view_running')} onClick={() => importAssignments()} /> })}
-									{assigned.length > 0 && t('shuttle_helper.calculator.warn_replace')}
+									{' '}{t('shuttle_helper.calculator.boosts_cleared')}
+									{assigned.length > 0 && <>{' '}{t('shuttle_helper.calculator.warn_replace')}</>}
 									</p>
 							</Message>
 						)}
@@ -313,6 +314,8 @@ export const Calculator = () => {
 		let running: number = 0;
 		const assigned: ISeatAssignment[] = [];
 		shuttlers.shuttles.filter(shuttle => shuttle.groupId === groupId).forEach(shuttle => {
+			// Boosts aren't included in player data, so clear any previously picked boost
+			delete shuttle.boost;
 			const runningAdventure: ShuttleAdventure | undefined = activeShuttles.find(adventure =>
 				adventure.symbol === shuttle.id && adventure.shuttles[0].state > 0
 			);

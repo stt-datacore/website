@@ -2406,6 +2406,7 @@
     },
     "shuttle_helper": {
         "calculator": {
+            "boosts_cleared": "Les boosts de navette ne sont pas inclus dans les données du joueur, donc tous les boosts que vous avez choisis seront effacés.",
             "change_missions": "Modifier les missions",
             "mission_selected": "1 mission sélectionnée",
             "missions_selected": "{{n}} missions sélectionnées",

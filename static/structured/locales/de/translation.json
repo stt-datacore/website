@@ -2394,6 +2394,7 @@
     },
     "shuttle_helper": {
         "calculator": {
+            "boosts_cleared": "Shuttle-Boosts sind nicht in den Spielerdaten enthalten, daher werden alle ausgewählten Boosts entfernt.",
             "change_missions": "Ändern Sie die Missionen",
             "mission_selected": "1 Mission ausgewählt",
             "missions_selected": "{{n}} Missionen ausgewählt",
