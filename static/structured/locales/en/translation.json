@@ -2396,6 +2396,7 @@
     },
     "shuttle_helper": {
         "calculator": {
+            "boosts_cleared": "Shuttle boosts aren't included in player data, so any boosts you've picked will be cleared.",
             "change_missions": "Change Missions",
             "mission_selected": "1 mission selected",
             "missions_selected": "{{n}} missions selected",

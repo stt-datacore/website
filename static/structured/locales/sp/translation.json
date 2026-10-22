@@ -2404,6 +2404,7 @@
     },
     "shuttle_helper": {
         "calculator": {
+            "boosts_cleared": "Los potenciadores de lanzadera no se incluyen en los datos del jugador, por lo que se borrarán los potenciadores que hayas elegido.",
             "change_missions": "Cambiar misiones",
             "mission_selected": "1 misión seleccionada",
             "missions_selected": "{{n}} misiones seleccionadas",
