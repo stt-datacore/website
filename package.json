@@ -43,6 +43,7 @@
     "build": "node mdgen && tsc -b && vite build",
     "cy:open": "cypress open",
     "develop": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",
+    "windev": "vite --port=8881",
     "lint": "eslint .",
     "preview": "node mdgen && vite preview",
     "serve": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",

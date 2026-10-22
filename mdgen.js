@@ -28,7 +28,7 @@ function scanForMarkdown(dir) {
         });
         let oi = org[sp[0]].length - 1;
         let filepath = rawmd[i];
-        let contents = fs.readFileSync(filepath, 'utf-8').split('---\n');
+        let contents = fs.readFileSync(filepath, 'utf-8').replace(/\r\n/g, '\n').split('---\n');
         let headers = contents[1].split("\n");
         let mapped = headers.map(h => {
             let x = h.indexOf(":");
@@ -51,4 +51,5 @@ function scanForMarkdown(dir) {
     }
     delete org.crew;
     fs.writeFileSync('./static/structured/markdown_pages.json', JSON.stringify(org, null, 4));
+    fs.writeFileSync('./src/static/structured/markdown_pages.json', JSON.stringify(org, null, 4));
 })();
