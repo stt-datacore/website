@@ -7,9 +7,3 @@
 //   const linkElement = screen.getByText(/learn react/i);
 //   expect(linkElement).toBeInTheDocument();
 // });
-
-import { expect, test } from 'vitest';
-
-test('test runner is wired up', () => {
-  expect(true).toBe(true);
-});
