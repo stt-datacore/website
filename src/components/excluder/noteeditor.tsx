@@ -16,7 +16,7 @@ import { drawSkills } from "../specialist/utils";
 import { OptionsPanelFlexRow } from "../stats/utils";
 
 export interface NoteEditorProps {
-    title: string | React.JSX.Element;
+    title: string | React.ReactNode;
     mode: 'add' | 'remove';
     crewIds: number[];
     isOpen: boolean;

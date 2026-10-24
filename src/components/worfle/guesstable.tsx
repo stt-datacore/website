@@ -56,7 +56,7 @@ export const GuessTable = () => {
 		</div>
 	);
 
-	function renderLoserRow(): JSX.Element {
+	function renderLoserRow(): React.ReactNode {
 		const evaluatedMysteryCrew: IEvaluatedGuess = {
 			crew: mysteryCrew,
 			crewEval: EvaluationState.Exact,
@@ -111,7 +111,7 @@ const GuessRow = (props: GuessRowProps) => {
 					)}
 					<div style={{ display: 'flex', alignItems: 'center', columnGap: '1em' }}>
 						<div>
-							<img src={`${process.env.GATSBY_ASSETS_URL}${evaluatedGuess.crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+							<img src={`${process.env.VITE_ASSETS_URL}${evaluatedGuess.crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 						</div>
 						<div style={{ fontSize: '1.25em' }}>
 							{evaluatedGuess.crew.name}
@@ -157,10 +157,10 @@ const GuessRow = (props: GuessRowProps) => {
 		</Table.Row>
 	);
 
-	function renderSkillCell(index: number): JSX.Element {
+	function renderSkillCell(index: number): React.ReactNode {
 		if (index >= evaluatedGuess.crew.skill_order.length) return <Icon name='minus' />;
 		const skill: string = evaluatedGuess.crew.skill_order[index];
-		return <img alt={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '2em' }} />;
+		return <img alt={skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '2em' }} />;
 	}
 
 	function styleRow(): React.CSSProperties {
@@ -176,7 +176,7 @@ const GuessRow = (props: GuessRowProps) => {
 		return {};
 	}
 
-	function renderFavoriteToggle(crew: IRosterCrew): JSX.Element {
+	function renderFavoriteToggle(crew: IRosterCrew): React.ReactNode {
 		const isFavorited: boolean = userPrefs.favorites.includes(crew.symbol);
 		const iconName: SemanticICONS = isFavorited ? 'heart' : 'heart outline';
 		const iconColor: SemanticCOLORS | undefined = isFavorited ? 'pink' : undefined;
@@ -210,7 +210,7 @@ const GuessRow = (props: GuessRowProps) => {
 		);
 	}
 
-	function renderHints(): JSX.Element {
+	function renderHints(): React.ReactNode {
 		const hintCount: number = hints.length;
 		if (hintCount === 0) return <>0 hints</>;
 		return (

@@ -1,51 +1,118 @@
 # Star Trek Timelines Data Core
 
+DataCore 4.0 is a TypeScript and React application built with Vite. Navigation uses React Router (`react-router-dom`) and `BrowserRouter`, replacing Gatsby from DataCore 3.4.
+
+## Requirements
+
+- Node.js 20.19+ on the 20.x release line, or 22.12+ (required by the installed Vite 8 package).
+- Yarn.
+- Linux or WSL for the commands below, which use POSIX environment variable syntax.
+
+## Local development
+
+From the project directory:
+
+```sh
+yarn install
+cp .env.defaults .env
+```
+
+Configure `.env` for your backend and image server. Include trailing slashes because the application appends paths:
+
+```dotenv
+VITE_DATACORE_URL=https://datacore.app/
+VITE_ASSETS_URL=https://assets.datacore.app/
+```
+
+These values are included in the frontend bundle; do not put secrets in them. Restart development or rebuild production after changing them.
+
+```sh
+yarn develop
+```
+
+Open http://localhost:8881, or the address Vite prints if that port is occupied. `yarn start` and `yarn serve` run the same development command.
+
+Public files, Markdown content, and structured JSON data live in `static/`. Before development, builds, and previews, `mdgen.js` generates `static/structured/markdown_pages.json` from Markdown front matter.
+
+## Build and preview
+
+```sh
+yarn build
+yarn preview
+```
+
+The build generates the Markdown index, runs the TypeScript project build, and bundles the frontend with Vite. Output goes to `build/`, bundled assets to `build/chunks/`, and public files are copied from `static/`.
+
+Preview serves the existing production build locally at the URL it prints. Rebuild after changes to source code, content, or environment values. Host deployed files with a production web server.
+
+## Deployment
+
+Deploy the contents of `build/`. React Router uses browser history, so direct visits and refreshes on application routes must fall back to `index.html`.
+
+For example, an nginx frontend location can use:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+Point the server root at the deployed build directory. Configure backend endpoints such as `/api/` and `/media/` separately so they reach the backend rather than the frontend fallback.
+
+The old Gatsby and `publish.sh` instructions do not apply to this checkout. Use your deployment process to install dependencies, run `yarn build`, and deploy the output.
+
+## Available scripts
+
+| Command | Purpose |
+| --- | --- |
+| `yarn develop`, `yarn start`, `yarn serve` | Generate the Markdown index and start Vite on port 8881. |
+| `yarn build` | Generate the Markdown index, check TypeScript, and build production files. |
+| `yarn preview` | Generate the Markdown index and preview the existing build. |
+| `yarn lint` | Run ESLint. |
+| `yarn cy:open` | Open Cypress; start the application separately. |
+| `yarn test:e2e` | Start development and open Cypress when the server is ready. |
+| `yarn test` | Placeholder; this command does not run an automated test suite. |
+
 ## System overview
 
-The assets (parsing, hosting) is set up on a separate machine to allow for more aggressive CDN / caching configuration, but the functionality could be combined with the main VM.
+The frontend, backend, and asset hosting are separate components. Asset parsing and hosting can run on a separate machine for independent CDN and caching configuration.
 
 ![assets VM](assets.svg "assets.datacore.app")
 
 ![main VM](main.svg "datacore.app")
 
-### System requirements
-A Linux VM with 2 CPUs and 4Gb of dedicated RAM should suffice for the current levels of traffic. Total space used (by assets, the static website, uploaded profiles and the DB) is under 2Gb (SSD preferred). Average traffic is 1200 unique users / day (13000 unique users / month) with 630Gb CDN cached bandwidth (+210Gb non-cached).
+### Website
 
-### Components
+The React frontend combines application code with Markdown content and structured JSON data. Vite produces a static frontend bundle, and React Router handles browser navigation. Dynamic features depend on backend services.
 
-#### the website
-Written in TypeScript with React.js and built with Gatsby, combines source code with big book notes (as markdown) and other data (as json) to create a static website which needs to be uploaded to the server's file system (CI loop recommended for build validation and deployments).
+### Assets
 
-#### assets
-This VM runs a cronjob every 10 minutes that scans, downloads and unpacks new assets (crew images) to the local file system. There's also an nginx HTTP server that publishes the assets. Code is hosted [here](https://github.com/stt-datacore/asset-server).
+A scheduled job scans, downloads, and unpacks assets such as crew images. An nginx HTTP server publishes them. Source: [asset-server](https://github.com/stt-datacore/asset-server).
 
-#### Image analysis
-Written in dotnet core and using OpenCV and Tesseract OCR, this is the most taxing (CPU and RAM) component of the system, used by the bot for recognizing behold (and voyage setup) screenshots. Code is hosted [here](https://github.com/stt-datacore/bot).
+### Image analysis
 
-#### site-server
-Serves the dynamic aspects of datacore.app (profile uploads / views, fleet info, crew comments). Code is hosted [here](https://github.com/stt-datacore/site-server).
+A standalone C++17 image-analysis service built with CMake, using OpenCV for image matching and Tesseract OCR for text recognition. It analyzes behold and voyage setup screenshots for the DataCore bot and exposes an HTTP interface that returns JSON results. Crew recognition data is generated from structured crew data and images from the asset server, then cached on disk. It replaces the earlier .NET implementation; the project README reports memory usage reduced from about 2.5 GB to under 500 MB. Source: [cpp-image-analysis](https://github.com/stt-datacore/cpp-image-analysis).
 
-#### discord bot
-The Discord bot implementation (written in TypeScript with discord.js). See source code [here](https://github.com/stt-datacore/bot).
+### Site server
 
-#### DB
-A simple DB (currently LiteSQL but configurable) that links discord user ids with uploaded profiles (where associated) and includes the crew comments.
+Serves profile uploads and views, fleet information, and crew comments. Source: [site-server](https://github.com/stt-datacore/site-server).
 
-#### misc scripts
-Scripts that take care of parsing the big / little book data, new items, ships and crew info and event details. These are currently manually executed by the maintainer 2-3 times a week and require regular maintenance to keep up with changes to the various upstream sources.
+### Discord bot
 
-# System Requirements
+Written in TypeScript with discord.js. Source: [bot](https://github.com/stt-datacore/bot).
 
-As of v2.1, DataCore requires Node 18+, and yarn to build.
+### Database
 
-# Usage
+Stores profile associations with Discord users and crew comments. Consult the backend project for its current database configuration.
 
-On first run, run `publish.sh -f` to generate static frontend website.
+### DataScore
 
-For future updates, setup a cron job that runs `publish.sh` once per hour.
+A separate TypeScript and Node.js toolset that generates scores and rankings for the DataScore system. It evaluates crew across voyages, gauntlets, shuttles, ship combat, quipment, and collections, with additional scripts for precalculation, ship battle simulations, and event statistics. These scripts read and update structured JSON data used by the website. The current implementation imports models and utilities from a sibling checkout named website and expects its static/structured/ directory, so clone the repositories side by side. Source: [datascore](https://github.com/stt-datacore/datascore).
 
-`-f` flag forces website to be regenerated, otherwise content will only be regenerated when there is new content in remote github source.
+### Data scripts
 
-# CONTRIBUTING
+Maintainer scripts parse Big Book and Little Book data, items, ships, crew information, and event details from upstream sources. The frontend consumes the resulting content and JSON data.
 
-Contributions are always welcome, no matter how large or small. Before contributing, please read the [code of conduct](CODE_OF_CONDUCT.md).
+## Contributing
+
+Contributions are welcome. Read the [code of conduct](CODE_OF_CONDUCT.md) and [contribution guidelines](CONTRIBUTING.md). Use this README for DataCore 4.0 setup and commands; the contribution guidelines still contain legacy Gatsby instructions.

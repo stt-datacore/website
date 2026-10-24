@@ -16,11 +16,11 @@ export const DEFAULT_SHIP_OPTIONS = {
 
 export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 	protected setAbility(abilities: string[]) {
-		let opt = { ... this.state.options } as ShipCrewModalOptions;
+		let opt = { ...this.state.options } as ShipCrewModalOptions;
 
 		if (!('abilities' in opt) || (JSON.stringify(opt['abilities']) != JSON.stringify(abilities))) {
 			opt.abilities = abilities;
-			this.setState({ ... this.state, options: opt });
+			this.setState({ ...this.state, options: opt });
 		}
 	}
 
@@ -115,7 +115,7 @@ export class ShipCrewOptionsModal extends OptionsModal<ShipCrewModalOptions> {
 		const isDefault = j1 === j3;
 
 		if (this.state.isDefault != isDefault || this.state.isDirty != isDirty) {
-			this.setState({ ... this.state, isDefault, isDirty });
+			this.setState({ ...this.state, isDefault, isDirty });
 			return true;
 		}
 

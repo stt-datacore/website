@@ -15,8 +15,8 @@ jobs:
 
       - name: Run cypress tests
         env:
-          GATSBY_DATACORE_URL: https://datacore.app/
-          GATSBY_ASSETS_URL: https://assets.datacore.app/
+          REACT_DATACORE_URL: https://datacore.app/
+          REACT_ASSETS_URL: https://assets.datacore.app/
         uses: cypress-io/github-action@v6
         with:
           install-command: yarn install
