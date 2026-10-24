@@ -121,9 +121,10 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 }
             }
             if (cool) {
-                setTimeout(() => {
+                const timer = setTimeout(() => {
                     setCoolSwitch(coolSwitch + 1);
                 }, 30000);
+                return () => clearTimeout(timer);
             }
             else {
                 setCoolSwitch(0);

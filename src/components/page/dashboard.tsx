@@ -31,9 +31,10 @@ const Dashboard = (props: DashboardProps) => {
 
 	React.useEffect(() => {
 		if (energyUpdated || !playerData || !ephemeral) return;
-		setTimeout(() => {
+		const timer = setTimeout(() => {
 			setEnergyUpdated(true);
 		}, 50);
+		return () => clearTimeout(timer);
 	}, [playerData, ephemeral]);
 
 	return (

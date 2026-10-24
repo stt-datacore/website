@@ -112,15 +112,27 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         }
     }, [currentConfig, engine, rarities, appliedProspects]);
 
-    setTimeout(() => {
-        if (requestRun) {
-            setRequestRun(false);
+    // Keep the latest runWorker so the delayed run below uses current settings
+    const runWorkerRef = React.useRef(runWorker);
+    React.useEffect(() => {
+        runWorkerRef.current = runWorker;
+    });
+
+    React.useEffect(() => {
+        if (!requestRun) return;
+        let runTimer: ReturnType<typeof setTimeout> | undefined;
+        const requestTimer = setTimeout(() => {
             cancel();
-            setTimeout(() => {
-                runWorker();
+            runTimer = setTimeout(() => {
+                setRequestRun(false);
+                runWorkerRef.current();
             }, 100);
-        }
-    }, 500);
+        }, 500);
+        return () => {
+            clearTimeout(requestTimer);
+            clearTimeout(runTimer);
+        };
+    }, [requestRun]);
 
     if (!globalContext.player.playerData) return <></>
 

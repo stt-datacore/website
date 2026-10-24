@@ -84,13 +84,13 @@ export const GauntletView = (props: GauntletViewProps) => {
     }, [settings, natural, outerGauntlet, filter, buffMode, range_max, playerData]);
 
     React.useEffect(() => {
-        if (requestRun) {
-            setTimeout(() => {
-                cancel();
-                runWorker();
-                setRequestRun(false);
-            }, 500);
-        }
+        if (!requestRun) return;
+        const timer = setTimeout(() => {
+            cancel();
+            runWorker();
+            setRequestRun(false);
+        }, 500);
+        return () => clearTimeout(timer);
     }, [requestRun]);
 
     return <React.Fragment>

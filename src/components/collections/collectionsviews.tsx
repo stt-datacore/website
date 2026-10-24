@@ -123,15 +123,23 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 	}, [colContext]);
 
-	if (!playerData) return <></>;
+	// Keep the latest runWorker so the delayed run below uses current filters
+	const runWorkerRef = React.useRef(runWorker);
+	React.useEffect(() => {
+		runWorkerRef.current = runWorker;
+	});
 
-	setTimeout(() => {
-		if (requestRun) {
-			runWorker();
+	React.useEffect(() => {
+		if (!requestRun || !playerData) return;
+		const timer = setTimeout(() => {
+			runWorkerRef.current();
 			setRequestRun(false);
 			setInitialized(true);
-		}
-	}, 500);
+		}, 500);
+		return () => clearTimeout(timer);
+	}, [requestRun, playerData]);
+
+	if (!playerData) return <></>;
 
 	if (mapFilter.collectionsFilter?.length === 1) {
 		let idx = playerCollections.findIndex(fc => fc.id === (!!mapFilter.collectionsFilter ? mapFilter.collectionsFilter[0] : null));
