@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Icon, Image, Label } from "semantic-ui-react";
+import { Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerData, TranslateMethod } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
@@ -9,7 +9,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
-import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
+import { AllEnergy, getAllEnergy } from "./util";
 import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from "../../pages/seasonal";
 import { useNavigate } from "react-router-dom";
 
@@ -48,23 +48,46 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const flexRow = OptionsPanelFlexRow;
 
     const globalContext = React.useContext(GlobalContext);
-    const energyLogContext = React.useContext(EnergyLogContext);
-    const { enabled, remoteEnabled, searchRemote } = energyLogContext;
     const { openPlayerPanel, requestDismiss, narrow, t } = props;
 
     const { isMobile } = globalContext;
     const { playerData, ephemeral } = globalContext.player;
 
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
-    const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
     const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
 
     React.useEffect(() => {
-        setTimeout(() => {
-            initShuttleTime();
-            getSales();
-        }, 250);
-    }, [ephemeral]);
+        let cancelled = false;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+
+        const getSales = async () => {
+            try {
+                const sale = await loadSaleData();
+                if (cancelled) return;
+                if (sale) {
+                    setSaleData(sale);
+                    setSaleUpdate(new Date());
+                    console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
+                    timer = setTimeout(getSales, 1800000);
+                }
+            }
+            catch (e: any) {
+                if (cancelled) return;
+                console.log(e);
+                console.log(`Fail to call DataCore API for '/api/sales'. will try again in 60 seconds.`);
+                timer = setTimeout(getSales, 60000);
+            }
+        };
+
+        // Reuse cached sale data if it is fresh, and refresh once it expires
+        const age = saleUpdate && saleData ? Date.now() - (new Date(saleUpdate)).getTime() : Infinity;
+        timer = setTimeout(getSales, Math.max(0, (60 * 1000 * 15) - age));
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    }, []);
 
     const currentEvent = React.useMemo(() => {
         return ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
@@ -91,16 +114,45 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     }, [playerData, ephemeral, costMode]);
 
-    React.useEffect(() => {
-        if (shuttleSeconds) {
-            setTimeout(shuttleTick, 60000);
+    // During a shuttle event, find the number of active shuttles and when the next one returns
+    const shuttleData = React.useMemo<ShuttleData | undefined>(() => {
+        if (!ephemeral?.shuttleAdventures?.length || currentEvent?.content.content_type !== 'shuttles') {
+            return undefined;
         }
-    }, [shuttleSeconds]);
+        ephemeral.shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
+
+        let adv = [...ephemeral.shuttleAdventures].filter(f => !!f.shuttles.length);
+        if (!adv.length) return undefined;
+        adv.sort((a, b) => {
+            let ad = (a.shuttles[0].expires_in * 1000) + a.reference_timestamp;
+            let bd = (b.shuttles[0].expires_in * 1000) + b.reference_timestamp;
+            return ad - bd;
+        });
+
+        let a = adv[0];
+        return {
+            shuttles: adv.length,
+            return: new Date((a.shuttles[0].expires_in * 1000) + a.reference_timestamp)
+        };
+    }, [ephemeral, currentEvent]);
+
+    // Count down to the next shuttle return, updating every minute
+    React.useEffect(() => {
+        if (!shuttleData) {
+            setShuttleSeconds(0);
+            return;
+        }
+        const shuttleTick = () => {
+            setShuttleSeconds(Math.floor((shuttleData.return.getTime() - Date.now()) / 60000) * 60);
+        };
+        shuttleTick();
+        const interval = setInterval(shuttleTick, 60000);
+        return () => clearInterval(interval);
+    }, [shuttleData]);
 
     const { supplyKit } = energy;
 
     if (!playerData?.player) return <></>;
-    const dbid = playerData.player.dbid;
 
     return (<div className={'ui segment'}
         style={{
@@ -385,69 +437,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         });
 
         return resources;
-    }
-
-    function initShuttleTime() {
-        const { ephemeral } = globalContext.player;
-        if (!ephemeral?.shuttleAdventures?.length || currentEvent?.content.content_type !== 'shuttles') {
-            setShuttleData(undefined);
-            setShuttleSeconds(0);
-            return;
-        }
-        ephemeral.shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
-
-        let adv = [...ephemeral.shuttleAdventures].filter(f => !!f.shuttles.length);
-        adv.sort((a, b) => {
-            let ad = (a.shuttles[0].expires_in * 1000) + a.reference_timestamp;
-            let bd = (b.shuttles[0].expires_in * 1000) + b.reference_timestamp;
-            return ad - bd;
-        });
-
-        let a = adv[0];
-        let ad = new Date((a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
-
-        setShuttleData({
-            shuttles: adv.length,
-            return: ad
-        });
-        shuttleTick();
-    }
-
-    function shuttleTick() {
-        if (!shuttleData) {
-            setShuttleSeconds(0);
-            return;
-        }
-        let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 60000) * 60;
-        if (diff !== shuttleSeconds) {
-            setShuttleSeconds(diff);
-        }
-    }
-
-    async function getSales() {
-        try {
-            if (saleUpdate && saleData) {
-                if (Date.now() - (new Date(saleUpdate)).getTime() < (60 * 1000 * 15)) {
-                    return;
-                }
-            }
-            const sale = await loadSaleData();
-            if (sale) {
-                setSaleData(sale);
-                setSaleUpdate(new Date());
-                console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
-                setTimeout(() => {
-                    getSales();
-                }, 1800000);
-            }
-        }
-        catch (e: any) {
-            console.log(e);
-            console.log(`Fail to call DataCore API for '/api/sales'. will try again in 60 seconds.`);
-            setTimeout(() => {
-                getSales();
-            }, 60000);
-        }
     }
 }
 
