@@ -486,8 +486,8 @@ export const TraitPicker = (props: TraitPickerProps) => {
 };
 
 export interface ShipOwnershipProps {
-	selectedValue?: 'owned' | 'unowned';
-	setSelectedValue: (value?: 'owned' | 'unowned') => void;
+	selectedValue?: 'owned' | 'unowned' | 'maxed' | 'unmaxed';
+	setSelectedValue: (value?: 'owned' | 'unowned' | 'maxed' | 'unmaxed') => void;
 	altTitle?: string;
 }
 
@@ -495,7 +495,7 @@ export const ShipOwnership = (props: ShipOwnershipProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { selectedValue: selectedValue, setSelectedValue: setSelectedUses } = props;
 
-    const ownershipOptions = ['owned', 'unowned'].map((u) => {
+    const ownershipOptions = ['owned', 'unowned', 'maxed', 'unmaxed'].map((u) => {
         return {
             key: u,
             value: u,
