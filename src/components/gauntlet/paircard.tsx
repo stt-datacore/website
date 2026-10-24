@@ -110,8 +110,6 @@ export const GauntletPairCard = (props: PairCardProps) => {
     const critString = crit + "%";
 
     const powerColor = ("immortal" in crew && crew.immortal === CompletionState.DisplayAsImmortalOwned) ? 'lightgreen' : undefined;
-    const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
-    const foreColor = theme === 'dark' ? 'white' : 'black';
 
     const roundPair = gauntlet?.contest_data?.secondary_skill ? [gauntlet?.contest_data?.primary_skill, gauntlet?.contest_data?.secondary_skill] : []
     const isRound = !onlyActiveRound || (skills.every(s => roundPair.some(e => s === e)));
@@ -263,7 +261,7 @@ export const GauntletPairCard = (props: PairCardProps) => {
                     alignItems: "center"
                 }}>
                     <div
-                        style={{ color: foreColor }}
+                        style={{ color: "white" }}
                         title={`Rank ${rnk} for ${pstr.slice(2).replace("_", "/")}`}
                     >{rnk}</div>
                 </div>
