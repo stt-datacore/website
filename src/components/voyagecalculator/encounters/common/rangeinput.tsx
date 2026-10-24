@@ -45,12 +45,16 @@ const ProficiencyInput = (props: ProficiencyInputProps) => {
 
 	const [value, setValue] = React.useState<number | string>(contestSkill[field]);
 	const [invalid, setInvalid] = React.useState<boolean>(false);
-	const [timer, setTimer] = React.useState<NodeJS.Timeout | undefined>(undefined);
+	const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	React.useEffect(() => {
 		setValue(contestSkill[field]);
 		setInvalid(false);
 	}, [contestSkill]);
+
+	React.useEffect(() => {
+		return () => clearTimeout(timer.current);
+	}, []);
 
 	return (
 		<Input
@@ -78,12 +82,11 @@ const ProficiencyInput = (props: ProficiencyInputProps) => {
 		setInvalid(false);
 
 		// Delay the edit to avoid simulating before finished input
-		if (timer) clearTimeout(timer);
-		const newTimer: NodeJS.Timeout = setTimeout(() => {
+		clearTimeout(timer.current);
+		timer.current = setTimeout(() => {
 			contestSkill[field] = parsedValue;
 			onChange(contestSkill);
-			setTimer(undefined);
+			timer.current = undefined;
 		}, 1000);
-		setTimer(newTimer);
 	}
 };

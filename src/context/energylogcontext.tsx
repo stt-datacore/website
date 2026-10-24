@@ -16,13 +16,21 @@ export const EnergyLogContextProvider = (props: IEnergyLogContextProvider) => {
     const [energyLogEnabled, setEnergyLogEnabled] = useStateWithStorage(`energy_log_enabled`, {} as EnergyEnabledType, { rememberForever: true });
     const [remoteLogEnabled, setRemoteLogEnabled] = useStateWithStorage(`energy_log_remote_enabled`, {} as EnergyEnabledType, { rememberForever: true });
     const [energyUpdated, setEnergyUpdated] = React.useState(false);
+    // Held in a ref because resetting energyUpdated below re-runs the effect,
+    // and an effect cleanup would cancel the pending update
+    const energyTimer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
     const { children } = props;
 
     React.useEffect(() => {
+        return () => clearTimeout(energyTimer.current);
+    }, []);
+
+    React.useEffect(() => {
         if (!energyUpdated) return;
         setEnergyUpdated(false);
-        setTimeout(() => {
+        clearTimeout(energyTimer.current);
+        energyTimer.current = setTimeout(() => {
             updateEnergy();
         }, 50);
     }, [energyUpdated]);
