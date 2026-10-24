@@ -55,39 +55,39 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
     const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
+    const [saleRetryAt, setSaleRetryAt] = React.useState<number | undefined>(undefined);
 
     React.useEffect(() => {
         let cancelled = false;
-        let timer: ReturnType<typeof setTimeout> | undefined;
 
-        const getSales = async () => {
+        // Reuse cached sale data if it is fresh, and refresh once it expires
+        const expires = saleUpdate && saleData ? (new Date(saleUpdate)).getTime() + 1800000 : 0;
+        const due = saleRetryAt ?? expires;
+
+        const timer = setTimeout(async () => {
             try {
                 const sale = await loadSaleData();
                 if (cancelled) return;
                 if (sale) {
                     setSaleData(sale);
                     setSaleUpdate(new Date());
+                    setSaleRetryAt(undefined);
                     console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
-                    timer = setTimeout(getSales, 1800000);
                 }
             }
             catch (e: any) {
                 if (cancelled) return;
                 console.log(e);
                 console.log(`Fail to call DataCore API for '/api/sales'. will try again in 60 seconds.`);
-                timer = setTimeout(getSales, 60000);
+                setSaleRetryAt(Date.now() + 60000);
             }
-        };
-
-        // Reuse cached sale data if it is fresh, and refresh once it expires
-        const age = saleUpdate && saleData ? Date.now() - (new Date(saleUpdate)).getTime() : Infinity;
-        timer = setTimeout(getSales, Math.max(0, (60 * 1000 * 15) - age));
+        }, Math.max(0, due - Date.now()));
 
         return () => {
             cancelled = true;
             clearTimeout(timer);
         };
-    }, []);
+    }, [saleUpdate, saleRetryAt]);
 
     const currentEvent = React.useMemo(() => {
         return ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);

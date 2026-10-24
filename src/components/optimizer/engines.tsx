@@ -112,11 +112,8 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         }
     }, [currentConfig, engine, rarities, appliedProspects]);
 
-    // Keep the latest runWorker so the delayed run below uses current settings
-    const runWorkerRef = React.useRef(runWorker);
-    React.useEffect(() => {
-        runWorkerRef.current = runWorker;
-    });
+    // An effect event so the delayed run below uses current settings
+    const runLatestWorker = React.useEffectEvent(() => runWorker());
 
     React.useEffect(() => {
         if (!requestRun) return;
@@ -125,7 +122,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
             cancel();
             runTimer = setTimeout(() => {
                 setRequestRun(false);
-                runWorkerRef.current();
+                runLatestWorker();
             }, 100);
         }, 500);
         return () => {

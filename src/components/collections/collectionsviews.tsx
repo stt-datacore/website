@@ -123,16 +123,13 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 		}
 	}, [colContext]);
 
-	// Keep the latest runWorker so the delayed run below uses current filters
-	const runWorkerRef = React.useRef(runWorker);
-	React.useEffect(() => {
-		runWorkerRef.current = runWorker;
-	});
+	// An effect event so the delayed run below uses current filters
+	const runLatestWorker = React.useEffectEvent(() => runWorker());
 
 	React.useEffect(() => {
 		if (!requestRun || !playerData) return;
 		const timer = setTimeout(() => {
-			runWorkerRef.current();
+			runLatestWorker();
 			setRequestRun(false);
 			setInitialized(true);
 		}, 500);
