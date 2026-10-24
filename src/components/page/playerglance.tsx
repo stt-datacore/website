@@ -201,11 +201,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
                 {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
                 {shuttleSeconds < 0 && <div style={{color: 'tomato', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
-                {/* {!!enabled && !!remoteEnabled && (
-                    <div style={{flexGrow: 1}}>
-                        <Button style={{float: 'right'}} icon='refresh' />
-                    </div>
-                )} */}
             </div>}
             <div style={{...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
                 {!!saleData?.honor_sale && (
