@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Icon, Image, Label } from "semantic-ui-react";
+import { Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerData, TranslateMethod } from "../../model/player";
 import { getIconPath } from "../../utils/assets";
@@ -9,7 +9,7 @@ import { useStateWithStorage } from "../../utils/storage";
 import CONFIG from "../CONFIG";
 import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
-import { AllEnergy, EnergyLogContext, getAllEnergy } from "./util";
+import { AllEnergy, getAllEnergy } from "./util";
 import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from "../../pages/seasonal";
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +24,9 @@ export interface PlayerResource {
     quantity: number;
     imageUrl?: string;
     style?: React.CSSProperties;
+    // eslint-disable-next-line no-unused-vars
     click?: (e: any) => void;
+    // eslint-disable-next-line no-unused-vars
     customRender?: (item: PlayerResource) => React.ReactNode;
 }
 
@@ -48,8 +50,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const flexRow = OptionsPanelFlexRow;
 
     const globalContext = React.useContext(GlobalContext);
-    const energyLogContext = React.useContext(EnergyLogContext);
-    const { enabled, remoteEnabled, searchRemote } = energyLogContext;
     const { openPlayerPanel, requestDismiss, narrow, t } = props;
 
     const { isMobile } = globalContext;
@@ -100,7 +100,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { supplyKit } = energy;
 
     if (!playerData?.player) return <></>;
-    const dbid = playerData.player.dbid;
 
     return (<div className={'ui segment'}
         style={{
@@ -149,11 +148,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
                 {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
                 {shuttleSeconds < 0 && <div style={{color: 'tomato', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
-                {/* {!!enabled && !!remoteEnabled && (
-                    <div style={{flexGrow: 1}}>
-                        <Button style={{float: 'right'}} icon='refresh' />
-                    </div>
-                )} */}
             </div>}
             <div style={{...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1'}}>
                 {!!saleData?.honor_sale && (
@@ -284,25 +278,25 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 name: t('global.item_types.valor'),
                 quantity: valor ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
-                click: (e) => navigate('/fbb')
+                click: () => navigate('/fbb')
             },
             {
                 name: t('global.item_types.quantum'),
                 quantity: quantum ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
-                click: (e) => navigate('/retrieval')
+                click: () => navigate('/retrieval')
             },
             {
                 name: t('global.item_types.interstellar_medium'),
                 quantity: ism ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
-                click: (e) => navigate('/retrieval')
+                click: () => navigate('/retrieval')
             },
             {
                 name: t('global.item_types.arena_tickets'),
                 quantity: pvp,
                 imageUrl: `${process.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`,
-                click: (e) => navigate('/ships')
+                click: () => navigate('/ships')
             },
             {
                 name: t('global.item_types.cadet_challenge_tickets'),
@@ -313,25 +307,25 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 name: t('global.item_types.voyage_consumable'),
                 quantity: revival?.quantity ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival.icon ? getIconPath(revival.icon, true) : '')}`,
-                click: (e) => navigate('/voyage')
+                click: () => navigate('/voyage')
             },
             {
                 name: t('global.item_types.shuttle_token'),
                 quantity: shuttle_rental_tokens ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`,
-                click: (e) => navigate('/shuttlehelper')
+                click: () => navigate('/shuttlehelper')
             },
             {
                 name: t('global.item_types.conquest_token'),
                 quantity: conquest_tokens ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
-                click: (e) => navigate('/seasonal')
+                click: () => navigate('/seasonal')
             },
             {
                 name: t('items.replications_remaining'),
                 quantity: reps ?? 0,
                 imageUrl: `${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`,
-                click: (e) => navigate('/items')
+                click: () => navigate('/items')
             }
 
         ] as PlayerResource[];
@@ -350,7 +344,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     style: {
                         border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
                     },
-                    click: (e) => navigate('/cite-opt')
+                    click: () => navigate('/cite-opt')
                 });
             }
         });
@@ -374,7 +368,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     &nbsp;{res.quantity?.toLocaleString() ?? 0}
                 </div>
             },
-            click: (e) => {
+            click: () => {
                 if (costMode === 'normal') {
                     setCostMode('sale');
                 }
