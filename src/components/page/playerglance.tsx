@@ -77,21 +77,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     }, [playerData, ephemeral, costMode]);
 
-    const shuttleReturn = React.useMemo(() => {
-        if (currentEvent?.content.content_type !== 'shuttles' || !ephemeral?.shuttleAdventures?.length) {
-            return undefined;
-        }
-        ephemeral.shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
+    const shuttleAdventures = currentEvent?.content.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
+    const now = useMinuteClock(!!shuttleAdventures.length);
 
-        const returns = ephemeral.shuttleAdventures
-            .filter(f => !!f.shuttles.length)
-            .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
-
-        return returns.length ? Math.min(...returns) : undefined;
-    }, [ephemeral, currentEvent]);
-
-    const now = useMinuteClock(!!shuttleReturn);
-    const shuttleSeconds = shuttleReturn ? Math.floor((shuttleReturn - now) / 60000) * 60 : 0;
+    shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
+    const returns = shuttleAdventures
+        .filter(f => !!f.shuttles.length)
+        .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
+    const shuttleSeconds = returns.length ? Math.floor((Math.min(...returns) - now) / 60000) * 60 : 0;
 
     const { supplyKit } = energy;
 
