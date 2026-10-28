@@ -338,6 +338,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:7.29.7":
+  version: 7.29.7
+  resolution: "@babel/runtime@npm:7.29.7"
+  checksum: bc311855c6dbf5356030979584ca0f8b6cee39fe058175b02e85a73e246fc76ae30248b0d40e70c2652101faeb43279468ed2d086a670673eb9783c1fee1df2b
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.10.4, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.23.7":
   version: 7.29.2
   resolution: "@babel/runtime@npm:7.29.2"
@@ -1715,6 +1722,73 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-async-storage-persister@npm:^5.105.0":
+  version: 5.105.0
+  resolution: "@tanstack/query-async-storage-persister@npm:5.105.0"
+  dependencies:
+    "@tanstack/query-core": 5.105.0
+    "@tanstack/query-persist-client-core": 5.105.0
+  checksum: e2a00e88b837ee963288904925e43f03506ef967b064493a854e3d7da7beac2187d3fd5bcf810df98fa9c3e73e693f3d3e5788c9e64279063b06bf8cfc28f1ab
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-broadcast-client-experimental@npm:^5.105.0":
+  version: 5.105.0
+  resolution: "@tanstack/query-broadcast-client-experimental@npm:5.105.0"
+  dependencies:
+    "@tanstack/query-core": 5.105.0
+    broadcast-channel: ^7.4.0
+  checksum: 53ae55e458cd21cb7f4ee72d228e5330d4d658cbfea32884fc7d1effcf4cede804586ee91c1c9504c81f2602164fde42c100b8ab2bb83275012168f297d792b4
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.105.0":
+  version: 5.105.0
+  resolution: "@tanstack/query-core@npm:5.105.0"
+  checksum: 63b705217ba09a2b656b599efcb7df2f01e86a6e37f7840ac27f5277bd5b5854c4dd139c65018f22f3c77d9babec2ab5deca8a06760cfc67c279cc4e91e3bad4
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-persist-client-core@npm:5.105.0":
+  version: 5.105.0
+  resolution: "@tanstack/query-persist-client-core@npm:5.105.0"
+  dependencies:
+    "@tanstack/query-core": 5.105.0
+  checksum: bc22cb0add20716c32076a5c14624103cffc8bdd0fa2e7401faa6e8e6ad01a007f7459bc4946c816948f3902ea9ea9304616eef63955302481af893c8b8b61b5
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-persist-client@npm:^5.105.0":
+  version: 5.105.0
+  resolution: "@tanstack/react-query-persist-client@npm:5.105.0"
+  dependencies:
+    "@tanstack/query-persist-client-core": 5.105.0
+  peerDependencies:
+    "@tanstack/react-query": ^5.105.0
+    "@types/react": ^18 || ^19
+    react: ^18 || ^19
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: c9d349b1532274f05a4e839c6cfb0b8b21bcd1ca5c385da3cd0876cf491ee01e3bb61b6950b1a8c2a76ca8bfbca675cd18929ad9349710eeb34f8b98a2af10fb
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.105.0":
+  version: 5.105.0
+  resolution: "@tanstack/react-query@npm:5.105.0"
+  dependencies:
+    "@tanstack/query-core": 5.105.0
+  peerDependencies:
+    "@types/react": ^18 || ^19
+    react: ^18 || ^19
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: bda9bb4aa11a4c9efbd0c68011260c6b0cc336c349b17c8288123dbe5510e82c4dd849a316659e156ebe7a97744d1959ce92039777afe6372b9a284cf81f1584
+  languageName: node
+  linkType: hard
+
 "@testing-library/react@npm:^16.3.2":
   version: 16.3.2
   resolution: "@testing-library/react@npm:16.3.2"
@@ -2890,6 +2964,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"broadcast-channel@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "broadcast-channel@npm:7.4.0"
+  dependencies:
+    "@babel/runtime": 7.29.7
+    oblivious-set: 2.0.0
+    p-queue: 6.6.2
+    unload: 2.4.1
+  checksum: 44c733fddda884eb0419f1f117d610f5bb422b7de207d10408e7c729654fb2df1148f4d8fbffc0a1fe19ab37a36e54559b660a30da6ce919431679f8ad527430
+  languageName: node
+  linkType: hard
+
 "browserslist@npm:^4.24.0":
   version: 4.28.2
   resolution: "browserslist@npm:4.28.2"
@@ -3985,6 +4071,13 @@ __metadata:
   version: 6.4.7
   resolution: "eventemitter2@npm:6.4.7"
   checksum: 1b36a77e139d6965ebf3a36c01fa00c089ae6b80faa1911e52888f40b3a7057b36a2cc45dcd1ad87cda3798fe7b97a0aabcbb8175a8b96092a23bb7d0f039e66
+  languageName: node
+  linkType: hard
+
+"eventemitter3@npm:^4.0.4":
+  version: 4.0.7
+  resolution: "eventemitter3@npm:4.0.7"
+  checksum: 1875311c42fcfe9c707b2712c32664a245629b42bb0a5a84439762dd0fd637fc54d078155ea83c2af9e0323c9ac13687e03cfba79b03af9f40c89b4960099374
   languageName: node
   linkType: hard
 
@@ -6121,6 +6214,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oblivious-set@npm:2.0.0":
+  version: 2.0.0
+  resolution: "oblivious-set@npm:2.0.0"
+  checksum: 1e7aab8c3343d333bb5b1c9fae1b42006c336830febbc077afd365ef578bab390e627f28aa49afc43a354eafcedd7602322c994707cf166f29ca59007bba5c48
+  languageName: node
+  linkType: hard
+
 "once@npm:^1.3.0, once@npm:^1.3.1, once@npm:^1.4.0":
   version: 1.4.0
   resolution: "once@npm:1.4.0"
@@ -6169,6 +6269,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-finally@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "p-finally@npm:1.0.0"
+  checksum: 93a654c53dc805dd5b5891bab16eb0ea46db8f66c4bfd99336ae929323b1af2b70a8b0654f8f1eae924b2b73d037031366d645f1fd18b3d30cbd15950cc4b1d4
+  languageName: node
+  linkType: hard
+
 "p-limit@npm:^2.2.0":
   version: 2.3.0
   resolution: "p-limit@npm:2.3.0"
@@ -6202,6 +6309,25 @@ __metadata:
   dependencies:
     p-limit: ^3.0.2
   checksum: 1623088f36cf1cbca58e9b61c4e62bf0c60a07af5ae1ca99a720837356b5b6c5ba3eb1b2127e47a06865fee59dd0453cad7cc844cda9d5a62ac1a5a51b7c86d3
+  languageName: node
+  linkType: hard
+
+"p-queue@npm:6.6.2":
+  version: 6.6.2
+  resolution: "p-queue@npm:6.6.2"
+  dependencies:
+    eventemitter3: ^4.0.4
+    p-timeout: ^3.2.0
+  checksum: 832642fcc4ab6477b43e6d7c30209ab10952969ed211c6d6f2931be8a4f9935e3578c72e8cce053dc34f2eb6941a408a2c516a54904e989851a1a209cf19761c
+  languageName: node
+  linkType: hard
+
+"p-timeout@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "p-timeout@npm:3.2.0"
+  dependencies:
+    p-finally: ^1.0.0
+  checksum: 3dd0eaa048780a6f23e5855df3dd45c7beacff1f820476c1d0d1bcd6648e3298752ba2c877aa1c92f6453c7dd23faaf13d9f5149fc14c0598a142e2c5e8d649c
   languageName: node
   linkType: hard
 
@@ -7211,6 +7337,10 @@ __metadata:
     "@nivo/radar": ^0.99.0
     "@nivo/sunburst": ^0.99.0
     "@nivo/swarmplot": ^0.99.0
+    "@tanstack/query-async-storage-persister": ^5.105.0
+    "@tanstack/query-broadcast-client-experimental": ^5.105.0
+    "@tanstack/react-query": ^5.105.0
+    "@tanstack/react-query-persist-client": ^5.105.0
     "@testing-library/react": ^16.3.2
     "@types/color-convert": ^3.0.1
     "@types/jest": ^30.0.0
@@ -7510,11 +7640,11 @@ __metadata:
 
 "typescript@patch:typescript@~6.0.2#~builtin<compat/typescript>":
   version: 6.0.3
-  resolution: "typescript@patch:typescript@npm%3A6.0.3#~builtin<compat/typescript>::version=6.0.3&hash=f3b441"
+  resolution: "typescript@patch:typescript@npm%3A6.0.3#~builtin<compat/typescript>::version=6.0.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 8ed159a81ab4901a620c19fda539632cee610f8ec34dde57a3acc6b6df72894ad0b50bdd1946b763313d9b73dedb019d2e81c03eff06c0f2c785cde30a537d15
+  checksum: 238430fdcadd2ca8ec7179bc644b324dbe4d13d647efae95351f216c7d9645092c0d848a45bd5a27a3d9058e2466eb8d67f9d944e2a78fa32171eee2e2f8d11e
   languageName: node
   linkType: hard
 
@@ -7559,6 +7689,13 @@ __metadata:
   version: 2.0.1
   resolution: "universalify@npm:2.0.1"
   checksum: ecd8469fe0db28e7de9e5289d32bd1b6ba8f7183db34f3bfc4ca53c49891c2d6aa05f3fb3936a81285a905cc509fb641a0c3fc131ec786167eff41236ae32e60
+  languageName: node
+  linkType: hard
+
+"unload@npm:2.4.1":
+  version: 2.4.1
+  resolution: "unload@npm:2.4.1"
+  checksum: a6f92d176e2718af3cb4bf087a338f21f2ded32e81c052d97d020c5b402e4a2925784efd8808827c149d35fddf49dad0a01035ecc6a69941f2c8eae90d33dc12
   languageName: node
   linkType: hard
 
