@@ -80,7 +80,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const shuttleAdventures = currentEvent?.content.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
     const now = useMinuteClock(!!shuttleAdventures.length);
 
-    shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
     const returns = shuttleAdventures
         .filter(f => !!f.shuttles.length)
         .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
