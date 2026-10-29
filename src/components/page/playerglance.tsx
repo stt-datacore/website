@@ -2,6 +2,7 @@ import React from "react";
 import { Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerData, TranslateMethod } from "../../model/player";
+import { EquipmentItem } from "../../model/equipment";
 import { getIconPath } from "../../utils/assets";
 import { mergeItems } from "../../utils/itemutils";
 import { colorToRGBA, printShortDistance } from "../../utils/misc";
@@ -11,7 +12,7 @@ import { OptionsPanelFlexRow } from "../stats/utils";
 import { PlayerBadge } from "./playerbadge";
 import { AllEnergy, getAllEnergy } from "./util";
 import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from "../../pages/seasonal";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 export interface SaleData {
@@ -25,13 +26,11 @@ export interface PlayerResource {
     quantity: number;
     imageUrl?: string;
     style?: React.CSSProperties;
-    // eslint-disable-next-line no-unused-vars
     click?: (e: any) => void;
-    // eslint-disable-next-line no-unused-vars
     customRender?: (item: PlayerResource) => React.ReactNode;
 }
 
-export interface PlayerGlanceProps {
+interface PlayerGlanceProps {
     openPlayerPanel: () => void;
     requestDismiss?: () => void;
     narrow?: boolean;
@@ -49,6 +48,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     const { isMobile } = globalContext;
     const { playerData, ephemeral } = globalContext.player;
+    const { items } = globalContext.core;
 
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
 
@@ -63,31 +63,34 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         else {
             return undefined;
         }
-    }, [currentEvent]);
+    }, [currentEvent, globalContext.core.crew]);
 
     const { resources, energy } = React.useMemo(() => {
         if (playerData && ephemeral) {
             let energy = getAllEnergy(playerData, ephemeral);
-            let resources = createResources(playerData, energy);
+            let resources = createResources(playerData, energy, items, costMode, setCostMode, navigate, t);
             return { resources, energy };
         }
         return {
             resources: [] as PlayerResource[],
             energy: { supplyKit: 0 } as AllEnergy
         }
-    }, [playerData, ephemeral, costMode]);
+    // `t` is left out on purpose: it is a new function on every render of the localization provider.
+    }, [playerData, ephemeral, items, costMode, setCostMode, navigate]);
 
     const shuttleAdventures = currentEvent?.content.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
-    const now = useMinuteClock(!!shuttleAdventures.length);
-
     const returns = shuttleAdventures
         .filter(f => !!f.shuttles.length)
         .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
-    const shuttleSeconds = returns.length ? Math.floor((Math.min(...returns) - now) / 60000) * 60 : 0;
+    const now = useMinuteClock(!!returns.length);
+
+    // Round away from zero so a shuttle under a minute out still shows "1m" rather than nothing.
+    const shuttleMs = returns.length ? Math.min(...returns) - now : 0;
+    const shuttleSeconds = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000) * 60;
 
     const { supplyKit } = energy;
 
-    if (!playerData?.player) return <></>;
+    if (!playerData?.player) return null;
 
     return (<div className={'ui segment'}
         style={{
@@ -133,7 +136,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 <h3 style={{ margin: 0 }}>
                     {currentEvent.name}
                 </h3>
-                {!!shuttleSeconds && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
+                {!!returns.length && <>&mdash;&nbsp;&nbsp;<img style={{height: '20px'}} src={`/media/shuttle_icon.png`} /></>}
                 {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
                 {shuttleSeconds < 0 && <div style={{color: 'tomato', fontWeight: 'bold'}}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
             </div>}
@@ -189,13 +192,13 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 justifyContent: isMobile || narrow ? 'center' : 'flex-start',
                 gap: '1em'
             }}>
-                {resources.map((res, idx) => {
+                {resources.map((res) => {
                     if (res.customRender) {
                         return res.customRender(res);
                     }
                     let click = res.click;
                     return (
-                        <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.name}+${idx}`} style={{ cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => click ? click(e) : 0}>
+                        <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.symbol}`} style={{ cursor: click ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => click ? click(e) : 0}>
                             <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                 {res.imageUrl && <Image size={'tiny'} avatar src={res.imageUrl} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />}
                             </div>
@@ -207,181 +210,215 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         </div>
     </div>
     )
-
-    function createResources(playerData: PlayerData, energy: AllEnergy) {
-        let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
-        let coreRevival = globalContext.core.items.find(f => f.symbol === 'voyage_revival')!;
-        let {
-            money,
-            premium_purchasable,
-            honor,
-            premium_earnable,
-            shuttle_rental_tokens,
-            chrons,
-            ism,
-            quantum,
-            valor,
-            ownedCites,
-            cadet,
-            pvp,
-            conquest_tokens
-        } = energy;
-        let reps = playerData.player.replicator_limit - playerData.player.replicator_uses_today;
-        if (revival && coreRevival) {
-            revival = mergeItems([revival], [coreRevival])[0];
-        }
-        else {
-            revival = coreRevival;
-        }
-
-        const honorimg = `${process.env.VITE_ASSETS_URL}atlas/honor_currency.png`;
-
-        let resources = [
-            {
-                name: t('global.item_types.chronitons'),
-                quantity: chrons,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`
-            },
-            {
-                name: t('global.item_types.credits'),
-                quantity: money,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`
-            },
-            {
-                name: t('global.item_types.dilithium'),
-                quantity: premium_purchasable,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`
-            },
-            {
-                name: t('global.item_types.merits'),
-                quantity: premium_earnable ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`
-            },
-            {
-                name: t('global.item_types.honor'),
-                quantity: honor ?? 0,
-                imageUrl: honorimg
-            },
-            {
-                name: t('global.item_types.valor'),
-                quantity: valor ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
-                click: () => navigate('/fbb')
-            },
-            {
-                name: t('global.item_types.quantum'),
-                quantity: quantum ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
-                click: () => navigate('/retrieval')
-            },
-            {
-                name: t('global.item_types.interstellar_medium'),
-                quantity: ism ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
-                click: () => navigate('/retrieval')
-            },
-            {
-                name: t('global.item_types.arena_tickets'),
-                quantity: pvp,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`,
-                click: () => navigate('/ships')
-            },
-            {
-                name: t('global.item_types.cadet_challenge_tickets'),
-                quantity: cadet,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/cadet_icon.png`
-            },
-            {
-                name: t('global.item_types.voyage_consumable'),
-                quantity: revival?.quantity ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival.icon ? getIconPath(revival.icon, true) : '')}`,
-                click: () => navigate('/voyage')
-            },
-            {
-                name: t('global.item_types.shuttle_token'),
-                quantity: shuttle_rental_tokens ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`,
-                click: () => navigate('/shuttlehelper')
-            },
-            {
-                name: t('global.item_types.conquest_token'),
-                quantity: conquest_tokens ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
-                click: () => navigate('/seasonal')
-            },
-            {
-                name: t('items.replications_remaining'),
-                quantity: reps ?? 0,
-                imageUrl: `${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`,
-                click: () => navigate('/items')
-            }
-        ] as PlayerResource[];
-
-        ownedCites.forEach((cite, idx) => {
-            if (idx === 0) return;
-            if (cite.quantity <= 0 && idx !== 5) return;
-            let item = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality${idx}`);
-            const img = `${process.env.VITE_ASSETS_URL}${item?.imageUrl}`;
-
-            if (cite.quantity > 0) {
-                resources.push({
-                    name: `${idx}* ` + t('global.item_types.honorable_citation'),
-                    quantity: cite.quantity,
-                    imageUrl: img,
-                    style: {
-                        border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
-                    },
-                    click: () => navigate('/cite-opt')
-                });
-            }
-        });
-
-        const cite = globalContext.core.items.find(f => f.symbol === `honorable_citation_quality5`);
-        const cite5img = `${process.env.VITE_ASSETS_URL}${cite?.imageUrl}`;
-        const p_cites = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
-
-        resources.push({
-            name: `${costMode === 'normal' ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale')}`,
-            quantity: p_cites,
-            style: {
-                border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
-            },
-            customRender: (res) => {
-                return <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.name}`} style={{ cursor: 'pointer', marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => res.click ? res.click(e) : 0}>
-                    <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <Image size={'tiny'} avatar src={honorimg} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />
-                        <Image size={'tiny'} avatar src={cite5img} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />
-                    </div>
-                    &nbsp;{res.quantity?.toLocaleString() ?? 0}
-                </div>
-            },
-            click: () => {
-                if (costMode === 'normal') {
-                    setCostMode('sale');
-                }
-                else {
-                    setCostMode('normal');
-                }
-            }
-        });
-
-        return resources;
-    }
 }
 
-/** Current time, refreshed every minute while `active`. */
+function createResources(
+    playerData: PlayerData,
+    energy: AllEnergy,
+    items: EquipmentItem[],
+    costMode: 'sale' | 'normal',
+    setCostMode: React.Dispatch<React.SetStateAction<'sale' | 'normal'>>,
+    navigate: NavigateFunction,
+    t: TranslateMethod
+) {
+    let revival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
+    let coreRevival = items.find(f => f.symbol === 'voyage_revival')!;
+    let {
+        money,
+        premium_purchasable,
+        honor,
+        premium_earnable,
+        shuttle_rental_tokens,
+        chrons,
+        ism,
+        quantum,
+        valor,
+        ownedCites,
+        cadet,
+        pvp,
+        conquest_tokens
+    } = energy;
+    const reps = (playerData.player.replicator_limit ?? 0) - (playerData.player.replicator_uses_today ?? 0);
+    if (revival && coreRevival) {
+        revival = mergeItems([revival], [coreRevival])[0];
+    }
+    else {
+        revival = coreRevival;
+    }
+
+    const honorimg = `${process.env.VITE_ASSETS_URL}atlas/honor_currency.png`;
+
+    let resources = [
+        {
+            name: t('global.item_types.chronitons'),
+            symbol: 'chronitons',
+            quantity: chrons,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`
+        },
+        {
+            name: t('global.item_types.credits'),
+            symbol: 'credits',
+            quantity: money,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`
+        },
+        {
+            name: t('global.item_types.dilithium'),
+            symbol: 'dilithium',
+            quantity: premium_purchasable,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`
+        },
+        {
+            name: t('global.item_types.merits'),
+            symbol: 'merits',
+            quantity: premium_earnable ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`
+        },
+        {
+            name: t('global.item_types.honor'),
+            symbol: 'honor',
+            quantity: honor ?? 0,
+            imageUrl: honorimg
+        },
+        {
+            name: t('global.item_types.valor'),
+            symbol: 'valor',
+            quantity: valor ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
+            click: () => navigate('/fbb')
+        },
+        {
+            name: t('global.item_types.quantum'),
+            symbol: 'quantum',
+            quantity: quantum ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
+            click: () => navigate('/retrieval')
+        },
+        {
+            name: t('global.item_types.interstellar_medium'),
+            symbol: 'interstellar_medium',
+            quantity: ism ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
+            click: () => navigate('/retrieval')
+        },
+        {
+            name: t('global.item_types.arena_tickets'),
+            symbol: 'arena_tickets',
+            quantity: pvp,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`,
+            click: () => navigate('/ships')
+        },
+        {
+            name: t('global.item_types.cadet_challenge_tickets'),
+            symbol: 'cadet_challenge_tickets',
+            quantity: cadet,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/cadet_icon.png`
+        },
+        {
+            name: t('global.item_types.voyage_consumable'),
+            symbol: 'voyage_consumable',
+            quantity: revival?.quantity ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival.icon ? getIconPath(revival.icon, true) : '')}`,
+            click: () => navigate('/voyage')
+        },
+        {
+            name: t('global.item_types.shuttle_token'),
+            symbol: 'shuttle_token',
+            quantity: shuttle_rental_tokens ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`,
+            click: () => navigate('/shuttlehelper')
+        },
+        {
+            name: t('global.item_types.conquest_token'),
+            symbol: 'conquest_token',
+            quantity: conquest_tokens ?? 0,
+            imageUrl: `${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
+            click: () => navigate('/seasonal')
+        },
+        {
+            name: t('items.replications_remaining'),
+            symbol: 'replications_remaining',
+            quantity: reps,
+            imageUrl: `${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`,
+            click: () => navigate('/items')
+        }
+    ] as PlayerResource[];
+
+    ownedCites.forEach((cite, idx) => {
+        if (idx === 0) return;
+        if (cite.quantity <= 0 && idx !== 5) return;
+        let item = items.find(f => f.symbol === `honorable_citation_quality${idx}`);
+        const img = `${process.env.VITE_ASSETS_URL}${item?.imageUrl}`;
+
+        if (cite.quantity > 0) {
+            resources.push({
+                name: `${idx}* ` + t('global.item_types.honorable_citation'),
+                symbol: `honorable_citation_quality${idx}`,
+                quantity: cite.quantity,
+                imageUrl: img,
+                style: {
+                    border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
+                },
+                click: () => navigate('/cite-opt')
+            });
+        }
+    });
+
+    const cite = items.find(f => f.symbol === `honorable_citation_quality5`);
+    const cite5img = `${process.env.VITE_ASSETS_URL}${cite?.imageUrl}`;
+    const p_cites = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
+
+    resources.push({
+        name: `${costMode === 'normal' ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale')}`,
+        symbol: 'potential_cites',
+        quantity: p_cites,
+        style: {
+            border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
+        },
+        customRender: (res) => {
+            return <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.symbol}`} style={{ cursor: 'pointer', marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={(e) => res.click ? res.click(e) : 0}>
+                <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Image size={'tiny'} avatar src={honorimg} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />
+                    <Image size={'tiny'} avatar src={cite5img} style={{ width: 'auto', height: '24px', marginRight: "0.5em" }} />
+                </div>
+                &nbsp;{res.quantity?.toLocaleString() ?? 0}
+            </div>
+        },
+        click: () => {
+            if (costMode === 'normal') {
+                setCostMode('sale');
+            }
+            else {
+                setCostMode('normal');
+            }
+        }
+    });
+
+    return resources;
+}
+
+/** Current time, re-rendering every minute while `active`. */
 function useMinuteClock(active: boolean): number {
-    const [now, setNow] = React.useState(() => Date.now());
+    return React.useSyncExternalStore(active ? subscribeToMinuteTicks : subscribeNever, getClockSnapshot);
+}
 
-    React.useEffect(() => {
-        if (!active) return;
-        setNow(Date.now());
-        const id = setInterval(() => setNow(Date.now()), 60 * 1000);
-        
-        return () => clearInterval(id);
-    }, [active]);
+function subscribeToMinuteTicks(onTick: () => void) {
+    const id = setInterval(onTick, 60 * 1000);
+    return () => clearInterval(id);
+}
 
-    return now;
+function subscribeNever() {
+    return () => {};
+}
+
+let clockSnapshot = Date.now();
+
+/** `useSyncExternalStore` requires back-to-back reads to match, so the time only advances once at least a second has passed. */
+function getClockSnapshot() {
+    const now = Date.now();
+    if (now - clockSnapshot >= 1000) {
+        clockSnapshot = now;
+    }
+    return clockSnapshot;
 }
 
 export function useSaleData(): UseQueryResult<SaleData, Error> {
@@ -398,8 +435,9 @@ export function useSaleData(): UseQueryResult<SaleData, Error> {
 }
 
 /** Old way of retrieving sale data. Can be made private or moved into `useSaleData` once it's no longer used by `restracker.tsx`. */
-export async function loadSaleData() {
-    const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`);
+export async function loadSaleData({ signal }: { signal?: AbortSignal } = {}): Promise<SaleData> {
+    const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`, { signal });
+    if (!response.ok) throw new Error(`Failed to load sale data: ${response.status} ${response.statusText}`);
     let sale = (await response.json()) as SaleData;
     return sale;
 }
