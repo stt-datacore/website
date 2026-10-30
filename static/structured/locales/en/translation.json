@@ -1546,6 +1546,7 @@
         "game_info_title": "Game Info",
         "player": {
             "clear_data": "Clear Player Data",
+            "close_glance": "Close player at-a-glance panel",
             "import_player_data": "Import Player Data",
             "import_player_data_ellipses": "Import Player Data ...",
             "menu_settings": "Menu Settings",

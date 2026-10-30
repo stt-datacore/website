@@ -1557,6 +1557,7 @@
         "game_info_title": "Info jeu",
         "player": {
             "clear_data": "Effacer les données du joueur",
+            "close_glance": "Fermer le panneau d'aperçu du joueur",
             "import_player_data": "Importer les données du joueur",
             "import_player_data_ellipses": "Importer les données ...",
             "menu_settings": "Paramètres des menus",

@@ -1545,6 +1545,7 @@
         "game_info_title": "Spiel Info",
         "player": {
             "clear_data": "Spielerdaten löschen",
+            "close_glance": "Spieler-Kurzübersicht schließen",
             "import_player_data": "Spielerdaten importieren",
             "import_player_data_ellipses": "Daten importieren ...",
             "menu_settings": "Menüeinstellungen",
