@@ -5,7 +5,7 @@ import { PlayerData, TranslateMethod } from '../../model/player';
 import { EquipmentItem } from '../../model/equipment';
 import { getIconPath } from '../../utils/assets';
 import { mergeItems } from '../../utils/itemutils';
-import { colorToRGBA, printShortDistance } from '../../utils/misc';
+import { colorToRGBA } from '../../utils/misc';
 import { useStateWithStorage } from '../../utils/storage';
 import CONFIG from '../CONFIG';
 import { OptionsPanelFlexRow } from '../stats/utils';
@@ -22,7 +22,7 @@ export interface SaleData {
 
 export interface PlayerResource {
     name: string;
-    symbol?: string;
+    symbol: string;
     quantity: number;
     imageUrl?: string;
     style?: React.CSSProperties;
@@ -53,7 +53,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true });
 
     const currentEvent = React.useMemo(() => {
-        return ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
+        return ephemeral?.events.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
     }, [ephemeral]);
 
     const currentEventCrew = React.useMemo(() => {
@@ -78,7 +78,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     // `t` is left out on purpose: it is a new function on every render of the localization provider.
     }, [playerData, ephemeral, items, costMode, setCostMode, navigate]);
 
-    const shuttleAdventures = currentEvent?.content.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
+    const shuttleAdventures = currentEvent?.content?.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
     const returns = shuttleAdventures
         .filter(f => !!f.shuttles.length)
         .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
@@ -86,11 +86,11 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     // Round away from zero so a shuttle under a minute out still shows "1m" rather than nothing.
     const shuttleMs = returns.length ? Math.min(...returns) - now : 0;
-    const shuttleSeconds = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000) * 60;
+    const shuttleMinutes = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000);
 
     const { supplyKit } = energy;
 
-    if (!playerData?.player) return null;
+    if (!playerData) return null;
 
     return (<div className={'ui segment'}
         style={{
@@ -137,8 +137,8 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                     {currentEvent.name}
                 </h3>
                 {!!returns.length && <>&mdash;&nbsp;&nbsp;<img style={{ height: '20px' }} src='/media/shuttle_icon.png' /></>}
-                {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
-                {shuttleSeconds < 0 && <div style={{ color: 'tomato', fontWeight: 'bold' }}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
+                {shuttleMinutes > 0 && printWholeMinutes(shuttleMinutes, t)}
+                {shuttleMinutes < 0 && <div style={{ color: 'tomato', fontWeight: 'bold' }}>- {printWholeMinutes(-1 * shuttleMinutes, t)}</div>}
             </div>}
             <div style={{ ...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1' }}>
                 {!!saleData?.honor_sale && (
@@ -238,7 +238,7 @@ function createResources(
         pvp,
         conquest_tokens
     } = energy;
-    const reps = (playerData.player.replicator_limit ?? 0) - (playerData.player.replicator_uses_today ?? 0);
+    const reps = playerData.player.replicator_limit - playerData.player.replicator_uses_today;
 
     const honorImg = `${process.env.VITE_ASSETS_URL}atlas/honor_currency.png`;
 
@@ -387,29 +387,30 @@ function createResources(
     return resources;
 }
 
+/** Same format as `printShortDistance`, whose floating-point math can come up a minute short on whole minutes. */
+function printWholeMinutes(totalMinutes: number, t: TranslateMethod) {
+    const days = Math.floor(totalMinutes / (24 * 60));
+    const hours = Math.floor(totalMinutes / 60) % 24;
+    const minutes = totalMinutes % 60;
+
+    if (days) return `${t('duration.n_d', { days })} ${t('duration.n_h', { hours })}`;
+    if (hours) return `${t('duration.n_h', { hours })} ${t('duration.n_m', { minutes })}`;
+    return t('duration.n_m', { minutes });
+}
+
 /** Current time, re-rendering every minute while `active`. */
 function useMinuteClock(active: boolean) {
-    return React.useSyncExternalStore(active ? subscribeToMinuteTicks : subscribeNever, getClockSnapshot);
-}
+    const [now, setNow] = React.useState(Date.now);
 
-function subscribeToMinuteTicks(onTick: () => void) {
-    const id = setInterval(onTick, 60 * 1000);
-    return () => clearInterval(id);
-}
+    React.useEffect(() => {
+        if (!active) return;
+        setNow(Date.now());
+        const id = setInterval(() => setNow(Date.now()), 60 * 1000);
 
-function subscribeNever() {
-    return () => {};
-}
+        return () => clearInterval(id);
+    }, [active]);
 
-let clockSnapshot = Date.now();
-
-/** `useSyncExternalStore` requires back-to-back reads to match, so the time only advances once at least a second has passed. */
-function getClockSnapshot() {
-    const now = Date.now();
-    if (now - clockSnapshot >= 1000) {
-        clockSnapshot = now;
-    }
-    return clockSnapshot;
+    return now;
 }
 
 export function useSaleData() {
@@ -421,14 +422,17 @@ export function useSaleData() {
         retry: true,
         retryDelay: 60 * 1000,
         meta: { persist: true },
-        queryFn: loadSaleData,
+        queryFn: async ({ signal }) => {
+            const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`, { signal });
+            if (!response.ok) throw new Error(`Failed to load sale data: ${response.status} ${response.statusText}`);
+            return (await response.json()) as SaleData;
+        },
     });
 }
 
 /** Old way of retrieving sale data. Can be made private or moved into `useSaleData` once it's no longer used by `restracker.tsx`. */
-export async function loadSaleData({ signal }: { signal?: AbortSignal } = {}) {
-    const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`, { signal });
-    if (!response.ok) throw new Error(`Failed to load sale data: ${response.status} ${response.statusText}`);
+export async function loadSaleData() {
+    const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`);
     const sale = (await response.json()) as SaleData;
     return sale;
 }
