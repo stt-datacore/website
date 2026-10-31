@@ -15,12 +15,12 @@ import { allLevelsToLevelStats } from '../utils/shiputils';
 //import { useTranslation } from 'react-i18next';
 
 interface LocalizedProviderProps {
-	children?: JSX.Element;
+	children?: React.ReactNode;
 };
 
 export type SupportedLanguage = 'en' | 'sp' | 'de' | 'fr';
 
-export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | JSX.Element }) => JSX.Element;
+export type JSXTranslateMethod = (key: string, options?: { [key: string]: string | React.ReactNode }) => React.ReactNode;
 
 export type UseTMethod = (prefix: string) => { t: TranslateMethod, tfmt: JSXTranslateMethod };
 
@@ -189,7 +189,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 
 	// Don't render any text while localizations are still loading
 	//if (!language) return <span><Icon loading name='spinner' /> Loading translations...</span>;
-	if (!language) return <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>&nbsp;<Icon name='500px' /></div>;
+	if (!language) return <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>&nbsp;<Icon name='spinner' /></div>;
 
 	const localizedData: ILocalizedData = {
 		...gameStrings,
@@ -251,7 +251,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 					name: crew.name,
 					short_name: crew.short_name,
 					flavor: crew.flavor,
-					action: { ... crew.action }
+					action: { ...crew.action }
 				};
 			});
 
@@ -400,7 +400,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessCrewTranslations<T extends CrewMember>(crew: T[], translation: IGameStrings): T[] | undefined {
 		if (crew.length && translation.CREW_ARCHETYPES) {
 			return crew.map((crew) => {
-				crew = { ... crew };
+				crew = { ...crew };
 
 				const arch: ICrewArchetype | undefined = translation.CREW_ARCHETYPES[crew.symbol];
 				if (arch) {
@@ -440,7 +440,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessItemTranslations(items: EquipmentItem[], translation: IGameStrings): EquipmentItem[] | undefined {
 		if (items.length && translation.ITEM_ARCHETYPES) {
 			return items.map((item) => {
-				item = { ... item };
+				item = { ...item };
 				let arch = translation.ITEM_ARCHETYPES[item.symbol];
 				let oldName = item.name;
 				if (!item.name_english) item.name_english = oldName;
@@ -459,7 +459,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 	function postProcessShipTranslations(ship_schematics: Schematics[], ships: Ship[], all_ships: ReferenceShip[], translation: IGameStrings, ignoreSchematics?: boolean): [Schematics[], Ship[], ReferenceShip[]] | [undefined, undefined, undefined] {
 		if ((ship_schematics.length || all_ships.length || ignoreSchematics) && translation.SHIP_ARCHETYPES) {
 			let result1 = ignoreSchematics ? [] : ship_schematics.map((ship) => {
-				ship = { ... ship, ship: { ... ship.ship, actions: ship.ship.actions ? structuredClone(ship.ship.actions) : undefined }};
+				ship = { ...ship, ship: { ...ship.ship, actions: ship.ship.actions ? structuredClone(ship.ship.actions) : undefined }};
 				let arch = translation.SHIP_ARCHETYPES[ship.ship.symbol];
 				ship.ship.flavor = arch?.flavor ?? ship.ship.flavor;
 				ship.ship.traits_named = ship.ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -473,7 +473,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				return ship;
 			});
 			let result2 = ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? structuredClone(ship.actions): undefined };
+				ship = { ...ship, actions: ship.actions ? structuredClone(ship.actions): undefined };
 				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -487,7 +487,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 				return ship;
 			});
 			let result3 = ignoreSchematics ? [] : all_ships.map((ship) => {
-				ship = { ... ship, actions: ship.actions ? structuredClone(ship.actions) : [] };
+				ship = { ...ship, actions: ship.actions ? structuredClone(ship.actions) : [] };
 				let arch = translation.SHIP_ARCHETYPES[ship.symbol];
 				ship.flavor = arch?.flavor ?? ship.flavor;
 				ship.traits_named = ship.traits?.map(t => translation.SHIP_TRAIT_NAMES[t]);
@@ -507,7 +507,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function makeWebstringMap(translations: Object, current?: { [key: string]: string }, currentName?: string): { [key: string]: string } {
+	function makeWebstringMap(translations: object, current?: { [key: string]: string }, currentName?: string): { [key: string]: string } {
 		current ??= {};
 		currentName ??= '';
 
@@ -570,7 +570,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		}
 	}
 
-	function tfmt(v: string, opts?: { [key: string]: string | JSX.Element | number }): JSX.Element {
+	function tfmt(v: string, opts?: { [key: string]: string | React.ReactNode | number }): React.ReactNode {
 		opts ??= {};
 		if ("__gender" in opts && !!opts["__gender"] && typeof opts["__gender"] === 'string') {
 			let newkey = `${v}_${opts["__gender"]}`;
@@ -582,13 +582,13 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 		try {
 			if (!webStringMap && !fallbackMap) return <>{v}</>;
 			let inparts = getParts(v);
-			let output = [] as JSX.Element[];
+			let output = [] as React.ReactNode[];
 			for (let v2 of inparts) {
 				if (v2 === '{{:}}') v2 = 'global.colon';
 				let obj = webStringMap[v2] ?? fallbackMap[v2];
 				if (opts && typeof obj === 'string') {
 					let parts = getParts(obj);
-					let finals = [] as JSX.Element[];
+					let finals = [] as React.ReactNode[];
 					for (let part of parts) {
 						if (part === '\n') {
 							finals.push(<br />);
@@ -673,7 +673,7 @@ export const LocalizedProvider = (props: LocalizedProviderProps) => {
 			return t(`${usePrefix}.${key}`, options);
 		}
 
-		const newFmtFnc = (key: string, options?: {[key:string]: string | JSX.Element | number }) => {
+		const newFmtFnc = (key: string, options?: {[key:string]: string | React.ReactNode | number }) => {
 			return tfmt(`${usePrefix}.${key}`, options);
 		}
 

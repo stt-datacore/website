@@ -156,7 +156,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
             customCompare: (a: PlayerCrew, b: PlayerCrew) => {
                 let ax = items?.filter(f => a.kwipment.includes(Number(f.item.kwipment_id!) as any));
                 let bx = items?.filter(f => b.kwipment.includes(Number(f.item.kwipment_id!) as any));
-                return ax?.reduce((p, n) => p + n.item.needed!, 0)! - bx?.reduce((p, n) => p + n.item.needed!, 0)!;
+                return ax!.reduce((p, n) => p + n.item.needed!, 0)! - bx!.reduce((p, n) => p + n.item.needed!, 0)!;
             }
         }
     ] as ITableConfigRow[];
@@ -485,7 +485,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 else return undefined;
             }).filter(i => i) as EquipmentItem[];
 
-            let items = [] as EquipmentItem[];
+            let items: EquipmentItem[];
 
             if (globalContext.player.playerData) {
                 let pitems = globalContext.player.playerData.player.character.items.filter(f => list.some(li => li.symbol === f.symbol)).map(e => e as EquipmentItem);

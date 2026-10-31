@@ -1,0 +1,22 @@
+.tall-feathered-border {
+  border-radius: 40px; /* Perfectly rounds the top and bottom caps */
+  background-color: #000000;
+
+  /* Creates a soft, feathered black border extending outward */
+  box-shadow: 0 0 20px 10px rgba(0, 0, 0, 1);
+}
+
+@font-face {
+  font-family: Star Cine;
+  src: url('./starcine.ttf');
+}
+
+@font-face {
+  font-family: Eurostile;
+  src: url('./eurostile-webfont.ttf');
+}
+/*
+body {
+  font-family: Eurostile, sans-serif;
+  font-size: 10pt;
+} */

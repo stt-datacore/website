@@ -1,18 +1,16 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-import { ShuttleAdventure, StaticFaction } from '../../model/shuttle';
 import { IEventData, IRosterCrew } from '../../components/eventplanner/model';
 import { GlobalContext } from '../../context/globalcontext';
+import { ShuttleAdventure, StaticFaction } from '../../model/shuttle';
 import { useStateWithStorage } from '../../utils/storage';
 
-import { Shuttlers, Shuttle, ShuttleSeat, ISeatAssignment } from './model';
-import { ShuttlersContext, IShuttlersContext } from './context';
-import { Calculator } from './calculator';
-import { QPContext } from '../qpconfig/provider';
 import { QuipmentProspectsOptions } from '../qpconfig/options';
-import { Faction, GameEvent, PlayerData } from '../../model/player';
-import { IEphemeralData } from '../../context/playercontext';
+import { QPContext } from '../qpconfig/provider';
+import { Calculator } from './calculator';
+import { IShuttlersContext, ShuttlersContext } from './context';
+import { ISeatAssignment, Shuttle, Shuttlers, ShuttleSeat } from './model';
 
 // Use ShuttleHelper when 1) there's no player data, OR 2) there's no active event, OR 3) using allCrew as roster
 //	Shuttles and assignments do NOT persist across sessions

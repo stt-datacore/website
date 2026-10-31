@@ -1,11 +1,26 @@
+import { NavigateFunction } from "react-router-dom";
 import { RankMode } from "../utils/misc";
 import { RawVoyageRecord } from "../utils/voyageutils";
 import { EquipmentItem } from "./equipment";
 import { TranslateMethod } from "./player";
 
-export interface VoyageHOFProps {};
+export interface VoyageHOFProps {
+    navigate: NavigateFunction;
+    crew_symbols?: string;
+};
 
 export type HOFViewModes = 'rankings' | 'details';
+
+export type VoyageStats = {
+        timestamp?: Date;
+        lastSevenDays: VoyageStatEntry[];
+        lastThirtyDays: VoyageStatEntry[];
+        lastNinetyDays: VoyageStatEntry[];
+        lastSixMonths?: VoyageStatEntry[];
+        oneYear?: VoyageStatEntry[];
+        allTime?: VoyageStatEntry[];
+    };
+
 
 export interface VoyageHOFState {
     voyageStats?: {

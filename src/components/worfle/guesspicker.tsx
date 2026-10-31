@@ -180,11 +180,11 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		}
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.ReactNode {
 		return <GuessPickerOptions />;
 	}
 
-	function renderActions(state: IDataPickerState): JSX.Element {
+	function renderActions(state: IDataPickerState): React.ReactNode {
 		let selectedCrew: IRosterCrew | undefined;
 		if (state.pendingSelectedIds.size > 0) {
 			selectedCrew = data.find(datum => datum.id === [...state.pendingSelectedIds][0]);
@@ -227,7 +227,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 		return 1;
 	}
 
-	function renderGridCrew(crew: IRosterCrew, isSelected: boolean): JSX.Element {
+	function renderGridCrew(crew: IRosterCrew, isSelected: boolean): React.ReactNode {
 		const isGuessed: boolean = !!evaluatedGuesses.find(evaluatedGuess => evaluatedGuess.crew.symbol === crew.symbol);
 		const isFavorited: boolean = userPrefs.favorites.includes(crew.symbol);
 		const isViable: boolean = rules.series.includes(crew.gamified_series)
@@ -238,7 +238,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 			<React.Fragment>
 				<Image>
 					<div style={{ opacity: isGuessed ? .5 : 1 }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
+						<img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} style={{ maxHeight: '72px' }} />
 					</div>
 					{isGuessed && (
 						<Label corner='right' color='red' icon='x' />
@@ -259,7 +259,7 @@ const GuessPickerModal = (props: GuessPickerModalProps) => {
 						<Label>
 							<div>
 								{crew.skill_order.map(skill => (
-									<img key={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
+									<img key={skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
 								))}
 							</div>
 						</Label>

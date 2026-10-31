@@ -1,13 +1,12 @@
 import React from "react";
-import { CrewMember } from "../../model/crew";
-import { GlobalContext } from "../../context/globalcontext";
-import { ItemWithBonus, getItemWithBonus, isQuipmentMatch, sortItemsWithBonus } from "../../utils/itemutils";
-import { ShipSeatPicker } from "../crewtables/shipoptions";
-import { EquipmentItem } from "../../model/equipment";
-import CONFIG from "../CONFIG";
-import { QuipmentTable } from "../items/quipmenttable";
 import { Checkbox } from "semantic-ui-react";
+import { GlobalContext } from "../../context/globalcontext";
+import { CrewMember } from "../../model/crew";
+import { getItemWithBonus, isQuipmentMatch, sortItemsWithBonus } from "../../utils/itemutils";
 import { useStateWithStorage } from "../../utils/storage";
+import CONFIG from "../CONFIG";
+import { ShipSeatPicker } from "../crewtables/shipoptions";
+import { QuipmentTable } from "../items/quipmenttable";
 
 export interface CrewQuipmentProps {
     crew: CrewMember;
