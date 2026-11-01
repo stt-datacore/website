@@ -41,18 +41,17 @@ interface PlayerGlanceProps {
     t: TranslateMethod;
 }
 
-export const PlayerGlance = (props: PlayerGlanceProps) => {
+export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: PlayerGlanceProps) => {
     const navigate = useNavigate();
     const { data: saleData } = useSaleData();
 
     const flexRow = OptionsPanelFlexRow;
 
     const globalContext = React.useContext(GlobalContext);
-    const { openPlayerPanel, requestDismiss, narrow, t } = props;
 
     const { isMobile } = globalContext;
     const { playerData, ephemeral } = globalContext.player;
-    const { items } = globalContext.core;
+    const { items, crew } = globalContext.core;
 
     const [costMode, setCostMode] = useStateWithStorage<CostMode>('glanceCostMode', CostMode.Sale, { rememberForever: true });
     const toggleCostMode = React.useCallback(() => {
@@ -65,14 +64,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
     const currentEventCrew = React.useMemo(() => {
         if (currentEvent?.featured_crew?.length) {
-            return globalContext.core.crew.find(f => f.symbol === currentEvent.featured_crew[0].symbol);
+            return crew.find(f => f.symbol === currentEvent.featured_crew[0].symbol);
         }
         else {
             return undefined;
         }
-    }, [currentEvent, globalContext.core.crew]);
+    }, [currentEvent, crew]);
 
-    const { resources, energy } = React.useMemo(() => {
+    const { resources, energy: { supplyKit } } = React.useMemo(() => {
         if (playerData && ephemeral) {
             const energy = getAllEnergy(playerData, ephemeral);
             const resources = createResources(playerData, energy, items, costMode, toggleCostMode, navigate, t);
@@ -93,8 +92,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     // Round away from zero so a shuttle under a minute out still shows "1m" rather than nothing.
     const shuttleMs = returns.length ? Math.min(...returns) - now : 0;
     const shuttleMinutes = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000);
-
-    const { supplyKit } = energy;
 
     if (!playerData) return null;
 
@@ -198,12 +195,12 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 justifyContent: isMobile || narrow ? 'center' : 'flex-start',
                 gap: '1em'
             }}>
-                {resources.map((res) => (
-                    <div title={res.name} className={'ui label'} key={res.symbol} style={{ cursor: res.onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={res.onClick}>
+                {resources.map(({ name, symbol, quantity, imageUrls, style, onClick }) => (
+                    <div title={name} className={'ui label'} key={symbol} style={{ cursor: onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...style }} onClick={onClick}>
                         <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            {res.imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={url} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
+                            {imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={url} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
                         </div>
-                        &nbsp;{(res.quantity || 0).toLocaleString()}
+                        &nbsp;{(quantity || 0).toLocaleString()}
                     </div>
                 ))}
             </div>
