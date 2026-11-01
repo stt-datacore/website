@@ -24,10 +24,9 @@ export interface PlayerResource {
     name: string;
     symbol: string;
     quantity: number;
-    imageUrl?: string;
+    imageUrls: string[];
     style?: React.CSSProperties;
     onClick?: () => void;
-    customRender?: (item: PlayerResource) => React.ReactNode;
 }
 
 interface PlayerGlanceProps {
@@ -192,19 +191,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 justifyContent: isMobile || narrow ? 'center' : 'flex-start',
                 gap: '1em'
             }}>
-                {resources.map((res) => {
-                    if (res.customRender) {
-                        return res.customRender(res);
-                    }
-                    return (
-                        <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.symbol}`} style={{ cursor: res.onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={res.onClick}>
-                            <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                {res.imageUrl && <Image size={'tiny'} avatar src={res.imageUrl} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />}
-                            </div>
-                            &nbsp;{res.quantity.toLocaleString()}
+                {resources.map((res) => (
+                    <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.symbol}`} style={{ cursor: res.onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={res.onClick}>
+                        <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            {res.imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={url} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
                         </div>
-                    );
-                })}
+                        &nbsp;{res.quantity.toLocaleString()}
+                    </div>
+                ))}
             </div>
         </div>
     </div>
@@ -247,92 +241,92 @@ function createResources(
             name: t('global.item_types.chronitons'),
             symbol: 'chronitons',
             quantity: chrons,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`]
         },
         {
             name: t('global.item_types.credits'),
             symbol: 'credits',
             quantity: money,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`]
         },
         {
             name: t('global.item_types.dilithium'),
             symbol: 'dilithium',
             quantity: premium_purchasable,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`]
         },
         {
             name: t('global.item_types.merits'),
             symbol: 'merits',
             quantity: premium_earnable,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`]
         },
         {
             name: t('global.item_types.honor'),
             symbol: 'honor',
             quantity: honor,
-            imageUrl: honorImg
+            imageUrls: [honorImg]
         },
         {
             name: t('global.item_types.valor'),
             symbol: 'valor',
             quantity: valor ?? 0,
-            imageUrl: `${process.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`],
             onClick: () => navigate('/fbb')
         },
         {
             name: t('global.item_types.quantum'),
             symbol: 'quantum',
             quantity: quantum ?? 0,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`],
             onClick: () => navigate('/retrieval')
         },
         {
             name: t('global.item_types.interstellar_medium'),
             symbol: 'interstellar_medium',
             quantity: ism,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`],
             onClick: () => navigate('/retrieval')
         },
         {
             name: t('global.item_types.arena_tickets'),
             symbol: 'arena_tickets',
             quantity: pvp,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`],
             onClick: () => navigate('/ships')
         },
         {
             name: t('global.item_types.cadet_challenge_tickets'),
             symbol: 'cadet_challenge_tickets',
             quantity: cadet,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/cadet_icon.png`
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/cadet_icon.png`]
         },
         {
             name: t('global.item_types.voyage_consumable'),
             symbol: 'voyage_consumable',
             quantity: revival?.quantity ?? 0,
-            imageUrl: `${process.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival?.icon ? getIconPath(revival.icon, true) : '')}`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival?.icon ? getIconPath(revival.icon, true) : '')}`],
             onClick: () => navigate('/voyage')
         },
         {
             name: t('global.item_types.shuttle_token'),
             symbol: 'shuttle_token',
             quantity: shuttle_rental_tokens,
-            imageUrl: `${process.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`],
             onClick: () => navigate('/shuttlehelper')
         },
         {
             name: t('global.item_types.conquest_token'),
             symbol: 'conquest_token',
             quantity: conquest_tokens,
-            imageUrl: `${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`],
             onClick: () => navigate('/seasonal')
         },
         {
             name: t('items.replications_remaining'),
             symbol: 'replications_remaining',
             quantity: reps,
-            imageUrl: `${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`,
+            imageUrls: [`${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`],
             onClick: () => navigate('/items')
         }
     ];
@@ -346,7 +340,7 @@ function createResources(
             name: `${idx}* ` + t('global.item_types.honorable_citation'),
             symbol: `honorable_citation_quality${idx}`,
             quantity: cite.quantity,
-            imageUrl: img,
+            imageUrls: [img],
             style: {
                 border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
             },
@@ -362,17 +356,9 @@ function createResources(
         name: costMode === 'normal' ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale'),
         symbol: 'potential_cites',
         quantity: potentialCites,
+        imageUrls: [honorImg, cite5Img],
         style: {
             border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
-        },
-        customRender: (res) => {
-            return <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.symbol}`} style={{ cursor: 'pointer', marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={res.onClick}>
-                <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <Image size={'tiny'} avatar src={honorImg} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />
-                    <Image size={'tiny'} avatar src={cite5Img} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />
-                </div>
-                &nbsp;{res.quantity.toLocaleString()}
-            </div>;
         },
         onClick: () => {
             if (costMode === 'normal') {
@@ -387,7 +373,6 @@ function createResources(
     return resources;
 }
 
-/** Same format as `printShortDistance`, whose floating-point math can come up a minute short on whole minutes. */
 function printWholeMinutes(totalMinutes: number, t: TranslateMethod) {
     const days = Math.floor(totalMinutes / (24 * 60));
     const hours = Math.floor(totalMinutes / 60) % 24;
