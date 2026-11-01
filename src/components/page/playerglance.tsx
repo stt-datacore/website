@@ -363,7 +363,7 @@ function createResources(
         name: costMode === CostMode.Normal ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale'),
         symbol: 'potential_cites',
         quantity: potentialCites,
-        imageUrls: [honorImg, cite5Img],
+        imageUrls: costMode === CostMode.Normal ? [cite5Img] : [honorImg, cite5Img],
         style: {
             border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
         },
