@@ -23,7 +23,7 @@ export interface SaleData {
 export interface PlayerResource {
     name: string;
     symbol: string;
-    quantity: number;
+    quantity?: number;
     imageUrls: string[];
     style?: React.CSSProperties;
     onClick?: () => void;
@@ -196,7 +196,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                         <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                             {res.imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={url} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
                         </div>
-                        &nbsp;{res.quantity.toLocaleString()}
+                        &nbsp;{(res.quantity || 0).toLocaleString()}
                     </div>
                 ))}
             </div>
