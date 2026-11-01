@@ -353,10 +353,10 @@ const MINUTE_MS = 60 * 1000;
 function useMinuteClock(active: boolean) {
     const [now, setNow] = React.useState(Date.now);
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         if (!active) return;
 
-        // Refresh right away, since the reading may have gone stale while inactive.
+        // Refresh before paint, since the reading may have gone stale while inactive.
         setNow(Date.now());
         const id = setInterval(() => setNow(Date.now()), MINUTE_MS);
 
