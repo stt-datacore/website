@@ -356,8 +356,11 @@ function useMinuteClock(active: boolean) {
     React.useLayoutEffect(() => {
         if (!active) return;
 
-        // Refresh before paint, since the reading may have gone stale while inactive.
-        setNow(Date.now());
+        // Refresh before paint if the reading went stale while inactive. Keeping a fresh one avoids a re-render on mount.
+        setNow(prev => {
+            const current = Date.now();
+            return current - prev < MINUTE_MS ? prev : current;
+        });
         const id = setInterval(() => setNow(Date.now()), MINUTE_MS);
 
         return () => clearInterval(id);
