@@ -379,19 +379,33 @@ function printWholeMinutes(totalMinutes: number, t: TranslateMethod) {
     return t('duration.n_m', { minutes });
 }
 
+const MINUTE_MS = 60 * 1000;
+let minuteClock = Date.now();
+
+function subscribeMinuteClock(onTick: () => void) {
+    const tick = () => {
+        minuteClock = Date.now();
+        onTick();
+    };
+    tick();
+    const id = setInterval(tick, MINUTE_MS);
+
+    return () => clearInterval(id);
+}
+
+function subscribeNever() {
+    return () => { };
+}
+
+/** Must return the same value between ticks, so it only moves once the reading is a minute old. */
+function getMinuteClock() {
+    if (Date.now() - minuteClock >= MINUTE_MS) minuteClock = Date.now();
+    return minuteClock;
+}
+
 /** Current time, re-rendering every minute while `active`. */
 function useMinuteClock(active: boolean) {
-    const [now, setNow] = React.useState(Date.now);
-
-    React.useEffect(() => {
-        if (!active) return;
-        setNow(Date.now());
-        const id = setInterval(() => setNow(Date.now()), 60 * 1000);
-
-        return () => clearInterval(id);
-    }, [active]);
-
-    return now;
+    return React.useSyncExternalStore(active ? subscribeMinuteClock : subscribeNever, getMinuteClock);
 }
 
 function useSaleData() {
