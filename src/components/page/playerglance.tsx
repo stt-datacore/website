@@ -8,7 +8,7 @@ import { PlayerData, TranslateMethod } from '../../model/player';
 import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from '../../pages/seasonal';
 import { getIconPath } from '../../utils/assets';
 import { mergeItems } from '../../utils/itemutils';
-import { colorToRGBA } from '../../utils/misc';
+import { colorToRGBA, printShortDistance } from '../../utils/misc';
 import { useStateWithStorage } from '../../utils/storage';
 import CONFIG from '../CONFIG';
 import { OptionsPanelFlexRow } from '../stats/utils';
@@ -59,7 +59,7 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
     }, [setCostMode]);
 
     const currentEvent = React.useMemo(() => {
-        return ephemeral?.events.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
+        return ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
     }, [ephemeral]);
 
     const currentEventCrew = React.useMemo(() => {
@@ -91,7 +91,7 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
 
     // Round away from zero so a shuttle under a minute out still shows "1m" rather than nothing.
     const shuttleMs = returns.length ? Math.min(...returns) - now : 0;
-    const shuttleMinutes = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000);
+    const shuttleSeconds = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000) * 60;
 
     if (!playerData) return null;
 
@@ -140,8 +140,8 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
                     {currentEvent.name}
                 </h3>
                 {!!returns.length && <>&mdash;&nbsp;&nbsp;<img style={{ height: '20px' }} src='/media/shuttle_icon.png' /></>}
-                {shuttleMinutes > 0 && printWholeMinutes(shuttleMinutes, t)}
-                {shuttleMinutes < 0 && <div style={{ color: 'tomato', fontWeight: 'bold' }}>- {printWholeMinutes(-1 * shuttleMinutes, t)}</div>}
+                {shuttleSeconds > 0 && printShortDistance(undefined, shuttleSeconds, true, t)}
+                {shuttleSeconds < 0 && <div style={{ color: 'tomato', fontWeight: 'bold' }}>- {printShortDistance(undefined, -1 * shuttleSeconds, true, t)}</div>}
             </div>}
             <div style={{ ...flexRow, gap: '1em', margin: '0', marginBottom: '1em', gridArea: 'v1' }}>
                 {!!saleData?.honor_sale && (
@@ -347,43 +347,23 @@ function createResources(playerData: PlayerData, energy: AllEnergy, items: Equip
     return resources;
 }
 
-function printWholeMinutes(totalMinutes: number, t: TranslateMethod) {
-    const days = Math.floor(totalMinutes / (24 * 60));
-    const hours = Math.floor(totalMinutes / 60) % 24;
-    const minutes = totalMinutes % 60;
-
-    if (days) return `${t('duration.n_d', { days })} ${t('duration.n_h', { hours })}`;
-    if (hours) return `${t('duration.n_h', { hours })} ${t('duration.n_m', { minutes })}`;
-    return t('duration.n_m', { minutes });
-}
-
 const MINUTE_MS = 60 * 1000;
-let minuteClock = Date.now();
-
-function subscribeMinuteClock(onTick: () => void) {
-    const tick = () => {
-        minuteClock = Date.now();
-        onTick();
-    };
-    tick();
-    const id = setInterval(tick, MINUTE_MS);
-
-    return () => clearInterval(id);
-}
-
-function subscribeNever() {
-    return () => { };
-}
-
-/** Must return the same value between ticks, so it only moves once the reading is a minute old. */
-function getMinuteClock() {
-    if (Date.now() - minuteClock >= MINUTE_MS) minuteClock = Date.now();
-    return minuteClock;
-}
 
 /** Current time, re-rendering every minute while `active`. */
 function useMinuteClock(active: boolean) {
-    return React.useSyncExternalStore(active ? subscribeMinuteClock : subscribeNever, getMinuteClock);
+    const [now, setNow] = React.useState(Date.now);
+
+    React.useEffect(() => {
+        if (!active) return;
+
+        // Refresh right away, since the reading may have gone stale while inactive.
+        setNow(Date.now());
+        const id = setInterval(() => setNow(Date.now()), MINUTE_MS);
+
+        return () => clearInterval(id);
+    }, [active]);
+
+    return now;
 }
 
 /** New way of retrieving sale data. Will be moved to common area when refactoring `restracker.tsx`. */
