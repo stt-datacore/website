@@ -71,15 +71,15 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
         }
     }, [currentEvent, crew]);
 
-    const { resources, energy: { supplyKit } } = React.useMemo(() => {
+    const { resources, supplyKit } = React.useMemo(() => {
         if (playerData && ephemeral) {
             const energy = getAllEnergy(playerData, ephemeral);
             const resources = createResources(playerData, energy, items, costMode, toggleCostMode, navigate, t);
-            return { resources, energy };
+            return { resources, supplyKit: energy.supplyKit };
         }
         return {
             resources: [] as PlayerResource[],
-            energy: { supplyKit: 0 } as AllEnergy
+            supplyKit: 0
         };
     }, [playerData, ephemeral, items, costMode, toggleCostMode, navigate, t]);
 
@@ -209,33 +209,11 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
     );
 };
 
-function createResources(
-    playerData: PlayerData,
-    energy: AllEnergy,
-    items: EquipmentItem[],
-    costMode: CostMode,
-    toggleCostMode: () => void,
-    navigate: NavigateFunction,
-    t: TranslateMethod
-) {
+function createResources(playerData: PlayerData, energy: AllEnergy, items: EquipmentItem[], costMode: CostMode, toggleCostMode: () => void, navigate: NavigateFunction, t: TranslateMethod ) {
+    const { money, premium_purchasable, honor, premium_earnable, shuttle_rental_tokens, chrons, ism, quantum, valor, ownedCites, cadet, pvp, conquest_tokens } = energy;
     const ownedRevival = playerData.player.character.items.find(f => f.symbol === 'voyage_revival');
     const coreRevival = items.find(f => f.symbol === 'voyage_revival');
     const revival = ownedRevival && coreRevival ? mergeItems([ownedRevival], [coreRevival])[0] : coreRevival;
-    const {
-        money,
-        premium_purchasable,
-        honor,
-        premium_earnable,
-        shuttle_rental_tokens,
-        chrons,
-        ism,
-        quantum,
-        valor,
-        ownedCites,
-        cadet,
-        pvp,
-        conquest_tokens
-    } = energy;
     const reps = playerData.player.replicator_limit - playerData.player.replicator_uses_today;
 
     const honorImg = 'atlas/honor_currency.png';
