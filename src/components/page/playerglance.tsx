@@ -386,6 +386,7 @@ function useMinuteClock(active: boolean) {
     return React.useSyncExternalStore(active ? subscribeMinuteClock : subscribeNever, getMinuteClock);
 }
 
+/** New way of retrieving sale data. Will be moved to common area when refactoring `restracker.tsx`. */
 function useSaleData() {
     return useQuery({
         queryKey: ['sales'],
@@ -403,7 +404,7 @@ function useSaleData() {
     });
 }
 
-/** Old way of retrieving sale data. Can be made private or moved into `useSaleData` once it's no longer used by `restracker.tsx`. */
+/** Old way of retrieving sale data. Will be removed once it's no longer used by `restracker.tsx`. */
 export async function loadSaleData() {
     const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`);
     const sale = (await response.json()) as SaleData;
