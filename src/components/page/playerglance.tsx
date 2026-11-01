@@ -1,8 +1,11 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { Icon, Image, Label } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
-import { PlayerData, TranslateMethod } from '../../model/player';
 import { EquipmentItem } from '../../model/equipment';
+import { PlayerData, TranslateMethod } from '../../model/player';
+import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from '../../pages/seasonal';
 import { getIconPath } from '../../utils/assets';
 import { mergeItems } from '../../utils/itemutils';
 import { colorToRGBA } from '../../utils/misc';
@@ -11,9 +14,6 @@ import CONFIG from '../CONFIG';
 import { OptionsPanelFlexRow } from '../stats/utils';
 import { PlayerBadge } from './playerbadge';
 import { AllEnergy, getAllEnergy } from './util';
-import { CONQUEST_CURRENCY_ICON, REPLICATOR_ICON } from '../../pages/seasonal';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 
 export interface SaleData {
     slot_sale: boolean;
