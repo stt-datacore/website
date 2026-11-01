@@ -29,6 +29,11 @@ export interface PlayerResource {
     onClick?: () => void;
 }
 
+enum CostMode {
+    Sale = 'sale',
+    Normal = 'normal'
+}
+
 interface PlayerGlanceProps {
     openPlayerPanel: () => void;
     requestDismiss?: () => void;
@@ -49,7 +54,10 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { playerData, ephemeral } = globalContext.player;
     const { items } = globalContext.core;
 
-    const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true });
+    const [costMode, setCostMode] = useStateWithStorage<CostMode>('glanceCostMode', CostMode.Sale, { rememberForever: true });
+    const toggleCostMode = React.useCallback(() => {
+        setCostMode(mode => mode === CostMode.Normal ? CostMode.Sale : CostMode.Normal);
+    }, [setCostMode]);
 
     const currentEvent = React.useMemo(() => {
         return ephemeral?.events.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
@@ -67,15 +75,14 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { resources, energy } = React.useMemo(() => {
         if (playerData && ephemeral) {
             const energy = getAllEnergy(playerData, ephemeral);
-            const resources = createResources(playerData, energy, items, costMode, setCostMode, navigate, t);
+            const resources = createResources(playerData, energy, items, costMode, toggleCostMode, navigate, t);
             return { resources, energy };
         }
         return {
             resources: [] as PlayerResource[],
             energy: { supplyKit: 0 } as AllEnergy
         };
-    // `t` is left out on purpose: it is a new function on every render of the localization provider.
-    }, [playerData, ephemeral, items, costMode, setCostMode, navigate]);
+    }, [playerData, ephemeral, items, costMode, toggleCostMode, navigate]);
 
     const shuttleAdventures = currentEvent?.content?.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
     const returns = shuttleAdventures
@@ -209,8 +216,8 @@ function createResources(
     playerData: PlayerData,
     energy: AllEnergy,
     items: EquipmentItem[],
-    costMode: 'sale' | 'normal',
-    setCostMode: React.Dispatch<React.SetStateAction<'sale' | 'normal'>>,
+    costMode: CostMode,
+    toggleCostMode: () => void,
     navigate: NavigateFunction,
     t: TranslateMethod
 ) {
@@ -350,24 +357,17 @@ function createResources(
 
     const cite = items.find(f => f.symbol === 'honorable_citation_quality5');
     const cite5Img = `${process.env.VITE_ASSETS_URL}${cite?.imageUrl}`;
-    const potentialCites = Math.floor(honor / (costMode === 'normal' ? 50000 : 40000));
+    const potentialCites = Math.floor(honor / (costMode === CostMode.Normal ? 50000 : 40000));
 
     resources.push({
-        name: costMode === 'normal' ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale'),
+        name: costMode === CostMode.Normal ? t('global.item_types.potential_cites') : t('global.item_types.potential_cites_honor_sale'),
         symbol: 'potential_cites',
         quantity: potentialCites,
         imageUrls: [honorImg, cite5Img],
         style: {
             border: `1.5px dashed ${CONFIG.RARITIES[5].color}`
         },
-        onClick: () => {
-            if (costMode === 'normal') {
-                setCostMode('sale');
-            }
-            else {
-                setCostMode('normal');
-            }
-        }
+        onClick: toggleCostMode
     });
 
     return resources;
