@@ -14,7 +14,6 @@ import { AvatarView } from "../item_presenters/avatarview";
 import { ItemHoverStat } from "../hovering/itemhoverstat";
 import { ItemsFilterContext } from "./filters";
 import { downloadData, skillSum } from "../../utils/crewutils";
-import { PlayerResource } from "../page/playerglance";
 import { useNavigate } from "react-router-dom";
 
 export interface EquipmentTableProps {

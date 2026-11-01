@@ -20,7 +20,7 @@ export interface SaleData {
     honor_sale: boolean;
 }
 
-export interface PlayerResource {
+interface PlayerResource {
     name: string;
     symbol: string;
     quantity?: number;
@@ -198,7 +198,7 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
                 {resources.map(({ name, symbol, quantity, imageUrls, style, onClick }) => (
                     <div title={name} className={'ui label'} key={symbol} style={{ cursor: onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...style }} onClick={onClick}>
                         <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            {imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={url} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
+                            {imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={`${process.env.VITE_ASSETS_URL}${url}`} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
                         </div>
                         &nbsp;{(quantity || 0).toLocaleString()}
                     </div>
@@ -238,32 +238,32 @@ function createResources(
     } = energy;
     const reps = playerData.player.replicator_limit - playerData.player.replicator_uses_today;
 
-    const honorImg = `${process.env.VITE_ASSETS_URL}atlas/honor_currency.png`;
+    const honorImg = 'atlas/honor_currency.png';
 
     const resources: PlayerResource[] = [
         {
             name: t('global.item_types.chronitons'),
             symbol: 'chronitons',
             quantity: chrons,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`]
+            imageUrls: ['atlas/energy_icon.png']
         },
         {
             name: t('global.item_types.credits'),
             symbol: 'credits',
             quantity: money,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`]
+            imageUrls: ['atlas/soft_currency_icon.png']
         },
         {
             name: t('global.item_types.dilithium'),
             symbol: 'dilithium',
             quantity: premium_purchasable,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`]
+            imageUrls: ['atlas/pp_currency_icon.png']
         },
         {
             name: t('global.item_types.merits'),
             symbol: 'merits',
             quantity: premium_earnable,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`]
+            imageUrls: ['atlas/pe_currency_icon.png']
         },
         {
             name: t('global.item_types.honor'),
@@ -275,62 +275,62 @@ function createResources(
             name: t('global.item_types.valor'),
             symbol: 'valor',
             quantity: valor ?? 0,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}fleet_boss_battles_icons_fbb_energy_icon.png`],
+            imageUrls: ['fleet_boss_battles_icons_fbb_energy_icon.png'],
             onClick: () => navigate('/fbb')
         },
         {
             name: t('global.item_types.quantum'),
             symbol: 'quantum',
             quantity: quantum ?? 0,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`],
+            imageUrls: ['atlas/crew_crafting_energy_detailed_icon.png'],
             onClick: () => navigate('/retrieval')
         },
         {
             name: t('global.item_types.interstellar_medium'),
             symbol: 'interstellar_medium',
             quantity: ism,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`],
+            imageUrls: ['atlas/managed_game_coin_detailed_icon.png'],
             onClick: () => navigate('/retrieval')
         },
         {
             name: t('global.item_types.arena_tickets'),
             symbol: 'arena_tickets',
             quantity: pvp,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/fleetmarker_icon.png`],
+            imageUrls: ['atlas/fleetmarker_icon.png'],
             onClick: () => navigate('/ships')
         },
         {
             name: t('global.item_types.cadet_challenge_tickets'),
             symbol: 'cadet_challenge_tickets',
             quantity: cadet,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/cadet_icon.png`]
+            imageUrls: ['atlas/cadet_icon.png']
         },
         {
             name: t('global.item_types.voyage_consumable'),
             symbol: 'voyage_consumable',
             quantity: revival?.quantity ?? 0,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}${revival?.imageUrl ?? (revival?.icon ? getIconPath(revival.icon, true) : '')}`],
+            imageUrls: [revival?.imageUrl ?? (revival?.icon ? getIconPath(revival.icon, true) : '')],
             onClick: () => navigate('/voyage')
         },
         {
             name: t('global.item_types.shuttle_token'),
             symbol: 'shuttle_token',
             quantity: shuttle_rental_tokens,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}atlas/icon_shuttle_token.png`],
+            imageUrls: ['atlas/icon_shuttle_token.png'],
             onClick: () => navigate('/shuttlehelper')
         },
         {
             name: t('global.item_types.conquest_token'),
             symbol: 'conquest_token',
             quantity: conquest_tokens,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`],
+            imageUrls: [CONQUEST_CURRENCY_ICON],
             onClick: () => navigate('/seasonal')
         },
         {
             name: t('items.replications_remaining'),
             symbol: 'replications_remaining',
             quantity: reps,
-            imageUrls: [`${process.env.VITE_ASSETS_URL}${REPLICATOR_ICON}`],
+            imageUrls: [REPLICATOR_ICON],
             onClick: () => navigate('/items')
         }
     ];
@@ -338,13 +338,12 @@ function createResources(
     ownedCites.forEach((cite, idx) => {
         if (idx === 0 || cite.quantity <= 0) return;
         const item = items.find(f => f.symbol === `honorable_citation_quality${idx}`);
-        const img = `${process.env.VITE_ASSETS_URL}${item?.imageUrl}`;
 
         resources.push({
             name: `${idx}* ` + t('global.item_types.honorable_citation'),
             symbol: `honorable_citation_quality${idx}`,
             quantity: cite.quantity,
-            imageUrls: [img],
+            imageUrls: [item?.imageUrl ?? ''],
             style: {
                 border: `1.5px solid ${CONFIG.RARITIES[idx].color}`
             },
@@ -353,7 +352,7 @@ function createResources(
     });
 
     const cite = items.find(f => f.symbol === 'honorable_citation_quality5');
-    const cite5Img = `${process.env.VITE_ASSETS_URL}${cite?.imageUrl}`;
+    const cite5Img = cite?.imageUrl ?? '';
     const potentialCites = Math.floor(honor / (costMode === CostMode.Normal ? 50000 : 40000));
 
     resources.push({
@@ -395,7 +394,7 @@ function useMinuteClock(active: boolean) {
     return now;
 }
 
-export function useSaleData() {
+function useSaleData() {
     return useQuery({
         queryKey: ['sales'],
         staleTime: 15 * 60 * 1000,
