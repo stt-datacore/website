@@ -199,7 +199,7 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
                 gap: '1em'
             }}>
                 {resources.map((res) => (
-                    <div title={res.name} className={'ui label'} key={`_player_head_resource_${res.symbol}`} style={{ cursor: res.onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={res.onClick}>
+                    <div title={res.name} className={'ui label'} key={res.symbol} style={{ cursor: res.onClick ? 'pointer' : undefined, marginLeft: 0, width: '10em', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', ...res.style }} onClick={res.onClick}>
                         <div style={{ width: '8em', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                             {res.imageUrls.map((url) => <Image key={url} size={'tiny'} avatar src={url} style={{ width: 'auto', height: '24px', marginRight: '0.5em' }} />)}
                         </div>
