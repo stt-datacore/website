@@ -81,7 +81,7 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
             resources: [] as PlayerResource[],
             energy: { supplyKit: 0 } as AllEnergy
         };
-    }, [playerData, ephemeral, items, costMode, toggleCostMode, navigate]);
+    }, [playerData, ephemeral, items, costMode, toggleCostMode, navigate, t]);
 
     const shuttleAdventures = currentEvent?.content?.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
     const returns = shuttleAdventures
