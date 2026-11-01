@@ -91,7 +91,7 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
 
     // Round away from zero so a shuttle under a minute out still shows "1m" rather than nothing.
     const shuttleMs = returns.length ? Math.min(...returns) - now : 0;
-    const shuttleSeconds = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / 60000) * 60;
+    const shuttleSeconds = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / MINUTE_MS) * 60;
 
     if (!playerData) return null;
 
