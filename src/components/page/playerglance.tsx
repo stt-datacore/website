@@ -252,14 +252,14 @@ function createResources(playerData: PlayerData, energy: AllEnergy, items: Equip
         {
             name: t('global.item_types.valor'),
             symbol: 'valor',
-            quantity: valor ?? 0,
+            quantity: valor,
             imageUrls: ['fleet_boss_battles_icons_fbb_energy_icon.png'],
             onClick: () => navigate('/fbb')
         },
         {
             name: t('global.item_types.quantum'),
             symbol: 'quantum',
-            quantity: quantum ?? 0,
+            quantity: quantum,
             imageUrls: ['atlas/crew_crafting_energy_detailed_icon.png'],
             onClick: () => navigate('/retrieval')
         },
@@ -286,7 +286,7 @@ function createResources(playerData: PlayerData, energy: AllEnergy, items: Equip
         {
             name: t('global.item_types.voyage_consumable'),
             symbol: 'voyage_consumable',
-            quantity: revival?.quantity ?? 0,
+            quantity: revival?.quantity,
             imageUrls: [revival?.imageUrl ?? (revival?.icon ? getIconPath(revival.icon, true) : '')],
             onClick: () => navigate('/voyage')
         },
