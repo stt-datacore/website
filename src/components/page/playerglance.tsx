@@ -87,11 +87,7 @@ export const PlayerGlance = ({ openPlayerPanel, requestDismiss, narrow, t }: Pla
     const returns = shuttleAdventures
         .filter(f => !!f.shuttles.length)
         .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
-    const now = useMinuteClock(!!returns.length);
-
-    // Round away from zero so a shuttle under a minute out still shows "1m" rather than nothing.
-    const shuttleMs = returns.length ? Math.min(...returns) - now : 0;
-    const shuttleSeconds = (shuttleMs > 0 ? Math.ceil : Math.floor)(shuttleMs / MINUTE_MS) * 60;
+    const shuttleSeconds = useMinutesUntil(returns.length ? Math.min(...returns) : undefined) * 60;
 
     if (!playerData) return null;
 
@@ -349,24 +345,49 @@ function createResources(playerData: PlayerData, energy: AllEnergy, items: Equip
 
 const MINUTE_MS = 60 * 1000;
 
-/** Current time, re-rendering every minute while `active`. */
-function useMinuteClock(active: boolean) {
-    const [now, setNow] = React.useState(Date.now);
+/** Whole minutes from `now` until `target`. Rounds away from zero so a shuttle under a minute out still shows "1m" rather than nothing. */
+function minutesUntil(target: number, now: number) {
+    const ms = target - now;
+    return (ms > 0 ? Math.ceil : Math.floor)(ms / MINUTE_MS);
+}
+
+/** Minutes until `target` (0 without one), re-rendering only when that value changes. */
+function useMinutesUntil(target: number | undefined) {
+    const [minutes, setMinutes] = React.useState(() => target === undefined ? 0 : minutesUntil(target, Date.now()));
 
     React.useLayoutEffect(() => {
-        if (!active) return;
+        if (target === undefined) {
+            setMinutes(0);
+            return;
+        }
 
-        // Refresh before paint if the reading went stale while inactive. Keeping a fresh one avoids a re-render on mount.
-        setNow(prev => {
+        let id: ReturnType<typeof setTimeout>;
+        const tick = () => {
             const current = Date.now();
-            return current - prev < MINUTE_MS ? prev : current;
-        });
-        const id = setInterval(() => setNow(Date.now()), MINUTE_MS);
+            setMinutes(minutesUntil(target, current));
 
-        return () => clearInterval(id);
-    }, [active]);
+            // The value only changes when the time left crosses a whole minute, so wake just past the next crossing.
+            // Recalculating each time, rather than using an interval, corrects for late timers.
+            const msPastMinute = ((target - current) % MINUTE_MS + MINUTE_MS) % MINUTE_MS;
+            id = setTimeout(tick, msPastMinute + 1);
+        };
+        tick();
 
-    return now;
+        // Browsers can throttle or pause timers in the background, so catch up as soon as the page is visible again.
+        const onVisibilityChange = () => {
+            if (document.visibilityState !== 'visible') return;
+            clearTimeout(id);
+            tick();
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearTimeout(id);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [target]);
+
+    return minutes;
 }
 
 /** New way of retrieving sale data. Will be moved to common area when refactoring `restracker.tsx`. */
