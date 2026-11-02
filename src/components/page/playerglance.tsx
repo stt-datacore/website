@@ -356,10 +356,7 @@ function useMinutesUntil(target: number | undefined) {
     const [minutes, setMinutes] = React.useState(() => target === undefined ? 0 : minutesUntil(target, Date.now()));
 
     React.useLayoutEffect(() => {
-        if (target === undefined) {
-            setMinutes(0);
-            return;
-        }
+        if (target === undefined) return;
 
         let id: ReturnType<typeof setTimeout>;
         const tick = () => {
@@ -387,7 +384,7 @@ function useMinutesUntil(target: number | undefined) {
         };
     }, [target]);
 
-    return minutes;
+    return target === undefined ? 0 : minutes;
 }
 
 /** New way of retrieving sale data. Will be moved to common area when refactoring `restracker.tsx`. */
