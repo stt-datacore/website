@@ -41,54 +41,52 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                 value: archetypeId ? c.archetype_id : c.id,
                 text: c.name,
                 content: (
-                    <React.Fragment>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "48px auto",
+                            gridTemplateAreas: "'img text' 'img rarity'",
+                        }}
+                    >
+                        <img
+                            src={`${process.env.VITE_ASSETS_URL}${c.imageUrlPortrait}`}
+                            style={{
+                                height: "32px",
+                                gridArea: "img",
+                            }}
+                        />
                         <div
                             style={{
-                                display: "grid",
-                                gridTemplateColumns: "48px auto",
-                                gridTemplateAreas: "'img text' 'img rarity'",
+                                gridArea: "text",
+                                textAlign: "left",
+                                marginBottom: "0.25em",
+                                display: 'flex',
+                                flexDirection: 'row',
+                                gap: "0.25em",
+                                justifyContent: 'flex-start',
+                                alignItems: 'center'
                             }}
                         >
-                            <img
-                                src={`${process.env.VITE_ASSETS_URL}${c.imageUrlPortrait}`}
-                                style={{
-                                    height: "32px",
-                                    gridArea: "img",
-                                }}
-                            />
-                            <div
-                                style={{
-                                    gridArea: "text",
-                                    textAlign: "left",
-                                    marginBottom: "0.25em",
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: "0.25em",
-                                    justifyContent: 'flex-start',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                {"immortal" in c && c.immortal > 0 &&
-                                <Icon name={'snowflake'} size={'small'} />}
-                                {c.name}
-                            </div>
-                            <div style={{ gridArea: "rarity", display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Rating
-                                    icon={"star"}
-                                    maxRating={c.max_rarity}
-                                    rating={rarity}
-                                    disabled
-                                    size={"tiny"}
-                                />
-                                {!plain && !custom &&
-                                <div style={{alignSelf: 'right'}}>
-                                    {c.q_bits} ({qbitsToSlots(c.q_bits)})
-                                </div>}
-                                {!plain && custom && custom(c)}
-                            </div>
-
+                            {"immortal" in c && c.immortal > 0 &&
+                            <Icon name={'snowflake'} size={'small'} />}
+                            {c.name}
                         </div>
-                    </React.Fragment>
+                        <div style={{ gridArea: "rarity", display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Rating
+                                icon={"star"}
+                                maxRating={c.max_rarity}
+                                rating={rarity}
+                                disabled
+                                size={"tiny"}
+                            />
+                            {!plain && !custom &&
+                            <div style={{alignSelf: 'right'}}>
+                                {c.q_bits} ({qbitsToSlots(c.q_bits)})
+                            </div>}
+                            {!plain && custom && custom(c)}
+                        </div>
+
+                    </div>
                 )
             });
         });
