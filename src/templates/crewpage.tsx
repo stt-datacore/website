@@ -10,6 +10,7 @@ import { CompletionState, PlayerCrew } from '../model/player';
 import { BuffStatTable } from '../utils/voyageutils';
 
 import { useParams } from 'react-router-dom';
+import { Message } from 'semantic-ui-react';
 import { CrewQuipment } from '../components/crewpage/crewquipment';
 import { CrewVariants } from '../components/crewpage/crewvariants';
 import { EquipmentBuilds } from '../components/crewpage/equipmentbuilds';
@@ -69,8 +70,9 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 
 	const { crew } = React.useMemo(() => {
 		const symbol = crew_symbol;
-		let crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
-		if (crew) crew = structuredClone(crew);
+		const found = context.core.crew.find(c => c.symbol === symbol);
+		if (!found) return { crew: undefined, symbol };
+		const crew = structuredClone(found) as PlayerCrew;
 		crew.immortal = CompletionState.DisplayAsImmortalStatic;
 		crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
 		crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;
@@ -90,6 +92,10 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 		}
 		return { crew, symbol };
 	}, [crew_symbol]);
+
+	if (!crew) {
+		return <Message error>Crew not found!</Message>;
+	}
 
 	const imageDoubleClick = () => {
 		if (window.innerWidth < DEFAULT_MOBILE_WIDTH) return;
