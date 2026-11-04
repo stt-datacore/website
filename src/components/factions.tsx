@@ -99,20 +99,20 @@ const FactionInfo = (props: ShuttleInfoProps) => {
 
     return (
         <>
-            <p>
+            <div style={{ margin: '0 0 1em' }}>
                 <span>
                     {tfmt('average_odds_dropdown', {
                         dropdown: (
                             <Dropdown text={`${successOdds}%`}>
                                 <Dropdown.Menu>
-                                    {oddsValues.map(val => (<Dropdown.Item onClick={(e, { value }) => setSuccessOdds(value as number)} text={`${val}%`} value={val} />))}
+                                    {oddsValues.map(val => (<Dropdown.Item key={`odds_${val}`} onClick={(e, { value }) => setSuccessOdds(value as number)} text={`${val}%`} value={val} />))}
                                 </Dropdown.Menu>
                             </Dropdown>
                         )
                     })}
                 </span>
-            </p>
-            <p>
+            </div>
+            <div style={{ margin: '0 0 1em' }}>
                 <span>
                     {tfmt('n_shuttles_per_day', {
                         n: (<>
@@ -133,7 +133,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
                 <Button
                     onClick={() => setShuttles(shuttleBays * 8)}
                     size='tiny'>{tg('global.reset')}</Button>
-            </p>
+            </div>
             <p>{t('odds_note')}</p>
             <SearchableTable
                 config={tableConfig}
