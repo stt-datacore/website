@@ -339,8 +339,8 @@ export const MissionMapComponent = (props: MissionComponentProps) => {
                                                     </Table.Row>}
                                                 {isMobile &&
                                                     !!stages && stages.map((tier, idx) => (
-                                                        <Table.Row>
-                                                            <Table.Cell key={pageId + "table_tier_" + idx}>
+                                                        <Table.Row key={pageId + "table_tier_" + idx}>
+                                                            <Table.Cell>
                                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                                                     {tier.map((item) => (
                                                                         <div key={pageId + 'table_tier_item_' + item.id} style={{ margin: "0.5em" }}>
