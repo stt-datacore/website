@@ -333,7 +333,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                             selection
                             scrolling
                             options={itemRarityOpts}
-                            value={rarityOptions}
+                            value={rarityOptions || []}
                             onChange={(e, { value }) =>
                                 setRarityOptions(value as number[] | undefined)
                             }
