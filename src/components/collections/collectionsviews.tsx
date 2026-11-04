@@ -60,7 +60,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [offPageSelect, setOffPageSelect] = React.useState<number | undefined>(undefined);
 	const milestoneOpts = [] as DropdownItemProps[];
 
-	const [tabIndex, setTabIndex] = useStateWithStorage<number | undefined>('collectionstool/tabIndex', undefined, { rememberForever: true });
+	const [tabIndex, setTabIndex] = useStateWithStorage<number>('collectionstool/tabIndex', 0, { rememberForever: true });
     const [compactView, setCompactView] = useStateWithStorage('collectionstool/compactView', false, { rememberForever: true });
 
 	React.useEffect(() => {
@@ -267,7 +267,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				<Step.Group fluid widths={5}>
 					{tabPanes.map((pane, idx) => {
 						return (
-							<Step active={(tabIndex === idx || (idx === 0 && tabIndex === undefined))} onClick={() => setTabIndex(idx)}>
+							<Step active={tabIndex === idx} onClick={() => setTabIndex(idx)}>
 								<Step.Content>
 									<Step.Title>{pane.menuItem || t(`collections.panes.${pane.mode}.title`)}</Step.Title>
 									<Step.Description>{pane.description || t(`collections.panes.${pane.mode}.description`)}</Step.Description>
@@ -286,7 +286,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					<CollectionPrefs
 						compactView={compactView}
 						setCompactView={setCompactView}
-						mode={tabPanes[tabIndex ?? 0].mode as any}
+						mode={tabPanes[tabIndex].mode as any}
 						playerCollections={playerCollections}
 						extendedCollections={extendedCollections}
 						colCombos={colCombos}
