@@ -45,7 +45,14 @@ export function renderBonuses(skills: { [key: string]: Skill & { disabled?: bool
 
     if (for_export) {
         return (<Table>
-            {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
+            {!!prospect && !!t && <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell colSpan={3}>
+                        <div style={flexCol}>{t('voyage.quipment.title')}</div>
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>}
+            <Table.Body>
             {Object.values(skills).map(((skill, idx) => {
                 const atext = CONFIG.SKILLS[skill.skill!];
                 return (
@@ -65,6 +72,7 @@ export function renderBonuses(skills: { [key: string]: Skill & { disabled?: bool
                         </Table.Cell>
                     </Table.Row>)
             }))}
+            </Table.Body>
         </Table>)
     }
     else {
@@ -206,7 +214,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         }
 
         let mt = true;
-        const dcrew = item.demandCrew?.map(sym => {
+        const dcrew = item.demandCrew?.map((sym, idx) => {
             const crew = roster.find(f => {
                 if (f.symbol !== sym || (f.level === 100 && f.equipment?.length === 4)) return false;
                 // if (mode === 'immediate') {
@@ -222,7 +230,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                 return f;
             });
             if (crew) mt = false;
-            return (<>
+            return (<React.Fragment key={'demand_crew_' + sym + idx}>
                 {crew && <div
                     onClick={(e) => this.navigate("/crew/" + crew.symbol)}
                     style={{
@@ -242,7 +250,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                     />
                     <i>{crew?.name}</i>
                 </div> || <></>}
-            </>)
+            </React.Fragment>)
         });
 
         const empty = mt;
@@ -413,7 +421,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                     if (ingitem && demand) {
                                         ingitem = { ...ingitem, quantity: demand.have, needed: demand.count };
                                     }
-                                    if (!ingitem) return <></>
+                                    if (!ingitem) return null;
                                     return (
                                         <div key={"recipe_component_hover_" + ing.symbol + item.symbol + idx}
                                             style={{
