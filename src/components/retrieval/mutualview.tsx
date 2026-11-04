@@ -631,7 +631,7 @@ const MutualTable = (props: MutualTableProps) => {
                         <PolestarDropdown
                             multiple
                             style={{minWidth: '15em'}}
-                            selection={polestarFilter}
+                            selection={polestarFilter ?? []}
                             setSelection={setPolestarFilter}
                             polestars={allowedPolestars}
                             />
@@ -660,11 +660,11 @@ const MutualTable = (props: MutualTableProps) => {
                 </Table.Row>
             </Table.Header>
             <Table.Body>
-                {currentPage.map((item) => renderTableRow(item))}
+                {currentPage.map((item, idx) => renderTableRow(item, pageStartIdx + idx))}
             </Table.Body>
             <Table.Footer>
                 <Table.Row>
-                    <Table.HeaderCell colspan={4}>
+                    <Table.HeaderCell colSpan={4}>
                         <Pagination
                             totalPages={totalPages}
                             activePage={activePage}
@@ -686,11 +686,11 @@ const MutualTable = (props: MutualTableProps) => {
         </Table>
     </div>)
 
-    function renderTableRow(item: DisplayItem) {
+    function renderTableRow(item: DisplayItem, idx: number) {
 
         const costs = item.cost;
 
-        return <Table.Row>
+        return <Table.Row key={`${item.combo.map(c => c.symbol).join(',')}_${idx}`}>
             <Table.Cell>
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
                     {item.combo.map((polestar) => {
@@ -707,7 +707,7 @@ const MutualTable = (props: MutualTableProps) => {
                             psName = TRAIT_NAMES[polestar.symbol.replace("_keystone", "")] || CONFIG.SKILLS[polestar.symbol.replace("_keystone", "")];
                         }
 
-                        return <div style={{ width: '7em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
+                        return <div key={polestar.symbol} style={{ width: '7em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
                             <ItemTarget
                                 inputItem={polestar as any as EquipmentItem}
                                 targetGroup="mutual_crew_item">
@@ -734,7 +734,7 @@ const MutualTable = (props: MutualTableProps) => {
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em'}}>
                     {item.crew.map((crew) => {
                         return (
-                            <div style={{display:'flex', gap: '1em', flexWrap:'wrap', flexDirection:'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                            <div key={`${crew.symbol}_${crew.id}`} style={{display:'flex', gap: '1em', flexWrap:'wrap', flexDirection:'row', justifyContent: 'flex-start', alignItems: 'center'}}>
                             <AvatarView
                                     mode='crew'
                                     item={crew}
@@ -752,8 +752,8 @@ const MutualTable = (props: MutualTableProps) => {
             </Table.Cell>
             <Table.Cell width={3}>
             <div style={{display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em'}}>
-                <p>{printCredits(costs?.credits ?? 0, t)}</p>
-                <p>{printQuantum(costs?.quantum ?? 0, t)}</p>
+                <div style={{marginBottom: '1em'}}>{printCredits(costs?.credits ?? 0, t)}</div>
+                <div>{printQuantum(costs?.quantum ?? 0, t)}</div>
             </div>
             </Table.Cell>
         </Table.Row>
