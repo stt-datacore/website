@@ -431,7 +431,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 
 			{filteredCount === 0 && (
 				<div style={{ margin: '2em 0' }}>
-					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage()}
+					{(props.zeroMessage && props.zeroMessage(searchFilter)) || renderDefaultZeroMessage(t)}
 				</div>
 			)}
 
@@ -673,9 +673,7 @@ export const prettyCrewColumnTitle = (column: string) => {
 	return column;
 };
 
-function renderDefaultZeroMessage(): React.ReactNode {
-	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const { t } = React.useContext(GlobalContext).localized;
+function renderDefaultZeroMessage(t: TranslateMethod): React.ReactNode {
 	return (
 		<Message icon>
 			<Icon name='search' />
