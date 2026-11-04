@@ -453,6 +453,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     const { battle_mode: input_battle_mode, rarity: input_rarity } = useParams();
 
+    // Declared before the windowLoaded effect so URL-param staffing below still wins on mount
+    React.useEffect(() => {
+        staffToCurrentBattleMode();
+    }, [opponentShip, battleMode]);
+
     React.useEffect(() => {
         if (!windowLoaded && playerShips && ship) {
             setWindowLoaded(true);
@@ -520,7 +525,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
 
     const metaList = React.useMemo(() => {
-        staffToCurrentBattleMode();
         return createMetaOptions((meta) => {
             if (battleMode.includes('fbb')) return meta.startsWith('fbb');
             else return !meta.startsWith('fbb');
@@ -992,7 +996,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     function renderBattleResult(sug: ShipWorkerItem, idx: number) {
         return <div style={{ width: '100%', gap: '0.5em', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
             <div style={{ display: 'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em' }}>
-                {sug.crew.map((crew, idx) => <div style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
+                {sug.crew.map((crew, idx) => <div key={`${crew.symbol}_${idx}`} style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
 
                     <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 
