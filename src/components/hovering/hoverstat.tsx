@@ -215,7 +215,6 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     constructor(props: TProps) {
         super(props);
         this.tiny = TinyStore.getStore(props.targetGroup);
-        this.tiny.subscribe(this.propertyChanged);
         this.targetOffset = props.offset ?? { x: 12, y: 12 };
         this.windowEdgeMinPadding = props.windowEdgeMinPadding ?? { x: 8, y: 8 };
 
@@ -617,6 +616,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     }
 
     componentDidMount(): void {
+        this._unmounted = false;
+        this.tiny.subscribe(this.propertyChanged);
         this.doWireup();
         this.observer.observe(document, { subtree: true, childList: true });
     }
@@ -642,6 +643,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
 
     componentWillUnmount(): void {
         this._unmounted = true;
+        this.tiny.unsubscribe(this.propertyChanged);
         this.observer.disconnect();
         if (!this._elems) return;
         for (let pl of this._elems) {
