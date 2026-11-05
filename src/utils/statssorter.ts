@@ -56,6 +56,24 @@ export interface StatsSorterConfig {
 }
 
 /**
+ * Supported compound operators
+ */
+const Operators: { [key: string]: (a: number, b: number) => number } = {
+    '+': (a, b) => a + b,
+    '-': (a, b) => a - b,
+    '*': (a, b) => a * b,
+    '/': (a, b) => a / b,
+    '%': (a, b) => a % b,
+    '**': (a, b) => a ** b,
+};
+
+function applyOperator(a: number, operation: string, b: number): number {
+    const fn = Operators[operation.trim()];
+    if (!fn) throw new Error(`Unsupported compound operator: '${operation}'`);
+    return fn(Number(a), Number(b));
+}
+
+/**
  * Sorts an array of objects based on the numeric fields of the objects and their nested objects using a configuration map
  */
 export class StatsSorter {
@@ -237,7 +255,7 @@ export class StatsSorter {
             if (val !== undefined) {
                 if (result === undefined) result = val;
                 else {
-                    result = eval(`${result} ${operation} ${val}`) as number;
+                    result = applyOperator(result, operation, val);
                 }
             }
         }
