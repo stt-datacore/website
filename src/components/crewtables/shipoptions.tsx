@@ -570,7 +570,7 @@ export const AdvantagePicker = (props: AdvantagePickerProps) => {
 				selection
 				options={advantageOptions}
 				value={selectedAdvantage ?? ''}
-				onChange={(e, { value }) => setAdvantage(value as ShipAdvantage | undefined)}
+				onChange={(e, { value }) => setAdvantage(value ? value as ShipAdvantage : undefined)}
 				closeOnChange
 			/>
 		</Form.Field>
