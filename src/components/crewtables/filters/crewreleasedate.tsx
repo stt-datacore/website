@@ -1,7 +1,6 @@
 import React from 'react';
 import { Form, Input } from 'semantic-ui-react';
 
-import moment from 'moment';
 import { ICrewFilter, IRosterCrew } from '../../../components/crewtables/model';
 import { GlobalContext } from '../../../context/globalcontext';
 import { CustomTimeFilterProps, TimeframeFilter, timeframeToWeeks } from '../../../pages/events';
@@ -30,10 +29,10 @@ export const ReleaseDateFilter = (props: ReleaseDateFilterProps) => {
         })(), { rememberForever: true });
 
     const { customDateVal, maxDateVal } = React.useMemo(() => {
-        const maxDateVal = moment(new Date()).utc(false).format('YYYY-MM-DD');
+        const maxDateVal = new Date().toLocaleDateString();
         if (customDate) {
             try {
-                const customDateVal = moment(customDate).utc(false).format('YYYY-MM-DD');
+                const customDateVal = new Date(customDate).toLocaleDateString();
                 return { customDateVal, maxDateVal };
             }
             catch {

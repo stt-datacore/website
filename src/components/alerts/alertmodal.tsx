@@ -1,9 +1,9 @@
 import React from 'react';
-import { Modal, Input, Button, Checkbox } from 'semantic-ui-react';
+import { Button, Checkbox, Input, Modal } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
+import { CrewDropDown } from '../base/crewdropdown';
 import { OptionsBase } from '../base/optionsmodal_base';
 import { AlertModalProps, DefaultAlertConfig, IAlertConfig } from './model';
-import { CrewDropDown } from '../base/crewdropdown';
 
 export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     const globalContext = React.useContext(GlobalContext);
@@ -11,7 +11,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
     const { t, tfmt } = globalContext.localized;
     const { config, setConfig } = props;
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const inputRef = React.createRef<Input>();
+    const inputRef = React.createRef<HTMLElement>();
 
     const [workConf, setWorkConf] = React.useState(config);
     const [innerSettings, setInnerSettings] = React.useState<IAlertConfig>(DefaultAlertConfig);
@@ -150,7 +150,7 @@ export const AlertModal = <T extends OptionsBase>(props: AlertModalProps) => {
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.ReactNode {
         return (
             <Button>
                 {t('global.advanced_settings')}

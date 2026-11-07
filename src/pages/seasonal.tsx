@@ -13,6 +13,7 @@ import { formatTime } from '../utils/itemutils';
 
 export const SEASONAL_EVENT_ICON = 'items_consumables_seasonal_event_shop_icon.png';
 export const CONQUEST_CURRENCY_ICON = 'currency_conquest_token_icon.png';
+export const REPLICATOR_ICON = 'atlas/sb_hull_repair.png';
 
 
 export interface SeasonalEventProps {

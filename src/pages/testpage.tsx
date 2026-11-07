@@ -6,6 +6,7 @@ import { CrewHoverStat } from '../components/hovering/crewhoverstat';
 import { ShipHoverStat } from '../components/hovering/shiphoverstat';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { Button, Checkbox } from 'semantic-ui-react';
+import { useNavigate } from 'react-router-dom';
 
 
 const TestPage = () => {
@@ -31,6 +32,7 @@ const TestComponent = () => {
     const [crewIdx, setCrewIdx] = React.useState(0);
     const [shipIdx, setShipIdx] = React.useState(0);
     const [fresh, setFresh] = React.useState(0);
+    const navigate = useNavigate();
 
     let stuff = [] as any;
     let c = 0;

@@ -7,8 +7,8 @@ import { GlobalContext } from '../../../context/globalcontext';
 
 type CrewTraitsFilterProps = {
 	pageId: string;
-	crewMarkups: ICrewMarkup[];
-	setCrewMarkups: (crewMarkups: ICrewMarkup[]) => void;
+	crewMarkups?: ICrewMarkup[];
+	setCrewMarkups?: (crewMarkups: ICrewMarkup[]) => void;
 	crewFilters: ICrewFilter[];
 	setCrewFilters: (crewFilters: ICrewFilter[]) => void;
 };
@@ -44,19 +44,24 @@ export const CrewTraitsFilter = (props: CrewTraitsFilterProps) => {
 		if (minTraitMatches > traitFilter.length)
 			setMinTraitMatches(traitFilter.length === 0 ? 1 : traitFilter.length);
 
-		const markupIndex = crewMarkups.findIndex(crewMarkup => crewMarkup.id === 'traits_matched');
-		if (markupIndex >= 0) crewMarkups.splice(markupIndex, 1);
-
 		const filterIndex = crewFilters.findIndex(crewFilter => crewFilter.id === 'traits_matched');
 		if (filterIndex >= 0) crewFilters.splice(filterIndex, 1);
 
 		if (traitFilter.length > 0) {
-			crewMarkups.push({ id: 'traits_matched', applyMarkup: addTraitsMatched });
 			crewFilters.push({ id: 'traits_matched', filterTest: filterByTrait });
 		}
 
-		setCrewMarkups([...crewMarkups]);
 		setCrewFilters([...crewFilters]);
+		if (crewMarkups && setCrewMarkups) {
+			const markupIndex = crewMarkups.findIndex(crewMarkup => crewMarkup.id === 'traits_matched');
+			if (markupIndex >= 0) crewMarkups.splice(markupIndex, 1);
+
+			if (traitFilter.length > 0) {
+				crewMarkups.push({ id: 'traits_matched', applyMarkup: addTraitsMatched });
+			}
+
+			setCrewMarkups([...crewMarkups]);
+		}
 	}, [traitFilter, minTraitMatches]);
 
 	return (

@@ -9,7 +9,7 @@ import { Dropdown, Form, Rating, Table } from "semantic-ui-react";
 import { Filter } from "../../model/game-elements";
 import { useStateWithStorage } from "../../utils/storage";
 import { crewMatchesSearchFilter } from "../../utils/crewsearch";
-import { Link } from "gatsby";
+import { Link } from "react-router-dom";
 import { descriptionLabel, RarityFilter } from "../crewtables/commonoptions";
 import { CrewHoverStat, CrewTarget } from "../hovering/crewhoverstat";
 import { CrewPreparer } from "../item_presenters/crew_preparer";
@@ -159,7 +159,7 @@ export const LootCrewTable = () => {
 					>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget inputItem={crew} targetGroup={dbidPrefix + 'targetClass'}>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>

@@ -1,10 +1,9 @@
-import React from "react"
-import { useStateWithStorage } from "../../utils/storage";
+import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
 
-import { AlertMode, DefaultAlertConfig, IAlertConfig } from "./model";
-import { AlertModal } from "./alertmodal";
 import { TinyStore } from "../../utils/tiny";
+import { AlertModal } from "./alertmodal";
+import { DefaultAlertConfig, IAlertConfig } from "./model";
 
 
 export interface IAlertContext {
@@ -12,7 +11,7 @@ export interface IAlertContext {
     setConfig: (value: IAlertConfig) => void;
     alertOpen: boolean,
     setAlertOpen: (value: boolean) => void;
-    drawAlertModal: (renderTrigger?: () => JSX.Element) => JSX.Element;
+    drawAlertModal: (renderTrigger?: () => React.ReactNode) => React.ReactNode;
     restoreHiddenAlerts: boolean,
 	setRestoreHiddenAlerts: (value: boolean) => void
 }
@@ -30,7 +29,7 @@ const DefaultAlertContext = {
 export const AlertContext = React.createContext(DefaultAlertContext);
 
 export interface AlertProviderProps {
-    children: JSX.Element;
+    children: React.ReactNode;
 }
 
 export const AlertProvider = (props: AlertProviderProps) => {
@@ -77,7 +76,7 @@ export const AlertProvider = (props: AlertProviderProps) => {
         </AlertContext.Provider>
     </React.Fragment>
 
-    function drawAlertModal(renderTrigger?: () => JSX.Element) {
+    function drawAlertModal(renderTrigger?: () => React.ReactNode) {
         return <AlertModal
                     config={config}
                     setConfig={setConfig}

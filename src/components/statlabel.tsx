@@ -7,8 +7,8 @@ import { GlobalContext } from '../context/globalcontext';
 const isWindow = typeof window !== 'undefined';
 
 export type StatLabelProps = {
-	title: string | JSX.Element;
-	value: number | string | JSX.Element;
+	title: string | React.ReactNode;
+	value: number | string | React.ReactNode;
 	size?: 'small' | 'medium' | 'large' | 'jumbo',
 	style?: React.CSSProperties
 };

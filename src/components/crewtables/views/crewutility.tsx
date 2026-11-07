@@ -1,22 +1,22 @@
+import { Link } from 'react-router-dom';
 import React from 'react';
-import { Link } from 'gatsby';
-import { Button, Form, Checkbox, Table, Segment, Modal, Header, Rating, Statistic, Divider, Label } from 'semantic-ui-react';
+import { Button, Checkbox, Divider, Form, Header, Label, Modal, Rating, Segment, Statistic, Table } from 'semantic-ui-react';
 
-import { CrewMember, Skill } from '../../../model/crew';
-import { CryoCollection, PlayerCollection, PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
-import { GlobalContext } from '../../../context/globalcontext';
 import CONFIG from '../../../components/CONFIG';
 import { ITableConfigRow } from '../../../components/searchabletable';
+import { GlobalContext } from '../../../context/globalcontext';
+import { CrewMember, Skill } from '../../../model/crew';
+import { PlayerUtilityRanks, TranslateMethod } from '../../../model/player';
 import { useStateWithStorage } from '../../../utils/storage';
 
-import { IRosterCrew, ICrewMarkup, ICrewFilter, ICrewUtilityRanks } from '../../../components/crewtables/model';
-import { CrewBaseCells, getBaseTableConfig, renderMainDataScore } from './base';
-import { getBernardsNumber } from '../../../utils/gauntlet';
-import { printPortalStatus } from '../../../utils/crewutils';
-import { categorizeCrewCollections } from '../../../utils/collectionutils';
+import { ICrewFilter, ICrewMarkup, ICrewUtilityRanks, IRosterCrew } from '../../../components/crewtables/model';
 import { Collection } from "../../../model/collections";
-import { Ship, ShipInUse } from '../../../model/ship';
+import { ShipInUse } from '../../../model/ship';
+import { categorizeCrewCollections } from '../../../utils/collectionutils';
+import { printPortalStatus } from '../../../utils/crewutils';
+import { getBernardsNumber } from '../../../utils/gauntlet';
 import { getShipsInUse } from '../../../utils/shiputils';
+import { CrewBaseCells, getBaseTableConfig, renderMainDataScore } from './base';
 
 interface IUtilityUserPrefs {
 	thresholds: IUtilityThresholds;
@@ -180,7 +180,7 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 		</div>
 	);
 
-	function renderThresholdForm(): JSX.Element {
+	function renderThresholdForm(): React.ReactNode {
 		const cellStyle: React.CSSProperties = {
 			display: 'flex',
 			justifyContent: 'space-between'
@@ -511,7 +511,7 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 		});
 	}
 
-	function renderUtilities(crew: IRosterCrew, options: string[]): JSX.Element {
+	function renderUtilities(crew: IRosterCrew, options: string[]): React.ReactNode {
 		if (!crew.markup || !crew.markup.crew_utility) return (<></>);
 		const crewUtility = crew.markup.crew_utility;
 		const utilities = crewUtility.thresholds.filter(key => options.includes(key.slice(0, 1)))
@@ -534,7 +534,7 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 								<div style={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
 								{utility.skills.map(skill =>
 									<span key={skill}>
-										<img key={skill} alt={skill} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
+										<img key={skill} alt={skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
 									</span>
 								)}
 								</div>
@@ -608,11 +608,11 @@ const RanksModal = (props: RanksModalProps) => {
 	}
 
 	// Adaptation of renderOtherRanks from commoncrewdata.tsx
-	function renderRanks(): JSX.Element {
-		const v = [] as JSX.Element[];
-		const g = [] as JSX.Element[], g1 = [] as JSX.Element[];
-		const b = [] as JSX.Element[];
-		const s = [] as JSX.Element[];
+	function renderRanks(): React.ReactNode {
+		const v = [] as React.ReactNode[];
+		const g = [] as React.ReactNode[], g1 = [] as React.ReactNode[];
+		const b = [] as React.ReactNode[];
+		const s = [] as React.ReactNode[];
 
 		const skillName = short => {
 

@@ -1,4 +1,3 @@
-import { navigate } from "gatsby";
 import React, { Component } from "react";
 import { Grid, Header, Rating, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -16,6 +15,7 @@ import { OptionsPanelFlexColumn } from "../stats/utils";
 import { AvatarView } from "./avatarview";
 import { CrewItemsView } from "./crew_items";
 import { PresenterProps } from "./ship_presenter";
+import { Navigate, NavigateOptions } from "react-router-dom";
 
 
 export function renderKwipmentBonus(kwipment: number[], items: EquipmentItem[], prospect?: boolean, t?: TranslateMethod, crew?: PlayerCrew, for_export?: boolean) {
@@ -92,7 +92,7 @@ export function renderBonuses(skills: { [key: string]: Skill & { disabled?: bool
                         }}
                     >
                         <div style={{ width: maxWidth ?? "2em", marginRight: "0.5em" }}>
-                            <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
+                            <img style={{ maxHeight: "2em", maxWidth: maxWidth ?? "2em", margin: margin ?? "0.5em", marginLeft: "0" }} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill.skill}.png`} />
                         </div>
                         <h4 style={{ margin: margin ?? "0.5em" }} >+{skill.core ?? 0} +({skill.range_min ?? 0}-{skill.range_max ?? 0})</h4>
                         <h4 style={{ margin: margin ?? "0.5em" }} >{atext}</h4>
@@ -115,6 +115,8 @@ export interface ItemPresenterProps extends PresenterProps {
 
 export interface ItemPresenterState {
     mobileWidth: number;
+    navLink?: string,
+    navOptions?: NavigateOptions;
 }
 
 export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterState> {
@@ -123,10 +125,14 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
 
     tiny: TinyStore;
 
+    private navigate(link: string, options?: NavigateOptions) {
+        this.setState({...this.state, navLink: link, navOptions: options });
+    }
+
     constructor(props: ItemPresenterProps) {
         super(props);
         this.state = {
-            ... this.state,
+            ...this.state,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH
         }
 
@@ -143,16 +149,21 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         this.forceUpdate();
     }
 
-    render(): JSX.Element {
+    render(): React.ReactNode {
         const { t, tfmt } = this.context.localized;
         const { item: item, touched, tabs, showIcon } = this.props;
         const { playerData } = this.context.player;
         const { items } = this.context.core;
-        const { mobileWidth } = this.state;
+        const { mobileWidth, navLink, navOptions } = this.state;
         const compact = this.props.compact ?? this.props.hover;
         const roster = playerData?.player?.character?.crew ?? [];
         const mode = this.demandMode;
 
+        if (navLink) {
+            return (
+                <Navigate to={navLink} replace={navOptions?.replace} />
+            )
+        }
         if (!item) {
             return <></>
         }
@@ -213,7 +224,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
             if (crew) mt = false;
             return (<>
                 {crew && <div
-                    onClick={(e) => navigate("/crew/" + crew.symbol)}
+                    onClick={(e) => this.navigate("/crew/" + crew.symbol)}
                     style={{
                         cursor: "pointer",
                         textAlign: "center",
@@ -267,7 +278,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
                     <AvatarView
-                        //src={`${process.env.GATSBY_ASSETS_URL}${item.imageUrl}`}
+                        //src={`${process.env.VITE_ASSETS_URL}${item.imageUrl}`}
                         size={compact ? 128 : 128}
                         //rarity={item.rarity}
                         //maxRarity={item.rarity}
@@ -417,7 +428,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                             }}>
                                             <a onClick={(e) => navClick(e, ingitem)} style={{ cursor: "pointer" }} title={ingitem.name}>
                                                 <ItemDisplay
-                                                    src={`${process.env.GATSBY_ASSETS_URL}${ingitem.imageUrl}`}
+                                                    src={`${process.env.VITE_ASSETS_URL}${ingitem.imageUrl}`}
                                                     rarity={ingitem.rarity}
                                                     maxRarity={ingitem.rarity}
                                                     size={48}

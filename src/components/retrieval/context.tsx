@@ -23,7 +23,7 @@ export interface IRetrievalContext {
 };
 
 export function printConquest(quantity: number, t?: TranslateMethod, printTicket?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`;
+	const img = `${process.env.VITE_ASSETS_URL}${CONQUEST_CURRENCY_ICON}`;
 
 	return <div
 		title={t ? t('global.item_types.conquest_token') : ''}
@@ -34,7 +34,7 @@ export function printConquest(quantity: number, t?: TranslateMethod, printTicket
 }
 
 export function printISM(quantity: number, t?: TranslateMethod, printISM?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/managed_game_coin_detailed_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.interstellar_medium') : ''}
@@ -45,7 +45,7 @@ export function printISM(quantity: number, t?: TranslateMethod, printISM?: boole
 }
 
 export function printLegendaryCite(quantity: number, t?: TranslateMethod, printCite?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}items_consumables_honorable_citation_item_3.png`;
+	const img = `${process.env.VITE_ASSETS_URL}items_consumables_honorable_citation_item_3.png`;
 
 	return <div
 		title={t ? t('global.item_types.honorable_citation') : ''}
@@ -56,7 +56,7 @@ export function printLegendaryCite(quantity: number, t?: TranslateMethod, printC
 }
 
 export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/honor_currency.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/honor_currency.png`;
 
 	return <div
 		title={t ? t('global.item_types.honor') : ''}
@@ -67,7 +67,7 @@ export function printHonor(quantity: number, t?: TranslateMethod, printHonor?: b
 }
 
 export function printDilithium(quantity: number, t?: TranslateMethod, printDil?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/pp_currency_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.dilithium') : ''}
@@ -78,7 +78,7 @@ export function printDilithium(quantity: number, t?: TranslateMethod, printDil?:
 }
 
 export function printMerits(quantity: number, t?: TranslateMethod, printMerits?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/pe_currency_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/pe_currency_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.merits') : ''}
@@ -89,7 +89,7 @@ export function printMerits(quantity: number, t?: TranslateMethod, printMerits?:
 }
 
 export function printCredits(quantity: number, t?: TranslateMethod, printCredits?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/soft_currency_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/soft_currency_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.credits') : ''}
@@ -100,7 +100,7 @@ export function printCredits(quantity: number, t?: TranslateMethod, printCredits
 }
 
 export function printIntel(quantity: number, t?: TranslateMethod, printIntel?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/intel_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/intel_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.intel') : ''}
@@ -111,7 +111,7 @@ export function printIntel(quantity: number, t?: TranslateMethod, printIntel?: b
 }
 
 export function printAM(quantity?: number, t?: TranslateMethod, printAM?: boolean, imageHeight?: string, withPlus?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}/captains_bridge_antimatter.png`;
+	const img = `${process.env.VITE_ASSETS_URL}/captains_bridge_antimatter.png`;
 
 	return <div
 		title={t ? t('ship.antimatter') : ''}
@@ -122,7 +122,7 @@ export function printAM(quantity?: number, t?: TranslateMethod, printAM?: boolea
 }
 
 export function printChrons(quantity?: number, t?: TranslateMethod, printChrons?: boolean, imageHeight?: string) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/energy_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.chronitons') : ''}
@@ -133,7 +133,7 @@ export function printChrons(quantity?: number, t?: TranslateMethod, printChrons?
 }
 
 export function printQuantum(quantity: number, t?: TranslateMethod, printQuantum?: boolean) {
-	const img = `${process.env.GATSBY_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`;
+	const img = `${process.env.VITE_ASSETS_URL}atlas/crew_crafting_energy_detailed_icon.png`;
 
 	return <div
 		title={t ? t('global.item_types.quantum') : ''}
@@ -155,7 +155,7 @@ export function sortCombosByCost(combos: string[][], allKeystones: IKeystone[], 
 	let pricemap = [] as { total: number, sell_count: number, combo: string[] }[];
 	let mul = direction === 'ascending' ? 1 : -1;
 	combos.forEach((combo) => {
-		pricemap.push({ ... getComboCost(combo, allKeystones, market, unowned_only), combo });
+		pricemap.push({ ...getComboCost(combo, allKeystones, market, unowned_only), combo });
 	});
 	pricemap.sort((a, b) => {
 		let r = (a.total - b.total) * mul;
@@ -169,7 +169,7 @@ export function sortCombosBySellCount(combos: string[][], allKeystones: IKeyston
 	let pricemap = [] as { total: number, sell_count: number, combo: string[] }[];
 	let mul = direction === 'ascending' ? 1 : -1;
 	combos.forEach((combo) => {
-		pricemap.push({ ... getComboCost(combo, allKeystones, market, unowned_only), combo });
+		pricemap.push({ ...getComboCost(combo, allKeystones, market, unowned_only), combo });
 	});
 	pricemap.sort((a, b) => {
 		let r = (a.sell_count - b.sell_count) * mul;
