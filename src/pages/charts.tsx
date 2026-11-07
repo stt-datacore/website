@@ -7,7 +7,7 @@ const ChartsPage = () => {
         <DataPageLayout
             pageTitle='My Charts & Stats'
             playerPromptType='require'
-            demands={['episodes', 'items', 'cadet', 'all_buffs', 'all_ships', 'cadet', 'collections']}>
+            demands={['episodes', 'items', 'cadet', 'all_buffs', 'all_ships', 'cadet', 'collections', 'factions']}>
             <ProfileCharts />
         </DataPageLayout>
     )

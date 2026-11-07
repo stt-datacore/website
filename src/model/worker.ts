@@ -77,18 +77,21 @@ export interface IMultiWorkerContext {
 
 
 export interface VoyageStatsConfig {
-    others?: number[];
+    others: Skill[];
     numSims: number;
     startAm: number;
     currentAm: number;
     elapsedSeconds: number;
     variance: number;
-    ps?: Skill;
-    ss?: Skill;
+    ps: Skill;
+    ss: Skill;
 }
 
-export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
+export interface SporeDriveConfig extends VoyageStatsConfig {
     selectedTime?: number;
+    prof?: number;
+    noExtends?: boolean;
+    vfast?: boolean;
 }
 
 export interface GameWorkerOptions {
