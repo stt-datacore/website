@@ -82,7 +82,7 @@ export const CollectionResearchView = (props: GroupTableProps) => {
 						{colData.slice(pageSize * (groupPage - 1), (pageSize * (groupPage - 1)) + pageSize).map((col, idx) => {
 
 							const collection = col.collection;
-							if (!collection?.totalRewards || !collection.milestone) return <></>;
+							if (!collection?.totalRewards || !collection.milestone) return null;
 
 							return (<Table.Row key={"colgroup" + idx}>
 								<Table.Cell width={4} style={{ verticalAlign: "top" }}>
@@ -102,6 +102,7 @@ export const CollectionResearchView = (props: GroupTableProps) => {
 									<Grid doubling columns={3} textAlign='center' >
 										{col.crew.map((crew, ccidx) => (
 											<CollectionsCrewCard
+												key={`rescrew_${crew.symbol}_${ccidx}`}
 												compactView={compactView}
 												highlightIfNeeded
 												crew={crew}

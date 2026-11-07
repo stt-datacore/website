@@ -227,10 +227,9 @@ export const createSubMenu = (title: string | React.ReactNode | undefined, child
                 key={v4()}
                 item
                 text={page ? undefined : text}
+                trigger={page ? formatItem(page) : undefined}
                 simple
-                style={{display: 'flex', flexDirection: page ? 'row-reverse' : 'row', alignItems: 'center'}}>
-                <>
-                {!!page && formatItem(page)}
+                style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <Dropdown.Menu style={{left: recursed ? "6em" : undefined}}>
                     {children.map(item => {
                         if (item.customRender) return item.customRender(item);
@@ -241,7 +240,6 @@ export const createSubMenu = (title: string | React.ReactNode | undefined, child
                         )
                     })}
                 </Dropdown.Menu>
-                </>
             </Dropdown>
             </div>
         );

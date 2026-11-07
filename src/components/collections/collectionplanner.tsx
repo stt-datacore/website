@@ -50,7 +50,13 @@ export const CollectionPlanner = () => {
 		return crew;
 	}), [allCrew, myCrew]);
 
-	const playerCollections = React.useMemo(() => allCollections.map(ac => {
+	const playerCollections = React.useMemo(() => {
+		// Reset the per-crew data this memo builds, so running it again (e.g. StrictMode) doesn't duplicate it
+		collectionCrew.forEach(cc => {
+			cc.unmaxedIds = [];
+			cc.immortalRewards = [];
+		});
+		return allCollections.map(ac => {
 		let collection: PlayerCollection = {
 			id: ac.id,
 			name: ac.name,
@@ -91,7 +97,8 @@ export const CollectionPlanner = () => {
 			if ((cc.highest_owned_rarity ?? 0) > 0) collection.owned++;
 		});
 		return collection;
-	}), [playerData, collectionCrew]);
+		});
+	}, [playerData, collectionCrew]);
 
 	if (!context.core.collections?.length) {
 		return context.core.spin ? context.core.spin() : <></>;

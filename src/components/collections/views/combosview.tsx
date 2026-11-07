@@ -127,13 +127,13 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 								window.setTimeout(() => {
 									setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
 								});
-								return <> </>
+								return null
 							}
 							const collection = structuredClone(col.collection) as PlayerCollection;
 							collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 							//collection.needed = comboCrew.length;
 							col.neededStars = neededStars(comboCrew);
-							if (!collection?.totalRewards || !collection.milestone) return <></>;
+							if (!collection?.totalRewards || !collection.milestone) return null;
 
 							return (<Table.Row key={"colgroup" + idx} >
 								<Table.Cell width={4} style={{ verticalAlign: "top" }}>
@@ -176,12 +176,13 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 									<div style={{ display: 'flex', flexDirection: crewPos === 'top' ? 'column-reverse' : 'column' }}>
 										<div style={{ display: 'flex', flexDirection: 'column' }}>
 											<Grid doubling columns={3} textAlign='center'>
-												{getOptCols(col, optCombo).map((c) => {
+												{getOptCols(col, optCombo).map((c, cidx) => {
 													const collection = c.collection;
-													if (!collection?.totalRewards || !collection.milestone) return <></>;
+													if (!collection?.totalRewards || !collection.milestone) return null;
 
 													return (
 														<CollectionCard
+															key={`optcol_${collection.id}_${cidx}`}
 															compactView={compactView}
 															ownedCites={ownedCites}
 															style={{ width: "350px" }}
@@ -197,6 +198,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 										<Grid doubling columns={3} textAlign='center'>
 											{comboCrew.map((crew, ccidx) => (
 												<CollectionsCrewCard
+													key={`combocrew_${crew.symbol}_${ccidx}`}
 													compactView={compactView}
 													crew={crew}
 													collection={collection}

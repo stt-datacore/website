@@ -52,7 +52,7 @@ export const CrewOfferFilter = (props: CrewOfferFilterProps) => {
 				selection
 				multiple={true}
 				options={offerOptions}
-				value={offerFilter}
+				value={offerFilter ?? []}
 				onChange={(e, { value }) => setOfferFilter(value as string[] | undefined)}
 				closeOnChange
 			/>

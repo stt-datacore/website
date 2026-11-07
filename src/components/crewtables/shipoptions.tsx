@@ -167,7 +167,7 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 		{
 			key: c,
 			value: c,
-			content: (<>
+			content: (
 				<div style={{
 					display: "flex",
 					flexDirection: "row",
@@ -179,7 +179,7 @@ export const ShipAbilityPicker = (props: ShipAbilityPickerProps) => {
 					}
 					<span style={{margin: "0.25em"}}>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[c]}</span>
 				</div>
-				</>),
+			),
 			text: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[c],
 			title: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[c]
 		} as DropDownItem
@@ -235,7 +235,7 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 		{
 			key: c.key,
 			value: c.key,
-			content: (<>
+			content: (
 			<div style={{
 				display: "flex",
 				flexDirection: "row",
@@ -245,7 +245,7 @@ export const ShipAbilityRankPicker = (props: ShipAbilityRankPickerProps) => {
 				<div style={{display:"block", margin: "0.25em"}}><Rating icon='star' disabled={true} maxRating={5} rating={rankToRating(c.rank)} /></div>
 				<span style={{margin: "0.25em"}}>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())}</span>
 			</div>
-			</>),
+			),
 			//image: { avatar: true, src: `${process.env.VITE_ASSETS_URL}atlas/icon_${c}.png` },
 			text: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString()),
 			title: CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE[c.type].replace("%VAL%", c.value.toString())
@@ -569,8 +569,8 @@ export const AdvantagePicker = (props: AdvantagePickerProps) => {
 				clearable
 				selection
 				options={advantageOptions}
-				value={selectedAdvantage ?? []}
-				onChange={(e, { value }) => setAdvantage(value as ShipAdvantage | undefined)}
+				value={selectedAdvantage ?? ''}
+				onChange={(e, { value }) => setAdvantage(value ? value as ShipAdvantage : undefined)}
 				closeOnChange
 			/>
 		</Form.Field>
