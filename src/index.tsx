@@ -17,7 +17,7 @@ broadcastQueryClient({ queryClient, broadcastChannel: 'stt_query_cache' });
 
 // Only queries that opt in with `meta: { persist: true }` survive a reload.
 const persistOptions = {
-  persister: createAsyncStoragePersister({ storage: window.localStorage, key: 'stt_query_cache' }),
+  persister: createAsyncStoragePersister({ storage: localStorage, key: 'stt_query_cache' }),
   dehydrateOptions: {
     shouldDehydrateQuery: (query) => query.meta?.persist === true && defaultShouldDehydrateQuery(query)
   }
