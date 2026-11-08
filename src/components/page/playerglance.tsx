@@ -1,4 +1,5 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Icon, Image, Label } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
 import { PlayerData, TranslateMethod } from "../../model/player";
@@ -35,15 +36,9 @@ export interface PlayerGlanceProps {
     t: TranslateMethod
 }
 
-type ShuttleData = {
-    shuttles: number;
-    return: Date;
-}
-
 export const PlayerGlance = (props: PlayerGlanceProps) => {
     const navigate = useNavigate();
-    const [saleUpdate, setSaleUpdate] = useStateWithStorage<Date | undefined>('stt_sale_data_update', undefined);
-    const [saleData, setSaleData] = useStateWithStorage<SaleData | undefined>('stt_sale_data', undefined);
+    const { data: saleData } = useSaleData();
 
     const flexRow = OptionsPanelFlexRow;
 
@@ -56,15 +51,6 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
     const { playerData, ephemeral } = globalContext.player;
 
     const [costMode, setCostMode] = useStateWithStorage<'sale' | 'normal'>('glanceCostMode', 'sale', { rememberForever: true })
-    const [shuttleData, setShuttleData] = React.useState<ShuttleData | undefined>(undefined);
-    const [shuttleSeconds, setShuttleSeconds] = React.useState(0);
-
-    React.useEffect(() => {
-        setTimeout(() => {
-            initShuttleTime();
-            getSales();
-        }, 250);
-    }, [ephemeral]);
 
     const currentEvent = React.useMemo(() => {
         return ephemeral?.events?.find(f => f.victory_points !== undefined && f.seconds_to_start === 0 && f.seconds_to_end > 0);
@@ -91,11 +77,11 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
         }
     }, [playerData, ephemeral, costMode]);
 
-    React.useEffect(() => {
-        if (shuttleSeconds) {
-            setTimeout(shuttleTick, 60000);
-        }
-    }, [shuttleSeconds]);
+    const shuttleAdventures = currentEvent?.content.content_type === 'shuttles' ? ephemeral?.shuttleAdventures ?? [] : [];
+    const returns = shuttleAdventures
+        .filter(f => !!f.shuttles.length)
+        .map(a => (a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
+    const shuttleSeconds = useMinutesUntil(returns.length ? Math.min(...returns) : undefined) * 60;
 
     const { supplyKit } = energy;
 
@@ -386,71 +372,91 @@ export const PlayerGlance = (props: PlayerGlanceProps) => {
 
         return resources;
     }
-
-    function initShuttleTime() {
-        const { ephemeral } = globalContext.player;
-        if (!ephemeral?.shuttleAdventures?.length || currentEvent?.content.content_type !== 'shuttles') {
-            setShuttleData(undefined);
-            setShuttleSeconds(0);
-            return;
-        }
-        ephemeral.shuttleAdventures.forEach(a => a.reference_timestamp ??= Date.now());
-
-        let adv = [...ephemeral.shuttleAdventures].filter(f => !!f.shuttles.length);
-        adv.sort((a, b) => {
-            let ad = (a.shuttles[0].expires_in * 1000) + a.reference_timestamp;
-            let bd = (b.shuttles[0].expires_in * 1000) + b.reference_timestamp;
-            return ad - bd;
-        });
-
-        let a = adv[0];
-        let ad = new Date((a.shuttles[0].expires_in * 1000) + a.reference_timestamp);
-
-        setShuttleData({
-            shuttles: adv.length,
-            return: ad
-        });
-        shuttleTick();
-    }
-
-    function shuttleTick() {
-        if (!shuttleData) {
-            setShuttleSeconds(0);
-            return;
-        }
-        let diff = Math.floor((shuttleData.return.getTime() - Date.now()) / 60000) * 60;
-        if (diff !== shuttleSeconds) {
-            setShuttleSeconds(diff);
-        }
-    }
-
-    async function getSales() {
-        try {
-            if (saleUpdate && saleData) {
-                if (Date.now() - (new Date(saleUpdate)).getTime() < (60 * 1000 * 15)) {
-                    return;
-                }
-            }
-            const sale = await loadSaleData();
-            if (sale) {
-                setSaleData(sale);
-                setSaleUpdate(new Date());
-                console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
-                setTimeout(() => {
-                    getSales();
-                }, 1800000);
-            }
-        }
-        catch (e: any) {
-            console.log(e);
-            console.log(`Fail to call DataCore API for '/api/sales'. will try again in 60 seconds.`);
-            setTimeout(() => {
-                getSales();
-            }, 60000);
-        }
-    }
 }
 
+const MINUTE_MS = 60 * 1000;
+
+/** Whole minutes from `now` until `target`. Rounds away from zero so a shuttle under a minute out still shows "1m" rather than nothing. */
+function minutesUntil(target: number, now: number) {
+    const ms = target - now;
+    return (ms > 0 ? Math.ceil : Math.floor)(ms / MINUTE_MS);
+}
+
+/** Minutes until `target` (0 without one), re-rendering only when that value changes. */
+function useMinutesUntil(target: number | undefined) {
+    const [minutes, setMinutes] = React.useState(() => target === undefined ? 0 : minutesUntil(target, Date.now()));
+
+    React.useLayoutEffect(() => {
+        if (target === undefined) return;
+
+        let id: ReturnType<typeof setTimeout>;
+        const tick = () => {
+            const current = Date.now();
+            setMinutes(minutesUntil(target, current));
+
+            // The value only changes when the time left crosses a whole minute, so wake just past the next crossing.
+            // Recalculating each time, rather than using an interval, corrects for late timers.
+            const msPastMinute = ((target - current) % MINUTE_MS + MINUTE_MS) % MINUTE_MS;
+            id = setTimeout(tick, msPastMinute + 1);
+        };
+        tick();
+
+        // Browsers can throttle or pause timers in the background, so catch up as soon as the page is visible again.
+        const onVisibilityChange = () => {
+            if (document.visibilityState !== 'visible') return;
+            clearTimeout(id);
+            tick();
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
+
+        return () => {
+            clearTimeout(id);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+        };
+    }, [target]);
+
+    return target === undefined ? 0 : minutes;
+}
+
+const SALE_REFRESH_MS = 30 * 60 * 1000;
+
+/** New way of retrieving sale data. Will be moved to common area when refactoring `restracker.tsx`. */
+function useSaleData() {
+    return useQuery<SaleData>({
+        queryKey: ['sales'],
+        staleTime: SALE_REFRESH_MS,
+        gcTime: 24 * SALE_REFRESH_MS,
+        // Time from the last fetch, not from mount, so data restored from storage refreshes on schedule.
+        // Recomputed after every query update; an error counts as a fetch so failures don't spin.
+        refetchInterval: (query) => {
+            if (query.state.fetchStatus === 'fetching') return false;
+            const lastFetch = Math.max(query.state.dataUpdatedAt, query.state.errorUpdatedAt);
+            return Math.max(lastFetch + SALE_REFRESH_MS - Date.now(), 1000);
+        },
+        // A failed fetch waits for the next scheduled refetch.
+        retry: false,
+        meta: { persist: true },
+        queryFn: async ({ signal }) => {
+            try {
+                const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`, { signal });
+                if (!response.ok) throw new Error(`Failed to load sale data: ${response.status} ${response.statusText}`);
+                const sale = (await response.json()) as SaleData;
+                console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
+                return sale;
+            }
+            catch (e) {
+                // A cancelled fetch isn't a failure; React Query cancels it when the component unmounts.
+                if (!signal.aborted) {
+                    console.log(e);
+                    console.log(`Fail to call DataCore API for '/api/sales'. will try again in 30 minutes.`);
+                }
+                throw e;
+            }
+        },
+    });
+}
+
+/** Old way of retrieving sale data. Will be removed once it's no longer used by `restracker.tsx`. */
 export async function loadSaleData() {
     const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`);
     let sale = (await response.json()) as SaleData;
