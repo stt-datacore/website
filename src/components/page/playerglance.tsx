@@ -437,9 +437,21 @@ function useSaleData() {
         retry: false,
         meta: { persist: true },
         queryFn: async ({ signal }) => {
-            const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`, { signal });
-            if (!response.ok) throw new Error(`Failed to load sale data: ${response.status} ${response.statusText}`);
-            return (await response.json()) as SaleData;
+            try {
+                const response = await fetch(`${process.env.VITE_DATACORE_URL}api/sales`, { signal });
+                if (!response.ok) throw new Error(`Failed to load sale data: ${response.status} ${response.statusText}`);
+                const sale = (await response.json()) as SaleData;
+                console.log(`Sale Data Acquired. Refresh in 30 minutes.`);
+                return sale;
+            }
+            catch (e) {
+                // A cancelled fetch isn't a failure; React Query cancels it when the component unmounts.
+                if (!signal.aborted) {
+                    console.log(e);
+                    console.log(`Fail to call DataCore API for '/api/sales'. will try again in 30 minutes.`);
+                }
+                throw e;
+            }
         },
     });
 }
