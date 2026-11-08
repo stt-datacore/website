@@ -422,11 +422,17 @@ const SALE_REFRESH_MS = 30 * 60 * 1000;
 
 /** New way of retrieving sale data. Will be moved to common area when refactoring `restracker.tsx`. */
 function useSaleData() {
-    return useQuery({
+    return useQuery<SaleData>({
         queryKey: ['sales'],
         staleTime: SALE_REFRESH_MS,
         gcTime: SALE_REFRESH_MS,
-        refetchInterval: SALE_REFRESH_MS,
+        // Time from the last fetch, not from mount, so data restored from storage refreshes on schedule.
+        // Recomputed after every query update; an error counts as a fetch so failures don't spin.
+        refetchInterval: (query) => {
+            if (query.state.fetchStatus === 'fetching') return false;
+            const lastFetch = Math.max(query.state.dataUpdatedAt, query.state.errorUpdatedAt);
+            return Math.max(lastFetch + SALE_REFRESH_MS - Date.now(), 1000);
+        },
         // A failed fetch waits for the next scheduled refetch.
         retry: false,
         meta: { persist: true },
