@@ -425,6 +425,7 @@ function useSaleData() {
     return useQuery<SaleData>({
         queryKey: ['sales'],
         staleTime: SALE_REFRESH_MS,
+        gcTime: 24 * SALE_REFRESH_MS,
         // Time from the last fetch, not from mount, so data restored from storage refreshes on schedule.
         // Recomputed after every query update; an error counts as a fetch so failures don't spin.
         refetchInterval: (query) => {
