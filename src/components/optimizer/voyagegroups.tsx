@@ -217,10 +217,10 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     function renderTableRow(voyage: VoyageImprovement, idx?: number) {
         let sp = voyage.skills;
         if (citeMode?.priSkills?.length) {
-            if (!citeMode.priSkills.includes(sp[0])) return (<></>);
+            if (!citeMode.priSkills.includes(sp[0])) return null;
         }
         if (citeMode?.secSkills?.length) {
-            if (!citeMode.secSkills.includes(sp[1])) return (<></>);
+            if (!citeMode.secSkills.includes(sp[1])) return null;
         }
 
         return (<Table.Row key={"voy" + idx}>
@@ -242,8 +242,8 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
             </Table.Cell>
             <Table.Cell>
                 <Grid doubling columns={3} textAlign='center'>
-                    {voyage.crew.filter(c => !!c).map((crew) => (
-                        <Grid.Column>
+                    {voyage.crew.filter(c => !!c).map((crew, cidx) => (
+                        <Grid.Column key={`voy${idx}_crew_${crew.symbol}_${cidx}`}>
                         <div style={{ margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                             <AvatarView
                                 mode='crew'

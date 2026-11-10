@@ -61,13 +61,13 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                             const grade = gradeCrew(challenge);
 
                             return (
-                                <div style={{ height: "130px", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
+                                <div key={`challenge_${idx}`} style={{ height: "130px", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                     <GradeSwatch grade={grade} style={{ marginRight: "1em" }} />
                                     {Object.values(challenge.skills).map(((skill: Skill) => {
                                         const key = skill.skill ?? '';
-                                        if (!showAllSkills && key !== challenge.challenge.skill) return <></>
+                                        if (!showAllSkills && key !== challenge.challenge.skill) return null;
                                         return (
-                                            <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
+                                            <div key={key} style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
                                                 <CrewStat
                                                     style={{
                                                         color: (challenge.max_solve ? 'aqua' : 'lightgreen')
@@ -109,9 +109,9 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                             height: "130px"
                         } as React.CSSProperties;
                         if (quest?.challenges && path) {
-                            return <div style={st}>{pathToNames(path, quest.challenges, ", ")}</div>
+                            return <div key={`path_${idx}`} style={st}>{pathToNames(path, quest.challenges, ", ")}</div>
                         }
-                        return <div style={st}>{path}</div>
+                        return <div key={`path_${idx}`} style={st}>{path}</div>
                     })}
                     </div>
                 </Table.Cell>
@@ -122,11 +122,11 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                             let ctraits = arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden));
 
                             if (!challenge) {
-                                return <></>
+                                return null;
                             }
 
                             return (
-                                <div style={{height: "130px"}}>
+                                <div key={`challenge_traits_${challenge.id}`} style={{height: "130px"}}>
                                     <div style={{
                                         display: 'grid',
                                         gridTemplateAreas: `'image text' 'image traits'`,

@@ -230,6 +230,7 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                 <div style={{ ...flexRow, flexWrap: 'wrap', overflowY: 'auto', maxHeight: '30em' }}>
                     {workCrew.map((crew) => {
                         return <div
+                            key={`globalfarm_${crew.symbol}`}
                             style={{ ...flexCol, width: '8em', height: '8em', cursor: 'pointer', textAlign: 'center', justifyContent: 'flex-start' }}
                             onClick={() => {
                                 if (!crewFilter.includes(crew.id)) {

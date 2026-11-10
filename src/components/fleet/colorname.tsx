@@ -16,13 +16,13 @@ export const ColorName = (props: ColorNameProps) => {
     if (splits.length === 1) return <span>{text}</span>;
 
 
-    segments.push(<span>{splits[0]}</span>);
+    segments.push(<span key={0}>{splits[0]}</span>);
     for (let i = 1; i < splits.length; i++) {
         let v = splits[i].indexOf(">");
         if (v !== -1) {
             let color = splits[i].slice(0, v);
             let text = splits[i].slice(v + 1);
-            segments.push(<span style={{color: "#" + color}}>{text}</span>);
+            segments.push(<span key={i} style={{color: "#" + color}}>{text}</span>);
         }
     }
 

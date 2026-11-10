@@ -106,7 +106,7 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 	function renderCrewRow(crew: PlayerCrew, idx: number): React.ReactNode {
 		const unmaxed = crew.unmaxedIds?.map(id => { return playerCollections.find(pc => pc.id === id) });
 		const tabledProgress = unmaxed?.sort((a, b) => (a?.needed ?? 0) - (b?.needed ?? 0)).map(collection => {
-			if (!collection) return <></>
+			if (!collection) return null;
 			return (
 				<tr key={`crew_collection_${collection.id}_${crew.id}`} style={{ cursor: 'pointer' }} onClick={() => setModalInstance({ collection, pageId: 'collections/crew', activeTab: 1 })}>
 					<td style={{ whiteSpace: 'wrap', fontSize: '.95em' }}>{collection.name}</td>
@@ -257,10 +257,10 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 					})}</h4>
 				</div>
 				<div style={{ ...flexRow, justifyContent: 'flex-start', gap: '0.5em', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-					{rewards.map((reward) => {
+					{rewards.map((reward, ridx) => {
 						let item = reward as EquipmentItem;
 						item.imageUrl = getIconPath(item.icon!, true);
-						return <div style={{ ...flexCol, gap: '0.5em', textAlign: 'center', width: '4em' }}>
+						return <div key={`reward_${item.symbol}_${ridx}`} style={{ ...flexCol, gap: '0.5em', textAlign: 'center', width: '4em' }}>
 							<AvatarView
 								mode={'item'}
 								item={item}

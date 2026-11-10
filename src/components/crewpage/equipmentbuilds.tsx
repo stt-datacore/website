@@ -122,7 +122,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 				<Grid columns={4} centered padded>
 					{equipment.recipe.list.map(entry => {
 						let recipeEntry = globalContext.core.items.find(item => item.symbol === entry.symbol);
-						if (!recipeEntry) return <></>
+						if (!recipeEntry) return null;
 						return (
 							<Grid.Column key={recipeEntry.name + recipeEntry.rarity} textAlign='center'>
 								<Popup

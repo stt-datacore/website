@@ -42,9 +42,12 @@ export const DataTable = (props: DataTableProps) => {
 	const data = React.useMemo<IEssentialData[]>(() => {
 		const data: IEssentialData[] = props.data.slice();
 		dataFieldSort(data, sortField, sortDirection);
-		setPaginationPage(1);
 		return data;
 	}, [props.data, sortField, sortDirection]);
+
+	React.useEffect(() => {
+		setPaginationPage(1);
+	}, [data]);
 
 	React.useEffect(() => {
 		if (props.setup?.defaultSort?.immediateOverride) {

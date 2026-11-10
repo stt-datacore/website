@@ -389,6 +389,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 <div style={{...flexRow, justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap'}}>
                     {items?.filter(orig => recipes[orig.item.symbol].some(rid => rid.symbol === item!.symbol)).map(item => {
                         return (<div
+                            key={item.item.symbol}
                             style={{...flexCol, fontSize: '0.8em'}}
                         >
                             <AvatarView
@@ -429,8 +430,8 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 <div style={{...flexRow, justifyContent: 'flex-start', flexWrap: 'wrap', gap: '2em'}}>
                 {row.kwipment.map((m) => {
                     let item = quipment.find(fq => fq.kwipment_id == m);
-                    if (!item) return <></>
-                    return <div style={{...flexCol, width: '12em', textAlign:'center'}}>
+                    if (!item) return null;
+                    return <div key={`kwipment_${m}`} style={{...flexCol, width: '12em', textAlign:'center'}}>
                     <AvatarView
                         mode='item'
                         targetGroup='voyage_prospect_summary'

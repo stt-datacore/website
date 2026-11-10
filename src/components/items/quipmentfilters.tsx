@@ -143,20 +143,21 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
 
     const crewItem = React.useMemo(() => {
         if (selectedCrew && crewChoices?.length) {
-            let selection = crewChoices.find(f => f.symbol === selectedCrew) as CrewMember | undefined;
-            if (selection) {
-                let kwips = selection.kwipment.map(kw => typeof kw === 'number' ? kw : kw[1] as number);
-                if (kwips.some(k => !!k)) {
-                    setSelectedItems(kwips);
-                }
-                else {
-                    setSelectedItems(undefined);
-                }
-            }
-            return selection;
+            return crewChoices.find(f => f.symbol === selectedCrew) as CrewMember | undefined;
         }
         return undefined;
     }, [crewChoices, selectedCrew]);
+
+    React.useEffect(() => {
+        if (!crewItem) return;
+        let kwips = crewItem.kwipment.map(kw => typeof kw === 'number' ? kw : kw[1] as number);
+        if (kwips.some(k => !!k)) {
+            setSelectedItems(kwips);
+        }
+        else {
+            setSelectedItems(undefined);
+        }
+    }, [crewItem]);
 
     const crew = React.useMemo(() => {
         if (crewItem) {
@@ -188,11 +189,16 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                 value: "frozen",
                 text: t("options.crew_status.frozen"),
             });
-            if (crewType === 'all' || !crewType) setCrewType('quippable');
         }
-        else if (!playerData && (crewType !== 'all' || !crewType)) setCrewType('all');
 
         return crewTypes;
+    }, [playerData]);
+
+    React.useEffect(() => {
+        if (!!playerData) {
+            if (crewType === 'all' || !crewType) setCrewType('quippable');
+        }
+        else if (crewType !== 'all' || !crewType) setCrewType('all');
     }, [playerData]);
 
     const ownedOpts = [
@@ -317,7 +323,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                     <Dropdown
                         selection
                         options={quipmentModes}
-                        value={mode || []}
+                        value={mode}
                         onChange={(e, { value }) =>
                             setMode(value as QuipmentMode)
                         }

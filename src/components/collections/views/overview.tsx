@@ -81,7 +81,7 @@ export const CollectionsOverview = () => {
 						colInfo = { ...colInfo, ...COLLECTIONS[`cc-${colInfo.type_id ?? colInfo.id}`]};
 					}
 
-					if (!collectionMatches(colInfo)) return <></>
+					if (!collectionMatches(colInfo)) return null;
 
 					return (
 						<Grid.Column

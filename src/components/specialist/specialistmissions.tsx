@@ -279,7 +279,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
 
         const skillimg = row.requirements.map((r) => {
             let skill_icon = `${process.env.VITE_ASSETS_URL}atlas/icon_${r}.png`;
-            return <div style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
+            return <div key={`skill_${r}`} style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
                 <img src={skill_icon} style={{width: '24px'}} />
             </div>
         });
@@ -287,13 +287,13 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const skillcontent = [] as React.ReactNode[];
 
         for (let img of skillimg) {
-            if (skillcontent.length) skillcontent.push(<div style={{width: '24px'}}>{combo_txt}</div>);
+            if (skillcontent.length) skillcontent.push(<div key={`skill_sep_${skillcontent.length}`} style={{width: '24px'}}>{combo_txt}</div>);
             skillcontent.push(img);
         }
 
         const traitimg = row.bonus_traits.map((trait) => {
             let trait_icon = `${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`;
-            return <div style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
+            return <div key={`trait_${trait}`} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
                 <img src={trait_icon} style={{height: '24px'}} />
                 {TRAIT_NAMES[trait]}
             </div>
@@ -308,7 +308,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const selected = !!selectedMissions?.some(sel => sel === row.id);
         const failed = !!staffingFailures?.some(sel => sel === row.id);
 
-        return <Table.Row negative={failed}>
+        return <Table.Row key={`specialist_mission_${row.id}`} negative={failed}>
             <Table.Cell style={{cursor: isLocked ? 'no-drop' : 'pointer'}} onClick={() => !isLocked && toggleMission(row)}>
                 <div style={{...flexRow, alignItems: 'flex-start', gap: '0.25em'}}>
                     <div style={{width: '24px', margin: '0 0.5em'}}>
@@ -523,8 +523,9 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const titleStyle = {...flexRow, alignItems: 'flex-start', gap: '0.5em'}
         return (
         <Table size='small' striped style={{width: isMobile ? 'undefined' : '18em'}}>
+            <Table.Body>
             <Table.Row>
-                <Table.Cell colspan={2} style={{textAlign: 'center'}}>
+                <Table.Cell colSpan={2} style={{textAlign: 'center'}}>
                     {t('global.n_total_x', {
                         n: clen,
                         x: t('base.crewmen')
@@ -558,6 +559,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         {voyage}
                     </Table.Cell>
                 </Table.Row>
+            </Table.Body>
             </Table>)
     }
 

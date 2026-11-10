@@ -41,52 +41,54 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                 value: archetypeId ? c.archetype_id : c.id,
                 text: c.name,
                 content: (
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "48px auto",
-                            gridTemplateAreas: "'img text' 'img rarity'",
-                        }}
-                    >
-                        <img
-                            src={`${process.env.VITE_ASSETS_URL}${c.imageUrlPortrait}`}
-                            style={{
-                                height: "32px",
-                                gridArea: "img",
-                            }}
-                        />
+                    <React.Fragment>
                         <div
                             style={{
-                                gridArea: "text",
-                                textAlign: "left",
-                                marginBottom: "0.25em",
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: "0.25em",
-                                justifyContent: 'flex-start',
-                                alignItems: 'center'
+                                display: "grid",
+                                gridTemplateColumns: "48px auto",
+                                gridTemplateAreas: "'img text' 'img rarity'",
                             }}
                         >
-                            {"immortal" in c && c.immortal > 0 &&
-                            <Icon name={'snowflake'} size={'small'} />}
-                            {c.name}
-                        </div>
-                        <div style={{ gridArea: "rarity", display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Rating
-                                icon={"star"}
-                                maxRating={c.max_rarity}
-                                rating={rarity}
-                                disabled
-                                size={"tiny"}
+                            <img
+                                src={`${process.env.VITE_ASSETS_URL}${c.imageUrlPortrait}`}
+                                style={{
+                                    height: "32px",
+                                    gridArea: "img",
+                                }}
                             />
-                            {!plain && !custom &&
-                            <div style={{alignSelf: 'right'}}>
-                                {c.q_bits} ({qbitsToSlots(c.q_bits)})
-                            </div>}
-                            {!plain && custom && custom(c)}
-                        </div>
+                            <div
+                                style={{
+                                    gridArea: "text",
+                                    textAlign: "left",
+                                    marginBottom: "0.25em",
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: "0.25em",
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                {"immortal" in c && c.immortal > 0 &&
+                                <Icon name={'snowflake'} size={'small'} />}
+                                {c.name}
+                            </div>
+                            <div style={{ gridArea: "rarity", display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Rating
+                                    icon={"star"}
+                                    maxRating={c.max_rarity}
+                                    rating={rarity}
+                                    disabled
+                                    size={"tiny"}
+                                />
+                                {!plain && !custom &&
+                                <div style={{alignSelf: 'right'}}>
+                                    {c.q_bits} ({qbitsToSlots(c.q_bits)})
+                                </div>}
+                                {!plain && custom && custom(c)}
+                            </div>
 
-                    </div>
+                        </div>
+                    </React.Fragment>
                 )
             });
         });
@@ -109,7 +111,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         placeholder={placeholder ?? "Search for a crew member..."}
         labeled
         options={crewChoices}
-        value={selection}
+        value={selection ?? (multiple ? [] : undefined)}
         onChange={(e, { value }) => internalSetSelection(value as number[] | number | undefined)}
     />
 

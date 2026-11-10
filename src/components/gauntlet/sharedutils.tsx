@@ -10,6 +10,7 @@ export function renderElevatedCritTable(crew: PlayerCrew, buckets: GauntletBucke
         return (
             <div style={{maxHeight: '15em', overflowY: 'auto', padding: '0.25em'}}>
                 <Table striped>
+                    <Table.Body>
                     {buckets.map((bucket, idx) => {
                         const { key, name, crit, count } = bucket;
                         return (
@@ -30,6 +31,7 @@ export function renderElevatedCritTable(crew: PlayerCrew, buckets: GauntletBucke
                             </Table.Row>
                         );
                     })}
+                    </Table.Body>
                 </Table>
             </div>
         )

@@ -187,9 +187,10 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                         Object.values(getCrewPower(c, pathIdx, crewChallenge, pathCrew))
                                             .map((skill: Skill) => {
                                                 const key = skill.skill ?? "";
-                                                if (key !== challenge.skill) return <></>;
+                                                if (key !== challenge.skill) return null;
                                                 return (
                                                     <div
+                                                        key={key}
                                                         style={{
                                                             display: "flex",
                                                             flexDirection: "column",

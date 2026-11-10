@@ -187,7 +187,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
                                             {getCrewCrit(crew, gauntlet)} %
                                             <div style={{ display: 'flex', flexDirection: 'row' }}>
                                                 {skills.map((skill) => (
-                                                    <CrewStat proficiencies scale={0.65} vertical={false} skill_name={skill.skill as string} data={skill} />
+                                                    <CrewStat key={skill.skill as string} proficiencies scale={0.65} vertical={false} skill_name={skill.skill as string} data={skill} />
                                                 ))}
                                             </div>
 
@@ -202,7 +202,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
             </Table.Body>
             <Table.Footer>
                 <Table.Row>
-                    <Table.HeaderCell colspan={4}>
+                    <Table.HeaderCell colSpan={4}>
                         <Pagination
                             totalPages={totalPages}
                             activePage={activePage}
