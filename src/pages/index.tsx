@@ -32,17 +32,22 @@ const IndexPage = (props: IndexPageProps) => {
 	const [playerBuffMode, setPlayerBuffMode] = useStateWithStorage<PlayerBuffMode | undefined>("roster/buffMode/player", 'player', { rememberForever: true });
 	const [buffMode, setBuffMode] = useStateWithStorage<PlayerBuffMode | undefined>("roster/buffMode/static", 'none', { rememberForever: true });
 
-	const tiny = TinyStore.getStore("index");
-
-	tiny.subscribe((name) => {
-		if (name === "search") {
-			let search = tiny.getRapid<string>('search') ?? '';
-			window.history.pushState({}, "", "/?search=" + search);
-			window.setTimeout(() => {
-				setSearchExtra(search);
-			});
-		}
-	});
+	React.useEffect(() => {
+		const tiny = TinyStore.getStore("index");
+		const onPropertyChanged = (name: string) => {
+			if (name === "search") {
+				let search = tiny.getRapid<string>('search') ?? '';
+				window.history.pushState({}, "", "/?search=" + search);
+				window.setTimeout(() => {
+					setSearchExtra(search);
+				});
+			}
+		};
+		tiny.subscribe(onPropertyChanged);
+		return () => {
+			tiny.unsubscribe(onPropertyChanged);
+		};
+	}, []);
 
 	React.useEffect(() => {
 		// Check for custom initial table options from URL or <Link state>
