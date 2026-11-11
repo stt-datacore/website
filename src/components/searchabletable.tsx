@@ -45,6 +45,7 @@ export interface ITableConfigRow {
 	width: number;
 	column?: string;
 	sticky?: boolean;
+	rare?: boolean;
 	title: string | React.ReactNode;
 	pseudocolumns?: string[];
 	reverse?: boolean;
@@ -173,12 +174,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				{props.config.map((cell, idx) => (
 					<Table.HeaderCell
 						key={idx}
-						className={cell.sticky ? 'ui segment' : undefined}
-						style={{
-							position: cell.sticky ? 'sticky' : undefined,
-							left: cell.sticky ? 0 : undefined,
-							background: 'rgb(28, 30, 34)'
-						}}
+						className={cell.sticky ? 'sticky' : undefined}
 						width={cell.width as any}
 						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : undefined) ?? undefined}
 						onClick={() => onHeaderClick(cell)}
