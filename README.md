@@ -65,9 +65,11 @@ The old Gatsby and `publish.sh` instructions do not apply to this checkout. Use 
 
 | Command | Purpose |
 | --- | --- |
-| `yarn develop`, `yarn start`, `yarn serve` | Generate the Markdown index and start Vite on port 8881. |
+| `yarn develop` | Generate the Markdown index and start Vite on port 8881. |
 | `yarn build` | Generate the Markdown index, check TypeScript, and build production files. |
-| `yarn preview` | Generate the Markdown index and preview the existing build. |
+| `yarn preview` | Preview the existing build. |
+| `yarn windev` | Start Vite on port 8881 (recommended for development in Windows). |
+| `yarn winbuild` | Check TypeScript and build production files (recommended for development in Windows). |
 | `yarn lint` | Run ESLint. |
 | `yarn cy:open` | Open Cypress; start the application separately. |
 | `yarn test:e2e` | Start development and open Cypress when the server is ready. |
