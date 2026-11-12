@@ -40309,6 +40309,74 @@ body.pushable > .pusher {
 }
 
 /*******************************
+         Sticky Table Cells
+*******************************/
+.ui.table thead th.sticky,
+.ui.table td.sticky {
+  position: sticky;
+  left: 0;
+  border: 1px solid #52575C;
+  /* z-index 2 is enough to layer sort-order icon beneath sticky cell */
+  z-index: 2;
+}
+
+.ui.celled.table thead th:first-child.sticky {
+  /* Without !important, the left border may not appear due to .ui.celled.table tr th:first-child rule */
+  border: 1px solid #52575C !important;
+}
+
+ui.table thead th.sticky {
+  /* Sticky cells need a solid (i.e. no alpha transparency) background; otherwise other cells will be visible under them */
+  background: #1c1e22;
+}
+
+.ui.table thead th.sticky:hover,
+.ui.sortable.table thead th.sticky.sorted,
+.ui.sortable.table thead th.sticky.sorted:hover {
+  /* #2b3035 is equivalent to rgba(0, 0, 0, 0.05) */
+  background: #2b3035;
+  color: #ffffff;
+}
+
+.ui.striped.table td.sticky,
+.ui.striped.table tbody td.sticky {
+  background-color: #2e3338;
+}
+
+.ui.striped.table > tr:nth-child(2n) td.sticky,
+.ui.striped.table tbody tr:nth-child(2n) td.sticky {
+  background-color: #353a41;
+}
+
+.ui.selectable.table > tr:hover td.sticky,
+.ui.selectable.table tbody tr:hover td.sticky {
+  /* #2b3035 is equivalent to rgba(0, 0, 0, 0.05) */
+  background-color: #2b3035;
+}
+
+/*******************************
+         Rarity Table Cells
+*******************************/
+.ui.table td.rare {
+  border: 1px solid #52575C;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Override stripe colors */
+.ui.striped.table > tr:nth-child(1n) td.rare,
+.ui.striped.table tbody tr:nth-child(1n) td.rare {
+  background-color: #272b30;
+}
+
+.ui.selectable.table > tr:hover td.rare,
+.ui.selectable.table tbody tr:hover td.rare {
+  /* #1b2025 here was arbitrarily chosen */
+  background-color: #1b2025;
+}
+
+/*******************************
          Site Overrides
 *******************************/
 /*
