@@ -97,7 +97,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     const [powerDepth, internalSetPowerDepth] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/powerDepth`, 1, { rememberForever: true });
     const [minRarity, setMinRarity] = useStateWithStorage<number>(`${pageId}/${ship.symbol}/minRarity`, ship.rarity - 1, { rememberForever: true });
     const [advancedOpen, setAdvancedOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
-    const [metasOpen, setMetasOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/advancedOpen`, false, { rememberForever: true });
+    const [metasOpen, setMetasOpen] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/metasOpen`, false, { rememberForever: true });
     const [exhaustiveMode, setExhaustiveMode] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/quickMode`, true, { rememberForever: true });
     const [buffUnownedShips, setBuffUnownedShips] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/buffUnownedShips`, true, { rememberForever: true });
     const [applyBossEffects, setApplyBossEffects] = useStateWithStorage<boolean>(`${pageId}/${ship.symbol}/applyBossEffects`, false, { rememberForever: true });
