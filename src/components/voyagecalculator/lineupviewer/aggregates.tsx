@@ -79,7 +79,7 @@ export const Aggregates = (props: { for_export?: boolean, export_id?: string }) 
 					{!ship && <span>{voyageConfig.max_hp}</span>}
 				</Table.Cell>
 				{!for_export && <Table.Cell className='iconic' textAlign='center'>
-					<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} className='invertibleIcon' />
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em' }} />
 				</Table.Cell>}
 			</Table.Row>
 		);
