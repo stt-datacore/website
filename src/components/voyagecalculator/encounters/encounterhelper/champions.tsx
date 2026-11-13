@@ -152,7 +152,6 @@ export const ChampionsTable = (props: ChampionsTableProps) => {
 				<img
 					src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 					style={{ height: '1.1em', verticalAlign: 'middle' }}
-					className='invertibleIcon'
 				/>
 			);
 		};
@@ -346,7 +345,6 @@ const ChampionContestCell = (props: ChampionContestCellProps) => {
 						<img
 							src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 							style={{ height: '1.1em', verticalAlign: 'middle' }}
-							className='invertibleIcon'
 						/>
 					</span>
 					<span>

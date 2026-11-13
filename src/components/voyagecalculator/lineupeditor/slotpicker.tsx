@@ -159,7 +159,7 @@ export const AlternateSlotPicker = (props: AlternateSlotPickerProps) => {
 	columns.push(
 		{
 			id: 'antimatter',
-			title: <img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} className='invertibleIcon' />,
+			title: <img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1em', verticalAlign: 'middle' }} />,
 			align: 'center',
 			sortField: { id: 'diff_antimatter', firstSort: 'descending' },
 			renderCell: (datum: IEssentialData) => <NumericDiff diff={datum[`diff_antimatter`]} />
@@ -349,7 +349,7 @@ const GridAlternateSlot = (props: GridAlternateSlotProps) => {
 									<b>{t('base.voyage')}</b>
 								</Table.Cell>
 								<Table.Cell textAlign='center'>
-									<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+									<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 								</Table.Cell>
 								<Table.Cell /* Estimate */
 									textAlign='center'

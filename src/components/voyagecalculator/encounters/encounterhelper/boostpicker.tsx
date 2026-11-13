@@ -145,7 +145,6 @@ export const BoostPicker = (props: BoostPickerProps) => {
 								<img
 									src={getTypeImg(group)}
 									style={{ height: '1.5em' }}
-									className='invertibleIcon'
 								/>
 							</Divider>
 						)}
