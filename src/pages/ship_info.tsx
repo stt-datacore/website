@@ -65,7 +65,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [opponentShip, setOpponentShip] = useStateWithStorage<Ship | undefined>('ship_info/opponent_ship', undefined, { rememberForever: true });
 
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
-	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
+	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerUnowned', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
 	const [ignoreTriggers, setIgnoreTriggers] = useStateWithStorage<boolean>(`ship_info/ignoreTriggers`, false);
     const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);

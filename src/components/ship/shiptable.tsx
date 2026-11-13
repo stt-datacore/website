@@ -62,8 +62,8 @@ export const ShipTable = (props: ShipTableProps) => {
 	const [grantFilter, setGrantFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/grant`, undefined);
 	const [abilityFilter, setAbilityFilter] = useStateWithStorage<string[]>(`${pageId}/ship_table_filter/ability`, []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/trait`, undefined);
-	const [onlyUsed, setOnlyUsed] = useStateWithStorage(`${pageId}/ship_table_filter/trait`, false);
-	const [ownership, setOwnership] = useStateWithStorage<Ownership | undefined>(`${pageId}/ship_table_filter/trait`, undefined);
+	const [onlyUsed, setOnlyUsed] = useStateWithStorage(`${pageId}/ship_table_filter/only_used`, false);
+	const [ownership, setOwnership] = useStateWithStorage<Ownership | undefined>(`${pageId}/ship_table_filter/ownership`, undefined);
 	const [shipsInUse, setShipsInUse] = React.useState<ShipInUse[] | undefined>(undefined);
 	const [buffMode, setBuffMode] = React.useState<PlayerBuffMode>('player');
 	const [showRanks, setShowRanks] = useStateWithStorage<boolean>(`${pageId}/ship_table_show_ranks`, true);
