@@ -65,7 +65,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                                     <GradeSwatch grade={grade} style={{ marginRight: "1em" }} />
                                     {Object.values(challenge.skills).map(((skill: Skill) => {
                                         const key = skill.skill ?? '';
-                                        if (!showAllSkills && key !== challenge.challenge.skill) return <></>
+                                        if (!showAllSkills && key !== challenge.challenge.skill) return null;
                                         return (
                                             <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
                                                 <CrewStat
@@ -122,7 +122,7 @@ export const QuestCrewTable = (props: QuestCrewTableProps) => {
                             let ctraits = arrayIntersect(challenge?.trait_bonuses?.map(t => t.trait) ?? [], crew.traits.concat(crew.traits_hidden));
 
                             if (!challenge) {
-                                return <></>
+                                return null;
                             }
 
                             return (

@@ -429,7 +429,7 @@ export const QuipmentProspectList = (props: QuipmentProspectListProps) => {
                 <div style={{...flexRow, justifyContent: 'flex-start', flexWrap: 'wrap', gap: '2em'}}>
                 {row.kwipment.map((m) => {
                     let item = quipment.find(fq => fq.kwipment_id == m);
-                    if (!item) return <></>
+                    if (!item) return null;
                     return <div style={{...flexCol, width: '12em', textAlign:'center'}}>
                     <AvatarView
                         mode='item'

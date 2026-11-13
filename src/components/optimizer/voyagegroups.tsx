@@ -217,10 +217,10 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
     function renderTableRow(voyage: VoyageImprovement, idx?: number) {
         let sp = voyage.skills;
         if (citeMode?.priSkills?.length) {
-            if (!citeMode.priSkills.includes(sp[0])) return (<></>);
+            if (!citeMode.priSkills.includes(sp[0])) return null;
         }
         if (citeMode?.secSkills?.length) {
-            if (!citeMode.secSkills.includes(sp[1])) return (<></>);
+            if (!citeMode.secSkills.includes(sp[1])) return null;
         }
 
         return (<Table.Row key={"voy" + idx}>

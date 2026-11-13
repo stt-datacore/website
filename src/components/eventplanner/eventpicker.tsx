@@ -292,7 +292,7 @@ const EventFeaturedShips = (props: FeatureToolProps) => {
 			<ShipHoverStat targetGroup='event_featured_ships' />
 			{event.featured_ships.map((symbol) => {
 				const ship = (playerShips ?? all_ships).find(f => f.symbol === symbol);
-				if (!ship) return <></>;
+				if (!ship) return null;
 				else {
 					return (
 						<div
@@ -372,7 +372,7 @@ export const EventFactions = (props: FeatureToolProps & { vertical?: boolean, im
 			}}>
 
 			{facts.map(faction => {
-				if (!faction) return <></>;
+				if (!faction) return null;
 				return (<div key={`${faction.id}_${faction.home_system}_eventpicker`} style={{...OptionsPanelFlexRow, alignItems: 'center', gap: '0.5em'}}>
 					<img alt={`${faction.name}`} style={{margin: 0, height: props.imgSize ?? '48px'}} src={`${process.env.VITE_ASSETS_URL}icons_icon_faction_${factionImageLocations[faction.id]}.png`} />
 					<div>{faction.name}</div>

@@ -637,7 +637,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 					</p>}
 					{[stat.crew, ...stat.other_legendaries ?? []].map((symbol, idx2) => {
 						const crew = globalContext.core.crew.find(f => f.symbol === symbol);
-						if (!crew) return <></>;
+						if (!crew) return null;
 						return <div
 							key={`${stat.event_name}_${stat.crew_name}_${idx}_${idx2}`}
 							style={{display:'flex', gap: '0.5em', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
