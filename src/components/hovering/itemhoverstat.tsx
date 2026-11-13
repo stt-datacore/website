@@ -33,10 +33,10 @@ export class ItemTarget extends HoverStatTarget<EquipmentItem | undefined, ItemT
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
 
-    constructor(props: ItemTargetProps){
-        super(props);
+    componentDidMount(): void {
         this.tiny.subscribe(this.propertyChanged);
     }
+
     protected propertyChanged = (key: string) => {
         if (key === 'cancelled') return;
         if (key === 'buff' || key === 'immo') {

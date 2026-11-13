@@ -28,8 +28,7 @@ export class ShipTarget extends HoverStatTarget<Ship | undefined, ShipTargetProp
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
 
-    constructor(props: ShipTargetProps){
-        super(props);
+    componentDidMount(): void {
         this.tiny.subscribe(this.propertyChanged);
     }
 

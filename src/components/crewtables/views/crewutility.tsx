@@ -72,28 +72,36 @@ export const CrewUtilityForm = (props: CrewUtilityFormProps) => {
 	const [shipsInUse, setShipsInUse] = React.useState<ShipInUse[]>([]);
 	const [crewOnShips, setCrewOnShips] = React.useState<IRosterCrew[]>([]);
 
+	// Computed here (not in crewReasons) so the ship state can be set in an effect, outside render
+	const shipData = React.useMemo(() => {
+		if (!playerData || !globalContext?.player) return undefined;
+		let ships = getShipsInUse(globalContext.player);
+		let shipCrew = ships.map(s => s.ship.battle_stations?.map(bs => bs.crew) || []).flat().filter(f => f !== undefined) as IRosterCrew[] || [];
+		shipCrew = shipCrew.concat(playerData.player.character.crew.filter(f => f.passive_status))
+		if (shipCrew.length) {
+			// Single representation of crew, only.
+			shipCrew = shipCrew.filter((c, i) => shipCrew.findIndex(c2 => c2.id === c.id) === i);
+		}
+		return { ships, shipCrew };
+	}, [globalContext.player]);
+
+	React.useEffect(() => {
+		if (!shipData) return;
+		setShipsInUse(shipData.ships);
+		setCrewOnShips(shipData.shipCrew);
+	}, [shipData]);
+
 	const crewReasons = React.useMemo(() => {
 		if (!playerData) return {};
 		const playerCols = playerData.player.character.cryo_collections.filter(f => f.milestone.rewards?.length);
 		const cols = globalContext.core.collections.filter(f => playerCols.some(pc => `${pc.type_id}` == `${f.id}` || `${pc.type_id}` == `${f.type_id}`))
 		const output = {} as {[key:string]: string[]}
-		let shipCrew = [] as IRosterCrew[];
-		if (globalContext?.player) {
-			let ships = getShipsInUse(globalContext.player);
-			setShipsInUse(ships);
-			shipCrew = ships.map(s => s.ship.battle_stations?.map(bs => bs.crew) || []).flat().filter(f => f !== undefined) as IRosterCrew[] || [];
-			shipCrew = shipCrew.concat(playerData.player.character.crew.filter(f => f.passive_status))
-			if (shipCrew.length) {
-				// Single representation of crew, only.
-				shipCrew = shipCrew.filter((c, i) => shipCrew.findIndex(c2 => c2.id === c.id) === i);
-			}
-			setCrewOnShips(shipCrew);
-		}
+		const shipCrew = shipData?.shipCrew ?? [];
 		for (let c of rosterCrew) {
 			output[c.id] = reasonsToKeep(c, cols, shipCrew);
 		}
 		return output;
-	}, [rosterCrew, globalContext.player, userPrefs]);
+	}, [rosterCrew, shipData, userPrefs]);
 
 	const addCrewUtility = (crew: IRosterCrew) => {
 		const myRanks = {} as ICrewUtilityRanks;

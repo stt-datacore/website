@@ -34,11 +34,6 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     static contextType = GlobalContext;
     declare context: React.ContextType<typeof GlobalContext>;
 
-    constructor(props: CrewTargetProps){
-        super(props);
-        this.tiny.subscribe(this.propertyChanged);
-    }
-
     protected get playerBuffMode(): PlayerBuffMode {
         let key = "buffmode";
         let def = "max" as PlayerBuffMode;
@@ -166,6 +161,7 @@ export class CrewTarget extends HoverStatTarget<PlayerCrew | CrewMember | undefi
     }
 
     componentDidMount(): void {
+        this.tiny.subscribe(this.propertyChanged);
         const di = this.props.inputItem;
         if (di) {
             const url = `${process.env.VITE_ASSETS_URL}${di.imageUrlFullBody}`;

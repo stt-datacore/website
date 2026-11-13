@@ -63,9 +63,9 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         return ephemeral?.stimpack?.energy_discount ?? 0;
     }, [ephemeral]);
 
-    const specialistCrew = React.useMemo(() => {
+    const specialistData = React.useMemo(() => {
         const newRoster = [] as ISpecialistCrewConfig[];
-        if (!eventData.activeContent || !bonuses) return [];
+        if (!eventData.activeContent || !bonuses) return { roster: newRoster, cool: false, ready: false };
         let cool = false;
         for (let c of crew) {
             const cooldown = cooldowns?.find(f => f.crew_id === c.id);
@@ -98,16 +98,22 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
             }
             newRoster.push(newItem);
         }
-        if (!!selection && !newRoster.some(data => data.crew.symbol === selection.symbol)) {
-            setSelection(undefined);
-        }
-        if (cool) {
-            setCoolSwitch(1);
-        }
         defaultSpecialistSort(newRoster);
         newRoster.forEach((rec, idx) => rec.position = idx + 1);
-        return newRoster;
+        return { roster: newRoster, cool, ready: true };
     }, [crew, mission, exclusions, supplyKit, ephemeral, hideActive]);
+
+    const specialistCrew = specialistData.roster;
+
+    React.useEffect(() => {
+        if (!specialistData.ready) return;
+        if (!!selection && !specialistCrew.some(data => data.crew.symbol === selection.symbol)) {
+            setSelection(undefined);
+        }
+        if (specialistData.cool) {
+            setCoolSwitch(1);
+        }
+    }, [specialistData]);
 
     React.useEffect(() => {
         if (coolSwitch) {
@@ -136,10 +142,15 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         let sidx = specialistCrew.findIndex(f => f.crew === selection);
         if (sidx > -1) {
             let sel = specialistCrew[sidx];
-            setPosition(sidx + 1);
             if (sel) return [sel];
         }
         return undefined;
+    }, [specialistCrew, selection]);
+
+    React.useEffect(() => {
+        if (!selection) return;
+        let sidx = specialistCrew.findIndex(f => f.crew === selection);
+        if (sidx > -1) setPosition(sidx + 1);
     }, [specialistCrew, selection]);
 
     const pageOptions = [

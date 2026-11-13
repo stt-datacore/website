@@ -52,13 +52,16 @@ export const BestShipFinder = () => {
             if (battleMode.includes('fbb')) return meta.startsWith('fbb');
             else return !meta.startsWith('fbb');
         });
-        if (!metas || typeof metas ==='string') setMetas([]);
-        else {
-            let newMetas = metas?.filter(m => !!opts.some(opt => opt.value == m));
-            if (!metas || newMetas?.length != metas?.length) setMetas(newMetas || []);
-        }
         return opts;
     }, [battleMode]);
+
+    React.useEffect(() => {
+        if (!metas || typeof metas ==='string') setMetas([]);
+        else {
+            let newMetas = metas?.filter(m => !!metaList.some(opt => opt.value == m));
+            if (!metas || newMetas?.length != metas?.length) setMetas(newMetas || []);
+        }
+    }, [metaList]);
 
     if (!playerShips || !playerData) return (<>
         <Message warning>

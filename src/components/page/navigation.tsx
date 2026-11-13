@@ -509,11 +509,16 @@ export const Navigation = (props: NavigationProps) => {
 		sidebarItems.push(createSubMenu(t('menu.about_title'), about, navigate, true));
 	}
 
-	if (typeof windowGlobal !== 'undefined') {
-		windowGlobal.addEventListener('resize', (e) => {
-			setIsMobile(typeof windowGlobal !== 'undefined' && windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
-		});
-	}
+	React.useEffect(() => {
+		if (typeof windowGlobal === 'undefined') return;
+		const onResize = () => {
+			setIsMobile(windowGlobal.innerWidth < DEFAULT_MOBILE_WIDTH);
+		};
+		windowGlobal.addEventListener('resize', onResize);
+		return () => {
+			windowGlobal.removeEventListener('resize', onResize);
+		};
+	}, []);
 
 	const sref = React.useRef<HTMLDivElement>(null);
 
