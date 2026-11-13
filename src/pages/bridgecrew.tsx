@@ -18,10 +18,8 @@ type BridgeCrewPageState = {
 type BridgePeopleListItem = {
 	key: string,
 	value: string,
-	imageUrlFullBody: string,
 	image: { avatar: true, src: string },
 	text: string,
-	max_rarity: number;
 }
 
 class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState> {
@@ -52,10 +50,8 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 			peopleList.push({
 				key: crew.symbol,
 				value: crew.symbol,
-				imageUrlFullBody: crew.imageUrlFullBody,
 				image: { avatar: true, src: `${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}` },
-				text: `${crew.short_name} (${crew.name})`,
-				max_rarity: crew.max_rarity
+				text: `${crew.short_name} (${crew.name})`
 			} as BridgePeopleListItem);
 		});
 		peopleList = peopleList.sort((a, b) => a.text.localeCompare(b.text));
