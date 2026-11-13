@@ -790,7 +790,7 @@ const EventTypeFilter = (props: EventTypeFilterProps) => {
 			selection
 			multiple
 			options={options}
-			value={type}
+			value={type ?? []}
 			onChange={(e, { value }) => setType(value as string[] | undefined)}
 		/>
 }
