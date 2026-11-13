@@ -7,6 +7,8 @@ import {
 	Statistic
 } from 'semantic-ui-react';
 
+import seedrandom from 'seedrandom';
+
 import { useStateWithStorage } from '../../utils/storage';
 
 import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, SolveState, THintGroup } from './model';
@@ -109,7 +111,6 @@ export const DailyGame = () => {
 		};
 
 		const getSeed = (gameId: string) => {
-			const seedrandom = require('seedrandom');
 			const rng = seedrandom(gameId);
 			return Math.floor(rng() * portalCrew.length);
 		};
