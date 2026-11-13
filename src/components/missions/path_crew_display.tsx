@@ -190,6 +190,7 @@ export const PathCrewDisplay = (props: PathCrewDisplayProps) => {
                                                 if (key !== challenge.skill) return <></>;
                                                 return (
                                                     <div
+                                                        key={key}
                                                         style={{
                                                             display: "flex",
                                                             flexDirection: "column",

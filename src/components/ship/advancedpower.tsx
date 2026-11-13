@@ -205,7 +205,7 @@ const AdvancedCrewPowerPopup = <T extends OptionsBase>(props: AdvancedCrewPowerP
                 let ne = [...innerSettings.ability_exclusions];
 
                 return (
-                    <div style={checkRowStyle}>
+                    <div key={`ability_${acode}`} style={checkRowStyle}>
                         <div style={textStyle}>{CONFIG.CREW_SHIP_BATTLE_ABILITY_TYPE_SHORT[acode]}:</div>
 
                         <Dropdown

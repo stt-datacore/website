@@ -157,7 +157,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                                     setCiteConfig({...citeConfig, skillPositions: skillPos });
                                 }
                                 return (
-                                    <Button disabled={!citeConfig?.seatSkills?.length} style={{height: '2.3em', margin:0}} active={active} onClick={() => click(pos.value)} >{pos.text}</Button>
+                                    <Button key={pos.value} disabled={!citeConfig?.seatSkills?.length} style={{height: '2.3em', margin:0}} active={active} onClick={() => click(pos.value)} >{pos.text}</Button>
                                 )
                             })}
                             </ButtonGroup>

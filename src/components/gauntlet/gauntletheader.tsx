@@ -384,7 +384,7 @@ export const GauntletHeader = (props: GauntletHeaderProps) => {
                                 .map((jcrew) => {
                                     const crit = ((prettyTraits?.filter(t => jcrew?.traits_named?.includes(t))?.length ?? 0) * 20 + 5);
                                     return (
-                                        <div style={{
+                                        <div key={`jackpot_${jcrew.id}`} style={{
                                             margin: "1em",
                                             padding: 0,
                                             width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "72px" : "96px",
