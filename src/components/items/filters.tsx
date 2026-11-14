@@ -136,7 +136,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 clearable
                 selection
                 options={rarityOptions}
-                value={rarityFilter}
+                value={rarityFilter ?? []}
                 onChange={(e, { value }) => setRarityFilter(value as number[] ?? [])}
             />
             <Dropdown
@@ -145,7 +145,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 clearable
                 selection
                 options={itemTypeOptions}
-                value={itemTypeFilter}
+                value={itemTypeFilter ?? []}
                 onChange={(e, { value }) => setItemTypeFilter(value as number[] ?? [])}
             />
             <Dropdown
@@ -154,7 +154,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 clearable
                 selection
                 options={itemSourceOptions}
-                value={itemSourceFilter}
+                value={itemSourceFilter ?? []}
                 onChange={(e, { value }) => setItemSourceFilter(value as number[] ?? [])}
             />
             {!!itemSourceFilter?.length && itemSourceFilter.some(s => s !== ItemSources.faction_missions) && <Dropdown
@@ -163,7 +163,7 @@ export const ItemsFilterProvider = (props: ItemsFilterProps) => {
                 clearable
                 selection
                 options={masteryOptions}
-                value={masteryFilter}
+                value={masteryFilter ?? []}
                 onChange={(e, { value }) => setMasteryFilter(value as number[] ?? [])}
             />}
             {!farmMode &&
