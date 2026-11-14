@@ -22,7 +22,7 @@ const toolPages: IToolPage[] = [
 	{ optionKey: 'gauntlet', src: '/media/gauntlet.png', title: "Gauntlet", link: "/gauntlets", sidebarRole: 'item' },	// Gauntlet added v1.7
 	{ optionKey: 'cite', src: `${process.env.VITE_ASSETS_URL}/atlas/star_reward.png`, title: "Citation Optimizer", link: "/cite-opt", sidebarRole: 'item' },	// Citations added 1.9
 	{ optionKey: 'voyage', src: "/media/voyage.png", title: "Voyage Calculator", link: "/voyage", sidebarRole: 'item' },	// Voyages added v3
-	{ optionKey: 'voyhist', src: "/media/voyagehist.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
+	{ optionKey: 'voyhist', src: "/media/antimatter_icon.png", title: "Voyage History", link: "/voyagehistory", sidebarRole: 'item' },	// Voyages added v3
 	{ optionKey: 'collection', src: '/media/vault.png', title: "Collection Planner", link: "/collections", sidebarRole: 'item' },	// Collections added v4
 	{ optionKey: 'retrieval', src: '/media/retrieval.png', title: "Crew Retrieval", link: "/retrieval", sidebarRole: 'item' },	// Crew retrieval added v8
 	{ optionKey: 'fbb', src: '/media/fbb.png', title: "Fleet Boss Battles", link: "/fbb", sidebarRole: 'item' },	// Fleet boss battles added v9
