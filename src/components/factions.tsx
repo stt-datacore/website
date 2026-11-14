@@ -99,7 +99,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
 
     return (
         <>
-            <p>
+            <div style={{ margin: '0 0 1em' }}>
                 <span>
                     {tfmt('average_odds_dropdown', {
                         dropdown: (
@@ -111,8 +111,8 @@ const FactionInfo = (props: ShuttleInfoProps) => {
                         )
                     })}
                 </span>
-            </p>
-            <p>
+            </div>
+            <div style={{ margin: '0 0 1em' }}>
                 <span>
                     {tfmt('n_shuttles_per_day', {
                         n: (<>
@@ -133,7 +133,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
                 <Button
                     onClick={() => setShuttles(shuttleBays * 8)}
                     size='tiny'>{tg('global.reset')}</Button>
-            </p>
+            </div>
             <p>{t('odds_note')}</p>
             <SearchableTable
                 config={tableConfig}

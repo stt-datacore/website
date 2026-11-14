@@ -126,17 +126,17 @@ export const TableView = () => {
 		const seated = for_export ? assignments : assignments.slice(index, index + 2);
 		return (
 			<Table key={index} fixed selectable striped unstackable compact='very' className={`voyageLineup ${compact ? 'compactView' : ''}`}>
+				{!!for_export && <Table.Header>
+					<Table.Row>
+						<Table.HeaderCell>Assignment</Table.HeaderCell>
+						<Table.HeaderCell>Crew Image</Table.HeaderCell>
+						<Table.HeaderCell>Crew Name</Table.HeaderCell>
+						<Table.HeaderCell>Voyage Skills</Table.HeaderCell>
+						<Table.HeaderCell>Quipment</Table.HeaderCell>
+						<Table.HeaderCell>Bonus</Table.HeaderCell>
+					</Table.Row>
+				</Table.Header>}
 				<Table.Body>
-					{!!for_export && <Table.Header>
-						<Table.Row>
-							<Table.HeaderCell>Assignment</Table.HeaderCell>
-							<Table.HeaderCell>Crew Image</Table.HeaderCell>
-							<Table.HeaderCell>Crew Name</Table.HeaderCell>
-							<Table.HeaderCell>Voyage Skills</Table.HeaderCell>
-							<Table.HeaderCell>Quipment</Table.HeaderCell>
-							<Table.HeaderCell>Bonus</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>}
 					{seated.map((assignment, idx) => {
 						const { crew, name, trait, bestRank } = assignment;
 						const highlight = (highlightedSkills?.length && highlightedSkills.every(hs => crew?.skill_order?.includes(hs)))

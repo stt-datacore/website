@@ -569,8 +569,8 @@ export const AdvantagePicker = (props: AdvantagePickerProps) => {
 				clearable
 				selection
 				options={advantageOptions}
-				value={selectedAdvantage ?? []}
-				onChange={(e, { value }) => setAdvantage(value as ShipAdvantage | undefined)}
+				value={selectedAdvantage ?? ''}
+				onChange={(e, { value }) => setAdvantage(value ? value as ShipAdvantage : undefined)}
 				closeOnChange
 			/>
 		</Form.Field>

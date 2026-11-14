@@ -647,6 +647,10 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 			);
 
 		}
+		if (mobile)
+			return (
+				<div key={key} style={{ textAlign: 'center' }}>-</div>
+			);
 		return (
 			<Table.Cell key={key} textAlign='center'>-</Table.Cell>
 		);

@@ -319,6 +319,7 @@ export const FTMHof = () => {
                         </div>
                         <div style={{ maxHeight: '7em', overflowY: 'auto', flexGrow: 1 }}>
                             <Table striped compact>
+                                <Table.Body>
                                 {row.ftms.map(ftm => {
                                     return (
                                         <Table.Row key={`${row.player_name}_${ftm.symbol}`}>
@@ -336,6 +337,7 @@ export const FTMHof = () => {
                                         </Table.Row>
                                     )
                                 })}
+                                </Table.Body>
                             </Table>
                         </div>
 

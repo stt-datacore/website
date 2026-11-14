@@ -95,7 +95,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</Step>)
 
 	const offersJSX = (
-		<Step active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
+		// Rendered as a div (with link styling) so the refresh Label <a> isn't nested inside an <a>
+		<Step as='div' link active={rosterType === 'offers'} onClick={() => setRosterType('offers')}>
 			<img src={`${process.env.VITE_ASSETS_URL}atlas/pp_currency_icon.png`} style={{ width: '2em', marginRight: '1em' }} />
 			<Step.Content>
 				<Step.Title>{t('pages.crew_view_modes.current_offers.name')}

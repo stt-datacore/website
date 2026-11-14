@@ -45,7 +45,14 @@ export function renderBonuses(skills: { [key: string]: Skill & { disabled?: bool
 
     if (for_export) {
         return (<Table>
-            {!!prospect && !!t && <div style={flexCol}>{t('voyage.quipment.title')}</div>}
+            {!!prospect && !!t && <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell colSpan={3}>
+                        <div style={flexCol}>{t('voyage.quipment.title')}</div>
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>}
+            <Table.Body>
             {Object.values(skills).map(((skill, idx) => {
                 const atext = CONFIG.SKILLS[skill.skill!];
                 return (
@@ -65,6 +72,7 @@ export function renderBonuses(skills: { [key: string]: Skill & { disabled?: bool
                         </Table.Cell>
                     </Table.Row>)
             }))}
+            </Table.Body>
         </Table>)
     }
     else {
