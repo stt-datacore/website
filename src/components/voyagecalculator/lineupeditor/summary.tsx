@@ -450,7 +450,7 @@ const ProspectiveProficiency = (props: ProspectiveProficiencyProps) => {
 function renderAntimatter(value: number): React.ReactNode {
 	return (
 		<React.Fragment>
-			{value} <img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+			{value} <img src={`${process.env.VITE_ASSETS_URL}atlas/icon_antimatter.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 		</React.Fragment>
 	);
 }
@@ -458,7 +458,7 @@ function renderAntimatter(value: number): React.ReactNode {
 function renderVP(value: number): React.ReactNode {
 	return (
 		<React.Fragment>
-			{value.toLocaleString()} <img src={`${process.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+			{value.toLocaleString()} <img src={`${process.env.VITE_ASSETS_URL}atlas/victory_point_icon.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 		</React.Fragment>
 	);
 }
