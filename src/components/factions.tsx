@@ -105,7 +105,7 @@ const FactionInfo = (props: ShuttleInfoProps) => {
                         dropdown: (
                             <Dropdown text={`${successOdds}%`}>
                                 <Dropdown.Menu>
-                                    {oddsValues.map(val => (<Dropdown.Item onClick={(e, { value }) => setSuccessOdds(value as number)} text={`${val}%`} value={val} />))}
+                                    {oddsValues.map(val => (<Dropdown.Item key={`odds_${val}`} onClick={(e, { value }) => setSuccessOdds(value as number)} text={`${val}%`} value={val} />))}
                                 </Dropdown.Menu>
                             </Dropdown>
                         )

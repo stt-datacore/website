@@ -106,7 +106,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				<div style={{ height: '500px', overflow: 'hidden', textAlign: 'center', padding: '25px', backgroundColor: '#203147', border: '2px solid lightblue' }}>
 					<Header as='h3'>Bridge Crew</Header>
 					{this.state.entries.map((entry, idx) => (
-							<img src={`${process.env.VITE_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
+							<img key={entry.crew?.symbol ?? idx} src={`${process.env.VITE_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
 					))}
 				</div>
 				</React.Fragment>
@@ -115,6 +115,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 	}
 
 	_selectionChanged(value: any) {
+		value = [...new Set(value as string[])];
 		let params = new URLSearchParams();
 		let entries = [] as { crew?: CrewMember }[]
 		for (let symbol of value) {

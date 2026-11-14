@@ -582,7 +582,7 @@ const EventCrewMatrix = (props: EventCrewMatrixProps) => {
 							let cbs = comboSeen[cbkey];
 							let vis = !skillFilter?.length || skillFilter.some(skill => [skillA.name, skillB.name].includes(skill));
 							comboSeen[cbkey] = true;
-							return !cbs && vis && <div className='ui segment' style={{
+							return !cbs && vis && <div key={cellId} className='ui segment' style={{
 								marginTop: '1em',
 								display: 'flex',
 								flexDirection: 'column',

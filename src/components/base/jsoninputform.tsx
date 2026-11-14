@@ -131,7 +131,7 @@ export const JsonInputForm = <T extends object>(props: JsonInputFormProps<T>) =>
   						<button type="submit" id={`__${title}_data_link`}> </button>
 						{Object.entries(postValues).map(([key, value]) => {
 							return (
-								<input type="hidden" name={key} value={value?.toString()} />
+								<input key={key} type="hidden" name={key} value={value?.toString()} />
 							)
 						})}
 				</form>}

@@ -290,7 +290,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', overflowY: 'auto', height: '14em' }}>
                                             {Object.entries(crew.quipStats!).map(([key, value]) => {
                                                 let equipment = value.equipment;
-                                                return <div style={{ width: 'calc(32px + 0.5em)', marginTop: '0.25em', marginBottom: '0.25em', display: 'flex', flexDirection: 'column', justifyItems: 'center', gap: "0.25em", alignItems: 'center' }}>
+                                                return <div key={`${crew.symbol}_quip_${key}`} style={{ width: 'calc(32px + 0.5em)', marginTop: '0.25em', marginBottom: '0.25em', display: 'flex', flexDirection: 'column', justifyItems: 'center', gap: "0.25em", alignItems: 'center' }}>
                                                     {equipment && <ItemDisplay
                                                         src={`${process.env.VITE_ASSETS_URL}${equipment.imageUrl}`}
                                                         size={32}

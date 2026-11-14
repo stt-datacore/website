@@ -207,7 +207,7 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
                 <div style={{...flexRow, justifyContent:'flex-start', gap: '1em'}}>
                     <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
                     <p>
-                        <span>{label.split("/").map((trait, idx) => <b>{!!idx && <>,&nbsp;</>}{trait}</b>)}</span>
+                        <span>{label.split("/").map((trait, idx) => <b key={`trait_${idx}`}>{!!idx && <>,&nbsp;</>}{trait}</b>)}</span>
                         {!!cmm && !stats && (
                             <span>
                                 <br />
@@ -234,7 +234,7 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
                 {!!cmmnext?.length && (<>
                     <div style={{...flexRow}}>
                         {cmmnext.map(cmmn => (
-                            <div style={{textAlign:'center', marginBottom: '0.5em'}}><AvatarView
+                            <div key={cmmn.symbol} style={{textAlign:'center', marginBottom: '0.5em'}}><AvatarView
                                 mode='crew'
                                 item={cmmn}
                                 size={48}

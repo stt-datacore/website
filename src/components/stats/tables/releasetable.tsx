@@ -185,7 +185,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
                                 {newhigh && !idx && <Label style={{margin: '0.5em 0'}} color='blue'>{t('stat_trends.new_high')}</Label>}
                                 {unique && !idx && <Label style={{margin: '0.5em 0'}} color='purple'>{uniquetxt}</Label>}
                                 <div style={{...flexRow, justifyContent: 'space-evenly'}}>
-                                    {diff.skills.map(skill => <img src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
+                                    {diff.skills.map((skill, sidx) => <img key={`skill_icon_${sidx}_${skill}`} src={`${skillIcon(skill)}`} style={{height: '1em'}} />)}
                                 </div>
                                 {!crew.preview && <>
                                     {daydiff > 1 && <i>({t('stat_trends.released_duration_ago', {
@@ -226,7 +226,7 @@ export const StatTrendsTable = (props: StatTrendsTableProps) => {
             {<Table.Cell>
             <div style={flexRow}>
                 {diff.skill_diffs.map((n, idx) => {
-                    return <div style={flexCol}>
+                    return <div key={`skill_diff_${idx}`} style={flexCol}>
                         <img src={`${skillIcon(diff.skills[idx])}`} style={{height: '1em'}} />
                         <span>{CONFIG.SKILLS_SHORT.find(sk => sk.name === diff.skills[idx])?.short}</span>
                         <span style={{color: n < 0 ? 'orange' : 'lightgreen'}}>{n}</span>

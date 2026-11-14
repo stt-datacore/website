@@ -117,7 +117,7 @@ export const StatsPrefsPanel = () => {
                     availopts?.sort((a, b) => a.key === 'none' ? -1 : b.key === 'none' ? 1 : (a.text as string).localeCompare(b.text as string));
                     const curropts = filterConfig[pos]?.length ? filterConfig[pos] : undefined;
 
-                    return (<div style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
+                    return (<div key={`skill_pos_${pos}`} style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
                         <span>{t(`quipment_ranks.${pos}`)}</span>
                         <Dropdown
                             placeholder={t(`quipment_ranks.${pos}`)}

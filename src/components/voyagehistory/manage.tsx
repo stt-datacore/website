@@ -322,8 +322,8 @@ const AdvancedOptions = () => {
 					{t('global.advanced_settings')}
 				</Message.Header>
 				<div style={{ marginTop: '1em' }}>
-					{buttons.filter(button => button.show).map(button => (
-						<Button {...button} />
+					{buttons.filter(button => button.show).map(({ key, show, ...button }) => (
+						<Button key={key} {...button} />
 					))}
 				</div>
 			</Message.Content>
@@ -389,7 +389,12 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 					/>
 
 				<p>{t('voyage.voyage_history.manage_placeholder')}</p>
-				<Button {...saveButton} />
+				<Button
+					icon={saveButton.icon}
+					content={saveButton.content}
+					disabled={saveButton.disabled}
+					onClick={saveButton.onClick}
+				/>
 			</Message.Content>
 		</Message>
 	);
