@@ -453,6 +453,11 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
 
     const { battle_mode: input_battle_mode, rarity: input_rarity } = useParams();
 
+    // Declared before the windowLoaded effect so URL-param staffing below still wins on mount
+    React.useEffect(() => {
+        staffToCurrentBattleMode();
+    }, [opponentShip, battleMode]);
+
     React.useEffect(() => {
         if (!windowLoaded && playerShips && ship) {
             setWindowLoaded(true);
@@ -520,7 +525,6 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     }, [ship, crew, battleMode, minRarity, powerDepth, advancedPowerSettings, maxInitTime, onlyImmortal]);
 
     const metaList = React.useMemo(() => {
-        staffToCurrentBattleMode();
         return createMetaOptions((meta) => {
             if (battleMode.includes('fbb')) return meta.startsWith('fbb');
             else return !meta.startsWith('fbb');

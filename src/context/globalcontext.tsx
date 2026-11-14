@@ -80,14 +80,17 @@ export const GlobalProvider = (props: GlobalProviderProperties) => {
 		setLocalizedPlayer(translatedPlayer);
 	}, [localizedCore, player]);
 
-	if (typeof window !== 'undefined') {
-		window.addEventListener('resize', (e) => {
-			let mobile = typeof window !== 'undefined' && window.innerWidth < DEFAULT_MOBILE_WIDTH;
-			if (isMobile !== mobile) {
-				setIsMobile(mobile);
-			}
-		});
-	}
+	React.useEffect(() => {
+		if (typeof window === 'undefined') return;
+		const onResize = () => {
+			// setIsMobile skips the re-render when the value is unchanged
+			setIsMobile(window.innerWidth < DEFAULT_MOBILE_WIDTH);
+		};
+		window.addEventListener('resize', onResize);
+		return () => {
+			window.removeEventListener('resize', onResize);
+		};
+	}, []);
 
 	let maxBuffs: BuffStatTable | undefined;
 

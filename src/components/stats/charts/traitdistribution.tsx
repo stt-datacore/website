@@ -94,9 +94,12 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
                 text: `${i} ${t('base.traits')}`
             })
         }
-        if (!output.some(o => o.value === comboSize)) setComboSize(output[0].value);
         return output;
     }, [dataSet]);
+
+    React.useEffect(() => {
+        if (!comboOptions.some(o => o.value === comboSize)) setComboSize(comboOptions[0].value);
+    }, [comboOptions]);
 
     React.useEffect(() => {
         if (!portalTraits.length) return;

@@ -25,7 +25,7 @@ export const PortalUpdateTable = () => {
 
     const [selections, setSelections] = React.useState<DropdownItemProps[]>([]);
 
-    const portalLog = React.useMemo(() => {
+    const portalData = React.useMemo(() => {
         const wholeLog = portal_log;
         const unique = [] as number[];
 
@@ -41,12 +41,17 @@ export const PortalUpdateTable = () => {
                 text: frec?.toLocaleDateString() || '<invalid_date>'
             });
         }
-        setSelections(newsels);
-        if (update === undefined && wholeLog?.length) {
-            setUpdate(wholeLog[wholeLog.length-1].portal_batch_id);
-        }
-        return wholeLog;
+        return { wholeLog, newsels };
     }, [portal_log, crew]);
+
+    React.useEffect(() => {
+        setSelections(portalData.newsels);
+        if (update === undefined && portalData.wholeLog?.length) {
+            setUpdate(portalData.wholeLog[portalData.wholeLog.length-1].portal_batch_id);
+        }
+    }, [portalData]);
+
+    const portalLog = portalData.wholeLog;
 
     const selCrew = React.useMemo(() => {
         if (!update) return [];

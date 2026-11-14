@@ -349,7 +349,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 		});
 
 		setCompiledStats(newStats);
-	}, [event_stats]);
+	}, [event_stats, TRAIT_NAMES]); // TRAIT_NAMES changes when translations load, so t() results are current
 
 	const featuredTextMap = React.useMemo(() => {
 		let es = {} as {[key:string]: string[]};
@@ -365,7 +365,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 			es[evt.instance_id] = es[evt.instance_id].map(m => m.toLowerCase());
 		}
 		return es;
-	}, [event_stats]);
+	}, [event_stats, TRAIT_NAMES]);
 
 	React.useEffect(() => {
 		if (!compiledStats?.length) return;
@@ -460,7 +460,9 @@ const EventStatsComponent = (props: EventStatsProps) => {
 			}
 		}
 		setTopPct(toppct);
-		setTypeFilter(newTypeFilter?.length ? newTypeFilter : undefined);
+		if (newTypeFilter.length !== (typeFilter?.length ?? 0)) {
+			setTypeFilter(newTypeFilter.length ? newTypeFilter : undefined);
+		}
 		setEventTypes(eventTypes);
 		const typeTotals = Object.entries(totals).map(([type, total]) => ({ type, total } as TypeTotals));
 		typeTotals.sort((a, b) => a.type.localeCompare(b.type));
