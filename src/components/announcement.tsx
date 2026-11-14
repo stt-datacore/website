@@ -1,22 +1,25 @@
 import React from "react";
-import { graphql, useStaticQuery, navigate } from "gatsby";
+
 import { Message, Icon, Button, SemanticCOLORS } from "semantic-ui-react";
 
 import { useStateWithStorage } from "../utils/storage";
+import { useNavigate } from "react-router-dom";
+import { MarkdownEntry } from "../model/mdpages";
+import MarkdownPage from "./mdpage";
 
 const DAYS_TO_EXPIRE = 7;
 
-const Announcement = () => {
+const Announcement = (props: { announcement: MarkdownEntry }) => {
     const [readyToAnnounce, setReadyToAnnounce] = React.useState<boolean>(false);
 
-    const [dismissAnnouncement, setDismissAnnouncement] 
+    const [dismissAnnouncement, setDismissAnnouncement]
         = useStateWithStorage<Date | undefined>
         (
-            "dismissAnnouncement", 
-            undefined, 
-            { 
-                rememberForever: true, 
-                onInitialize: () => setReadyToAnnounce(true) 
+            "dismissAnnouncement",
+            undefined,
+            {
+                rememberForever: true,
+                onInitialize: () => setReadyToAnnounce(true)
             }
         );
 
@@ -26,6 +29,7 @@ const Announcement = () => {
 
     return (
         <LastAnnouncement
+            announcement={props.announcement}
             dismissAnnouncement={dismissAnnouncement}
             setDismissAnnouncement={setDismissAnnouncement}
         />
@@ -33,43 +37,17 @@ const Announcement = () => {
 };
 
 type LastAnnouncementProps = {
+    announcement: MarkdownEntry;
     dismissAnnouncement: Date | undefined;
     setDismissAnnouncement: (dismissDate: Date) => void;
 };
 
 const LastAnnouncement = (props: LastAnnouncementProps) => {
-    const { dismissAnnouncement, setDismissAnnouncement } = props;
-
+    const { dismissAnnouncement, setDismissAnnouncement, announcement } = props;
+    const navigate = useNavigate();
     const [dateNow, setDateNow] = React.useState<Date>(new Date());
 
-    const data = useStaticQuery(graphql`
-    query AnnouncementQuery {
-      allMarkdownRemark(
-        limit: 1
-        sort: { frontmatter: { date: DESC } }
-        filter: { fields: { source: { eq: "announcements" } } }
-      ) {
-        edges {
-          node {
-            html
-            frontmatter {
-              title
-              class
-              icon
-              date
-            }
-            excerpt(format: HTML)
-          }
-        }
-      }
-    }
-  `);
-
-    const announcements = data.allMarkdownRemark.edges;
-    if (announcements.length === 0) return <></>;
-
-    const announcement = announcements[0].node;
-    const datePosted: Date = new Date(announcement.frontmatter.date);
+    const datePosted: Date = new Date(announcement.date! as any);
     if (dismissAnnouncement) {
         const dateDismissed: Date = new Date(dismissAnnouncement);
         if (dateDismissed > datePosted) return <></>;
@@ -79,10 +57,10 @@ const LastAnnouncement = (props: LastAnnouncementProps) => {
     dateExpires.setDate(datePosted.getDate() + DAYS_TO_EXPIRE);
     if (dateExpires < dateNow) return <></>;
 
-    const isExcerpt: boolean = announcement.html !== announcement.excerpt;
+    const isExcerpt: boolean = true;
 
     let color: SemanticCOLORS;
-    switch (announcement.frontmatter.class) {
+    switch (announcement.class) {
         case "info":
             color = "blue";
             break;
@@ -107,12 +85,12 @@ const LastAnnouncement = (props: LastAnnouncementProps) => {
             color={color}
             onDismiss={() => setDismissAnnouncement(new Date())}
         >
-            <Icon name={announcement.frontmatter.icon ?? "info"} />
+            <Icon name={announcement.icon as any ?? "info"} />
             <Message.Content>
                 <Message.Header>
-                    {announcement.frontmatter.title ?? "Message from the DataCore Team"}
+                    {announcement.title ?? "Message from the DataCore Team"}
                 </Message.Header>
-                <div dangerouslySetInnerHTML={{ __html: announcement.excerpt }} />
+                <MarkdownPage node={announcement} prefix={'announcements'} excerpt={true} />
                 {isExcerpt && (
                     <div style={{ marginTop: "1em" }}>
                         <Button

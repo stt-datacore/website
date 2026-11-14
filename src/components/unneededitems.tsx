@@ -44,7 +44,7 @@ export const UnneededItems = () => {
 		</React.Fragment>
 	);
 
-	function renderWarning(): JSX.Element {
+	function renderWarning(): React.ReactNode {
 		return (
 			<Message warning>
 				<Message.Header>{t('items_unneeded.limit_warning.title')}</Message.Header>
@@ -70,15 +70,13 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 
 	const [sort, setSort] = useStateWithStorage<string>(`${dbid}/unneeded_ship/sort`, '', { rememberForever: true });
 
-	if (!playerData || !playerShips) return <></>;
-
 	// const allPlayerShips: Ship[] = playerShips.slice();
 	// // Core ships is missing the default ship (1* Constellation Class), so manually account for it here
 	// const defaultShip: Ship | undefined = playerData.player.character.ships.find(ship => ship.symbol === 'constellation_ship');
 	// if (defaultShip) allPlayerShips.push(defaultShip);
 
 	// Calculate unneeded schematics
-	const maxedShips: Ship[] = React.useMemo(() => playerShips.filter(
+	const maxedShips: Ship[] = React.useMemo(() => (playerShips ?? []).filter(
 		ship => ship.level === ship.max_level
 	), [playerShips]);
 
@@ -105,7 +103,7 @@ const SchematicFuel = (props: SchematicFuelProps) => {
 		});
 	}, [playerSchematics]);
 
-	if (fuelList.length === 0) return <></>;
+	if (!playerData || !playerShips || fuelList.length === 0) return <></>;
 
 	const sortOptions = [
 		{ key: 'default', value: '', text: t('items.columns.rarity') },
@@ -419,7 +417,7 @@ const FuelGrid = (props: FuelGridProps) => {
 		</Segment>
 	);
 
-	function renderLink(itemName: string, itemEnglish?: string): JSX.Element {
+	function renderLink(itemName: string, itemEnglish?: string): React.ReactNode {
 		const itemUrl: string = 'https://sttwiki.org/wiki/'+(itemEnglish ?? itemName).replace(/\s/g,'_').replace(/’/g,'\'');
 		return <a href={itemUrl}>{itemName}</a>;
 	};

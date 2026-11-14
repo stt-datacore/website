@@ -1,6 +1,7 @@
 import React from "react";
 import * as uuid from 'uuid';
 import { TinyStore } from "../../utils/tiny";
+import { Navigate, NavigateFunction, NavigateOptions } from "react-router-dom";
 
 const isWindow = typeof window !== 'undefined';
 
@@ -21,6 +22,7 @@ export interface HoverStatProps {
      * The target group (required to bind)
      */
     targetGroup: string;
+
     offset?: Coord;
     windowEdgeMinPadding?: Coord;
     boxStyle?: React.CSSProperties;
@@ -54,7 +56,7 @@ export interface HoverStatTargetProps<T> {
     /**
      * The wrapped content
      */
-    children: JSX.Element;
+    children: React.ReactNode;
 
     /**
      * The target group (required to bind)
@@ -71,10 +73,14 @@ export interface HoverStatState<T> {
     boxStyle: React.CSSProperties;
     mobileWidth: number;
     displayItem?: T;
+    navTarget?: string;
+    navOptions?: NavigateOptions
 }
 
 export interface HoverStatTargetState {
     targetId: string;
+    navTarget?: string;
+    navOptions?: NavigateOptions
 }
 
 /**
@@ -107,6 +113,10 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 
     protected set cancelled(value: boolean) {
         this.tiny.setValue('cancelled', value);
+    }
+
+    protected navigate(link: string, navOptions?: NavigateOptions) {
+        this.setState({...this.state, navTarget: link, navOptions });
     }
 
     /**
@@ -142,7 +152,13 @@ export abstract class HoverStatTarget<T, TProps extends HoverStatTargetProps<T>,
 
     render(): React.ReactNode {
         const { targetGroup, children } = this.props;
+        const { navTarget, navOptions } = this.state;
 
+        if (navTarget) {
+            return (
+                <Navigate to={navTarget} replace={navOptions?.replace} />
+            )
+        }
         return (
             <div className={targetGroup}
                  onDoubleClick={(e) => this.containerEnter(e)}
@@ -190,7 +206,11 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
      *
      * _(Optionally, you can attach a children property to a HoverStatProps derived object and pass that through, here)_
      */
-    protected abstract renderContent(): JSX.Element;
+    protected abstract renderContent(): React.ReactNode;
+
+    readonly navigate = (link: string, navOptions?: NavigateOptions) => {
+        this.setState({ navTarget: link, navOptions });
+    }
 
     constructor(props: TProps) {
         super(props);
@@ -203,7 +223,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             divId: "hoverstat__popover_" + uuid.v4().replace(/-/g, ""),
             touchToggled: false,
             mobileWidth: props.mobileWidth ?? DEFAULT_MOBILE_WIDTH,
-            boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ... this.props.boxStyle ?? {}} as React.CSSProperties
+            boxStyle: { position: "fixed", "display": "none", left: 0, top: 0, zIndex: -100, border: "1px solid gray", borderRadius: "8px", padding: "8px", ...this.props.boxStyle ?? {}} as React.CSSProperties
         } as TState;
 
         this.hoverDelay = props.activationDelay ?? 0;
@@ -218,7 +238,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     protected propertyChanged = (key: string): void => {
         if (key === 'cancelled') return;
         else if (key === 'displayItem') {
-            this.setState({ ... this.state, displayItem: this.tiny.getRapid('displayItem')});
+            this.setState({ ...this.state, displayItem: this.tiny.getRapid('displayItem')});
         }
         else {
             this.forceUpdate();
@@ -226,7 +246,12 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
     }
 
     render() {
-        const { divId, boxStyle } = this.state;
+        const { divId, boxStyle, navTarget, navOptions } = this.state;
+        if (navTarget) {
+            return (
+                <Navigate to={navTarget} replace={navOptions?.replace} />
+            )
+        }
         const renderContent = this.renderContent;
         const me = this;
 
@@ -269,7 +294,7 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
      */
     protected resizer = (e: any) => {
         this.forceUpdate();
-        // this.state = { ... this.state };
+        // this.state = { ...this.state };
         // if (this.currentTarget) {
         //     this.activate(this.currentTarget);
         // }
@@ -378,8 +403,8 @@ export abstract class HoverStat<T, TProps extends HoverStatProps, TState extends
             y -= modalBounds.y;
         }
 
-        let off = { ... this.targetOffset };
-        let pad = { ... this.windowEdgeMinPadding };
+        let off = { ...this.targetOffset };
+        let pad = { ...this.windowEdgeMinPadding };
 
         if (target.clientWidth >= 64) {
             off.x += ((target.clientWidth / 2));

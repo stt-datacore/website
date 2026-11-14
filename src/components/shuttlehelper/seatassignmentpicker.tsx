@@ -6,7 +6,7 @@ import { IRosterCrew } from '../../components/eventplanner/model';
 import { Shuttle, ShuttleSeat, CrewScores, ICrewScore, IShuttleScores, IAssignableCrew, ISeatAssignment } from './model';
 import { ShuttlersContext } from './context';
 import { SeatSkillView, SeatCrewView } from './missionstable';
-import { getSkillSetId } from './utils';
+import { findSeatedCrew, getCrewSeatScore, getShuttleChance, getSkillSetId } from './utils';
 import { GlobalContext } from '../../context/globalcontext';
 
 interface IActiveEdit {
@@ -26,7 +26,7 @@ type SeatAssignmentPickerProps = {
 export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 	const { t, tfmt } = React.useContext(GlobalContext).localized;
 	const shuttlersContext = React.useContext(ShuttlersContext);
-	const { rosterCrew, shuttlers, assigned } = shuttlersContext;
+	const { rosterCrew, eventData, shuttlers, assigned } = shuttlersContext;
 	const { activeEdit, setActiveEdit, updateAssignment, crewScores, updateCrewScores, shuttleScores } = props;
 	const { shuttleId, seatNum } = activeEdit;
 
@@ -74,15 +74,12 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 		</Modal>
 	);
 
-	function renderTable(): JSX.Element {
+	function renderTable(): React.ReactNode {
 		let assignedCrew: IRosterCrew | undefined = undefined;
 		const seated: ISeatAssignment | undefined = assigned.find(seat =>
 			seat.shuttleId === shuttleId && seat.seatNum == seatNum
 		);
-		if (seated) {
-			assignedCrew = rosterCrew.find(crew => crew.id === seated.assignedId && crew.symbol === seated.assignedSymbol);
-			if (!assignedCrew) assignedCrew = rosterCrew.find(crew => crew.symbol === seated.assignedSymbol);
-		}
+		if (seated) assignedCrew = findSeatedCrew(rosterCrew, seated);
 
 		// Pagination
 		const rowsPerPage: number = 10;
@@ -120,7 +117,7 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 		);
 	}
 
-	function renderRow(score: ICrewScore, idx: number, assignedCrew: IRosterCrew | undefined): JSX.Element {
+	function renderRow(score: ICrewScore, idx: number, assignedCrew: IRosterCrew | undefined): React.ReactNode {
 		const scoreCrew: IRosterCrew | undefined = rosterCrew.find(crew => crew.id === score.id);
 		if (!scoreCrew) return <></>;
 
@@ -152,7 +149,7 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 					{crew.statusIcon && <Icon name={crew.statusIcon} />}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					{renderScoreChange(shuttleId, seatNum, crew.score)}
+					{renderScoreChange(shuttleId, seatNum, shuttle?.boost ? getCrewSeatScore(scoreCrew, seat, eventData, shuttle.boost) : crew.score)}
 				</Table.Cell>
 				<Table.Cell>
 					{currentShuttle?.name}
@@ -166,13 +163,12 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 		);
 	}
 
-	function renderScoreChange(shuttleId: string, seatNum: number, replacementScore: number = 0): JSX.Element {
-		if (!shuttleScores[shuttleId]) return <></>;
+	function renderScoreChange(shuttleId: string, seatNum: number, replacementScore: number = 0): React.ReactNode {
+		const scoredShuttle: Shuttle | undefined = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
+		if (!scoredShuttle || !shuttleScores[shuttleId]) return <></>;
 		const newScores = [...shuttleScores[shuttleId].scores];
 		newScores[seatNum] = replacementScore;
-		const DIFFICULTY = 2000;
-		const dAvgSkill = newScores.reduce((a, b) => (a + b), 0)/newScores.length;
-		const dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/DIFFICULTY)));
+		const dChance = getShuttleChance(scoredShuttle, newScores, eventData);
 		let style = {} as Object;
 		if (replacementScore === 0) {
 			if (dChance*100 >= 90) style = { color: 'green', fontWeight: 'bold' };

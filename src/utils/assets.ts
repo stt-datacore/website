@@ -23,7 +23,7 @@ export function getIconPath(icon: IconObject, relative?: boolean) {
         return file;
     }
     else {
-        return `${process.env.GATSBY_ASSETS_URL}${file}`;
+        return `${process.env.VITE_ASSETS_URL}${file}`;
     }
 
 }

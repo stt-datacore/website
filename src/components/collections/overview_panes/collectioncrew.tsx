@@ -1,11 +1,10 @@
-import React from "react"
-import { Collection } from "../../../model/collections";
+import React from "react";
+import { Link } from "react-router-dom";
 import { GlobalContext } from "../../../context/globalcontext";
-import { AvatarView } from "../../item_presenters/avatarview";
-import { CrewPresenter } from "../../item_presenters/crew_presenter";
-import { DEFAULT_MOBILE_WIDTH } from "../../hovering/hoverstat";
-import { Link } from "gatsby";
+import { Collection } from "../../../model/collections";
 import CONFIG from "../../CONFIG";
+import { DEFAULT_MOBILE_WIDTH } from "../../hovering/hoverstat";
+import { AvatarView } from "../../item_presenters/avatarview";
 
 export const CollectionCrew = (props: { collection: Collection }) => {
 

@@ -2,7 +2,7 @@ import { CrewMember } from "../model/crew";
 import { PlayerCrew } from "../model/player";
 import { MetaCacheEntry, Ship } from "../model/ship";
 import { AttackInstant } from "../model/worker";
-import { AllBosses, getBosses, getCrewDivisions, getShipDivision } from "../utils/shiputils";
+import { AllBosses, getShipDivision } from "../utils/shiputils";
 import { iterateBattle } from "./battleworkerutils";
 
 

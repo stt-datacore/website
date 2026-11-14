@@ -4,6 +4,7 @@ import { shortToSkill } from "../utils/crewutils";
 export interface Rarity {
 	name: string;
 	color: string;
+	rgb: string;
 }
 
 export interface Mastery {
@@ -20,12 +21,12 @@ export default class CONFIG {
 	static TRIPLET_TEXT = 'Triplet';
 
 	static readonly RARITIES: Rarity[] = [
-		{ name: 'Basic', color: 'Grey' },
-		{ name: 'Common', color: rgbToHex(155, 155, 155) },
-		{ name: 'Uncommon', color: rgbToHex(80, 170, 60) },
-		{ name: 'Rare', color: rgbToHex(90, 170, 255) },
-		{ name: 'Super Rare', color: rgbToHex(170, 45, 235) },
-		{ name: 'Legendary', color: rgbToHex(253, 210, 106) }
+		{ name: 'Basic', color: 'Grey', rgb: 'rgba(127, 127, 127, 1)' },
+		{ name: 'Common', color: rgbToHex(155, 155, 155), rgb: 'rgba(155, 155, 155, 1)' },
+		{ name: 'Uncommon', color: rgbToHex(80, 170, 60), rgb: 'rgba(80, 170, 60, 1)' },
+		{ name: 'Rare', color: rgbToHex(90, 170, 255), rgb: 'rgba(90, 170, 255, 1)' },
+		{ name: 'Super Rare', color: rgbToHex(170, 45, 235), rgb: 'rgba(170, 45, 235, 1)' },
+		{ name: 'Legendary', color: rgbToHex(253, 210, 106), rgb: 'rgba(253, 210, 106, 1)' }
 	];
 
 	static readonly MASTERY_LEVELS: Mastery[] = [
@@ -271,19 +272,19 @@ export default class CONFIG {
 
 	static setLanguage(l: SupportedLanguage) {
 		this.language = l;
-
+		let rgbs = this.RARITIES.map(r => r.rgb);
 		// ENGLISH
 		if (l === 'en') {
 			this.TRIPLET_TEXT = 'Triplet';
 
 			this.RARITIES.length = 0;
 			this.RARITIES.push(
-				{ name: 'Basic', color: 'Grey' },
-				{ name: 'Common', color: rgbToHex(155, 155, 155) },
-				{ name: 'Uncommon', color: rgbToHex(80, 170, 60) },
-				{ name: 'Rare', color: rgbToHex(90, 170, 255) },
-				{ name: 'Super Rare', color: rgbToHex(170, 45, 235) },
-				{ name: 'Legendary', color: rgbToHex(253, 210, 106) }
+				{ name: 'Basic', color: 'Grey', rgb: 'rgba(127, 127, 127, 1)' },
+				{ name: 'Common', color: rgbToHex(155, 155, 155), rgb: 'rgba(155, 155, 155, 1)' },
+				{ name: 'Uncommon', color: rgbToHex(80, 170, 60), rgb: 'rgba(80, 170, 60, 1)' },
+				{ name: 'Rare', color: rgbToHex(90, 170, 255), rgb: 'rgba(90, 170, 255, 1)' },
+				{ name: 'Super Rare', color: rgbToHex(170, 45, 235), rgb: 'rgba(170, 45, 235, 1)' },
+				{ name: 'Legendary', color: rgbToHex(253, 210, 106), rgb: 'rgba(253, 210, 106, 1)' }
 			);
 
 			this.MASTERY_LEVELS.length = 0;
@@ -414,12 +415,12 @@ export default class CONFIG {
 
 			this.RARITIES.length = 0;
 			this.RARITIES.push(
-				{ name: 'Basique', color: 'Grey' },
-				{ name: 'Ordinaire', color: rgbToHex(155, 155, 155) },
-				{ name: 'Insolite', color: rgbToHex(80, 170, 60) },
-				{ name: 'Rare', color: rgbToHex(90, 170, 255) },
-				{ name: 'Super Rare', color: rgbToHex(170, 45, 235) },
-				{ name: 'Légendaire', color: rgbToHex(253, 210, 106) }
+				{ name: 'Basique', color: 'Grey', rgb: 'rgba(127, 127, 127, 1)' },
+				{ name: 'Ordinaire', color: rgbToHex(155, 155, 155), rgb: 'rgba(155, 155, 155, 1)' },
+				{ name: 'Insolite', color: rgbToHex(80, 170, 60), rgb: 'rgba(80, 170, 60, 1)' },
+				{ name: 'Rare', color: rgbToHex(90, 170, 255), rgb: 'rgba(90, 170, 255, 1)' },
+				{ name: 'Super Rare', color: rgbToHex(170, 45, 235), rgb: 'rgba(170, 45, 235, 1)' },
+				{ name: 'Légendaire', color: rgbToHex(253, 210, 106), rgb: 'rgba(253, 210, 106, 1)' }
 			);
 
 			this.MASTERY_LEVELS.length = 0;
@@ -550,12 +551,12 @@ export default class CONFIG {
 
 			this.RARITIES.length = 0;
 			this.RARITIES.push(
-				{ name: 'Basisch', color: 'Grey' },
-				{ name: 'Gewöhnliche', color: rgbToHex(155, 155, 155) },
-				{ name: 'Ungewöhnliche', color: rgbToHex(80, 170, 60) },
-				{ name: 'Seltene', color: rgbToHex(90, 170, 255) },
-				{ name: 'Extrem Seltene', color: rgbToHex(170, 45, 235) },
-				{ name: 'Legendäre', color: rgbToHex(253, 210, 106) }
+				{ name: 'Basisch', color: 'Grey', rgb: 'rgba(127, 127, 127, 1)' },
+				{ name: 'Gewöhnliche', color: rgbToHex(155, 155, 155), rgb: 'rgba(155, 155, 155, 1)' },
+				{ name: 'Ungewöhnliche', color: rgbToHex(80, 170, 60), rgb: 'rgba(80, 170, 60, 1)' },
+				{ name: 'Seltene', color: rgbToHex(90, 170, 255), rgb: 'rgba(90, 170, 255, 1)' },
+				{ name: 'Extrem Seltene', color: rgbToHex(170, 45, 235), rgb: 'rgba(170, 45, 235, 1)' },
+				{ name: 'Legendäre', color: rgbToHex(253, 210, 106), rgb: 'rgba(253, 210, 106, 1)' }
 			);
 
 			this.MASTERY_LEVELS.length = 0;
@@ -687,12 +688,12 @@ export default class CONFIG {
 
 			this.RARITIES.length = 0;
 			this.RARITIES.push(
-				{ name: 'Basico', color: 'Grey' },
-				{ name: 'Común', color: rgbToHex(155, 155, 155) },
-				{ name: 'Poco Común', color: rgbToHex(80, 170, 60) },
-				{ name: 'Especiale', color: rgbToHex(90, 170, 255) },
-				{ name: 'Excepcionale', color: rgbToHex(170, 45, 235) },
-				{ name: 'Legendario', color: rgbToHex(253, 210, 106) }
+				{ name: 'Basico', color: 'Grey', rgb: 'rgba(127, 127, 127, 1)' },
+				{ name: 'Común', color: rgbToHex(155, 155, 155), rgb: 'rgba(155, 155, 155, 1)' },
+				{ name: 'Poco Común', color: rgbToHex(80, 170, 60), rgb: 'rgba(80, 170, 60, 1)' },
+				{ name: 'Especiale', color: rgbToHex(90, 170, 255), rgb: 'rgba(90, 170, 255, 1)' },
+				{ name: 'Excepcionale', color: rgbToHex(170, 45, 235), rgb: 'rgba(170, 45, 235, 1)' },
+				{ name: 'Legendario', color: rgbToHex(253, 210, 106), rgb: 'rgba(253, 210, 106, 1)' }
 			);
 
 			this.MASTERY_LEVELS.length = 0;

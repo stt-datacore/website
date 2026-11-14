@@ -11,7 +11,7 @@ export interface DropDownItem {
 	image: AvatarIcon;
 	text: string;
 	title?: string;
-	content?: JSX.Element;
+	content?: React.ReactNode;
 }
 
 export function translateSkills(string: string, separator: string = '/'): string {
@@ -56,7 +56,7 @@ export function getCoolStats(t: TranslateMethod, crew: PlayerCrew | CrewMember, 
 		}
 	}
 	let minglescore = {
-		... crew.ranks.scores,
+		...crew.ranks.scores,
 		arena: crew.ranks.scores.ship.arena_rank,
 		fbb: crew.ranks.scores.ship.fbb_rank
 	};
@@ -158,10 +158,15 @@ export function appelate(text: string) {
 }
 
 export function decamelify(value: string) {
-	value = value.replace(/_/g, " ");
+	value = value.replace(/_/g, " ").replace(/\./g, " ");
 	let vm = "";
-	let pch = ""
+	let pch = "";
+
 	for (let ch of value) {
+		if (ch != " " && ch.toUpperCase() === ch && pch !== " ") {
+			vm += " ";
+			pch = " ";
+		}
 		if (ch === " ") {
 			vm += " ";
 		}
@@ -173,7 +178,7 @@ export function decamelify(value: string) {
 		}
 		pch = ch;
 	}
-	vm = vm.split(" ").map(s => s === 'Fbb' ? 'FBB' : s).join(" ");
+	vm = vm.split(" ").map(s => s === 'Fbb' ? 'FBB' : s).filter(f => !!f).join(" ");
 	return vm;
 }
 

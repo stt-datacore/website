@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Input, Dropdown, Button, Icon } from "semantic-ui-react";
+import { Segment, Input, Dropdown, Button, Icon, ButtonGroup } from "semantic-ui-react";
 import { PortalFilter } from "../crewtables/commonoptions";
 import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
 import { GlobalContext } from "../../context/globalcontext";
@@ -27,32 +27,41 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
         proccrew = undefined;
     }
     else {
-        proccrew = proccrew.map(mc => globalContext.player.playerData?.player.character.crew.find(f => f.name === mc.name)!)!
+        proccrew = proccrew.map(mc => globalContext.player.playerData?.player.character.crew.find(f => f.name === mc.name)).filter(f => !!f);
     }
 
     const resultCrew = proccrew?.filter((f, idx) => f && proccrew.findIndex(f2 => f2 && ((f.symbol && f2.symbol === f.symbol) || (f.name && f.name === f2.name))) === idx);
 
     const priSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
-            key: skill.replace('_skill', ''),
-            value: skill.replace('_skill', ''),
+            key: skill,
+            value: skill,
             text: name
         }
     });
 
     const secSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
-            key: skill.replace('_skill', ''),
-            value: skill.replace('_skill', ''),
+            key: skill,
+            value: skill,
             text: name
         }
     });
 
     const seatSkills = Object.entries(CONFIG.SKILLS).map(([skill, name]) => {
         return {
-            key: skill.replace('_skill', ''),
-            value: skill.replace('_skill', ''),
+            key: skill,
+            value: skill,
             text: name
+        }
+    });
+
+    const seatPositions = [1,2,3].map(pos => {
+        let key = "".padEnd(pos, "I");
+        return {
+            key,
+            value: pos,
+            text: key
         }
     });
 
@@ -77,7 +86,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                         <PortalFilter
                             portalFilter={citeConfig?.portal}
                             setPortalFilter={(data) => {
-                                setCiteConfig({ ... citeConfig ?? {}, portal: data });
+                                setCiteConfig({ ...citeConfig ?? {}, portal: data });
                             }}
                             />
                     </div>
@@ -85,7 +94,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                         <Input
                             label={t('global.search')}
                             value={citeConfig.nameFilter}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, nameFilter: value })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, nameFilter: value })}
                             />
                         <i className='delete icon'
                             title={t('cite_opt.config.clear')}
@@ -94,7 +103,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                                 marginLeft: "0.75em"
                             }}
                             onClick={(e) => {
-                                    setCiteConfig({ ... citeConfig ?? {}, nameFilter: '' });
+                                    setCiteConfig({ ...citeConfig ?? {}, nameFilter: '' });
                                     setTimeout(() => {
                                         setCiteConfig({ ...citeConfig ?? {}, nameFilter: '' , checks: [] });
                                     });
@@ -110,7 +119,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_primary_skill')}
                             value={citeConfig.priSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, priSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, priSkills: value as string[] })}
                             />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -120,7 +129,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_secondary_skill')}
                             value={citeConfig.secSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, secSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, secSkills: value as string[] })}
                             />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "left", marginLeft: "1em"}}>
@@ -130,8 +139,30 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             clearable
                             placeholder={t('hints.filter_by_voyage_seating')}
                             value={citeConfig.seatSkills}
-                            onChange={(e, { value }) => setCiteConfig({ ... citeConfig ?? {}, seatSkills: value as string[] })}
+                            onChange={(e, { value }) => setCiteConfig({ ...citeConfig ?? {}, seatSkills: value as string[], skillPositions: (value as string[])?.length ? citeConfig.skillPositions : [] })}
                             />
+
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "left", marginLeft: "1em", gap: 0}}>
+                            <ButtonGroup>
+                            {seatPositions.map(pos => {
+                                let skillPos = [... citeConfig.skillPositions ?? []];
+                                const active = skillPos.includes(pos.value);
+                                const click = (val: number) => {
+                                    if (skillPos.includes(val)) {
+                                        skillPos = skillPos.filter(f => f !== val);
+                                    }
+                                    else {
+                                        skillPos.push(val);
+                                    }
+                                    setCiteConfig({...citeConfig, skillPositions: skillPos });
+                                }
+                                return (
+                                    <Button disabled={!citeConfig?.seatSkills?.length} style={{height: '2.3em', margin:0}} active={active} onClick={() => click(pos.value)} >{pos.text}</Button>
+                                )
+                            })}
+                            </ButtonGroup>
+                        </div>
+
                     </div>
                 </div>
                 <div style={{
@@ -148,7 +179,7 @@ export const CiteConfigPanel = (props: CiteConfigPanelProps) => {
                             multiple={true}
                             selection={citeConfig.collections}
                             setSelection={(data) => {
-                                setCiteConfig({ ... citeConfig ?? {}, collections: typeof data === 'number' ? [data] : (!data ? [] : data) });
+                                setCiteConfig({ ...citeConfig ?? {}, collections: typeof data === 'number' ? [data] : (!data ? [] : data) });
                             }}
                             customRender={(col) => {
 
