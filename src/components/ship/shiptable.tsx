@@ -47,7 +47,7 @@ type ActiveDetails = {
 	boss?: string
 }
 
-type Ownership = 'owned' | 'unowned';
+type Ownership = 'owned' | 'unowned' | 'maxed' | 'unmaxed';
 
 export const ShipTable = (props: ShipTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
@@ -93,6 +93,7 @@ export const ShipTable = (props: ShipTableProps) => {
 					if (playerShips) {
 						let owned = playerShips.find(f => f.symbol === ship.symbol);
 						ship.level = owned?.level ?? 0;
+						ship.owned = !!owned && owned?.level != 0;
 					}
 					return ship;
 				});
@@ -125,9 +126,11 @@ export const ShipTable = (props: ShipTableProps) => {
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
 			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
-			if (mode === 'all') {
-				if (ownership === 'owned' && (!playerShips || !playerShips.some(ps => ps.symbol === ship.symbol))) return false;
-				else if (ownership === 'unowned' && (!playerShips || playerShips.some(ps => ps.symbol === ship.symbol))) return false;
+			if (mode === 'all' && !!playerShips) {
+				if (ownership === 'owned' && !ship.owned) return false;
+				else if (ownership === 'maxed' && (!ship.owned || ship.level !== ship.max_level)) return false;
+				else if (ownership === 'unmaxed' && (!ship.owned || ship.level === ship.max_level)) return false;
+				else if (ownership === 'unowned' && ship?.owned) return false;
 			}
 			if (mode === 'owned') {
 				if (onlyUsed && shipsInUse?.length) {
@@ -214,7 +217,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				width: 1, column: 'crit_bonus', title: t('ship.crit_bonus'), reverse: false
 			},
 			{
-				width: 1, column: 'crit_rating', title: t('ship.crit_rating'), reverse: false
+				width: 1, column: 'crit_chance', title: t('ship.crit_rating'), reverse: false,
 			},
 			{
 				width: 1,
@@ -258,7 +261,7 @@ export const ShipTable = (props: ShipTableProps) => {
 					/>
 					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => setGrantFilter(value as string[])} />
 					<ShipAbilityPicker ship={true} selectedAbilities={abilityFilter} setSelectedAbilities={(value) => setAbilityFilter(value as string[])} />
-					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter(value as string[])} />
+					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter((value as string[] ?? []).filter(v => !!v?.trim()))} />
 					{mode === 'all' && <CrewBuffModes buffMode={buffMode} setBuffMode={(e) => setBuffMode(e || 'none')} playerAvailable={!!playerShips} />}
 					{!!playerShips && mode === 'all' && <ShipOwnership selectedValue={ownership} setSelectedValue={setOwnership} />}
 					{!!minOpts && (
