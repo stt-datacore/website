@@ -358,7 +358,7 @@ const BetaTachyonSettingsPopup = (props: BetaTachyonSettingsProps) => {
             }}>
                 {Object.keys(DefaultBetaTachyonSettings).map((key) => {
                     let disabled = false;
-                    if (key === 'is_custom') return <></>;
+                    if (key === 'is_custom') return null;
                     if (!innerSettings['is_custom']) disabled = true;
                     return (<div style={rowStyle} key={`bt_setting_${key}`}>
                         <div style={textStyle}>{t(`cite_opt.btp.settings.${key}`)}:</div>

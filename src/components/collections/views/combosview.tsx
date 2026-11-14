@@ -127,13 +127,13 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 								window.setTimeout(() => {
 									setCombo(col, col.combos ? col.combos[0].names.join(" / ") : undefined);
 								});
-								return <> </>
+								return null
 							}
 							const collection = structuredClone(col.collection) as PlayerCollection;
 							collection.neededCost = starCost(comboCrew, undefined, costMode === 'sale');
 							//collection.needed = comboCrew.length;
 							col.neededStars = neededStars(comboCrew);
-							if (!collection?.totalRewards || !collection.milestone) return <></>;
+							if (!collection?.totalRewards || !collection.milestone) return null;
 
 							return (<Table.Row key={"colgroup" + idx} >
 								<Table.Cell width={4} style={{ verticalAlign: "top" }}>
@@ -178,7 +178,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 											<Grid doubling columns={3} textAlign='center'>
 												{getOptCols(col, optCombo).map((c) => {
 													const collection = c.collection;
-													if (!collection?.totalRewards || !collection.milestone) return <></>;
+													if (!collection?.totalRewards || !collection.milestone) return null;
 
 													return (
 														<CollectionCard
