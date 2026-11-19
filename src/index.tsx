@@ -6,7 +6,6 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import { broadcastQueryClient } from '@tanstack/query-broadcast-client-experimental';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { applyAprilFools } from './utils/aprilfools';
 import './styles/semantic.slate.css';
 import './styles/custom.css';
 
@@ -38,4 +37,3 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-applyAprilFools();

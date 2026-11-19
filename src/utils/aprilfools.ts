@@ -42,3 +42,5 @@ export function applyAprilFools(): void {
 	style.innerHTML = 'img { transform: rotate(180deg); }';
 	document.head.appendChild(style);
 }
+
+applyAprilFools();
