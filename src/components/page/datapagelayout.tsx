@@ -214,7 +214,6 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 			<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
 			<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
 			<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
-			<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
 		</Helmet>
 	);
 };
