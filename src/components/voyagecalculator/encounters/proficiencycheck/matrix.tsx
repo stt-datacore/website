@@ -55,7 +55,7 @@ export const ProficiencyMatrix = (props: ProficiencyMatrixProps) => {
 	function renderSkillHeader(skill: string): React.ReactNode {
 		return (
 			<React.Fragment>
-				<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1.1em', verticalAlign: 'middle' }} />
 				{voyageConfig.skills.primary_skill === skill && <Icon name='star' color='yellow' />}
 				{voyageConfig.skills.secondary_skill === skill && <Icon name='star' color='grey' />}
 			</React.Fragment>
@@ -108,7 +108,7 @@ const CrewCritTraits = (props: CrewCritTraitsProps) => {
 	return (
 		<Label>
 			<div style={{ display: 'flex', alignItems: 'center' }} title={title}>
-				<img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '.9em', verticalAlign: 'middle' }} className='invertibleIcon' />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: '.9em', verticalAlign: 'middle' }} />
 				{crewCritTraits.length}
 			</div>
 		</Label>

@@ -11,8 +11,6 @@ import { useNavigate } from 'react-router-dom';
 const EpisodesPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const navigate = useNavigate();
-	const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
-	const foreColor = theme === 'dark' ? 'white' : 'black';
 
 	return (
 		<DataPageLayout
@@ -35,7 +33,7 @@ const EpisodesPage = () => {
 								<Item.Header as="a" onClick={() => navigate(`/episode/${episode.symbol}`)}>
 									{getEpisodeName(episode)}
 								</Item.Header>
-								<Item.Meta><span style={{color:foreColor}}>Total stars: {episode.total_stars}</span></Item.Meta>
+								<Item.Meta><span style={{color: "white"}}>Total stars: {episode.total_stars}</span></Item.Meta>
 								<Item.Description>
 									<p>{episode.description}</p>
 								</Item.Description>

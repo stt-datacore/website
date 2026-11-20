@@ -104,7 +104,6 @@ export const ShuttleBoostPicker = (props: ShuttleBoostPickerProps) => {
 						<img
 							src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 							style={{ height: '1.5em' }}
-							className='invertibleIcon'
 						/>
 					</Divider>
 				)}

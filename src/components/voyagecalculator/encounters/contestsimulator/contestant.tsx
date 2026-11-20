@@ -142,7 +142,6 @@ export const Contestant = (props: ContestantProps) => {
 									<img
 										src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
 										style={{ height: '1.1em', verticalAlign: 'middle' }}
-										className='invertibleIcon'
 									/>
 								</span>
 								<span>
@@ -187,7 +186,6 @@ export const Contestant = (props: ContestantProps) => {
 							<img
 								src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 								style={{ height: '1.5em' }}
-								className='invertibleIcon'
 							/>
 						</Grid.Column>
 						<Grid.Column width={9} textAlign='center'>
@@ -217,7 +215,6 @@ export const Contestant = (props: ContestantProps) => {
 						<img
 							src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 							style={{ height: '1.1em', verticalAlign: 'middle' }}
-							className='invertibleIcon'
 						/>
 					</span>
 					<span>

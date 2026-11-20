@@ -43,7 +43,6 @@ export const EncounterCard = (props: EncounterCardProps) => {
 											key={contest.skills[skillKey]}
 											src={`${process.env.VITE_ASSETS_URL}atlas/icon_${contest.skills[skillKey]}.png`}
 											style={{ height: isBoss ? '1.8em' : '1.5em', verticalAlign: 'middle' }}
-											className='invertibleIcon'
 										/>
 									))}
 								</div>
