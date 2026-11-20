@@ -23,8 +23,6 @@ export const BrowsableGauntletView = (props: BrowseableGauntletProps) => {
     const { gauntlets, config } = gauntletContext;
     const { searching, pane } = props;
     const { TRAIT_NAMES, t } = globalContext.localized;
-    const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
-    const foreColor = theme === 'dark' ? 'white' : 'black';
     const browsing = pane === 'browse';
 
     const [browseGauntlet, setBrowseGauntlet] = useStateWithStorage(`${dbid}/gauntlet/browseSelection`, undefined as string | undefined);

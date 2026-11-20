@@ -8,7 +8,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './styles/semantic.slate.css';
 import './styles/custom.css';
-import './styles/theming.js';
 
 const queryClient = new QueryClient();
 
