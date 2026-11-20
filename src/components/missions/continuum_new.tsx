@@ -397,6 +397,11 @@ const QpCrew = (props: QpCrewProps) => {
     const [activePlace, setActivePlace] = React.useState("crew");
     const [modalOpenConfig, setModalOpenConfig] = React.useState(undefined as ModalOpenConfig | undefined);
 
+    // In primary mode only one skill may be selected; the most recently clicked skill wins.
+    const selectSkills = (skills: string[], primary = primaryOnly) => {
+        setSelSkills(primary && skills.length > 1 ? skills.slice(-1) : skills);
+    };
+
     React.useEffect(() => {
         if (
             traits === undefined ||
@@ -628,14 +633,17 @@ const QpCrew = (props: QpCrewProps) => {
                 <div style={{ gridArea: 'thing1'}}>
                     <ShipSeatPicker
                         availableSeats={availSkills}
-                        setSelectedSeats={setSelSkills}
+                        setSelectedSeats={selectSkills}
                         selectedSeats={selSkills}
                         />
                 </div>
                 <div style={{ gridArea: 'thing2'}}>
                     <Checkbox
                         checked={primaryOnly}
-                        onChange={(e, { checked }) => setPrimaryOnly(!!checked)}
+                        onChange={(e, { checked }) => {
+                            setPrimaryOnly(!!checked);
+                            selectSkills(selSkills, !!checked);
+                        }}
                         label={t('base.primary')}
                         />
                 </div>
