@@ -1859,15 +1859,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/codemirror@npm:^5.60.10":
-  version: 5.60.17
-  resolution: "@types/codemirror@npm:5.60.17"
-  dependencies:
-    "@types/tern": "*"
-  checksum: b1bb5c209780f30714c533e96657a7fce35eef9bac928e036628a82fe8ad39a60281d0dfe731ab0171ff9ae9ccfcbfb2deab59318c75888e0429c6ab5cefc1e9
-  languageName: node
-  linkType: hard
-
 "@types/color-convert@npm:^3.0.1":
   version: 3.0.1
   resolution: "@types/color-convert@npm:3.0.1"
@@ -1995,7 +1986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree@npm:*, @types/estree@npm:^1.0.6, @types/estree@npm:^1.0.8":
+"@types/estree@npm:^1.0.6, @types/estree@npm:^1.0.8":
   version: 1.0.9
   resolution: "@types/estree@npm:1.0.9"
   checksum: 752c0afee3ec82b8e24484bf6a27dfa093bbf3de4ef1c20ed0364fb6ad2c0c7971e7504ed9a7aaff103a47e2d945ce7a17f74951743dd944782a0735f53170de
@@ -2050,13 +2041,6 @@ __metadata:
   dependencies:
     localforage: "*"
   checksum: f06f7643a15edb6ccd524c705a08e46fa54e5a3939dbaaa5050935d3436b392a363709881919b34d4b157b6bcedf5d0c7da7a67275b1e4e50a6e6cbf85e61d49
-  languageName: node
-  linkType: hard
-
-"@types/marked@npm:^4.0.7":
-  version: 4.3.2
-  resolution: "@types/marked@npm:4.3.2"
-  checksum: c1107079d6c368dd60a668a41aa2101d006cad404b6eb4af6723d419dc869b278928fb769825f11d0d311a8cf437428992729c8a47253b6a3894a6326b1ee4d9
   languageName: node
   linkType: hard
 
@@ -2146,15 +2130,6 @@ __metadata:
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
   checksum: 72576cc1522090fe497337c2b99d9838e320659ac57fa5560fcbdcbafcf5d0216c6b3a0a8a4ee4fdb3b1f5e3420aa4f6223ab57b82fef3578bec3206425c6cf5
-  languageName: node
-  linkType: hard
-
-"@types/tern@npm:*":
-  version: 0.23.9
-  resolution: "@types/tern@npm:0.23.9"
-  dependencies:
-    "@types/estree": "*"
-  checksum: 53f229c79edf9454011f5b37c8539e0e760a130beac953d4e2126823de1ac6b0e2a45612596679fb232ec861826584fcaa272e2254a890b410575683423d56a8
   languageName: node
   linkType: hard
 
@@ -3211,22 +3186,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror-spell-checker@npm:1.1.2":
-  version: 1.1.2
-  resolution: "codemirror-spell-checker@npm:1.1.2"
-  dependencies:
-    typo-js: "*"
-  checksum: e58de8f64453352f4a42c3752650fa7d65dc8e9fbdbdc4a2a80a748e5d794e84c5779409386d8d1f06d41cad41bacb3bbce91eb2cd5a5548a59bb71d932dec96
-  languageName: node
-  linkType: hard
-
-"codemirror@npm:^5.65.15":
-  version: 5.65.21
-  resolution: "codemirror@npm:5.65.21"
-  checksum: 31b00bdbdea89f1efef7ea57eb3c59536806ccfc4a514f0187f40dafb580ba2ce50c91afdca80c6eeb2f7620a6032b25f5d2cce42d10d2d97c6ad204c332b82a
-  languageName: node
-  linkType: hard
-
 "collect-v8-coverage@npm:^1.0.2":
   version: 1.0.3
   resolution: "collect-v8-coverage@npm:1.0.3"
@@ -3770,19 +3729,6 @@ __metadata:
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
   checksum: 7d00d7cd8e49b9afa762a813faac332dee781932d6f2c848dc348939c4253f1d4564341b7af1d041853bc3f32c2ef141b58e0a4d9862c17a7f08f68df1e0f1ed
-  languageName: node
-  linkType: hard
-
-"easymde@npm:^2.18.0":
-  version: 2.21.0
-  resolution: "easymde@npm:2.21.0"
-  dependencies:
-    "@types/codemirror": ^5.60.10
-    "@types/marked": ^4.0.7
-    codemirror: ^5.65.15
-    codemirror-spell-checker: 1.1.2
-    marked: ^4.1.0
-  checksum: b973ba85129839710df6037e30b63ef8ff90cf5294a816c51839b1ec4a90e2fd1b31ef2e7b10d09e4085c299e943b9e9cd545b192ecb2b6da975865033f329eb
   languageName: node
   linkType: hard
 
@@ -5977,15 +5923,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.1.0":
-  version: 4.3.0
-  resolution: "marked@npm:4.3.0"
-  bin:
-    marked: bin/marked.js
-  checksum: 0db6817893952c3ec710eb9ceafb8468bf5ae38cb0f92b7b083baa13d70b19774674be04db5b817681fa7c5c6a088f61300815e4dd75a59696f4716ad69f6260
-  languageName: node
-  linkType: hard
-
 "math-intrinsics@npm:^1.1.0":
   version: 1.1.0
   resolution: "math-intrinsics@npm:1.1.0"
@@ -7357,7 +7294,6 @@ __metadata:
     color-convert: ^3.0.1
     cypress: ^15.14.2
     dotenv: ^17.4.2
-    easymde: ^2.18.0
     eslint: ^10.3.0
     eslint-plugin-react-hooks: ^7.1.1
     eslint-plugin-react-refresh: ^0.5.2
@@ -7645,13 +7581,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 238430fdcadd2ca8ec7179bc644b324dbe4d13d647efae95351f216c7d9645092c0d848a45bd5a27a3d9058e2466eb8d67f9d944e2a78fa32171eee2e2f8d11e
-  languageName: node
-  linkType: hard
-
-"typo-js@npm:*":
-  version: 1.3.2
-  resolution: "typo-js@npm:1.3.2"
-  checksum: ae9a2bc814baeb83d51bb2c3d8fea760246e47ffcee8d4e33bc65ae4ebbbe2d278ae7697a6d0097b998aed9dd2531141c32e70428a906645dd7baafc95f3ca3e
   languageName: node
   linkType: hard
 
