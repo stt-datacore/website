@@ -17,7 +17,7 @@ self.onmessage = async (message: { data: { id: string; config: ParaDemandConfig;
     const id = message.data.id;
     const postResult = (result: ICrewDemands | undefined, inProgress: boolean) => {
         postMessage({ result, inProgress, id });
-        if (!inProgress) window.close();
+        if (!inProgress) self.close();
     };
     const config = message.data.config as ParaDemandConfig;
     const { crew, fromCurrLvl, excludePrimary } = config;
