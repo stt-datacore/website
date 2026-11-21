@@ -376,7 +376,7 @@ export const ResourceTracker = () => {
 
     function renderTableRow(row: ResourceData, index?: number, isActive?: boolean) {
         return (
-            <Table.Row>
+            <Table.Row key={`resource_row_${index}`}>
                 <Table.Cell>
                     {row.timestamp.toLocaleString()}
                 </Table.Cell>

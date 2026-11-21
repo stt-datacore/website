@@ -115,20 +115,20 @@ export const StatTrendsComponent = () => {
 
     if (filterConfig.primary.length || filterConfig.secondary.length || filterConfig.tertiary.length) {
         const fcs = makeFilterCombos(filterConfig, false);
-        fcs.forEach((skillKey) => {
+        fcs.forEach((skillKey, comboIdx) => {
             const preskill = skillKey.split(",").filter(f => f);
             if (skillKey.trim()) {
                 const newelem = [] as React.ReactNode[];
                 preskill.forEach((text, idx) => {
                     if (!text) return;
-                    if (idx) newelem.push(<>&nbsp;/&nbsp;</>);
-                    newelem.push(<span>
+                    if (idx) newelem.push(<React.Fragment key={`skill_combo_sep_${idx}`}>&nbsp;/&nbsp;</React.Fragment>);
+                    newelem.push(<span key={`skill_combo_skill_${idx}`}>
                         {text !== '*' && <><img src={skillIcon(text)} style={{ height: '0.75em' }} />&nbsp;
                         {CONFIG.SKILLS_SHORT.find(f => f.name === text)?.short}</>}
                         {text === '*' ? '*' : ''}
                     </span>)
                 });
-                skillDecors.push(<Label color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
+                skillDecors.push(<Label key={`skill_combo_${comboIdx}_${skillKey}`} color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
             }
 
             if (sst) sst += "; ";
@@ -137,7 +137,7 @@ export const StatTrendsComponent = () => {
 
         });
     }
-    if (!sst) skillDecors.push(<span>{t('roster_summary.skills.combos.all')}</span>);
+    if (!sst) skillDecors.push(<span key='skill_combo_all'>{t('roster_summary.skills.combos.all')}</span>);
 
     return (
             <div>
@@ -230,7 +230,7 @@ export const StatTrendsComponent = () => {
                                     gap: '1em', marginBottom: idx === useRarities.length - 1 ? '0.5em' : undefined
                                     }}>
                                     {totalPowerDiff.filter(f => f.rarity === rarity).map((skill) => {
-                                        return <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
+                                        return <div key={`tpd_${rarity}_${skill.skill}`} style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '0.5em'}}>
                                             <img src={skillIcon(skill.skill)} style={{height: '1.2em'}} />
                                             {skill.core > 0 ? "+" : ""}{skill.core.toFixed(2)}
                                         </div>

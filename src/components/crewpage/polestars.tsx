@@ -236,8 +236,8 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 								{renderComboGrid(optimal)}
 								{expanded === idx && (<>
 									<div style={{...OptionsPanelFlexRow, margin: '1em 0', gap: '1em', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-evenly'}}>
-										{optimal.alts.map((alt) => (
-											<div style={{
+										{optimal.alts.map((alt, aidx) => (
+											<div key={`alt_${aidx}`} style={{
 												...OptionsPanelFlexColumn,
 												justifyContent: 'flex-start',
 												alignItems: 'center',

@@ -147,7 +147,7 @@ export const LootCrewTable = () => {
         const crew = row.crew;
 
         return (
-            <Table.Row>
+            <Table.Row key={`loot_crew_${crew.symbol}_${idx}`}>
                 <Table.Cell className='sticky'>
 					<div
 						style={{
@@ -175,10 +175,10 @@ export const LootCrewTable = () => {
                     <p>
                         {row.voyages.length}
                     </p>
-                    {row.voyages.map(voy => {
+                    {row.voyages.map((voy, vidx) => {
                         const created = new Date(voy.created_at);
                         return (
-                        <p>
+                        <p key={`voy_${vidx}`}>
                             {created.toLocaleDateString()}
                         </p>
                     )})}

@@ -319,7 +319,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
         const skillimg = row.matched_skills.map((skill) => {
             let skill_icon = `${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
             return (
-                <div title={CONFIG.SKILLS[skill]} style={{
+                <div key={`skill_${skill}`} title={CONFIG.SKILLS[skill]} style={{
                     ...flexRow,
                     alignItems: 'center',
                     justifyContent: 'flex-start',
@@ -348,7 +348,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
 
         const traitimg = row.matched_traits.map((trait) => {
             let trait_icon = `${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`;
-            return <div title={TRAIT_NAMES[trait]} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
+            return <div key={`trait_${trait}`} title={TRAIT_NAMES[trait]} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
                 <img src={trait_icon} style={{height: '24px'}} />
                 {TRAIT_NAMES[trait]}
             </div>
@@ -364,6 +364,7 @@ function SpecialistPickerModal(props: SpecialistPickerProps) {
                 !!cooldown?.is_disabled;
 
         return <Table.Row
+                    key={`specialist_crew_${row.crew.id}`}
                     positive={selection?.id == row.crew.id}
                     onClick={() => setSelection(row)}
                     style={{

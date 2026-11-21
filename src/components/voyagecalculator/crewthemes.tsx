@@ -686,7 +686,7 @@ const ThemesTable = (props: ThemesTableProps) => {
 			</Form>
 
 			{filteredCategories.map((cat) => (
-				<div style={{marginTop: '0.25em', marginBottom: '0.25em'}}>
+				<div key={cat.name} style={{marginTop: '0.25em', marginBottom: '0.25em'}}>
 					<div className='ui header segment'>{cat.name}</div>
 					<Table sortable celled selectable striped>
 						<Table.Header>

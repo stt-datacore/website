@@ -992,7 +992,7 @@ export const ShipRosterCalc = (props: RosterCalcProps) => {
     function renderBattleResult(sug: ShipWorkerItem, idx: number) {
         return <div style={{ width: '100%', gap: '0.5em', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
             <div style={{ display: 'flex', width: '100%', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5em' }}>
-                {sug.crew.map((crew, idx) => <div style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
+                {sug.crew.map((crew, idx) => <div key={`${crew.symbol}_${idx}`} style={{ display: 'flex', width: `${98 / ships[shipIdx].battle_stations!.length}%`, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25em', textAlign: 'center' }}>
 
                     <img style={{ width: '32px', margin: '0.25em' }} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 

@@ -102,6 +102,7 @@ export const CollectionResearchView = (props: GroupTableProps) => {
 									<Grid doubling columns={3} textAlign='center' >
 										{col.crew.map((crew, ccidx) => (
 											<CollectionsCrewCard
+												key={`rescrew_${crew.symbol}_${ccidx}`}
 												compactView={compactView}
 												highlightIfNeeded
 												crew={crew}
