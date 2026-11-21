@@ -119,7 +119,7 @@ export const SeatAssignmentPicker = (props: SeatAssignmentPickerProps) => {
 
 	function renderRow(score: ICrewScore, idx: number, assignedCrew: IRosterCrew | undefined): React.ReactNode {
 		const scoreCrew: IRosterCrew | undefined = rosterCrew.find(crew => crew.id === score.id);
-		if (!scoreCrew) return <></>;
+		if (!scoreCrew) return null;
 
 		const crew: IAssignableCrew = {
 			...scoreCrew,

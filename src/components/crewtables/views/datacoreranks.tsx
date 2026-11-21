@@ -203,7 +203,7 @@ export const CrewDataCoreRankCells = (props: CrewRankCellsProps) => {
                     val = Number(((crew.ranks.scores[field])).toFixed(4));
                     rank = crew.ranks[sortedRanks[idx + 2]] || crew.ranks.scores[sortedRanks[idx + 2]];
                 }
-                if (typeof val !== 'number') return <></>
+                if (typeof val !== 'number') return null;
 
                 return (<Table.Cell key={`scores.${field}`} textAlign='center'
                     style={getCellStyle(field)}

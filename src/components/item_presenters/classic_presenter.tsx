@@ -299,7 +299,7 @@ export const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boole
 					<Accordion.Content active={accOpen}>
 						{crew.obtained_metadata.additional_events.map(add => {
 							let evtData = instances.find(f => f.instance_id === add.instance_id);
-							if (!evtData) return <></>;
+							if (!evtData) return null;
 							if (typeof evtData.event_date === 'string') {
 								evtData.event_date = new Date(evtData.event_date);
 							}

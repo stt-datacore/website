@@ -523,7 +523,7 @@ const ItemInfo = (props: ItemInfoComponentProps) => {
 	}
 
 	function renderEntry(entry: IDemand, idx: number) {
-		if (!entry.equipment) return <></>;
+		if (!entry.equipment) return null;
 		const hc = getHaveCount(entry.equipment.symbol);
 		const scolor = hc < entry.count ? 'tomato' : undefined;
 		return (
