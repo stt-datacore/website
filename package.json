@@ -45,7 +45,7 @@
   "scripts": {
     "build": "node mdgen && tsc -b && vite build",
     "cy:open": "cypress open",
-    "develop": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",
+    "develop": "node mdgen && NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881 --host=127.0.0.1",
     "winbuild": "tsc -b && vite build",
     "windev": "NODE_OPTIONS=--max-old-space-size=4096 vite --port=8881",
     "lint": "eslint .",
