@@ -317,7 +317,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                     <Dropdown
                         selection
                         options={quipmentModes}
-                        value={mode || []}
+                        value={mode}
                         onChange={(e, { value }) =>
                             setMode(value as QuipmentMode)
                         }
@@ -333,7 +333,7 @@ export const QuipmentFilterProvider = (props: QuipmentFilterProps) => {
                             selection
                             scrolling
                             options={itemRarityOpts}
-                            value={rarityOptions}
+                            value={rarityOptions || []}
                             onChange={(e, { value }) =>
                                 setRarityOptions(value as number[] | undefined)
                             }

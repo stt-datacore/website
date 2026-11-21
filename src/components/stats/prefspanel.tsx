@@ -115,7 +115,7 @@ export const StatsPrefsPanel = () => {
                     });
 
                     availopts?.sort((a, b) => a.key === 'none' ? -1 : b.key === 'none' ? 1 : (a.text as string).localeCompare(b.text as string));
-                    const curropts = filterConfig[pos]?.length ? filterConfig[pos] : undefined;
+                    const curropts = (filterConfig[pos] ?? []) as string[];
 
                     return (<div style={{ ...flexCol, alignItems: 'flex-start', textAlign: 'left' }}>
                         <span>{t(`quipment_ranks.${pos}`)}</span>
@@ -154,7 +154,6 @@ export const StatsPrefsPanel = () => {
                     <span>{t('global.date_end')}</span>
                     <Form.Input
                         style={{minWidth: !isMobile ? '14.25em' : undefined}}
-                        clearable
                         type='date'
                         value={filterConfig.end_date}
                         onChange={(e, { value }) => setFilterConfig({ ...filterConfig, end_date: value })}
