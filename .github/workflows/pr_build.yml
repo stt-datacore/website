@@ -22,7 +22,7 @@ jobs:
           install-command: yarn install
           wait-on: 'http://localhost:8881/'
           wait-on-timeout: 240
-          start: yarn run develop
+          start: npm run start
 
       # after the test run completes
       # store videos and any screenshots
