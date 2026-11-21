@@ -84,10 +84,10 @@ export const VoyageStatsChart = (props: VoyageStatsChartProps) => {
 					margin={{ top: 50, right: 170, bottom: 50, left: 60 }}
 					enablePoints= {true}
 					pointSize={0}
-					crosshairType={undefined}
+					//crosshairType={undefined}
 					tooltip={input => {
 						let data = input.point.data;
-						return <>{input.point.serieId}:
+						return <>{input.point.seriesId}:
 						{t('voyage.estimate.n_chance_of_reaching_t', {
 							n: (data.y as number).toFixed(2),
 							t: formatTime(data.x as number, t)

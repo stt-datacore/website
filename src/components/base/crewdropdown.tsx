@@ -15,7 +15,7 @@ export interface CrewPickerProperties {
     fluid?: boolean;
     plain?: boolean;
     showRarity?: boolean;
-    custom?: (crew: PlayerCrew | CrewMember) => JSX.Element;
+    custom?: (crew: PlayerCrew | CrewMember) => React.ReactNode;
     archetypeId?: boolean;
     upward?: boolean;
 }
@@ -50,7 +50,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
                             }}
                         >
                             <img
-                                src={`${process.env.GATSBY_ASSETS_URL}${c.imageUrlPortrait}`}
+                                src={`${process.env.VITE_ASSETS_URL}${c.imageUrlPortrait}`}
                                 style={{
                                     height: "32px",
                                     gridArea: "img",

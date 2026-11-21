@@ -339,8 +339,8 @@ export const getOptCrew = (col: CollectionCombo, costMode: 'normal' | 'sale', se
         }
     }
 
-    let needs = [ col.collection.needed ?? 0, ... cols.map(c => c.collection.needed ?? 0) ];
-    let chks = [ 0, ... cols.map(c => 0) ];
+    let needs = [ col.collection.needed ?? 0, ...cols.map(c => c.collection.needed ?? 0) ];
+    let chks = [ 0, ...cols.map(c => 0) ];
     let allneed = undefined as number | undefined;
 
     crewmap.sort((a, b) => {

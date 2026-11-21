@@ -7,6 +7,8 @@ import {
 	Statistic
 } from 'semantic-ui-react';
 
+import seedrandom from 'seedrandom';
+
 import { useStateWithStorage } from '../../utils/storage';
 
 import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, SolveState, THintGroup } from './model';
@@ -109,7 +111,6 @@ export const DailyGame = () => {
 		};
 
 		const getSeed = (gameId: string) => {
-			const seedrandom = require('seedrandom');
 			const rng = seedrandom(gameId);
 			return Math.floor(rng() * portalCrew.length);
 		};
@@ -198,10 +199,10 @@ export const DailyGame = () => {
 			stats.guesses.fail++;
 			stats.streak = 0;
 		}
-		setStats({... stats});
+		setStats({...stats});
 	}
 
-	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): JSX.Element {
+	function renderShare(evaluatedGuesses: IEvaluatedGuess[]): React.ReactNode {
 		return (
 			<DailyShare
 				gameTime={gameTime}
@@ -212,7 +213,7 @@ export const DailyGame = () => {
 		);
 	}
 
-	function renderStats(): JSX.Element {
+	function renderStats(): React.ReactNode {
 		if (stats.plays === 0) return <></>;
 		if (!showStats)
 			return (
@@ -257,7 +258,7 @@ export const DailyGame = () => {
 		);
 	}
 
-	function renderResetTime(): JSX.Element {
+	function renderResetTime(): React.ReactNode {
 		if (!showStats || solveState === SolveState.Unsolved) return <></>;
 
 		const formatTime = (seconds: number) => {
@@ -286,7 +287,7 @@ const DailyShare = (props: DailyShareProps) => {
 	const { gameTime, solveState, evaluatedGuesses, hintCount } = props;
 
 	const GAME_NAME = 'Worfle';
-	const GAME_URL = `${process.env.GATSBY_DATACORE_URL}crewchallenge`;
+	const GAME_URL = `${process.env.VITE_DATACORE_URL}crewchallenge`;
 
 	const formatEvaluation = (evaluation: number) => {
 		if (evaluation === EvaluationState.Exact)

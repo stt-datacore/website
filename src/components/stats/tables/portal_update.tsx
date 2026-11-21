@@ -59,8 +59,8 @@ export const PortalUpdateTable = () => {
 
     const flexCol = OptionsPanelFlexColumn;
 
-    return (<div style={{...flexCol, margin: '1em 0', gap: '1em', alignItems: 'flex-start'}}>
-        <div style={{...flexCol, alignItems: 'flex-start'}}>
+    return (<div>
+        <div style={{...flexCol, alignItems: 'flex-start', marginBottom:'1em'}}>
             {t('global.portal_update')}
             <Dropdown
                 placeholder={t('hints.filter_by_date')}
@@ -75,7 +75,7 @@ export const PortalUpdateTable = () => {
             pageId='portal_update'
             rosterCrew={selCrew}
             setBuffMode={setBuffMode}
-            rosterType="myCrew"
+            rosterType="allCrew"
             />
         </div>)
 

@@ -12,7 +12,7 @@ import { TinyStore } from './tiny';
 import { demandsPerSlot } from './equipment';
 
 const tiny = TinyStore.getStore(`global_playerSettings`);
-export var gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
+export let gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
 tiny.subscribe((key) => {
 	if (key === 'noGradeColors') {
 		gradeColorsDisabled = tiny.getValue<boolean>('noGradeColors') ?? false;
@@ -31,7 +31,7 @@ export function exportCrewFields(t: TranslateMethod, force_english = true): Expo
 		},
 		{
 			label: 'Have',
-			value: (row: PlayerCrew) => row.have
+			value: (row: PlayerCrew) => row.have ? 'true' : 'false'
 		},
 		{
 			label: 'Short name',
@@ -63,7 +63,7 @@ export function exportCrewFields(t: TranslateMethod, force_english = true): Expo
 		},
 		{
 			label: 'In portal',
-			value: (row: PlayerCrew) => (row.in_portal === undefined ? 'N/A' : row.in_portal)
+			value: (row: PlayerCrew) => (row.in_portal === undefined ? 'N/A' : (row.in_portal ? 'true' : 'false'))
 		},
 		{
 			label: 'Collections',
@@ -365,7 +365,7 @@ export function download(filename: string, text: any) {
 	if (isText) {
 		downloadData(`data:${mimeType},${encodeURIComponent(text)}`, filename);
 	} else {
-		var a = new FileReader();
+		let a = new FileReader();
 		a.onload = (e) => {
 			if (e.target && e.target.result) downloadData(e.target.result as string, filename);
 		};
@@ -445,12 +445,6 @@ export function mergeListsOneToMany<T, U extends T>(onelist: T[], manylist: U[],
 		}
 		results.push(res);
 	}
-	// results.sort((a, b) => {
-	// 	let ax = orgList.findIndex(fi => fi === a.token);
-	// 	let bx = orgList.findIndex(fi => fi === b.token);
-	// 	return ax - bx;
-	// });
-
 	return results;
 }
 
@@ -523,9 +517,9 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 			}
 		}
 
-		if (crew.immortal) {
-			if (buffConfig) applyCrewBuffs(crew, buffConfig);
-			crew.have = true;
+		crew.have = !!crew.immortal && (crew.immortal === CompletionState.DisplayAsImmortalOwned || crew.immortal === CompletionState.Immortalized || crew.immortal > 0);
+
+		if (crew.have) {
 			crew.highest_owned_rarity = crew.max_rarity ?? crew.rarity;
 			crew.highest_owned_level = crew.max_level ?? 100;
 			crew.q_bits ??= 0;
@@ -537,7 +531,7 @@ export function prepareOne(origCrew: CrewMember | PlayerCrew, playerData?: Playe
 	}
 	//let ccc = null as any;
 	if (!crew.preview) {
-		inroster = (knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal === undefined || c.immortal <= 0) && c.archetype_id === crew.archetype_id) ?? []));
+		inroster = (knownPlayerCrew?.concat(inroster) || inroster.concat(playerData?.player?.character?.crew?.filter(c => (c.immortal === undefined || c.immortal <= 0) && c.archetype_id === crew.archetype_id && c.symbol === crew.symbol) ?? []));
 		//ccc = playerData?.player?.character?.crew?.filter(fc => fc.symbol === 'troi_lwaxana_fascination_crew');
 	}
 	else {
@@ -715,14 +709,11 @@ export function prepareProfileData(caller: string, allcrew: CrewMember[], player
 	let ownedCrew = [] as PlayerCrew[];
 	let unOwnedCrew = [] as PlayerCrew[];
 	let cidx = -1;
-	playerData.player.character.crew.sort((a, b) => a.archetype_id - b.archetype_id || a.id - b.id);
-	allcrew.sort((a, b) => a.archetype_id - b.archetype_id);
-	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.archetype_id - b.archetype_id);
+	playerData.player.character.crew.sort((a, b) => a.symbol.localeCompare(b.symbol) || a.archetype_id - b.archetype_id || a.id - b.id);
+	allcrew.sort((a, b) => a.symbol.localeCompare(b.symbol) || a.archetype_id - b.archetype_id);
+	let twolists = mergeListsOneToMany(allcrew, playerData.player.character.crew, (a, b) => a.symbol.localeCompare(b.symbol) || a.archetype_id - b.archetype_id);
 	for (let tl of twolists) {
 		let c = tl.token;
-		if (c.symbol === 'troi_lwaxana_fascination_crew') {
-			console.log('break');
-		}
 		for (let crew of prepareOne(c, playerData, buffConfig)) {
 			if (crew.have) {
 				if (!crew.id) {
@@ -879,8 +870,8 @@ export function getPairScore(scores: GauntletPairScore[], pair: string) {
 }
 
 
-export function shortToSkill(rank: string, english?: boolean): PlayerSkill | undefined {
-	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === rank) : CONFIG.SKILLS_SHORT.find(f => f.short === rank);
+export function shortToSkill(skill: string, english?: boolean): PlayerSkill | undefined {
+	let f = english ? CONFIG.SKILLS_SHORT_ENGLISH.find(f => f.short === skill) : CONFIG.SKILLS_SHORT.find(f => f.short === skill);
 	if (f) return f.name as PlayerSkill;
 	return undefined;
 }
@@ -1124,7 +1115,7 @@ export function getShipChargePhases(item?: PlayerCrew | CrewMember | ShipAction 
 	action.charge_phases.forEach(cp => {
 		// After {{seconds}}s, {{action}}
 		charge_time += cp.charge_time;
-		let phaseDescription = '';
+		let phaseDescription: string;
 
 		if (t) {
 			phaseDescription = t(`ship.charge_phase.after_seconds${short ? '_short' : ''}`, { seconds: `${charge_time}` });
@@ -1315,9 +1306,9 @@ export function applySkillBuff(buffConfig: BuffStatTable, skill: string, base_sk
 }
 
 export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | CrewMember, preferEnglish = true) {
+	let daxname: string;
 	switch(trait) {
 		case "dax":
-			let daxname = '';
 			if (Array.isArray(crewGroup)) {
 				daxname = (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
 			}
@@ -1326,6 +1317,10 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			}
 			if (daxname === 'Ezri') return daxname;
 			return 'Dax';
+		// case "una":
+		// 	return "Una";
+		// case "number_one":
+		// 	return "Number One";
 		case "tpring":
 			return "T'Pring";
 		case "mbenga":
@@ -1336,7 +1331,6 @@ export function getShortNameFromTrait(trait: string, crewGroup: CrewMember[] | C
 			return "M. Burnham";
 		case "mburnham_sr":
 			return "M. Burnham, Sr."
-
 		default:
 			if (Array.isArray(crewGroup)) {
 				return (preferEnglish ? crewGroup[0].short_name_english : '') || crewGroup[0].short_name;
@@ -1378,6 +1372,8 @@ export function getVariantTraits(subject: PlayerCrew | CrewMember | string[]): s
 			}
 		});
 	}
+	// if (variantTraits.includes("una")) variantTraits.push("number_one");
+	// else if (variantTraits.includes("number_one")) variantTraits.push("una");
 
 	return variantTraits;
 }
@@ -1648,10 +1644,10 @@ export function mapToRankings(map: { [key: string]: { [key: string]: (PlayerCrew
 		ableSet = Object.keys(map).map(key => Number.parseInt(key));
 	}
 
-	for (var ability of ableSet) {
+	for (let ability of ableSet) {
 		let currmap = map[ability];
 		if (currmap) {
-			for (var stat in currmap) {
+			for (let stat in currmap) {
 				let value = Number.parseInt(stat);
 				let actions = currmap[stat];
 				if (actions) {
@@ -1729,9 +1725,9 @@ export function printSkillOrder(crew: PlayerCrew | CrewMember) {
 }
 
 
-export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod, long?: boolean) {
+export function prettyObtained(item: { obtained: string } | { obtained?: string }, t: TranslateMethod, long?: boolean) {
 	long ??= false;
-	let obstr = `${crew.obtained}`;
+	let obstr = `${item.obtained}`;
 	if (obstr === 'HonorHall') obstr = 'Honor Hall';
 	else if (obstr === 'FactionStore') obstr = 'Faction';
 	if (long) {
@@ -1740,7 +1736,7 @@ export function prettyObtained(crew: PlayerCrew | CrewMember, t: TranslateMethod
 	else {
 		obstr = t(`obtained.short.${obstr}`);
 	}
-	return obstr;
+	return obstr || item.obtained || '';
 }
 
 /**
@@ -1832,12 +1828,30 @@ export function skillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)
 	}
 }
 
+/**
+ * Adds one or more skill-type objects together by minimum power
+ * @param skills The skill or skills to add
+ * @param mode Specify what to add (optional)
+ * @returns The sum of core + ((max+min) * 0.5) (depending on mode) from every element.
+ */
+export function minSkillSum(skills: Skill | ComputedSkill | (Skill | ComputedSkill)[]): number {
+	if (Array.isArray(skills)) {
+		return skills.reduce((p, n) => p + minSkillSum(n), 0);
+	}
+	else if ("range_min" in skills) {
+		return skills.core + skills.range_min;
+	}
+	else {
+		return skills.core + skills.min;
+	}
+}
+
 export function powerSum(skills: Skill[]): { [key: string]: Skill } {
 	const output = {} as { [key: string]: Skill };
 	skills.forEach((skill) => {
 		if (!skill.skill) return;
 		if (!output[skill.skill]) {
-			output[skill.skill] = { ... skill };
+			output[skill.skill] = { ...skill };
 		}
 		else {
 			output[skill.skill] = skillAdd(output[skill.skill], skill) as Skill;

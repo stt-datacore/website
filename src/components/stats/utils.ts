@@ -42,7 +42,7 @@ export const HiddenTraitCols = {
 };
 
 export function getRGBSkillColors() {
-    const output = { ... SkillColors };
+    const output = { ...SkillColors };
     Object.keys(output).forEach((key) => {
         let res = convert.hex.rgb(output[key].slice(1));
         output[key] = `rgb(${res[0]},${res[1]},${res[2]})`
@@ -71,7 +71,7 @@ export function findHigh(epoch_day: number, skills: string[], data: Highs[], rar
 }
 
 export function skillIcon(skill: string) {
-    return `${process.env.GATSBY_ASSETS_URL}/atlas/icon_${skill}.png`;
+    return `${process.env.VITE_ASSETS_URL}/atlas/icon_${skill}.png`;
 }
 
 export function formatElapsedDays(days: number, t: TranslateMethod, ago = false): string {
@@ -722,7 +722,7 @@ export function fillGaps(data: EpochItem[]) {
             }
             else if (prevrec) {
                 let prevchunk = prevrec;
-                let newrec = { ... prevchunk };
+                let newrec = { ...prevchunk };
 
                 newrec.epoch_day = m;
                 // newrec.prev = prevchunk;

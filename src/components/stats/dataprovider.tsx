@@ -26,7 +26,7 @@ const defaultContextData = {
 
 export const StatsContext = React.createContext(defaultContextData);
 
-export const StatsDataProvider = (props: { children: JSX.Element }) => {
+export const StatsDataProvider = (props: { children: React.ReactNode }) => {
     const { children } = props;
     const globalContext = React.useContext(GlobalContext);
     const { crew: globalCrew } = globalContext.core;
@@ -50,7 +50,7 @@ export const StatsDataProvider = (props: { children: JSX.Element }) => {
         }
         obtainlist.sort();
         const crew = crewCopy(globalCrew)
-            .sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
+            .sort((a, b) => a.date_added.getTime() - b.date_added.getTime() || a.archetype_id - b.archetype_id);
 
         setUniqueObtained(obtainlist);
         setMasterCrew(crew);

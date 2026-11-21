@@ -25,3 +25,8 @@ export function alphaFieldSort(a: IEssentialData, b: IEssentialData, sortField: 
 	if (sortDirection === 'descending') return b[sortField.id].localeCompare(a[sortField.id]);
 	return a[sortField.id].localeCompare(b[sortField.id]);
 }
+
+// Lowercase strings and strip non-alphanumeric characters for smarter text matching
+export function standardize(fieldValue: string): string {
+	return fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '');
+}

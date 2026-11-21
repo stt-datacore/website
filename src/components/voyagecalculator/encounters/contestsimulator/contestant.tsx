@@ -22,7 +22,7 @@ type ContestantProps = {
 	skills: string[];
 	critChances: number[];
 	contestant: IContestant;
-	wins: string | JSX.Element;
+	wins: string | React.ReactNode;
 	editContestant: (contestant: IContestant) => void;
 	dismissContestant?: () => void;
 	compact?: boolean;
@@ -116,7 +116,7 @@ export const Contestant = (props: ContestantProps) => {
 		</React.Fragment>
 	);
 
-	function renderFullHeader(): JSX.Element {
+	function renderFullHeader(): React.ReactNode {
 		return (
 			<React.Fragment>
 				<Message.Header style={{ textAlign: 'center' }}>
@@ -127,7 +127,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderCompactHeader(): JSX.Element {
+	function renderCompactHeader(): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', columnGap: '1em' }}>
 				<div>
@@ -140,9 +140,8 @@ export const Contestant = (props: ContestantProps) => {
 							<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 								<span>
 									<img
-										src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+										src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
 										style={{ height: '1.1em', verticalAlign: 'middle' }}
-										className='invertibleIcon'
 									/>
 								</span>
 								<span>
@@ -156,7 +155,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderAvatar(): JSX.Element {
+	function renderAvatar(): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'center' }}>
 				{contestant.crew && (
@@ -176,7 +175,7 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderContestantSkill(skill: string): JSX.Element {
+	function renderContestantSkill(skill: string): React.ReactNode {
 		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
 
 		return (
@@ -185,9 +184,8 @@ export const Contestant = (props: ContestantProps) => {
 					<Grid columns='equal' verticalAlign='middle'>
 						<Grid.Column textAlign='center'>
 							<img
-								src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+								src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 								style={{ height: '1.5em' }}
-								className='invertibleIcon'
 							/>
 						</Grid.Column>
 						<Grid.Column width={9} textAlign='center'>
@@ -208,16 +206,15 @@ export const Contestant = (props: ContestantProps) => {
 		);
 	}
 
-	function renderContestantSkillLabel(skill: string): JSX.Element {
+	function renderContestantSkillLabel(skill: string): React.ReactNode {
 		const contestantSkill: IContestSkill | undefined = contestant.skills.find(cs => cs.skill === skill);
 		return (
 			<Label key={skill}>
 				<div style={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', columnGap: '.3em' }}>
 					<span>
 						<img
-							src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill}.png`}
+							src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`}
 							style={{ height: '1.1em', verticalAlign: 'middle' }}
-							className='invertibleIcon'
 						/>
 					</span>
 					<span>

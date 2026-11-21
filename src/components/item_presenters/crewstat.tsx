@@ -31,15 +31,16 @@ class CrewStat extends PureComponent<CrewStatProps> {
 					display: 'inline-grid',
 					width: 'max-content',
 					textAlign: vertical ? 'center' : undefined,
+					alignItems:  'center',
 					gridTemplateColumns: vertical ? `auto` : `${2.5 * scale}em auto auto`,
-					gridTemplateAreas: vertical ? `'icon' 'stats' 'profs' 'crits'` : `'icon stats profs' 'icon crits crits'`,
+					gridTemplateAreas: vertical ? `'icon' 'stats' 'profs' 'crits'` : (!quipmentMode ? `'icon stats profs'` : `'icon stats profs' 'icon crits crits'`),
 					gridGap: `${0.2 * scale}em`,
 					paddingTop: `${0.2 * scale}em`,
 					paddingRight: vertical ? '0' : `${0.4 * scale}em`,
 					...this.props.gridStyle
 				}}>
 				<div style={{ gridArea: 'icon' }}>
-					<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
+					<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${this.props.skill_name}.png`} style={{ height: `${2 * scale}em` }} />
 				</div>
 				{!!stats && (
 					<React.Fragment>
@@ -60,7 +61,7 @@ class CrewStat extends PureComponent<CrewStatProps> {
 						</div>}
 						{!!quipmentMode &&
 						<div style={{ gridArea: 'crits', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-							<img src={`${process.env.GATSBY_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
+							<img src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`} style={{ height: `${1 * scale}em` }} />
 							<span style={{ fontWeight: 'bolder', fontSize: `${scale}em` }}>
 								{stats.core! + stats.range_min!}-{stats.core! + stats.range_max!}
 							</span>

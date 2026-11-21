@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'gatsby';
+import { Link } from 'react-router-dom';
 import {
 	Button,
 	Dropdown,
@@ -117,7 +117,7 @@ export const CrewTable = () => {
 		tableConfig.push({
 			width: 1,
 			column: `skill_assignments.${skill.name}.usage`,
-			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
+			title: <img alt={CONFIG.SKILLS[skill.name]} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill.name}.png`} style={{ height: '1.1em' }} />,
 			reverse: true
 		});
 	});
@@ -163,7 +163,7 @@ export const CrewTable = () => {
 		</React.Fragment>
 	);
 
-	function renderTableRow(crew: ITrackedCrewMember): JSX.Element {
+	function renderTableRow(crew: ITrackedCrewMember): React.ReactNode {
 		const dtLastAssignment = crew.assignments.length > 0 ? new Date(crew.last_assignment.created_at) : undefined;
 		return (
 			<Table.Row key={crew.symbol}>
@@ -177,7 +177,7 @@ export const CrewTable = () => {
 						}}>
 						<div style={{ gridArea: 'icon' }}>
 							<CrewTarget targetGroup='voyageCrewHistory' inputItem={crew}>
-								<img width={48} src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							</CrewTarget>
 						</div>
 						<div style={{ gridArea: 'stats' }}>
@@ -209,7 +209,7 @@ export const CrewTable = () => {
 		);
 	}
 
-	function renderPercentCell(crew: ITrackedCrewMember, skillName: string): JSX.Element {
+	function renderPercentCell(crew: ITrackedCrewMember, skillName: string): React.ReactNode {
 		const usage = crew.skill_assignments[skillName].usage;
 		if (usage === 0) return (<Table.Cell key={skillName} />);
 		return (
@@ -281,7 +281,7 @@ const CrewSkillModal = (props: CrewSkillModalProps) => {
 							<Table.HeaderCell />
 							{CONFIG.SKILLS_SHORT.map(secondary => (
 								<Table.HeaderCell key={secondary.name} textAlign='center'>
-									<img alt={CONFIG.SKILLS[secondary.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${secondary.name}.png`} style={{ height: '1.1em', verticalAlign: 'text-bottom' }} />
+									<img alt={CONFIG.SKILLS[secondary.name]} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${secondary.name}.png`} style={{ height: '1.1em', verticalAlign: 'text-bottom' }} />
 									<Icon name='star' color='grey' />
 								</Table.HeaderCell>
 							))}
@@ -291,7 +291,7 @@ const CrewSkillModal = (props: CrewSkillModalProps) => {
 						{CONFIG.SKILLS_SHORT.map(primary => (
 							<Table.Row key={primary.name}>
 								<Table.HeaderCell textAlign='center'>
-									<img alt={CONFIG.SKILLS[primary.name]} src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_${primary.name}.png`} style={{ height: '1.1em', verticalAlign: 'text-bottom' }} />
+									<img alt={CONFIG.SKILLS[primary.name]} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${primary.name}.png`} style={{ height: '1.1em', verticalAlign: 'text-bottom' }} />
 									<Icon name='star' color='yellow' />
 								</Table.HeaderCell>
 								{CONFIG.SKILLS_SHORT.map(secondary => (
