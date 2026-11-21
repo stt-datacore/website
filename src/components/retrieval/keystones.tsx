@@ -123,7 +123,8 @@ const ModePicker = (props: ModePickerProps) => {
 						<Step.Description>{t('retrieval.modes.mutual_polestar_calculator_desc')}</Step.Description>
 					</Step.Content>
 				</Step>}
-				<Step style={{width: isMobile ? '100%' : '33%'}}  key={`celestial_market`} active={mode === 'market'} onClick={() => setMode('market')}>
+				{/* Rendered as a div (with link styling) so the refresh Label <a> isn't nested inside an <a> */}
+				<Step as='div' link style={{width: isMobile ? '100%' : '33%'}}  key={`celestial_market`} active={mode === 'market'} onClick={() => setMode('market')}>
 					<Step.Content>
 						<Step.Title>{t('retrieval.market.title')}
 							<Label as='a' corner='right' onClick={() => reloadMarket()}>

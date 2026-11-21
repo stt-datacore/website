@@ -102,6 +102,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
 
         <Table>
             <Table.Header>
+                <Table.Row>
                 <Table.HeaderCell>
                     <Pagination
                         totalPages={totalPages}
@@ -120,6 +121,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                     </span>
 
                 </Table.HeaderCell>
+                </Table.Row>
             </Table.Header>
         </Table>
 
@@ -189,6 +191,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
 
         <Table>
             <Table.Header>
+                <Table.Row>
                 <Table.HeaderCell>
                     <Pagination
                         totalPages={totalPages}
@@ -207,6 +210,7 @@ export const GauntletTileView = (props: GauntletTileViewProps) => {
                     </span>
 
                 </Table.HeaderCell>
+                </Table.Row>
             </Table.Header>
         </Table>
 

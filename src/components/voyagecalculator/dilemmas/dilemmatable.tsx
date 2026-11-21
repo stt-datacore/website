@@ -220,7 +220,7 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
         const farsize = !!row.narrative ? '24px' : '0';
         const gradesize = !gradeColorsDisabled ? '12px' : '0';
         if (gradeColorsDisabled) bgColor = undefined;
-        return <>
+        return (
             <Table.Row key={key}>
                 <Table.Cell
                     style={{
@@ -307,9 +307,9 @@ export const DilemmaTable = (props: DilemmaTableProps) => {
                         </Table.Cell>
                     )
                 })}
-                {!row.choiceC && <Table.Row></Table.Row>}
+                {!row.choiceC && <Table.Cell />}
             </Table.Row>
-        </>
+        );
     }
 
     function renderChoice(choice: DilemmaChoice, selected: boolean, choiceVar: string, selObj?: CrewMember | ReferenceShip, selLoot?: Loot[], icon?: { name: SemanticICONS, color?: SemanticCOLORS }) {

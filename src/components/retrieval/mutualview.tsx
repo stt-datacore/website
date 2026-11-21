@@ -664,7 +664,7 @@ const MutualTable = (props: MutualTableProps) => {
             </Table.Body>
             <Table.Footer>
                 <Table.Row>
-                    <Table.HeaderCell colspan={4}>
+                    <Table.HeaderCell colSpan={4}>
                         <Pagination
                             totalPages={totalPages}
                             activePage={activePage}
@@ -752,8 +752,8 @@ const MutualTable = (props: MutualTableProps) => {
             </Table.Cell>
             <Table.Cell width={3}>
             <div style={{display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em'}}>
-                <p>{printCredits(costs?.credits ?? 0, t)}</p>
-                <p>{printQuantum(costs?.quantum ?? 0, t)}</p>
+                <div style={{marginBottom: '1em'}}>{printCredits(costs?.credits ?? 0, t)}</div>
+                <div>{printQuantum(costs?.quantum ?? 0, t)}</div>
             </div>
             </Table.Cell>
         </Table.Row>

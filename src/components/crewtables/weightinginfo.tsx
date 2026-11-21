@@ -171,6 +171,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
                     <b>{t(`ranking_tools.weights.${transKey}.title`)}</b>
                 </div>
                 <Table striped>
+                    <Table.Body>
                     {weightKeys.map(key => {
                         return (
                             <Table.Row key={`base_weights_${key}_${plus}`}>
@@ -188,6 +189,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
                             </Table.Row>
                         )
                     })}
+                    </Table.Body>
                 </Table>
             </div>
 
@@ -200,6 +202,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
         else weightKeys?.sort((a, b) => a.localeCompare(b));
         return (
             <Table striped>
+                <Table.Body>
                 {!!weightKeys && !!weighting && weightKeys.map((key) => {
                     return (<Table.Row key={`WeightingRow_${key}`}>
                         <Table.Cell>
@@ -232,6 +235,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
                         </Table.Cell>
                     </Table.Row>)
                 })}
+                </Table.Body>
             </Table>
         )
     }

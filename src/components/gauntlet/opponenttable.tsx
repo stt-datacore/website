@@ -202,7 +202,7 @@ export const OpponentTable = (props: OpponentTableProps) => {
             </Table.Body>
             <Table.Footer>
                 <Table.Row>
-                    <Table.HeaderCell colspan={4}>
+                    <Table.HeaderCell colSpan={4}>
                         <Pagination
                             totalPages={totalPages}
                             activePage={activePage}
