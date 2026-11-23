@@ -132,7 +132,8 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 			params.append('crew', symbol);
 		}
 
-		this.setState({ entries, currentSelectedItems: value });
+		// The dropdown keys its selected labels by value, so it gets each crew once; the images keep any repeats.
+		this.setState({ entries, currentSelectedItems: [...new Set(value as string[])] });
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);
