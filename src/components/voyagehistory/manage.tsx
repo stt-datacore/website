@@ -371,14 +371,6 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { history } = React.useContext(HistoryContext);
 
-	const saveButton: IManageButton = {
-		key: 'voyage.tracking.export',
-		icon: 'download',
-		content: t('voyage.voyage_history.export_history'),
-		show: true,
-		onClick: () => exportHistory()
-	};
-
 	return (
 		<Message>
 			<Message.Content>
@@ -390,10 +382,9 @@ const DataManagementPlaceholder = (props: ManageRemoteSyncProps) => {
 
 				<p>{t('voyage.voyage_history.manage_placeholder')}</p>
 				<Button
-					icon={saveButton.icon}
-					content={saveButton.content}
-					disabled={saveButton.disabled}
-					onClick={saveButton.onClick}
+					icon='download'
+					content={t('voyage.voyage_history.export_history')}
+					onClick={() => exportHistory()}
 				/>
 			</Message.Content>
 		</Message>
