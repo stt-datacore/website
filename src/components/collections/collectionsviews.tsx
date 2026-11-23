@@ -277,25 +277,21 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					})}
 				</Step.Group>
 			</div>
-			{tabIndex !== undefined &&
-			<>
-				<Header as='h4'>{tabPanes[tabIndex].longTitle || t(`collections.panes.${tabPanes[tabIndex].mode}.long_title`)}</Header>
-				<p>{tabPanes[tabIndex].longDescription || t(`collections.panes.${tabPanes[tabIndex].mode}.long_description`)}</p>
+			<Header as='h4'>{tabPanes[tabIndex].longTitle || t(`collections.panes.${tabPanes[tabIndex].mode}.long_title`)}</Header>
+			<p>{tabPanes[tabIndex].longDescription || t(`collections.panes.${tabPanes[tabIndex].mode}.long_description`)}</p>
 
-				{tabPanes[tabIndex].showFilters &&
-					<CollectionPrefs
-						compactView={compactView}
-						setCompactView={setCompactView}
-						mode={tabPanes[tabIndex].mode as any}
-						playerCollections={playerCollections}
-						extendedCollections={extendedCollections}
-						colCombos={colCombos}
-						workerRunning={workerRunning}
-						/>
-				}
-				{tabPanes[tabIndex].render(workerRunning)}
-			</>
+			{tabPanes[tabIndex].showFilters &&
+				<CollectionPrefs
+					compactView={compactView}
+					setCompactView={setCompactView}
+					mode={tabPanes[tabIndex].mode as any}
+					playerCollections={playerCollections}
+					extendedCollections={extendedCollections}
+					colCombos={colCombos}
+					workerRunning={workerRunning}
+					/>
 			}
+			{tabPanes[tabIndex].render(workerRunning)}
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>
