@@ -207,7 +207,7 @@ export const TraitDistributions = (props: TraitDistributionProps) => {
                 <div style={{...flexRow, justifyContent:'flex-start', gap: '1em'}}>
                     <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
                     <p>
-                        <span>{label.split("/").map((trait, idx) => <b key={`trait_${idx}`}>{!!idx && <>,&nbsp;</>}{trait}</b>)}</span>
+                        <span>{label.split("/").map((trait, idx) => <b key={`trait_${trait}`}>{!!idx && <>,&nbsp;</>}{trait}</b>)}</span>
                         {!!cmm && !stats && (
                             <span>
                                 <br />

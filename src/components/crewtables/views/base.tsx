@@ -384,10 +384,10 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			<div className='ui segment'
 				style={{...OptionsPanelFlexRow}}
 			>
-				{crew.factionItems!.map((item, idx) => {
+				{crew.factionItems!.map((item) => {
 
 					return (
-						<div key={`faction_item_${crew.symbol}_${idx}`} style={{...OptionsPanelFlexColumn}}>
+						<div key={`faction_item_${crew.symbol}_${item.symbol}`} style={{...OptionsPanelFlexColumn}}>
 							<AvatarView
 								mode='item'
 								item={item}

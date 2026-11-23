@@ -660,7 +660,7 @@ const MutualTable = (props: MutualTableProps) => {
                 </Table.Row>
             </Table.Header>
             <Table.Body>
-                {currentPage.map((item, idx) => renderTableRow(item, pageStartIdx + idx))}
+                {currentPage.map((item) => renderTableRow(item))}
             </Table.Body>
             <Table.Footer>
                 <Table.Row>
@@ -686,11 +686,11 @@ const MutualTable = (props: MutualTableProps) => {
         </Table>
     </div>)
 
-    function renderTableRow(item: DisplayItem, idx: number) {
+    function renderTableRow(item: DisplayItem) {
 
         const costs = item.cost;
 
-        return <Table.Row key={`${item.combo.map(c => c.symbol).join(',')}_${idx}`}>
+        return <Table.Row key={`${item.combo.map(c => c.symbol).join(',')}_${item.crew.map(c => c.symbol).join(',')}`}>
             <Table.Cell>
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
                     {item.combo.map((polestar) => {

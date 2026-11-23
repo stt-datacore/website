@@ -115,7 +115,7 @@ export const StatTrendsComponent = () => {
 
     if (filterConfig.primary.length || filterConfig.secondary.length || filterConfig.tertiary.length) {
         const fcs = makeFilterCombos(filterConfig, false);
-        fcs.forEach((skillKey, comboIdx) => {
+        fcs.forEach((skillKey) => {
             const preskill = skillKey.split(",").filter(f => f);
             if (skillKey.trim()) {
                 const newelem = [] as React.ReactNode[];
@@ -128,7 +128,7 @@ export const StatTrendsComponent = () => {
                         {text === '*' ? '*' : ''}
                     </span>)
                 });
-                skillDecors.push(<Label key={`skill_combo_${comboIdx}_${skillKey}`} color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
+                skillDecors.push(<Label key={`skill_combo_${skillKey}`} color='green' style={{border: '1px solid gray', borderRadius: '1em'}}>{newelem}</Label>)
             }
 
             if (sst) sst += "; ";

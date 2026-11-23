@@ -206,7 +206,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
         }
 
         let mt = true;
-        const dcrew = item.demandCrew?.map((sym, idx) => {
+        const dcrew = item.demandCrew?.map((sym) => {
             const crew = roster.find(f => {
                 if (f.symbol !== sym || (f.level === 100 && f.equipment?.length === 4)) return false;
                 // if (mode === 'immediate') {
@@ -222,7 +222,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                 return f;
             });
             if (crew) mt = false;
-            return (<React.Fragment key={'demand_crew_' + sym + idx}>
+            return (<React.Fragment key={'demand_crew_' + sym}>
                 {crew && <div
                     onClick={(e) => this.navigate("/crew/" + crew.symbol)}
                     style={{
