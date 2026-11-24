@@ -40377,6 +40377,23 @@ ui.table thead th.sticky {
 }
 
 /*******************************
+         Responsive Table Cells
+*******************************/
+@media only screen and (max-width: 767px) {
+  .ui.table td.desktop,
+  .ui.table th.desktop {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .ui.table td.mobile,
+  .ui.table th.mobile {
+    display: none;
+  }
+}
+
+/*******************************
          Site Overrides
 *******************************/
 /*

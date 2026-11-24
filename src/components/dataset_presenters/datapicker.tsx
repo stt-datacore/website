@@ -17,16 +17,8 @@ import { useStateWithStorage } from '../../utils/storage';
 import { IDataGridSetup, IDataPickerState, IDataTableSetup, IEssentialData } from './model';
 import { DataGrid } from './datagrid';
 import { DataTable } from './datatable';
+import { useDataPreparer } from './usedata';
 import { standardize } from './utils';
-
-interface IQueryRequest {
-	input: string;
-	terms: string[];
-	index: number;
-	matches: Set<number>;
-};
-
-const QUERY_BATCH_SIZE: number = 100;
 
 type DataPickerProps = {
 	id: string;
@@ -34,6 +26,7 @@ type DataPickerProps = {
 	closePicker: (selectedIds: Set<number>, affirmative: boolean) => void;
 	singleSelect?: boolean;
 	title?: string | React.ReactNode;
+	/** preFilteredIds here are ids that should NOT be listed */
 	preFilteredIds?: Set<number>;
 	preSelectedIds?: Set<number>;
 	selection?: boolean;
@@ -52,19 +45,31 @@ export const DataPicker = (props: DataPickerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
 	// Queryable data is the prefiltered dataset BEFORE filtering further by query
-	const queryableData = React.useMemo<IEssentialData[]>(() => {
-		if (props.preFilteredIds)
-			return props.data.filter(datum => !props.preFilteredIds?.has(datum.id));
-		return props.data;
-	}, [props.data, props.preFilteredIds]);
+	//	Caching a copy of queryable data here to make subsequent queries faster
+	const [queryableData, setQueryableData] = React.useState<IEssentialData[] | undefined>(undefined);
+	const prepareQueryableData = useDataPreparer<IEssentialData>(
+		[{ match: (datum) => !props.preFilteredIds?.has(datum.id) }],
+		{
+			batchesPerPass: 5,
+			onProgress: (progress) => setProgress(progress)
+		}
+	);
+
+	// Queried data is the dataset AFTER filtering by query
+	const [queriedData, setQueriedData] = React.useState<IEssentialData[] | undefined>(undefined);
+	const prepareQueriedData = useDataPreparer<IEssentialData>(
+		[{ match: (datum) => dataMatches(datum) }],
+		{
+			onProgress: (progress) => setProgress(progress)
+		}
+	);
 
 	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
-	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(new Set<number>());
+	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(props.preSelectedIds ?? new Set<number>());
 
-	// Reset search query and results on each reload
+	// Reset search query and progress on each reload
 	const [searchQuery, setSearchQuery] = React.useState<string>('');
-	const [queryRequest, setQueryRequest] = React.useState<IQueryRequest | undefined>(undefined);
-	const [queriedData, setQueriedData] = React.useState<IEssentialData[]>(queryableData);
+	const [progress, setProgress] = React.useState<number>(0);
 
 	// Close options on each reload
 	const [showOptions, setShowOptions] = React.useState<boolean>(false);
@@ -72,67 +77,42 @@ export const DataPicker = (props: DataPickerProps) => {
 	// Persist layout preference
 	const [layout, setLayout] = useStateWithStorage<'grid' | 'table'>(`${props.id}/layout`, props.tableSetup ? 'table' : 'grid');
 
-	// Initialize query process on changes to prefilters or query
+	const [modalIsBlurring, setModalIsBlurring] = React.useState<boolean>(false);
+
+	// Process queryable data on changes to master dataset or prefilters
 	React.useEffect(() => {
-		// Skip query process on empty search and return all queryable data
+		// Bypass preparer if no filters active
+		if (!props.preFilteredIds) {
+			setQueryableData(props.data);
+			return;
+		}
+		prepareQueryableData(props.data).then(queryableData => {
+			setQueryableData(queryableData);
+		});
+	}, [props.data, props.preFilteredIds]);
+
+	// Process queried data on changes to queryable data or query
+	React.useEffect(() => {
+		if (!queryableData) return;
+		// Bypass preparer on empty search
 		if (searchQuery === '') {
-			setQueryRequest(undefined);
 			setQueriedData(queryableData);
 			return;
 		}
-		// If query already in progress, delay new request to give previous request a chance to self-cancel
-		setTimeout(() => {
-			// Parse and validate comma-delimited terms here
-			const terms: string[] = [];
-			searchQuery.split(',').forEach(userTerm => {
-				const term: string = userTerm.trim();
-				if (term !== '') terms.push(term);
-			});
-			setQueryRequest({
-				input: searchQuery,
-				terms,
-				index: 0,
-				matches: new Set<number>()
-			});
-		}, queryRequest ? 100 : 0);
-	}, [queryableData, searchQuery]);
-
-	// Process query request in batches
-	React.useEffect(() => {
-		// Self-cancel request if query doesn't exist or if it's changed
-		if (!queryRequest || queryRequest.input !== searchQuery) return;
-		const newMatches: Set<number> = new Set<number>(queryRequest.matches);
-		for (let i = queryRequest.index; i < queryRequest.index + QUERY_BATCH_SIZE; i++) {
-			if (i >= queryableData.length) break;
-			const datum: IEssentialData = queryableData[i];
-			if (dataMatches(datum, queryRequest.terms))
-				newMatches.add(datum.id);
-		}
-		// Queue next batch
-		if (queryRequest.index + QUERY_BATCH_SIZE < queryableData.length) {
-			setQueryRequest({
-				...queryRequest,
-				index: queryRequest.index + QUERY_BATCH_SIZE,
-				matches: newMatches
-			});
-		}
-		// Finalize (i.e. send to render)
-		else {
-			const queriedData: IEssentialData[] = queryableData.filter(datum => newMatches.has(datum.id));
-			setQueryRequest(undefined);
+		prepareQueriedData(queryableData).then(queriedData => {
 			setQueriedData(queriedData);
-		}
-	}, [queryRequest]);
-
-	// Update selected ids on external changes
-	React.useEffect(() => {
-		setPendingSelectedIds(props.preSelectedIds ?? new Set<number>());
-	}, [props.preSelectedIds]);
+		});
+	}, [queryableData, searchQuery]);
 
 	// Hide options on search query change
 	React.useEffect(() => {
 		setShowOptions(false);
 	}, [searchQuery]);
+
+	// Ensures closePicker sends latest pendingSelectedIds on modal blur
+	React.useEffect(() => {
+		if (modalIsBlurring) props.closePicker(pendingSelectedIds, false);
+	}, [modalIsBlurring]);
 
 	const inputRef = React.createRef<HTMLInputElement>();
 	React.useEffect(() => {
@@ -140,7 +120,7 @@ export const DataPicker = (props: DataPickerProps) => {
 	}, []);
 
 	const dataPickerState: IDataPickerState = {
-		data: queriedData,
+		data: queriedData ?? [],
 		pendingSelectedIds, setPendingSelectedIds,
 		searchQuery, setSearchQuery,
 		showOptions, setShowOptions,
@@ -150,13 +130,13 @@ export const DataPicker = (props: DataPickerProps) => {
 	return (
 		<Modal
 			open={true}
-			onClose={() => props.closePicker(pendingSelectedIds, false)}
+			onClose={() => setModalIsBlurring(true)}
 			centered={false}
 		>
 			<Modal.Header>
 				{renderModalHeader()}
 			</Modal.Header>
-			{props.search && renderQueryProgress()}
+			{props.search && renderProgress()}
 			<Modal.Content scrolling>
 				{renderModalContent()}
 			</Modal.Content>
@@ -166,14 +146,19 @@ export const DataPicker = (props: DataPickerProps) => {
 		</Modal>
 	);
 
-	function dataMatches(datum: IEssentialData, terms: string[]): boolean {
+	function dataMatches(datum: IEssentialData): boolean {
 		// Multisearch (i.e. match ANY comma-delimited terms)
+		const terms: string[] = [];
+		searchQuery.split(',').forEach(userTerm => {
+			const term: string = userTerm.trim();
+			if (term !== '') terms.push(term);
+		});
 		if (terms.length > 1) {
 			return terms.some(term =>
-				(!!props.customSearchMatch && props.customSearchMatch(datum, term))
+				(props.customSearchMatch && props.customSearchMatch(datum, term))
 					|| standardize(datum.name).indexOf(standardize(term)) >= 0);
 		}
-		return (!!props.customSearchMatch && props.customSearchMatch(datum, terms[0]))
+		return (props.customSearchMatch && props.customSearchMatch(datum, terms[0]))
 			|| standardize(datum.name).indexOf(standardize(terms[0])) >= 0;
 	}
 
@@ -199,13 +184,10 @@ export const DataPicker = (props: DataPickerProps) => {
 		);
 	}
 
-	function renderQueryProgress(): React.ReactNode {
-		let percent: number = 100;
-		if (queryRequest && queryableData.length > 0)
-			percent = queryRequest.index / queryableData.length * 100;
+	function renderProgress(): React.ReactNode {
 		return (
 			<Progress
-				percent={percent}
+				percent={progress}
 				attached='bottom'
 			/>
 		);
@@ -239,25 +221,34 @@ export const DataPicker = (props: DataPickerProps) => {
 						{props.renderPreface(dataPickerState)}
 					</div>
 				)}
-				{(layout === 'grid' || !props.tableSetup) && (
-					<DataGrid
-						id={`${props.id}/datagrid`}
-						data={queriedData}
-						setup={props.gridSetup}
-						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? toggleDatum : undefined}
-						handleDblClick={props.selection ? selectAndClose : undefined}
-					/>
+				{queriedData && (
+					<React.Fragment>
+						{(layout === 'grid' || !props.tableSetup) && (
+							<DataGrid
+								id={`${props.id}/datagrid`}
+								data={queriedData}
+								setup={props.gridSetup}
+								selectedIds={pendingSelectedIds}
+								handleClick={props.selection ? toggleDatum : undefined}
+								handleDblClick={props.selection ? selectAndClose : undefined}
+							/>
+						)}
+						{layout === 'table' && props.tableSetup && (
+							<DataTable
+								id={`${props.id}/datatable`}
+								data={queriedData}
+								setup={props.tableSetup}
+								selectedIds={pendingSelectedIds}
+								handleClick={props.selection ? toggleDatum : undefined}
+								handleDblClick={props.selection ? selectAndClose : undefined}
+							/>
+						)}
+					</React.Fragment>
 				)}
-				{layout === 'table' && props.tableSetup && (
-					<DataTable
-						id={`${props.id}/datatable`}
-						data={queriedData}
-						setup={props.tableSetup}
-						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? toggleDatum : undefined}
-						handleDblClick={props.selection ? selectAndClose : undefined}
-					/>
+				{!queriedData && (
+					<div style={{ textAlign: 'center' }}>
+						<Icon loading name='spinner' /> {t('global.loading_ellipses')}
+					</div>
 				)}
 			</React.Fragment>
 		);
@@ -291,11 +282,11 @@ export const DataPicker = (props: DataPickerProps) => {
 		if (pendingSelectedIds.has(datumId))
 			pendingSelectedIds.delete(datumId);
 		else {
-			if (props.singleSelect && pendingSelectedIds.size)  pendingSelectedIds.clear();
+			if (props.singleSelect) pendingSelectedIds.clear();
 			pendingSelectedIds.add(datumId);
 		}
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
-		if (pendingSelectedIds.size > 0 && props.closeOnChange)
+		if (props.closeOnChange && pendingSelectedIds.size > 0)
 			props.closePicker(pendingSelectedIds, true);
 	}
 
@@ -306,7 +297,7 @@ export const DataPicker = (props: DataPickerProps) => {
 	}
 
 	function submitQuery(): void {
-		if (!props.selection || queriedData.length === 0 || !!queryRequest)
+		if (!props.selection || !queriedData || queriedData.length !== 1)
 			return;
 		pendingSelectedIds.add(queriedData[0].id);
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
