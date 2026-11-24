@@ -45,7 +45,6 @@ export interface ITableConfigRow {
 	width: number;
 	column?: string;
 	sticky?: boolean;
-	rare?: boolean;
 	title: string | React.ReactNode;
 	pseudocolumns?: string[];
 	reverse?: boolean;

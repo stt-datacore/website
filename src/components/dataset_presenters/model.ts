@@ -81,8 +81,6 @@ export interface IDataSortField {
 	firstSort?: TSortDirection;
 	stringValue?: boolean;
 	customSort?: (a: IEssentialData, b: IEssentialData, sortDirection: TSortDirection) => number;
-	/** TODO: Deprecate override in favor of using controlled sorts */
-	immediateOverride?: boolean;
 	/** If true, will treat undefined data as 0 (or as empty string); otherwise undefined data will ALWAYS be listed AFTER sorted defined data */
 	defaultToZero?: boolean;
 };

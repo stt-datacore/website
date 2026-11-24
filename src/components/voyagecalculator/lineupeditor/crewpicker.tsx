@@ -180,8 +180,7 @@ export const AlternateCrewPicker = (props: AlternateCrewPickerProps) => {
 		if (targeting) {
 			tableSetup.defaultSort = {
 				id: `scored_${targeting.slot.skill}`,
-				firstSort: 'descending',
-				immediateOverride: true
+				firstSort: 'descending'
 			};
 		}
 		return tableSetup;
