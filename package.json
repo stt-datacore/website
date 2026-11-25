@@ -3,7 +3,6 @@
   "description": "STT DataCore",
   "author": "ussjohnjay/ironyWrit",
   "license": "MIT",
-  "type": "module",
   "dependencies": {
     "@nivo/bar": "^0.99.0",
     "@nivo/boxplot": "^0.99.0",
