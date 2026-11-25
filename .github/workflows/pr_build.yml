@@ -3,7 +3,29 @@ name: Website CI Build PR
 on: [pull_request]
 
 jobs:
+  # Never allow "type": "module" in any package.json. This repo is consumed as
+  # model/lib source by other CommonJS Node.js build scripts; flipping the
+  # module type breaks them all. Use .mjs for individual ESM files instead.
+  pre-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Reject "type": "module" in any package.json'
+        run: |
+          bad=0
+          while IFS= read -r f; do
+            t=$(jq -r '.type // empty' "$f")
+            if [ "$t" = "module" ]; then
+              echo "::error file=$f::\"type\": \"module\" is forbidden. This repo is imported by CommonJS Node build scripts; setting it breaks them. Use .mjs for individual ESM files instead."
+              bad=1
+            fi
+          done < <(git ls-files -- 'package.json' '**/package.json')
+          exit $bad
+
   build:
+    needs: pre-build
     runs-on: ubuntu-latest
 
     steps:
