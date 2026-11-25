@@ -71,7 +71,7 @@ export function findHigh(epoch_day: number, skills: string[], data: Highs[], rar
 }
 
 export function skillIcon(skill: string) {
-    return `${import.meta.env.VITE_ASSETS_URL}/atlas/icon_${skill}.png`;
+    return `${process.env.VITE_ASSETS_URL}/atlas/icon_${skill}.png`;
 }
 
 export function formatElapsedDays(days: number, t: TranslateMethod, ago = false): string {

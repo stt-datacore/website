@@ -77,7 +77,7 @@ export const CrewTraitFilter = (props: CrewTraitFilterProps) => {
 				key: trait,
 				value: trait,
 				text: TRAIT_NAMES[trait],
-				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${import.meta.env.VITE_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
+				//content: <div style={{display:'flex', alignItems: 'center'}}><img style={{height:'24px',margin: '0.25em'}} src={`${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`} />{TRAIT_NAMES[trait]}</div>
 			} as TraitOptions;
 		}).sort((a, b) => a.text.localeCompare(b.text));
 		// [ ...CONFIG.SERIES].reverse().forEach(series => {
@@ -180,7 +180,7 @@ export function descriptionLabel(t: TranslateMethod, crew: IRosterCrew, showOwne
 				{crew.active_status === 2 && <>&nbsp;{t('base.shuttle')}<br /></>}
 				{crew.active_status === 3 && <>&nbsp;{t('base.voyage')}<br /></>}
 			</React.Fragment>
-			{crew.immortal >= CompletionState.Immortalized &&
+			{crew.immortal >= CompletionState.Immortalized && !showOwned &&
 				<React.Fragment>
 					{crew.immortal >= CompletionState.Frozen &&
 						<Label style={{ whiteSpace: 'nowrap' }}>

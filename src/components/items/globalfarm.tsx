@@ -99,7 +99,8 @@ export const GlobalFarm = (props: GlobalFarmProps) => {
                     if (playerData && !crewFilter?.length) setCalculatedDemands(data.data.result.items as EquipmentItem[]);
                     setPrefilteredData(filterDemands(data.data.result.items as EquipmentItem[]));
                 },
-                true
+                true,
+                'equipment-worker.ts'
             )
         }, 500);
     }, [playerData, coreItems, crewFilter, props.noRender]);

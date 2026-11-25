@@ -105,7 +105,7 @@ export const TraitDive = (props: TraitDiveProps) => {
                     {CONFIG.SERIES.includes(info.trait_raw) &&
                     <img
                         style={{ height: '4em', margin: '0.25em', gridArea: 'img', alignSelf: 'flex-start'}}
-                        src={`${import.meta.env.VITE_DATACORE_URL}/media/series/${info.trait_raw}.png`} />
+                        src={`${process.env.VITE_DATACORE_URL}/media/series/${info.trait_raw}.png`} />
                 }
                 </div>
             </div>

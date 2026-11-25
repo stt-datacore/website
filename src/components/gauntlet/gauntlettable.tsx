@@ -302,7 +302,7 @@ export const GauntletCrewTable = (props: GauntletTableProps) => {
                                 <img
                                     onClick={(e) => imageClick(e, crew)}
                                     width={48}
-                                    src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
+                                    src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`}
                                 />
                             </CrewTarget>
                             {crew.immortal > 0 &&

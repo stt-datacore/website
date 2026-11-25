@@ -83,7 +83,7 @@ const CardCrew = (props: CardCrewProps) => {
 					<Icon name='x' color='red' style={{ cursor: 'pointer' }} />
 				</Label>
 				<Card.Content>
-					<Image src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} floated='right' size='small' />
+					<Image src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`} floated='right' size='small' />
 					<Card.Header>
 						<Link to={`/crew/${crew.symbol}`}>{crew.name}</Link>
 					</Card.Header>

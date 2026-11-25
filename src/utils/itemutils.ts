@@ -453,7 +453,7 @@ export function sortItemsWithBonus(quipment: ItemWithBonus[], byItemCost?: boole
 	const sf = sortFactor === -1 ? -1 : 1;
 
 	return quipment.sort((a, b) => {
-		let r = 0;
+		let r: number;
 
 		if (byItemCost) {
 			let ac = a.item.demands?.map(d => d.count * (d.equipment?.rarity ?? 1)).reduce((p, n) => p + n, 0) ?? 0;
@@ -462,8 +462,8 @@ export function sortItemsWithBonus(quipment: ItemWithBonus[], byItemCost?: boole
 			if (r) return r;
 		}
 
-		let an = 0;
-		let bn = 0;
+		let an: number;
+		let bn: number;
 
 		if (skill && skill in a.bonusInfo.bonuses && skill in b.bonusInfo.bonuses) {
 			let ask = a.bonusInfo.bonuses[skill];

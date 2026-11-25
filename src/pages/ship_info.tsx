@@ -17,7 +17,6 @@ import { Step } from 'semantic-ui-react';
 const ShipInfoPage = () => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized
-
 	const [shipKey, setShipKey] = React.useState<string | undefined>();
 	const { ship_symbol } = useParams();
 	const navigate = useNavigate();
@@ -39,6 +38,7 @@ const ShipInfoPage = () => {
 	);
 
 	function navToShip(ship: string) {
+		if (ship === ship_symbol) return;
 		navigate(`/ship/${ship}`)
 	}
 }
@@ -65,7 +65,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	const [opponentShip, setOpponentShip] = useStateWithStorage<Ship | undefined>('ship_info/opponent_ship', undefined, { rememberForever: true });
 
 	const [considerFrozen, setConsiderFrozen] = useStateWithStorage('ship_info/considerFrozen', false);
-	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerFrozen', false);
+	const [considerUnowned, setConsiderUnowned] = useStateWithStorage('ship_info/considerUnowned', false);
     const [ignoreSkills, setIgnoreSkills] = useStateWithStorage<boolean>(`ship_info/ignoreSkills`, false);
 	const [ignoreTriggers, setIgnoreTriggers] = useStateWithStorage<boolean>(`ship_info/ignoreTriggers`, false);
     const [onlyImmortal, setOnlyImmortal] = useStateWithStorage<boolean>(`ship_info/onlyImmortal`, false);
@@ -81,7 +81,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 	React.useEffect(() => {
 		if (inputShip) {
 			if ((inputShip.battle_stations?.length !== crewStations?.length)) {
-				setCrewStations(inputShip?.battle_stations?.map(b => undefined) ?? [])
+				setCrewStations(inputShip?.battle_stations?.map(b => b.crew) ?? [])
 			}
 			else {
 				setCrewStations([...crewStations]);
@@ -90,7 +90,6 @@ const ShipViewer = (props: ShipViewerProps) => {
 	}, [inputShip]);
 
 	React.useEffect(() => {
-		const c = inputShip?.battle_stations?.length ?? 0;
 		if (inputShip && crewStations) {
 			if (oldShip === inputShip?.symbol && asMaxed === oldMaxed && ship && ship.battle_stations?.length === crewStations?.length && crewStations.every((cs, i) => cs?.id == ship.battle_stations![i]?.crew?.id)) return;
 			setShip(setupShip(inputShip, crewStations));
@@ -138,12 +137,7 @@ const ShipViewer = (props: ShipViewerProps) => {
 				Navigate({ to: "/ships" });
 			}
 		}
-	}, [ships, shipKey]);
-
-	React.useEffect(() => {
-		let sk = shipKey;
-		setShipKey("_" + sk);
-	}, [asMaxed]);
+	}, [ships, shipKey, asMaxed]);
 
 	const division = React.useMemo(() => {
 		if (ship) {

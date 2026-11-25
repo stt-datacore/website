@@ -17,21 +17,22 @@ type CrewRankHighlightsProps = {
 	crew: CrewMember;
 	markdownRemark?: any;
 	compact?: boolean;
+	cool?: boolean;
 };
 
 export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
-	const { crew, compact } = props;
+	const { crew, compact, cool } = props;
 	const { t } = React.useContext(GlobalContext).localized;
 	const navigate = useNavigate();
-
+	const statStyle = cool ? { background: 'rgba(127, 127, 127, 0.25)', border: '1px solid #666' } : undefined;
 	if (compact) {
 		return (
 			<div style={{ textAlign: 'center' }}>
-				<StatLabel title={t('rank_names.voyage_rank')} value={crew.ranks.voyRank} />
-				<StatLabel title={t('rank_names.gauntlet_rank')} value={crew.ranks.gauntletRank} />
-				<StatLabel title={t('rank_names.datascore')} value={crew.ranks.scores.overall_grade} />
-				<StatLabel title={t('rank_names.cab_grade')} value={crew.cab_ov_grade} />
-				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{ color: gradeToColor(crew.quipment_grade) ?? undefined }}>{numberToGrade(crew.quipment_grade)}</span>} />}
+				<StatLabel style={statStyle} title={t('rank_names.voyage_rank')} value={crew.ranks.voyRank} />
+				<StatLabel style={statStyle} title={t('rank_names.gauntlet_rank')} value={crew.ranks.gauntletRank} />
+				<StatLabel style={statStyle} title={t('rank_names.datascore')} value={crew.ranks.scores.overall_grade} />
+				<StatLabel style={statStyle} title={t('rank_names.cab_grade')} value={crew.cab_ov_grade} />
+				{crew.quipment_grade && <StatLabel style={statStyle} title={t('rank_names.quipment_score')} value={<span style={{ color: gradeToColor(crew.quipment_grade) ?? undefined }}>{numberToGrade(crew.quipment_grade)}</span>} />}
 			</div>
 		);
 	}
@@ -52,6 +53,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				flexWrap: "wrap"
 			}}>
 				<StatLabel
+				 	style={statStyle}
 					title={t('rank_names.datascore')}
 					size='jumbo'
 					value={<div
@@ -64,6 +66,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 					</div>}
 				/>
 				<StatLabel
+				 	style={statStyle}
 					title={t('rank_names.cab_grade')}
 					size='jumbo'
 					value={
@@ -80,9 +83,9 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 					}
 				/>
 
-				<StatLabel title={t('rank_names.voyage_rank')}
+				<StatLabel style={statStyle} title={t('rank_names.voyage_rank')}
 					value={rankLinker(navigate, false, crew.ranks.voyRank, crew.symbol, 'ranks.voyRank')} />
-				<StatLabel title={t('rank_names.gauntlet_rank')}
+				<StatLabel style={statStyle} title={t('rank_names.gauntlet_rank')}
 					value={rankLinker(navigate, false, crew.ranks.gauntletRank, crew.symbol, 'ranks.gauntletRank')} />
 			</div>
 
@@ -99,11 +102,13 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 			}}>
 
 				<StatLabel
+				 	style={statStyle}
 					title={t('rank_names.scores.overall_rank')}
 					value={crew.ranks.scores.overall_rank ? rankLinker(navigate, false, crew.ranks.scores.overall_rank, crew.symbol, 'ranks.scores.overall', 'descending', 'rarity:' + crew.max_rarity) : '?'}
 				/>
 
 				<StatLabel
+					style={statStyle}
 					title={t('rank_names.cab_rank')}
 					value={crew.cab_ov_rank ? rankLinker(navigate, false, crew.cab_ov_rank, crew.symbol, 'cab_ov', 'descending', 'rarity:' + crew.max_rarity) : '?'}
 				/>
@@ -111,6 +116,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 				{!isNever && <>
 					{crew.in_portal && !!crew.unique_polestar_combos?.length &&
 						<StatLabel
+							style={statStyle}
 							title={<>
 								<div style={{ width: "100%", textAlign: "center", display: 'flex', flexDirection: 'column', justifyContent: 'center', color: crew.in_portal ? 'lightgreen' : undefined, fontWeight: crew.in_portal ? 'bold' : undefined }}>
 									{t('base.uniquely_retrievable')}
@@ -119,6 +125,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 							value="" />
 						||
 						<StatLabel
+						 	style={statStyle}
 							title={t('global.portal')}
 							value={<>
 								<div style={{ color: crew.in_portal ? 'lightgreen' : undefined, fontWeight: crew.in_portal ? 'bold' : undefined }}>
@@ -128,6 +135,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 						/>}
 				</>}
 				{isNever && <StatLabel
+					style={statStyle}
 					title={<>
 						<div style={{ width: "100%", color: CONFIG.RARITIES[5].color, textAlign: !crew.antimatter_bonus ? "center" : 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontWeight: 'bold' }}>
 							{prettyObtained(crew, t, true)}
@@ -141,7 +149,7 @@ export const CrewRankHighlights = (props: CrewRankHighlightsProps) => {
 
 
 				}
-				{crew.quipment_grade && <StatLabel title={t('rank_names.quipment_score')} value={<span style={{ color: gradeToColor(crew.quipment_grade) ?? undefined }}>{numberToGrade(crew.quipment_grade)}</span>} />}
+				{crew.quipment_grade && <StatLabel style={statStyle} title={t('rank_names.quipment_score')} value={<span style={{ color: gradeToColor(crew.quipment_grade) ?? undefined }}>{numberToGrade(crew.quipment_grade)}</span>} />}
 				{/* {markdownRemark.frontmatter.events !== null && (
 				<StatLabel title="Events" value={markdownRemark.frontmatter.events} />
 				)} */}

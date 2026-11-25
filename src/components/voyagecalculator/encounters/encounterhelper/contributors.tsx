@@ -95,9 +95,8 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 								textAlign='center'
 							>
 								<img
-									src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${contestSkill.skill}.png`}
+									src={`${process.env.VITE_ASSETS_URL}atlas/icon_${contestSkill.skill}.png`}
 									style={{ height: '1.1em', verticalAlign: 'middle' }}
-									className='invertibleIcon'
 								/>
 							</Table.HeaderCell>
 						))}
@@ -433,9 +432,8 @@ export const ContributorsTable = (props: ContributorsTableProps) => {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', columnGap: '.3em' }}>
 				<img
-					src={`${import.meta.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
+					src={`${process.env.VITE_ASSETS_URL}atlas/crit_icon_gauntlet.png`}
 					style={{ height: '1.1em' }}
-					className='invertibleIcon'
 				/>
 				<span>{activeContest.champion.critChance}%</span>
 				{isBoosted && (

@@ -19,9 +19,10 @@ import { EventStats } from '../utils/event_stats';
 import { allLevelsToLevelStats, highestLevel } from '../utils/shiputils';
 import { useStateWithStorage } from '../utils/storage';
 import { BuffStatTable, calculateMaxBuffs } from '../utils/voyageutils';
-import { ICoreData } from './coremodel';
+import { ICoreData, Series } from './coremodel';
 import { SeasonalShop } from '../model/offers';
 import { RootSpin } from '../components/rootspin';
+import CONFIG from '../components/CONFIG';
 
 const DC_DEBUGGING: boolean = false;
 
@@ -99,6 +100,7 @@ const defaultData = {
 	missionsfull: [] as Mission[],
 	objective_events: [] as ObjectiveEvent[],
 	portal_log: [] as PortalLogEntry[],
+	series: {} as Series,
 	ship_schematics: [] as Schematics[],
 	ships: [] as Ship[],
 	topQuipmentScores: [] as QuipmentScores[],
@@ -242,7 +244,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 			return { demand, json } as IDemandResult;
 		})).then((results) => {
 			const newData = {...data};
-
+			let processed: { crew: CrewMember[], series: Series };
 			// Process individual demands
 			results.forEach(result => {
 				if (DC_DEBUGGING) console.log(`Demand '${result.demand}' loaded, processing ...`);
@@ -251,7 +253,9 @@ export const DataProvider = (props: DataProviderProperties) => {
 						newData.all_buffs = calculateMaxBuffs(result.json);
 						break;
 					case 'crew':
-						newData.crew = processCrew(result.json);
+						processed = processCrew(result.json);
+						newData.crew = processed.crew;
+						newData.series = processed.series;
 						break;
 					case 'gauntlets':
 						newData.gauntlets = processGauntlets(result.json);
@@ -266,6 +270,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 					case 'portal_log':
 						newData.portal_log = result.json;
 						newData.portal_log?.forEach(log => log.date = new Date(log.date));
+						newData.portal_log?.sort((a, b) => a.date.getTime() - b.date.getTime());
 						break;
 					default:
 						newData[result.demand] = result.json;
@@ -385,13 +390,18 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 	function processAllShips(all_ships: ReferenceShip[]) {
 		for (let ship of all_ships) {
+			if (ship.date_added) {
+				ship.date_added = new Date(ship.date_added);
+			}
 			ship.id = ship.archetype_id;
 		}
 		data.ships = all_ships.map(ship => ({...ship, levels: allLevelsToLevelStats(ship.levels), id: ship.id || ship.archetype_id }));
 		return all_ships;
 	}
 
-	function processCrew(result: CrewMember[]): CrewMember[] {
+	function processCrew(result: CrewMember[]): { crew: CrewMember[], series: Series } {
+		const series = {} as {[key:string]: number}
+		CONFIG.SERIES.forEach((s) => series[s] = 0);
 		result.forEach((item) => {
 			if (typeof item.date_added === 'string') {
 				item.date_added = new Date(item.date_added);
@@ -399,9 +409,14 @@ export const DataProvider = (props: DataProviderProperties) => {
 			item.post_bigbook_epoch = item.date_added.getTime() > POST_BIGBOOK_EPOCH.getTime();
 			item.bigbook_tier ??= -1;
 			if (!item.id) item.id = item.archetype_id;
+			for(let trait of item.traits_hidden) {
+				if (trait in series) {
+					series[trait]++;
+				}
+			}
 		});
 
-		return result;
+		return { crew: result, series };
 	}
 
 	function processGauntlets(result: Gauntlet[] | undefined): Gauntlet[] {
@@ -480,7 +495,7 @@ export const DataProvider = (props: DataProviderProperties) => {
 
 export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	if (!allCrew?.length) {
-		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${import.meta.env.VITE_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
+		return  <img style={{ height: "15em", cursor: "pointer" }} src={`${process.env.VITE_ASSETS_URL}crew_full_body_cm_qjudge_full.png`} />;
 	}
 
 	const rndcrew_pass1 = (allCrew.filter((a: CrewMember) => a.traits_hidden.includes(symbol) && a.max_rarity >= 4) ?? []) as CrewMember[];
@@ -499,7 +514,7 @@ export function randomCrew(symbol: string, allCrew: CrewMember[]) {
 	const idx = Math.floor(Math.random() * (rndcrew.length - 1));
 	const q = rndcrew[idx];
 	const img = q.imageUrlFullBody;
-	const fullurl = `${import.meta.env.VITE_ASSETS_URL}${img}`;
+	const fullurl = `${process.env.VITE_ASSETS_URL}${img}`;
 
 	return <img style={{ height: "15em", cursor: "pointer" }} src={fullurl} onClick={(e) => Navigate({ to: "/crew/" + q.symbol })} />
 }

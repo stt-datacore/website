@@ -32,7 +32,10 @@ const FleetPage = lazy(() => import("./pages/fleet"));
 const FTMHofPage = lazy(() => import("./pages/ftmhof"));
 const GauntletsPage = lazy(() => import("./pages/gauntlets"));
 const HallOfFamePage = lazy(() => import("./pages/hall_of_fame"));
+
+// Main Page
 const IndexPage = lazy(() => import("./pages"));
+
 const ItemInfoPage = lazy(() => import("./pages/item_info"));
 const ItemsPage = lazy(() => import("./pages/items"));
 const MarkdownPage = lazy(() => import("./components/mdpage"));
@@ -40,10 +43,12 @@ const ObjectiveEventHelperPage = lazy(() => import("./pages/objective_events"));
 const OtherPage = lazy(() => import("./pages/achievements"));
 const PlayerToolsPage = lazy(() => import("./pages/playertools"));
 const ProfilePage = lazy(() => import("./pages/profile"));
+const ReleasesPage = lazy(() => import("./pages/releases"));
 const ResourceTrackerPage = lazy(() => import("./pages/resourcetracker"));
 const RetrievalPage = lazy(() => import("./pages/retrieval"));
 const SeasonalEvent = lazy(() => import("./pages/seasonal"));
 const ShipInfoPage = lazy(() => import("./pages/ship_info"));
+const ShipReleases = lazy(() => import("./pages/shipreleases"));
 const ShipsPage = lazy(() => import("./pages/ships"));
 const ShuttleHelperPage = lazy(() => import("./pages/shuttlehelper"));
 const StatsPage = lazy(() => import("./pages/stats"));
@@ -61,7 +66,7 @@ function App() {
 
   populateSlugs(announcements);
   populateSlugs(pages);
-  const announcement = announcements.length ? announcements[0] : undefined;
+  const announcement = announcements.length ? structuredClone(announcements[0]) : undefined;
 
   return (
     <BrowserRouter>
@@ -100,10 +105,13 @@ function App() {
                       <Route path="/objective_events" element={<ObjectiveEventHelperPage />} />
                       <Route path="/playertools" element={<PlayerToolsPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/releases" element={<ReleasesPage />} />
                       <Route path="/resourcetracker" element={<ResourceTrackerPage />} />
                       <Route path="/retrieval" element={<RetrievalPage />} />
                       <Route path="/seasonal" element={<SeasonalEvent />} />
                       <Route path="/ship/:ship_symbol" element={<ShipInfoPage />} />
+                      <Route path="/ship/:ship_symbol/:battle_mode/:rarity" element={<ShipInfoPage />} />
+                      <Route path="/shipreleases" element={<ShipReleases />} />
                       <Route path="/ships" element={<ShipsPage />} />
                       <Route path="/shuttlehelper" element={<ShuttleHelperPage />} />
                       <Route path="/stats" element={<StatsPage />} />
@@ -116,7 +124,7 @@ function App() {
                             return (
                                 <Route path={`/${page.slug}`} key={`__markdown_slug_${page.slug}`}
                                     element={(
-                                        <MarkdownPage fullpage node={page} prefix="pages" />
+                                        <MarkdownPage no_cache={true} fullpage node={page} prefix="pages" />
                                     )}
                                 />
                             );

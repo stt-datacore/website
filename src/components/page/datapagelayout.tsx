@@ -43,6 +43,8 @@ export interface DataPageLayoutProps {
 	/** default is true */
 	initPlayerData?: boolean;
 
+	suppressTitleDisplay?: boolean;
+	suppressPlayerHeader?: boolean;
 	playerPromptType?: 'require' | 'recommend' | 'none';
 };
 
@@ -74,7 +76,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 	const globalContext = React.useContext(GlobalContext);
 	const { t } = globalContext.localized;
 
-	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType } = props;
+	const { children, pageTitle, pageTitleJSX, pageDescriptionJSX, pageDescription, notReadyMessage, narrowLayout, playerPromptType, suppressTitleDisplay, suppressPlayerHeader } = props;
 
 	const [isReady, setIsReady] = React.useState(false);
 	const [dashboardPanel, setDashboardPanel] = React.useState<string | undefined>(undefined);
@@ -123,7 +125,7 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 				>
 					<EnergyLogContextProvider>
 						<MainContent narrowLayout={narrowLayout}>
-							<Dashboard
+							{!suppressPlayerHeader && <Dashboard
 								openInputPanel={() => {
 									setPlayerPanel('input');
 									scrollTo(contentAnchor as any);
@@ -131,15 +133,15 @@ const DataPageLayout = <T extends DataPageLayoutProps>(props: T) => {
 								narrow={narrowLayout ?? false}
 								activePanel={dashboardPanel}
 								setActivePanel={setDashboardPanel}
-							/>
+							/>}
 							<div ref={contentAnchor} style={{ paddingTop: '60px', marginTop: '-60px' }}>
-								{(!!pageTitleJSX || !!pageTitle) && (
+								{(!!pageTitleJSX || !!pageTitle) && !suppressTitleDisplay && (
 									<React.Fragment>
 										<Header as='h2'>{pageTitleJSX || pageTitle}</Header>
 										{(!!pageDescriptionJSX || !!pageDescription) && <p>{pageDescriptionJSX || pageDescription}</p>}
 									</React.Fragment>
 								)}
-								{!!isReady && <PlayerHeader
+								{!!isReady && !suppressPlayerHeader && <PlayerHeader
 									promptType={playerPromptType ?? 'none'}
 									activePanel={playerPanel}
 									setActivePanel={setPlayerPanel}
@@ -202,17 +204,16 @@ const DataPageHelmet = (props: DataPageHelmetProps) => {
 	function withPrefix(arg0: string): string | undefined {
 		return "/" + arg0;
 	}
-
+	const pageTitle = `STT DataCore - ${title}`;
 	return (
-		<Helmet titleTemplate={data.site.siteMetadata.titleTemplate} defaultTitle={data.site.siteMetadata.defaultTitle}>
+		<Helmet titleTemplate={pageTitle} defaultTitle={pageTitle}>
 			{title && <title>{title}</title>}
 			<meta property='og:type' content='website' />
-			<meta property='og:title' content={`${title ? `${title} - ` : ''}${data.site.siteMetadata.defaultTitle}`} />
-			<meta property='og:site_name' content='DataCore' />
+			<meta property='og:title' content={pageTitle} />
+			<meta property='og:site_name' content='`Star Trek Timelines DataCore' />
 			<meta property='og:image' content={`${data.site.siteMetadata.baseUrl}/media/logo.png`} />
 			<meta property='og:description' content={description ?? data.site.siteMetadata.defaultDescription} />
 			<link id='defaultThemeCSS' rel='stylesheet' type='text/css' href={withPrefix('styles/semantic.slate.css')} />
-			<link rel='stylesheet' type='text/css' href={withPrefix('styles/easymde.min.css')} />
 		</Helmet>
 	);
 };

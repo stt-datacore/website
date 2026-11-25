@@ -25,6 +25,7 @@ const ScoreFields = [
     "gauntlet",
     "gauntlet_plus",
     "greatness",
+    "donut",
     "crit",
     "ship",
     "quipment",
@@ -40,7 +41,8 @@ const ScoreFields = [
     "tertiary_rarity",
     "velocity",
     "sko_absolute",
-    "sko_ambivalent"
+    "sko_ambivalent",
+    "adv_crit"
 ]
 
 const RankFields = [
@@ -54,6 +56,7 @@ const RankFields = [
     "gauntletRank",
     "gauntlet_plus_rank",
     "greatness_rank",
+    "donut_rank",
     "crit_rank",
     "ship_rank",
     "quipment_rank",
@@ -69,7 +72,8 @@ const RankFields = [
     "tertiary_rarity_rank",
     "velocity_rank",
     "sko_absolute_rank",
-    "sko_ambivalent_rank"
+    "sko_ambivalent_rank",
+    "adv_crit_rank"
 ]
 
 export const getDataCoreRanksTableConfig = (weights: CurrentWeighting, t: TranslateMethod, rarityFilter?: number[]) => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Step } from 'semantic-ui-react';
 
+import { AvatarView } from '../components/item_presenters/avatarview';
 import { DemandsTable } from '../components/items/demandstable';
 import { EquipmentTable } from '../components/items/equipment_table';
 import { ItemsFilterProvider } from '../components/items/filters';
@@ -10,17 +11,16 @@ import { QuipmentTable } from '../components/items/quipmenttable';
 import { CustomFieldDef } from '../components/items/utils';
 import DataPageLayout from '../components/page/datapagelayout';
 import { approxDate, getItemDateEstimates } from '../components/stats/itemdateutils';
+import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../components/stats/utils';
 import { GlobalContext } from '../context/globalcontext';
 import { WorkerProvider } from '../context/workercontext';
+import { ContinuumMission } from '../model/continuum';
 import { CrewMember } from '../model/crew';
-import { EquipmentBonuses, EquipmentItem, EquipmentItemSource } from '../model/equipment';
+import { EquipmentItem, EquipmentItemSource } from '../model/equipment';
 import { binaryLocate, formatDuration, getPossibleQuipment } from '../utils/itemutils';
 import { useStateWithStorage } from '../utils/storage';
-import { ContinuumMission } from '../model/continuum';
-import { MissionReward } from '../model/missions';
-import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../components/stats/utils';
-import { AvatarView } from '../components/item_presenters/avatarview';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ItemsPageProps { }
 
 type QBitSource = { quest: string, index: number, mastery: number, rewards: number };

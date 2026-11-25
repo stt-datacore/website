@@ -7,6 +7,8 @@ import {
 	Statistic
 } from 'semantic-ui-react';
 
+import seedrandom from 'seedrandom';
+
 import { useStateWithStorage } from '../../utils/storage';
 
 import { EvaluationState, IDeduction, IEvaluatedGuess, IRosterCrew, SolveState, THintGroup } from './model';
@@ -109,7 +111,6 @@ export const DailyGame = () => {
 		};
 
 		const getSeed = (gameId: string) => {
-			const seedrandom = require('seedrandom');
 			const rng = seedrandom(gameId);
 			return Math.floor(rng() * portalCrew.length);
 		};
@@ -286,7 +287,7 @@ const DailyShare = (props: DailyShareProps) => {
 	const { gameTime, solveState, evaluatedGuesses, hintCount } = props;
 
 	const GAME_NAME = 'Worfle';
-	const GAME_URL = `${import.meta.env.VITE_DATACORE_URL}crewchallenge`;
+	const GAME_URL = `${process.env.VITE_DATACORE_URL}crewchallenge`;
 
 	const formatEvaluation = (evaluation: number) => {
 		if (evaluation === EvaluationState.Exact)

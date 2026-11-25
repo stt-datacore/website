@@ -77,18 +77,21 @@ export interface IMultiWorkerContext {
 
 
 export interface VoyageStatsConfig {
-    others?: number[];
+    others: Skill[];
     numSims: number;
     startAm: number;
     currentAm: number;
     elapsedSeconds: number;
     variance: number;
-    ps?: Skill;
-    ss?: Skill;
+    ps: Skill;
+    ss: Skill;
 }
 
-export interface ExtendedVoyageStatsConfig extends VoyageStatsConfig{
+export interface SporeDriveConfig extends VoyageStatsConfig {
     selectedTime?: number;
+    prof?: number;
+    noExtends?: boolean;
+    vfast?: boolean;
 }
 
 export interface GameWorkerOptions {
@@ -319,9 +322,25 @@ export type LineUpMeta =
     'arena_boom_all' |
     'arena_crit_all' |
 
+    // Standard Arena Line-ups. Damage heavy or crit heavy.
+    // Ensure one of each bonus kind
+    'arena_boom_each' |
+    'arena_crit_each' |
+    'arena_even_each' |
+
+    // Aggressive Arena Line-ups. All damage or all crit.
+    // Ensure one of each bonus kind
+    'arena_boom_all_each' |
+    'arena_crit_all_each' |
+
     // Standard Arena Line-ups with one wildcard berth.
     'arena_boom_wildcard' |
     'arena_crit_wildcard' |
+
+    // Standard Arena Line-ups with one wildcard berth.
+    // Ensure one of each bonus kind
+    'arena_boom_wildcard_each' |
+    'arena_crit_wildcard_each' |
 
     // Healer-meta Boss Battles
     'fbb_1_healer' |
@@ -351,9 +370,24 @@ export const BuiltInMetas: LineUpMeta[] = [
     'arena_boom_all',
     'arena_crit_all',
 
+    // Standard Arena Line-ups. Damage heavy or crit heavy.
+    // Ensure one of each bonus kind
+    'arena_boom_each',
+    'arena_crit_each',
+    'arena_even_each',
+    // Aggressive Arena Line-ups. All damage or all crit.
+    // Ensure one of each bonus kind
+    'arena_boom_all_each',
+    'arena_crit_all_each',
+
     // Standard Arena Line-ups with one wildcard berth.
     'arena_boom_wildcard',
     'arena_crit_wildcard',
+
+    // Standard Arena Line-ups with one wildcard berth.
+    // Ensure one of each bonus kind
+    'arena_boom_wildcard_each',
+    'arena_crit_wildcard_each',
 
     // Healer-meta Boss Battles
     'fbb_1_healer',

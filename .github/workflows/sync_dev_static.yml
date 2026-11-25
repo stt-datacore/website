@@ -1,0 +1,38 @@
+name: sync-dev-static
+run-name: Sync Dev Static Files
+on:
+  # pull_request:
+  #   types: [opened, ready_for_review, reopened, synchronize, labeled]
+
+  push:
+    branches: [ 'master' ]
+    paths: [ static/structured/** ]
+
+jobs:
+    merge-master:
+        name: Merge master into dev on autosync or PR merge
+        runs-on: ubuntu-latest
+        # if: |
+        #   github.ref_name == 'master' ||
+        #   (github.event.pull_request.draft == false &&
+        #   github.event.pull_request.mergeable == true &&
+        #   github.event.pull_request.head.repo.fork == false &&
+        #   contains(github.event.pull_request.labels.*.name, 'dev-'))
+        if: |
+          github.ref_name == 'master'
+
+        steps:
+            - name: Website - Checkout
+              uses: actions/checkout@v4
+              with:
+                repository: stt-datacore/website
+                token: ${{ secrets.GITHUB_TOKEN }}
+                path: website
+
+            - name: Merge into Dev
+
+              uses: devmasx/merge-branch@master
+              with:
+                type: now
+                target_branch: dev
+                github_token: ${{ secrets.GITHUB_TOKEN }}

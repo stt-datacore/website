@@ -352,9 +352,9 @@ export function buffShip(ship: Ship, buffs: BuffStatTable) {
 export function mergeShips(ship_schematics: Schematics[], ships: Ship[], max_buffs = false): Ship[] {
 	let newShips: Ship[] = [];
 	let power = 1 + (max_buffs ? 0.16 : 0);
+	let unowned_id = -1;
 	ship_schematics = structuredClone(ship_schematics);
 	ship_schematics.forEach((schematic) => {
-		let unowned_id = -1;
 		let owned = ships.find((ship) => ship.symbol == schematic.ship.symbol);
 
 		let traits_named = schematic.ship.traits_named;
@@ -483,7 +483,7 @@ export function findPotentialCrew(ship: Ship, allCrew: (CrewMember | PlayerCrew)
 		//if (bscrew.length === 0) bscrew = bsave;
 	}
 
-	var sorter = new StatsSorter({ objectConfig: shipStatSortConfig });
+	let sorter = new StatsSorter({ objectConfig: shipStatSortConfig });
 	sorter.sortStats(bscrew, true);
 	return bscrew;
 }
@@ -645,7 +645,7 @@ export function setupShip(ship: Ship, crewStations: (CrewMember | PlayerCrew | u
 
 export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, b: ShipWorkerTransportItem | ShipWorkerItem, fbb_mode: boolean) {
 	if (fbb_mode) {
-		let r = 0;
+		let r: number;
 		let aa: number;
 		let ba: number;
 		aa = a.fbb_metric;
@@ -670,7 +670,7 @@ export function compareShipResults(a: ShipWorkerTransportItem | ShipWorkerItem, 
 		return r;
 	}
 	else {
-		let r = 0;
+		let r: number;
 		if (a.win !== b.win) {
 			if (a.win) return -1;
 			else if (b.win) return 1;

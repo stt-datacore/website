@@ -50,7 +50,7 @@ export const StatsDataProvider = (props: { children: React.ReactNode }) => {
         }
         obtainlist.sort();
         const crew = crewCopy(globalCrew)
-            .sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
+            .sort((a, b) => a.date_added.getTime() - b.date_added.getTime() || a.archetype_id - b.archetype_id);
 
         setUniqueObtained(obtainlist);
         setMasterCrew(crew);

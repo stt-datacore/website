@@ -244,7 +244,7 @@ export const ConfigEditor = (props: ConfigEditorProps) => {
 								{ idx % 2 === 0 ?
 									(
 										<Table.Cell rowSpan='2' textAlign='center'>
-											<img alt={seat.skill} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${seat.skill}.png`} style={{ height: '3em' }} />
+											<img alt={seat.skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${seat.skill}.png`} style={{ height: '3em' }} />
 										</Table.Cell>
 									)
 									: (<></>)

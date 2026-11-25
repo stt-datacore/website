@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/immutability */
 import React from 'react';
 import { ArchetypeRoot20 } from '../model/archetype';
 import { BossBattlesRoot } from '../model/boss';
 import { EquipmentItem } from '../model/equipment';
-import { BorrowedCrew, CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
+import { BorrowedCrew, CompactCrew, Fleet, GalaxyCrewCooldown, GameEvent, ObjectiveEventRoot, PinnedCrewRoot, PinnedStatisVaultRoot, PlayerCrew, PlayerData, Stimpack, Voyage, VoyageDescription } from '../model/player';
 import { Ship } from '../model/ship';
 import { ShuttleAdventure } from '../model/shuttle';
 import { ShipTraitNames } from '../model/traits';
@@ -57,6 +58,8 @@ export interface IEphemeralData {
 	seasonalEventShop?: SeasonalShop;
 	stimpack?: Stimpack;
 	borrowedCrew: BorrowedCrew[];
+	pinnedCrew?: PinnedCrewRoot;
+	pinnedStasisVault?: PinnedStatisVaultRoot;
 };
 
 export interface ISessionStates {
@@ -104,7 +107,7 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 
 	// Profile can be fully re-constituted on reloads from stripped and ephemeral
 	const [stripped, setStripped] = useStateWithStorage<PlayerData | undefined>('playerData', undefined, { compress: true });
-	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentItem)[] | undefined>('calculatedDemands', undefined, { compress: true });
+	const [calculatedDemands, setCalculatedDemands] = useStateWithStorage<(EquipmentItem | EquipmentItem)[] | undefined>('calculatedDemands', undefined, { compress: true, avoidSessionStorage: true });
 
 	const [ephemeral, setEphemeral] = useStateWithStorage<IEphemeralData | undefined>('ephemeralPlayerData', undefined, { compress: true });
 
@@ -154,8 +157,6 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 		});
 
 		if (input.stripped !== true) {
-			setCalculatedDemands(undefined);
-
 			if (!!input.archetype_cache?.archetypes?.length) {
 				setItemArchetypeCache(input.archetype_cache);
 			}
@@ -178,19 +179,22 @@ export const PlayerProvider = (props: DataProviderProperties) => {
 				galaxyCooldowns: input.player.character.galaxy_crew_cooldowns ?? [],
 				stimpack: input.player.character.stimpack,
 				seasonalEventShop: input.seasonal_event_shop_root,
-				borrowedCrew: [...input.player.character.crew_borrows ?? []]
+				borrowedCrew: [...input.player.character.crew_borrows ?? []],
+				pinnedCrew: input.pinned_crew_root,
+				pinnedStasisVault: input.pinned_stasis_vault_root
 			});
 		}
 
-		const dtImported = (typeof input.calc?.lastImported === 'string') ? new Date(input.calc?.lastImported) : new Date();
+		const dtImported = (input.calc?.lastImported) ? new Date(input.calc?.lastImported) : new Date();
 
 		// stripped is used for any storage purpose, i.e. sharing profile
 		//	Ephmeral data is stripped from playerData here
 		const strippedData = input.stripped ? input : stripPlayerData(coreData.items, {...input}) as PlayerData;
-		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString() };
+		strippedData.calc = input.calc ?? { 'lastImported': dtImported.toISOString(), 'guild_create': strippedData.calc?.guild_create ? new Date(strippedData.calc.guild_create) : undefined };
 
 		if (input.stripped !== true) {
-			setStripped({ ...structuredClone(strippedData), stripped: true });
+			setStripped({ ... structuredClone(strippedData), stripped: true });
+			setCalculatedDemands(undefined);
 		}
 
 		// preparedProfileData is expanded with useful data and helpers for DataCore tools

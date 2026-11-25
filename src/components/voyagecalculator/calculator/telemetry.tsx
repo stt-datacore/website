@@ -93,7 +93,7 @@ export function sendCalcResultTelemetry(
 	};
 
 	try {
-		fetch(`${import.meta.env.VITE_DATACORE_URL}api/telemetry`, {
+		fetch(`${process.env.VITE_DATACORE_URL}api/telemetry`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json'

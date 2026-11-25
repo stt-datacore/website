@@ -100,6 +100,22 @@ export interface ReferenceShip extends ShipBonus {
   passive_status: number
   levels: ShipLevel[];
   ranks: ShipScores;
+
+  series?: string;
+  obtained?: string;
+  date_added?: Date;
+  obtained_metadata?: {
+    instance_id?: number,
+    event?: string,
+    event_type?: string,
+    mission?: string,
+    mission_id?: number,
+    quest?: string,
+    quest_id?: number,
+    challenge?: string
+    challenge_id?: number
+  }
+  in_portal?: boolean;
 }
 /**
  * Ship
@@ -143,6 +159,23 @@ export interface Ship extends ShipBonus {
   predefined?: boolean;
   dps?: number;
 
+  preview?: boolean;
+  published_date?: Date;
+  series?: string;
+  obtained?: string;
+  date_added?: Date;
+  obtained_metadata?: {
+    instance_id?: number,
+    event?: string,
+    event_type?: string,
+    mission?: string,
+    mission_id?: number,
+    quest?: string,
+    quest_id?: number,
+    challenge?: string
+    challenge_id?: number
+  }
+  in_portal?: boolean;
   /** Internal use only, not part of game data */
   buffed?: boolean;
 }

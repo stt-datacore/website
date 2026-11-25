@@ -1,8 +1,8 @@
 name: sync-beta-static
 run-name: Sync Beta Static Files
 on:
-  pull_request:
-    types: [opened, ready_for_review, reopened, synchronize, labeled]
+  # pull_request:
+  #   types: [opened, ready_for_review, reopened, synchronize, labeled]
 
   push:
     branches: [ 'master' ]
@@ -17,7 +17,7 @@ jobs:
         #   (github.event.pull_request.draft == false &&
         #   github.event.pull_request.mergeable == true &&
         #   github.event.pull_request.head.repo.fork == false &&
-        #   contains(github.event.pull_request.labels.*.name, 'dev-'))
+        #   contains(github.event.pull_request.labels.*.name, 'beta-'))
         if: |
           github.ref_name == 'master'
 
@@ -29,7 +29,7 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 path: website
 
-            - name: Merge into Beta
+            - name: Merge into Dev
 
               uses: devmasx/merge-branch@master
               with:

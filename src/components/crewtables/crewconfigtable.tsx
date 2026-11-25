@@ -13,6 +13,7 @@ import { printAM } from '../retrieval/context';
 import { descriptionLabel, SpecialViews } from './commonoptions';
 import { CrewTraitMatchesCell } from './filters/crewtraits';
 import { ICrewFilter, IRosterCrew, RosterType } from './model';
+import CONFIG from '../CONFIG';
 
 type CrewConfigTableProps = {
 	pageId: string;
@@ -53,6 +54,7 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 	const tableConfig: ITableConfigRow[] = [
 		{
 			width: 3, column: 'name', title: t('base.crew'), pseudocolumns: pseudos,
+			sticky: true,
 			translatePseudocolumn: (field) => {
 				return t(`base.${field}`) || t(`base.pseudocolumns.${field}`);
 			}
@@ -115,34 +117,63 @@ export const CrewConfigTable = (props: CrewConfigTableProps) => {
 			positive: highlighted
 		};
 
-		setCrew ??= (e) => { return; };
-
+		//setCrew ??= (e) => { return; };
+		let ownedbg = '';
+		if (crew.have) {
+			let kwip = crew.kwipment;
+			if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+			}
+			else if (crew.immortal && (crew.immortal === -1 || crew.immortal > 0)) {
+				ownedbg = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+			}
+		}
 		return (
 			<Table.Row key={`roster_${crew.symbol}+${crew.id}+${!!crew.have}_${rosterType}`} {...attributes}
 				// style={{
 				// 	backgroundColor: specialView === 'as_immortalized' && crew.immortal === CompletionState.DisplayAsImmortalOwned ? 'darkgreen' : undefined
 				// }}
 				>
-				<Table.Cell className='sticky'>
-					<div
-						style={{
-							display: 'grid',
-							gridTemplateColumns: '60px auto',
-							gridTemplateAreas: `'icon stats' 'icon description'`,
-							gridGap: '1px'
-						}}
-					>
-						<div style={{ gridArea: 'icon' }}>
-							<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
-								<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
-							</CrewTarget>
+				<Table.Cell
+					className='sticky rare'
+					style={{
+						borderLeft: '2px solid ' + CONFIG.RARITIES[crew.max_rarity].color,
+						minWidth: '18em',
+						//background: idx % 2 ? '#353a41' : '#2e3338'
+						backgroundImage:
+							`linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))` +
+							(ownedbg ? ", " + ownedbg : '') ,
+					}}>
+					<div style={{display: 'grid', gridTemplateAreas: `'a'`}}>
+						<div style={{
+						//backgroundImage: `linear-gradient(to left, ${CONFIG.RARITIES[crew.max_rarity].rgb.replace(", 1)", ", 0.1)")}, rgba(127,127,127,0))`,
+							gridArea: 'a',
+							height: '100%',
+							width: '100%'
+							}}>
+								&nbsp;
 						</div>
-						<div style={{ gridArea: 'stats' }}>
-							<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
-						</div>
-						<div style={{ gridArea: 'description' }}>
-							{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
-							{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+						<div
+							style={{
+								gridArea: 'a',
+								display: 'grid',
+								gridTemplateColumns: '60px auto',
+								gridTemplateAreas: `'icon stats' 'icon description'`,
+								gridGap: '1px',
+							}}
+						>
+							<div style={{ gridArea: 'icon' }}>
+								<CrewTarget inputItem={crew} targetGroup={pageId+'/targetClass'} >
+									<img width={48} src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+								</CrewTarget>
+							</div>
+							<div style={{ gridArea: 'stats' }}>
+								<span style={{ fontWeight: 'bolder', fontSize: '1.25em' }}><Link to={`/crew/${crew.symbol}/`}>{CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name}</Link></span>
+							</div>
+							<div style={{ gridArea: 'description' }}>
+								{descriptionLabel(t, crew, showOwned, specialView === 'as_immortalized')}
+								{!!crew.antimatter_bonus && printAM(crew.antimatter_bonus, t, false, '16px', true)}
+							</div>
 						</div>
 					</div>
 				</Table.Cell>

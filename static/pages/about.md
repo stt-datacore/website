@@ -1,10 +1,10 @@
 ---
 title: "About"
 hide_in_other: true
-date: 2026-05-13T16:00:00Z
+date: 2026-05-18T16:00:00Z
 ---
 
-## DataCore v3.3.1
+## DataCore v4.0.0
 
 DataCore is a companion resource to Tilting Point's [Star Trek Timelines](https://www.tiltingpoint.com/games/star-trek-timelines/) game. It's designed as a compendium of data, statistics and assets, both extracted from the game as well as user generated.
 

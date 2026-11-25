@@ -140,7 +140,7 @@ export const Game = (props: GameProps) => {
 			options.push({
 				id: options.length + 1,
 				name: `${CONFIG.SKILLS[skill]}`,
-				iconUrl: `${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`,
+				iconUrl: `${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`,
 				field: 'skills',
 				value: skill
 			});

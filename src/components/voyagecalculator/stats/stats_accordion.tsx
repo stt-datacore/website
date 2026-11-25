@@ -3,9 +3,9 @@ import { Accordion, Message, Dimmer, Loader, Icon, Segment, SemanticICONS } from
 
 import { UnifiedWorker as Worker } from '../../../typings/worker';
 import { PlayerCrew, PlayerData, Voyage } from '../../../model/player';
-import { ExtendedVoyageStatsConfig, VoyageStatsConfig } from '../../../model/worker';
+import { SporeDriveConfig, VoyageStatsConfig } from '../../../model/worker';
 import { Estimate } from "../../../model/voyage";
-import { CrewMember } from '../../../model/crew';
+import { CrewMember, Skill } from '../../../model/crew';
 import { GlobalContext } from '../../../context/globalcontext';
 import { VoyageStatsEstimate, VoyageStatsEstimateTitle } from './statsestimate';
 
@@ -29,12 +29,18 @@ type VoyageStatsState = {
 	hoverCrew?: CrewMember | PlayerCrew | undefined;
 };
 
+type EstimateResponse = {
+	data: {
+		result: Estimate
+	}
+}
+
 export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStatsState> {
 	static contextType = GlobalContext;
 	declare context: React.ContextType<typeof GlobalContext>;
 
 	private worker: Worker | undefined = undefined;
-	private config: ExtendedVoyageStatsConfig = {} as VoyageStatsConfig;
+	private config: SporeDriveConfig = {} as SporeDriveConfig;
 
 	constructor(props: VoyageStatsProps | Readonly<VoyageStatsProps>) {
 		super(props);
@@ -46,8 +52,6 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 			voyageBugDetected: Math.floor(voyageData.voyage_duration / 7200) > Math.floor(voyageData.log_index / 360),
 			currentAm: props.voyageData.hp ?? voyageData.max_hp
 		};
-
-		this.updateAndRun();
 	}
 
 	private updateAndRun(force?: boolean) {
@@ -66,8 +70,10 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 				startAm: voyageData.max_hp,
 				currentAm: voyageData.hp ?? voyageData.max_hp,
 				elapsedSeconds: correctedDuration,
-				variance: 0
-			} as VoyageStatsConfig;
+				variance: 0,
+				ps: {} as Skill,
+				ss: {} as Skill
+			} as SporeDriveConfig;
 
 			for (let agg of Object.values(voyageData.skill_aggregates)) {
 				let skillOdds = 0.1;
@@ -83,47 +89,55 @@ export class VoyageStatsAccordion extends Component<VoyageStatsProps, VoyageStat
 				this.config.variance += ((agg.range_max - agg.range_min) / (agg.core + agg.range_max)) * skillOdds;
 			}
 
-			if (this.worker) {
-				this.worker.terminate();
-				this.worker.removeEventListener('message', this._eventListener);
-				this.worker = undefined;
-			}
-
-			this.worker = new Worker();
-			this.worker.addEventListener('message', this._eventListener);
-
 			this.beginCalc();
 		}
 	}
 
-	private readonly _eventListener = (message) => {
+	private readonly _eventListener = (message: EstimateResponse) => {
+		this.config.selectedTime = message.data.result.adjustedTime ?? 20;
 		this.setState({ estimate: message.data.result });
 	}
 
+	private initWorker() {
+		if (this.worker) {
+			this.worker.terminate();
+			this.worker.removeEventListener('message', this._eventListener);
+			this.worker = undefined;
+		}
+
+		this.worker = new Worker();
+		this.worker.addEventListener('message', this._eventListener);
+
+	}
+
 	private beginCalc() {
+		this.initWorker();
 		if (this.config.elapsedSeconds) {
 			let nextHour = Math.ceil(this.config.elapsedSeconds / 3600);
 			if (nextHour % 2) nextHour++;
 
 			if (nextHour >= 16 && (this.config?.selectedTime === undefined || this.config.selectedTime <= nextHour)) {
-				this.config.selectedTime = nextHour + 6;
+				this.config.selectedTime = nextHour + 10;
 				if (this.config.selectedTime > 84) {
 					this.config.selectedTime = 84;
 				}
 				this.config.numSims = this.config.selectedTime * 250;
 			}
 
-
 			if (this.config?.selectedTime !== undefined) {
 				if (this.config.selectedTime <= nextHour) {
 					this.config.selectedTime = nextHour + 2;
 				}
-				this.worker?.postMessage({ worker: 'voyageEstimateExtended', config: this.config });
+				this.worker?.postMessage({ worker: 'sporeDrive', config: this.config });
 				return;
 			}
 		}
 
-		this.worker?.postMessage({ worker: 'voyageEstimate', config: this.config });
+		this.worker?.postMessage({ worker: 'sporeDrive', config: this.config });
+	}
+
+	componentDidMount(): void {
+		this.updateAndRun();
 	}
 
 	componentWillUnmount() {

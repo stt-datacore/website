@@ -534,7 +534,7 @@ export const CrewUtilityCells = (props: CrewCellProps) => {
 								<div style={{ display: 'flex', justifyContent: 'center', gap: '3px' }}>
 								{utility.skills.map(skill =>
 									<span key={skill}>
-										<img key={skill} alt={skill} src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
+										<img key={skill} alt={skill} src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`} style={{ height: '1em' }} />
 									</span>
 								)}
 								</div>

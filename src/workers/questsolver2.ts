@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-assignment */
 import CONFIG from "../components/CONFIG";
 import { BaseSkills } from "../model/crew";
 import { EquipmentItem } from "../model/equipment";

@@ -58,7 +58,7 @@ export function settingsToPermalink(page: string, settings: EditObject, fields: 
         }
     }
     let host = "";
-    if (!globalThis.window) host = (import.meta.env.VITE_DATACORE_URL ?? "") as string;
+    if (!globalThis.window) host = (process.env.VITE_DATACORE_URL ?? "") as string;
     else host = globalThis.window.location.origin + "/";
     return `${host}${page}?${params.toString()}`;
 }

@@ -158,10 +158,15 @@ export function appelate(text: string) {
 }
 
 export function decamelify(value: string) {
-	value = value.replace(/_/g, " ");
+	value = value.replace(/_/g, " ").replace(/\./g, " ");
 	let vm = "";
-	let pch = ""
+	let pch = "";
+
 	for (let ch of value) {
+		if (ch != " " && ch.toUpperCase() === ch && pch !== " ") {
+			vm += " ";
+			pch = " ";
+		}
 		if (ch === " ") {
 			vm += " ";
 		}
@@ -173,7 +178,7 @@ export function decamelify(value: string) {
 		}
 		pch = ch;
 	}
-	vm = vm.split(" ").map(s => s === 'Fbb' ? 'FBB' : s).join(" ");
+	vm = vm.split(" ").map(s => s === 'Fbb' ? 'FBB' : s).filter(f => !!f).join(" ");
 	return vm;
 }
 

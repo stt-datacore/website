@@ -160,7 +160,7 @@ const BeholdHelper = (props: BeholdHelperProps) => {
 							size='tiny'
 							trigger={
 								<Button icon='clipboard' content={t('global.copy_permalink_clipboard')}
-									onClick={() => navigator.clipboard.writeText(`${import.meta.env.VITE_DATACORE_URL}/behold?${permalink}`)}
+									onClick={() => navigator.clipboard.writeText(`${process.env.VITE_DATACORE_URL}/behold?${permalink}`)}
 								/>
 							}
 						/>

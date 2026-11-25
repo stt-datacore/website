@@ -44,6 +44,7 @@ export interface SortConfig {
 export interface ITableConfigRow {
 	width: number;
 	column?: string;
+	sticky?: boolean;
 	title: string | React.ReactNode;
 	pseudocolumns?: string[];
 	reverse?: boolean;
@@ -116,12 +117,12 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	//	Previously stored values will be rendered before an override triggers a re-render
 	React.useEffect(() => {
 		if (props.initOptions) {
-			setSearchFilter(props.initOptions.search ?? '');
-			setFilterType(props.initOptions.filter ?? 'Any match');
-			setColumn(props.initOptions.column ?? undefined);
-			setDirection(props.initOptions.direction ?? undefined);
-			setPaginationRows(props.initOptions.rows ?? 10);
-			setPaginationPage(props.initOptions.page ?? 1);
+			setSearchFilter(props.initOptions.search ?? searchFilter);
+			setFilterType(props.initOptions.filter ?? filterType);
+			setColumn(props.initOptions.column ?? column);
+			setDirection(props.initOptions.direction ?? direction);
+			setPaginationRows(props.initOptions.rows ?? pagination_rows);
+			setPaginationPage(props.initOptions.page ?? pagination_page);
 		}
 	}, [props.initOptions]);
 
@@ -172,6 +173,7 @@ export const SearchableTable = (props: SearchableTableProps) => {
 				{props.config.map((cell, idx) => (
 					<Table.HeaderCell
 						key={idx}
+						className={cell.sticky ? 'sticky' : undefined}
 						width={cell.width as any}
 						sorted={(((cell.pseudocolumns && cell.pseudocolumns.includes(column)) || (column === cell.column)) ? direction : undefined) ?? undefined}
 						onClick={() => onHeaderClick(cell)}
@@ -246,11 +248,11 @@ export const SearchableTable = (props: SearchableTableProps) => {
 	}
 	// If no direction set, determine direction from tableConfig when possible
 	if (!sortDirection) {
-		const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
+		const columnConfig = props.config.find(col => col.column === sortColumn) || props.config.find(col => col.pseudocolumns?.includes(sortColumn));
 		sortDirection = columnConfig?.reverse ? 'descending' : 'ascending';
 	}
 
-	const columnConfig = props.config.find(col => col.column === sortColumn || col.pseudocolumns?.includes(sortColumn));
+	const columnConfig = props.config.find(col => col.column === sortColumn) || props.config.find(col => col.pseudocolumns?.includes(sortColumn));
 
 	const sortConfig: IConfigSortData = {
 		field: sortColumn,
@@ -429,13 +431,17 @@ export const SearchableTable = (props: SearchableTableProps) => {
 			)}
 
 			{filteredCount > 0 && (
-				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto' }}>
-					<Table sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table' style={props.tableStyle}>
+				<div className='flipscroll-container' style={{ margin: '1em 0', overflowX: props.overflowX ?? 'auto', gap: 0 }}>
+					<Table
+						sortable celled selectable striped collapsing unstackable compact="very" className='flipscroll-table'
+						style={props.tableStyle}>
 						<Table.Header>{renderTableHeader(column, direction)}</Table.Header>
 						<Table.Body>{data.map((row, idx) => props.renderTableRow(row, idx, isRowActive(row, activeLock)))}</Table.Body>
+					</Table>
+					<Table style={{position: 'sticky', left: 0, width: '100%', marginTop: 0, paddingTop: 0}}>
 						<Table.Footer>
 							<Table.Row>
-								<Table.HeaderCell colSpan={props.config.length}>
+								<Table.HeaderCell>
 									<div style={{ zIndex: "1000", width: "100%" }}>
 										<Pagination
 											totalPages={totalPages}

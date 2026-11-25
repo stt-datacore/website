@@ -107,7 +107,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     const useDirect = props.useDirect || false //?? !!props.item;
     const mode = props.mode === 1 ? 'crew' : props.mode === 8 ? 'ship' : typeof props.mode === 'string' ? props.mode : 'item';
 
-    if (id === undefined && !symbol) {
+    if (id === undefined && !symbol && !props.src) {
         throw new Error("Avatar View requires either id or symbol");
     }
 
@@ -118,8 +118,8 @@ export const AvatarView = (props: AvatarViewProps) => {
     let starSize = Math.floor(size / 6);
     let bottomStar = Math.floor(size / 23);
     let borderRadius = props.round ? Math.floor(size / 2) : Math.floor(size / 7);
-    let star_reward = `${import.meta.env.VITE_ASSETS_URL}atlas/star_reward.png`;
-    let star_reward_inactive = `${import.meta.env.VITE_ASSETS_URL}atlas/star_reward_inactive.png`;
+    let star_reward = `${process.env.VITE_ASSETS_URL}atlas/star_reward.png`;
+    let star_reward_inactive = `${process.env.VITE_ASSETS_URL}atlas/star_reward_inactive.png`;
     let item = undefined as EquipmentItem | undefined;
     let ship = undefined as Ship | undefined;
     let HoverTarget = undefined as any | undefined;
@@ -152,10 +152,10 @@ export const AvatarView = (props: AvatarViewProps) => {
         gen_item = { ...gen_item ?? {}, ...props.item };
     }
 
-    if (!gen_item) return <></>
+    if (!gen_item && !props.src) return <></>
 
-    maxRarity = gen_item?.max_rarity ?? gen_item?.rarity ?? 0;
-    borderColor = CONFIG.RARITIES[maxRarity].color;
+    // maxRarity = gen_item?.max_rarity ?? gen_item?.rarity ?? 0;
+    // borderColor = CONFIG.RARITIES[maxRarity].color;
 
     const divStyle = {
         cursor: props.link || props.onClick ? 'pointer' : undefined,
@@ -178,7 +178,7 @@ export const AvatarView = (props: AvatarViewProps) => {
         textAlign: 'center'
     } as React.CSSProperties;
 
-    if (!hideRarity) {
+    if (!hideRarity && gen_item) {
         if (showMaxRarity || mode !== 'crew') {
             for (let i = 0; i < gen_item.max_rarity!; i++) {
                 rarity.push(<img key={i} src={star_reward} style={{ width: starSize + 'px' }} />);
@@ -196,7 +196,7 @@ export const AvatarView = (props: AvatarViewProps) => {
 
     if (targetGroup && HoverTarget) {
         return (
-            <div style={divStyle} onClick={() => props.onClick ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
+            <div style={divStyle} onClick={() => props.onClick && gen_item ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
                 <HoverTarget
                     passDirect={passDirect}
                     inputItem={gen_item as PlayerCrew}
@@ -218,7 +218,7 @@ export const AvatarView = (props: AvatarViewProps) => {
     }
     else {
         return (
-            <div style={divStyle} onClick={() => props.onClick ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
+            <div style={divStyle} onClick={() => props.onClick && gen_item ? props.onClick(gen_item) : (link ? navigate(link) : undefined)}>
                 <img
                     src={src}
                     style={imgStyle}
@@ -245,13 +245,17 @@ export const AvatarView = (props: AvatarViewProps) => {
                     gen_item = { ...gen_item };
                     gen_item.rarity = showMaxRarity ? gen_item.max_rarity : 0;
                 }
+                else if (props.item) {
+                    gen_item = { ...props.item};
+                    gen_item.rarity = showMaxRarity ? gen_item.max_rarity : 0;
+                }
             }
         }
         if (gen_item) {
             HoverTarget = CrewTarget;
             const crew = gen_item as PlayerCrew;
             if (!crew.rarity && !!crew.highest_owned_rarity) crew.rarity = crew.highest_owned_rarity!;
-            if (!src) src= `${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`;
+            if (!src) src= `${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`;
             if (!playerData) {
                 crew.immortal = CompletionState.DisplayAsImmortalUnowned;
                 crew.rarity = crew.max_rarity;
@@ -259,10 +263,10 @@ export const AvatarView = (props: AvatarViewProps) => {
             if ((showMaxRarity || crew.immortal) && crewBackground === 'rich') {
                 let kwip = substitute_kwipment ?? crew.kwipment;
                 if (kwip?.length === 4 && kwip?.every((qs) => typeof qs === 'number' ? !!qs : !!qs[1])) {
-                    imgStyle.backgroundImage = `url(${import.meta.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
+                    imgStyle.backgroundImage = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_postimmortalized_256.png)`;
                 }
                 else {
-                    imgStyle.backgroundImage = `url(${import.meta.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
+                    imgStyle.backgroundImage = `url(${process.env.VITE_ASSETS_URL}collection_vault_vault_item_bg_immortalized_256.png)`;
                 }
                 imgStyle.backgroundSize = (size) + "px";
                 imgStyle.backgroundRepeat = "no-repeat";
@@ -316,10 +320,10 @@ export const AvatarView = (props: AvatarViewProps) => {
                 item.demandCrew = citem.demandCrew;
                 if (!src) {
                     if (item.imageUrl) {
-                        src = `${import.meta.env.VITE_ASSETS_URL}${item.imageUrl}`;
+                        src = `${process.env.VITE_ASSETS_URL}${item.imageUrl}`;
                     }
                     else if (item.icon) {
-                        src = `${import.meta.env.VITE_ASSETS_URL}${getIconPath(item.icon, true)}`;
+                        src = `${process.env.VITE_ASSETS_URL}${getIconPath(item.icon, true)}`;
                     }
 
                 }
@@ -328,7 +332,7 @@ export const AvatarView = (props: AvatarViewProps) => {
                 item = { ...item, ...globalContext.localized.ITEM_ARCHETYPES[item.symbol] };
             }
             if (item && gen_item.rarity) item.rarity = gen_item.rarity;
-            if (item && !src) src = `${import.meta.env.VITE_ASSETS_URL}${item.imageUrl}`;
+            if (item && !src) src = `${process.env.VITE_ASSETS_URL}${item.imageUrl}`;
             gen_item = item;
             if (gen_item && !gen_item.max_rarity) {
                 gen_item.max_rarity = gen_item.rarity;
@@ -376,10 +380,10 @@ export const AvatarView = (props: AvatarViewProps) => {
             }
 
             if (props.useSchematicsIcon && cship) {
-                if (!src) src = `${import.meta.env.VITE_ASSETS_URL}${cship.icon?.file.slice(1).replace('/', '_')}.png`;
+                if (!src) src = `${process.env.VITE_ASSETS_URL}${cship.icon?.file.slice(1).replace('/', '_')}.png`;
             }
             else if (ship) {
-                if (!src) src = `${import.meta.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`;
+                if (!src) src = `${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`;
             }
             gen_item = ship;
             if (gen_item && !gen_item.max_rarity) {

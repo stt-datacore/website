@@ -58,7 +58,7 @@ export const CombosGrid = (props: CombosGridProps) => {
 					<Grid.Row key={'combo'+cdx}>
 						{combo.sort(sortPolestars).map((polestar, pdx) => (
 							<Grid.Column key={'combo'+cdx+',polestar'+pdx}>
-								<img width={32} src={`${import.meta.env.VITE_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
+								<img width={32} src={`${process.env.VITE_ASSETS_URL}${polestar.icon.file.slice(1).replace(/\//g, '_')}`} />
 								<br />{polestar.short_name}
 								{(playerData || !!alwaysShowPrice) && (
 									<React.Fragment>

@@ -2,11 +2,13 @@ import React from 'react';
 import { Table, Icon, Button } from 'semantic-ui-react';
 
 import { IRosterCrew } from '../../components/eventplanner/model';
-import { Shuttle, ShuttleSeat, CrewScores, IShuttleScores, ITableColumn, ITableData, IAssignableCrew, ISeatAssignment } from './model';
+import { Shuttle, ShuttleSeat, CrewScores, IShuttleBoost, IShuttleScores, ITableColumn, ITableData, IAssignableCrew, ISeatAssignment } from './model';
 import { ShuttlersContext } from './context';
 import { MissionsTable, MissionFactionView, SeatSkillView, SeatCrewView } from './missionstable';
 import { SeatAssignmentPicker } from './seatassignmentpicker';
 import { EventProjection } from './eventprojection';
+import { ShuttleBoostPicker } from './shuttleboostpicker';
+import { findSeatedCrew, getCrewSeatScore, getShuttleChance } from './utils';
 import { GlobalContext } from '../../context/globalcontext';
 
 interface IActiveEdit {
@@ -35,17 +37,12 @@ export const Assignments = (props: AssignmentsProps) => {
 		assigned.forEach(seated => {
 			const shuttle: Shuttle | undefined = shuttlers.shuttles.find(shuttle => shuttle.id === seated.shuttleId);
 			if (shuttle) {
-				// Assume max shuttle difficulty for events (i.e. 2000 challenge rating)
-				//	Otherwise use shuttle difficulty imported from player data
-				const challengeRating: number = eventData ? 2000 : shuttle.challenge_rating;
 				if (!newScores[seated.shuttleId]) {
 					const seatCount: number = shuttle.seats.length;
 					newScores[seated.shuttleId] = { chance: 0, scores: Array(seatCount).fill(0) };
 				}
-				newScores[seated.shuttleId].scores[seated.seatNum] = seated.seatScore;
-				const dAvgSkill = newScores[seated.shuttleId].scores.reduce((a, b) => (a + b), 0)/newScores[seated.shuttleId].scores.length;
-				const dChance = 1/(1+Math.pow(Math.E, 3.5*(0.5-dAvgSkill/challengeRating)));
-				newScores[seated.shuttleId].chance = dAvgSkill > 0 ? dChance : 0;
+				newScores[seated.shuttleId].scores[seated.seatNum] = getSeatScore(shuttle, seated);
+				newScores[seated.shuttleId].chance = getShuttleChance(shuttle, newScores[seated.shuttleId].scores, eventData);
 			}
 		});
 		setShuttleScores(newScores);
@@ -62,13 +59,14 @@ export const Assignments = (props: AssignmentsProps) => {
 				return shuttleData;
 			});
 		setData([...data]);
-	}, [shuttlers, assigned]);
+	}, [shuttlers, assigned, rosterCrew]);
 
 	const columns: ITableColumn[] = [
 		{ id: 'priority', title: <Icon name='check' />, align: 'center', sortField: { id: '_priority' }},
 		{ id: 'name', title: t('shuttle_helper.missions.columns.name'), sortField: { id: 'name' } },
 		{ id: 'faction', title: t('shuttle_helper.missions.columns.faction'), align: 'center', sortField: { id: 'faction' } },
 		{ id: 'assignments', title: t('shuttle_helper.missions.columns.seat_assignments'), align: 'center', sortField: { id: 'seats.length' } },
+		{ id: 'boost', title: t('boosts.boost'), align: 'center' },
 		{ id: 'chance', title: t('shuttle_helper.missions.columns.success_chance'), align: 'center', sortField: { id: 'chance', firstSort: 'descending' } },
 		{ id: 'actions', title: '' }
 	];
@@ -133,6 +131,12 @@ export const Assignments = (props: AssignmentsProps) => {
 					</Table>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
+					<ShuttleBoostPicker
+						shuttle={datum}
+						onBoostSelected={(boost) => updateBoost(datum.id, boost)}
+					/>
+				</Table.Cell>
+				<Table.Cell textAlign='center'>
 					{datum.chance > 0 && <b>{Math.floor(datum.chance*100)}%</b>}
 				</Table.Cell>
 				<Table.Cell textAlign='right'>
@@ -142,15 +146,29 @@ export const Assignments = (props: AssignmentsProps) => {
 		);
 	}
 
+	// Assigned seat scores are stored unboosted, so rescore seats of boosted shuttles
+	function getSeatScore(shuttle: Shuttle, seated: ISeatAssignment): number {
+		if (!shuttle.boost || seated.assignedSymbol === '') return seated.seatScore;
+		const seat = shuttle.seats[seated.seatNum];
+		const seatedCrew = findSeatedCrew(rosterCrew, seated);
+		if (!seat || !seatedCrew) return seated.seatScore;
+		return getCrewSeatScore(seatedCrew, seat, eventData, shuttle.boost);
+	}
+
+	function updateBoost(shuttleId: string, boost: IShuttleBoost | undefined): void {
+		const shuttle = shuttlers.shuttles.find(shuttle => shuttle.id === shuttleId);
+		if (shuttle) {
+			shuttle.boost = boost;
+			setShuttlers({...shuttlers});
+		}
+	}
+
 	function renderSeatAssignment(shuttleId: string, seatNum: number, seat: ShuttleSeat): React.ReactNode {
 		let assignedCrew: IRosterCrew | undefined = undefined;
 		const seated: ISeatAssignment | undefined = assigned.find(seat =>
 			seat.shuttleId === shuttleId && seat.seatNum === seatNum
 		);
-		if (seated) {
-			assignedCrew = rosterCrew.find(crew => crew.id === seated.assignedId && crew.symbol === seated.assignedSymbol);
-			if (!assignedCrew) assignedCrew = rosterCrew.find(crew => crew.symbol === seated.assignedSymbol);
-		}
+		if (seated) assignedCrew = findSeatedCrew(rosterCrew, seated);
 
 		return (
 			<Table.Row key={seatNum} style={{ cursor: 'pointer' }}

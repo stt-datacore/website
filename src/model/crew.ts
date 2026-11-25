@@ -15,7 +15,11 @@ export interface CrossFuseInfo {
 export interface MarkdownInfo {
     author: string;
     modified: Date;
+    author_key?: string;
+    extra?: string;
+    changeLog?: MarkdownInfo[];
 }
+
 export interface SkillQuipmentScores {
     command_skill: number;
     security_skill: number;
@@ -97,6 +101,13 @@ export interface ObtainedMetadata {
     event_instance_id?: number;
     where?: EventWhere;
     additional_events?: AdditionalEvent[];
+    continuum_id?: number;
+}
+
+export interface CrewReview {
+    symbol: string;
+    markdownContent: string;
+    markdownInfo: MarkdownInfo;
 }
 
 /**
@@ -115,6 +126,11 @@ export interface CrewMember extends QuipmentScores {
     flavor: string;
 	flavor_english?: string;
     archetype_id: number;
+
+    // Occasionally, some crew silently release to the game without being in the portal.
+    // We can track those with this number.
+    silent_id?: number;
+
     max_rarity: number;
     equipment_slots: EquipmentSlot[];
     voice_over?: string;
@@ -168,6 +184,7 @@ export interface CrewMember extends QuipmentScores {
     cap_achiever?: CapAchiever;
     preview?: boolean;
     published?: boolean;
+    published_date?: Date;
     requiredChronCost?: number;
     requiredFactionItems?: number;
     npe?: boolean;
@@ -275,6 +292,7 @@ export interface Nickname {
 export interface GauntletPlusWeights {
     gauntlet: number,
     crit: number,
+    adv_crit: number,
     quipment: number
 }
 
@@ -282,6 +300,7 @@ export interface VoyagePlusWeights {
     voyage: number;
     am_seating: number;
     quipment: number;
+    tertiary_rarity: number;
 }
 
 export interface BasePlusWeights {
@@ -298,6 +317,7 @@ export interface ConstituentWeights {
     gauntlet: number
     gauntlet_plus: number
     crit: number
+    adv_crit: number
     ship: number
     quipment: number
     collections: number
@@ -313,6 +333,7 @@ export interface ConstituentWeights {
     velocity: number
     sko_absolute: number;
     sko_ambivalent: number;
+    donut: number;
     gauntlet_plus_weights: GauntletPlusWeights;
     base_plus_weights: BasePlusWeights;
     voyage_plus_weights: VoyagePlusWeights;
@@ -341,6 +362,11 @@ export interface ShipScores {
     fbb_rank: number,
     boss_details: BossDetails[],
     bosses: BossScore[];
+    avg_compat: number;
+    extra: {
+        mo: number;
+        compat_score: number;
+    };
     divisions: {
         fbb: {
             1?: number,
@@ -402,8 +428,12 @@ export interface RankScoring {
     am_seating: number;
     collections: number;
     crit: number;
+    donut: number;
+    donut_rank: number;
     gauntlet_plus_rank: number;
     gauntlet_plus: number;
+    adv_crit: number;
+    adv_crit_rank: number;
     gauntlet: number;
     greatness_rank: number;
     greatness: number;

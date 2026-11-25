@@ -50,7 +50,7 @@ export interface PlayerData {
   fleet_boss_battles_root?: BossBattlesRoot;
   captains_bridge_root?: CaptainsBridgeRoot;
   seasonal_event_shop_root?: SeasonalShop;
-  calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; };
+  calc?: { lastImported?: string, lastModified?: Date; numImmortals?: number; guild_create?: Date };
   archetype_cache?: ArchetypeRoot20;
   [key: string]: any;
   forte_root: ForteRoot;
@@ -61,6 +61,8 @@ export interface PlayerData {
   buyback_well: PlayerCrew[];
   crew_crafting_root?: CrewCraftingRoot;
   objective_event_root?: ObjectiveEventRoot;
+  pinned_crew_root?: PinnedCrewRoot;
+  pinned_stasis_vault_root?: PinnedStatisVaultRoot;
 }
 
 export interface Player {
@@ -98,10 +100,22 @@ export interface Player {
   consent: boolean
   ccpa_opted_out: boolean
   u_13: boolean
-
 }
 
+export interface PinnedCrewFeature {
+  feature_id: number;
+  crew_ids: number[];
+}
 
+export interface PinnedCrewRoot {
+  id: number;
+  features: PinnedCrewFeature[];
+}
+
+export interface PinnedStatisVaultRoot {
+  id: number;
+  archetype_ids: number[];
+}
 
 export interface CurrencyExchange {
   id: number

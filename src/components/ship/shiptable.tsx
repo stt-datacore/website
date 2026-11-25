@@ -18,7 +18,7 @@ import { BossShip } from '../../model/boss';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { AvatarView } from '../item_presenters/avatarview';
 import { CrewHoverStat } from '../hovering/crewhoverstat';
-import { gradeToColor } from '../../utils/crewutils';
+import { gradeToColor, numberToGrade, prettyObtained } from '../../utils/crewutils';
 import { useNavigate } from 'react-router-dom';
 
 type ShipTableProps = {
@@ -47,13 +47,13 @@ type ActiveDetails = {
 	boss?: string
 }
 
-type Ownership = 'owned' | 'unowned';
+type Ownership = 'owned' | 'unowned' | 'maxed' | 'unmaxed';
 
 export const ShipTable = (props: ShipTableProps) => {
 	const globalContext = React.useContext(GlobalContext);
 	const navigate = useNavigate();
 
-	const { all_ships } = globalContext.core;
+	const { all_ships, portal_log } = globalContext.core;
 	const { playerData, playerShips } = globalContext.player;
 	const { t, SHIP_TRAIT_NAMES } = globalContext.localized;
 	const { mode, pageId, event_ships, high_bonus, event_ship_traits, customList, hideTools, tierLabel, tierDescending, tierColor } = props;
@@ -62,8 +62,8 @@ export const ShipTable = (props: ShipTableProps) => {
 	const [grantFilter, setGrantFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/grant`, undefined);
 	const [abilityFilter, setAbilityFilter] = useStateWithStorage<string[]>(`${pageId}/ship_table_filter/ability`, []);
 	const [traitFilter, setTraitFilter] = useStateWithStorage<string[] | undefined>(`${pageId}/ship_table_filter/trait`, undefined);
-	const [onlyUsed, setOnlyUsed] = useStateWithStorage(`${pageId}/ship_table_filter/trait`, false);
-	const [ownership, setOwnership] = useStateWithStorage<Ownership | undefined>(`${pageId}/ship_table_filter/trait`, undefined);
+	const [onlyUsed, setOnlyUsed] = useStateWithStorage(`${pageId}/ship_table_filter/only_used`, false);
+	const [ownership, setOwnership] = useStateWithStorage<Ownership | undefined>(`${pageId}/ship_table_filter/ownership`, undefined);
 	const [shipsInUse, setShipsInUse] = React.useState<ShipInUse[] | undefined>(undefined);
 	const [buffMode, setBuffMode] = React.useState<PlayerBuffMode>('player');
 	const [showRanks, setShowRanks] = useStateWithStorage<boolean>(`${pageId}/ship_table_show_ranks`, true);
@@ -95,6 +95,7 @@ export const ShipTable = (props: ShipTableProps) => {
 					if (playerShips) {
 						let owned = playerShips.find(f => f.symbol === ship.symbol);
 						ship.level = owned?.level ?? 0;
+						ship.owned = !!owned && owned?.level != 0;
 					}
 					return ship;
 				});
@@ -118,18 +119,26 @@ export const ShipTable = (props: ShipTableProps) => {
 	}, [ships]);
 
 	const filteredShips = React.useMemo(() => {
+		let last_portal = portal_log.length ? new Date(portal_log[portal_log.length - 1].date) : undefined;
+
 		const result = ships.filter((ship) => {
 			ship.ranks ??= {} as any;
 			ship.ranks!.overall ??= 0;
 			ship.ranks!.arena ??= 0;
 			ship.ranks!.fbb ??= 0;
+			if (last_portal && ship.date_added) {
+				ship.date_added = new Date(ship.date_added);
+				ship.in_portal = ship.date_added.getTime() <= last_portal.getTime();
+			}
 			if (rarityFilter && !!rarityFilter?.length && !rarityFilter.some((r) => ship.rarity === r)) return false;
 			if (grantFilter && !!grantFilter?.length && !ship.actions?.some((action) => grantFilter.some((gf) => Number.parseInt(gf) === action.status))) return false;
 			if (abilityFilter && !!abilityFilter?.length && !ship.actions?.some((action) => abilityFilter.some((af) => action.ability?.type.toString() === af))) return false;
 			if (traitFilter && !!traitFilter?.length && !ship.traits?.some((trait) => traitFilter.includes(trait))) return false;
-			if (mode === 'all') {
-				if (ownership === 'owned' && (!playerShips || !playerShips.some(ps => ps.symbol === ship.symbol))) return false;
-				else if (ownership === 'unowned' && (!playerShips || playerShips.some(ps => ps.symbol === ship.symbol))) return false;
+			if (mode === 'all' && !!playerShips) {
+				if (ownership === 'owned' && !ship.owned) return false;
+				else if (ownership === 'maxed' && (!ship.owned || ship.level !== ship.max_level)) return false;
+				else if (ownership === 'unmaxed' && (!ship.owned || ship.level === ship.max_level)) return false;
+				else if (ownership === 'unowned' && ship?.owned) return false;
 			}
 			if (mode === 'owned') {
 				if (onlyUsed && shipsInUse?.length) {
@@ -163,6 +172,7 @@ export const ShipTable = (props: ShipTableProps) => {
 
 	const tableConfig = React.useMemo(() => {
 		let bb = [] as ITableConfigRow[];
+
 		if (breakoutBosses) {
 			let distinct = [...new Set(AllBosses.map(m => m.symbol || '')) ];
 			distinct.sort();
@@ -176,8 +186,8 @@ export const ShipTable = (props: ShipTableProps) => {
 							title: boss.name,
 							reverse: true,
 							customCompare: (a: Ship, b: Ship) => {
-								let aboss = a.ranks?.bosses.find(f => f.boss === boss.symbol);
-								let bboss = b.ranks?.bosses.find(f => f.boss === boss.symbol);
+								let aboss = a.ranks?.bosses?.find(f => f.boss === boss.symbol);
+								let bboss = b.ranks?.bosses?.find(f => f.boss === boss.symbol);
 								if (!aboss && !bboss) return 0;
 								else if (!aboss) return -1;
 								else if (!bboss) return 1;
@@ -203,6 +213,10 @@ export const ShipTable = (props: ShipTableProps) => {
 			{ width: 1, column: 'ranks.arena', title: t('rank_names.arena_rank'), reverse: true },
 			{ width: 1, column: 'ranks.fbb', title: t('rank_names.fbb_rank'), reverse: true },
 			...bb,
+			{
+				width: 1, column: 'compat_score', title: t('ship.compat_score'), reverse: true,
+				customCompare: (a, b) => (a.ranks.extra?.compat_score ?? 0) - (b.ranks.extra?.compat_score ?? 0)
+			},
 			{ width: 1, column: 'antimatter', title: t('ship.antimatter'), reverse: true },
 			{ width: 1, column: 'accuracy', title: t('ship.accuracy'), reverse: true },
 			{ width: 1, column: 'attack', title: t('ship.attack'), reverse: true },
@@ -216,7 +230,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				width: 1, column: 'crit_bonus', title: t('ship.crit_bonus'), reverse: false
 			},
 			{
-				width: 1, column: 'crit_rating', title: t('ship.crit_rating'), reverse: false
+				width: 1, column: 'crit_chance', title: t('ship.crit_rating'), reverse: false,
 			},
 			{
 				width: 1,
@@ -224,16 +238,33 @@ export const ShipTable = (props: ShipTableProps) => {
 				title: t('ship.level'),
 				reverse: true,
 				customCompare: (a, b) => {
-					let r = 0;
-					r = (a.max_level ?? 0) - (b.max_level ?? 0);
+					let r = (a.max_level ?? 0) - (b.max_level ?? 0);
 					if (!r) r = (a.level ?? 0) - (b.level ?? 0);
 					return r;
 				}
 			},
-		 );
+			{
+				width: 1, column: 'date_added', title: t('base.release_date'), reverse: true,
+				customCompare: (a: Ship, b: Ship) => {
+					if (!a.date_added && !b.date_added) return 0;
+					if (!a.date_added) return -1;
+					if (!b.date_added) return 1;
+					if (typeof a.date_added === 'string') {
+						a.date_added = new Date(a.date_added);
+					}
+					if (typeof b.date_added === 'string') {
+						b.date_added = new Date(b.date_added);
+					}
+					return a.date_added.getTime() - b.date_added.getTime();
+				}
+			},
+			{
+				width: 1, column: 'in_portal', title: t('base.in_portal')
+			}
+		);
 		if (!showRanks) {
-			if (!!tierLabel) conf.splice(2, 3);
-			else conf.splice(1, 3);
+			if (!!tierLabel) conf.splice(2, 4);
+			else conf.splice(1, 4);
 		}
 		return conf;
 	}, [showRanks, t, breakoutBosses]);
@@ -260,7 +291,7 @@ export const ShipTable = (props: ShipTableProps) => {
 					/>
 					<TriggerPicker grants={true} altTitle={t('hints.filter_ship_grants')} selectedTriggers={grantFilter} setSelectedTriggers={(value) => setGrantFilter(value as string[])} />
 					<ShipAbilityPicker ship={true} selectedAbilities={abilityFilter} setSelectedAbilities={(value) => setAbilityFilter(value as string[])} />
-					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter(value as string[])} />
+					<TraitPicker ship={true} selectedTraits={traitFilter} setSelectedTraits={(value) => setTraitFilter((value as string[] ?? []).filter(v => !!v?.trim()))} />
 					{mode === 'all' && <CrewBuffModes buffMode={buffMode} setBuffMode={(e) => setBuffMode(e || 'none')} playerAvailable={!!playerShips} />}
 					{!!playerShips && mode === 'all' && <ShipOwnership selectedValue={ownership} setSelectedValue={setOwnership} />}
 					{!!minOpts && (
@@ -319,10 +350,10 @@ export const ShipTable = (props: ShipTableProps) => {
 		if (usages?.length) {
 			for (let usage of usages) {
 				if (usage.battle_mode.startsWith('fbb')) {
-					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}/${usage.battle_mode}/${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity - 1].color, cursor: 'pointer' }}>{`${t(`ship.fbb`)} ${usage.rarity}*`}</a>);
 				}
 				else if (usage.battle_mode === 'pvp') {
-					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}&battle_mode=${usage.battle_mode}&rarity=${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
+					texts.push(<a onClick={() => navigate(`/ship/${ship.symbol}/${usage.battle_mode}/${usage.rarity}`)} style={{ color: CONFIG.RARITIES[usage.rarity].color, cursor: 'pointer' }}>{`${t('ship.pvp')}: ${t(`ship.pvp_divisions.${usage.pvp_division}`)}`}</a>);
 				}
 			}
 		}
@@ -374,7 +405,7 @@ export const ShipTable = (props: ShipTableProps) => {
 				>
 					<div style={{ gridArea: 'icon', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
 						<ShipTarget inputItem={ship} targetGroup={`${pageId}/ship_hover`}>
-							<img width={48} src={`${import.meta.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
+							<img width={48} src={`${process.env.VITE_ASSETS_URL}${ship.icon?.file.slice(1).replace('/', '_')}.png`} />
 						</ShipTarget>
 					</div>
 					<div style={{ gridArea: 'stats', cursor: "pointer" }} onClick={(e) => navToShip(ship)}>
@@ -426,7 +457,7 @@ export const ShipTable = (props: ShipTableProps) => {
 			</>}
 			{breakoutBosses && (<>
 				{bosses.map((boss, idx) => {
-					let rank = ship.ranks?.bosses.find(f => f.boss === boss.symbol);
+					let rank = ship.ranks?.bosses?.find(f => f.boss === boss.symbol);
 					let isActive = activeMode && activeMode.ship === ship && activeMode.mode === 'fbb' && activeMode.boss === boss.symbol;
 
 					const toggle = () => {
@@ -463,6 +494,16 @@ export const ShipTable = (props: ShipTableProps) => {
 					}
 				})}
 			</>)}
+			{showRanks && <>
+				<Table.Cell>
+					<div style={{
+						color: gradeToColor(ship.ranks?.extra?.compat_score ?? 0)
+					}}>
+						{numberToGrade(ship.ranks?.extra?.compat_score ?? 0)}<br />
+						{formatcompat(ship.ranks?.extra?.compat_score ?? 0)}
+					</div>
+				</Table.Cell>
+			</>}
 			<Table.Cell>{printShipValue(ship, "antimatter", pship)}</Table.Cell>
 			<Table.Cell>{printShipValue(ship, "accuracy", pship)}</Table.Cell>
 			<Table.Cell>{printShipValue(ship, "attack", pship)} ({printShipValue(ship, "attacks_per_second", pship)}/s)</Table.Cell>
@@ -480,6 +521,13 @@ export const ShipTable = (props: ShipTableProps) => {
 				{ship.level && <> {ship.level} / {ship.max_level} </>
 					|| <>{ship.max_level}</>}
 			</Table.Cell>}
+			<Table.Cell>
+				{ship.date_added?.toLocaleDateString() || ''}<br />
+				{prettyObtained(ship, t, true)}
+			</Table.Cell>
+			<Table.Cell>
+				{ship.in_portal ? t('global.yes') : t('global.no')}
+			</Table.Cell>
 		</Table.Row>)
 	}
 
@@ -551,6 +599,9 @@ export const ShipTable = (props: ShipTableProps) => {
 		else {
 			ecrew = globalContext.core.crew;
 		}
+		if (!ship.ranks?.bosses?.length) {
+			console.warn(`${ship.symbol} has no bosses!`);
+		}
 		if (fbb && ship.ranks?.divisions.fbb_crew) {
 			let bosses = getBosses(ship).filter(f => fbb === 'all' || f.symbol === fbb);
 			if (bosses?.length) {
@@ -574,5 +625,9 @@ export const ShipTable = (props: ShipTableProps) => {
 			});
 		}
 		return [];
+	}
+
+	function formatcompat(n: number) {
+		return Number((n * 100).toFixed(2))
 	}
 }

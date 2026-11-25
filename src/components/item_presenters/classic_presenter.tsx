@@ -68,6 +68,7 @@ type ClassicPresenterProps = {
 	fieldOverrides?: IFieldOverride[];
 	compact?: boolean;
 	fieldScale?: IFieldScale[]
+	coolMode?: boolean;
 };
 
 export const ClassicPresenter = (props: ClassicPresenterProps) => {
@@ -79,12 +80,12 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 
 	const fields = props.fields ?? defaultFields;
 	const elements = [] as React.ReactNode[];
-	if (!crew.cap_achiever && myCrew) {
-		let fc = myCrew.find(f => f.symbol === crew.symbol);
-		if (fc?.cap_achiever) {
-			crew.cap_achiever = fc.cap_achiever;
-		}
-	}
+	// if (!crew.cap_achiever && myCrew) {
+	// 	let fc = myCrew.find(f => f.symbol === crew.symbol);
+	// 	if (fc?.cap_achiever) {
+	// 		crew.cap_achiever = fc.cap_achiever;
+	// 	}
+	// }
 	fields.forEach(field => {
 		const fieldOverride = props.fieldOverrides?.find(fo => fo.field === field);
 		if (fieldOverride) {
@@ -92,7 +93,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 		}
 		else {
 			if (field === 'collections')
-				elements.push(<p><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></p>);
+				elements.push(<div key={`crewpage_col_wrap_${crew.symbol}`}><b>{t('base.collections')}: </b><CollectionDisplay style={{display: 'inline'}} key={field} crew={crew} /></div>);
 
 			if (field === 'crew_demands')
 				elements.push(<CrewDemands key={field} crew={crew} />);
@@ -117,7 +118,7 @@ export const ClassicPresenter = (props: ClassicPresenterProps) => {
 				elements.push(<Nicknames key={field} crew={crew} />);
 
 			if (field === 'rank_highlights')
-				elements.push(<CrewRankHighlights key={field} crew={crew} markdownRemark={markdownRemark} compact={compact} />);
+				elements.push(<CrewRankHighlights cool={props.coolMode} key={field} crew={crew} markdownRemark={markdownRemark} compact={compact} />);
 
 			if (field === 'ranks') {
 				elements.push(<CrewRanks key='ranks' crew={crew} />);
@@ -185,12 +186,12 @@ const CrewDemands = (props: { crew: CrewMember }) => {
 				n: <b>{crewDemands.factionOnlyTotal}</b>
 			})}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/energy_icon.png`} height={14} />
+				<img src={`${process.env.VITE_ASSETS_URL}atlas/energy_icon.png`} height={14} />
 			</span>{' '}
 			<b>{crewDemands.totalChronCost}</b>
 			{', '}
 			<span style={{ display: 'inline-block' }}>
-				<img src={`${import.meta.env.VITE_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
+				<img src={`${process.env.VITE_ASSETS_URL}currency_sc_currency_0.png`} height={16} />
 			</span>{' '}
 			<b>{crewDemands.craftCost}</b>
 		</div>
@@ -224,7 +225,7 @@ const CrossFuses = (props: { crew: CrewMember }) => {
 	return <></>;
 };
 
-const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) => {
+export const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) => {
 	const { crew, disable_event_modal } = props;
 	const globalContext = React.useContext(GlobalContext);
 	const instances = globalContext.core.event_instances;
@@ -240,7 +241,7 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 	}, [crew]);
 
 	return (
-		<p>
+		<div style={{display: 'inline'}}>
 			<b>{t('base.release_date')}: </b>{crew.preview ? t('global.pending_release') : (new Date(crew.date_added))?.toLocaleDateString()} (<b>{t('global.obtained')}: </b>{prettyObtained(crew, t, true)})
 			{!!crewEvent?.event_date && !disable_event_modal && (
 				<div>
@@ -299,6 +300,9 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 						{crew.obtained_metadata.additional_events.map(add => {
 							let evtData = instances.find(f => f.instance_id === add.instance_id);
 							if (!evtData) return <></>;
+							if (typeof evtData.event_date === 'string') {
+								evtData.event_date = new Date(evtData.event_date);
+							}
 							return (
 								<React.Fragment key={`crew_additional_${add.instance_id}`}>
 									<div style={{
@@ -339,11 +343,11 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 					</Accordion.Content>
 				</Accordion>
 			)}
-		</p>
+		</div>
 	);
 
 	function printWhere(crew: CrewMember) {
-		let txt = t(`event_info.${crew.obtained_metadata.where}_rewards`)
+		let txt = t(`event_info.${crew.obtained_metadata.where || 'threshold'}_rewards`)
 		if (!txt && crew.obtained === 'Mega') txt = t(`event_info.threshold_rewards`);
 		return txt;
 	}
@@ -353,10 +357,12 @@ const DateAdded = (props: { crew: CrewMember, disable_event_modal?: boolean }) =
 		if (['Event', 'Mega'].includes(crew.obtained) && crew.obtained_metadata?.event_instance_id) {
 			event = instances.find(f => f.instance_id === crew.obtained_metadata?.event_instance_id);
 		}
+		else if (['Event', 'Mega'].includes(crew.obtained) && (crew.obtained_metadata as any)?.instance_id) {
+			event = instances.find(f => f.instance_id === (crew.obtained_metadata as any)?.instance_id);
+		}
 		setCrewEvent(event);
 		setModalEvent(event);
 	}
-
 };
 
 
@@ -442,7 +448,7 @@ export const Fuses = (props: { crew: CrewMember, compact?: boolean }) => {
 					<Table.HeaderCell />
 					{baseSkills.map(skill =>
 						<Table.HeaderCell key={skill[0]} textAlign='center'>
-							<img src={`${import.meta.env.VITE_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
+							<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_${skill[0]}.png`} style={{ height: '1.1em' }} />
 						</Table.HeaderCell>
 					)}
 				</Table.Row>

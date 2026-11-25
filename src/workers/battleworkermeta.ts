@@ -40,7 +40,19 @@ export function passesMeta(ship: Ship, crew: CrewMember[], meta: LineUpMeta | Cu
     if (!ignore_cloak && meta.startsWith('arena')) {
         if (!cloakcheck()) return false;
     }
+    if (meta.endsWith("_each")) {
+        if (![0,1,2].every(type => crew.some(c => c.action.bonus_type === type))) return false;
+        meta = meta.replace("_each", "") as LineUpMeta;
+    }
     let ables = crew.map(m => m.action.ability?.type ?? -1);
+    if (meta.startsWith("fbb")) {
+        if (ship.battle_stations!.length >= 3 && crew.filter(f => f.action.bonus_type === 0).length < 2) {
+            return false;
+        }
+    }
+    if (meta === 'fbb_0_healer_evasion' && crew.some(c => c.action.ability?.type === 2)) {
+        return false;
+    }
     let types = crew.map(m => m.action.bonus_type);
     let grants = ship.actions!.map(a => a.status).filter(f => f !== undefined);
     if (crew.some(c => c.action.ability?.condition && !grants.includes(c.action.ability?.condition))) return false;

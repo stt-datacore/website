@@ -13,7 +13,7 @@ export const CrewLabel = (props: CrewLabelProps) => {
 	return (
 		<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 			<ItemDisplay
-				src={`${import.meta.env.VITE_ASSETS_URL}${imageUrlPortrait}`}
+				src={`${process.env.VITE_ASSETS_URL}${imageUrlPortrait}`}
 				size={32}
 				maxRarity={crew.max_rarity}
 				rarity={crew.rarity}

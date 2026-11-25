@@ -57,6 +57,7 @@ export const QuestDropDown = (props: QuestDropDownProps) => {
                 if (result.quests) {
                     for (let i = 0; i < result.quests.length; i++) {
                         let quests = result.quests;
+                        // eslint-disable-next-line react-hooks/immutability
                         result.quests[i].challenges = rq[quests[i].id].challenges ? structuredClone(rq[quests[i].id].challenges) : undefined;
                         result.quests[i].challenges?.forEach(ch => {
                             ch.trait_bonuses = [];

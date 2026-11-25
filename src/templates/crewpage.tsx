@@ -16,6 +16,8 @@ import { EquipmentBuilds } from '../components/crewpage/equipmentbuilds';
 import { Polestars } from '../components/crewpage/polestars';
 import { ItemHoverStat } from '../components/hovering/itemhoverstat';
 import { useStateWithStorage } from '../utils/storage';
+import { StandardTreeComponent } from '../components/base/tree';
+import { CrewGraphAccordion } from '../components/item_presenters/crew_graph';
 
 const DEFAULT_MOBILE_WIDTH = 768;
 
@@ -65,28 +67,29 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 	const { crew_symbol } = props;
 	const { TRAIT_NAMES, CREW_ARCHETYPES } = context.localized;
 
-	const symbol = crew_symbol;
-	const crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
-
-	crew.immortal = CompletionState.DisplayAsImmortalStatic;
-
-	crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
-	crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;
-	crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
-
-	if (ownedCrew) {
-		let discovered = ownedCrew.filter(item => item.symbol === crew.symbol);
-		if (discovered?.length) {
-			let immortal = 0;
-			for (let c of discovered) {
-				if (c.immortal) {
-					immortal = c.immortal;
-					break;
+	const { crew } = React.useMemo(() => {
+		const symbol = crew_symbol;
+		let crew = (context.core.crew.find(c => c.symbol === symbol)) as PlayerCrew;
+		if (crew) crew = structuredClone(crew);
+		crew.immortal = CompletionState.DisplayAsImmortalStatic;
+		crew.traits_named = crew.traits.map(t => TRAIT_NAMES[t]);
+		crew.name = CREW_ARCHETYPES[crew.symbol]?.name ?? crew.name;
+		crew.short_name = CREW_ARCHETYPES[crew.symbol]?.short_name ?? crew.short_name;
+		if (ownedCrew) {
+			let discovered = ownedCrew.filter(item => item.symbol === crew.symbol);
+			if (discovered?.length) {
+				let immortal = 0;
+				for (let c of discovered) {
+					if (c.immortal) {
+						immortal = c.immortal;
+						break;
+					}
 				}
+				crew.immortal = immortal;
 			}
-			crew.immortal = immortal;
 		}
-	}
+		return { crew, symbol };
+	}, [crew_symbol]);
 
 	const imageDoubleClick = () => {
 		if (window.innerWidth < DEFAULT_MOBILE_WIDTH) return;
@@ -97,12 +100,12 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 
 	return (
 		<>
-			<Helmet titleTemplate={`${crew.name}`} defaultTitle={`STT DataCore`}>
+			<Helmet titleTemplate={`STT DataCore - ${crew.name}`} defaultTitle={`STT DataCore`}>
 				<title>{crew.name}</title>
 				<meta property='og:type' content='website' />
 				<meta property='og:title' content={`${crew.name} - ${`STT`}`} />
 				<meta property='og:site_name' content='DataCore' />
-				<meta property='og:image' content={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
+				<meta property='og:image' content={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 				<meta property='og:description' content={`${crew.name} - ${`STT`}`} />
 				<meta property='og:url' content={`${location}`} />
 			</Helmet>
@@ -113,7 +116,6 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 						<Rating defaultRating={crew.max_rarity} maxRating={crew.max_rarity} icon='star' size='large' disabled />
 					</div>
 				</h2>
-
 				<div
 					id='static_avatar'
 					style={{
@@ -152,7 +154,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 								width: window.innerWidth < DEFAULT_MOBILE_WIDTH ? "75%" : "100%",
 								marginRight: window.innerWidth >= DEFAULT_MOBILE_WIDTH ? "0.5em" : undefined
 							}}
-								src={`${import.meta.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`}
+								src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlFullBody}`}
 								alt={crew.name}
 							/>
 							{(window.innerWidth >= DEFAULT_MOBILE_WIDTH && !itemBig) && (<i style={{ textAlign: "center", fontSize: "0.8em", color: "gray" }}>{"(double-click to enlarge)"}</i>)}
@@ -175,6 +177,7 @@ const StaticCrewContent = (props: StaticCrewComponentProps) => {
 			<Polestars crew={crew} />
 			<CrewQuipment crew={crew} />
 			<CrewVariants traits_hidden={crew.traits_hidden} short_name={crew.short_name} />
+			<CrewGraphAccordion crew={crew} />
 		</>
 	);
 }

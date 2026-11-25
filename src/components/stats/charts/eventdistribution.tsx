@@ -66,6 +66,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         { key: 'snw', value: 'snw', text: t('series.snw') },
         { key: 'vst', value: 'vst', text: t('series.vst') },
         { key: 'sfa', value: 'sfa', text: t('series.sfa') },
+        { key: 's31', value: 's31', text: t('series.s31') },
         { key: 'original', value: 'original', text: t('series.original') },
     ];
 
@@ -188,7 +189,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
 
                 {!!img && !!stats && (
                     <div>
-                        <img src={`${import.meta.env.VITE_ASSETS_URL}${img}`} style={{padding: 0,margin:0, height: '64px', border: '1px solid gray', borderRadius: '12px'}} />
+                        <img src={`${process.env.VITE_ASSETS_URL}${img}`} style={{padding: 0,margin:0, height: '64px', border: '1px solid gray', borderRadius: '12px'}} />
                         <br/>{stats?.event_name}
                         <br/>{stats?.discovered?.toLocaleDateString()}
                     </div>

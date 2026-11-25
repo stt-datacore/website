@@ -1,7 +1,3 @@
-import moment from "moment";
-import 'moment/locale/de';
-import 'moment/locale/es';
-import 'moment/locale/fr';
 
 import React from "react";
 import { GlobalContext } from "../../context/globalcontext";
@@ -17,6 +13,7 @@ import { BrowsableGauntletView } from "./browseableview";
 import { GauntletImportComponent } from "./gauntletimporter";
 import { GauntletView } from "./gauntletview";
 import GauntletSettingsPopup from "./settings";
+import { useLocaleDate } from "../base/localedate";
 
 export const GauntletPicker = () => {
     const globalContext = React.useContext(GlobalContext);
@@ -26,6 +23,7 @@ export const GauntletPicker = () => {
     const { playerData } = globalContext.player;
     const hasPlayer = !!playerData;
     const [dbid, setDbid] = React.useState("");
+    const localeDate = useLocaleDate(globalContext.localized);
 
     const tiny = TinyStore.getStore('gauntlets');
 
@@ -69,11 +67,10 @@ export const GauntletPicker = () => {
     if (!gauntlets?.length) return <></>
 
     const today = gauntlets[0];
-    const yesterday = gauntlets[1];
 
     const fs = isMobile ? "0.75em" : "1em";
-    const tDateStr = moment(today?.date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y");
-    const yDateStr = moment(yesterday?.date).utc(false).locale(globalContext.localized.language === 'sp' ? 'es' : globalContext.localized.language).format("MMM D, y");
+    const tDateStr = localeDate(new Date(today.date));
+
     const tabPanes = [
         {
             pane: 'today',
@@ -173,11 +170,11 @@ export const GauntletPicker = () => {
                 return;
             }
 
-            const dts = gauntlet.bracket_id?.split("_");
+            // const dts = gauntlet.bracket_id?.split("_");
 
-            if (dts !== undefined) {
-                gauntlet.date = dts[0];
-            }
+            // if (dts !== undefined) {
+            //     gauntlet.date = dts[0];
+            // }
 
             if (!gauntlet.date && gauntlet.seconds_to_join) {
                 let d = new Date((Date.now() + (1000 * gauntlet.seconds_to_join)));

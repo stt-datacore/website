@@ -1,118 +1,47 @@
-/* eslint-disable */
-import voymod from './voymod';
-import transwarp from './transwarp';
+import voymod from './voymod.ts';
 import sporedrive from './sporedrive';
 import VoyagersWorker from './voyagers';
-import Optimizer from './optimizer';
-import BetaTachyon from './betatachyon';
 import CollectionOptimizer from './collectionworker';
-import ItemsWorker from './itemsworker';
 import QuestSolver from './questsolver2';
 import ShipFinder from './shipfinder';
-import { calcQLots } from '../utils/equipment';
-import ShipCrewWorker from './shipcrewworker';
-import { calculateGauntlet } from '../utils/gauntlet';
 import VoyPADD from './voypadd';
+import { SporeDriveConfig } from '../model/worker';
+import { Estimate } from '../model/voyage';
 
 // This worker can estimate a single lineup from input config
-const voyageEstimate = (config, progress) => {
+const sporeDrive = (config: SporeDriveConfig, progress: (est: Estimate) => boolean) => {
     return new Promise((resolve, reject) => {
-        let estimate = transwarp.getEstimate(config, progress);
+        let estimate = sporedrive(config, progress);
         resolve(estimate);
     });
 };
 
-// This worker can estimate a single lineup from input config
-const voyageEstimateExtended = (config, progress) => {
-    return new Promise((resolve, reject) => {
-        let estimate = sporedrive.getEstimate(config, progress);
-        resolve(estimate);
-    });
-};
-
-/**
- *
- * @param {import('../model/player.js').PlayerData} playerData
- * @param {import('../model/crew.js').CrewMember[]} allCrew
- * @returns
- */
-const citeOptimizer = (playerData, allCrew) => {
-    /**
-     * @param {import('../model/player.js').PlayerCrew} c
-     */
-    const isImmortal = (c) => {
-        return c.level === 100 && c.equipment?.length === 4 && c.rarity === c.max_rarity;
-    }
-    return new Promise((resolve, reject) => {
-        if (playerData.citeMode && playerData.citeMode.rarities?.length) {
-            playerData = structuredClone(playerData);
-            playerData.player.character.crew = playerData.player.character.crew
-                .filter((crew) => playerData.citeMode.rarities.includes(crew.max_rarity));
-        }
-        Optimizer.assessCrewRoster(playerData, allCrew);
-        Optimizer.sortVoyageRankings();
-        Optimizer.findCurrentBestCrew();
-        Optimizer.findBestForRarity();
-        Optimizer.findCrewToTrain();
-        Optimizer.findEVContributionOfCrewToTrain();
-        Optimizer.sortCrewToTrain();
-        Optimizer.findBestCitedCrew();
-        Optimizer.findCrewToCite();
-        Optimizer.findEVContributionOfCrewToCite();
-        Optimizer.sortCrewToCite();
-        resolve({
-            crewToCite: Optimizer.rankedCrewToCite,
-            crewToTrain: Optimizer.rankedCrewToTrain
-        });
-    });
-};
-
-// eslint-disable-next-line no-restricted-globals
 self.onmessage = (message: any) => {
     const postResult = (result: any, inProgress?: boolean) => {
         postMessage({ result, inProgress });
         if (!inProgress) self.close();
-        return inProgress;
+        return !!inProgress;
     };
-    console.log('Unified Worker has been started.');
     const messageHandlers = {
-        'voyageEstimate': () => voyageEstimate(message.data.config, est => postResult(est, true)).then(estimate =>
+        'voyageEstimate': () => sporeDrive(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
-        'voyageEstimateExtended': () => voyageEstimateExtended(message.data.config, est => postResult(est, true)).then(estimate =>
+        'sporeDrive': () => sporeDrive(message.data.config, est => postResult(est, true)).then(estimate =>
             postResult(estimate, false)
         ),
-        'citeOptimizer': () => citeOptimizer(message.data.config.playerData, message.data.config.allCrew).then(data => postResult(data, false)),
         'questSolver': () => QuestSolver.solveQuest(message.data.config).then(data => postResult(data, false)),
-        'ironywrit': () => BetaTachyon.scanCrew(message.data.config).then(data => postResult(data, false)),
         'colOptimizer2': () => CollectionOptimizer.scanAll2(message.data.config).then(data => postResult(data, false)),
-        'equipmentWorker': () => ItemsWorker.processItems(message.data.config).then(data => postResult(data, false)),
-        'iampicard': () => voymod().then(mod => {
-            let result = mod.calculate(JSON.stringify(message.data), res => {
-                postResult(res, true);
-            });
-            postResult(result, false);
-        }),
+        'iampicard': async () => {
+            voymod().then(mod => {
+                let result = mod.calculate(JSON.stringify(message.data), res => {
+                    postResult(res, true);
+                });
+                postResult(result, false);
+            })
+        },
         'voypadd': () => VoyPADD.start(message.data, postResult),
-        'gauntlet': () => {
-            const gauntlet = calculateGauntlet(message.data.config);
-            postResult(gauntlet, false);
-        },
-        'ussjohnjay': () => VoyagersWorker(message.data, postResult, transwarp.getEstimate),
-        'qpower': () => {
-            const { crew, quipment, buffs, max_qbits, slots, mode } = message.data.config;
-            crew.forEach((crew) => {
-                calcQLots(crew, quipment, buffs, max_qbits, slots, mode);
-            });
-            postResult(crew, false);
-        },
-        'shipworker': () => ShipCrewWorker.calc(message.data.config, progress => postResult(progress, true) || false).then(data => postResult(data, false)),
-        'bestshipworker': () => ShipCrewWorker.bestFinder(message.data.config).then(data => postResult(data, false)),
+        'ussjohnjay': () => VoyagersWorker(message.data, postResult, sporedrive),
         'ship_finder': () => ShipFinder.findShips(message.data.config).then(data => postResult(data, false))
     };
-
-    //console.log(message.data.worker);
-
     messageHandlers[message.data.worker]();
-    // postMessage(result);
 };

@@ -10,6 +10,21 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.archetype_cache;
     delete p.version;
 
+    // Find grant/claim for guild_create
+    // This is a good proxy for account creation
+    p.calc ??= {};
+
+    let gc = p.player.entitlements?.granted.map(m => m.history).filter(h => h.filter(h2 => h2.what === 'granted')).flat().map(d => new Date(d.when)).sort((a, b) => a.getTime() - b.getTime());
+    let cc = p.player.entitlements?.claimed.map(m => m.history).filter(h => h.filter(h2 => h2.what === 'granted')).flat().map(d => new Date(d.when)).sort((a, b) => a.getTime() - b.getTime());
+    let gctime = undefined as Date | undefined;
+    if (gc?.length) {
+        gctime = gc[0];
+    }
+    if (cc?.length && (!gctime || gctime.getTime() > cc[0].getTime())) {
+        gctime = cc[0];
+    }
+    if (gctime) p.calc.guild_create = gctime;
+
     delete p.player.entitlements;
     delete p.player.mailbox;
     delete p.player.motd;
@@ -38,6 +53,8 @@ export function stripPlayerData(items: PlayerEquipmentItem[], p: PlayerData): an
     delete p.archetype_cache;
     delete p.item_archetype_cache;
     delete p.seasonal_event_shop_root;
+    delete p.pinned_crew_root;
+    delete p.pinned_stasis_vault_root;
 
     delete p.player.character.navmap;
     delete p.player.character.tutorials;
@@ -299,7 +316,7 @@ export function bonusCrewForCurrentEvent(
 }
 
 export function getChrons(playerData: PlayerData) {
-    let ch = 0;
+    let ch: number;
     ch = Math.floor(playerData.player.character.seconds_from_replay_energy_basis / playerData.player.character.replay_energy_rate);
     if (ch <= 0) {
         ch = playerData.player.character.replay_energy_max + playerData.player.character.replay_energy_overflow;
