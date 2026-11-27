@@ -1,6 +1,7 @@
 {
   "name": "stt-data-core",
   "description": "STT DataCore",
+  "version": "4.0.0",
   "author": "ussjohnjay/ironyWrit",
   "license": "MIT",
   "dependencies": {
