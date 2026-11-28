@@ -587,7 +587,7 @@ const EventStatsComponent = (props: EventStatsProps) => {
 				</Table.Body>
 				<Table.Footer>
 					<Table.Row>
-						<Table.HeaderCell colspan={9}>
+						<Table.HeaderCell colSpan={9}>
 							<Pagination
 								totalPages={totalPages}
 								activePage={activePage}

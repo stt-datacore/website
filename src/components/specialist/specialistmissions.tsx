@@ -523,8 +523,9 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
         const titleStyle = {...flexRow, alignItems: 'flex-start', gap: '0.5em'}
         return (
         <Table size='small' striped style={{width: isMobile ? 'undefined' : '18em'}}>
+            <Table.Body>
             <Table.Row>
-                <Table.Cell colspan={2} style={{textAlign: 'center'}}>
+                <Table.Cell colSpan={2} style={{textAlign: 'center'}}>
                     {t('global.n_total_x', {
                         n: clen,
                         x: t('base.crewmen')
@@ -558,6 +559,7 @@ export const SpecialistMissionTable = (props: SpecialistMissionTableProps) => {
                         {voyage}
                     </Table.Cell>
                 </Table.Row>
+            </Table.Body>
             </Table>)
     }
 

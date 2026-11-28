@@ -180,7 +180,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
         let amount = `${t('global.n_%', { n: data.datum.value })}`;
         return <div className="ui label" style={{...flexRow, justifyContent:'flex-start', gap: '1em'}}>
             <div style={{width: '16px', height: '16px', backgroundColor: `${data.datum.color}`}}></div>
-            <p>
+            <div style={{ margin: '0 0 1em' }}>
                 <span>{label}</span>
                 {!!cmm && !stats && <span>
                     <br />
@@ -194,7 +194,7 @@ export const EventDistributionPicker = (props: DistributionPickerOpts) => {
                         <br/>{stats?.discovered?.toLocaleDateString()}
                     </div>
                 )}
-            </p>
+            </div>
             <span>
                 {amount}
             </span>

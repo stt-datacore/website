@@ -252,6 +252,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
                             }
                         }}
                     >
+                    <Table.Body>
                     {drawTraitRow(item.popular_trait!, 0, rarity)}
                     {expanded === item.symbol &&
                         item.extra_traits!.map((trait, idx) => drawTraitRow(trait, idx + 1, rarity))
@@ -263,7 +264,7 @@ export const ItemStatsTable = (props: ItemStatsTableProps) => {
                             </Table.Cell>
                         </Table.Row>
                     }
-
+                    </Table.Body>
                 </Table>
             </div>
         )

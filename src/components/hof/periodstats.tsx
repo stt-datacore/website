@@ -184,7 +184,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                 <Table striped>
                     <Table.Header>
                         <Table.Row>
-                            <Table.Cell colspan={3}>
+                            <Table.Cell colSpan={3}>
                                 <Pagination fluid activePage={activePage + 1} totalPages={totalPages} onPageChange={(e, { activePage }) => { setActivePage((activePage as number) - 1) }} />
                             </Table.Cell>
                         </Table.Row>
@@ -311,7 +311,7 @@ export const VoyageStatsForPeriod = ({ period, stats, allCrew, rankBy, clickCrew
                     </Table.Body>
                     <Table.Footer>
                         <Table.Row>
-                            <Table.Cell colspan={3}>
+                            <Table.Cell colSpan={3}>
                                 <Pagination fluid activePage={activePage + 1} totalPages={totalPages} onPageChange={(e, { activePage }) => { setActivePage((activePage as number) - 1) }} />
                             </Table.Cell>
                         </Table.Row>
