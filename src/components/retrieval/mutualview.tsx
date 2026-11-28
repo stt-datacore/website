@@ -631,7 +631,7 @@ const MutualTable = (props: MutualTableProps) => {
                         <PolestarDropdown
                             multiple
                             style={{minWidth: '15em'}}
-                            selection={polestarFilter}
+                            selection={polestarFilter ?? []}
                             setSelection={setPolestarFilter}
                             polestars={allowedPolestars}
                             />

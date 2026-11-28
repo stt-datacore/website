@@ -111,7 +111,7 @@ export const CrewDropDown = (props: CrewPickerProperties) => {
         placeholder={placeholder ?? "Search for a crew member..."}
         labeled
         options={crewChoices}
-        value={selection}
+        value={selection ?? (multiple ? [] : undefined)}
         onChange={(e, { value }) => internalSetSelection(value as number[] | number | undefined)}
     />
 

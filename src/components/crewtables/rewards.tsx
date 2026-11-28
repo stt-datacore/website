@@ -227,7 +227,7 @@ export const RewardPicker = (props: RewardPickerProps) => {
 			selection
 			placeholder={placeholder ?? 'Prioritize rewards'}
 			options={rrOpts}
-			value={value}
+			value={value ?? []}
 			multiple
 			onChange={(e, { value }) => handleChange(value as string[] | undefined)}
 		/>

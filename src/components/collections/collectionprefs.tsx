@@ -129,7 +129,7 @@ export const CollectionPrefs = (props: CollectionPrefsProps) => {
                     search
                     selection
                     options={collectionsOptions}
-                    value={mapFilter.collectionsFilter}
+                    value={mapFilter.collectionsFilter ?? []}
                     onChange={(e, { value }) => setMapFilter({ ...mapFilter ?? {}, collectionsFilter: value })}
                     closeOnChange
                 />

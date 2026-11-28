@@ -45,7 +45,7 @@ export const CollectionDropDown = (props: CollectionDropDownProps) => {
             search
             selection
             options={collectionsOptions}
-            value={selection}
+            value={selection ?? (multiple ? [] : undefined)}
             onChange={(e, { value }) => setSelection(value as number[] | number)}
             closeOnChange
         />

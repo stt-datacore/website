@@ -52,7 +52,7 @@ export const SkillPicker = (props: SkillPickerProps) => {
         placeholder={placeholder ?? t('hints.filter_by_skill')}
         labeled
         options={options}
-        value={value}
+        value={value ?? (multiple ? [] : undefined)}
         onChange={(e, { value }) => setValue(value as any)}
     />
 
