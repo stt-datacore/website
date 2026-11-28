@@ -283,7 +283,7 @@ const SettingsEditorModal = (props: SettingsModalProps) => {
                     let field = fields.find(f => f.field === key);
                     if (!field) return (<React.Fragment key={`null_${key}`}></React.Fragment>);
                     let disabled = false;
-                    if (key === 'is_custom') return <></>;
+                    if (key === 'is_custom') return null;
                     if (!innerSettings['is_custom']) disabled = true;
                     return (
                         <div style={rowStyle} key={`${page}_setting_${key}`}>

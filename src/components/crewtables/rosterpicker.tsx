@@ -164,7 +164,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 	return (
 		<>
 		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
-			if (fuseDismissed.includes(crew.symbol)) return <></>
+			if (fuseDismissed.includes(crew.symbol)) return null;
 			let cols = getPlayerCols(crew);
 			return drawAlert(crew, <>
 				{t('alerts.fusible_crew', {
@@ -175,7 +175,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				</>, idx, cols, 'atlas/fusion_icon.png', dismissFuse);
 		})}
 		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
-			if (newDismissed.includes(crew.symbol)) return <></>
+			if (newDismissed.includes(crew.symbol)) return null;
 			let cols = getPlayerCols(crew);
 			return drawAlert(crew, <>
 				{t('alerts.new_crew', {
@@ -186,7 +186,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
 		})}
 		{!!buyWatched?.length && buyWatched.map((crew, idx) => {
-			if (newDismissed.includes(crew.symbol)) return <></>
+			if (newDismissed.includes(crew.symbol)) return null;
 			let cols = [] as CryoCollection[];
 			return drawAlert(crew, <>
 				{t('alerts.watched_crew', {

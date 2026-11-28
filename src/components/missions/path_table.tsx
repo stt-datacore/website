@@ -78,7 +78,7 @@ export const PathTable = (props: PathTableProps) => {
 
     function renderRow(data: PathGroup, idx: number): React.ReactNode {
 
-        if (!quest) return <></>
+        if (!quest) return null;
 
 		return (
 			<Table.Row key={data.path + data.mastery.toString() + data.crew.map(c => c.symbol).join(",")}>

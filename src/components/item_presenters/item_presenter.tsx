@@ -413,7 +413,7 @@ export class ItemPresenter extends Component<ItemPresenterProps, ItemPresenterSt
                                     if (ingitem && demand) {
                                         ingitem = { ...ingitem, quantity: demand.have, needed: demand.count };
                                     }
-                                    if (!ingitem) return <></>
+                                    if (!ingitem) return null;
                                     return (
                                         <div key={"recipe_component_hover_" + ing.symbol + item.symbol + idx}
                                             style={{

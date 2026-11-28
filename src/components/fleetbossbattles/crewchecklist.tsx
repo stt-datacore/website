@@ -123,7 +123,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 			<React.Fragment>
 				{Array.from(selectedIds).map(selectedId => {
 					const crew: BossCrew | undefined = bossCrew.find(crew => crew.id === selectedId);
-					if (!crew) return <></>;
+					if (!crew) return null;
 					return (
 						<Label key={crew.id} style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
 							<Image spaced='right' src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />

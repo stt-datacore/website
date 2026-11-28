@@ -320,7 +320,7 @@ const ProfileCharts = (props: ProfileChartsProps) => {
 								on='click'
 								wide
 							/>}
-						</Grid.Column> || <></>
+						</Grid.Column> || null
 					))}
 				</Grid>
 			</div>
