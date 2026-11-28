@@ -118,7 +118,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		</React.Fragment>
 	);
 
-	function renderAttempts(): JSX.Element {
+	function renderAttempts(): React.ReactNode {
 		return (
 			<React.Fragment>
 				{Array.from(selectedIds).map(selectedId => {
@@ -126,7 +126,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 					if (!crew) return <></>;
 					return (
 						<Label key={crew.id} style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
-							<Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+							<Image spaced='right' src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
 							{crew.name}
 							<Icon name='delete' onClick={() => cancelAttempt(crew.symbol)} />
 						</Label>
@@ -160,7 +160,7 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		return (filter === '' || (crew.highest_owned_rarity > 0 && (filter === 'owned' || !crew.only_frozen)));
 	}
 
-	function renderOptions(): JSX.Element {
+	function renderOptions(): React.ReactNode {
 		return (
 			<CrewPickerOptions
 				filters={filters}
@@ -169,13 +169,13 @@ const CrewChecklist = (props: CrewChecklistProps) => {
 		);
 	}
 
-	function renderGridCrew(datum: IEssentialData, isSelected: boolean): JSX.Element {
+	function renderGridCrew(datum: IEssentialData, isSelected: boolean): React.ReactNode {
 		const crew: BossCrew = datum as BossCrew;
 		return (
 			<React.Fragment>
 				<Image>
 					<div style={{ opacity: isSelected ? .5 : 1 }}>
-						<img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
+						<img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
 					</div>
 					{isSelected && (
 						<Label corner='right' color='red' icon='x' />

@@ -1,9 +1,8 @@
-import React from "react"
-import { Collection } from "../../../model/collections";
+import React from "react";
+import { Icon, Table } from "semantic-ui-react";
 import { GlobalContext } from "../../../context/globalcontext";
-import { Icon, Tab, Table } from "semantic-ui-react";
-import { PlayerCollection, Reward } from "../../../model/player";
-import { ItemArchetypeBase } from "../../../model/player";
+import { Collection } from "../../../model/collections";
+import { ItemArchetypeBase, PlayerCollection, Reward } from "../../../model/player";
 import { RewardsGrid } from "../../crewtables/rewards";
 import { DEFAULT_MOBILE_WIDTH } from "../../hovering/hoverstat";
 

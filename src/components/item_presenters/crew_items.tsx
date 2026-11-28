@@ -1,17 +1,20 @@
 import * as React from 'react';
 
-import { navigate } from 'gatsby';
-import { Label, Progress } from 'semantic-ui-react';
+import { Button, Icon, Label, Modal, Progress, Table } from 'semantic-ui-react';
 import { GlobalContext, IDefaultGlobal } from '../../context/globalcontext';
 import { CrewMember, EquipmentSlot } from "../../model/crew";
 import { EquipmentItem } from '../../model/equipment';
 import { PlayerCrew, PlayerData } from "../../model/player";
-import { qbitsToSlots, qbProgressToNext } from '../../utils/crewutils';
+import { getCrewQuipment, qbitsToSlots, qbProgressToNext } from '../../utils/crewutils';
 import { printShortDistance } from '../../utils/misc';
 import { DEFAULT_MOBILE_WIDTH } from '../hovering/hoverstat';
 import ItemDisplay from '../itemdisplay';
 import { OptionsPanelFlexColumn, OptionsPanelFlexRow } from '../stats/utils';
 import { getRealCrewLevel } from '../../utils/equipment';
+import { useNavigate } from 'react-router-dom';
+import { AvatarView } from './avatarview';
+import { getItemBonuses, getItemWithBonus, isQuipmentMatch } from '../../utils/itemutils';
+import CrewStat from './crewstat';
 
 export interface CrewItemsViewProps {
     crew: PlayerCrew | CrewMember;
@@ -21,13 +24,16 @@ export interface CrewItemsViewProps {
     itemSize?: number;
     mobileSize?: number;
     quipment?: boolean;
-    printNA?: string | JSX.Element;
+    printNA?: string | React.ReactNode;
     targetGroup?: string;
     locked?: boolean;
+    altProspectText?: string;
     vertical?: boolean;
     alwaysHideProgress?: boolean;
     alwaysShowProgress?: boolean;
     gap?: string;
+    prospectsClicked?: (data?: PlayerCrew) => void;
+    altItemClick?: (data: EquipmentItem | undefined, idx: number) => void;
 }
 
 function expToDate(playerData: PlayerData, crew: PlayerCrew) {
@@ -35,7 +41,7 @@ function expToDate(playerData: PlayerData, crew: PlayerCrew) {
         let dnum = Math.floor(playerData.calc.lastModified.getTime() / 1000);
         let result = (crew.kwipment_expiration?.map((kw: number | number[]) => {
             if (kw === 0) return undefined;
-            let n = 0;
+            let n: number;
             if (typeof kw === 'number') {
                 n = (dnum+kw);
             }
@@ -67,7 +73,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
     const [toNext, next] = alwaysShowProgress && crew.q_bits >= 1300 ? [0, 1300] : (!!alwaysHideProgress || !quip || !crew.have || crew.immortal !== -1) ? [0, 0] : qbProgressToNext(crew.q_bits);
 
     crew.equipment ??= [];
-    let startlevel = 0;
+    let startlevel: number;
     let { level: lvl } = getRealCrewLevel(crew);
     startlevel = Math.floor(lvl / 10) * 4;
     // if (crew.local_slots?.length && crew.local_slots[0]?.level === crew.level) {
@@ -136,6 +142,7 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
         if (crew.kwipment?.length && !crew.kwipment_slots) {
             if ((crew.kwipment as number[])?.some((q: number) => !!q)) {
                 let quips = (crew.kwipment as number[]).map(q => context.core.items.find(i => i.kwipment_id?.toString() === q.toString()) as EquipmentItem)?.filter(q => !!q) ?? [];
+                // eslint-disable-next-line react-hooks/immutability
                 crew.kwipment_slots = quips.map(q => {
                     return {
                         level: 100,
@@ -198,7 +205,10 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>
         ||context.core.items?.length &&
             <div style={{...flexCol, gap: 0}}>
-            {!!crew.kwipment_prospects && quip && <Label color='blue'><i>{t('voyage.quipment.title')}</i></Label> }
+            {!!crew.kwipment_prospects && quip && <Label
+            style={{cursor: props.prospectsClicked ? 'pointer' : undefined}}
+            onClick={() => props.prospectsClicked ? props.prospectsClicked(crew) : false}
+            color='blue'><i>{props.altProspectText || t('voyage.quipment.title')}</i></Label> }
             <div style={{
                 display: "flex",
                 flexDirection: vertical ? 'column' : 'row',
@@ -210,17 +220,21 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
             }}>
             {equip.map((item, idx) => (
                     <CrewItemDisplay
+                        idx={idx}
                         nonInteractive={props.nonInteractive}
                         key={`${crew.id}_${crew.symbol}_${idx}_${item.symbol}__crewEquipBox`}
                         context={context}
                         vertical={!!vertical}
+                        altProspectText={props.altProspectText}
                         targetGroup={targetGroup}
                         style={(quip && maxqIdx < idx) || disabled[idx] ? { opacity: locked ? "0.50" : "0.25" } : undefined}
                         locked={getLocked(idx)}
                         itemSize={props.itemSize}
                         mobileSize={props.mobileSize}
+                        prospectsClicked={props.prospectsClicked}
                         mobileWidth={mobileWidth}
                         crew={crew}
+                        altItemClick={(quip && maxqIdx < idx) || disabled[idx] ? undefined : props.altItemClick}
                         expiration={expirations ? (expirations[idx] ? printShortDistance(expirations[idx]) : <>{props.printNA && item.symbol ? props.printNA : <br/>}</>) : undefined}
                         equipment={item} />
                 ))}
@@ -249,8 +263,9 @@ export const CrewItemsView = (props: CrewItemsViewProps) => {
 
 export interface CrewItemDisplayProps extends CrewItemsViewProps {
     equipment?: EquipmentItem;
-    expiration?: string | JSX.Element;
+    expiration?: string | React.ReactNode;
     vertical: boolean;
+    idx?: number;
     itemSize?: number;
     mobileSize?: number;
     style?: React.CSSProperties;
@@ -260,17 +275,26 @@ export interface CrewItemDisplayProps extends CrewItemsViewProps {
 
 export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
 
-    const globalContext = props.context;
+    const navigate = useNavigate();
 
-    const { locked, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration } = props;
+    const { altItemClick, locked, nonInteractive, style, targetGroup, vertical, equipment, mobileWidth, mobileSize, expiration, prospectsClicked, idx } = props;
 
     const itemSize = window.innerWidth < (mobileWidth ?? DEFAULT_MOBILE_WIDTH) ? (mobileSize ?? 24) : (props.itemSize ?? 32);
 
+    const itemClick = (() => {
+        if (altItemClick) {
+            altItemClick(equipment, idx || 0);
+        }
+        else if (!nonInteractive && !targetGroup && !!equipment?.symbol) {
+            navigate("/item_info?symbol=" + equipment.symbol)
+        }
+    });
+
     return (<div
-        onClick={(e) => (!props.nonInteractive && !targetGroup && props.equipment?.symbol) ? navigate("/item_info?symbol=" + props.equipment?.symbol) : false}
+        onClick={(e) => itemClick()}
         title={equipment?.name}
         style={{
-        cursor: props.equipment?.symbol ? "pointer" : 'no-drop',
+        cursor: (equipment?.symbol || altItemClick) ? "pointer" : 'no-drop',
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
@@ -281,19 +305,139 @@ export const CrewItemDisplay = (props: CrewItemDisplayProps) => {
     }}>
         <div style={{display:'flex', flexDirection:'column', alignItems: 'center', justifyContent: "center"}}>
         {!!expiration && <div style={{fontSize: "0.75em", textAlign: 'center'}}>{expiration}</div>}
-        <ItemDisplay
+        <AvatarView
             style={style}
-            targetGroup={targetGroup}
-            itemSymbol={equipment?.symbol}
-            allItems={globalContext.core.items}
-            playerData={globalContext.player.playerData}
-            src={`${process.env.GATSBY_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            mode='item'
+            symbol={equipment?.symbol}
+            item={equipment}
             size={itemSize}
-            maxRarity={equipment?.rarity ?? 0}
-            rarity={equipment?.rarity ?? 0}
-        />
-        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.GATSBY_ASSETS_URL}atlas/lock_icon.png`}/>}
+            src={`${process.env.VITE_ASSETS_URL}${equipment?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+            />
+
+        {locked && <img style={{position: "relative", marginTop:"-16px", height: "16px"}} src={`${process.env.VITE_ASSETS_URL}atlas/lock_icon.png`}/>}
         </div>
     </div>)
+}
+
+export type QuipmentPickerModalProps = {
+    crew: PlayerCrew | CrewMember,
+    current?: EquipmentItem;
+    setCurrent: (value: EquipmentItem | undefined, old_value: EquipmentItem | undefined, idx: number) => void,
+    idx?: number,
+    equipment?: EquipmentItem[];
+    show: boolean;
+    setShow: (value: boolean) => void;
+}
+
+export const QuipmentPickerModal = (props: QuipmentPickerModalProps) => {
+    const globalContext = React.useContext(GlobalContext);
+    const { t } = globalContext.localized;
+    const { equipment, crew, current, setCurrent, idx, show, setShow } = props;
+
+    const [proposed, setProposed] = React.useState(current);
+
+    const { items, itemsWithBonus } = React.useMemo(() => {
+        const quips = (equipment || globalContext.core.items.filter(i => i.type === 14));
+        const items = quips.filter(quip => isQuipmentMatch(crew as PlayerCrew, quip) && (proposed?.symbol === quip.symbol || current?.symbol === quip.symbol || !crew.kwipment?.some(k => Number(quip.id) == k)));
+        const itemsWithBonus = items.map(item => getItemWithBonus(item));
+        return { items, itemsWithBonus };
+    }, [equipment, globalContext.core.items, proposed]);
+
+    return (<>
+        <Modal size={'small'} open={show}>
+            <Modal.Header>
+                { (
+                    <div style={{
+                            gap: '1em',
+                            fontSize: '1rem',
+                            alignItems: 'center',
+                            margin: '0 2em',
+                            wordWrap: 'normal',
+                            maxWidth: '75%',
+                            display: 'grid',
+                            gridTemplateAreas: `'a b'`,
+                        }}>
+                        <AvatarView
+                            style={{gridArea: 'a'}}
+                            mode='item'
+                            item={proposed}
+                            size={48}
+                            src={`${process.env.VITE_ASSETS_URL}${proposed?.imageUrl ?? "items_equipment_box02_icon.png"}`}
+                            />
+                        <div style={{gridArea:'b'}}>
+                            {proposed?.name || t('global.none')}
+                        </div>
+                    </div>
+                )}
+
+            </Modal.Header>
+            <Modal.Content style={{maxHeight: '25em', overflowY: 'auto'}}>
+                <Table striped selectable>
+                    <Table.Body>
+                        {items.map((available, idx) => {
+                            const bonuses = Object.values(itemsWithBonus[idx].bonusInfo.bonuses);
+
+                            return (
+                                <Table.Row key={`quipment_pickeR_modal_${available.symbol}`}
+                                    onClick={() => setProposed(available)}
+                                    style={{ cursor: 'pointer' }}
+                                    >
+                                    <Table.Cell width={1}>
+                                        {proposed?.symbol === available.symbol && <Icon name='check' color='green' />}
+                                    </Table.Cell>
+                                    <Table.Cell width={1}>
+                                        <div
+                                            style={{...OptionsPanelFlexColumn}}>
+                                            <AvatarView
+                                                mode='item'
+                                                item={available}
+                                                size={48}
+                                                />
+                                        </div>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        {available.name}
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <div style={{...OptionsPanelFlexColumn, alignItems: 'flex-start', justifyContent: 'center'}}>
+                                        {bonuses?.map((skill, idx) => {
+                                            return (
+                                                <CrewStat style={{fontSize: '1rem'}} key={`stat_${idx}_${skill.skill}_${available.symbol}`} skill_name={skill.skill} data={skill} />
+                                            )
+                                        })}
+                                        </div>
+                                    </Table.Cell>
+                                </Table.Row>
+                            )
+                        })}
+                    </Table.Body>
+                </Table>
+            </Modal.Content>
+            <Modal.Header style={{float: 'right'}}>
+                <Button onClick={() => cancel()}>
+                    {t('global.cancel')}
+                </Button>
+                <Button onClick={() => setProposed(undefined)}>
+                    {t('global.clear')}
+                </Button>
+                <Button onClick={() => setProposed(current)}>
+                    {t('global.reset')}
+                </Button>
+                <Button onClick={() => accept()}>
+                    {t('global.apply')}
+                </Button>
+            </Modal.Header>
+        </Modal>
+    </>)
+
+    function accept() {
+        setCurrent(proposed, current, props.idx || 0);
+        setShow(false);
+    }
+
+    function cancel() {
+        setProposed(current);
+        setShow(false);
+    }
 
 }

@@ -5,11 +5,12 @@ import {
 	Table
 } from 'semantic-ui-react';
 
-import { GlobalContext } from '../../context/globalcontext';
-import { useStateWithStorage } from '../../utils/storage';
+import { v4 } from 'uuid';
 
-import { IDataSortField, IDataTableColumn, IDataTableSetup, IEssentialData } from './model';
-import { dataFieldSort } from './utils';
+import { GlobalContext } from '../../context/globalcontext';
+
+import { IControlledPagination, IControlledSort, IDataSortField, IDataTableColumn, IDataTableSetup, IEssentialData, TSortDirection } from './model';
+import { useDataSorter } from './usedata';
 
 const defaultSort: IDataSortField = {
 	id: 'name',
@@ -24,40 +25,48 @@ type DataTableProps = {
 	selectedIds?: Set<number>;
 	handleClick?: (datumId: number) => void;
 	handleDblClick?: (datumId: number) => void;
+	controlledSort?: IControlledSort;
+	controlledPagination?: IControlledPagination;
 };
 
 export const DataTable = (props: DataTableProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { setup } = props;
 
-	// Persist sort preference
-	const [sortField, setSortField] = useStateWithStorage<IDataSortField>(`${props.id}/sortField`, setup.defaultSort ?? defaultSort);
-	const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>(`${props.id}/sortDirection`, setup.defaultSort?.firstSort ?? 'ascending');
+	const [data, setData] = React.useState<IEssentialData[] | undefined>(undefined);
+	const prepareSortedData = useDataSorter<IEssentialData>();
+
+	// Reset sort on each reload
+	const [sortField, setSortField] = React.useState<IDataSortField>(setup?.defaultSort ?? defaultSort);
+	const [sortDirection, setSortDirection] = React.useState<TSortDirection>(setup?.defaultSort?.firstSort ?? 'ascending');
 
 	// Reset pagination on each reload
 	const [paginationPage, setPaginationPage] = React.useState<number>(1);
 
+	React.useEffect(() => {
+		// If controlled sort, update state directly without preparation
+		if (props.controlledSort) {
+			updateState(
+				props.data,
+				props.controlledSort.sortField,
+				props.controlledSort.sortDirection
+			);
+			return;
+		}
+		// Otherwise re-sort data by most recent sort field
+		prepareSortedData(props.data, sortField, sortDirection).then(sortedData => {
+			updateState(sortedData, sortField, sortDirection);
+		});
+	}, [props.data, setup]);
+
 	const selectedIds: Set<number> = props.selectedIds ?? new Set<number>();
 
-	const data = React.useMemo<IEssentialData[]>(() => {
-		const data: IEssentialData[] = props.data.slice();
-		dataFieldSort(data, sortField, sortDirection);
-		setPaginationPage(1);
-		return data;
-	}, [props.data, sortField, sortDirection]);
+	if (!data) return <></>;
 
-	React.useEffect(() => {
-		if (props.setup?.defaultSort?.immediateOverride) {
-			delete props.setup.defaultSort.immediateOverride;
-			setSortField(props.setup.defaultSort);
-			setSortDirection(props.setup.defaultSort.firstSort ?? 'ascending');
-		}
-	}, [props.setup.defaultSort]);
-
-	// Pagination
+	// Pagination (only used if controlled pagination is not defined)
 	const rowsPerPage: number = setup.rowsPerPage ?? 10;
 	const totalPages: number = Math.ceil(data.length / rowsPerPage);
-	const pageData: IEssentialData[] = data.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage);
+	const pagedData: IEssentialData[] = data.slice(rowsPerPage * (paginationPage - 1), rowsPerPage * paginationPage);
 
 	const defaultTableProps: StrictTableProps = {
 		celled: true,
@@ -72,73 +81,115 @@ export const DataTable = (props: DataTableProps) => {
 	const columnCount: number = setup.columns.length;
 
 	return (
-		<div style={{ overflowX: 'auto' }}>
-			<Table {...tableProps}>
-				<Table.Header>
-					<Table.Row>
-						{setup.columns.map(column => (
-							<Table.HeaderCell key={column.id}
-								textAlign={column.align ?? 'left'}
-								sorted={column.sortField && sortField.id === column.sortField.id ? sortDirection : undefined}
-								onClick={() => handleColumnHeaderClick(column)}
-							>
-								{column.title}
-							</Table.HeaderCell>
-						))}
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{data.length === 0 && (
+		<React.Fragment>
+			<div style={{ overflowX: 'auto' }}>
+				<Table {...tableProps}>
+					<Table.Header>
 						<Table.Row>
-							<Table.Cell colSpan={columnCount} textAlign='center'>
-								{/* No results found. Please try different search options. */}
-								<p>{t('global.no_search_results_found')}</p>
-							</Table.Cell>
-						</Table.Row>
-					)}
-					{pageData.map(datum => (
-						<Table.Row key={datum.id}
-							style={{ cursor: props.handleClick ? 'pointer' : undefined }}
-							onClick={(e) => {
-								if (e.detail === 2 && props.handleDblClick)
-									props.handleDblClick(datum.id);
-								else if (props.handleClick)
-									props.handleClick(datum.id);
-							}}
-						>
 							{setup.columns.map(column => (
-								<Table.Cell key={column.id} textAlign={column.align ?? 'left'}>
-									{column.renderCell(datum, selectedIds.has(datum.id))}
-								</Table.Cell>
+								<Table.HeaderCell key={v4()}
+									textAlign={column.align ?? 'left'}
+									sorted={column.sortField && sortField.id === column.sortField.id ? sortDirection : undefined}
+									onClick={() => handleColumnHeaderClick(column)}
+									className={column.className}
+								>
+									<div style={{ display: 'inline-block' }}>
+										{column.title}
+										{column.subtitle && (
+											<div>
+												<small>{column.subtitle.toLocaleUpperCase()}</small>
+											</div>
+										)}
+									</div>
+								</Table.HeaderCell>
 							))}
 						</Table.Row>
-					))}
-				</Table.Body>
-				<Table.Footer>
-					<Table.Row>
-						<Table.HeaderCell colSpan={columnCount}>
-							<Pagination
-								totalPages={totalPages}
-								activePage={paginationPage}
-								onPageChange={(e, { activePage }) => setPaginationPage(activePage as number)}
-							/>
-						</Table.HeaderCell>
-					</Table.Row>
-				</Table.Footer>
-			</Table>
-		</div>
+					</Table.Header>
+					<Table.Body>
+						{data.length === 0 && (
+							<Table.Row>
+								<Table.Cell colSpan={columnCount} textAlign='center'>
+									{/* No results found. Please try different search options. */}
+									<p>{t('global.no_search_results_found')}</p>
+								</Table.Cell>
+							</Table.Row>
+						)}
+						{pagedData.map(datum => (
+							<Table.Row key={v4()}
+								style={{ cursor: props.handleClick ? 'pointer' : undefined }}
+								onClick={(e) => {
+									if (e.detail === 2 && props.handleDblClick)
+										props.handleDblClick(datum.id);
+									else if (props.handleClick)
+										props.handleClick(datum.id);
+								}}
+							>
+								{setup.columns.map(column => renderCell(column, datum))}
+							</Table.Row>
+						))}
+					</Table.Body>
+					<Table.Footer>
+						<Table.Row>
+							<Table.HeaderCell colSpan={columnCount} />
+						</Table.Row>
+					</Table.Footer>
+				</Table>
+			</div>
+			{!props.controlledPagination && totalPages > 1 && (
+				<div style={{ marginTop: '1em' }}>
+					<Pagination
+						totalPages={totalPages}
+						activePage={paginationPage}
+						onPageChange={(e, { activePage }) => setPaginationPage(activePage as number)}
+						boundaryRange={0}
+						ellipsisItem={false}
+					/>
+				</div>
+			)}
+		</React.Fragment>
 	);
+
+	function updateState(data: IEssentialData[], sortField: IDataSortField, sortDirection: TSortDirection, paginationPage: number = 1): void {
+		setData(data);
+		setSortField(sortField);
+		setSortDirection(sortDirection);
+		setPaginationPage(paginationPage);
+	}
 
 	function handleColumnHeaderClick(column: IDataTableColumn): void {
 		if (!column.sortField) return;
-		if (column.sortField.id === sortField.id) {
-			setSortDirection(sortDirection === 'ascending' ? 'descending' : 'ascending');
-			setPaginationPage(1);
+		let updatedSortDirection: TSortDirection = column.sortField.firstSort ?? 'ascending';
+		if (column.sortField.id === sortField.id)
+			updatedSortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending';
+		// If controlled sort, update parent with requested sort field
+		if (props.controlledSort?.onSortRequest) {
+			props.controlledSort.onSortRequest(column.sortField, updatedSortDirection);
+			return;
 		}
-		else {
-			setSortField(column.sortField);
-			setSortDirection(column.sortField.firstSort ?? 'ascending');
-			setPaginationPage(1);
-		}
+		// Otherwise re-sort data by requested sort field
+		prepareSortedData(props.data, column.sortField, updatedSortDirection).then(sortedData => {
+			updateState(sortedData, column.sortField!, updatedSortDirection);
+		});
+	}
+
+	function renderCell(column: IDataTableColumn, datum: IEssentialData): React.ReactNode {
+		if (column.renderComplexCell) return column.renderComplexCell(datum, selectedIds.has(datum.id));
+		return (
+			<Table.Cell key={column.id}
+				textAlign={column.align ?? 'left'}
+				className={column.className}
+			>
+				{column.renderCell ? column.renderCell(datum, selectedIds.has(datum.id)) : renderDataField(datum, column.id)}
+			</Table.Cell>
+		);
+	}
+
+	function renderDataField(datum: IEssentialData, fieldName: string): React.ReactNode {
+		const value: any = fieldName.split('.').reduce((prev, curr) =>
+			prev?.hasOwnProperty(curr) ? prev[curr] : undefined,
+			datum
+		);
+		if (value) return <>{value}</>;
+		return <></>;
 	}
 };

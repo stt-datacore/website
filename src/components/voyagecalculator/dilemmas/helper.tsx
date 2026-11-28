@@ -107,7 +107,7 @@ export const DilemmaHelper = (props: DilemmaHelperProps) => {
 					log.selection = answer.selection;
 				}
 			}
-            return { ... voyageLog[1] };
+            return { ...voyageLog[1] };
         }
         return undefined;
     }, [voyageLog, answeredDilemmas, dbid]);

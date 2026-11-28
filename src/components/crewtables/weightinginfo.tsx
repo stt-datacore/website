@@ -1,11 +1,10 @@
 import React from 'react';
-import { Modal, Input, Button, Table } from 'semantic-ui-react';
+import { Button, Input, Modal, Table } from 'semantic-ui-react';
 import { GlobalContext } from '../../context/globalcontext';
-import { BetaTachyonSettings } from '../../model/worker';
 import { ConstituentWeights, CurrentWeighting } from '../../model/crew';
+import { Slider } from '../base/slider';
 import { OptionsPanelFlexColumn } from '../stats/utils';
 import { RarityFilter } from './commonoptions';
-import { Slider } from '../base/slider';
 
 
 /*
@@ -33,13 +32,13 @@ export interface WeightingInfoProps {
     saveConfig?: (rarity: number, value: ConstituentWeights) => void,
     editable?: boolean;
     rarity?: number;
-    renderTrigger?: () => JSX.Element;
+    renderTrigger?: () => React.ReactNode;
     setIsOpen: (value: boolean) => void;
     isOpen: boolean;
 };
 
 const WeightingInfoPopup = (props: WeightingInfoProps) => {
-    const inputRef = React.createRef<Input>();
+    const inputRef = React.createRef<HTMLInputElement>();
     const globalContext = React.useContext(GlobalContext);
 
     const { current_weighting } = globalContext.core;
@@ -194,7 +193,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
 
         )
     }
-    function renderGrid(): JSX.Element {
+    function renderGrid(): React.ReactNode {
 
         const weightKeys = weighting ? Object.keys(weighting).filter(f => typeof weighting[f] === 'number') : undefined;
         if (!editable) weightKeys?.sort((a, b) => weighting![b] - weighting![a]);
@@ -242,7 +241,7 @@ const WeightingInfoPopup = (props: WeightingInfoProps) => {
         setModalIsOpen(false);
     }
 
-    function renderDefaultTrigger(): JSX.Element {
+    function renderDefaultTrigger(): React.ReactNode {
         return (
             <Button>
                 {t('ranking_tools.show_weighting_details')}

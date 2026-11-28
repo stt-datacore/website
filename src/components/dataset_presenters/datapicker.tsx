@@ -7,33 +7,36 @@ import {
 	Loader,
 	Message,
 	Modal,
+	Progress,
 	Segment
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
 import { useStateWithStorage } from '../../utils/storage';
 
-import { IDataPickerState, IEssentialData } from './model';
+import { IDataGridSetup, IDataPickerState, IDataTableSetup, IEssentialData } from './model';
 import { DataGrid } from './datagrid';
-import { IDataGridSetup } from './model';
 import { DataTable } from './datatable';
-import { IDataTableSetup } from './model';
+import { useDataPreparer } from './usedata';
+import { standardize } from './utils';
 
 type DataPickerProps = {
 	id: string;
 	data: IEssentialData[];
 	closePicker: (selectedIds: Set<number>, affirmative: boolean) => void;
 	singleSelect?: boolean;
-	title?: string | JSX.Element;
+	title?: string | React.ReactNode;
+	/** preFilteredIds here are ids that should NOT be listed */
 	preFilteredIds?: Set<number>;
 	preSelectedIds?: Set<number>;
 	selection?: boolean;
 	closeOnChange?: boolean;
 	search?: boolean;
 	searchPlaceholder?: string;
-	renderOptions?: (dataPickerState: IDataPickerState) => JSX.Element;
-	renderPreface?: (dataPickerState: IDataPickerState) => JSX.Element;
-	renderActions?: (dataPickerState: IDataPickerState) => JSX.Element;
+	customSearchMatch?: (datum: IEssentialData, term: string) => boolean;
+	renderOptions?: (dataPickerState: IDataPickerState) => React.ReactNode;
+	renderPreface?: (dataPickerState: IDataPickerState) => React.ReactNode;
+	renderActions?: (dataPickerState: IDataPickerState) => React.ReactNode;
 	gridSetup?: IDataGridSetup;
 	tableSetup?: IDataTableSetup;
 };
@@ -41,40 +44,83 @@ type DataPickerProps = {
 export const DataPicker = (props: DataPickerProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 
-	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
-	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(new Set<number>());
+	// Queryable data is the prefiltered dataset BEFORE filtering further by query
+	//	Caching a copy of queryable data here to make subsequent queries faster
+	const [queryableData, setQueryableData] = React.useState<IEssentialData[] | undefined>(undefined);
+	const prepareQueryableData = useDataPreparer<IEssentialData>(
+		[{ match: (datum) => !props.preFilteredIds?.has(datum.id) }],
+		{
+			batchesPerPass: 5,
+			onProgress: (progress) => setProgress(progress)
+		}
+	);
 
-	// Reset search query and close options on each reload
+	// Queried data is the dataset AFTER filtering by query
+	const [queriedData, setQueriedData] = React.useState<IEssentialData[] | undefined>(undefined);
+	const prepareQueriedData = useDataPreparer<IEssentialData>(
+		[{ match: (datum) => dataMatches(datum) }],
+		{
+			onProgress: (progress) => setProgress(progress)
+		}
+	);
+
+	// Reset selected ids on each reload, parent should maintain persistent state of selected ids
+	const [pendingSelectedIds, setPendingSelectedIds] = React.useState<Set<number>>(props.preSelectedIds ?? new Set<number>());
+
+	// Reset search query and progress on each reload
 	const [searchQuery, setSearchQuery] = React.useState<string>('');
+	const [progress, setProgress] = React.useState<number>(0);
+
+	// Close options on each reload
 	const [showOptions, setShowOptions] = React.useState<boolean>(false);
 
 	// Persist layout preference
 	const [layout, setLayout] = useStateWithStorage<'grid' | 'table'>(`${props.id}/layout`, props.tableSetup ? 'table' : 'grid');
 
-	const data = React.useMemo<IEssentialData[]>(() => {
-		return props.data.slice().filter(datum =>
-			(!props.preFilteredIds || !props.preFilteredIds.has(datum.id))
-				&& (searchQuery === '' || textMatch(datum.name, searchQuery))
-		);
-	}, [props.data, props.preFilteredIds, searchQuery]);
+	const [modalIsBlurring, setModalIsBlurring] = React.useState<boolean>(false);
 
-	// Update selected ids on external changes
+	// Process queryable data on changes to master dataset or prefilters
 	React.useEffect(() => {
-		setPendingSelectedIds(props.preSelectedIds ?? new Set<number>());
-	}, [props.preSelectedIds]);
+		// Bypass preparer if no filters active
+		if (!props.preFilteredIds) {
+			setQueryableData(props.data);
+			return;
+		}
+		prepareQueryableData(props.data).then(queryableData => {
+			setQueryableData(queryableData);
+		});
+	}, [props.data, props.preFilteredIds]);
+
+	// Process queried data on changes to queryable data or query
+	React.useEffect(() => {
+		if (!queryableData) return;
+		// Bypass preparer on empty search
+		if (searchQuery === '') {
+			setQueriedData(queryableData);
+			return;
+		}
+		prepareQueriedData(queryableData).then(queriedData => {
+			setQueriedData(queriedData);
+		});
+	}, [queryableData, searchQuery]);
 
 	// Hide options on search query change
 	React.useEffect(() => {
 		setShowOptions(false);
 	}, [searchQuery]);
 
-	const inputRef: React.RefObject<Input> = React.createRef<Input>();
+	// Ensures closePicker sends latest pendingSelectedIds on modal blur
+	React.useEffect(() => {
+		if (modalIsBlurring) props.closePicker(pendingSelectedIds, false);
+	}, [modalIsBlurring]);
+
+	const inputRef = React.createRef<HTMLInputElement>();
 	React.useEffect(() => {
 		inputRef.current?.focus();
 	}, []);
 
 	const dataPickerState: IDataPickerState = {
-		data,
+		data: queriedData ?? [],
 		pendingSelectedIds, setPendingSelectedIds,
 		searchQuery, setSearchQuery,
 		showOptions, setShowOptions,
@@ -84,12 +130,13 @@ export const DataPicker = (props: DataPickerProps) => {
 	return (
 		<Modal
 			open={true}
-			onClose={() => props.closePicker(pendingSelectedIds, false)}
+			onClose={() => setModalIsBlurring(true)}
 			centered={false}
 		>
 			<Modal.Header>
 				{renderModalHeader()}
 			</Modal.Header>
+			{props.search && renderProgress()}
 			<Modal.Content scrolling>
 				{renderModalContent()}
 			</Modal.Content>
@@ -99,37 +146,54 @@ export const DataPicker = (props: DataPickerProps) => {
 		</Modal>
 	);
 
-	function textMatch(fieldValue: string, userQuery: string): boolean {
-		return fieldValue.toLowerCase().replace(/[^a-z0-9]/g, '')
-			.indexOf(userQuery.toLowerCase().replace(/[^a-z0-9]/g, '')) >= 0;
+	function dataMatches(datum: IEssentialData): boolean {
+		// Multisearch (i.e. match ANY comma-delimited terms)
+		const terms: string[] = [];
+		searchQuery.split(',').forEach(userTerm => {
+			const term: string = userTerm.trim();
+			if (term !== '') terms.push(term);
+		});
+		if (terms.length > 1) {
+			return terms.some(term =>
+				(props.customSearchMatch && props.customSearchMatch(datum, term))
+					|| standardize(datum.name).indexOf(standardize(term)) >= 0);
+		}
+		return (props.customSearchMatch && props.customSearchMatch(datum, terms[0]))
+			|| standardize(datum.name).indexOf(standardize(terms[0])) >= 0;
 	}
 
-	function renderModalHeader(): JSX.Element {
+	function renderModalHeader(): React.ReactNode {
 		if (!props.search) return <>{props.title}</>;
 		return (
-			<Input	/* Search by name */
-				ref={inputRef}
-				fluid size='mini'
-				iconPosition='left'
-				placeholder={props.searchPlaceholder ?? t('global.search_by_name')}
-				value={searchQuery}
-				onChange={(e, { value }) => setSearchQuery(value as string)}
-			>
-				<input
-					onKeyUp={(e) => {
-						if (!!props.selection && data.length === 1 && e.key === 'Enter')
-							selectFromQuery();
-					}}
-				/>
-				<Icon name='search' />
-				<Button icon onClick={() => setSearchQuery('')}>
-					<Icon name='delete' />
-				</Button>
-			</Input>
+			<React.Fragment>
+				<Input	/* Search by name */
+					ref={inputRef}
+					fluid size='mini'
+					iconPosition='left'
+					placeholder={props.searchPlaceholder ?? t('global.search_by_name')}
+					value={searchQuery}
+					onChange={(e, { value }) => setSearchQuery(value as string)}
+				>
+					<input onKeyUp={(e) => { if (e.key === 'Enter') submitQuery(); }} />
+					<Icon name='search' />
+					<Button icon onClick={() => { setSearchQuery(''); inputRef?.current?.focus(); }}>
+						<Icon name='delete' />
+					</Button>
+				</Input>
+			</React.Fragment>
 		);
 	}
 
-	function renderModalContent(): JSX.Element {
+	function renderProgress(): React.ReactNode {
+		return (
+			<Progress
+				percent={progress}
+				attached='bottom'
+			/>
+		);
+	}
+
+	function renderModalContent(): React.ReactNode {
 		return (
 			<React.Fragment>
 				{props.renderOptions && showOptions && (
@@ -157,31 +221,40 @@ export const DataPicker = (props: DataPickerProps) => {
 						{props.renderPreface(dataPickerState)}
 					</div>
 				)}
-				{(layout === 'grid' || !props.tableSetup) && (
-					<DataGrid
-						id={`${props.id}/datagrid`}
-						data={data}
-						setup={props.gridSetup}
-						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? toggleDatum : undefined}
-						handleDblClick={props.selection ? selectAndClose : undefined}
-					/>
+				{queriedData && (
+					<React.Fragment>
+						{(layout === 'grid' || !props.tableSetup) && (
+							<DataGrid
+								id={`${props.id}/datagrid`}
+								data={queriedData}
+								setup={props.gridSetup}
+								selectedIds={pendingSelectedIds}
+								handleClick={props.selection ? toggleDatum : undefined}
+								handleDblClick={props.selection ? selectAndClose : undefined}
+							/>
+						)}
+						{layout === 'table' && props.tableSetup && (
+							<DataTable
+								id={`${props.id}/datatable`}
+								data={queriedData}
+								setup={props.tableSetup}
+								selectedIds={pendingSelectedIds}
+								handleClick={props.selection ? toggleDatum : undefined}
+								handleDblClick={props.selection ? selectAndClose : undefined}
+							/>
+						)}
+					</React.Fragment>
 				)}
-				{layout === 'table' && props.tableSetup && (
-					<DataTable
-						id={`${props.id}/datatable`}
-						data={data}
-						setup={props.tableSetup}
-						selectedIds={pendingSelectedIds}
-						handleClick={props.selection ? toggleDatum : undefined}
-						handleDblClick={props.selection ? selectAndClose : undefined}
-					/>
+				{!queriedData && (
+					<div style={{ textAlign: 'center' }}>
+						<Icon loading name='spinner' /> {t('global.loading_ellipses')}
+					</div>
 				)}
 			</React.Fragment>
 		);
 	}
 
-	function renderModalActions(): JSX.Element {
+	function renderModalActions(): React.ReactNode {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', columnGap: '1em' }}>
@@ -209,11 +282,11 @@ export const DataPicker = (props: DataPickerProps) => {
 		if (pendingSelectedIds.has(datumId))
 			pendingSelectedIds.delete(datumId);
 		else {
-			if (props.singleSelect && pendingSelectedIds.size)  pendingSelectedIds.clear();
+			if (props.singleSelect) pendingSelectedIds.clear();
 			pendingSelectedIds.add(datumId);
 		}
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
-		if (pendingSelectedIds.size > 0 && props.closeOnChange)
+		if (props.closeOnChange && pendingSelectedIds.size > 0)
 			props.closePicker(pendingSelectedIds, true);
 	}
 
@@ -223,13 +296,12 @@ export const DataPicker = (props: DataPickerProps) => {
 		props.closePicker(pendingSelectedIds, true);
 	}
 
-	function selectFromQuery(): void {
-		pendingSelectedIds.add(data[0].id);
+	function submitQuery(): void {
+		if (!props.selection || !queriedData || queriedData.length !== 1)
+			return;
+		pendingSelectedIds.add(queriedData[0].id);
 		setPendingSelectedIds(new Set<number>(pendingSelectedIds));
 		props.closePicker(pendingSelectedIds, true);
-		// setSearchQuery('');
-		// if (pendingSelectedIds.size > 0 && props.closeOnChange)
-		// 	props.closePicker(pendingSelectedIds, true);
 	}
 };
 

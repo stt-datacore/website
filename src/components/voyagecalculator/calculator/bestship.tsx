@@ -26,7 +26,7 @@ export const BestShipCard = (props: BestShipCardProps) => {
 	return (
 		<Card fluid>
 			<Card.Content>
-				<Image floated='left' src={`${process.env.GATSBY_ASSETS_URL}${bestShip.ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
+				<Image floated='left' src={`${process.env.VITE_ASSETS_URL}${bestShip.ship.icon?.file.slice(1).replace('/', '_')}.png`} style={{ height: '4em' }} />
 				<Card.Header>{bestShip.ship.name}</Card.Header>
 				<p>best ship{bestShip.traited && (<span style={{ marginLeft: '1em' }}>{` +`}{SHIP_TRAIT_NAMES[voyageConfig.ship_trait]}</span>)}</p>
 				{bestShip.ship.index && (

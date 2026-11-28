@@ -26,7 +26,7 @@ export const CitationProspects = (props: CitationProspectsProps) => {
     const { appliedProspects, setAppliedProspects } = citeContext;
 
     const [prospects, internalSetProspects] = useStateWithStorage<LockedProspect[]>(`${dbid}/${pageId}/cite_opt/locked_prospects`, [], { rememberForever: true });
-    const [unownedOnly, setUnownedOnly] = useStateWithStorage<boolean>(`${dbid}/${pageId}/cite_opt/locked_prospects`, false, { rememberForever: true });
+    const [unownedOnly, setUnownedOnly] = useStateWithStorage<boolean>(`${dbid}/${pageId}/cite_opt/unowned_only`, false, { rememberForever: true });
 
     React.useEffect(() => {
         if (prospects?.length) applyProspects();

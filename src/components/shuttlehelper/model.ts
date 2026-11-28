@@ -14,11 +14,17 @@ export class Shuttle {
 	priority: number = 0;
 	created: number = Date.now();
 	readonly: boolean = false;
+	boost?: IShuttleBoost;
 	constructor (groupId: string, id?: string, readonly?: boolean) {
 		this.groupId = groupId;
 		this.id = id ?? 'shuttle-'+Date.now();
 		this.readonly = readonly ?? false;
 	}
+};
+
+export interface IShuttleBoost {
+	skill: string;	// command_skill, diplomacy_skill, etc
+	rarity: number;
 };
 
 export class ShuttleSeat {
@@ -66,7 +72,7 @@ export interface IShuttleScore {
 
 export interface ITableColumn {
 	id: string;
-	title: string | JSX.Element;
+	title: string | React.ReactNode;
 	align?: 'left' | 'right' | 'center';
 	span?: number;
 	sortField?: ITableSortField;
@@ -97,5 +103,5 @@ export interface IActiveEdit {
 export interface IDropdownOption {
 	key: string | number;
 	value: string | number;
-	text: string | JSX.Element;
+	text: string | React.ReactNode;
 };

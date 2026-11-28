@@ -1,4 +1,3 @@
-//import allEvents from '../../static/structured/event_instances.json';
 import { CrewMember } from '../model/crew';
 import { CompletionState, Content, GameEvent, PlayerCrew, Shuttle, SpecialistMission } from '../model/player';
 import { IBestCombos, IEventCombos, IEventData, IEventPair, IEventScoredCrew, IEventSkill, IRosterCrew } from '../components/eventplanner/model';
@@ -413,7 +412,7 @@ export function guessBonusCrew(activeEvent: GameEvent, allCrew: CrewMember[], la
 		});
 	}
 
-	return { bonus: [ ... new Set(bonus)], featured: [...new Set(featured)], traits };
+	return { bonus: [ ...new Set(bonus)], featured: [...new Set(featured)], traits };
 }
 
 // Formula based on PADD's EventHelperGalaxy, assuming craft_config is constant
@@ -525,7 +524,7 @@ export function calculateSpecialistTime(crew: PlayerCrew, eventData: IEventData,
 	let best = 0;
 
 	for (let skill of mission.requirements) {
-		if (mission.min_req_threshold == mission.requirements.length && !crew[skill]?.core) return undefined;
+		if (mission.min_req_threshold === mission.requirements.length && !crew[skill]?.core) return undefined;
 		else if (crew[skill].core > best) best = crew[skill].core;
 	}
 
@@ -637,7 +636,7 @@ export function computeEventBest(
 							crew[skill.name].core = crew[skill.name].core*crew.bonus;
 						}
 						else {
-							crew[skill.name].core = crew[skill.name].core;
+							crew[skill.name].core = crew[skill.name].core*1;
 						}
 
 					}
@@ -752,7 +751,7 @@ export function guessEncounterTimes(gameEvent: GameEvent, as: 'minutes' | 'secon
 				let parts = time.split(" ");
 				let value = Number(parts[0]);
 				if (parts[1].toLocaleLowerCase().includes("hour")) value *= 60;
-				if (as == 'seconds') value *= 60;
+				if (as === 'seconds') value *= 60;
 				values.push(value);
 			})
 		}

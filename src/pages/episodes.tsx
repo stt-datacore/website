@@ -1,5 +1,4 @@
 import React from 'react';
-import { navigate } from 'gatsby';
 import { Item } from 'semantic-ui-react';
 
 import { Mission } from '../model/missions';
@@ -7,12 +6,11 @@ import { GlobalContext } from '../context/globalcontext';
 import DataPageLayout from '../components/page/datapagelayout';
 
 import { getEpisodeName } from '../utils/episodes';
+import { useNavigate } from 'react-router-dom';
 
 const EpisodesPage = () => {
 	const globalContext = React.useContext(GlobalContext);
-
-	const theme = typeof window === 'undefined' ? 'dark' : window.localStorage.getItem('theme') ?? 'dark';
-	const foreColor = theme === 'dark' ? 'white' : 'black';
+	const navigate = useNavigate();
 
 	return (
 		<DataPageLayout
@@ -25,7 +23,7 @@ const EpisodesPage = () => {
 						<Item key={episode.symbol}>
 							<Item.Image
 								size="tiny"
-								src={`${process.env.GATSBY_ASSETS_URL}${episode.episode_portrait
+								src={`${process.env.VITE_ASSETS_URL}${episode.episode_portrait
 										? episode.episode_portrait.file.slice(1).replace('/', '_') + '.png'
 										: 'crew_full_body_cm_empty_full.png'
 									}`}
@@ -35,7 +33,7 @@ const EpisodesPage = () => {
 								<Item.Header as="a" onClick={() => navigate(`/episode/${episode.symbol}`)}>
 									{getEpisodeName(episode)}
 								</Item.Header>
-								<Item.Meta><span style={{color:foreColor}}>Total stars: {episode.total_stars}</span></Item.Meta>
+								<Item.Meta><span style={{color: "white"}}>Total stars: {episode.total_stars}</span></Item.Meta>
 								<Item.Description>
 									<p>{episode.description}</p>
 								</Item.Description>

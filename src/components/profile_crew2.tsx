@@ -152,7 +152,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 		if (!data) return;
 		const sorted: IResultSortDataBy = sortDataBy(data, sortConfig);
 		this.setState({
-			... this.state,
+			...this.state,
 			activeItem: newActiveItem || activeItem,
 			column: newColumn || column,
 			data: sorted.result,
@@ -162,7 +162,7 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 	}
 
 	_onChangeFilter(value: string) {
-		this.setState({ ... this.state, searchFilter: value.toLowerCase() });
+		this.setState({ ...this.state, searchFilter: value.toLowerCase() });
 	}
 
 	_onChange(option: string) {
@@ -194,11 +194,11 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 
 	_onSettingChange(setting: string, value: boolean) {
 		if (setting === 'Include Frozen') {
-			this.setState({ ... this.state, includeFrozen: value });
+			this.setState({ ...this.state, includeFrozen: value });
 		} else if (setting === 'Exclude FF') {
-			this.setState({ ... this.state, excludeFF: value });
+			this.setState({ ...this.state, excludeFF: value });
 		} else if (setting.startsWith('Only event')) {
-			this.setState({ ... this.state, onlyEvent: value });
+			this.setState({ ...this.state, onlyEvent: value });
 		}
 	}
 
@@ -258,42 +258,42 @@ class ProfileCrewMobile extends Component<ProfileCrewMobileProps, ProfileCrewMob
 						active={activeItem === 'command_skill'}
 						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_command_skill.png`} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_command_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="diplomacy_skill"
 						active={activeItem === 'diplomacy_skill'}
 						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_diplomacy_skill.png`} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_diplomacy_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="engineering_skill"
 						active={activeItem === 'engineering_skill'}
 						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_engineering_skill.png`} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_engineering_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="security_skill"
 						active={activeItem === 'security_skill'}
 						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_security_skill.png`} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_security_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="medicine_skill"
 						active={activeItem === 'medicine_skill'}
 						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_medicine_skill.png`} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_medicine_skill.png`} />
 					</Menu.Item>
 					<Menu.Item
 						name="science_skill"
 						active={activeItem === 'science_skill'}
 						onClick={(e, { name }) => this._handleSortNew({activeItem: name})}
 					>
-						<img src={`${process.env.GATSBY_ASSETS_URL}atlas/icon_science_skill.png`} />
+						<img src={`${process.env.VITE_ASSETS_URL}atlas/icon_science_skill.png`} />
 					</Menu.Item>
 
 					<DropdownOpts

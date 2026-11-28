@@ -1,20 +1,18 @@
 import React from "react";
+import { Checkbox, Dropdown, DropdownItemProps, Segment } from "semantic-ui-react";
 import { GlobalContext } from "../../context/globalcontext";
-import { useStateWithStorage } from "../../utils/storage";
+import { WorkerContext } from "../../context/workercontext";
+import { CiteMode, PlayerCrew, PlayerData } from "../../model/player";
 import { BetaTachyonRunnerConfig, BetaTachyonSettings, CiteData, SkillOrderRarity } from "../../model/worker";
+import { useStateWithStorage } from "../../utils/storage";
+import { RarityFilter } from "../crewtables/commonoptions";
+import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
+import { BetaTachyonPresets } from "./btpresets";
 import BetaTachyonSettingsPopup, {
     DefaultBetaTachyonSettings,
-    DefaultPresets,
-    NoPortalBiasSettings,
+    DefaultPresets
 } from "./btsettings";
-import { Segment, Dropdown, Checkbox, DropdownItemProps } from "semantic-ui-react";
-import { DEFAULT_MOBILE_WIDTH } from "../hovering/hoverstat";
-import { CiteMode, PlayerCrew, PlayerData } from "../../model/player";
-import { UnifiedWorker } from "../../typings/worker";
 import { CiteOptContext } from "./context";
-import { RarityFilter } from "../crewtables/commonoptions";
-import { WorkerContext } from "../../context/workercontext";
-import { BetaTachyonPresets } from "./btpresets";
 
 export type CiteEngine = "original" | "beta_tachyon_pulse";
 
@@ -22,6 +20,7 @@ export interface EngineRunnerProps {
     pageId: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IEngineRunnerContext {
 
 }
@@ -238,7 +237,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
         if (!globalContext.player.playerData) return [];
         const { crew } = globalContext.player.playerData.player.character;
         let m = crew.filter(c => !!c.immortal).map(m => m.symbol);
-        return [ ... new Set(m) ];
+        return [ ...new Set(m) ];
     }
 
 	function runWorker() {
@@ -253,7 +252,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
                 internalRunWorker(workerName, {
                     playerData,
                     allCrew
-                }, workerResponse);
+                }, workerResponse, undefined, 'cite-worker.ts');
             });
 		}
 		else {
@@ -266,7 +265,7 @@ export const EngineRunner = (props: EngineRunnerProps) => {
 					buffs: buffConfig,
 					settings: { ...DefaultBetaTachyonSettings, ...currentConfig },
 					coreItems: globalContext.core.items
-				} as BetaTachyonRunnerConfig, workerResponse);
+				} as BetaTachyonRunnerConfig, workerResponse, undefined, 'cite-worker.ts');
             });
 		}
 	}

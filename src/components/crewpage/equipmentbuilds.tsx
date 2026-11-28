@@ -1,21 +1,19 @@
 import React from 'react';
-import { Segment, Header, Dropdown, Button, Grid, Label, Popup } from 'semantic-ui-react';
+import { Button, Dropdown, Grid, Header, Label, Popup, Segment } from 'semantic-ui-react';
 
-import { CrewMember } from '../../model/crew';
-import { GlobalContext } from '../../context/globalcontext';
 import CONFIG from '../../components/CONFIG';
-import ItemDisplay from '../../components/itemdisplay';
 import ItemSources from '../../components/itemsources';
-import { ItemHoverStat } from '../../components/hovering/itemhoverstat';
+import { GlobalContext } from '../../context/globalcontext';
+import { CrewMember } from '../../model/crew';
 
-import CrewFullEquipTree from './crewfullequiptree';
 import { AvatarView } from '../item_presenters/avatarview';
+import CrewFullEquipTree from './crewfullequiptree';
 
 interface IEquipmentOptions {
 	key: string;
 	text: string;
 	value: string;
-	content: JSX.Element;
+	content: React.ReactNode;
 };
 
 type EquipmentBuildsProps = {
@@ -52,7 +50,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 		</React.Fragment>
 	);
 
-	function renderEquipment(crew: CrewMember): JSX.Element {
+	function renderEquipment(crew: CrewMember): React.ReactNode {
 		let options = [] as IEquipmentOptions[];
 		crew.equipment_slots.forEach(es => {
 			const equipment = globalContext.core.items.find(item => item.symbol === es.symbol);
@@ -75,7 +73,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 								item={equipment}
 								/>
 							// <ItemDisplay
-							// 	src={`${process.env.GATSBY_ASSETS_URL}${equipment.imageUrl}`}
+							// 	src={`${process.env.VITE_ASSETS_URL}${equipment.imageUrl}`}
 							// 	size={48}
 							// 	maxRarity={equipment.rarity}
 							// 	rarity={equipment.rarity}
@@ -99,7 +97,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 		);
 	}
 
-	function renderEquipmentDetails(crew: CrewMember): JSX.Element {
+	function renderEquipmentDetails(crew: CrewMember): React.ReactNode {
 		if (selectedEquipment === '') return <></>;
 
 		let es = crew.equipment_slots.find(es => es.symbol === selectedEquipment);
@@ -130,7 +128,7 @@ export const EquipmentBuilds = (props: EquipmentBuildsProps) => {
 								<Popup
 									trigger={
 										<Label as='a' style={{ background: CONFIG.RARITIES[recipeEntry.rarity].color }} image size='big'>
-											<img src={`${process.env.GATSBY_ASSETS_URL}${recipeEntry.imageUrl}`} />x{entry.count}
+											<img src={`${process.env.VITE_ASSETS_URL}${recipeEntry.imageUrl}`} />x{entry.count}
 										</Label>
 									}
 									header={CONFIG.RARITIES[recipeEntry.rarity].name + ' ' + recipeEntry.name}

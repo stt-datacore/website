@@ -1,12 +1,10 @@
 import React from 'react';
 import {
-    Button,
     Icon,
     Image,
     Input,
     Label,
     Message,
-    Popup,
     Rating,
     Segment
 } from 'semantic-ui-react';
@@ -36,7 +34,7 @@ type CrewMultiPickerProps = {
     updateSelected: (crewSymbols: number[]) => void;
     selectionPosition?: 'before' | 'after';
     extraContentPosition?: 'before' | 'after';
-    renderExtraContent?: () => JSX.Element;
+    renderExtraContent?: () => React.ReactNode;
 };
 
 export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
@@ -117,7 +115,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         </React.Fragment>
     );
 
-    function renderSelected(): JSX.Element {
+    function renderSelected(): React.ReactNode {
         return (
             <React.Fragment>
                 {Array.from(selectedIds).map(selectedId => {
@@ -125,7 +123,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
                     if (!crew) return <></>;
                     return (
                         <Label key={crew.id} style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
-                            <Image spaced='right' src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} />
+                            <Image spaced='right' src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} />
                             {crew.name}
                             <Icon name='delete' onClick={() => cancelSelection(crew.id)} />
                         </Label>
@@ -143,7 +141,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         return true;
     }
 
-    function renderOptions(): JSX.Element {
+    function renderOptions(): React.ReactNode {
         return <></>;
         // return (
         //     <CrewPickerOptions
@@ -153,7 +151,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
         // );
     }
 
-    function renderGridCrew(datum: IEssentialData, isSelected: boolean): JSX.Element {
+    function renderGridCrew(datum: IEssentialData, isSelected: boolean): React.ReactNode {
         const crew: CrewMember | PlayerCrew = datum as CrewMember | PlayerCrew;
         const frozen = ("immortal" in crew && !!crew.immortal) && crew.immortal > 0;
         const highest_owned_rarity = ("highest_owned_rarity" in crew) ? (crew.highest_owned_rarity || 0) : undefined;
@@ -161,7 +159,7 @@ export const CrewMultiPicker = (props: CrewMultiPickerProps) => {
             <React.Fragment>
                 <Image>
                     <div style={{ opacity:  1 }}>
-                        <img src={`${process.env.GATSBY_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
+                        <img src={`${process.env.VITE_ASSETS_URL}${crew.imageUrlPortrait}`} width='72px' height='72px' />
                     </div>
                     {isSelected && (
                         <Label corner='right' color='green' icon='check' />

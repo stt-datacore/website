@@ -3,14 +3,14 @@ import { InView } from 'react-intersection-observer';
 import {
 	Grid,
 	Icon,
+	Pagination,
 	StrictGridColumnProps,
 	StrictGridProps
 } from 'semantic-ui-react';
 
 import { GlobalContext } from '../../context/globalcontext';
-import { useStateWithStorage } from '../../utils/storage';
 
-import { IDataGridSetup, IDataSortField, IEssentialData } from './model';
+import { IControlledPagination, IControlledSort, IDataGridSetup, IDataSortField, IEssentialData, TSortDirection } from './model';
 import { dataFieldSort } from './utils';
 
 const defaultSort: IDataSortField = {
@@ -26,34 +26,59 @@ type DataGridProps = {
 	selectedIds?: Set<number>;
 	handleClick?: (datumId: number) => void;
 	handleDblClick?: (datumId: number) => void;
+	controlledSort?: IControlledSort;
+	controlledPagination?: IControlledPagination;
 };
 
 export const DataGrid = (props: DataGridProps) => {
 	const { t } = React.useContext(GlobalContext).localized;
 	const { setup } = props;
 
-	// Persist sort preference
-	const [sortField, setSortField] = useStateWithStorage<IDataSortField>(`${props.id}/sortField`, setup?.defaultSort ?? defaultSort);
-	const [sortDirection, setSortDirection] = useStateWithStorage<'ascending' | 'descending'>(`${props.id}/sortDirection`, setup?.defaultSort?.firstSort ?? 'ascending');
+	const [data, setData] = React.useState<IEssentialData[] | undefined>(undefined);
 
-	// Reset pagination on each reload
+	// Reset sort on each reload
+	const [sortField, setSortField] = React.useState<IDataSortField>(setup?.defaultSort ?? defaultSort);
+	const [sortDirection, setSortDirection] = React.useState<TSortDirection>(setup?.defaultSort?.firstSort ?? 'ascending');
+
+	// Reset pagination/view on each reload
 	const [paginationPage, setPaginationPage] = React.useState<number>(1);
+	const [pageInView, setPageInView] = React.useState<number>(1);
 
-	const selectedIds: Set<number> = props.selectedIds ?? new Set<number>();
+	React.useEffect(() => {
+		// If controlled sort, send data and sort field directly to UI
+		if (props.controlledSort) {
+			updateState(
+				props.data,
+				props.controlledSort.sortField,
+				props.controlledSort.sortDirection
+			);
+			return;
+		}
+		// Otherwise re-sort updated data by most recent sort field
+		const data: IEssentialData[] = dataFieldSort(props.data, sortField, sortDirection);
+		updateState(data, sortField, sortDirection);
+	}, [props.data, setup]);
 
-	const data = React.useMemo<IEssentialData[]>(() => {
-		const data: IEssentialData[] = props.data.slice();
-		dataFieldSort(data, sortField, sortDirection);
-		setPaginationPage(1);
-		return data;
-	}, [props.data, sortField, sortDirection]);
-
-	// Pagination
-	const itemsPerPage = 24, itemsToShow = itemsPerPage * paginationPage;
+	if (!data) return <></>;
 
 	// No results found. Please try different search options.
 	if (data.length === 0)
 		return <>{t('global.no_search_results_found')}</>;
+
+	const selectedIds: Set<number> = props.selectedIds ?? new Set<number>();
+
+	// Pagination (only used if controlled pagination is not defined)
+	let totalPages: number = 1;
+	let pagedData: IEssentialData[] = data.slice();
+	if (setup?.itemsPerPage) {
+		const itemsPerPage: number = setup.itemsPerPage;
+		totalPages = Math.ceil(data.length / itemsPerPage);
+		pagedData = data.slice(itemsPerPage * (paginationPage - 1), itemsPerPage * paginationPage);
+	}
+
+	// Number of items that are rendered in view at a time (defaults to 24)
+	const itemsInView: number = setup?.itemsInView ?? (setup?.itemsPerPage ?? 24);
+	let itemsToRender: number = (itemsInView * (pageInView - 1)) + itemsInView;
 
 	const defaultGridProps: StrictGridProps = {
 		textAlign: 'center'
@@ -73,7 +98,7 @@ export const DataGrid = (props: DataGridProps) => {
 	return (
 		<React.Fragment>
 			<Grid {...gridProps}>
-				{data.slice(0, itemsToShow).map(datum => (
+				{pagedData.slice(0, itemsToRender).map(datum => (
 					<Grid.Column key={datum.id}
 						{...columnProps}
 						style={{ cursor: props.handleClick ? 'pointer' : undefined }}
@@ -89,17 +114,36 @@ export const DataGrid = (props: DataGridProps) => {
 					</Grid.Column>
 				))}
 			</Grid>
-			{itemsToShow < data.length && (
+			{itemsToRender < pagedData.length && (
 				<InView as='div' style={{ margin: '2em 0', textAlign: 'center' }}
-					onChange={(inView, _entry) => { if (inView) setPaginationPage(prevState => prevState + 1); }}
+					onChange={(inView, _entry) => { if (inView) setPageInView(prevState => prevState + 1); }}
 				>
 					<Icon loading name='spinner' /> {t('global.loading_ellipses')}
 				</InView>
 			)}
+			{!props.controlledPagination && totalPages > 1 && (
+				<div style={{ marginTop: '1em' }}>
+					<Pagination
+						totalPages={totalPages}
+						activePage={paginationPage}
+						onPageChange={(e, { activePage }) => setPaginationPage(activePage as number)}
+						boundaryRange={0}
+						ellipsisItem={false}
+					/>
+				</div>
+			)}
 		</React.Fragment>
 	);
 
-	function renderDefaultGridColumn(datum: IEssentialData, isSelected: boolean): JSX.Element {
+	function updateState(data: IEssentialData[], sortField: IDataSortField, sortDirection: TSortDirection, paginationPage: number = 1): void {
+		setData(data);
+		setSortField(sortField);
+		setSortDirection(sortDirection);
+		setPaginationPage(paginationPage);
+		setPageInView(1);
+	}
+
+	function renderDefaultGridColumn(datum: IEssentialData, isSelected: boolean): React.ReactNode {
 		return (
 			<React.Fragment>
 				{isSelected && <Icon name='check' color='blue' />} {datum.name}
