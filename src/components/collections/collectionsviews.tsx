@@ -60,7 +60,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 	const [offPageSelect, setOffPageSelect] = React.useState<number | undefined>(undefined);
 	const milestoneOpts = [] as DropdownItemProps[];
 
-	const [tabIndex, setTabIndex] = useStateWithStorage<number | undefined>('collectionstool/tabIndex', undefined, { rememberForever: true });
+	const [tabIndex, setTabIndex] = useStateWithStorage<number>('collectionstool/tabIndex', 0, { rememberForever: true });
     const [compactView, setCompactView] = useStateWithStorage('collectionstool/compactView', false, { rememberForever: true });
 
 	React.useEffect(() => {
@@ -267,7 +267,7 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 				<Step.Group fluid widths={5}>
 					{tabPanes.map((pane, idx) => {
 						return (
-							<Step active={(tabIndex === idx || (idx === 0 && tabIndex === undefined))} onClick={() => setTabIndex(idx)}>
+							<Step key={pane.mode} active={tabIndex === idx} onClick={() => setTabIndex(idx)}>
 								<Step.Content>
 									<Step.Title>{pane.menuItem || t(`collections.panes.${pane.mode}.title`)}</Step.Title>
 									<Step.Description>{pane.description || t(`collections.panes.${pane.mode}.description`)}</Step.Description>
@@ -277,25 +277,21 @@ export const CollectionsViews = (props: CollectionsViewsProps) => {
 					})}
 				</Step.Group>
 			</div>
-			{tabIndex !== undefined &&
-			<>
-				<Header as='h4'>{tabPanes[tabIndex].longTitle || t(`collections.panes.${tabPanes[tabIndex].mode}.long_title`)}</Header>
-				<p>{tabPanes[tabIndex].longDescription || t(`collections.panes.${tabPanes[tabIndex].mode}.long_description`)}</p>
+			<Header as='h4'>{tabPanes[tabIndex].longTitle || t(`collections.panes.${tabPanes[tabIndex].mode}.long_title`)}</Header>
+			<p>{tabPanes[tabIndex].longDescription || t(`collections.panes.${tabPanes[tabIndex].mode}.long_description`)}</p>
 
-				{tabPanes[tabIndex].showFilters &&
-					<CollectionPrefs
-						compactView={compactView}
-						setCompactView={setCompactView}
-						mode={tabPanes[tabIndex ?? 0].mode as any}
-						playerCollections={playerCollections}
-						extendedCollections={extendedCollections}
-						colCombos={colCombos}
-						workerRunning={workerRunning}
-						/>
-				}
-				{tabPanes[tabIndex].render(workerRunning)}
-			</>
+			{tabPanes[tabIndex].showFilters &&
+				<CollectionPrefs
+					compactView={compactView}
+					setCompactView={setCompactView}
+					mode={tabPanes[tabIndex].mode as any}
+					playerCollections={playerCollections}
+					extendedCollections={extendedCollections}
+					colCombos={colCombos}
+					workerRunning={workerRunning}
+					/>
 			}
+			{tabPanes[tabIndex].render(workerRunning)}
 			<CrewHoverStat  openCrew={(crew) => navToCrewPage(crew, navigate)} targetGroup='collectionsTarget' />
 			<ItemHoverStat targetGroup='collectionsTarget_item' />
 		</React.Fragment>

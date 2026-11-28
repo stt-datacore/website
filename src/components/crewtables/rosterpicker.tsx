@@ -163,8 +163,8 @@ export const RosterPicker = (props: RosterPickerProps) => {
 
 	return (
 		<>
-		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew, idx) => {
-			if (fuseDismissed.includes(crew.symbol)) return <></>
+		{!!alertConfig.alert_fuses && !!buyFuses?.length && buyFuses.map((crew) => {
+			if (fuseDismissed.includes(crew.symbol)) return null;
 			let cols = getPlayerCols(crew);
 			return drawAlert(crew, <>
 				{t('alerts.fusible_crew', {
@@ -172,10 +172,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 								rarity: `${crew.rarity}`,
 								max_rarity: `${crew.max_rarity}`
 				})} {t('alerts.check_buyback')}
-				</>, idx, cols, 'atlas/fusion_icon.png', dismissFuse);
+				</>, `buyback_fuse_${crew.symbol}`, cols, 'atlas/fusion_icon.png', dismissFuse);
 		})}
-		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew, idx) => {
-			if (newDismissed.includes(crew.symbol)) return <></>
+		{!!alertConfig.alert_new && !!buyUnowned?.length && buyUnowned.map((crew) => {
+			if (newDismissed.includes(crew.symbol)) return null;
 			let cols = getPlayerCols(crew);
 			return drawAlert(crew, <>
 				{t('alerts.new_crew', {
@@ -183,10 +183,10 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						rarity: `${crew.rarity}`,
 						max_rarity: `${crew.max_rarity}`
 						})} {t('alerts.check_buyback')}
-				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
+				</>, `buyback_new_${crew.symbol}`, cols, 'atlas/crew_icon.png', dismissNew)
 		})}
 		{!!buyWatched?.length && buyWatched.map((crew, idx) => {
-			if (newDismissed.includes(crew.symbol)) return <></>
+			if (newDismissed.includes(crew.symbol)) return null;
 			let cols = [] as CryoCollection[];
 			return drawAlert(crew, <>
 				{t('alerts.watched_crew', {
@@ -194,7 +194,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 						rarity: `${crew.rarity}`,
 						max_rarity: `${crew.max_rarity}`
 						})} {t('alerts.check_buyback')}
-				</>, idx, cols, 'atlas/crew_icon.png', dismissNew)
+				</>, `buyback_watched_${crew.symbol}_${idx}`, cols, 'atlas/crew_icon.png', dismissNew)
 		})}
 		<Step.Group fluid widths={hasBuyBack ? 4 : 3}>
 			{steps.map((step, idx) => <React.Fragment key={`index_page_step_${idx}`}>{step}</React.Fragment>)}
@@ -203,7 +203,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 		</>
 	);
 
-	function drawAlert(crew: PlayerCrew, message: string | React.ReactNode, idx: number, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
+	function drawAlert(crew: PlayerCrew, message: string | React.ReactNode, key: string, cols: CryoCollection[], icon: string, dismiss: (crew: PlayerCrew) => void) {
 		let one = false;
 		if (cols.length) {
 			for (let c of cols) {
@@ -217,7 +217,7 @@ export const RosterPicker = (props: RosterPickerProps) => {
 			navigate("/collections?select=" + encodeURIComponent(col));
 		}
 		return (
-			<div style={{
+			<div key={key} style={{
 				margin: '0.5em 0',
 				display: 'grid',
 				gridTemplateAreas: `'icon image alert'`,
@@ -237,7 +237,6 @@ export const RosterPicker = (props: RosterPickerProps) => {
 				</div>
 				<img src={`${process.env.VITE_ASSETS_URL}${icon}`} style={{gridArea: 'icon', width: '24px', height: 'auto', margin: 'auto'}} />
 				<Message
-					key={`buyback_${crew.symbol}+${idx}`}
 					style={{
 						gridArea: 'alert'
 					}}

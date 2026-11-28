@@ -296,7 +296,7 @@ export const FTMHof = () => {
     function renderTableRow(row: AchieverDetails | AchieverStat, idx?: number) {
 
         if ("ftms" in row) {
-            return (<Table.Row>
+            return (<Table.Row key={`ftmhof_player_${row.player_name}`}>
                 <Table.Cell>
                     <div style={{ ...flexRow, justifyContent: 'flex-start', gap: '1em', fontWeight: 'bold', fontSize: '1.2em' }}>
                         {!!row.avatar && <img style={{ height: '48px' }} src={`${process.env.VITE_ASSETS_URL}${row.avatar}`} />}
@@ -350,7 +350,7 @@ export const FTMHof = () => {
             </Table.Row>)
         }
         else {
-            return (<Table.Row>
+            return (<Table.Row key={`ftmhof_ftm_${row.player_name}_${row.crew_symbol}`}>
                 <Table.Cell>
                     <div style={{ ...flexRow, justifyContent: 'flex-start', gap: '1em', fontWeight: 'bold', fontSize: '1.2em' }}>
                         {!!row.avatar && <img style={{ height: '48px' }} src={`${process.env.VITE_ASSETS_URL}${row.avatar}`} />}

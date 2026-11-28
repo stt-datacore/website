@@ -237,7 +237,7 @@ const OptimalPolestars = (props: OptimalPolestarsProps) => {
 								{expanded === idx && (<>
 									<div style={{...OptionsPanelFlexRow, margin: '1em 0', gap: '1em', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-evenly'}}>
 										{optimal.alts.map((alt) => (
-											<div style={{
+											<div key={`alt_${alt.symbol}`} style={{
 												...OptionsPanelFlexColumn,
 												justifyContent: 'flex-start',
 												alignItems: 'center',

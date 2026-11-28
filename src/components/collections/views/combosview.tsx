@@ -182,6 +182,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 
 													return (
 														<CollectionCard
+															key={`optcol_${collection.id}`}
 															compactView={compactView}
 															ownedCites={ownedCites}
 															style={{ width: "350px" }}
@@ -197,6 +198,7 @@ export const CollectionCombosView = (props: CollectionOptimizerProps) => {
 										<Grid doubling columns={3} textAlign='center'>
 											{comboCrew.map((crew, ccidx) => (
 												<CollectionsCrewCard
+													key={`combocrew_${crew.symbol}`}
 													compactView={compactView}
 													crew={crew}
 													collection={collection}

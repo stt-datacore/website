@@ -243,7 +243,7 @@ export const VoyageGroupsComponent = (props: VoyageGroupsComponentProps) => {
             <Table.Cell>
                 <Grid doubling columns={3} textAlign='center'>
                     {voyage.crew.filter(c => !!c).map((crew) => (
-                        <Grid.Column>
+                        <Grid.Column key={`voy${idx}_crew_${crew.symbol}`}>
                         <div style={{ margin: "1.5em", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                             <AvatarView
                                 mode='crew'

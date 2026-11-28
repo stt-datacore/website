@@ -141,13 +141,13 @@ export const LootCrewTable = () => {
         return false;
     }
 
-    function renderTableRow(crew_in: IRosterCrew, idx?: number) {
+    function renderTableRow(crew_in: IRosterCrew) {
 
         const row = getLootCrew(crew_in)!;
         const crew = row.crew;
 
         return (
-            <Table.Row>
+            <Table.Row key={`loot_crew_${crew.symbol}`}>
                 <Table.Cell className='sticky'>
 					<div
 						style={{
@@ -175,10 +175,10 @@ export const LootCrewTable = () => {
                     <p>
                         {row.voyages.length}
                     </p>
-                    {row.voyages.map(voy => {
+                    {row.voyages.map((voy) => {
                         const created = new Date(voy.created_at);
                         return (
-                        <p>
+                        <p key={`voy_${voy.tracker_id}`}>
                             {created.toLocaleDateString()}
                         </p>
                     )})}

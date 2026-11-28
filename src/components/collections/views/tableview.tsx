@@ -257,10 +257,10 @@ export const CollectionTableView = (props: CollectionTableProps) => {
 					})}</h4>
 				</div>
 				<div style={{ ...flexRow, justifyContent: 'flex-start', gap: '0.5em', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-					{rewards.map((reward) => {
+					{rewards.map((reward, ridx) => {
 						let item = reward as EquipmentItem;
 						item.imageUrl = getIconPath(item.icon!, true);
-						return <div style={{ ...flexCol, gap: '0.5em', textAlign: 'center', width: '4em' }}>
+						return <div key={`reward_${item.symbol}_${ridx}`} style={{ ...flexCol, gap: '0.5em', textAlign: 'center', width: '4em' }}>
 							<AvatarView
 								mode={'item'}
 								item={item}

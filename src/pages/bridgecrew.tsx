@@ -106,7 +106,7 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 				<div style={{ height: '500px', overflow: 'hidden', textAlign: 'center', padding: '25px', backgroundColor: '#203147', border: '2px solid lightblue' }}>
 					<Header as='h3'>Bridge Crew</Header>
 					{this.state.entries.map((entry, idx) => (
-							<img src={`${process.env.VITE_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
+							<img key={idx} src={`${process.env.VITE_ASSETS_URL}${entry.crew?.imageUrlFullBody}`} style={{ height: '725px', margin: '0 -6.5%' }} />
 					))}
 				</div>
 				</React.Fragment>
@@ -132,7 +132,8 @@ class BridgeCrewPage extends Component<BridgeCrewPageProps, BridgeCrewPageState>
 			params.append('crew', symbol);
 		}
 
-		this.setState({ entries, currentSelectedItems: value });
+		// The dropdown keys its selected labels by value, so it gets each crew once; the images keep any repeats.
+		this.setState({ entries, currentSelectedItems: [...new Set(value as string[])] });
 
 		let newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
 		window.history.pushState({ path: newurl }, '', newurl);

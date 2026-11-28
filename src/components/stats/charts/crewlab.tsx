@@ -157,7 +157,7 @@ export const CrewLab = (props: CrewLabProps) => {
                             <h3>{t('quipment_dropdowns.mode.skill_order')}</h3>
                             <div style={{ ...flexRow }}>
                                 {crew.skill_order.map((skill) => {
-                                    return <CrewStat skill_name={skill} data={crew[skill]} />
+                                    return <CrewStat key={`${crew.symbol}_${skill}`} skill_name={skill} data={crew[skill]} />
                                 })}
                             </div>
                             {!!lineData?.length && !!lineData[idx] && !!lineData[idx].length &&

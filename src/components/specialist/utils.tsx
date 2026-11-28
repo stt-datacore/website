@@ -13,7 +13,7 @@ export function drawTraits(traits: string[], TRAIT_NAMES: TraitNames, style?: Re
 
     const traitimg = traits.map((trait) => {
         let trait_icon = `${process.env.VITE_ASSETS_URL}items_keystones_${trait}.png`;
-        return <div style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
+        return <div key={`trait_${trait}`} style={{...flexRow, alignItems: 'center', justifyContent: 'flex-start'}}>
             <img src={trait_icon} style={{height: `${iconSize}px`}} />
             {TRAIT_NAMES[trait]}
         </div>
@@ -49,7 +49,7 @@ export function drawSkills(skills: string[], t: TranslateMethod, combo?: 'and' |
 
     const skillimg = skills.map((skill) => {
         let skill_icon = `${process.env.VITE_ASSETS_URL}atlas/icon_${skill}.png`;
-        return <div title={CONFIG.SKILLS[skill]} style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
+        return <div key={`skill_${skill}`} title={CONFIG.SKILLS[skill]} style={{...flexRow, alignItems: 'center', justifyContent: 'center'}}>
             <img src={skill_icon} style={{width: `${iconSize}px`}} />
             {!!names && <span>{CONFIG.SKILLS[skill]}</span>}
         </div>
@@ -58,7 +58,7 @@ export function drawSkills(skills: string[], t: TranslateMethod, combo?: 'and' |
     const skillcontent = [] as React.ReactNode[];
 
     for (let img of skillimg) {
-        if (skillcontent.length) skillcontent.push(<div style={{width: `${iconSize}px`}}>{combo_txt}</div>);
+        if (skillcontent.length) skillcontent.push(<div key={`skill_sep_${skillcontent.length}`} style={{width: `${iconSize}px`}}>{combo_txt}</div>);
         skillcontent.push(img);
     }
     if (style) {

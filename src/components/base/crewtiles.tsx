@@ -62,7 +62,7 @@ export const CrewTiles = (props: CrewTilesProps) => {
                         <span>{c.name}</span>
                         {!!miniSkills && <div style={{ ...flexRow, gap: '0.5em', justifyContent: 'space-evenly' }}>
                             {Object.values(c.base_skills!).map((skill) => {
-                                return <img src={skillIcon(skill.skill)} style={{ height: '1.2em' }} />
+                                return <img key={`${c.symbol}_${skill.skill}`} src={skillIcon(skill.skill)} style={{ height: '1.2em' }} />
                             })}
                         </div>}
                         {!!extraMessage && !!displayExtraMessage && displayExtraMessage(c) && <>{extraMessage}</>}

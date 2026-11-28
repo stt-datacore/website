@@ -72,7 +72,7 @@ export const getBaseTableConfig = (tableType: RosterType, t: TranslateMethod, al
 				column: "requiredFactionItems",
 				title: (
 					<div style={{display: 'inline-flex', width: '3em', textAlign: 'left', marginRight: '0.25em'}}>
-						{t('behold_helper.columns.faction_items').split(" ").map((t, idx) => <>{!!idx && <br />}{t}</>)}
+						{t('behold_helper.columns.faction_items').split(" ").map((t, idx) => <React.Fragment key={`faction_items_title_${idx}`}>{!!idx && <br />}{t}</React.Fragment>)}
 					</div>
 				),
 				customCompare: (a: PlayerCrew, b: PlayerCrew) => {
@@ -384,10 +384,10 @@ export const CrewBaseCells = (props: CrewCellProps) => {
 			<div className='ui segment'
 				style={{...OptionsPanelFlexRow}}
 			>
-				{crew.factionItems!.map((item, idx) => {
+				{crew.factionItems!.map((item) => {
 
 					return (
-						<div style={{...OptionsPanelFlexColumn}}>
+						<div key={`faction_item_${crew.symbol}_${item.symbol}`} style={{...OptionsPanelFlexColumn}}>
 							<AvatarView
 								mode='item'
 								item={item}

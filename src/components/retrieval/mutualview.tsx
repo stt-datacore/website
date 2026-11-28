@@ -690,7 +690,7 @@ const MutualTable = (props: MutualTableProps) => {
 
         const costs = item.cost;
 
-        return <Table.Row>
+        return <Table.Row key={`${item.combo.map(c => c.symbol).join(',')}_${item.crew.map(c => c.symbol).join(',')}`}>
             <Table.Cell>
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'row', justifyContent: 'space-evenly', alignItems: 'flex-start'}}>
                     {item.combo.map((polestar) => {
@@ -707,7 +707,7 @@ const MutualTable = (props: MutualTableProps) => {
                             psName = TRAIT_NAMES[polestar.symbol.replace("_keystone", "")] || CONFIG.SKILLS[polestar.symbol.replace("_keystone", "")];
                         }
 
-                        return <div style={{ width: '7em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
+                        return <div key={polestar.symbol} style={{ width: '7em', display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'center', alignItems: 'center', gap: '0.5em'}}>
                             <ItemTarget
                                 inputItem={polestar as any as EquipmentItem}
                                 targetGroup="mutual_crew_item">
@@ -734,7 +734,7 @@ const MutualTable = (props: MutualTableProps) => {
                 <div style={{display:'flex', flexWrap:'wrap', flexDirection:'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1em'}}>
                     {item.crew.map((crew) => {
                         return (
-                            <div style={{display:'flex', gap: '1em', flexWrap:'wrap', flexDirection:'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                            <div key={`${crew.symbol}_${crew.id}`} style={{display:'flex', gap: '1em', flexWrap:'wrap', flexDirection:'row', justifyContent: 'flex-start', alignItems: 'center'}}>
                             <AvatarView
                                     mode='crew'
                                     item={crew}
