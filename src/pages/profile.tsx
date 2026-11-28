@@ -28,9 +28,18 @@ import { PlayerCrew, PlayerData } from '../model/player';
 import { useStateWithStorage } from '../utils/storage';
 import { calculateBuffConfig } from '../utils/voyageutils';
 
+// Without a dbid/hash/discord param, the profile page shows the player's own data
+function hasProfileParams(): boolean {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.has('dbid') || urlParams.has('hash') || (urlParams.has('discord') && window.location.hash !== '');
+}
+
 export const ProfilePage = () => {
 	return (
-		<DataPageLayout demands={['cadet', 'episodes', 'items', 'all_buffs', 'current_weighting']}>
+		<DataPageLayout
+			demands={['cadet', 'episodes', 'items', 'all_buffs', 'current_weighting']}
+			playerPromptType={hasProfileParams() ? 'none' : 'require'}
+		>
 			<ProfilePageLoader />
 		</DataPageLayout>
 	);
@@ -49,12 +58,14 @@ const ProfilePageLoader = () => {
 	const [errorMessage, setErrorMessage] = React.useState('');
 	const buffConfig = strippedPlayerData ? calculateBuffConfig(strippedPlayerData.player) : undefined;
 	const [calculatedDemands, setCalculatedDemands] = React.useState<EquipmentItem[] | undefined>(undefined);
+	const profileParams = hasProfileParams();
+	const ownPlayerData = profileParams ? undefined : globalContext.player.playerData;
 
 	React.useEffect(() => {
 		if (coreCrew?.length) {
 			configureProfile();
 		}
-	}, [coreCrew]);
+	}, [coreCrew, ownPlayerData]);
 
 	const profData: PlayerData | undefined = React.useMemo(() => {
 		if (!strippedPlayerData) return;
@@ -80,7 +91,7 @@ const ProfilePageLoader = () => {
 	}
 	else return (
 		<React.Fragment>
-			{!profData && <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>}
+			{!profData && (profileParams || !!ownPlayerData) && <div className='ui medium centered text active inline loader'>{t('spinners.default')}</div>}
 			{!!profData && <React.Fragment>
 				<GlobalContext.Provider value={{
 					...globalContext,
@@ -153,6 +164,10 @@ const ProfilePageLoader = () => {
 			if (globalContext.player.playerData) {
 				setStrippedPlayerData(globalContext.player.playerData);
 				setLastModified(globalContext.player.playerData.calc?.lastModified);
+			}
+			else {
+				// No player data to show; DataPageLayout prompts for player data instead
+				setStrippedPlayerData(undefined);
 			}
 			return;
 		}
